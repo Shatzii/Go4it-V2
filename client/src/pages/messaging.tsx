@@ -1,6 +1,5 @@
 import React from 'react';
 import { MessagingInterface } from '@/components/messaging/messaging-interface';
-import { MessagingProvider } from '@/contexts/messaging-context';
 
 export default function MessagingPage() {
   return (
@@ -15,9 +14,7 @@ export default function MessagingPage() {
       </div>
       
       <div className="grid place-items-center">
-        <MessagingProvider>
-          <MessagingInterface />
-        </MessagingProvider>
+        <MessagingInterface />
       </div>
     </div>
   );

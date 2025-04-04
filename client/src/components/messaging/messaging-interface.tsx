@@ -31,12 +31,12 @@ export const MessagingInterface: React.FC = () => {
   
   // Fetch available users to message
   const { data: athletes } = useQuery({
-    queryKey: ['/api/admin/athletes'],
+    queryKey: ['/api/athletes/list'],
     enabled: user?.role === 'coach' || user?.role === 'admin',
   });
   
   const { data: coaches } = useQuery({
-    queryKey: ['/api/admin/coaches'],
+    queryKey: ['/api/coaches/list'],
     enabled: user?.role === 'athlete' || user?.role === 'admin',
   });
 
@@ -46,11 +46,11 @@ export const MessagingInterface: React.FC = () => {
     
     let availableUsers: UserItem[] = [];
     
-    if (user.role === 'athlete' && coaches) {
+    if (user.role === 'athlete' && coaches && Array.isArray(coaches)) {
       availableUsers = coaches;
-    } else if (user.role === 'coach' && athletes) {
+    } else if (user.role === 'coach' && athletes && Array.isArray(athletes)) {
       availableUsers = athletes;
-    } else if (user.role === 'admin' && coaches && athletes) {
+    } else if (user.role === 'admin' && coaches && athletes && Array.isArray(coaches) && Array.isArray(athletes)) {
       availableUsers = [...coaches, ...athletes];
     }
     

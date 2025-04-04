@@ -251,6 +251,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     return res.status(403).json({ message: "Not authorized" });
   };
+  
+  // Routes for listing athletes and coaches for messaging
+  app.get("/api/athletes/list", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const athletes = await storage.getAllAthletes();
+      return res.json(athletes.map(athlete => ({
+        id: athlete.id,
+        name: athlete.name,
+        username: athlete.username,
+        profileImage: athlete.profileImage,
+        role: athlete.role
+      })));
+    } catch (error) {
+      console.error("Error fetching athletes list:", error);
+      return res.status(500).json({ message: "Error fetching athletes list" });
+    }
+  });
+  
+  app.get("/api/coaches/list", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const coaches = await storage.getAllCoaches();
+      return res.json(coaches.map(coach => ({
+        id: coach.id,
+        name: coach.name,
+        username: coach.username,
+        profileImage: coach.profileImage,
+        role: coach.role
+      })));
+    } catch (error) {
+      console.error("Error fetching coaches list:", error);
+      return res.status(500).json({ message: "Error fetching coaches list" });
+    }
+  });
 
   // User profile routes
   app.get("/api/athletes/:id", isAuthenticated, async (req: Request, res: Response) => {
