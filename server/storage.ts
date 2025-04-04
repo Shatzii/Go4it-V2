@@ -15,7 +15,10 @@ import {
   athleteChallenges, type AthleteChallenge, type InsertAthleteChallenge,
   recoveryLogs, type RecoveryLog, type InsertRecoveryLog,
   fanClubFollowers, type FanClubFollower, type InsertFanClubFollower,
-  leaderboardEntries, type LeaderboardEntry, type InsertLeaderboardEntry
+  leaderboardEntries, type LeaderboardEntry, type InsertLeaderboardEntry,
+  // New imports for blog and featured athletes
+  blogPosts, type BlogPost, type InsertBlogPost,
+  featuredAthletes, type FeaturedAthlete, type InsertFeaturedAthlete
 } from "@shared/schema";
 
 export interface IStorage {
@@ -121,6 +124,24 @@ export interface IStorage {
   getUserLeaderboardEntry(userId: number, category: string): Promise<LeaderboardEntry | undefined>;
   createLeaderboardEntry(entry: InsertLeaderboardEntry): Promise<LeaderboardEntry>;
   updateLeaderboardEntry(id: number, data: Partial<LeaderboardEntry>): Promise<LeaderboardEntry | undefined>;
+
+  // Blog operations
+  getBlogPosts(limit?: number, offset?: number): Promise<BlogPost[]>;
+  getFeaturedBlogPosts(limit?: number): Promise<BlogPost[]>;
+  getBlogPostsByCategory(category: string, limit?: number): Promise<BlogPost[]>;
+  getBlogPostBySlug(slug: string): Promise<BlogPost | undefined>;
+  getBlogPost(id: number): Promise<BlogPost | undefined>;
+  createBlogPost(post: InsertBlogPost): Promise<BlogPost>;
+  updateBlogPost(id: number, data: Partial<BlogPost>): Promise<BlogPost | undefined>;
+  deleteBlogPost(id: number): Promise<boolean>;
+
+  // Featured Athletes operations
+  getFeaturedAthletes(limit?: number): Promise<FeaturedAthlete[]>;
+  getFeaturedAthlete(id: number): Promise<FeaturedAthlete | undefined>;
+  getFeaturedAthleteByUserId(userId: number): Promise<FeaturedAthlete | undefined>;
+  createFeaturedAthlete(athlete: InsertFeaturedAthlete): Promise<FeaturedAthlete>;
+  updateFeaturedAthlete(id: number, data: Partial<FeaturedAthlete>): Promise<FeaturedAthlete | undefined>;
+  deactivateFeaturedAthlete(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -143,6 +164,10 @@ export class MemStorage implements IStorage {
   private fanClubFollowers: Map<number, FanClubFollower>;
   private leaderboardEntries: Map<number, LeaderboardEntry>;
   
+  // Content components
+  private blogPosts: Map<number, BlogPost>;
+  private featuredAthletes: Map<number, FeaturedAthlete>;
+  
   private currentUserId: number;
   private currentAthleteProfileId: number;
   private currentCoachProfileId: number;
@@ -159,6 +184,8 @@ export class MemStorage implements IStorage {
   private currentRecoveryLogId: number;
   private currentFanClubFollowerId: number;
   private currentLeaderboardEntryId: number;
+  private currentBlogPostId: number;
+  private currentFeaturedAthleteId: number;
 
   constructor() {
     this.users = new Map();
@@ -180,6 +207,10 @@ export class MemStorage implements IStorage {
     this.fanClubFollowers = new Map();
     this.leaderboardEntries = new Map();
     
+    // Initialize content component maps
+    this.blogPosts = new Map();
+    this.featuredAthletes = new Map();
+    
     this.currentUserId = 1;
     this.currentAthleteProfileId = 1;
     this.currentCoachProfileId = 1;
@@ -196,6 +227,8 @@ export class MemStorage implements IStorage {
     this.currentRecoveryLogId = 1;
     this.currentFanClubFollowerId = 1;
     this.currentLeaderboardEntryId = 1;
+    this.currentBlogPostId = 1;
+    this.currentFeaturedAthleteId = 1;
     
     // Initialize with sample data for testing
     this.seedInitialData();
@@ -727,6 +760,118 @@ export class MemStorage implements IStorage {
     this.leaderboardEntries.set(id, updatedEntry);
     return updatedEntry;
   }
+  
+  // Blog Post operations
+  async getBlogPosts(limit: number = 20, offset: number = 0): Promise<BlogPost[]> {
+    return Array.from(this.blogPosts.values())
+      .sort((a, b) => new Date(b.publishDate || Date.now()).getTime() - new Date(a.publishDate || Date.now()).getTime())
+      .slice(offset, offset + limit);
+  }
+  
+  async getFeaturedBlogPosts(limit: number = 5): Promise<BlogPost[]> {
+    return Array.from(this.blogPosts.values())
+      .filter(post => post.featured)
+      .sort((a, b) => new Date(b.publishDate || Date.now()).getTime() - new Date(a.publishDate || Date.now()).getTime())
+      .slice(0, limit);
+  }
+  
+  async getBlogPostsByCategory(category: string, limit: number = 10): Promise<BlogPost[]> {
+    return Array.from(this.blogPosts.values())
+      .filter(post => post.category === category)
+      .sort((a, b) => new Date(b.publishDate || Date.now()).getTime() - new Date(a.publishDate || Date.now()).getTime())
+      .slice(0, limit);
+  }
+  
+  async getBlogPostBySlug(slug: string): Promise<BlogPost | undefined> {
+    return Array.from(this.blogPosts.values()).find(
+      (post) => post.slug === slug
+    );
+  }
+  
+  async getBlogPost(id: number): Promise<BlogPost | undefined> {
+    return this.blogPosts.get(id);
+  }
+  
+  async createBlogPost(post: InsertBlogPost): Promise<BlogPost> {
+    const id = this.currentBlogPostId++;
+    const now = new Date();
+    const newPost: BlogPost = {
+      ...post,
+      id,
+      publishDate: post.publishDate || now
+    };
+    this.blogPosts.set(id, newPost);
+    return newPost;
+  }
+  
+  async updateBlogPost(id: number, data: Partial<BlogPost>): Promise<BlogPost | undefined> {
+    const post = this.blogPosts.get(id);
+    if (!post) return undefined;
+    
+    const updatedPost = {
+      ...post,
+      ...data
+    };
+    this.blogPosts.set(id, updatedPost);
+    return updatedPost;
+  }
+  
+  async deleteBlogPost(id: number): Promise<boolean> {
+    return this.blogPosts.delete(id);
+  }
+  
+  // Featured Athlete operations
+  async getFeaturedAthletes(limit: number = 4): Promise<FeaturedAthlete[]> {
+    return Array.from(this.featuredAthletes.values())
+      .filter(athlete => athlete.active)
+      .sort((a, b) => new Date(b.featuredDate || Date.now()).getTime() - new Date(a.featuredDate || Date.now()).getTime())
+      .slice(0, limit);
+  }
+  
+  async getFeaturedAthlete(id: number): Promise<FeaturedAthlete | undefined> {
+    return this.featuredAthletes.get(id);
+  }
+  
+  async getFeaturedAthleteByUserId(userId: number): Promise<FeaturedAthlete | undefined> {
+    return Array.from(this.featuredAthletes.values()).find(
+      (athlete) => athlete.userId === userId
+    );
+  }
+  
+  async createFeaturedAthlete(athlete: InsertFeaturedAthlete): Promise<FeaturedAthlete> {
+    const id = this.currentFeaturedAthleteId++;
+    const now = new Date();
+    const newAthlete: FeaturedAthlete = {
+      ...athlete,
+      id,
+      featuredDate: athlete.featuredDate || now,
+      order: athlete.order || 0, 
+      active: athlete.active === undefined ? true : athlete.active
+    };
+    this.featuredAthletes.set(id, newAthlete);
+    return newAthlete;
+  }
+  
+  async updateFeaturedAthlete(id: number, data: Partial<FeaturedAthlete>): Promise<FeaturedAthlete | undefined> {
+    const athlete = this.featuredAthletes.get(id);
+    if (!athlete) return undefined;
+    
+    const updatedAthlete = {
+      ...athlete,
+      ...data
+    };
+    this.featuredAthletes.set(id, updatedAthlete);
+    return updatedAthlete;
+  }
+  
+  async deactivateFeaturedAthlete(id: number): Promise<boolean> {
+    const athlete = this.featuredAthletes.get(id);
+    if (!athlete) return false;
+    
+    athlete.active = false;
+    this.featuredAthletes.set(id, athlete);
+    return true;
+  }
 
   // Method to seed some initial data for development
   private seedInitialData() {
@@ -1199,6 +1344,73 @@ export class MemStorage implements IStorage {
       updatedAt: new Date(2023, 5, 15),
     };
     this.leaderboardEntries.set(verticalLeaderboardEntry.id, verticalLeaderboardEntry);
+    
+    // Create sample blog posts
+    const blogPost1: BlogPost = {
+      id: this.currentBlogPostId++,
+      title: "5 Tips to Improve Your Vertical Jump",
+      slug: "5-tips-improve-vertical-jump",
+      content: "Increasing your vertical jump can dramatically improve your performance in basketball, volleyball, and many other sports. Here are five evidence-based tips to help you add inches to your vertical leap...",
+      summary: "Learn how to increase your vertical jump with these proven techniques that can help you gain an edge in your sport.",
+      category: "training",
+      authorId: coachUser1.id,
+      coverImage: "https://images.unsplash.com/photo-1574416792053-85da360629e5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      publishDate: new Date(2023, 5, 10),
+      featured: true,
+      tags: ["vertical jump", "training", "basketball", "volleyball"]
+    };
+    this.blogPosts.set(blogPost1.id, blogPost1);
+    
+    const blogPost2: BlogPost = {
+      id: this.currentBlogPostId++,
+      title: "Understanding the NCAA Eligibility Process",
+      slug: "understanding-ncaa-eligibility-process",
+      content: "Navigating the NCAA eligibility process can be complex for student athletes. This comprehensive guide breaks down each requirement and provides a clear roadmap to ensure you maintain your eligibility...",
+      summary: "A complete guide to NCAA eligibility requirements and how to ensure you meet all criteria as a student athlete.",
+      category: "ncaa",
+      authorId: adminUser.id,
+      coverImage: "https://images.unsplash.com/photo-1580846629473-61e93f9b2268?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      publishDate: new Date(2023, 5, 15),
+      featured: true,
+      tags: ["ncaa", "eligibility", "college sports", "recruitment"]
+    };
+    this.blogPosts.set(blogPost2.id, blogPost2);
+    
+    const blogPost3: BlogPost = {
+      id: this.currentBlogPostId++,
+      title: "How AI Is Transforming Sports Analysis",
+      slug: "how-ai-transforming-sports-analysis",
+      content: "Artificial intelligence is revolutionizing how athletes and coaches analyze performance. From motion detection to predictive analytics, discover how AI tools are providing unprecedented insights into athletic performance...",
+      summary: "Discover the cutting-edge AI technologies that are changing how athletes train and coaches recruit.",
+      category: "technology",
+      authorId: adminUser.id,
+      coverImage: "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      publishDate: new Date(2023, 5, 20),
+      featured: false,
+      tags: ["AI", "technology", "sports analytics", "motion analysis"]
+    };
+    this.blogPosts.set(blogPost3.id, blogPost3);
+    
+    // Create sample featured athletes
+    const featuredAthlete1: FeaturedAthlete = {
+      id: this.currentFeaturedAthleteId++,
+      userId: athleteUser.id,
+      highlightText: "Alex Johnson has shown exceptional progress in basketball skills, with a 92% match to the sport based on motion analysis.",
+      sportPosition: "Guard",
+      starRating: 4,
+      featuredStats: {
+        points: 25,
+        rebounds: 8,
+        assists: 5,
+        achievements: ["Regional championship MVP", "25 points per game average"]
+      },
+      featuredDate: new Date(2023, 5, 15),
+      featuredVideo: sampleVideo.id.toString(),
+      coverImage: athleteUser.profileImage || "https://images.unsplash.com/photo-1628157588553-5eeea00af15c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      order: 1,
+      active: true
+    };
+    this.featuredAthletes.set(featuredAthlete1.id, featuredAthlete1);
   }
 }
 
