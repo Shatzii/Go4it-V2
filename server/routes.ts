@@ -35,10 +35,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     session({
       secret: process.env.SESSION_SECRET || "supersecret",
       resave: false,
-      saveUninitialized: false,
+      saveUninitialized: true,
       store: storage.sessionStore,
       cookie: {
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax"
       },
     })
   );
@@ -52,8 +54,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     new LocalStrategy(async (username, password, done) => {
       try {
         console.log("Attempting login for username:", username);
-        const users = await db.query.users.findMany();
-        const user = users.find(u => u.username === username);
+        const [user] = await db
+          .select()
+          .from(users)
+          .where(eq(users.username, username));
         
         if (!user) {
           console.log("User not found");
