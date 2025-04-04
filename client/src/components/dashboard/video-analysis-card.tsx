@@ -14,16 +14,24 @@ export function VideoAnalysisCard({ video, analysis }: VideoAnalysisCardProps) {
 
   // Get motion markers from analysis if available
   const getMotionMarkers = () => {
-    if (!analysis?.motionData?.keyFrameTimestamps) {
+    if (!analysis?.keyFrameTimestamps) {
       return [];
     }
     // Return timestamps as markers for now
     return analysis.keyFrameTimestamps.map(timestamp => ({
-      x: timestamp / video.duration,
+      x: timestamp / (video.duration || 1),
       y: 0.5,
       name: `Key frame ${timestamp}s`
     }));
   };
+
+  if (!analysis && video.analyzed) {
+    return (
+      <div className="p-4 text-center">
+        <p className="text-gray-600">Analysis is being processed...</p>
+      </div>
+    );
+  }
 
   const handleViewDetails = () => {
     window.location.href = `/video-analysis/${video.id}`;
