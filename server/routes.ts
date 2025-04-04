@@ -4,6 +4,8 @@ import { storage } from "./storage";
 import { fileUpload } from "./file-upload";
 import { analyzeVideo, generateSportRecommendations } from "./openai";
 import { hashPassword, comparePasswords } from "./database-storage";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -15,6 +17,7 @@ import {
   insertNcaaEligibilitySchema,
   insertCoachConnectionSchema,
   insertMessageSchema,
+  users,
 } from "@shared/schema";
 
 import session from "express-session";
