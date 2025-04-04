@@ -120,8 +120,8 @@ export const messages = pgTable("messages", {
   senderId: integer("sender_id").notNull().references(() => users.id),
   recipientId: integer("recipient_id").notNull().references(() => users.id),
   content: text("content").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("sent_at").defaultNow(),
+  isRead: boolean("read").default(false),
 });
 
 // Skills for athlete's skill tree
