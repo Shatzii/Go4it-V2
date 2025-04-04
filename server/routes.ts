@@ -17,9 +17,9 @@ import {
 } from "@shared/schema";
 
 import session from "express-session";
-import MemoryStore from "memorystore";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
+import { comparePasswords, hashPassword } from "./database-storage";
 
 // Create a file upload middleware
 const upload = multer({
@@ -31,15 +31,12 @@ const upload = multer({
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup session middleware
-  const MemoryStoreInstance = MemoryStore(session);
   app.use(
     session({
       secret: process.env.SESSION_SECRET || "supersecret",
       resave: false,
       saveUninitialized: false,
-      store: new MemoryStoreInstance({
-        checkPeriod: 86400000, // prune expired entries every 24h
-      }),
+      store: storage.sessionStore,
       cookie: {
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
       },
@@ -58,10 +55,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (!user) {
           return done(null, false, { message: "Incorrect username" });
         }
-        if (user.password !== password) {
-          // In a real app, you would use proper password hashing
+        
+        const isValidPassword = await comparePasswords(password, user.password);
+        if (!isValidPassword) {
           return done(null, false, { message: "Incorrect password" });
         }
+        
         return done(null, user);
       } catch (error) {
         return done(error);
@@ -99,8 +98,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Email already exists" });
       }
       
-      // Create user
-      const user = await storage.createUser(userData);
+      // Hash password before storing
+      const hashedPassword = await hashPassword(userData.password);
+      
+      // Create user with hashed password
+      const user = await storage.createUser({
+        ...userData,
+        password: hashedPassword
+      });
       
       // Create profile based on role
       if (userData.role === "athlete") {
