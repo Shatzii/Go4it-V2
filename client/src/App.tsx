@@ -16,6 +16,7 @@ import NcaaClearinghouse from "@/pages/ncaa-clearinghouse";
 import AdminDashboard from "@/pages/admin-dashboard";
 import UploadVideo from "@/pages/upload-video";
 import AuthPage from "@/pages/auth-page";
+import AnalysisReport from "@/pages/analysis-report"; // Import the new component
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -60,6 +61,9 @@ function Router() {
       <Route path="/video-analysis">
         {() => <ProtectedRoute component={VideoAnalysis} />}
       </Route>
+      <Route path="/video-analysis/:id"> {/* Added route for analysis report */}
+        {() => <ProtectedRoute component={AnalysisReport} />}
+      </Route>
       <Route path="/sport-recommendations">
         {() => <ProtectedRoute component={SportRecommendations} />}
       </Route>
@@ -84,12 +88,12 @@ function Router() {
 function AppContent() {
   const { user } = useAuth();
   const [location] = useLocation();
-  
+
   // Don't render the layout for the auth page
   if (location === "/auth") {
     return <AuthPage />;
   }
-  
+
   return (
     <Layout>
       <Router />
