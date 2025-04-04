@@ -90,46 +90,59 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-50 to-indigo-50">
+    <div className="flex items-center justify-center min-h-screen bg-black">
       <div className="grid w-full max-w-6xl grid-cols-1 gap-8 px-4 md:grid-cols-2 lg:px-0">
         <div className="flex flex-col justify-center text-center md:text-left">
-          <h1 className="mb-4 text-4xl font-bold tracking-tight text-primary md:text-5xl lg:text-6xl">
-            GoForIt Sports
+          <h1 className="mb-4 text-4xl font-bold tracking-tight neon-text md:text-5xl lg:text-6xl">
+            GET VERIFIED
           </h1>
-          <p className="mb-6 text-lg text-muted-foreground md:text-xl">
+          <h2 className="mb-6 text-3xl font-bold tracking-tight text-white md:text-4xl">
+            Combine Tour
+          </h2>
+          <p className="mb-6 text-lg text-gray-300 md:text-xl">
             AI-powered sports analysis to help student athletes reach their potential and connect with coaches.
           </p>
           <div className="flex flex-col space-y-4 md:space-y-0 md:space-x-4 md:flex-row">
-            <div className="flex items-center p-4 bg-white/80 rounded-lg shadow-sm">
+            <div className="flex items-center p-4 bg-gray-900/80 rounded-lg shadow-sm card-glow">
               <div className="p-3 mr-4 bg-primary/10 rounded-full">
                 <Video className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h3 className="font-medium">Video Analysis</h3>
-                <p className="text-sm text-muted-foreground">AI motion analysis for your sports videos</p>
+                <h3 className="font-medium text-white">Video Analysis</h3>
+                <p className="text-sm text-gray-400">AI motion analysis for your sports videos</p>
               </div>
             </div>
-            <div className="flex items-center p-4 bg-white/80 rounded-lg shadow-sm">
+            <div className="flex items-center p-4 bg-gray-900/80 rounded-lg shadow-sm card-glow">
               <div className="p-3 mr-4 bg-primary/10 rounded-full">
                 <Award className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h3 className="font-medium">Sport Matching</h3>
-                <p className="text-sm text-muted-foreground">Find your perfect sport match</p>
+                <h3 className="font-medium text-white">Sport Matching</h3>
+                <p className="text-sm text-gray-400">Find your perfect sport match</p>
               </div>
             </div>
           </div>
         </div>
         <div className="flex items-center justify-center">
-          <Card className="w-full max-w-md">
+          <Card className="w-full max-w-md bg-gray-900 border-gray-800 card-glow">
             <CardHeader>
-              <CardTitle className="text-2xl">Welcome</CardTitle>
-              <CardDescription>Sign in to your account or create a new one</CardDescription>
+              <CardTitle className="text-2xl text-white">Welcome</CardTitle>
+              <CardDescription className="text-gray-400">Sign in to your account or create a new one</CardDescription>
             </CardHeader>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="register">Register</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 bg-gray-800 p-1">
+                <TabsTrigger 
+                  value="login" 
+                  className="data-[state=active]:bg-gray-900 data-[state=active]:text-primary data-[state=active]:neon-text data-[state=active]:shadow-sm"
+                >
+                  Login
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="register" 
+                  className="data-[state=active]:bg-gray-900 data-[state=active]:text-primary data-[state=active]:neon-text data-[state=active]:shadow-sm"
+                >
+                  Register
+                </TabsTrigger>
               </TabsList>
               <TabsContent value="login">
                 <Form {...loginForm}>
@@ -140,9 +153,13 @@ export default function AuthPage() {
                         name="username"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Username</FormLabel>
+                            <FormLabel className="text-gray-300">Username</FormLabel>
                             <FormControl>
-                              <Input placeholder="Enter your username" {...field} />
+                              <Input 
+                                placeholder="Enter your username" 
+                                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500" 
+                                {...field} 
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -153,9 +170,14 @@ export default function AuthPage() {
                         name="password"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Password</FormLabel>
+                            <FormLabel className="text-gray-300">Password</FormLabel>
                             <FormControl>
-                              <Input type="password" placeholder="Enter your password" {...field} />
+                              <Input 
+                                type="password" 
+                                placeholder="Enter your password" 
+                                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500" 
+                                {...field} 
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -163,7 +185,7 @@ export default function AuthPage() {
                       />
                     </CardContent>
                     <CardFooter>
-                      <Button type="submit" className="w-full" disabled={isSubmitting}>
+                      <Button type="submit" className="w-full verified-button" disabled={isSubmitting}>
                         {isSubmitting ? (
                           <>
                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -186,9 +208,13 @@ export default function AuthPage() {
                         name="username"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Username</FormLabel>
+                            <FormLabel className="text-gray-300">Username</FormLabel>
                             <FormControl>
-                              <Input placeholder="Choose a username" {...field} />
+                              <Input 
+                                placeholder="Choose a username" 
+                                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500" 
+                                {...field} 
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -199,9 +225,13 @@ export default function AuthPage() {
                         name="name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Full Name</FormLabel>
+                            <FormLabel className="text-gray-300">Full Name</FormLabel>
                             <FormControl>
-                              <Input placeholder="Enter your full name" {...field} />
+                              <Input 
+                                placeholder="Enter your full name" 
+                                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500" 
+                                {...field} 
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -212,9 +242,14 @@ export default function AuthPage() {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Email</FormLabel>
+                            <FormLabel className="text-gray-300">Email</FormLabel>
                             <FormControl>
-                              <Input type="email" placeholder="Enter your email" {...field} />
+                              <Input 
+                                type="email" 
+                                placeholder="Enter your email" 
+                                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500" 
+                                {...field} 
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -225,9 +260,14 @@ export default function AuthPage() {
                         name="password"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Password</FormLabel>
+                            <FormLabel className="text-gray-300">Password</FormLabel>
                             <FormControl>
-                              <Input type="password" placeholder="Create a password" {...field} />
+                              <Input 
+                                type="password" 
+                                placeholder="Create a password" 
+                                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500" 
+                                {...field} 
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -238,10 +278,10 @@ export default function AuthPage() {
                         name="role"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>I am a</FormLabel>
+                            <FormLabel className="text-gray-300">I am a</FormLabel>
                             <FormControl>
                               <select
-                                className="w-full p-2 border rounded-md"
+                                className="w-full p-2 rounded-md bg-gray-800 border-gray-700 text-white"
                                 {...field}
                               >
                                 <option value="athlete">Student Athlete</option>
@@ -254,7 +294,7 @@ export default function AuthPage() {
                       />
                     </CardContent>
                     <CardFooter>
-                      <Button type="submit" className="w-full" disabled={isSubmitting}>
+                      <Button type="submit" className="w-full verified-button" disabled={isSubmitting}>
                         {isSubmitting ? (
                           <>
                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
