@@ -9,5 +9,43 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    background-color: #000814;
+  }
+}
+
+@layer components {
+  .neon-text {
+    @apply text-[#00c8ff];
+    text-shadow: 0 0 5px rgba(0, 200, 255, 0.5), 0 0 10px rgba(0, 200, 255, 0.3);
+  }
+  
+  .neon-border {
+    @apply border border-[#00c8ff];
+    box-shadow: 0 0 5px rgba(0, 200, 255, 0.5), 0 0 10px rgba(0, 200, 255, 0.3);
+  }
+  
+  .verified-gradient {
+    background: linear-gradient(135deg, #00c8ff 0%, #0099ff 100%);
+  }
+  
+  .verified-button {
+    @apply bg-primary hover:bg-primary/90 text-white font-bold;
+    box-shadow: 0 0 10px rgba(0, 200, 255, 0.7);
+    transition: all 0.3s ease;
+  }
+  
+  .verified-button:hover {
+    box-shadow: 0 0 15px rgba(0, 200, 255, 0.9);
+    transform: translateY(-1px);
+  }
+  
+  .card-glow {
+    @apply bg-card border border-border;
+    box-shadow: 0 0 10px rgba(0, 200, 255, 0.1);
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .card-glow:hover {
+    box-shadow: 0 0 20px rgba(0, 200, 255, 0.3);
   }
 }
