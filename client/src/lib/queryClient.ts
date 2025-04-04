@@ -15,14 +15,17 @@ export const apiRequest = async (
       url: `${baseURL}${url}`,
       data,
       withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       ...options,
     });
     return response;
   } catch (error: any) {
-    if (error.response) {
-      throw new Error(error.response.data.message || "Request failed");
+    if (error.response?.data?.message) {
+      throw new Error(error.response.data.message);
     }
-    throw error;
+    throw new Error("Network error occurred");
   }
 };
 
