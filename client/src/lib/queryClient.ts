@@ -18,14 +18,21 @@ export const apiRequest = async (
       headers: {
         'Content-Type': 'application/json'
       },
+      timeout: 10000, // Added timeout
       ...options,
     });
     return response;
   } catch (error: any) {
-    if (error.response?.data?.message) {
+    if (!error.response) {
+      throw new Error('Network error - Please check your connection');
+    } else if (error.response?.status === 401) {
+      //Handle 401 specifically if needed.  Could redirect or show a login prompt.
+      throw new Error('Unauthorized. Please login.')
+    }
+    else if (error.response?.data?.message) {
       throw new Error(error.response.data.message);
     }
-    throw new Error("Network error occurred");
+    throw new Error(`API request failed with status ${error.response?.status} and data: ${error.response?.data}`);
   }
 };
 

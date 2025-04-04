@@ -68,7 +68,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setLoading(true);
       const response = await apiRequest("POST", "/api/auth/login", { username, password });
       
-      if (response.data && response.data.user) {
+      if (response?.data?.user) {
         setUser(response.data.user);
         toast({
           title: "Login successful", 
@@ -76,16 +76,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
         });
         navigate("/");
       } else {
-        throw new Error("Invalid response format");
+        throw new Error("Invalid credentials");
       }
     } catch (error: any) {
       console.error("Login error:", error);
+      const errorMessage = error.response?.data?.message || 
+                         error.message || 
+                         (error.code === 'ECONNREFUSED' ? 'Network error - Server unreachable' : 'Login failed');
       toast({
         title: "Login failed",
-        description: error.message || "Invalid username or password",
+        description: errorMessage,
         variant: "destructive",
       });
-      throw error;
     } finally {
       setLoading(false);
     }
