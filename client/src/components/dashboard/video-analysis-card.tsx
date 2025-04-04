@@ -49,7 +49,7 @@ export function VideoAnalysisCard({ video, analysis }: VideoAnalysisCardProps) {
             : new Date(video.uploadDate).toLocaleDateString()}
         </p>
         
-        {analysis && (
+        {analysis?.motionData && (
           <div className="mt-3 grid grid-cols-2 gap-2">
             {/* Display metrics from the analysis */}
             {Object.entries(analysis.motionData)
