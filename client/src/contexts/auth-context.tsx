@@ -67,17 +67,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       setLoading(true);
       const response = await apiRequest("POST", "/api/auth/login", { username, password });
-      const data = await response.json();
-      setUser(data.user);
-      toast({
-        title: "Login successful",
-        description: `Welcome back, ${data.user.name}!`,
-      });
-      navigate("/");
-    } catch (error) {
+      
+      if (response.data && response.data.user) {
+        setUser(response.data.user);
+        toast({
+          title: "Login successful", 
+          description: `Welcome back, ${response.data.user.name}!`,
+        });
+        navigate("/");
+      } else {
+        throw new Error("Invalid response format");
+      }
+    } catch (error: any) {
+      console.error("Login error:", error);
       toast({
         title: "Login failed",
-        description: "Invalid username or password",
+        description: error.message || "Invalid username or password",
         variant: "destructive",
       });
       throw error;
