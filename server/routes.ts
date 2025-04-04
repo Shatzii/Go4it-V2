@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { fileUpload } from "./file-upload";
 import { analyzeVideo, generateSportRecommendations } from "./openai";
+import { hashPassword, comparePasswords } from "./database-storage";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -19,7 +20,6 @@ import {
 import session from "express-session";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { comparePasswords, hashPassword } from "./database-storage";
 
 // Create a file upload middleware
 const upload = multer({
