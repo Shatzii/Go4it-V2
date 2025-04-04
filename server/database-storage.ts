@@ -47,6 +47,9 @@ export class DatabaseStorage implements IStorage {
       },
       createTableIfMissing: true
     });
+    
+    // Seed initial data for testing
+    this.seedInitialData();
   }
 
   // User operations
