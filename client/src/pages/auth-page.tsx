@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, FileVideo, Award } from "lucide-react";
+import { Loader2, Video, Award } from "lucide-react";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -102,7 +102,7 @@ export default function AuthPage() {
           <div className="flex flex-col space-y-4 md:space-y-0 md:space-x-4 md:flex-row">
             <div className="flex items-center p-4 bg-white/80 rounded-lg shadow-sm">
               <div className="p-3 mr-4 bg-primary/10 rounded-full">
-                <FileVideo className="w-6 h-6 text-primary" />
+                <Video className="w-6 h-6 text-primary" />
               </div>
               <div>
                 <h3 className="font-medium">Video Analysis</h3>

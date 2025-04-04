@@ -1,45 +1,49 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import axios from "axios";
 
-async function throwIfResNotOk(res: Response) {
-  if (!res.ok) {
-    const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
-  }
-}
+const baseURL = window.location.hostname === "localhost" ? "http://localhost:5000" : "";
 
-export async function apiRequest(
+export const apiRequest = async (
   method: string,
   url: string,
-  data?: unknown | undefined,
-): Promise<Response> {
-  const res = await fetch(url, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
-  });
-
-  await throwIfResNotOk(res);
-  return res;
-}
+  data?: any,
+  options?: any
+) => {
+  try {
+    const response = await axios({
+      method,
+      url: `${baseURL}${url}`,
+      data,
+      withCredentials: true,
+      ...options,
+    });
+    return response;
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data.message || "Request failed");
+    }
+    throw error;
+  }
+};
 
 type UnauthorizedBehavior = "returnNull" | "throw";
 export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
-  async ({ queryKey }) => {
-    const res = await fetch(queryKey[0] as string, {
-      credentials: "include",
-    });
+    async ({ queryKey }) => {
+      const res = await apiRequest("GET", queryKey[0] as string);
 
-    if (unauthorizedBehavior === "returnNull" && res.status === 401) {
-      return null;
-    }
+      if (unauthorizedBehavior === "returnNull" && res.status === 401) {
+        return null;
+      }
 
-    await throwIfResNotOk(res);
-    return await res.json();
-  };
+      if (!res.data) {
+        throw new Error(`API request failed with status ${res.status}`)
+      }
+
+      return res.data;
+    };
 
 export const queryClient = new QueryClient({
   defaultOptions: {
