@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, json, real } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, json, real, date } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -124,6 +124,78 @@ export const messages = pgTable("messages", {
   read: boolean("read").default(false),
 });
 
+// Skills for athlete's skill tree
+export const skills = pgTable("skills", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  skillName: text("skill_name").notNull(),
+  skillCategory: text("skill_category").notNull(), // speed, strength, agility, technique, etc
+  skillLevel: integer("skill_level").notNull().default(0), // 0-5 rating
+  xpPoints: integer("xp_points").notNull().default(0),
+  nextLevelXp: integer("next_level_xp").notNull().default(100),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Challenges for workout and training gamification
+export const challenges = pgTable("challenges", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  difficulty: text("difficulty").notNull(), // easy, medium, hard
+  xpReward: integer("xp_reward").notNull(),
+  category: text("category").notNull(), // speed, strength, agility, etc
+  createdAt: timestamp("created_at").defaultNow(),
+  expiresAt: timestamp("expires_at"),
+  creatorId: integer("creator_id").references(() => users.id), // null for system challenges
+});
+
+// Athlete challenge participation 
+export const athleteChallenges = pgTable("athlete_challenges", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  challengeId: integer("challenge_id").notNull().references(() => challenges.id),
+  status: text("status").notNull().default("accepted"), // accepted, completed, failed
+  startedAt: timestamp("started_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+  proofUrl: text("proof_url"), // video or photo proof of completion
+});
+
+// Recovery tracking for athletes
+export const recoveryLogs = pgTable("recovery_logs", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  logDate: date("log_date").notNull().defaultNow(),
+  sleepHours: real("sleep_hours"),
+  sorenessLevel: integer("soreness_level"), // 1-10
+  energyLevel: integer("energy_level"), // 1-10
+  hydrationLevel: integer("hydration_level"), // 1-10
+  notes: text("notes"),
+  overallRecoveryScore: integer("overall_recovery_score"), // 0-100
+});
+
+// Fan club followers
+export const fanClubFollowers = pgTable("fan_club_followers", {
+  id: serial("id").primaryKey(),
+  athleteId: integer("athlete_id").notNull().references(() => users.id),
+  followerName: text("follower_name").notNull(),
+  followerEmail: text("follower_email"),
+  followerType: text("follower_type").notNull(), // fan, recruiter, friend, family
+  followDate: timestamp("follow_date").defaultNow(),
+  notes: text("notes"),
+});
+
+// Next up leaderboard entries
+export const leaderboardEntries = pgTable("leaderboard_entries", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  category: text("category").notNull(), // by sport or skill
+  rankPosition: integer("rank_position").notNull(),
+  score: integer("score").notNull(),
+  city: text("city"),
+  state: text("state"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Create insert schemas for all tables
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
 export const insertAthleteProfileSchema = createInsertSchema(athleteProfiles).omit({ id: true });
@@ -135,6 +207,14 @@ export const insertNcaaEligibilitySchema = createInsertSchema(ncaaEligibility).o
 export const insertCoachConnectionSchema = createInsertSchema(coachConnections).omit({ id: true, connectionDate: true, lastContact: true });
 export const insertAchievementSchema = createInsertSchema(achievements).omit({ id: true, earnedDate: true });
 export const insertMessageSchema = createInsertSchema(messages).omit({ id: true, sentAt: true, read: true });
+
+// New schema for story mode components
+export const insertSkillSchema = createInsertSchema(skills).omit({ id: true, updatedAt: true });
+export const insertChallengeSchema = createInsertSchema(challenges).omit({ id: true, createdAt: true });
+export const insertAthleteChallengeSchema = createInsertSchema(athleteChallenges).omit({ id: true, startedAt: true, completedAt: true });
+export const insertRecoveryLogSchema = createInsertSchema(recoveryLogs).omit({ id: true, logDate: true });
+export const insertFanClubFollowerSchema = createInsertSchema(fanClubFollowers).omit({ id: true, followDate: true });
+export const insertLeaderboardEntrySchema = createInsertSchema(leaderboardEntries).omit({ id: true, updatedAt: true });
 
 // Export types for insert and select operations
 export type User = typeof users.$inferSelect;
@@ -166,3 +246,22 @@ export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
 
 export type Message = typeof messages.$inferSelect;
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
+
+// Story mode component types
+export type Skill = typeof skills.$inferSelect;
+export type InsertSkill = z.infer<typeof insertSkillSchema>;
+
+export type Challenge = typeof challenges.$inferSelect;
+export type InsertChallenge = z.infer<typeof insertChallengeSchema>;
+
+export type AthleteChallenge = typeof athleteChallenges.$inferSelect;
+export type InsertAthleteChallenge = z.infer<typeof insertAthleteChallengeSchema>;
+
+export type RecoveryLog = typeof recoveryLogs.$inferSelect;
+export type InsertRecoveryLog = z.infer<typeof insertRecoveryLogSchema>;
+
+export type FanClubFollower = typeof fanClubFollowers.$inferSelect;
+export type InsertFanClubFollower = z.infer<typeof insertFanClubFollowerSchema>;
+
+export type LeaderboardEntry = typeof leaderboardEntries.$inferSelect;
+export type InsertLeaderboardEntry = z.infer<typeof insertLeaderboardEntrySchema>;

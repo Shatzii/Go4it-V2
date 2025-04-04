@@ -8,7 +8,14 @@ import {
   ncaaEligibility, type NcaaEligibility, type InsertNcaaEligibility,
   coachConnections, type CoachConnection, type InsertCoachConnection,
   achievements, type Achievement, type InsertAchievement,
-  messages, type Message, type InsertMessage
+  messages, type Message, type InsertMessage,
+  // New imports for story mode components
+  skills, type Skill, type InsertSkill,
+  challenges, type Challenge, type InsertChallenge,
+  athleteChallenges, type AthleteChallenge, type InsertAthleteChallenge,
+  recoveryLogs, type RecoveryLog, type InsertRecoveryLog,
+  fanClubFollowers, type FanClubFollower, type InsertFanClubFollower,
+  leaderboardEntries, type LeaderboardEntry, type InsertLeaderboardEntry
 } from "@shared/schema";
 
 export interface IStorage {
@@ -75,6 +82,45 @@ export interface IStorage {
     totalAnalyses: number;
     totalCoachConnections: number;
   }>;
+  
+  // Skill Tree operations
+  getUserSkills(userId: number): Promise<Skill[]>;
+  getUserSkillsByCategory(userId: number, category: string): Promise<Skill[]>;
+  getSkill(id: number): Promise<Skill | undefined>;
+  createSkill(skill: InsertSkill): Promise<Skill>;
+  updateSkill(id: number, data: Partial<Skill>): Promise<Skill | undefined>;
+  
+  // Challenges operations
+  getChallenges(): Promise<Challenge[]>;
+  getChallengesByCategory(category: string): Promise<Challenge[]>;
+  getChallenge(id: number): Promise<Challenge | undefined>;
+  createChallenge(challenge: InsertChallenge): Promise<Challenge>;
+  getAthleteChallenges(userId: number): Promise<AthleteChallenge[]>;
+  getAthleteChallenge(id: number): Promise<AthleteChallenge | undefined>;
+  createAthleteChallenge(athleteChallenge: InsertAthleteChallenge): Promise<AthleteChallenge>;
+  updateAthleteChallenge(id: number, data: Partial<AthleteChallenge>): Promise<AthleteChallenge | undefined>;
+  
+  // Recovery Tracker operations
+  getRecoveryLogs(userId: number): Promise<RecoveryLog[]>;
+  getLatestRecoveryLog(userId: number): Promise<RecoveryLog | undefined>;
+  createRecoveryLog(recoveryLog: InsertRecoveryLog): Promise<RecoveryLog>;
+  
+  // Fan Club operations
+  getFanClubFollowers(athleteId: number): Promise<FanClubFollower[]>;
+  getFanClubStats(athleteId: number): Promise<{
+    totalFollowers: number;
+    fans: number;
+    recruiters: number;
+    family: number;
+    friends: number;
+  }>;
+  createFanClubFollower(follower: InsertFanClubFollower): Promise<FanClubFollower>;
+  
+  // Leaderboard operations
+  getLeaderboardEntries(category: string): Promise<LeaderboardEntry[]>;
+  getUserLeaderboardEntry(userId: number, category: string): Promise<LeaderboardEntry | undefined>;
+  createLeaderboardEntry(entry: InsertLeaderboardEntry): Promise<LeaderboardEntry>;
+  updateLeaderboardEntry(id: number, data: Partial<LeaderboardEntry>): Promise<LeaderboardEntry | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -89,6 +135,14 @@ export class MemStorage implements IStorage {
   private achievements: Map<number, Achievement>;
   private messages: Map<number, Message>;
   
+  // Story mode components
+  private skills: Map<number, Skill>;
+  private challenges: Map<number, Challenge>;
+  private athleteChallenges: Map<number, AthleteChallenge>;
+  private recoveryLogs: Map<number, RecoveryLog>;
+  private fanClubFollowers: Map<number, FanClubFollower>;
+  private leaderboardEntries: Map<number, LeaderboardEntry>;
+  
   private currentUserId: number;
   private currentAthleteProfileId: number;
   private currentCoachProfileId: number;
@@ -99,6 +153,12 @@ export class MemStorage implements IStorage {
   private currentCoachConnectionId: number;
   private currentAchievementId: number;
   private currentMessageId: number;
+  private currentSkillId: number;
+  private currentChallengeId: number;
+  private currentAthleteChallengeId: number;
+  private currentRecoveryLogId: number;
+  private currentFanClubFollowerId: number;
+  private currentLeaderboardEntryId: number;
 
   constructor() {
     this.users = new Map();
@@ -112,6 +172,14 @@ export class MemStorage implements IStorage {
     this.achievements = new Map();
     this.messages = new Map();
     
+    // Initialize story mode component maps
+    this.skills = new Map();
+    this.challenges = new Map();
+    this.athleteChallenges = new Map();
+    this.recoveryLogs = new Map();
+    this.fanClubFollowers = new Map();
+    this.leaderboardEntries = new Map();
+    
     this.currentUserId = 1;
     this.currentAthleteProfileId = 1;
     this.currentCoachProfileId = 1;
@@ -122,6 +190,12 @@ export class MemStorage implements IStorage {
     this.currentCoachConnectionId = 1;
     this.currentAchievementId = 1;
     this.currentMessageId = 1;
+    this.currentSkillId = 1;
+    this.currentChallengeId = 1;
+    this.currentAthleteChallengeId = 1;
+    this.currentRecoveryLogId = 1;
+    this.currentFanClubFollowerId = 1;
+    this.currentLeaderboardEntryId = 1;
     
     // Initialize with sample data for testing
     this.seedInitialData();
@@ -448,6 +522,211 @@ export class MemStorage implements IStorage {
       totalCoachConnections: this.coachConnections.size,
     };
   }
+  
+  // Skill Tree operations
+  async getUserSkills(userId: number): Promise<Skill[]> {
+    return Array.from(this.skills.values()).filter(
+      (skill) => skill.userId === userId
+    );
+  }
+  
+  async getUserSkillsByCategory(userId: number, category: string): Promise<Skill[]> {
+    return Array.from(this.skills.values()).filter(
+      (skill) => skill.userId === userId && skill.skillCategory === category
+    );
+  }
+  
+  async getSkill(id: number): Promise<Skill | undefined> {
+    return this.skills.get(id);
+  }
+  
+  async createSkill(skill: InsertSkill): Promise<Skill> {
+    const id = this.currentSkillId++;
+    const now = new Date();
+    const newSkill: Skill = {
+      ...skill,
+      id,
+      updatedAt: now
+    };
+    this.skills.set(id, newSkill);
+    return newSkill;
+  }
+  
+  async updateSkill(id: number, data: Partial<Skill>): Promise<Skill | undefined> {
+    const skill = this.skills.get(id);
+    if (!skill) return undefined;
+    
+    const now = new Date();
+    const updatedSkill = {
+      ...skill,
+      ...data,
+      updatedAt: now
+    };
+    this.skills.set(id, updatedSkill);
+    return updatedSkill;
+  }
+  
+  // Challenges operations
+  async getChallenges(): Promise<Challenge[]> {
+    return Array.from(this.challenges.values());
+  }
+  
+  async getChallengesByCategory(category: string): Promise<Challenge[]> {
+    return Array.from(this.challenges.values()).filter(
+      (challenge) => challenge.category === category
+    );
+  }
+  
+  async getChallenge(id: number): Promise<Challenge | undefined> {
+    return this.challenges.get(id);
+  }
+  
+  async createChallenge(challenge: InsertChallenge): Promise<Challenge> {
+    const id = this.currentChallengeId++;
+    const now = new Date();
+    const newChallenge: Challenge = {
+      ...challenge,
+      id,
+      createdAt: now
+    };
+    this.challenges.set(id, newChallenge);
+    return newChallenge;
+  }
+  
+  async getAthleteChallenges(userId: number): Promise<AthleteChallenge[]> {
+    return Array.from(this.athleteChallenges.values()).filter(
+      (athleteChallenge) => athleteChallenge.userId === userId
+    );
+  }
+  
+  async getAthleteChallenge(id: number): Promise<AthleteChallenge | undefined> {
+    return this.athleteChallenges.get(id);
+  }
+  
+  async createAthleteChallenge(athleteChallenge: InsertAthleteChallenge): Promise<AthleteChallenge> {
+    const id = this.currentAthleteChallengeId++;
+    const now = new Date();
+    const newAthleteChallenge: AthleteChallenge = {
+      ...athleteChallenge,
+      id,
+      startedAt: now,
+      completedAt: null
+    };
+    this.athleteChallenges.set(id, newAthleteChallenge);
+    return newAthleteChallenge;
+  }
+  
+  async updateAthleteChallenge(id: number, data: Partial<AthleteChallenge>): Promise<AthleteChallenge | undefined> {
+    const athleteChallenge = this.athleteChallenges.get(id);
+    if (!athleteChallenge) return undefined;
+    
+    const updatedAthleteChallenge = {
+      ...athleteChallenge,
+      ...data
+    };
+    this.athleteChallenges.set(id, updatedAthleteChallenge);
+    return updatedAthleteChallenge;
+  }
+  
+  // Recovery Tracker operations
+  async getRecoveryLogs(userId: number): Promise<RecoveryLog[]> {
+    return Array.from(this.recoveryLogs.values())
+      .filter((log) => log.userId === userId)
+      .sort((a, b) => new Date(b.logDate).getTime() - new Date(a.logDate).getTime());
+  }
+  
+  async getLatestRecoveryLog(userId: number): Promise<RecoveryLog | undefined> {
+    const logs = await this.getRecoveryLogs(userId);
+    return logs.length > 0 ? logs[0] : undefined;
+  }
+  
+  async createRecoveryLog(recoveryLog: InsertRecoveryLog): Promise<RecoveryLog> {
+    const id = this.currentRecoveryLogId++;
+    const today = new Date();
+    const newRecoveryLog: RecoveryLog = {
+      ...recoveryLog,
+      id,
+      logDate: today
+    };
+    this.recoveryLogs.set(id, newRecoveryLog);
+    return newRecoveryLog;
+  }
+  
+  // Fan Club operations
+  async getFanClubFollowers(athleteId: number): Promise<FanClubFollower[]> {
+    return Array.from(this.fanClubFollowers.values())
+      .filter((follower) => follower.athleteId === athleteId)
+      .sort((a, b) => new Date(b.followDate).getTime() - new Date(a.followDate).getTime());
+  }
+  
+  async getFanClubStats(athleteId: number): Promise<{
+    totalFollowers: number;
+    fans: number;
+    recruiters: number;
+    family: number;
+    friends: number;
+  }> {
+    const followers = await this.getFanClubFollowers(athleteId);
+    
+    return {
+      totalFollowers: followers.length,
+      fans: followers.filter(f => f.followerType === "fan").length,
+      recruiters: followers.filter(f => f.followerType === "recruiter").length,
+      family: followers.filter(f => f.followerType === "family").length,
+      friends: followers.filter(f => f.followerType === "friend").length
+    };
+  }
+  
+  async createFanClubFollower(follower: InsertFanClubFollower): Promise<FanClubFollower> {
+    const id = this.currentFanClubFollowerId++;
+    const now = new Date();
+    const newFollower: FanClubFollower = {
+      ...follower,
+      id,
+      followDate: now
+    };
+    this.fanClubFollowers.set(id, newFollower);
+    return newFollower;
+  }
+  
+  // Leaderboard operations
+  async getLeaderboardEntries(category: string): Promise<LeaderboardEntry[]> {
+    return Array.from(this.leaderboardEntries.values())
+      .filter((entry) => entry.category === category)
+      .sort((a, b) => a.rankPosition - b.rankPosition);
+  }
+  
+  async getUserLeaderboardEntry(userId: number, category: string): Promise<LeaderboardEntry | undefined> {
+    return Array.from(this.leaderboardEntries.values()).find(
+      (entry) => entry.userId === userId && entry.category === category
+    );
+  }
+  
+  async createLeaderboardEntry(entry: InsertLeaderboardEntry): Promise<LeaderboardEntry> {
+    const id = this.currentLeaderboardEntryId++;
+    const now = new Date();
+    const newEntry: LeaderboardEntry = {
+      ...entry,
+      id,
+      updatedAt: now
+    };
+    this.leaderboardEntries.set(id, newEntry);
+    return newEntry;
+  }
+  
+  async updateLeaderboardEntry(id: number, data: Partial<LeaderboardEntry>): Promise<LeaderboardEntry | undefined> {
+    const entry = this.leaderboardEntries.get(id);
+    if (!entry) return undefined;
+    
+    const now = new Date();
+    const updatedEntry = {
+      ...entry,
+      ...data,
+      updatedAt: now
+    };
+    this.leaderboardEntries.set(id, updatedEntry);
+    return updatedEntry;
+  }
 
   // Method to seed some initial data for development
   private seedInitialData() {
@@ -701,6 +980,184 @@ export class MemStorage implements IStorage {
       iconType: "certificate",
     };
     this.achievements.set(achievement4.id, achievement4);
+    
+    // Create sample skills for the athlete
+    const jumpingSkill: Skill = {
+      id: this.currentSkillId++,
+      userId: athleteUser.id,
+      skillName: "Vertical Jump",
+      skillCategory: "athletic",
+      currentLevel: 7,
+      maxLevel: 10,
+      description: "Ability to jump vertically with power and control",
+      xpPoints: 850,
+      xpToNextLevel: 1000,
+      updatedAt: new Date(2023, 5, 15),
+    };
+    this.skills.set(jumpingSkill.id, jumpingSkill);
+    
+    const shootingSkill: Skill = {
+      id: this.currentSkillId++,
+      userId: athleteUser.id,
+      skillName: "Jump Shot",
+      skillCategory: "basketball",
+      currentLevel: 6,
+      maxLevel: 10,
+      description: "Basketball jump shot form and accuracy",
+      xpPoints: 750,
+      xpToNextLevel: 1000,
+      updatedAt: new Date(2023, 5, 15),
+    };
+    this.skills.set(shootingSkill.id, shootingSkill);
+    
+    const speedSkill: Skill = {
+      id: this.currentSkillId++,
+      userId: athleteUser.id,
+      skillName: "Sprint Speed",
+      skillCategory: "athletic",
+      currentLevel: 8,
+      maxLevel: 10,
+      description: "Speed in short distance sprints",
+      xpPoints: 900,
+      xpToNextLevel: 1000,
+      updatedAt: new Date(2023, 5, 15),
+    };
+    this.skills.set(speedSkill.id, speedSkill);
+    
+    // Create sample challenges
+    const conditioningChallenge: Challenge = {
+      id: this.currentChallengeId++,
+      title: "Conditioning Challenge",
+      description: "Complete 10 suicides under 3 minutes",
+      difficulty: "intermediate",
+      category: "conditioning",
+      pointsAwarded: 200,
+      createdAt: new Date(2023, 4, 1),
+    };
+    this.challenges.set(conditioningChallenge.id, conditioningChallenge);
+    
+    const shootingChallenge: Challenge = {
+      id: this.currentChallengeId++,
+      title: "Shooting Challenge",
+      description: "Make 50 free throws with 80% accuracy",
+      difficulty: "beginner",
+      category: "basketball",
+      pointsAwarded: 150,
+      createdAt: new Date(2023, 4, 1),
+    };
+    this.challenges.set(shootingChallenge.id, shootingChallenge);
+    
+    const strengthChallenge: Challenge = {
+      id: this.currentChallengeId++,
+      title: "Strength Challenge",
+      description: "Complete 5 sets of 10 push-ups, 10 sit-ups, and 10 squats",
+      difficulty: "beginner",
+      category: "strength",
+      pointsAwarded: 100,
+      createdAt: new Date(2023, 4, 1),
+    };
+    this.challenges.set(strengthChallenge.id, strengthChallenge);
+    
+    // Create athlete challenges (challenges accepted by the athlete)
+    const athleteShootingChallenge: AthleteChallenge = {
+      id: this.currentAthleteChallengeId++,
+      userId: athleteUser.id,
+      challengeId: shootingChallenge.id,
+      status: "completed",
+      progress: 100,
+      startedAt: new Date(2023, 5, 10),
+      completedAt: new Date(2023, 5, 12),
+    };
+    this.athleteChallenges.set(athleteShootingChallenge.id, athleteShootingChallenge);
+    
+    const athleteStrengthChallenge: AthleteChallenge = {
+      id: this.currentAthleteChallengeId++,
+      userId: athleteUser.id,
+      challengeId: strengthChallenge.id,
+      status: "in-progress",
+      progress: 60,
+      startedAt: new Date(2023, 5, 15),
+      completedAt: null,
+    };
+    this.athleteChallenges.set(athleteStrengthChallenge.id, athleteStrengthChallenge);
+    
+    // Create recovery logs
+    const recoveryLog1: RecoveryLog = {
+      id: this.currentRecoveryLogId++,
+      userId: athleteUser.id,
+      sleepHours: 8,
+      hydrationLevel: 7,
+      nutritionLevel: 6,
+      fatigueLevel: 3,
+      soreness: 4,
+      notes: "Feeling good overall, slight soreness in quads from yesterday's workout",
+      logDate: new Date(2023, 5, 18),
+    };
+    this.recoveryLogs.set(recoveryLog1.id, recoveryLog1);
+    
+    const recoveryLog2: RecoveryLog = {
+      id: this.currentRecoveryLogId++,
+      userId: athleteUser.id,
+      sleepHours: 6,
+      hydrationLevel: 5,
+      nutritionLevel: 7,
+      fatigueLevel: 6,
+      soreness: 5,
+      notes: "Not enough sleep last night, more tired than usual",
+      logDate: new Date(2023, 5, 17),
+    };
+    this.recoveryLogs.set(recoveryLog2.id, recoveryLog2);
+    
+    // Create fan club followers
+    const fanClubFollower1: FanClubFollower = {
+      id: this.currentFanClubFollowerId++,
+      athleteId: athleteUser.id,
+      followerName: "James Smith",
+      followerType: "fan",
+      followDate: new Date(2023, 4, 20),
+    };
+    this.fanClubFollowers.set(fanClubFollower1.id, fanClubFollower1);
+    
+    const fanClubFollower2: FanClubFollower = {
+      id: this.currentFanClubFollowerId++,
+      athleteId: athleteUser.id,
+      followerName: "Coach Thompson",
+      followerType: "recruiter",
+      followDate: new Date(2023, 5, 5),
+    };
+    this.fanClubFollowers.set(fanClubFollower2.id, fanClubFollower2);
+    
+    const fanClubFollower3: FanClubFollower = {
+      id: this.currentFanClubFollowerId++,
+      athleteId: athleteUser.id,
+      followerName: "John Johnson",
+      followerType: "family",
+      followDate: new Date(2023, 4, 15),
+    };
+    this.fanClubFollowers.set(fanClubFollower3.id, fanClubFollower3);
+    
+    // Create leaderboard entries
+    const shootingLeaderboardEntry: LeaderboardEntry = {
+      id: this.currentLeaderboardEntryId++,
+      userId: athleteUser.id,
+      username: athleteUser.username,
+      category: "basketball-shooting",
+      score: 850,
+      rankPosition: 3,
+      updatedAt: new Date(2023, 5, 15),
+    };
+    this.leaderboardEntries.set(shootingLeaderboardEntry.id, shootingLeaderboardEntry);
+    
+    const verticalLeaderboardEntry: LeaderboardEntry = {
+      id: this.currentLeaderboardEntryId++,
+      userId: athleteUser.id,
+      username: athleteUser.username,
+      category: "vertical-jump",
+      score: 920,
+      rankPosition: 2,
+      updatedAt: new Date(2023, 5, 15),
+    };
+    this.leaderboardEntries.set(verticalLeaderboardEntry.id, verticalLeaderboardEntry);
   }
 }
 

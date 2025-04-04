@@ -8,7 +8,13 @@ import {
   ncaaEligibility, type NcaaEligibility, type InsertNcaaEligibility,
   coachConnections, type CoachConnection, type InsertCoachConnection,
   achievements, type Achievement, type InsertAchievement,
-  messages, type Message, type InsertMessage
+  messages, type Message, type InsertMessage,
+  skills, type Skill, type InsertSkill,
+  challenges, type Challenge, type InsertChallenge,
+  athleteChallenges, type AthleteChallenge, type InsertAthleteChallenge,
+  recoveryLogs, type RecoveryLog, type InsertRecoveryLog,
+  fanClubFollowers, type FanClubFollower, type InsertFanClubFollower,
+  leaderboardEntries, type LeaderboardEntry, type InsertLeaderboardEntry
 } from "@shared/schema";
 import { IStorage } from "./storage";
 import { db } from "./db";
@@ -449,6 +455,324 @@ export class DatabaseStorage implements IStorage {
     };
   }
   
+  // Skill Tree operations
+  async getUserSkills(userId: number): Promise<Skill[]> {
+    return await db
+      .select()
+      .from(skills)
+      .where(eq(skills.userId, userId))
+      .orderBy(asc(skills.skillCategory), asc(skills.skillName));
+  }
+
+  async getUserSkillsByCategory(userId: number, category: string): Promise<Skill[]> {
+    return await db
+      .select()
+      .from(skills)
+      .where(
+        and(
+          eq(skills.userId, userId),
+          eq(skills.skillCategory, category)
+        )
+      )
+      .orderBy(asc(skills.skillName));
+  }
+
+  async getSkill(id: number): Promise<Skill | undefined> {
+    const [skill] = await db
+      .select()
+      .from(skills)
+      .where(eq(skills.id, id));
+    return skill;
+  }
+
+  async createSkill(skill: InsertSkill): Promise<Skill> {
+    const now = new Date();
+    const [newSkill] = await db
+      .insert(skills)
+      .values({
+        ...skill,
+        updatedAt: now
+      })
+      .returning();
+    return newSkill;
+  }
+
+  async updateSkill(id: number, data: Partial<Skill>): Promise<Skill | undefined> {
+    const now = new Date();
+    const [skill] = await db
+      .update(skills)
+      .set({
+        ...data,
+        updatedAt: now
+      })
+      .where(eq(skills.id, id))
+      .returning();
+    return skill;
+  }
+
+  // Challenges operations
+  async getChallenges(): Promise<Challenge[]> {
+    return await db
+      .select()
+      .from(challenges)
+      .orderBy(desc(challenges.createdAt));
+  }
+
+  async getChallengesByCategory(category: string): Promise<Challenge[]> {
+    return await db
+      .select()
+      .from(challenges)
+      .where(eq(challenges.category, category))
+      .orderBy(desc(challenges.createdAt));
+  }
+
+  async getChallenge(id: number): Promise<Challenge | undefined> {
+    const [challenge] = await db
+      .select()
+      .from(challenges)
+      .where(eq(challenges.id, id));
+    return challenge;
+  }
+
+  async createChallenge(challenge: InsertChallenge): Promise<Challenge> {
+    const now = new Date();
+    const [newChallenge] = await db
+      .insert(challenges)
+      .values({
+        ...challenge,
+        createdAt: now
+      })
+      .returning();
+    return newChallenge;
+  }
+
+  async getAthleteChallenges(userId: number): Promise<AthleteChallenge[]> {
+    return await db
+      .select()
+      .from(athleteChallenges)
+      .where(eq(athleteChallenges.userId, userId))
+      .orderBy(desc(athleteChallenges.startedAt));
+  }
+  
+  async getAthleteChallenge(id: number): Promise<AthleteChallenge | undefined> {
+    const [athleteChallenge] = await db
+      .select()
+      .from(athleteChallenges)
+      .where(eq(athleteChallenges.id, id));
+    return athleteChallenge;
+  }
+
+  async createAthleteChallenge(athleteChallenge: InsertAthleteChallenge): Promise<AthleteChallenge> {
+    const [newAthleteChallenge] = await db
+      .insert(athleteChallenges)
+      .values(athleteChallenge)
+      .returning();
+    return newAthleteChallenge;
+  }
+
+  async updateAthleteChallenge(id: number, data: Partial<AthleteChallenge>): Promise<AthleteChallenge | undefined> {
+    const [athleteChallenge] = await db
+      .update(athleteChallenges)
+      .set(data)
+      .where(eq(athleteChallenges.id, id))
+      .returning();
+    return athleteChallenge;
+  }
+  
+  // Additional helper methods
+  async getCompletedChallengesByUser(userId: number): Promise<AthleteChallenge[]> {
+    return await db
+      .select()
+      .from(athleteChallenges)
+      .where(
+        and(
+          eq(athleteChallenges.userId, userId),
+          eq(athleteChallenges.status, "completed")
+        )
+      )
+      .orderBy(desc(athleteChallenges.completedAt));
+  }
+  
+  async getAthleteChallengeByUserAndChallenge(userId: number, challengeId: number): Promise<AthleteChallenge | undefined> {
+    const [athleteChallenge] = await db
+      .select()
+      .from(athleteChallenges)
+      .where(
+        and(
+          eq(athleteChallenges.userId, userId),
+          eq(athleteChallenges.challengeId, challengeId)
+        )
+      );
+    return athleteChallenge;
+  }
+
+  // Recovery Tracker operations
+  async getRecoveryLogs(userId: number): Promise<RecoveryLog[]> {
+    return await db
+      .select()
+      .from(recoveryLogs)
+      .where(eq(recoveryLogs.userId, userId))
+      .orderBy(desc(recoveryLogs.logDate));
+  }
+
+  async getLatestRecoveryLog(userId: number): Promise<RecoveryLog | undefined> {
+    const logs = await this.getRecoveryLogs(userId);
+    return logs.length > 0 ? logs[0] : undefined;
+  }
+
+  async createRecoveryLog(log: InsertRecoveryLog): Promise<RecoveryLog> {
+    const [newLog] = await db
+      .insert(recoveryLogs)
+      .values(log)
+      .returning();
+    return newLog;
+  }
+  
+  // Additional helper methods
+  async getRecoveryLog(id: number): Promise<RecoveryLog | undefined> {
+    const [log] = await db
+      .select()
+      .from(recoveryLogs)
+      .where(eq(recoveryLogs.id, id));
+    return log;
+  }
+
+  // Fan Club operations
+  async getFanClubFollowers(athleteId: number): Promise<FanClubFollower[]> {
+    return await db
+      .select()
+      .from(fanClubFollowers)
+      .where(eq(fanClubFollowers.athleteId, athleteId))
+      .orderBy(desc(fanClubFollowers.followDate));
+  }
+  
+  async getFanClubStats(athleteId: number): Promise<{
+    totalFollowers: number;
+    fans: number;
+    recruiters: number;
+    family: number;
+    friends: number;
+  }> {
+    const followers = await this.getFanClubFollowers(athleteId);
+    
+    return {
+      totalFollowers: followers.length,
+      fans: followers.filter(f => f.followerType === "fan").length,
+      recruiters: followers.filter(f => f.followerType === "recruiter").length,
+      family: followers.filter(f => f.followerType === "family").length,
+      friends: followers.filter(f => f.followerType === "friend").length
+    };
+  }
+  
+  async createFanClubFollower(follower: InsertFanClubFollower): Promise<FanClubFollower> {
+    const [newFollower] = await db
+      .insert(fanClubFollowers)
+      .values(follower)
+      .returning();
+    return newFollower;
+  }
+  
+  // Additional helper methods
+  async getFanClubFollower(id: number): Promise<FanClubFollower | undefined> {
+    const [follower] = await db
+      .select()
+      .from(fanClubFollowers)
+      .where(eq(fanClubFollowers.id, id));
+    return follower;
+  }
+
+  // Leaderboard operations
+  async getLeaderboardEntries(category: string): Promise<LeaderboardEntry[]> {
+    return await db
+      .select()
+      .from(leaderboardEntries)
+      .where(eq(leaderboardEntries.category, category))
+      .orderBy(asc(leaderboardEntries.rankPosition));
+  }
+  
+  async getUserLeaderboardEntry(userId: number, category: string): Promise<LeaderboardEntry | undefined> {
+    const [entry] = await db
+      .select()
+      .from(leaderboardEntries)
+      .where(
+        and(
+          eq(leaderboardEntries.userId, userId),
+          eq(leaderboardEntries.category, category)
+        )
+      );
+    return entry;
+  }
+  
+  async createLeaderboardEntry(entry: InsertLeaderboardEntry): Promise<LeaderboardEntry> {
+    const [newEntry] = await db
+      .insert(leaderboardEntries)
+      .values(entry)
+      .returning();
+    
+    // Recalculate ranks after creating a new entry
+    await this.recalculateLeaderboardRanks(entry.category);
+    
+    return newEntry;
+  }
+  
+  async updateLeaderboardEntry(id: number, data: Partial<LeaderboardEntry>): Promise<LeaderboardEntry | undefined> {
+    const [entry] = await db
+      .update(leaderboardEntries)
+      .set(data)
+      .where(eq(leaderboardEntries.id, id))
+      .returning();
+    
+    if (entry && data.score !== undefined) {
+      // If score was updated, recalculate ranks
+      await this.recalculateLeaderboardRanks(entry.category);
+    }
+    
+    return entry;
+  }
+  
+  async recalculateLeaderboardRanks(category: string): Promise<void> {
+    // Get all entries for the category sorted by score descending
+    const entries = await db
+      .select()
+      .from(leaderboardEntries)
+      .where(eq(leaderboardEntries.category, category))
+      .orderBy(desc(leaderboardEntries.score));
+    
+    // Update rank positions
+    for (let i = 0; i < entries.length; i++) {
+      await db
+        .update(leaderboardEntries)
+        .set({ rankPosition: i + 1 })
+        .where(eq(leaderboardEntries.id, entries[i].id));
+    }
+  }
+  
+  // Additional helper methods
+  async getLeaderboardEntry(id: number): Promise<LeaderboardEntry | undefined> {
+    const [entry] = await db
+      .select()
+      .from(leaderboardEntries)
+      .where(eq(leaderboardEntries.id, id));
+    return entry;
+  }
+  
+  async getLeaderboardEntriesByUser(userId: number): Promise<LeaderboardEntry[]> {
+    return await db
+      .select()
+      .from(leaderboardEntries)
+      .where(eq(leaderboardEntries.userId, userId))
+      .orderBy(asc(leaderboardEntries.category));
+  }
+
+  // Player Story Mode - Achievements operations
+  async getAchievementsByUser(userId: number): Promise<Achievement[]> {
+    return await db
+      .select()
+      .from(achievements)
+      .where(eq(achievements.userId, userId))
+      .orderBy(desc(achievements.earnedDate));
+  }
+
   // Method to seed initial data
   async seedInitialData() {
     // Check if we already have users
@@ -457,7 +781,6 @@ export class DatabaseStorage implements IStorage {
       console.log("Data already seeded, skipping...");
       return;
     }
-    
     // Create sample users (1 athlete, 2 coaches, 1 admin)
     const [athleteUser] = await db.insert(users).values({
       username: "alexjohnson",

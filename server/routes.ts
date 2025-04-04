@@ -17,6 +17,12 @@ import {
   insertNcaaEligibilitySchema,
   insertCoachConnectionSchema,
   insertMessageSchema,
+  insertSkillSchema,
+  insertChallengeSchema,
+  insertAthleteChallengeSchema,
+  insertRecoveryLogSchema,
+  insertFanClubFollowerSchema,
+  insertLeaderboardEntrySchema,
   users,
 } from "@shared/schema";
 
@@ -828,6 +834,374 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching stats:", error);
       return res.status(500).json({ message: "Error fetching stats" });
+    }
+  });
+
+  // Player Story Mode - Skills API Routes
+  app.get("/api/player/skills", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const skills = await storage.getSkills(user.id);
+      return res.json(skills);
+    } catch (error) {
+      console.error("Error fetching skills:", error);
+      return res.status(500).json({ message: "Error fetching skills" });
+    }
+  });
+
+  app.post("/api/player/skills", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const skillData = insertSkillSchema.parse({
+        ...req.body,
+        userId: user.id,
+      });
+      
+      const skill = await storage.createSkill(skillData);
+      return res.status(201).json(skill);
+    } catch (error) {
+      console.error("Error creating skill:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/player/skills/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const skillId = parseInt(req.params.id);
+      const user = req.user as any;
+      const skill = await storage.getSkill(skillId);
+      
+      if (!skill) {
+        return res.status(404).json({ message: "Skill not found" });
+      }
+      
+      // Only allow updating own skills unless admin
+      if (skill.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to update this skill" });
+      }
+      
+      const updatedSkill = await storage.updateSkill(skillId, req.body);
+      return res.json(updatedSkill);
+    } catch (error) {
+      console.error("Error updating skill:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Player Story Mode - Challenges API Routes
+  app.get("/api/player/challenges", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const challenges = await storage.getChallenges();
+      return res.json(challenges);
+    } catch (error) {
+      console.error("Error fetching challenges:", error);
+      return res.status(500).json({ message: "Error fetching challenges" });
+    }
+  });
+
+  app.get("/api/player/challenges/active", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const userChallenges = await storage.getAthleteChallenges(user.id);
+      
+      // For each user challenge, get the challenge details
+      const activeChallenges = await Promise.all(
+        userChallenges.map(async (userChallenge) => {
+          const challenge = await storage.getChallenge(userChallenge.challengeId);
+          return {
+            ...userChallenge,
+            challenge,
+          };
+        })
+      );
+      
+      return res.json(activeChallenges);
+    } catch (error) {
+      console.error("Error fetching active challenges:", error);
+      return res.status(500).json({ message: "Error fetching active challenges" });
+    }
+  });
+
+  app.post("/api/player/challenges/:id/accept", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const challengeId = parseInt(req.params.id);
+      const user = req.user as any;
+      
+      const challenge = await storage.getChallenge(challengeId);
+      if (!challenge) {
+        return res.status(404).json({ message: "Challenge not found" });
+      }
+      
+      // Check if user already accepted this challenge
+      const existingChallenge = await storage.getAthleteChallengeByUserAndChallenge(user.id, challengeId);
+      if (existingChallenge) {
+        return res.status(400).json({ message: "Challenge already accepted" });
+      }
+      
+      const athleteChallenge = await storage.createAthleteChallenge({
+        userId: user.id,
+        challengeId,
+        status: "in-progress",
+        startedAt: new Date(),
+        completedAt: null,
+        proofUrl: null,
+      });
+      
+      return res.status(201).json(athleteChallenge);
+    } catch (error) {
+      console.error("Error accepting challenge:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/player/challenges/:id/complete", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const challengeId = parseInt(req.params.id);
+      const user = req.user as any;
+      
+      // Find the athlete challenge
+      const athleteChallenge = await storage.getAthleteChallengeByUserAndChallenge(user.id, challengeId);
+      if (!athleteChallenge) {
+        return res.status(404).json({ message: "Challenge not found or not accepted" });
+      }
+      
+      if (athleteChallenge.status === "completed") {
+        return res.status(400).json({ message: "Challenge already completed" });
+      }
+      
+      // Update the athlete challenge
+      const updatedChallenge = await storage.updateAthleteChallenge(athleteChallenge.id, {
+        status: "completed",
+        completedAt: new Date(),
+        proofUrl: req.body.proofUrl || null,
+      });
+      
+      // Get the challenge details to award XP
+      const challenge = await storage.getChallenge(challengeId);
+      if (challenge) {
+        // Find a skill that matches the challenge category
+        const skills = await storage.getSkills(user.id);
+        const matchingSkill = skills.find(skill => skill.skillCategory.toLowerCase() === challenge.category.toLowerCase());
+        
+        // If there's a matching skill, update it with XP
+        if (matchingSkill) {
+          const newXpPoints = matchingSkill.xpPoints + challenge.xpReward;
+          let newLevel = matchingSkill.skillLevel;
+          
+          // Level up if enough XP
+          if (newXpPoints >= matchingSkill.nextLevelXp && matchingSkill.skillLevel < matchingSkill.maxLevel) {
+            newLevel += 1;
+          }
+          
+          await storage.updateSkill(matchingSkill.id, {
+            xpPoints: newXpPoints,
+            skillLevel: newLevel,
+          });
+          
+          // Add achievement if this is the first challenge completed
+          const completedChallenges = await storage.getCompletedChallengesByUser(user.id);
+          if (completedChallenges.length === 1) {
+            await storage.createAchievement({
+              userId: user.id,
+              title: "First Challenge Completed",
+              description: "Completed your first training challenge",
+              achievementType: "challenge",
+              iconType: "award",
+              earnedDate: new Date(),
+            });
+          }
+        }
+      }
+      
+      return res.json(updatedChallenge);
+    } catch (error) {
+      console.error("Error completing challenge:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Player Story Mode - Recovery Tracker API Routes
+  app.get("/api/player/recovery", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const recoveryLogs = await storage.getRecoveryLogs(user.id);
+      return res.json(recoveryLogs);
+    } catch (error) {
+      console.error("Error fetching recovery logs:", error);
+      return res.status(500).json({ message: "Error fetching recovery logs" });
+    }
+  });
+
+  app.post("/api/player/recovery", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const logData = insertRecoveryLogSchema.parse({
+        ...req.body,
+        userId: user.id,
+        logDate: new Date(),
+      });
+      
+      const log = await storage.createRecoveryLog(logData);
+      
+      // Check if this is the first recovery log
+      const userLogs = await storage.getRecoveryLogs(user.id);
+      if (userLogs.length === 1) {
+        await storage.createAchievement({
+          userId: user.id,
+          title: "Recovery Tracking Started",
+          description: "Started tracking your recovery and wellness",
+          achievementType: "recovery",
+          iconType: "heart",
+          earnedDate: new Date(),
+        });
+      }
+      
+      return res.status(201).json(log);
+    } catch (error) {
+      console.error("Error creating recovery log:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Player Story Mode - Fan Club API Routes
+  app.get("/api/player/fan-club", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const followers = await storage.getFanClubFollowers(user.id);
+      return res.json(followers);
+    } catch (error) {
+      console.error("Error fetching fan club followers:", error);
+      return res.status(500).json({ message: "Error fetching fan club followers" });
+    }
+  });
+
+  app.post("/api/player/fan-club", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      
+      // Only athletes can have fan clubs
+      const athlete = await storage.getAthleteProfile(user.id);
+      if (!athlete) {
+        return res.status(403).json({ message: "Only athletes can have fan clubs" });
+      }
+      
+      const followerData = insertFanClubFollowerSchema.parse({
+        ...req.body,
+        athleteId: user.id,
+        followDate: new Date(),
+      });
+      
+      const follower = await storage.createFanClubFollower(followerData);
+      
+      // Check milestone achievements
+      const followers = await storage.getFanClubFollowers(user.id);
+      if (followers.length === 1) {
+        await storage.createAchievement({
+          userId: user.id,
+          title: "First Fan",
+          description: "Someone is following your athletic journey",
+          achievementType: "fanclub",
+          iconType: "users",
+          earnedDate: new Date(),
+        });
+      } else if (followers.length === 10) {
+        await storage.createAchievement({
+          userId: user.id,
+          title: "Rising Star",
+          description: "Your fan club has reached 10 followers",
+          achievementType: "fanclub",
+          iconType: "star",
+          earnedDate: new Date(),
+        });
+      } else if (followers.length === 50) {
+        await storage.createAchievement({
+          userId: user.id,
+          title: "Local Celebrity",
+          description: "Your fan club has reached 50 followers",
+          achievementType: "fanclub",
+          iconType: "award",
+          earnedDate: new Date(),
+        });
+      }
+      
+      return res.status(201).json(follower);
+    } catch (error) {
+      console.error("Error creating fan club follower:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Player Story Mode - Leaderboard API Routes
+  app.get("/api/player/leaderboard/:category", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const category = req.params.category;
+      const entries = await storage.getLeaderboardEntries(category);
+      return res.json(entries);
+    } catch (error) {
+      console.error("Error fetching leaderboard entries:", error);
+      return res.status(500).json({ message: "Error fetching leaderboard entries" });
+    }
+  });
+
+  app.get("/api/player/leaderboard", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const entries = await storage.getLeaderboardEntriesByUser(user.id);
+      return res.json(entries);
+    } catch (error) {
+      console.error("Error fetching user leaderboard entries:", error);
+      return res.status(500).json({ message: "Error fetching user leaderboard entries" });
+    }
+  });
+
+  app.post("/api/player/leaderboard", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      
+      const entryData = insertLeaderboardEntrySchema.parse({
+        ...req.body,
+        userId: user.id,
+        updatedAt: new Date(),
+      });
+      
+      // Check if entry already exists for this category and user
+      const existingEntry = await storage.getUserLeaderboardEntry(user.id, entryData.category);
+      
+      let entry;
+      if (existingEntry) {
+        // Update only if new score is higher
+        if (entryData.score > existingEntry.score) {
+          entry = await storage.updateLeaderboardEntry(existingEntry.id, {
+            score: entryData.score,
+            rankPosition: entryData.rankPosition,
+            updatedAt: new Date(),
+          });
+        } else {
+          entry = existingEntry;
+        }
+      } else {
+        entry = await storage.createLeaderboardEntry(entryData);
+      }
+      
+      // Update all rank positions in this category
+      await storage.recalculateLeaderboardRanks(entryData.category);
+      
+      return res.status(201).json(entry);
+    } catch (error) {
+      console.error("Error creating/updating leaderboard entry:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Player Story Mode - Achievements API Routes
+  app.get("/api/player/achievements", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const achievements = await storage.getAchievementsByUser(user.id);
+      return res.json(achievements);
+    } catch (error) {
+      console.error("Error fetching achievements:", error);
+      return res.status(500).json({ message: "Error fetching achievements" });
     }
   });
 
