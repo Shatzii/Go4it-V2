@@ -124,6 +124,36 @@ export const messages = pgTable("messages", {
   isRead: boolean("read").default(false),
 });
 
+// Blogs and articles
+export const blogPosts = pgTable("blog_posts", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  summary: text("summary").notNull(),
+  coverImage: text("cover_image"),
+  authorId: integer("author_id").references(() => users.id),
+  category: text("category").notNull(), // nextup, analysis, combine, tips
+  publishDate: timestamp("publish_date").defaultNow(),
+  featured: boolean("featured").default(false),
+  slug: text("slug").notNull().unique(),
+  tags: text("tags").array(),
+});
+
+// Featured athletes 
+export const featuredAthletes = pgTable("featured_athletes", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  coverImage: text("cover_image"),
+  featuredVideo: text("featured_video").references(() => videos.id),
+  highlightText: text("highlight_text").notNull(),
+  sportPosition: text("sport_position"),
+  starRating: integer("star_rating").notNull(),
+  featuredStats: json("featured_stats"),
+  featuredDate: timestamp("featured_date").defaultNow(),
+  order: integer("order").default(0),
+  active: boolean("active").default(true),
+});
+
 // Skills for athlete's skill tree
 export const skills = pgTable("skills", {
   id: serial("id").primaryKey(),
@@ -215,6 +245,13 @@ export const insertAthleteChallengeSchema = createInsertSchema(athleteChallenges
 export const insertRecoveryLogSchema = createInsertSchema(recoveryLogs).omit({ id: true, logDate: true });
 export const insertFanClubFollowerSchema = createInsertSchema(fanClubFollowers).omit({ id: true, followDate: true });
 export const insertLeaderboardEntrySchema = createInsertSchema(leaderboardEntries).omit({ id: true, updatedAt: true });
+export const insertBlogPostSchema = createInsertSchema(blogPosts, {
+  publishDate: z.date().optional(),
+}).omit({ id: true });
+
+export const insertFeaturedAthleteSchema = createInsertSchema(featuredAthletes, {
+  featuredDate: z.date().optional(),
+}).omit({ id: true });
 
 // Export types for insert and select operations
 export type User = typeof users.$inferSelect;
@@ -265,3 +302,9 @@ export type InsertFanClubFollower = z.infer<typeof insertFanClubFollowerSchema>;
 
 export type LeaderboardEntry = typeof leaderboardEntries.$inferSelect;
 export type InsertLeaderboardEntry = z.infer<typeof insertLeaderboardEntrySchema>;
+
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
+
+export type FeaturedAthlete = typeof featuredAthletes.$inferSelect;
+export type InsertFeaturedAthlete = z.infer<typeof insertFeaturedAthleteSchema>;

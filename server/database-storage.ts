@@ -14,7 +14,9 @@ import {
   athleteChallenges, type AthleteChallenge, type InsertAthleteChallenge,
   recoveryLogs, type RecoveryLog, type InsertRecoveryLog,
   fanClubFollowers, type FanClubFollower, type InsertFanClubFollower,
-  leaderboardEntries, type LeaderboardEntry, type InsertLeaderboardEntry
+  leaderboardEntries, type LeaderboardEntry, type InsertLeaderboardEntry,
+  blogPosts, type BlogPost, type InsertBlogPost,
+  featuredAthletes, type FeaturedAthlete, type InsertFeaturedAthlete
 } from "@shared/schema";
 import { IStorage } from "./storage";
 import { db } from "./db";
@@ -773,6 +775,133 @@ export class DatabaseStorage implements IStorage {
       .from(achievements)
       .where(eq(achievements.userId, userId))
       .orderBy(desc(achievements.earnedDate));
+  }
+
+  // Blog operations
+  async getBlogPosts(limit: number = 20, offset: number = 0): Promise<BlogPost[]> {
+    return await db
+      .select()
+      .from(blogPosts)
+      .orderBy(desc(blogPosts.publishDate))
+      .limit(limit)
+      .offset(offset);
+  }
+
+  async getFeaturedBlogPosts(limit: number = 5): Promise<BlogPost[]> {
+    return await db
+      .select()
+      .from(blogPosts)
+      .where(eq(blogPosts.featured, true))
+      .orderBy(desc(blogPosts.publishDate))
+      .limit(limit);
+  }
+
+  async getBlogPostsByCategory(category: string, limit: number = 10): Promise<BlogPost[]> {
+    return await db
+      .select()
+      .from(blogPosts)
+      .where(eq(blogPosts.category, category))
+      .orderBy(desc(blogPosts.publishDate))
+      .limit(limit);
+  }
+
+  async getBlogPostBySlug(slug: string): Promise<BlogPost | undefined> {
+    const [post] = await db
+      .select()
+      .from(blogPosts)
+      .where(eq(blogPosts.slug, slug));
+    return post;
+  }
+
+  async getBlogPost(id: number): Promise<BlogPost | undefined> {
+    const [post] = await db
+      .select()
+      .from(blogPosts)
+      .where(eq(blogPosts.id, id));
+    return post;
+  }
+
+  async createBlogPost(post: InsertBlogPost): Promise<BlogPost> {
+    const now = new Date();
+    const [newPost] = await db
+      .insert(blogPosts)
+      .values({
+        ...post,
+        publishDate: now
+      })
+      .returning();
+    return newPost;
+  }
+
+  async updateBlogPost(id: number, data: Partial<BlogPost>): Promise<BlogPost | undefined> {
+    const [post] = await db
+      .update(blogPosts)
+      .set(data)
+      .where(eq(blogPosts.id, id))
+      .returning();
+    return post;
+  }
+
+  async deleteBlogPost(id: number): Promise<boolean> {
+    const result = await db
+      .delete(blogPosts)
+      .where(eq(blogPosts.id, id));
+    return result.count > 0;
+  }
+
+  // Featured Athletes operations
+  async getFeaturedAthletes(limit: number = 4): Promise<FeaturedAthlete[]> {
+    return await db
+      .select()
+      .from(featuredAthletes)
+      .where(eq(featuredAthletes.active, true))
+      .orderBy(asc(featuredAthletes.order), desc(featuredAthletes.featuredDate))
+      .limit(limit);
+  }
+
+  async getFeaturedAthlete(id: number): Promise<FeaturedAthlete | undefined> {
+    const [athlete] = await db
+      .select()
+      .from(featuredAthletes)
+      .where(eq(featuredAthletes.id, id));
+    return athlete;
+  }
+
+  async getFeaturedAthleteByUserId(userId: number): Promise<FeaturedAthlete | undefined> {
+    const [athlete] = await db
+      .select()
+      .from(featuredAthletes)
+      .where(eq(featuredAthletes.userId, userId));
+    return athlete;
+  }
+
+  async createFeaturedAthlete(athlete: InsertFeaturedAthlete): Promise<FeaturedAthlete> {
+    const now = new Date();
+    const [newAthlete] = await db
+      .insert(featuredAthletes)
+      .values({
+        ...athlete,
+        featuredDate: now
+      })
+      .returning();
+    return newAthlete;
+  }
+
+  async updateFeaturedAthlete(id: number, data: Partial<FeaturedAthlete>): Promise<FeaturedAthlete | undefined> {
+    const [athlete] = await db
+      .update(featuredAthletes)
+      .set(data)
+      .where(eq(featuredAthletes.id, id))
+      .returning();
+    return athlete;
+  }
+
+  async deactivateFeaturedAthlete(id: number): Promise<boolean> {
+    const result = await db
+      .update(featuredAthletes)
+      .set({ active: false })
+      .where(eq(featuredAthletes.id, id));
+    return result.count > 0;
   }
 
   // Method to seed initial data

@@ -24,6 +24,8 @@ import {
   insertRecoveryLogSchema,
   insertFanClubFollowerSchema,
   insertLeaderboardEntrySchema,
+  insertBlogPostSchema,
+  insertFeaturedAthleteSchema,
   users,
 } from "@shared/schema";
 
@@ -1407,6 +1409,231 @@ export async function registerRoutes(app: Express): Promise<Server> {
       clients.delete(ws);
       console.log('WebSocket connection closed');
     });
+  });
+
+  // Blog Posts API Routes
+  app.get("/api/blog-posts", async (req: Request, res: Response) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+      const offset = parseInt(req.query.offset as string) || 0;
+      
+      const blogPosts = await storage.getBlogPosts(limit, offset);
+      res.json(blogPosts);
+    } catch (error) {
+      console.error("Error fetching blog posts:", error);
+      res.status(500).json({ message: "Error fetching blog posts" });
+    }
+  });
+  
+  app.get("/api/blog-posts/featured", async (req: Request, res: Response) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 5;
+      const featuredPosts = await storage.getFeaturedBlogPosts(limit);
+      res.json(featuredPosts);
+    } catch (error) {
+      console.error("Error fetching featured blog posts:", error);
+      res.status(500).json({ message: "Error fetching featured blog posts" });
+    }
+  });
+  
+  app.get("/api/blog-posts/category/:category", async (req: Request, res: Response) => {
+    try {
+      const category = req.params.category;
+      const limit = parseInt(req.query.limit as string) || 10;
+      
+      const posts = await storage.getBlogPostsByCategory(category, limit);
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching blog posts by category:", error);
+      res.status(500).json({ message: "Error fetching blog posts by category" });
+    }
+  });
+  
+  app.get("/api/blog-posts/:slug", async (req: Request, res: Response) => {
+    try {
+      const slug = req.params.slug;
+      const post = await storage.getBlogPostBySlug(slug);
+      
+      if (!post) {
+        return res.status(404).json({ message: "Blog post not found" });
+      }
+      
+      res.json(post);
+    } catch (error) {
+      console.error("Error fetching blog post:", error);
+      res.status(500).json({ message: "Error fetching blog post" });
+    }
+  });
+  
+  // Admin-only blog post management routes
+  app.post("/api/blog-posts", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const postData = insertBlogPostSchema.parse(req.body);
+      const post = await storage.createBlogPost(postData);
+      res.status(201).json(post);
+    } catch (error) {
+      console.error("Error creating blog post:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+  
+  app.put("/api/blog-posts/:id", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const postId = parseInt(req.params.id);
+      const postData = insertBlogPostSchema.partial().parse(req.body);
+      
+      const updatedPost = await storage.updateBlogPost(postId, postData);
+      if (!updatedPost) {
+        return res.status(404).json({ message: "Blog post not found" });
+      }
+      
+      res.json(updatedPost);
+    } catch (error) {
+      console.error("Error updating blog post:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+  
+  app.delete("/api/blog-posts/:id", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const postId = parseInt(req.params.id);
+      const success = await storage.deleteBlogPost(postId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Blog post not found" });
+      }
+      
+      res.json({ message: "Blog post deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting blog post:", error);
+      res.status(500).json({ message: "Error deleting blog post" });
+    }
+  });
+  
+  // Featured Athletes API Routes
+  app.get("/api/featured-athletes", async (req: Request, res: Response) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 4;
+      const athletes = await storage.getFeaturedAthletes(limit);
+      
+      // Enrich with user data
+      const enrichedAthletes = await Promise.all(athletes.map(async (athlete) => {
+        const user = await storage.getUser(athlete.userId);
+        return {
+          ...athlete,
+          name: user?.name || "",
+          username: user?.username || "",
+          profileImage: user?.profileImage || athlete.coverImage
+        };
+      }));
+      
+      res.json(enrichedAthletes);
+    } catch (error) {
+      console.error("Error fetching featured athletes:", error);
+      res.status(500).json({ message: "Error fetching featured athletes" });
+    }
+  });
+  
+  app.get("/api/featured-athletes/:id", async (req: Request, res: Response) => {
+    try {
+      const athleteId = parseInt(req.params.id);
+      const athlete = await storage.getFeaturedAthlete(athleteId);
+      
+      if (!athlete) {
+        return res.status(404).json({ message: "Featured athlete not found" });
+      }
+      
+      const user = await storage.getUser(athlete.userId);
+      
+      res.json({
+        ...athlete,
+        name: user?.name || "",
+        username: user?.username || "",
+        profileImage: user?.profileImage || athlete.coverImage
+      });
+    } catch (error) {
+      console.error("Error fetching featured athlete:", error);
+      res.status(500).json({ message: "Error fetching featured athlete" });
+    }
+  });
+  
+  // Admin-only featured athlete management routes
+  app.post("/api/featured-athletes", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const athleteData = insertFeaturedAthleteSchema.parse(req.body);
+      const athlete = await storage.createFeaturedAthlete(athleteData);
+      res.status(201).json(athlete);
+    } catch (error) {
+      console.error("Error creating featured athlete:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+  
+  app.put("/api/featured-athletes/:id", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const athleteId = parseInt(req.params.id);
+      const athleteData = insertFeaturedAthleteSchema.partial().parse(req.body);
+      
+      const updatedAthlete = await storage.updateFeaturedAthlete(athleteId, athleteData);
+      if (!updatedAthlete) {
+        return res.status(404).json({ message: "Featured athlete not found" });
+      }
+      
+      res.json(updatedAthlete);
+    } catch (error) {
+      console.error("Error updating featured athlete:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+  
+  app.delete("/api/featured-athletes/:id", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const athleteId = parseInt(req.params.id);
+      const success = await storage.deactivateFeaturedAthlete(athleteId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Featured athlete not found" });
+      }
+      
+      res.json({ message: "Featured athlete deactivated successfully" });
+    } catch (error) {
+      console.error("Error deactivating featured athlete:", error);
+      res.status(500).json({ message: "Error deactivating featured athlete" });
+    }
+  });
+  
+  // Home feed API - combines blog posts and featured athletes for the dashboard
+  app.get("/api/feed", async (req: Request, res: Response) => {
+    try {
+      // Get featured blog posts
+      const featuredPosts = await storage.getFeaturedBlogPosts(3);
+      
+      // Get featured athletes
+      const featuredAthletes = await storage.getFeaturedAthletes(4);
+      
+      // Enrich athletes with user data
+      const enrichedAthletes = await Promise.all(featuredAthletes.map(async (athlete) => {
+        const user = await storage.getUser(athlete.userId);
+        return {
+          ...athlete,
+          name: user?.name || "",
+          username: user?.username || "",
+          profileImage: user?.profileImage || athlete.coverImage
+        };
+      }));
+      
+      // Get latest blog posts
+      const latestPosts = await storage.getBlogPosts(5);
+      
+      res.json({
+        featuredPosts,
+        featuredAthletes: enrichedAthletes,
+        latestPosts
+      });
+    } catch (error) {
+      console.error("Error fetching home feed:", error);
+      res.status(500).json({ message: "Error fetching home feed" });
+    }
   });
 
   return httpServer;
