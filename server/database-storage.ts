@@ -369,7 +369,7 @@ export class DatabaseStorage implements IStorage {
       .where(
         sql`${messages.senderId} = ${userId} OR ${messages.recipientId} = ${userId}`
       )
-      .orderBy(desc(messages.sentAt));
+      .orderBy(desc(messages.createdAt));
   }
 
   async createMessage(message: InsertMessage): Promise<Message> {
@@ -378,8 +378,8 @@ export class DatabaseStorage implements IStorage {
       .insert(messages)
       .values({
         ...message,
-        sentAt: now,
-        read: false
+        createdAt: now,
+        isRead: false
       })
       .returning();
     return newMessage;
@@ -388,7 +388,7 @@ export class DatabaseStorage implements IStorage {
   async markMessageAsRead(id: number): Promise<Message | undefined> {
     const [message] = await db
       .update(messages)
-      .set({ read: true })
+      .set({ isRead: true })
       .where(eq(messages.id, id))
       .returning();
     return message;
