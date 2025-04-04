@@ -841,7 +841,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/player/skills", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const user = req.user as any;
-      const skills = await storage.getSkills(user.id);
+      const skills = await storage.getUserSkills(user.id);
       return res.json(skills);
     } catch (error) {
       console.error("Error fetching skills:", error);
@@ -980,7 +980,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const challenge = await storage.getChallenge(challengeId);
       if (challenge) {
         // Find a skill that matches the challenge category
-        const skills = await storage.getSkills(user.id);
+        const skills = await storage.getUserSkills(user.id);
         const matchingSkill = skills.find(skill => skill.skillCategory.toLowerCase() === challenge.category.toLowerCase());
         
         // If there's a matching skill, update it with XP
