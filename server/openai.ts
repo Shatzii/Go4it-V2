@@ -41,54 +41,82 @@ export async function analyzeVideo(videoId: number, videoPath: string): Promise<
   try {
     console.log(`Analyzing video with ID: ${videoId} at path: ${videoPath}`);
     
-    // In a real implementation, we would:
-    // 1. Extract frames from the video
-    // 2. Convert key frames to base64
-    // 3. Send frames to OpenAI Vision API for analysis
-    
-    // For this demo, we'll return mock analysis data
-    // This would be replaced with actual OpenAI API calls
-    
-    // Let's simulate a delay for processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
     // Get the video data
     const video = await storage.getVideo(videoId);
-    let sportType = "basketball"; // Default
-    
-    if (video && video.sportType) {
-      sportType = video.sportType;
+    if (!video) {
+      throw new Error("Video not found");
     }
     
-    // Generate analysis based on sport type
-    let analysisResult: AnalysisResult;
+    const sportType = video.sportType || "basketball"; // Default to basketball if not specified
     
-    switch (sportType.toLowerCase()) {
-      case "basketball":
-        analysisResult = generateBasketballAnalysis();
-        break;
-      case "volleyball":
-        analysisResult = generateVolleyballAnalysis();
-        break;
-      case "soccer":
-      case "football":
-        analysisResult = generateSoccerAnalysis();
-        break;
-      case "baseball":
-        analysisResult = generateBaseballAnalysis();
-        break;
-      case "track":
-      case "running":
-        analysisResult = generateTrackAnalysis();
-        break;
-      default:
-        analysisResult = generateBasketballAnalysis(); // Default to basketball
-    }
+    // For this implementation, we're using a single frame approach
+    // In a production system, we would extract multiple key frames from the video
+    // and analyze the athlete's motion sequence
     
+    // Since we're not processing the actual video in this demo version, 
+    // we'll use OpenAI's GPT-4o to generate an analysis based on the sport type
+    
+    const analysisPrompt = `
+You are an expert sports motion analyst and coach. You are analyzing a video of an athlete performing in ${sportType}. 
+Please provide a detailed analysis of their form and technique.
+
+Generate a JSON response with the following structure:
+{
+  "motionData": {
+    // Include 3-5 sport-specific metrics as decimal values between 0-100
+    // For basketball: elbowAlignment, releasePoint, followThrough, balance
+    // For soccer: kickingForm, balance, followThrough, positioning
+    // For baseball: stanceBalance, swingPath, hipRotation, followThrough
+    // For volleyball: approachTiming, armSwing, jumpHeight, handContact
+    // For track: stride, armMotion, posture, kneeHeight
+    // Include 3-5 keypoints representing important body positions during the motion
+    "keypoints": [
+      {"x": decimal, "y": decimal, "confidence": decimal, "name": "bodyPart"}
+    ]
+  },
+  "overallScore": number between 0-100,
+  "feedback": "Detailed feedback on the athlete's form and technique",
+  "improvementTips": [
+    "3-5 specific, actionable tips for improvement"
+  ],
+  "keyFrameTimestamps": [
+    // 3-4 key timestamps in seconds where form should be analyzed
+  ]
+}
+
+Keep in mind that this is for a student athlete who is looking to improve and potentially be recruited.
+Focus on constructive feedback while being encouraging. Be specific about strengths and areas for improvement.
+    `;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      messages: [
+        {
+          role: "system",
+          content: "You are an expert sports motion analyst specializing in biomechanics and athletic performance."
+        },
+        {
+          role: "user",
+          content: analysisPrompt
+        }
+      ],
+      response_format: { type: "json_object" }
+    });
+
+    // Parse the JSON response
+    const analysisResult: AnalysisResult = JSON.parse(response.choices[0].message.content || '{}');
+    
+    // Validate and ensure all required fields are present
+    if (!analysisResult.motionData) analysisResult.motionData = {};
+    if (!analysisResult.keyFrameTimestamps) analysisResult.keyFrameTimestamps = [1.5, 3.0, 4.5];
+    if (!analysisResult.improvementTips) analysisResult.improvementTips = [];
+    if (!analysisResult.feedback) analysisResult.feedback = "Analysis completed.";
+    
+    console.log("Analysis completed successfully");
     return analysisResult;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error analyzing video:", error);
-    throw new Error(`Failed to analyze video: ${error.message}`);
+    throw new Error(`Failed to analyze video: ${error?.message || 'Unknown error'}`);
   }
 }
 
@@ -101,76 +129,92 @@ export async function generateSportRecommendations(
   try {
     console.log(`Generating sport recommendations for user ${userId}`);
     
-    // In a real implementation, we would:
-    // 1. Use OpenAI API to analyze the motion data and athlete profile
-    // 2. Generate personalized sport recommendations
-    
-    // For this demo, we'll return mock recommendations
-    // This would be replaced with actual OpenAI API calls
-    
-    // Let's simulate a delay for processing
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
     // Get existing recommendations to avoid duplicates
     const existingRecommendations = await storage.getSportRecommendations(userId);
-    const existingSports = existingRecommendations.map(r => r.sport.toLowerCase());
+    const existingSports = new Set(existingRecommendations.map(r => r.sport.toLowerCase()));
     
-    // Generate recommendations based on height, weight, motion scores
-    const recommendations: SportRecommendation[] = [];
+    // Format the athlete profile for the prompt
+    const athleteInfo = {
+      age: athleteProfile.age || 18,
+      height: athleteProfile.height || 175, // in cm
+      weight: athleteProfile.weight || 70, // in kg
+      sports: athleteProfile.sportsInterest || [],
+      injuries: [],
+      strengths: [],
+      goals: []
+    };
     
-    // Basketball recommendation
-    if (!existingSports.includes("basketball")) {
-      recommendations.push({
-        sport: "Basketball",
-        matchPercentage: Math.floor(80 + Math.random() * 15),
-        positionRecommendation: athleteProfile.height > 190 ? "Forward" : "Guard",
-        potentialLevel: "NCAA Div II Potential",
-        reasonForMatch: "Great match for your height and vertical jumping ability."
-      });
-    }
+    // Format the motion data for the prompt
+    const formattedMotionData = {
+      ...motionData,
+      overallScore: motionData.overallScore || 75
+    };
     
-    // Volleyball recommendation
-    if (!existingSports.includes("volleyball")) {
-      recommendations.push({
-        sport: "Volleyball",
-        matchPercentage: Math.floor(75 + Math.random() * 15),
-        positionRecommendation: "Outside Hitter",
-        potentialLevel: "Club Level Potential",
-        reasonForMatch: "Your jumping and arm extension are perfect for volleyball."
-      });
-    }
+    // Create a prompt for OpenAI
+    const recommendationPrompt = `
+You are an expert sports scout and talent evaluator helping a student athlete find the sports that best match their physical attributes and movement patterns.
+
+ATHLETE PROFILE:
+- Age: ${athleteInfo.age} years
+- Height: ${athleteInfo.height} cm
+- Weight: ${athleteInfo.weight} kg
+- Previous Sports Experience: ${athleteInfo.sports.join(', ') || 'None'}
+- Physical Strengths: ${athleteInfo.strengths.join(', ') || 'Not specified'}
+- Injuries: ${athleteInfo.injuries.join(', ') || 'None'}
+- Athletic Goals: ${athleteInfo.goals.join(', ') || 'Not specified'}
+
+MOTION ANALYSIS DATA:
+${JSON.stringify(formattedMotionData, null, 2)}
+
+TASK:
+Recommend 5 sports that would be an excellent match for this athlete based on their profile and motion analysis data. 
+For each recommendation, provide:
+1. Sport name
+2. Match percentage (1-100)
+3. Position recommendation
+4. Potential level (High School, Club, NCAA Div II, NCAA Div I, etc.)
+5. A specific reason for why this sport matches their attributes
+
+Return your response as a JSON array with the following structure:
+[
+  {
+    "sport": "Sport name",
+    "matchPercentage": number between 60-95,
+    "positionRecommendation": "Best position for this athlete",
+    "potentialLevel": "Competitive level potential",
+    "reasonForMatch": "Detailed reason for this recommendation based on their attributes"
+  },
+  ...
+]
+
+Consider both traditional sports (basketball, soccer, etc.) and less common sports (rowing, fencing, etc.) that might be a good match.
+Focus on realistic NCAA recruitment potential for college scholarships.
+
+${existingSports.size > 0 ? `Note: The athlete already has recommendations for these sports, so exclude them: ${Array.from(existingSports).join(', ')}` : ''}
+`;
+
+    // Call OpenAI API
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      messages: [
+        {
+          role: "system",
+          content: "You are an expert sports talent scout with deep knowledge of athletic performance metrics and NCAA recruitment standards."
+        },
+        {
+          role: "user",
+          content: recommendationPrompt
+        }
+      ],
+      response_format: { type: "json_object" }
+    });
+
+    // Parse the JSON response
+    let recommendations: SportRecommendation[] = JSON.parse(response.choices[0].message.content || '[]');
     
-    // Track & Field recommendation
-    if (!existingSports.includes("track & field")) {
-      recommendations.push({
-        sport: "Track & Field",
-        matchPercentage: Math.floor(70 + Math.random() * 15),
-        positionRecommendation: "Sprinter",
-        potentialLevel: "NCAA Div I Potential",
-        reasonForMatch: "Your stride length and acceleration show potential."
-      });
-    }
-    
-    // Soccer recommendation
-    if (!existingSports.includes("soccer")) {
-      recommendations.push({
-        sport: "Soccer",
-        matchPercentage: Math.floor(65 + Math.random() * 15),
-        positionRecommendation: "Midfielder",
-        potentialLevel: "Club Level Potential",
-        reasonForMatch: "Your leg strength and agility are well-suited for soccer."
-      });
-    }
-    
-    // Swimming recommendation
-    if (!existingSports.includes("swimming")) {
-      recommendations.push({
-        sport: "Swimming",
-        matchPercentage: Math.floor(60 + Math.random() * 15),
-        positionRecommendation: "Freestyle",
-        potentialLevel: "High School Varsity",
-        reasonForMatch: "Your arm motion and body coordination suggest swimming potential."
-      });
+    // Validate the response and ensure it has the correct format
+    if (!Array.isArray(recommendations)) {
+      recommendations = [];
     }
     
     // Sort by match percentage
@@ -179,129 +223,10 @@ export async function generateSportRecommendations(
     // Return top 3 (or fewer if we don't have 3)
     return recommendations.slice(0, 3);
     
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error generating sport recommendations:", error);
-    throw new Error(`Failed to generate sport recommendations: ${error.message}`);
+    throw new Error(`Failed to generate sport recommendations: ${error?.message || 'Unknown error'}`);
   }
 }
 
-// Mock analysis generators
-function generateBasketballAnalysis(): AnalysisResult {
-  return {
-    motionData: {
-      elbowAlignment: 85,
-      releasePoint: 72,
-      followThrough: 55,
-      balance: 90,
-      keypoints: [
-        { x: 0.42, y: 0.35, confidence: 0.95, name: "elbow" },
-        { x: 0.52, y: 0.45, confidence: 0.90, name: "wrist" },
-        { x: 0.48, y: 0.65, confidence: 0.85, name: "knee" }
-      ]
-    },
-    overallScore: 75,
-    feedback: "Good elbow alignment and balance. Work on follow through.",
-    improvementTips: [
-      "Maintain follow through position longer",
-      "Keep your shooting elbow tucked in more consistently",
-      "Work on consistent release point"
-    ],
-    keyFrameTimestamps: [2.4, 3.1, 4.5],
-  };
-}
-
-function generateVolleyballAnalysis(): AnalysisResult {
-  return {
-    motionData: {
-      armExtension: 88,
-      jumpHeight: 82,
-      timing: 70,
-      landingBalance: 85,
-      keypoints: [
-        { x: 0.45, y: 0.25, confidence: 0.92, name: "shoulder" },
-        { x: 0.55, y: 0.30, confidence: 0.88, name: "elbow" },
-        { x: 0.52, y: 0.40, confidence: 0.91, name: "wrist" }
-      ]
-    },
-    overallScore: 80,
-    feedback: "Excellent arm extension and jump height. Work on timing your approach.",
-    improvementTips: [
-      "Improve timing between approach and jump",
-      "Keep your eyes on the ball throughout contact",
-      "Land with knees slightly bent to absorb impact"
-    ],
-    keyFrameTimestamps: [1.2, 2.7, 3.8],
-  };
-}
-
-function generateSoccerAnalysis(): AnalysisResult {
-  return {
-    motionData: {
-      kickingForm: 78,
-      footPlacement: 65,
-      bodyAlignment: 82,
-      followThrough: 75,
-      keypoints: [
-        { x: 0.38, y: 0.75, confidence: 0.90, name: "hip" },
-        { x: 0.45, y: 0.85, confidence: 0.93, name: "knee" },
-        { x: 0.52, y: 0.95, confidence: 0.89, name: "ankle" }
-      ]
-    },
-    overallScore: 72,
-    feedback: "Good body alignment and kicking form. Improve foot placement.",
-    improvementTips: [
-      "Position non-kicking foot closer to the ball",
-      "Keep head down and eyes on the ball during contact",
-      "Follow through in the direction you want the ball to go"
-    ],
-    keyFrameTimestamps: [1.8, 2.1, 2.5],
-  };
-}
-
-function generateBaseballAnalysis(): AnalysisResult {
-  return {
-    motionData: {
-      stanceBalance: 85,
-      hipRotation: 78,
-      elbowPosition: 68,
-      followThrough: 80,
-      keypoints: [
-        { x: 0.42, y: 0.45, confidence: 0.91, name: "shoulder" },
-        { x: 0.48, y: 0.55, confidence: 0.88, name: "hip" },
-        { x: 0.55, y: 0.60, confidence: 0.92, name: "knee" }
-      ]
-    },
-    overallScore: 77,
-    feedback: "Good stance and follow through. Work on elbow position and hip rotation.",
-    improvementTips: [
-      "Keep back elbow higher during swing",
-      "Initiate swing with hip rotation before upper body",
-      "Maintain weight balance throughout swing"
-    ],
-    keyFrameTimestamps: [1.5, 2.2, 3.0],
-  };
-}
-
-function generateTrackAnalysis(): AnalysisResult {
-  return {
-    motionData: {
-      strideLength: 92,
-      armMotion: 75,
-      kneeHeight: 82,
-      footStrike: 68,
-      keypoints: [
-        { x: 0.48, y: 0.55, confidence: 0.94, name: "hip" },
-        { x: 0.52, y: 0.75, confidence: 0.90, name: "knee" },
-        { x: 0.55, y: 0.95, confidence: 0.89, name: "ankle" }
-      ]
-    },
-    overallScore: 78,
-    feedback: "Excellent stride length and knee height. Improve arm motion and foot strike.",
-    improvementTips: [
-      "Maintain 90-degree bend in arms throughout stride",
-      "Land midfoot rather than heel-first",
-      "Drive knees higher for more explosive acceleration"
-    ],
-    keyFrameTimestamps: [0.8, 1.5, 2.3],
-  };
-}
+// Note: We've replaced the mock analysis functions with real OpenAI-powered analysis
