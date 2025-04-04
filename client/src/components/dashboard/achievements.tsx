@@ -14,7 +14,9 @@ interface AchievementsProps {
 }
 
 export function Achievements({ achievements }: AchievementsProps) {
-  if (!achievements || achievements.length === 0) {
+  const achievementsArray = Array.isArray(achievements) ? achievements : [];
+  
+  if (achievementsArray.length === 0) {
     return null;
   }
 
@@ -66,7 +68,7 @@ export function Achievements({ achievements }: AchievementsProps) {
     <div className="mt-6">
       <h3 className="font-medium text-neutral mb-3">Recent Achievements</h3>
       <div className="flex flex-wrap gap-3">
-        {achievements.map((achievement) => (
+        {achievementsArray.map((achievement) => (
           <div
             key={achievement.id}
             className={`${getAchievementColorClass(achievement)} px-3 py-1.5 rounded-full text-sm font-medium flex items-center`}
