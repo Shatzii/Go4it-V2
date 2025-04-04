@@ -90,17 +90,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       setLoading(true);
       const response = await apiRequest("POST", "/api/auth/register", userData);
-      const data = await response.json();
+      const data = response.data;
       setUser(data.user);
       toast({
         title: "Registration successful",
         description: `Welcome, ${data.user.name}!`,
       });
       navigate("/");
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Registration error:", error);
       toast({
         title: "Registration failed",
-        description: error.message || "Failed to create account",
+        description: error.message || "Failed to create account. Please try again.",
         variant: "destructive",
       });
       throw error;
