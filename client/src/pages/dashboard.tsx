@@ -230,11 +230,11 @@ export default function Dashboard() {
             
             <p className="text-gray-600 mb-4">Based on your motion analysis, these sports match your athletic profile:</p>
             
-            {sportRecommendations && sportRecommendations.length > 0 ? (
+            {Array.isArray(sportRecommendations) && sportRecommendations.length > 0 ? (
               <div className="space-y-4">
                 {sportRecommendations.slice(0, 3).map((recommendation, index) => (
                   <SportRecommendationCard 
-                    key={recommendation.id} 
+                    key={recommendation.id || index} 
                     recommendation={recommendation} 
                     index={index}
                   />
