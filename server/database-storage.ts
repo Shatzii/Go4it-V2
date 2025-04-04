@@ -498,6 +498,15 @@ export class DatabaseStorage implements IStorage {
       createdAt: new Date(),
     }).returning();
 
+    const [newAdmin] = await db.insert(users).values({
+      username: "superadmin",
+      password: await hashPassword("superadmin123"),
+      email: "superadmin@goforit.com",
+      name: "Super Admin",
+      role: "admin",
+      createdAt: new Date(),
+    }).returning();
+
     // Create athlete profile
     const [athleteProfile] = await db.insert(athleteProfiles).values({
       userId: athleteUser.id,
