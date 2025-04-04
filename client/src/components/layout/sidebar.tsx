@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/contexts/auth-context";
+import { useMessaging } from "@/contexts/messaging-context";
 import MobileNav from "./mobile-nav";
 import {
   Home,
@@ -13,7 +14,8 @@ import {
   LogOut,
   LogIn,
   Plus,
-  ChartBarStacked
+  ChartBarStacked,
+  MessageSquare
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -25,6 +27,7 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
   const { user, logout } = useAuth();
+  const { unreadCount } = useMessaging();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Close mobile menu when location changes
@@ -108,6 +111,22 @@ export default function Layout({ children }: LayoutProps) {
                 <a className={`flex items-center p-2 rounded-lg ${location === "/ncaa-clearinghouse" ? "bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
                   <BookOpen className="h-5 w-5 mr-3" />
                   NCAA Clearinghouse
+                </a>
+              </Link>
+            </li>
+
+            <li>
+              <Link href="/messaging">
+                <a className={`flex items-center p-2 rounded-lg ${location === "/messaging" ? "bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                  <div className="relative mr-3">
+                    <MessageSquare className="h-5 w-5" />
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                        {unreadCount > 99 ? '99+' : unreadCount}
+                      </span>
+                    )}
+                  </div>
+                  Messaging
                 </a>
               </Link>
             </li>
@@ -241,6 +260,21 @@ export default function Layout({ children }: LayoutProps) {
                     <a className="flex items-center p-2 rounded-lg text-white text-lg">
                       <BookOpen className="h-6 w-6 mr-3" />
                       NCAA Clearinghouse
+                    </a>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/messaging">
+                    <a className="flex items-center p-2 rounded-lg text-white text-lg">
+                      <div className="relative mr-3">
+                        <MessageSquare className="h-6 w-6" />
+                        {unreadCount > 0 && (
+                          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                            {unreadCount > 99 ? '99+' : unreadCount}
+                          </span>
+                        )}
+                      </div>
+                      Messaging
                     </a>
                   </Link>
                 </li>

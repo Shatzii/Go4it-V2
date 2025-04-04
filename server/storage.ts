@@ -472,8 +472,8 @@ export class MemStorage implements IStorage {
     const newMessage: Message = { 
       ...message, 
       id, 
-      sentAt: now, 
-      read: false 
+      createdAt: now, 
+      isRead: false 
     };
     this.messages.set(id, newMessage);
     return newMessage;
@@ -483,7 +483,7 @@ export class MemStorage implements IStorage {
     const message = this.messages.get(id);
     if (!message) return undefined;
     
-    const updatedMessage = { ...message, read: true };
+    const updatedMessage = { ...message, isRead: true };
     this.messages.set(id, updatedMessage);
     return updatedMessage;
   }
@@ -1135,6 +1135,47 @@ export class MemStorage implements IStorage {
       followDate: new Date(2023, 4, 15),
     };
     this.fanClubFollowers.set(fanClubFollower3.id, fanClubFollower3);
+    
+    // Create sample messages
+    const message1: Message = {
+      id: this.currentMessageId++,
+      senderId: coachUser1.id,
+      recipientId: athleteUser.id,
+      content: "Hi Alex, I was impressed with your basketball jump shot video. Would love to discuss your college plans.",
+      createdAt: new Date(2023, 4, 20),
+      isRead: true
+    };
+    this.messages.set(message1.id, message1);
+    
+    const message2: Message = {
+      id: this.currentMessageId++,
+      senderId: athleteUser.id,
+      recipientId: coachUser1.id,
+      content: "Thank you Coach Williams! I'm very interested in your basketball program. When would be a good time to talk?",
+      createdAt: new Date(2023, 4, 21),
+      isRead: true
+    };
+    this.messages.set(message2.id, message2);
+    
+    const message3: Message = {
+      id: this.currentMessageId++,
+      senderId: coachUser1.id,
+      recipientId: athleteUser.id,
+      content: "How about this Friday at 3pm? We can discuss scholarship opportunities and what our program can offer you.",
+      createdAt: new Date(2023, 4, 22),
+      isRead: false
+    };
+    this.messages.set(message3.id, message3);
+    
+    const message4: Message = {
+      id: this.currentMessageId++,
+      senderId: coachUser2.id,
+      recipientId: athleteUser.id,
+      content: "Alex, I noticed your vertical leap stats. Have you considered volleyball? We might have a spot for you on our team.",
+      createdAt: new Date(2023, 5, 1),
+      isRead: false
+    };
+    this.messages.set(message4.id, message4);
     
     // Create leaderboard entries
     const shootingLeaderboardEntry: LeaderboardEntry = {

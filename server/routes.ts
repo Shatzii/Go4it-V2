@@ -9,6 +9,7 @@ import { eq } from "drizzle-orm";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { WebSocketServer, WebSocket } from 'ws';
 import { 
   insertUserSchema,
   insertAthleteProfileSchema,
@@ -1207,6 +1208,173 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Create HTTP server
   const httpServer = createServer(app);
+  
+  // Setup WebSocket server
+  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  
+  // Store connected clients with their user info
+  const clients = new Map<WebSocket, { userId: number, username: string, role: string }>();
+  
+  wss.on('connection', (ws: WebSocket, req) => {
+    console.log('WebSocket connection established');
+    
+    // Handle authentication - extract session
+    const cookieHeader = req.headers.cookie;
+    if (!cookieHeader) {
+      ws.close(4001, 'Authentication required');
+      return;
+    }
+    
+    // The client needs to authenticate after connection
+    ws.on('message', async (message: string) => {
+      try {
+        const data = JSON.parse(message);
+        
+        // Handle client authentication
+        if (data.type === 'auth') {
+          const userId = data.userId;
+          const user = await storage.getUser(userId);
+          
+          if (!user) {
+            ws.send(JSON.stringify({ type: 'error', message: 'Authentication failed' }));
+            return;
+          }
+          
+          // Store client info
+          clients.set(ws, { 
+            userId: user.id, 
+            username: user.username, 
+            role: user.role 
+          });
+          
+          console.log(`WebSocket authenticated for user: ${user.username}`);
+          
+          // Send confirmation
+          ws.send(JSON.stringify({ 
+            type: 'auth_success',
+            message: 'Authentication successful' 
+          }));
+          
+          // Load unread messages
+          const messages = await storage.getMessages(userId);
+          const unreadMessages = messages.filter(msg => !msg.isRead && msg.recipientId === userId);
+          
+          if (unreadMessages.length > 0) {
+            ws.send(JSON.stringify({ 
+              type: 'unread_messages', 
+              count: unreadMessages.length,
+              messages: unreadMessages.map(msg => ({
+                id: msg.id,
+                senderId: msg.senderId,
+                recipientId: msg.recipientId,
+                content: msg.content,
+                createdAt: msg.createdAt,
+                isRead: msg.isRead
+              }))
+            }));
+          }
+          
+          return;
+        }
+        
+        // Check if client is authenticated
+        const clientInfo = clients.get(ws);
+        if (!clientInfo) {
+          ws.send(JSON.stringify({ type: 'error', message: 'Not authenticated' }));
+          return;
+        }
+        
+        // Handle messages
+        if (data.type === 'message') {
+          const { recipientId, content } = data;
+          
+          if (!recipientId || !content) {
+            ws.send(JSON.stringify({ type: 'error', message: 'Invalid message data' }));
+            return;
+          }
+          
+          // Store message in database
+          const message = await storage.createMessage({
+            senderId: clientInfo.userId,
+            recipientId,
+            content,
+            isRead: false
+          });
+          
+          // Find recipient if they're connected
+          for (const [clientWs, info] of clients.entries()) {
+            if (info.userId === recipientId && clientWs.readyState === WebSocket.OPEN) {
+              // Send to recipient
+              clientWs.send(JSON.stringify({
+                type: 'new_message',
+                message: {
+                  id: message.id,
+                  senderId: message.senderId,
+                  senderName: clientInfo.username,
+                  recipientId: message.recipientId,
+                  content: message.content,
+                  createdAt: message.createdAt,
+                  isRead: message.isRead
+                }
+              }));
+              break;
+            }
+          }
+          
+          // Confirm to sender
+          ws.send(JSON.stringify({
+            type: 'message_sent',
+            messageId: message.id,
+            recipientId,
+            timestamp: new Date().toISOString()
+          }));
+          
+          return;
+        }
+        
+        // Handle read receipts
+        if (data.type === 'message_read') {
+          const { messageId } = data;
+          
+          if (!messageId) {
+            ws.send(JSON.stringify({ type: 'error', message: 'Invalid message ID' }));
+            return;
+          }
+          
+          // Update message in database
+          const updatedMessage = await storage.markMessageAsRead(messageId);
+          
+          if (!updatedMessage) {
+            ws.send(JSON.stringify({ type: 'error', message: 'Message not found' }));
+            return;
+          }
+          
+          // Notify sender if connected
+          for (const [clientWs, info] of clients.entries()) {
+            if (info.userId === updatedMessage.senderId && clientWs.readyState === WebSocket.OPEN) {
+              clientWs.send(JSON.stringify({
+                type: 'message_read_receipt',
+                messageId: updatedMessage.id,
+                readAt: new Date().toISOString()
+              }));
+              break;
+            }
+          }
+          
+          return;
+        }
+      } catch (error) {
+        console.error('WebSocket message error:', error);
+        ws.send(JSON.stringify({ type: 'error', message: 'Invalid message format' }));
+      }
+    });
+    
+    // Handle disconnections
+    ws.on('close', () => {
+      clients.delete(ws);
+      console.log('WebSocket connection closed');
+    });
+  });
 
   return httpServer;
 }

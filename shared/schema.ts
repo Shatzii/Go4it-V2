@@ -120,8 +120,8 @@ export const messages = pgTable("messages", {
   senderId: integer("sender_id").notNull().references(() => users.id),
   recipientId: integer("recipient_id").notNull().references(() => users.id),
   content: text("content").notNull(),
-  sentAt: timestamp("sent_at").defaultNow(),
-  read: boolean("read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  isRead: boolean("is_read").default(false),
 });
 
 // Skills for athlete's skill tree
@@ -206,7 +206,7 @@ export const insertSportRecommendationSchema = createInsertSchema(sportRecommend
 export const insertNcaaEligibilitySchema = createInsertSchema(ncaaEligibility).omit({ id: true, lastUpdated: true });
 export const insertCoachConnectionSchema = createInsertSchema(coachConnections).omit({ id: true, connectionDate: true, lastContact: true });
 export const insertAchievementSchema = createInsertSchema(achievements).omit({ id: true, earnedDate: true });
-export const insertMessageSchema = createInsertSchema(messages).omit({ id: true, sentAt: true, read: true });
+export const insertMessageSchema = createInsertSchema(messages).omit({ id: true, createdAt: true, isRead: true });
 
 // New schema for story mode components
 export const insertSkillSchema = createInsertSchema(skills).omit({ id: true, updatedAt: true });
