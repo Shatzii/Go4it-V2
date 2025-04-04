@@ -66,23 +66,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const login = async (username: string, password: string) => {
     try {
       setLoading(true);
-      const response = await apiRequest("POST", "/api/auth/login", { username, password });
+      await apiRequest("POST", "/api/auth/login", { username, password });
       
-      if (response?.data?.user) {
-        setUser(response.data.user);
+      // After successful login, fetch the user data
+      const userResponse = await apiRequest("GET", "/api/auth/me");
+      
+      if (userResponse?.data?.user) {
+        setUser(userResponse.data.user);
         toast({
           title: "Login successful", 
-          description: `Welcome back, ${response.data.user.name}!`,
+          description: `Welcome back, ${userResponse.data.user.name}!`,
         });
         navigate("/");
       } else {
-        throw new Error("Invalid credentials");
+        throw new Error("Failed to get user data");
       }
     } catch (error: any) {
       console.error("Login error:", error);
       const errorMessage = error.response?.data?.message || 
                          error.message || 
-                         (error.code === 'ECONNREFUSED' ? 'Network error - Server unreachable' : 'Login failed');
+                         "Invalid username or password";
       toast({
         title: "Login failed",
         description: errorMessage,
