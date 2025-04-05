@@ -30,7 +30,8 @@ import {
   workoutVerificationCheckpoints, type WorkoutVerificationCheckpoint, type InsertWorkoutVerificationCheckpoint,
   weightRoomEquipment, type WeightRoomEquipment, type InsertWeightRoomEquipment,
   playerEquipment, type PlayerEquipment, type InsertPlayerEquipment,
-  videoHighlights, type VideoHighlight, type InsertVideoHighlight
+  videoHighlights, type VideoHighlight, type InsertVideoHighlight,
+  athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile
 } from "@shared/schema";
 import { IStorage } from "./storage";
 import { db } from "./db";
@@ -2359,5 +2360,50 @@ export class DatabaseStorage implements IStorage {
       .where(eq(apiKeys.keyType, keyType));
     
     return result.count > 0;
+  }
+
+  // Athlete Star Profile operations
+  async getAthleteStarProfiles(filters?: { sport?: string; position?: string; starLevel?: number }): Promise<AthleteStarProfile[]> {
+    let query = db.select().from(athleteStarProfiles);
+    
+    if (filters) {
+      if (filters.sport) {
+        query = query.where(eq(athleteStarProfiles.sport, filters.sport));
+      }
+      
+      if (filters.position) {
+        query = query.where(eq(athleteStarProfiles.position, filters.position));
+      }
+      
+      if (filters.starLevel) {
+        query = query.where(eq(athleteStarProfiles.starLevel, filters.starLevel));
+      }
+    }
+    
+    return await query.orderBy(desc(athleteStarProfiles.createdAt));
+  }
+
+  async getAthleteStarProfile(id: number): Promise<AthleteStarProfile | undefined> {
+    const [profile] = await db
+      .select()
+      .from(athleteStarProfiles)
+      .where(eq(athleteStarProfiles.id, id));
+      
+    return profile;
+  }
+
+  async createAthleteStarProfile(profile: InsertAthleteStarProfile): Promise<AthleteStarProfile> {
+    const now = new Date();
+    
+    const [newProfile] = await db
+      .insert(athleteStarProfiles)
+      .values({
+        ...profile,
+        createdAt: now,
+        updatedAt: now
+      })
+      .returning();
+    
+    return newProfile;
   }
 }

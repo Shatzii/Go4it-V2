@@ -51,7 +51,9 @@ import {
   // Video highlights
   videoHighlights, type VideoHighlight, type InsertVideoHighlight,
   // API Keys
-  apiKeys, type ApiKey, type InsertApiKey
+  apiKeys, type ApiKey, type InsertApiKey,
+  // Athlete star profiles
+  athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile
 } from "@shared/schema";
 
 import { AnalysisResult } from "./openai";
@@ -67,6 +69,11 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, data: Partial<User>): Promise<User | undefined>;
+  
+  // Athlete Star Profile operations
+  getAthleteStarProfiles(filters?: { sport?: string, position?: string, starLevel?: number }): Promise<AthleteStarProfile[]>;
+  getAthleteStarProfile(id: number): Promise<AthleteStarProfile | undefined>;
+  createAthleteStarProfile(profile: InsertAthleteStarProfile): Promise<AthleteStarProfile>;
   
   // Athlete Profile operations
   getAthleteProfile(userId: number): Promise<AthleteProfile | undefined>;
@@ -336,6 +343,7 @@ export class MemStorage implements IStorage {
   sessionStore: session.SessionStore;
   private users: Map<number, User>;
   private athleteProfiles: Map<number, AthleteProfile>;
+  private athleteStarProfiles: Map<number, AthleteStarProfile>;
   private coachProfiles: Map<number, CoachProfile>;
   private videos: Map<number, Video>;
   private videoAnalyses: Map<number, VideoAnalysis>;
@@ -440,7 +448,8 @@ export class MemStorage implements IStorage {
   // Weight room equipment IDs
   private currentWeightRoomEquipmentId: number;
   private currentPlayerEquipmentId: number;
-
+  private currentAthleteStarProfileId: number;
+  
   constructor() {
     // Initialize the memorystore session store
     const MemoryStore = createMemoryStore(session);
@@ -450,6 +459,7 @@ export class MemStorage implements IStorage {
     
     this.users = new Map();
     this.athleteProfiles = new Map();
+    this.athleteStarProfiles = new Map();
     this.coachProfiles = new Map();
     this.videos = new Map();
     this.videoAnalyses = new Map();
@@ -544,6 +554,7 @@ export class MemStorage implements IStorage {
     this.currentWorkoutVerificationCheckpointId = 1;
     this.currentWeightRoomEquipmentId = 1;
     this.currentPlayerEquipmentId = 1;
+    this.currentAthleteStarProfileId = 1;
     
     // Initialize with sample data for testing
     this.seedInitialData();
@@ -2306,6 +2317,47 @@ export class MemStorage implements IStorage {
     };
     this.playerEquipment.set(id, updatedEquipment);
     return updatedEquipment;
+  }
+
+  // Athlete Star Profile operations
+  async getAthleteStarProfiles(filters?: { sport?: string; position?: string; starLevel?: number }): Promise<AthleteStarProfile[]> {
+    const profiles = Array.from(this.athleteStarProfiles.values());
+    
+    if (!filters) {
+      return profiles;
+    }
+    
+    return profiles.filter(profile => {
+      if (filters.sport && profile.sport !== filters.sport) {
+        return false;
+      }
+      if (filters.position && profile.position !== filters.position) {
+        return false;
+      }
+      if (filters.starLevel && profile.starLevel !== filters.starLevel) {
+        return false;
+      }
+      return true;
+    });
+  }
+
+  async getAthleteStarProfile(id: number): Promise<AthleteStarProfile | undefined> {
+    return this.athleteStarProfiles.get(id);
+  }
+
+  async createAthleteStarProfile(profile: InsertAthleteStarProfile): Promise<AthleteStarProfile> {
+    const id = this.currentAthleteStarProfileId++;
+    const now = new Date();
+    
+    const newProfile: AthleteStarProfile = {
+      ...profile,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    
+    this.athleteStarProfiles.set(id, newProfile);
+    return newProfile;
   }
 
   // Video Highlight operations
