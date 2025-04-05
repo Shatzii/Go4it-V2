@@ -21,7 +21,14 @@ import {
   workoutExercises, type WorkoutExercise, type InsertWorkoutExercise,
   filmComparisons, type FilmComparison, type InsertFilmComparison,
   comparisonVideos, type ComparisonVideo, type InsertComparisonVideo,
-  comparisonAnalyses, type ComparisonAnalysis, type InsertComparisonAnalysis
+  comparisonAnalyses, type ComparisonAnalysis, type InsertComparisonAnalysis,
+  playerProgress, type PlayerProgress, type InsertPlayerProgress,
+  xpTransactions, type XpTransaction, type InsertXpTransaction,
+  playerBadges, type PlayerBadge, type InsertPlayerBadge,
+  workoutVerifications, type WorkoutVerification, type InsertWorkoutVerification,
+  workoutVerificationCheckpoints, type WorkoutVerificationCheckpoint, type InsertWorkoutVerificationCheckpoint,
+  weightRoomEquipment, type WeightRoomEquipment, type InsertWeightRoomEquipment,
+  playerEquipment, type PlayerEquipment, type InsertPlayerEquipment
 } from "@shared/schema";
 import { IStorage } from "./storage";
 import { db } from "./db";
@@ -1288,6 +1295,164 @@ export class DatabaseStorage implements IStorage {
     return analysis;
   }
 
+  // MyPlayer XP System methods
+  async getPlayerProgress(userId: number): Promise<PlayerProgress | undefined> {
+    const [progress] = await db.select()
+      .from(playerProgress)
+      .where(eq(playerProgress.userId, userId));
+    return progress;
+  }
+  
+  async createPlayerProgress(data: InsertPlayerProgress): Promise<PlayerProgress> {
+    const [progress] = await db.insert(playerProgress)
+      .values({
+        ...data,
+        lastActive: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning();
+    return progress;
+  }
+  
+  async updatePlayerProgress(userId: number, data: Partial<PlayerProgress>): Promise<PlayerProgress | undefined> {
+    const [updatedProgress] = await db.update(playerProgress)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(playerProgress.userId, userId))
+      .returning();
+    return updatedProgress;
+  }
+  
+  async getXpTransactions(userId: number): Promise<XpTransaction[]> {
+    return await db.select()
+      .from(xpTransactions)
+      .where(eq(xpTransactions.userId, userId))
+      .orderBy(desc(xpTransactions.createdAt));
+  }
+  
+  async addXpToPlayer(userId: number, amount: number, type: string, description: string, sourceId?: string): Promise<{ 
+    progress: PlayerProgress, 
+    transaction: XpTransaction,
+    leveledUp: boolean 
+  }> {
+    // Begin a transaction
+    return await db.transaction(async (tx) => {
+      // 1. Create the XP transaction record
+      const [transaction] = await tx.insert(xpTransactions)
+        .values({
+          userId,
+          amount,
+          transactionType: type,
+          description,
+          createdAt: new Date(),
+        })
+        .returning();
+      
+      // 2. Get the player's current progress
+      const [progress] = await tx.select()
+        .from(playerProgress)
+        .where(eq(playerProgress.userId, userId));
+      
+      let leveledUp = false;
+      let newProgress: PlayerProgress;
+      
+      if (!progress) {
+        // Create new progress record if it doesn't exist
+        const [createdProgress] = await tx.insert(playerProgress)
+          .values({
+            userId,
+            currentLevel: 1,
+            totalXp: amount,
+            levelXp: amount,
+            xpToNextLevel: 100,
+            streakDays: 0,
+            lastActive: new Date(),
+            updatedAt: new Date(),
+          })
+          .returning();
+          
+        newProgress = createdProgress;
+      } else {
+        // Update existing progress record
+        const newTotalXp = progress.totalXp + amount;
+        const newLevelXp = progress.levelXp + amount;
+        
+        // Calculate if this XP causes a level up
+        let newCurrentLevel = progress.currentLevel;
+        let newLevelXpValue = newLevelXp;
+        let newXpToNextLevel = progress.xpToNextLevel;
+        
+        // Check for level up (simple progression formula)
+        if (newLevelXp >= progress.xpToNextLevel) {
+          newCurrentLevel += 1;
+          newLevelXpValue = newLevelXp - progress.xpToNextLevel;
+          // Scale up the XP needed for next level (by 10% each level)
+          newXpToNextLevel = Math.floor(progress.xpToNextLevel * 1.1);
+          leveledUp = true;
+        }
+        
+        const [updatedProgress] = await tx.update(playerProgress)
+          .set({
+            totalXp: newTotalXp,
+            levelXp: newLevelXpValue,
+            currentLevel: newCurrentLevel,
+            xpToNextLevel: newXpToNextLevel,
+            lastActive: new Date(),
+            updatedAt: new Date(),
+          })
+          .where(eq(playerProgress.userId, userId))
+          .returning();
+          
+        newProgress = updatedProgress;
+      }
+      
+      return {
+        progress: newProgress,
+        transaction,
+        leveledUp
+      };
+    });
+  }
+  
+  async getPlayerBadges(userId: number): Promise<PlayerBadge[]> {
+    return await db.select()
+      .from(playerBadges)
+      .where(eq(playerBadges.userId, userId))
+      .orderBy(asc(playerBadges.category), asc(playerBadges.badgeName));
+  }
+  
+  async getPlayerBadgesByCategory(userId: number, category: string): Promise<PlayerBadge[]> {
+    return await db.select()
+      .from(playerBadges)
+      .where(
+        and(
+          eq(playerBadges.userId, userId),
+          eq(playerBadges.category, category)
+        )
+      )
+      .orderBy(asc(playerBadges.badgeName));
+  }
+  
+  async createPlayerBadge(badge: InsertPlayerBadge): Promise<PlayerBadge> {
+    const [newBadge] = await db.insert(playerBadges)
+      .values({
+        ...badge,
+        earnedAt: new Date(),
+      })
+      .returning();
+    return newBadge;
+  }
+  
+  async updatePlayerBadge(id: number, data: Partial<PlayerBadge>): Promise<PlayerBadge | undefined> {
+    const [updatedBadge] = await db.update(playerBadges)
+      .set(data)
+      .where(eq(playerBadges.id, id))
+      .returning();
+    return updatedBadge;
+  }
+  
   // Method to seed initial data
   async seedInitialData() {
     // Check if we already have users
