@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth-context";
+import { useMeasurement } from "@/contexts/measurement-context";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -7,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { insertAthleteProfileSchema } from "@shared/schema";
+import { formatHeight, formatWeight } from "@/lib/unit-conversion";
 
 import {
   Form,
@@ -25,6 +27,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MultiSelect } from "@/components/ui/multi-select";
+import { MeasurementToggle } from "@/components/ui/measurement-toggle";
 
 // Extend the athlete profile schema with more validation rules
 const athleteProfileFormSchema = insertAthleteProfileSchema.extend({
@@ -64,6 +67,7 @@ const sportsOptions = [
 export default function Profile() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { system } = useMeasurement();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("personal");
   
@@ -186,7 +190,13 @@ export default function Profile() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="font-heading text-3xl font-bold mb-6">My Profile</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="font-heading text-3xl font-bold">My Profile</h1>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-500">Measurement Units:</span>
+          <MeasurementToggle />
+        </div>
+      </div>
       
       <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
         <div className="p-6 md:p-8">
@@ -321,18 +331,25 @@ export default function Profile() {
                             name="height"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Height (cm)</FormLabel>
+                                <FormLabel>Height {system === 'metric' ? '(cm)' : '(ft/in)'}</FormLabel>
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="Height in cm" 
+                                    placeholder={system === 'metric' ? 'Height in cm' : 'Height in inches'} 
                                     {...field}
                                     onChange={(e) => field.onChange(Number(e.target.value))}
                                   />
                                 </FormControl>
                                 <FormDescription>
-                                  Your height in centimeters
+                                  {system === 'metric' 
+                                    ? 'Your height in centimeters' 
+                                    : 'Your height in inches (or use the formatted value below)'}
                                 </FormDescription>
+                                {field.value > 0 && (
+                                  <div className="text-sm text-gray-600 mt-1">
+                                    {formatHeight(field.value, system)}
+                                  </div>
+                                )}
                                 <FormMessage />
                               </FormItem>
                             )}
@@ -343,18 +360,25 @@ export default function Profile() {
                             name="weight"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Weight (kg)</FormLabel>
+                                <FormLabel>Weight {system === 'metric' ? '(kg)' : '(lbs)'}</FormLabel>
                                 <FormControl>
                                   <Input 
                                     type="number" 
-                                    placeholder="Weight in kg" 
+                                    placeholder={system === 'metric' ? 'Weight in kg' : 'Weight in lbs'} 
                                     {...field}
                                     onChange={(e) => field.onChange(Number(e.target.value))}
                                   />
                                 </FormControl>
                                 <FormDescription>
-                                  Your weight in kilograms
+                                  {system === 'metric' 
+                                    ? 'Your weight in kilograms' 
+                                    : 'Your weight in pounds'}
                                 </FormDescription>
+                                {field.value > 0 && (
+                                  <div className="text-sm text-gray-600 mt-1">
+                                    {formatWeight(field.value, system)}
+                                  </div>
+                                )}
                                 <FormMessage />
                               </FormItem>
                             )}

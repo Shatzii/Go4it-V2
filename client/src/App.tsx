@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider, useAuth } from "./contexts/auth-context";
 import { MessagingProvider } from "./contexts/messaging-context";
 import { LayoutProvider } from "./contexts/layout-context";
+import { MeasurementProvider } from "./contexts/measurement-context";
 import { Loader2 } from "lucide-react";
 
 import Layout from "@/components/layout/sidebar";
@@ -249,8 +250,10 @@ function App() {
       <AuthProvider>
         <MessagingProvider>
           <LayoutProvider>
-            <AppContent />
-            <Toaster />
+            <MeasurementProvider>
+              <AppContent />
+              <Toaster />
+            </MeasurementProvider>
           </LayoutProvider>
         </MessagingProvider>
       </AuthProvider>
