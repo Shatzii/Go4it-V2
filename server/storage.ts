@@ -269,6 +269,7 @@ export interface IStorage {
   // API Key operations
   getApiKey(keyType: string): Promise<ApiKey | undefined>;
   getAllApiKeys(): Promise<ApiKey[]>;
+  getAllActiveApiKeys(): Promise<ApiKey[]>;
   getApiKeyStatus(): Promise<Record<string, boolean>>;
   saveApiKey(key: InsertApiKey): Promise<ApiKey>;
   updateApiKey(keyType: string, data: Partial<ApiKey>): Promise<ApiKey | undefined>;
@@ -2412,6 +2413,12 @@ export class MemStorage implements IStorage {
 
   async getAllApiKeys(): Promise<ApiKey[]> {
     return Array.from(this.apiKeys.values());
+  }
+  
+  async getAllActiveApiKeys(): Promise<ApiKey[]> {
+    return Array.from(this.apiKeys.values()).filter(
+      (key) => key.isActive === true
+    );
   }
 
   async getApiKeyStatus(): Promise<Record<string, boolean>> {

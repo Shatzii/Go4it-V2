@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import { createSchema } from "./create-schema";
 import cors from "cors";
+import { storage } from './storage';
 
 const app = express();
 app.use(express.json());
@@ -62,6 +63,39 @@ app.use((req, res, next) => {
     // Create database schema if needed
     await createSchema();
     log("Database schema created successfully", "db");
+    
+    // Load API keys from database
+    try {
+      const apiKeys = await storage.getAllActiveApiKeys();
+      if (apiKeys && apiKeys.length > 0) {
+        log(`Loading ${apiKeys.length} API keys from database`);
+        
+        // Set environment variables from stored API keys
+        apiKeys.forEach((key: any) => {
+          const keyName = key.keyType.toUpperCase() + '_API_KEY';
+          if (key.keyType === 'openai') {
+            process.env.OPENAI_API_KEY = key.keyValue;
+            log('Set OPENAI_API_KEY from database');
+          } else if (key.keyType === 'stripe') {
+            process.env.STRIPE_SECRET_KEY = key.keyValue;
+            log('Set STRIPE_SECRET_KEY from database');
+          } else if (key.keyType === 'sendgrid') {
+            process.env.SENDGRID_API_KEY = key.keyValue;
+            log('Set SENDGRID_API_KEY from database');
+          } else if (key.keyType === 'twilio') {
+            process.env.TWILIO_AUTH_TOKEN = key.keyValue;
+            log('Set TWILIO_AUTH_TOKEN from database');
+          } else {
+            process.env[keyName] = key.keyValue;
+            log(`Set ${keyName} from database`);
+          }
+        });
+      } else {
+        log('No API keys found in database', 'db');
+      }
+    } catch (err) {
+      log(`Error loading API keys from database: ${err}`, 'db');
+    }
   } catch (error) {
     log(`Error creating database schema: ${error}`, "db");
   }
