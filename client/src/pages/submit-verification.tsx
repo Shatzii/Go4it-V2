@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
@@ -31,6 +31,7 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { 
+  AlertCircle,
   ChevronLeft, 
   Plus, 
   Trash2, 
@@ -39,11 +40,15 @@ import {
   CheckCircle, 
   Clock, 
   Save,
-  X
+  X,
+  Loader2
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const formSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters long"),
@@ -87,7 +92,82 @@ export default function SubmitVerification() {
     },
   });
 
-  function onSubmit(data: FormValues) {
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Mutation for uploading videos
+  const uploadMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('video', file);
+      
+      try {
+        const response = await apiRequest('POST', '/api/videos/upload', formData);
+        
+        // Track upload progress using a reference if needed in the future
+        setUploadProgress(100);
+        
+        return response;
+      } catch (error) {
+        setUploadProgress(0);
+        console.error("Video upload error:", error);
+        throw error;
+      }
+    },
+    onError: (error) => {
+      setError(error instanceof Error ? error.message : "Failed to upload video");
+      setUploadProgress(0);
+    }
+  });
+  
+  // Mutation for creating workout verification
+  const createVerificationMutation = useMutation({
+    mutationFn: async (payload: {
+      title: string;
+      workoutType: string;
+      duration: number;
+      location: string;
+      description: string;
+      notes?: string;
+      mediaUrls: string[];
+      checkpoints?: any[];
+    }) => {
+      try {
+        return apiRequest('POST', '/api/workout-verifications', payload);
+      } catch (error) {
+        console.error("Create verification error:", error);
+        throw error;
+      }
+    },
+    onError: (error) => {
+      setError(error instanceof Error ? error.message : "Failed to create workout verification");
+    }
+  });
+  
+  // Mutation for analyzing workout video
+  const analyzeVideoMutation = useMutation({
+    mutationFn: async ({ verificationId, videoPath, checkpointId }: { 
+      verificationId: number,
+      videoPath: string,
+      checkpointId?: number
+    }) => {
+      try {
+        return apiRequest('POST', `/api/workout-verifications/${verificationId}/analyze`, 
+          { videoPath, checkpointId }
+        );
+      } catch (error) {
+        console.error("Video analysis error:", error);
+        throw error;
+      }
+    },
+    onError: (error) => {
+      setError(error instanceof Error ? error.message : "Failed to analyze workout video");
+    }
+  });
+
+  async function onSubmit(data: FormValues) {
     if (videos.length === 0) {
       toast({
         title: "Error",
@@ -97,14 +177,74 @@ export default function SubmitVerification() {
       return;
     }
 
-    // In a real implementation, this would submit the data and files to the API
-    toast({
-      title: "Workout submitted!",
-      description: "Your workout has been submitted for verification",
-    });
-    
-    // Navigate to the verification listing page
-    navigate("/workout-verification");
+    try {
+      setSubmitting(true);
+      setError(null);
+      
+      // Upload all videos first
+      const uploadedVideos = [];
+      
+      for (const video of videos) {
+        const result = await uploadMutation.mutateAsync(video);
+        if (result && result.data && result.data.filePath) {
+          uploadedVideos.push(result.data.filePath);
+        }
+      }
+      
+      if (uploadedVideos.length === 0) {
+        throw new Error("Failed to upload videos");
+      }
+      
+      // Create checkpoints data
+      const checkpointsData = checkpoints.map(checkpoint => ({
+        exerciseName: checkpoint.title,
+        isCompleted: false,
+        completedAmount: 0,
+        targetAmount: 10, // Default value, should be configurable
+        feedback: checkpoint.description,
+        mediaProof: "",
+        checkpointOrder: 0,
+      }));
+      
+      // Create the workout verification
+      const verificationResponse = await createVerificationMutation.mutateAsync({
+        title: data.title,
+        workoutType: data.workoutType,
+        duration: parseInt(data.duration),
+        location: data.location,
+        description: data.description,
+        notes: data.notes,
+        mediaUrls: uploadedVideos,
+        checkpoints: checkpointsData
+      });
+      
+      // Analyze the first video
+      if (verificationResponse?.data?.id && uploadedVideos.length > 0) {
+        await analyzeVideoMutation.mutateAsync({
+          verificationId: verificationResponse.data.id,
+          videoPath: uploadedVideos[0]
+        });
+      }
+      
+      toast({
+        title: "Workout submitted!",
+        description: "Your workout has been submitted for verification and AI analysis",
+      });
+      
+      // Navigate to the verification listing page
+      navigate("/workout-verification");
+    } catch (err) {
+      console.error("Error submitting workout:", err);
+      setError(typeof err === 'string' ? err : err instanceof Error ? err.message : "An unknown error occurred");
+      toast({
+        title: "Error",
+        description: "Failed to submit workout verification",
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+      setUploadProgress(0);
+    }
   }
 
   function handleVideoUpload(event: React.ChangeEvent<HTMLInputElement>) {
@@ -524,8 +664,40 @@ export default function SubmitVerification() {
                   </ul>
                 </CardContent>
                 <CardFooter className="border-t pt-4">
-                  <Button className="w-full" type="submit">
-                    <Save className="mr-2 h-4 w-4" /> Submit for Verification
+                  {error && (
+                    <Alert variant="destructive" className="mb-4">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertTitle>Error</AlertTitle>
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  {uploadProgress > 0 && uploadProgress < 100 && (
+                    <div className="mb-4">
+                      <p className="text-sm mb-1">Uploading video... {uploadProgress}%</p>
+                      <div className="w-full bg-gray-200 rounded-full h-2.5">
+                        <div 
+                          className="bg-primary h-2.5 rounded-full" 
+                          style={{ width: `${uploadProgress}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
+
+                  <Button 
+                    className="w-full" 
+                    type="submit"
+                    disabled={submitting}
+                  >
+                    {submitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="mr-2 h-4 w-4" /> Submit for Verification
+                      </>
+                    )}
                   </Button>
                 </CardFooter>
               </Card>

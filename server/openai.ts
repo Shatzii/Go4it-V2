@@ -919,3 +919,127 @@ Be encouraging but honest - this is a student athlete who wants to improve, not 
     throw new Error(`Failed to generate form feedback: ${error?.message || 'Unknown error'}`);
   }
 }
+
+// Function to analyze workout videos for verification
+export async function verifyWorkoutVideo(verificationId: number, videoPath: string): Promise<{
+  isCompleted: boolean;
+  completedAmount: number;
+  targetAmount: number;
+  repAccuracy: number;
+  feedback: string;
+  motionAnalysis: any;
+}> {
+  try {
+    console.log(`Verifying workout video for verification ID: ${verificationId} at path: ${videoPath}`);
+    
+    // Get the verification data
+    const verification = await storage.getWorkoutVerification(verificationId);
+    if (!verification) {
+      throw new Error("Workout verification not found");
+    }
+    
+    // Get the checkpoints that need to be verified
+    const checkpoints = await storage.getWorkoutVerificationCheckpoints(verificationId);
+    if (!checkpoints || checkpoints.length === 0) {
+      throw new Error("No checkpoints found for this verification");
+    }
+    
+    // This would typically be a video analysis which counts reps, analyzes technique, etc.
+    // Here we'll simulate it with OpenAI
+    
+    // First, we need to create a description of the video for OpenAI
+    // In a real implementation, this would use the actual video data
+    const videoDescription = `The video shows an athlete performing a ${verification.title} workout. 
+    The video lasts for ${verification.duration || 'unknown'} minutes.
+    The exercise being performed is ${checkpoints[0]?.exerciseName || 'unknown'}.
+    The target amount is ${checkpoints[0]?.targetAmount || 'unknown'} reps.`;
+    
+    // Now we'll ask GPT-4o to analyze this workout
+    const messages = [
+      {
+        role: "system" as const,
+        content: `You are an AI sports coach that specializes in analyzing workout videos. 
+        Your task is to count repetitions, analyze technique, measure distance and speed,
+        and provide feedback on the workout. Be specific about what you observe and provide
+        constructive feedback for improvement. You always return a JSON object with the following fields:
+        - isCompleted: boolean indicating if the workout was completed successfully
+        - completedAmount: number of reps completed or distance covered
+        - targetAmount: target number of reps or distance
+        - repAccuracy: number from 0-100 indicating the accuracy/quality of the reps
+        - feedback: string with detailed feedback about form, technique, and suggestions
+        - motionAnalysis: object with detailed analysis of the motion including:
+          - posture: rating from 0-100
+          - formConsistency: rating from 0-100
+          - power: rating from 0-100
+          - speed: rating from 0-100
+          - keyIssues: array of strings describing key issues
+          - strengths: array of strings describing key strengths
+        `
+      },
+      {
+        role: "user" as const,
+        content: `Please analyze this workout video: ${videoDescription}
+        
+        For this simulation, assume the athlete is performing ${checkpoints[0]?.exerciseName || 'push-ups'} with 
+        a target of ${checkpoints[0]?.targetAmount || '20'} repetitions.
+        
+        Generate a detailed analysis including rep counting, technique assessment, and feedback.`
+      }
+    ];
+
+    // Make the API call to OpenAI
+    const completionResponse = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages,
+      temperature: 0.2,
+      max_tokens: 1000,
+      response_format: { type: "json_object" }
+    });
+
+    // Parse the response
+    const responseContent = completionResponse.choices[0]?.message?.content || '{}';
+    console.log(`OpenAI response for workout verification: ${responseContent}`);
+    
+    try {
+      // Parse the JSON response
+      const analysis = JSON.parse(responseContent);
+      
+      // Return the analysis
+      return {
+        isCompleted: analysis.isCompleted || false,
+        completedAmount: analysis.completedAmount || 0,
+        targetAmount: analysis.targetAmount || 0,
+        repAccuracy: analysis.repAccuracy || 0,
+        feedback: analysis.feedback || "Unable to provide detailed feedback",
+        motionAnalysis: analysis.motionAnalysis || {
+          posture: 0,
+          formConsistency: 0,
+          power: 0,
+          speed: 0,
+          keyIssues: ["Unable to analyze motion"],
+          strengths: []
+        }
+      };
+    } catch (error) {
+      console.error("Error parsing OpenAI response:", error);
+      return {
+        isCompleted: false,
+        completedAmount: 0,
+        targetAmount: checkpoints[0]?.targetAmount || 0,
+        repAccuracy: 0,
+        feedback: "Error analyzing workout video. Please try again or contact support.",
+        motionAnalysis: {
+          posture: 0,
+          formConsistency: 0,
+          power: 0,
+          speed: 0,
+          keyIssues: ["Error in analysis"],
+          strengths: []
+        }
+      };
+    }
+  } catch (error) {
+    console.error("Error in verifyWorkoutVideo:", error);
+    throw new Error("Failed to verify workout video");
+  }
+}

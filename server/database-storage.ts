@@ -1565,6 +1565,126 @@ export class DatabaseStorage implements IStorage {
     }
   }
   
+  // Workout Verification operations
+  async getWorkoutVerifications(userId: number): Promise<WorkoutVerification[]> {
+    try {
+      return await db.select().from(workoutVerifications).where(eq(workoutVerifications.userId, userId));
+    } catch (error) {
+      console.error(`Error in getWorkoutVerifications for user ${userId}:`, error);
+      return [];
+    }
+  }
+  
+  async getPendingWorkoutVerifications(): Promise<WorkoutVerification[]> {
+    try {
+      return await db.select().from(workoutVerifications)
+        .where(eq(workoutVerifications.verificationStatus, "pending"))
+        .orderBy(desc(workoutVerifications.submissionDate));
+    } catch (error) {
+      console.error("Error in getPendingWorkoutVerifications:", error);
+      return [];
+    }
+  }
+  
+  async getWorkoutVerification(id: number): Promise<WorkoutVerification | undefined> {
+    try {
+      const [result] = await db.select().from(workoutVerifications).where(eq(workoutVerifications.id, id)).limit(1);
+      return result;
+    } catch (error) {
+      console.error(`Error in getWorkoutVerification for ID ${id}:`, error);
+      return undefined;
+    }
+  }
+  
+  async createWorkoutVerification(verification: InsertWorkoutVerification): Promise<WorkoutVerification> {
+    try {
+      const [result] = await db.insert(workoutVerifications).values(verification).returning();
+      return result;
+    } catch (error) {
+      console.error("Error in createWorkoutVerification:", error);
+      throw new Error("Failed to create workout verification");
+    }
+  }
+  
+  async updateWorkoutVerification(id: number, data: Partial<WorkoutVerification>): Promise<WorkoutVerification | undefined> {
+    try {
+      const [result] = await db.update(workoutVerifications)
+        .set(data)
+        .where(eq(workoutVerifications.id, id))
+        .returning();
+      return result;
+    } catch (error) {
+      console.error(`Error in updateWorkoutVerification for ID ${id}:`, error);
+      return undefined;
+    }
+  }
+  
+  async getWorkoutVerificationCheckpoints(verificationId: number): Promise<WorkoutVerificationCheckpoint[]> {
+    try {
+      return await db.select()
+        .from(workoutVerificationCheckpoints)
+        .where(eq(workoutVerificationCheckpoints.verificationId, verificationId))
+        .orderBy(workoutVerificationCheckpoints.checkpointOrder);
+    } catch (error) {
+      console.error(`Error in getWorkoutVerificationCheckpoints for verification ${verificationId}:`, error);
+      return [];
+    }
+  }
+  
+  async createWorkoutVerificationCheckpoint(checkpoint: InsertWorkoutVerificationCheckpoint): Promise<WorkoutVerificationCheckpoint> {
+    try {
+      const [result] = await db.insert(workoutVerificationCheckpoints).values(checkpoint).returning();
+      return result;
+    } catch (error) {
+      console.error("Error in createWorkoutVerificationCheckpoint:", error);
+      throw new Error("Failed to create workout verification checkpoint");
+    }
+  }
+  
+  async updateWorkoutVerificationCheckpoint(id: number, data: Partial<WorkoutVerificationCheckpoint>): Promise<WorkoutVerificationCheckpoint | undefined> {
+    try {
+      const [result] = await db.update(workoutVerificationCheckpoints)
+        .set(data)
+        .where(eq(workoutVerificationCheckpoints.id, id))
+        .returning();
+      return result;
+    } catch (error) {
+      console.error(`Error in updateWorkoutVerificationCheckpoint for ID ${id}:`, error);
+      return undefined;
+    }
+  }
+  
+  async verifyWorkout(id: number, verifierId: number, status: string, xpEarned: number, feedback?: string): Promise<WorkoutVerification | undefined> {
+    try {
+      const [result] = await db.update(workoutVerifications)
+        .set({
+          verificationStatus: status,
+          verifiedBy: verifierId,
+          verificationDate: new Date(),
+          notes: feedback,
+          xpEarned
+        })
+        .where(eq(workoutVerifications.id, id))
+        .returning();
+        
+      // If approved, add XP to the player
+      if (status === 'approved' && result) {
+        await this.addXpToPlayer(
+          result.userId, 
+          xpEarned, 
+          'workout', 
+          `Workout verification: ${result.title}`,
+          result.id.toString()
+        );
+      }
+      
+      return result;
+    } catch (error) {
+      console.error(`Error in verifyWorkout for ID ${id}:`, error);
+      return undefined;
+    }
+  }
+  
   // Method to seed initial data
   async seedInitialData() {
     // Check if we already have users

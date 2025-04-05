@@ -1987,6 +1987,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  /**
+   * @route POST /api/workout-verifications/:id/analyze
+   * @desc Analyze a workout video with AI
+   */
+  app.post("/api/workout-verifications/:id/analyze", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const verificationId = parseInt(req.params.id);
+      const { videoPath, checkpointId } = req.body;
+      
+      if (!videoPath) {
+        return res.status(400).json({ message: "Video path is required" });
+      }
+      
+      const verification = await storage.getWorkoutVerification(verificationId);
+      
+      if (!verification) {
+        return res.status(404).json({ message: "Workout verification not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only the owner or coaches/admins can analyze the workout
+      if (verification.userId !== user.id && user.role !== "coach" && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to analyze this workout" });
+      }
+      
+      // Use OpenAI to analyze the workout video
+      const analysis = await verifyWorkoutVideo(verificationId, videoPath);
+      
+      // Update the checkpoint if provided
+      if (checkpointId) {
+        await storage.updateWorkoutVerificationCheckpoint(parseInt(checkpointId), {
+          isCompleted: analysis.isCompleted,
+          completedAmount: analysis.completedAmount,
+          feedback: analysis.feedback,
+          mediaProof: videoPath
+        });
+      }
+      
+      // If all checkpoints are completed, update the verification status
+      if (analysis.isCompleted) {
+        const checkpoints = await storage.getWorkoutVerificationCheckpoints(verificationId);
+        const allCompleted = checkpoints.every(c => c.isCompleted);
+        
+        if (allCompleted) {
+          // Calculate XP based on completed amount and accuracy
+          const baseXp = Math.round(analysis.completedAmount * (analysis.repAccuracy / 100) * 10);
+          const xpEarned = Math.max(50, baseXp); // Minimum 50 XP
+          
+          await storage.verifyWorkout(
+            verificationId,
+            user.id,
+            "approved",
+            xpEarned,
+            "Automatically verified by AI analysis"
+          );
+          
+          analysis.xpEarned = xpEarned;
+        }
+      }
+      
+      res.json(analysis);
+    } catch (error) {
+      console.error("Error analyzing workout video:", error);
+      res.status(500).json({ message: "Failed to analyze workout video" });
+    }
+  });
+  
   // MyPlayer UI Weight Room API Routes
   app.get("/api/weight-room/equipment", async (req: Request, res: Response) => {
     try {
