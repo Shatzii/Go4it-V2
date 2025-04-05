@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { fileUpload, imageUpload, getUploadedImages, deleteImage } from "./file-upload";
+import { fileUpload, imageUpload, videoUpload, getUploadedImages, deleteImage } from "./file-upload";
 import fs from "fs";
 import { analyzeVideo, generateSportRecommendations } from "./openai";
 import activeNetworkService from "./active-network";
@@ -314,7 +314,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Upload video endpoint
-  app.post("/api/videos/upload", isAuthenticated, upload.single("video"), async (req: Request, res: Response) => {
+  app.post("/api/videos/upload", isAuthenticated, videoUpload.single("video"), async (req: Request, res: Response) => {
     try {
       if (!req.file) {
         return res.status(400).json({ message: "No video file uploaded" });
