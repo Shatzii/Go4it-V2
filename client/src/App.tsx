@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider, useAuth } from "./contexts/auth-context";
 import { MessagingProvider } from "./contexts/messaging-context";
+import { LayoutProvider } from "./contexts/layout-context";
 import { Loader2 } from "lucide-react";
 
 import Layout from "@/components/layout/sidebar";
@@ -156,8 +157,10 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <MessagingProvider>
-          <AppContent />
-          <Toaster />
+          <LayoutProvider>
+            <AppContent />
+            <Toaster />
+          </LayoutProvider>
         </MessagingProvider>
       </AuthProvider>
     </QueryClientProvider>

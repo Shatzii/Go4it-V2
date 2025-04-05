@@ -16,7 +16,9 @@ import {
   fanClubFollowers, type FanClubFollower, type InsertFanClubFollower,
   leaderboardEntries, type LeaderboardEntry, type InsertLeaderboardEntry,
   blogPosts, type BlogPost, type InsertBlogPost,
-  featuredAthletes, type FeaturedAthlete, type InsertFeaturedAthlete
+  featuredAthletes, type FeaturedAthlete, type InsertFeaturedAthlete,
+  workoutPlaylists, type WorkoutPlaylist, type InsertWorkoutPlaylist,
+  workoutExercises, type WorkoutExercise, type InsertWorkoutExercise
 } from "@shared/schema";
 import { IStorage } from "./storage";
 import { db } from "./db";
@@ -908,6 +910,258 @@ export class DatabaseStorage implements IStorage {
       .where(eq(featuredAthletes.id, id));
     return result.count > 0;
   }
+  
+  // Workout Playlist operations
+  async getWorkoutPlaylists(userId: number): Promise<WorkoutPlaylist[]> {
+    return await db
+      .select()
+      .from(workoutPlaylists)
+      .where(eq(workoutPlaylists.userId, userId))
+      .orderBy(desc(workoutPlaylists.lastUsed));
+  }
+
+  async getWorkoutPlaylist(id: number): Promise<WorkoutPlaylist | undefined> {
+    const [playlist] = await db
+      .select()
+      .from(workoutPlaylists)
+      .where(eq(workoutPlaylists.id, id));
+    return playlist;
+  }
+
+  async createWorkoutPlaylist(playlist: InsertWorkoutPlaylist): Promise<WorkoutPlaylist> {
+    const now = new Date();
+    const [newPlaylist] = await db
+      .insert(workoutPlaylists)
+      .values({
+        ...playlist,
+        createdAt: now,
+        lastUsed: now,
+        timesUsed: 0
+      })
+      .returning();
+    return newPlaylist;
+  }
+
+  async updateWorkoutPlaylist(id: number, data: Partial<WorkoutPlaylist>): Promise<WorkoutPlaylist | undefined> {
+    const [playlist] = await db
+      .update(workoutPlaylists)
+      .set(data)
+      .where(eq(workoutPlaylists.id, id))
+      .returning();
+    return playlist;
+  }
+
+  async deleteWorkoutPlaylist(id: number): Promise<boolean> {
+    // First delete all exercises associated with this playlist
+    await db
+      .delete(workoutExercises)
+      .where(eq(workoutExercises.playlistId, id));
+    
+    // Then delete the playlist itself
+    const result = await db
+      .delete(workoutPlaylists)
+      .where(eq(workoutPlaylists.id, id));
+    
+    return result.count > 0;
+  }
+
+  async incrementPlaylistUsage(id: number): Promise<WorkoutPlaylist | undefined> {
+    const [playlist] = await db
+      .select()
+      .from(workoutPlaylists)
+      .where(eq(workoutPlaylists.id, id));
+    
+    if (!playlist) return undefined;
+    
+    const now = new Date();
+    const [updatedPlaylist] = await db
+      .update(workoutPlaylists)
+      .set({
+        lastUsed: now,
+        timesUsed: (playlist.timesUsed || 0) + 1
+      })
+      .where(eq(workoutPlaylists.id, id))
+      .returning();
+    
+    return updatedPlaylist;
+  }
+
+  async getWorkoutExercises(playlistId: number): Promise<WorkoutExercise[]> {
+    return await db
+      .select()
+      .from(workoutExercises)
+      .where(eq(workoutExercises.playlistId, playlistId))
+      .orderBy(asc(workoutExercises.order));
+  }
+
+  async createWorkoutExercise(exercise: InsertWorkoutExercise): Promise<WorkoutExercise> {
+    const [newExercise] = await db
+      .insert(workoutExercises)
+      .values(exercise)
+      .returning();
+    return newExercise;
+  }
+
+  async updateWorkoutExercise(id: number, data: Partial<WorkoutExercise>): Promise<WorkoutExercise | undefined> {
+    const [exercise] = await db
+      .update(workoutExercises)
+      .set(data)
+      .where(eq(workoutExercises.id, id))
+      .returning();
+    return exercise;
+  }
+
+  async deleteWorkoutExercise(id: number): Promise<boolean> {
+    const result = await db
+      .delete(workoutExercises)
+      .where(eq(workoutExercises.id, id));
+    return result.count > 0;
+  }
+
+  async getPublicWorkoutPlaylists(workoutType?: string, intensityLevel?: string): Promise<WorkoutPlaylist[]> {
+    let query = db
+      .select()
+      .from(workoutPlaylists)
+      .where(eq(workoutPlaylists.isPublic, true));
+    
+    if (workoutType) {
+      query = query.where(eq(workoutPlaylists.workoutType, workoutType));
+    }
+    
+    if (intensityLevel) {
+      query = query.where(eq(workoutPlaylists.intensityLevel, intensityLevel));
+    }
+    
+    return await query.orderBy(desc(workoutPlaylists.timesUsed));
+  }
+
+  async getAthleteProfileByUserId(userId: number): Promise<AthleteProfile | undefined> {
+    return this.getAthleteProfile(userId);
+  }
+
+  async generateAIWorkoutPlaylist(userId: number, preferences: {
+    workoutType: string;
+    intensityLevel: string;
+    duration: number;
+    targets: string[];
+    userProfile?: AthleteProfile;
+  }): Promise<WorkoutPlaylist> {
+    // Create a basic playlist structure
+    const now = new Date();
+    
+    // Insert the playlist first
+    const [playlist] = await db
+      .insert(workoutPlaylists)
+      .values({
+        userId,
+        title: `AI Generated ${preferences.workoutType} Workout (${preferences.intensityLevel})`,
+        description: `A ${preferences.intensityLevel} ${preferences.workoutType} workout targeting ${preferences.targets.join(', ')}`,
+        workoutType: preferences.workoutType,
+        intensityLevel: preferences.intensityLevel,
+        duration: preferences.duration,
+        targets: preferences.targets,
+        isPublic: false,
+        createdAt: now,
+        lastUsed: now,
+        timesUsed: 0
+      })
+      .returning();
+    
+    // Now generate exercises based on workout type and user profile
+    const exercises = [];
+    
+    // This is a simplified version - in a real implementation, this would make API calls to OpenAI
+    // to generate personalized exercises
+    if (preferences.workoutType === 'Strength') {
+      if (preferences.targets.includes('Upper Body')) {
+        exercises.push({
+          playlistId: playlist.id,
+          name: 'Push-ups',
+          description: 'Standard push-ups with proper form',
+          duration: 60,
+          sets: 3,
+          reps: 15,
+          restPeriod: 30,
+          order: 1
+        });
+        exercises.push({
+          playlistId: playlist.id,
+          name: 'Pull-ups',
+          description: 'Pull-ups with proper form',
+          duration: 60,
+          sets: 3,
+          reps: 10,
+          restPeriod: 45,
+          order: 2
+        });
+      }
+      if (preferences.targets.includes('Lower Body')) {
+        exercises.push({
+          playlistId: playlist.id,
+          name: 'Squats',
+          description: 'Bodyweight squats with proper form',
+          duration: 60,
+          sets: 3,
+          reps: 20,
+          restPeriod: 30,
+          order: 3
+        });
+        exercises.push({
+          playlistId: playlist.id,
+          name: 'Lunges',
+          description: 'Alternating lunges with proper form',
+          duration: 60,
+          sets: 3,
+          reps: 12,
+          restPeriod: 30,
+          order: 4
+        });
+      }
+    } else if (preferences.workoutType === 'Cardio') {
+      exercises.push({
+        playlistId: playlist.id,
+        name: 'Jumping Jacks',
+        description: 'Standard jumping jacks at a moderate pace',
+        duration: 60,
+        sets: 3,
+        order: 1
+      });
+      exercises.push({
+        playlistId: playlist.id,
+        name: 'Mountain Climbers',
+        description: 'Mountain climbers at a quick pace',
+        duration: 45,
+        sets: 3,
+        order: 2
+      });
+    } else if (preferences.workoutType === 'Flexibility') {
+      exercises.push({
+        playlistId: playlist.id,
+        name: 'Standing Hamstring Stretch',
+        description: 'Gentle hamstring stretch while standing',
+        duration: 30,
+        sets: 2,
+        order: 1
+      });
+      exercises.push({
+        playlistId: playlist.id,
+        name: 'Hip Flexor Stretch',
+        description: 'Gentle hip flexor stretch in lunge position',
+        duration: 30,
+        sets: 2,
+        order: 2
+      });
+    }
+    
+    // Add the exercises to the database
+    for (const exercise of exercises) {
+      await db
+        .insert(workoutExercises)
+        .values(exercise);
+    }
+    
+    return playlist;
+  }
 
   // Method to seed initial data
   async seedInitialData() {
@@ -1154,5 +1408,147 @@ export class DatabaseStorage implements IStorage {
       iconPath: "/icons/trophy.svg",
       earnedDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) // 90 days ago
     }).returning();
+
+    // Add sample workout playlists
+    const now = new Date();
+    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
+
+    // Create a strength workout playlist for the athlete
+    const [strengthPlaylist] = await db.insert(workoutPlaylists).values({
+      userId: athleteUser.id,
+      title: "Upper Body Strength",
+      description: "A comprehensive upper body workout focusing on arms, chest, and shoulders",
+      workoutType: "strength",
+      intensityLevel: "medium",
+      duration: 45,
+      targets: ["arms", "chest", "shoulders"],
+      createdAt: twoWeeksAgo,
+      lastUsed: oneWeekAgo,
+      timesUsed: 5,
+      isCustom: true,
+      isPublic: false
+    }).returning();
+
+    // Add exercises to the strength playlist
+    await db.insert(workoutExercises).values({
+      playlistId: strengthPlaylist.id,
+      name: "Push-ups",
+      description: "Standard push-ups with proper form",
+      sets: 3,
+      reps: 15,
+      restPeriod: 60,
+      order: 1,
+      notes: "Keep core tight and maintain straight back"
+    });
+
+    await db.insert(workoutExercises).values({
+      playlistId: strengthPlaylist.id,
+      name: "Dumbbell Curls",
+      description: "Alternating dumbbell curls",
+      sets: 3,
+      reps: 12,
+      restPeriod: 45,
+      order: 2,
+      notes: "Use controlled movements"
+    });
+
+    await db.insert(workoutExercises).values({
+      playlistId: strengthPlaylist.id,
+      name: "Shoulder Press",
+      description: "Dumbbell shoulder presses",
+      sets: 3,
+      reps: 10,
+      restPeriod: 60,
+      order: 3,
+      equipmentNeeded: ["dumbbells"]
+    });
+
+    // Create a cardio workout playlist that's public
+    const [cardioPlaylist] = await db.insert(workoutPlaylists).values({
+      userId: coachUser1.id,
+      title: "Basketball Conditioning",
+      description: "High-intensity cardio workout for basketball players",
+      workoutType: "cardio",
+      intensityLevel: "high",
+      duration: 30,
+      targets: ["stamina", "agility", "speed"],
+      createdAt: twoWeeksAgo,
+      lastUsed: now,
+      timesUsed: 12,
+      isCustom: true,
+      isPublic: true
+    }).returning();
+
+    // Add exercises to the cardio playlist
+    await db.insert(workoutExercises).values({
+      playlistId: cardioPlaylist.id,
+      name: "Suicides",
+      description: "Court length sprints with increasing distances",
+      duration: 300, // 5 minutes
+      order: 1,
+      equipmentNeeded: ["basketball court"]
+    });
+
+    await db.insert(workoutExercises).values({
+      playlistId: cardioPlaylist.id,
+      name: "Jump Rope",
+      description: "High-intensity jump rope intervals",
+      duration: 180, // 3 minutes
+      order: 2,
+      equipmentNeeded: ["jump rope"]
+    });
+
+    await db.insert(workoutExercises).values({
+      playlistId: cardioPlaylist.id,
+      name: "Defensive Slides",
+      description: "Side-to-side defensive movement drills",
+      duration: 240, // 4 minutes
+      order: 3
+    });
+
+    // Create a flexibility/recovery workout playlist
+    const [flexibilityPlaylist] = await db.insert(workoutPlaylists).values({
+      userId: athleteUser.id,
+      title: "Post-Game Recovery",
+      description: "Gentle stretching routine for recovery after games",
+      workoutType: "flexibility",
+      intensityLevel: "low",
+      duration: 20,
+      targets: ["recovery", "flexibility"],
+      createdAt: oneWeekAgo,
+      lastUsed: now,
+      timesUsed: 3,
+      isCustom: true,
+      isPublic: false
+    }).returning();
+
+    // Add exercises to the flexibility playlist
+    await db.insert(workoutExercises).values({
+      playlistId: flexibilityPlaylist.id,
+      name: "Hamstring Stretch",
+      description: "Seated hamstring stretch",
+      duration: 60, // 1 minute
+      sets: 2,
+      order: 1
+    });
+
+    await db.insert(workoutExercises).values({
+      playlistId: flexibilityPlaylist.id,
+      name: "Quad Stretch",
+      description: "Standing quad stretch with support",
+      duration: 60, // 1 minute
+      sets: 2,
+      order: 2
+    });
+
+    await db.insert(workoutExercises).values({
+      playlistId: flexibilityPlaylist.id,
+      name: "Shoulder Stretch",
+      description: "Cross-body shoulder stretch",
+      duration: 60, // 1 minute
+      sets: 2,
+      order: 3
+    });
   }
 }

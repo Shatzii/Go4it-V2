@@ -18,7 +18,10 @@ import {
   leaderboardEntries, type LeaderboardEntry, type InsertLeaderboardEntry,
   // New imports for blog and featured athletes
   blogPosts, type BlogPost, type InsertBlogPost,
-  featuredAthletes, type FeaturedAthlete, type InsertFeaturedAthlete
+  featuredAthletes, type FeaturedAthlete, type InsertFeaturedAthlete,
+  // New imports for workout playlists
+  workoutPlaylists, type WorkoutPlaylist, type InsertWorkoutPlaylist,
+  workoutExercises, type WorkoutExercise, type InsertWorkoutExercise
 } from "@shared/schema";
 
 export interface IStorage {
@@ -142,6 +145,26 @@ export interface IStorage {
   createFeaturedAthlete(athlete: InsertFeaturedAthlete): Promise<FeaturedAthlete>;
   updateFeaturedAthlete(id: number, data: Partial<FeaturedAthlete>): Promise<FeaturedAthlete | undefined>;
   deactivateFeaturedAthlete(id: number): Promise<boolean>;
+  
+  // Workout Playlist operations
+  getWorkoutPlaylists(userId: number): Promise<WorkoutPlaylist[]>;
+  getWorkoutPlaylist(id: number): Promise<WorkoutPlaylist | undefined>;
+  createWorkoutPlaylist(playlist: InsertWorkoutPlaylist): Promise<WorkoutPlaylist>;
+  updateWorkoutPlaylist(id: number, data: Partial<WorkoutPlaylist>): Promise<WorkoutPlaylist | undefined>;
+  deleteWorkoutPlaylist(id: number): Promise<boolean>;
+  incrementPlaylistUsage(id: number): Promise<WorkoutPlaylist | undefined>;
+  getWorkoutExercises(playlistId: number): Promise<WorkoutExercise[]>;
+  createWorkoutExercise(exercise: InsertWorkoutExercise): Promise<WorkoutExercise>;
+  updateWorkoutExercise(id: number, data: Partial<WorkoutExercise>): Promise<WorkoutExercise | undefined>;
+  deleteWorkoutExercise(id: number): Promise<boolean>;
+  getPublicWorkoutPlaylists(workoutType?: string, intensityLevel?: string): Promise<WorkoutPlaylist[]>;
+  generateAIWorkoutPlaylist(userId: number, preferences: {
+    workoutType: string;
+    intensityLevel: string;
+    duration: number;
+    targets: string[];
+    userProfile?: AthleteProfile;
+  }): Promise<WorkoutPlaylist>;
 }
 
 export class MemStorage implements IStorage {
@@ -168,6 +191,10 @@ export class MemStorage implements IStorage {
   private blogPosts: Map<number, BlogPost>;
   private featuredAthletes: Map<number, FeaturedAthlete>;
   
+  // Workout playlist components
+  private workoutPlaylists: Map<number, WorkoutPlaylist>;
+  private workoutExercises: Map<number, WorkoutExercise>;
+  
   private currentUserId: number;
   private currentAthleteProfileId: number;
   private currentCoachProfileId: number;
@@ -186,6 +213,8 @@ export class MemStorage implements IStorage {
   private currentLeaderboardEntryId: number;
   private currentBlogPostId: number;
   private currentFeaturedAthleteId: number;
+  private currentWorkoutPlaylistId: number;
+  private currentWorkoutExerciseId: number;
 
   constructor() {
     this.users = new Map();
@@ -211,6 +240,10 @@ export class MemStorage implements IStorage {
     this.blogPosts = new Map();
     this.featuredAthletes = new Map();
     
+    // Initialize workout playlist maps
+    this.workoutPlaylists = new Map();
+    this.workoutExercises = new Map();
+    
     this.currentUserId = 1;
     this.currentAthleteProfileId = 1;
     this.currentCoachProfileId = 1;
@@ -229,6 +262,8 @@ export class MemStorage implements IStorage {
     this.currentLeaderboardEntryId = 1;
     this.currentBlogPostId = 1;
     this.currentFeaturedAthleteId = 1;
+    this.currentWorkoutPlaylistId = 1;
+    this.currentWorkoutExerciseId = 1;
     
     // Initialize with sample data for testing
     this.seedInitialData();
@@ -872,6 +907,241 @@ export class MemStorage implements IStorage {
     this.featuredAthletes.set(id, athlete);
     return true;
   }
+  
+  // Workout Playlist operations
+  async getWorkoutPlaylists(userId: number): Promise<WorkoutPlaylist[]> {
+    return Array.from(this.workoutPlaylists.values())
+      .filter(playlist => playlist.userId === userId)
+      .sort((a, b) => new Date(b.lastUsed || Date.now()).getTime() - new Date(a.lastUsed || Date.now()).getTime());
+  }
+
+  async getWorkoutPlaylist(id: number): Promise<WorkoutPlaylist | undefined> {
+    return this.workoutPlaylists.get(id);
+  }
+
+  async createWorkoutPlaylist(playlist: InsertWorkoutPlaylist): Promise<WorkoutPlaylist> {
+    const id = this.currentWorkoutPlaylistId++;
+    const now = new Date();
+    const newPlaylist: WorkoutPlaylist = {
+      ...playlist,
+      id,
+      createdAt: now,
+      lastUsed: now,
+      timesUsed: 0
+    };
+    this.workoutPlaylists.set(id, newPlaylist);
+    return newPlaylist;
+  }
+
+  async updateWorkoutPlaylist(id: number, data: Partial<WorkoutPlaylist>): Promise<WorkoutPlaylist | undefined> {
+    const playlist = this.workoutPlaylists.get(id);
+    if (!playlist) return undefined;
+    
+    const updatedPlaylist = { ...playlist, ...data };
+    this.workoutPlaylists.set(id, updatedPlaylist);
+    return updatedPlaylist;
+  }
+
+  async deleteWorkoutPlaylist(id: number): Promise<boolean> {
+    // First delete all exercises associated with this playlist
+    Array.from(this.workoutExercises.values())
+      .filter(exercise => exercise.playlistId === id)
+      .forEach(exercise => this.workoutExercises.delete(exercise.id));
+    
+    // Then delete the playlist itself
+    return this.workoutPlaylists.delete(id);
+  }
+
+  async incrementPlaylistUsage(id: number): Promise<WorkoutPlaylist | undefined> {
+    const playlist = this.workoutPlaylists.get(id);
+    if (!playlist) return undefined;
+    
+    const now = new Date();
+    const updatedPlaylist = { 
+      ...playlist,
+      lastUsed: now,
+      timesUsed: (playlist.timesUsed || 0) + 1
+    };
+    this.workoutPlaylists.set(id, updatedPlaylist);
+    return updatedPlaylist;
+  }
+
+  async getWorkoutExercises(playlistId: number): Promise<WorkoutExercise[]> {
+    return Array.from(this.workoutExercises.values())
+      .filter(exercise => exercise.playlistId === playlistId)
+      .sort((a, b) => a.orderIndex - b.orderIndex);
+  }
+
+  async createWorkoutExercise(exercise: InsertWorkoutExercise): Promise<WorkoutExercise> {
+    const id = this.currentWorkoutExerciseId++;
+    const newExercise: WorkoutExercise = {
+      ...exercise,
+      id
+    };
+    this.workoutExercises.set(id, newExercise);
+    return newExercise;
+  }
+
+  async updateWorkoutExercise(id: number, data: Partial<WorkoutExercise>): Promise<WorkoutExercise | undefined> {
+    const exercise = this.workoutExercises.get(id);
+    if (!exercise) return undefined;
+    
+    const updatedExercise = { ...exercise, ...data };
+    this.workoutExercises.set(id, updatedExercise);
+    return updatedExercise;
+  }
+
+  async deleteWorkoutExercise(id: number): Promise<boolean> {
+    return this.workoutExercises.delete(id);
+  }
+
+  async getPublicWorkoutPlaylists(workoutType?: string, intensityLevel?: string): Promise<WorkoutPlaylist[]> {
+    let playlists = Array.from(this.workoutPlaylists.values())
+      .filter(playlist => playlist.isPublic);
+    
+    if (workoutType) {
+      playlists = playlists.filter(playlist => playlist.workoutType === workoutType);
+    }
+    
+    if (intensityLevel) {
+      playlists = playlists.filter(playlist => playlist.intensityLevel === intensityLevel);
+    }
+    
+    return playlists.sort((a, b) => 
+      (b.timesUsed || 0) - (a.timesUsed || 0) // Sort by popularity
+    );
+  }
+
+  async generateAIWorkoutPlaylist(userId: number, preferences: {
+    workoutType: string;
+    intensityLevel: string;
+    duration: number;
+    targets: string[];
+    userProfile?: AthleteProfile;
+  }): Promise<WorkoutPlaylist> {
+    // This would typically use the OpenAI API to generate a workout playlist
+    // For now, we'll create a placeholder workout playlist
+    const now = new Date();
+    const id = this.currentWorkoutPlaylistId++;
+    
+    // Create the playlist
+    const playlist: WorkoutPlaylist = {
+      id,
+      userId,
+      name: `AI Generated ${preferences.workoutType} Workout (${preferences.intensityLevel})`,
+      description: `A ${preferences.intensityLevel} ${preferences.workoutType} workout targeting ${preferences.targets.join(', ')}`,
+      workoutType: preferences.workoutType,
+      intensityLevel: preferences.intensityLevel,
+      durationMinutes: preferences.duration,
+      targetAreas: preferences.targets,
+      isPublic: false,
+      createdAt: now,
+      lastUsed: now,
+      timesUsed: 0
+    };
+    
+    this.workoutPlaylists.set(id, playlist);
+    
+    // Generate some sample exercises based on the workout type and target areas
+    const exercises: InsertWorkoutExercise[] = [];
+    
+    // This would be much more sophisticated with actual AI generation
+    if (preferences.workoutType === 'Strength') {
+      if (preferences.targets.includes('Upper Body')) {
+        exercises.push({
+          playlistId: id,
+          name: 'Push-ups',
+          description: 'Standard push-ups with proper form',
+          durationSeconds: 60,
+          repetitions: 15,
+          sets: 3,
+          restSeconds: 30,
+          orderIndex: 1
+        });
+        exercises.push({
+          playlistId: id,
+          name: 'Pull-ups',
+          description: 'Pull-ups with proper form',
+          durationSeconds: 60,
+          repetitions: 10,
+          sets: 3,
+          restSeconds: 45,
+          orderIndex: 2
+        });
+      }
+      if (preferences.targets.includes('Lower Body')) {
+        exercises.push({
+          playlistId: id,
+          name: 'Squats',
+          description: 'Bodyweight squats with proper form',
+          durationSeconds: 60,
+          repetitions: 20,
+          sets: 3,
+          restSeconds: 30,
+          orderIndex: 3
+        });
+        exercises.push({
+          playlistId: id,
+          name: 'Lunges',
+          description: 'Alternating lunges with proper form',
+          durationSeconds: 60,
+          repetitions: 12,
+          sets: 3,
+          restSeconds: 30,
+          orderIndex: 4
+        });
+      }
+    } else if (preferences.workoutType === 'Cardio') {
+      exercises.push({
+        playlistId: id,
+        name: 'Jumping Jacks',
+        description: 'Standard jumping jacks at a moderate pace',
+        durationSeconds: 60,
+        repetitions: null,
+        sets: 3,
+        restSeconds: 15,
+        orderIndex: 1
+      });
+      exercises.push({
+        playlistId: id,
+        name: 'Mountain Climbers',
+        description: 'Mountain climbers at a quick pace',
+        durationSeconds: 45,
+        repetitions: null,
+        sets: 3,
+        restSeconds: 15,
+        orderIndex: 2
+      });
+    } else if (preferences.workoutType === 'Flexibility') {
+      exercises.push({
+        playlistId: id,
+        name: 'Standing Hamstring Stretch',
+        description: 'Gentle hamstring stretch while standing',
+        durationSeconds: 30,
+        repetitions: null,
+        sets: 3,
+        restSeconds: 10,
+        orderIndex: 1
+      });
+      exercises.push({
+        playlistId: id,
+        name: 'Hip Flexor Stretch',
+        description: 'Gentle hip flexor stretch in lunge position',
+        durationSeconds: 30,
+        repetitions: null,
+        sets: 3,
+        restSeconds: 10,
+        orderIndex: 2
+      });
+    }
+    
+    // Add the exercises to the database
+    for (const exercise of exercises) {
+      await this.createWorkoutExercise(exercise);
+    }
+    
+    return playlist;
+  }
 
   // Method to seed some initial data for development
   private seedInitialData() {
@@ -1411,6 +1681,205 @@ export class MemStorage implements IStorage {
       active: true
     };
     this.featuredAthletes.set(featuredAthlete1.id, featuredAthlete1);
+    
+    // Create sample workout playlists
+    const now = new Date();
+    
+    // Strength training workout playlist
+    const strengthPlaylist: WorkoutPlaylist = {
+      id: this.currentWorkoutPlaylistId++,
+      userId: athleteUser.id,
+      name: "Basketball Strength Builder",
+      description: "A strength training program designed for basketball players to improve performance",
+      workoutType: "Strength",
+      intensityLevel: "Intermediate",
+      durationMinutes: 45,
+      targetAreas: ["Upper Body", "Lower Body", "Core"],
+      isPublic: true,
+      createdAt: now,
+      lastUsed: now,
+      timesUsed: 12
+    };
+    this.workoutPlaylists.set(strengthPlaylist.id, strengthPlaylist);
+    
+    // Add exercises to the strength playlist
+    const strengthExercises: WorkoutExercise[] = [
+      {
+        id: this.currentWorkoutExerciseId++,
+        playlistId: strengthPlaylist.id,
+        name: "Push-ups",
+        description: "Standard push-ups focusing on chest and triceps",
+        durationSeconds: 60,
+        repetitions: 15,
+        sets: 3,
+        restSeconds: 30,
+        orderIndex: 1
+      },
+      {
+        id: this.currentWorkoutExerciseId++,
+        playlistId: strengthPlaylist.id,
+        name: "Bodyweight Squats",
+        description: "Deep squats to strengthen quads and glutes",
+        durationSeconds: 60,
+        repetitions: 20,
+        sets: 3,
+        restSeconds: 45,
+        orderIndex: 2
+      },
+      {
+        id: this.currentWorkoutExerciseId++,
+        playlistId: strengthPlaylist.id,
+        name: "Plank",
+        description: "Core stabilization exercise",
+        durationSeconds: 45,
+        repetitions: null,
+        sets: 3,
+        restSeconds: 30,
+        orderIndex: 3
+      },
+      {
+        id: this.currentWorkoutExerciseId++,
+        playlistId: strengthPlaylist.id,
+        name: "Lunges",
+        description: "Forward lunges for leg strength",
+        durationSeconds: 60,
+        repetitions: 12,
+        sets: 3,
+        restSeconds: 30,
+        orderIndex: 4
+      }
+    ];
+    
+    for (const exercise of strengthExercises) {
+      this.workoutExercises.set(exercise.id, exercise);
+    }
+    
+    // Cardio workout playlist
+    const cardioPlaylist: WorkoutPlaylist = {
+      id: this.currentWorkoutPlaylistId++,
+      userId: athleteUser.id,
+      name: "Basketball Conditioning",
+      description: "High-intensity cardio workout to improve basketball endurance",
+      workoutType: "Cardio",
+      intensityLevel: "Advanced",
+      durationMinutes: 30,
+      targetAreas: ["Cardiovascular", "Agility"],
+      isPublic: true,
+      createdAt: now,
+      lastUsed: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
+      timesUsed: 8
+    };
+    this.workoutPlaylists.set(cardioPlaylist.id, cardioPlaylist);
+    
+    // Add exercises to the cardio playlist
+    const cardioExercises: WorkoutExercise[] = [
+      {
+        id: this.currentWorkoutExerciseId++,
+        playlistId: cardioPlaylist.id,
+        name: "Line Sprints",
+        description: "Court line-to-line sprints",
+        durationSeconds: 30,
+        repetitions: 10,
+        sets: 2,
+        restSeconds: 15,
+        orderIndex: 1
+      },
+      {
+        id: this.currentWorkoutExerciseId++,
+        playlistId: cardioPlaylist.id,
+        name: "Jumping Jacks",
+        description: "Classic cardio exercise",
+        durationSeconds: 60,
+        repetitions: null,
+        sets: 3,
+        restSeconds: 20,
+        orderIndex: 2
+      },
+      {
+        id: this.currentWorkoutExerciseId++,
+        playlistId: cardioPlaylist.id,
+        name: "Burpees",
+        description: "Full body cardio exercise",
+        durationSeconds: 45,
+        repetitions: 12,
+        sets: 3,
+        restSeconds: 30,
+        orderIndex: 3
+      }
+    ];
+    
+    for (const exercise of cardioExercises) {
+      this.workoutExercises.set(exercise.id, exercise);
+    }
+    
+    // Flexibility workout playlist (private)
+    const flexPlaylist: WorkoutPlaylist = {
+      id: this.currentWorkoutPlaylistId++,
+      userId: athleteUser.id,
+      name: "My Recovery Routine",
+      description: "Personal flexibility and recovery routine",
+      workoutType: "Flexibility",
+      intensityLevel: "Beginner",
+      durationMinutes: 20,
+      targetAreas: ["Recovery", "Flexibility"],
+      isPublic: false,
+      createdAt: now,
+      lastUsed: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+      timesUsed: 5
+    };
+    this.workoutPlaylists.set(flexPlaylist.id, flexPlaylist);
+    
+    // Add exercises to the flexibility playlist
+    const flexExercises: WorkoutExercise[] = [
+      {
+        id: this.currentWorkoutExerciseId++,
+        playlistId: flexPlaylist.id,
+        name: "Hamstring Stretch",
+        description: "Seated hamstring stretch",
+        durationSeconds: 30,
+        repetitions: null,
+        sets: 2,
+        restSeconds: 10,
+        orderIndex: 1
+      },
+      {
+        id: this.currentWorkoutExerciseId++,
+        playlistId: flexPlaylist.id,
+        name: "Shoulder Stretch",
+        description: "Cross-body shoulder stretch",
+        durationSeconds: 30,
+        repetitions: null,
+        sets: 2,
+        restSeconds: 10,
+        orderIndex: 2
+      },
+      {
+        id: this.currentWorkoutExerciseId++,
+        playlistId: flexPlaylist.id,
+        name: "Quad Stretch",
+        description: "Standing quad stretch",
+        durationSeconds: 30,
+        repetitions: null,
+        sets: 2,
+        restSeconds: 10,
+        orderIndex: 3
+      },
+      {
+        id: this.currentWorkoutExerciseId++,
+        playlistId: flexPlaylist.id,
+        name: "Calf Stretch",
+        description: "Wall calf stretch",
+        durationSeconds: 30,
+        repetitions: null,
+        sets: 2,
+        restSeconds: 10,
+        orderIndex: 4
+      }
+    ];
+    
+    for (const exercise of flexExercises) {
+      this.workoutExercises.set(exercise.id, exercise);
+    }
   }
 }
 

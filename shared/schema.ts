@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, json, real, date } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, json, real, date, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -226,6 +226,40 @@ export const leaderboardEntries = pgTable("leaderboard_entries", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Workout playlists
+export const workoutPlaylists = pgTable("workout_playlists", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  title: text("title").notNull(),
+  description: text("description"),
+  workoutType: text("workout_type").notNull(), // strength, cardio, flexibility, sport-specific, recovery
+  intensityLevel: text("intensity_level").notNull(), // low, medium, high
+  duration: integer("duration").notNull(), // in minutes
+  targets: text("targets").array(), // body parts or skills targeted
+  createdAt: timestamp("created_at").defaultNow(),
+  lastUsed: timestamp("last_used"),
+  timesUsed: integer("times_used").default(0),
+  isCustom: boolean("is_custom").default(true),
+  isPublic: boolean("is_public").default(false),
+});
+
+// Workout exercises in playlists
+export const workoutExercises = pgTable("workout_exercises", {
+  id: serial("id").primaryKey(),
+  playlistId: integer("playlist_id").notNull().references(() => workoutPlaylists.id),
+  name: text("name").notNull(),
+  description: text("description"),
+  sets: integer("sets"),
+  reps: integer("reps"),
+  duration: integer("duration"), // in seconds, for timed exercises
+  restPeriod: integer("rest_period"), // in seconds
+  order: integer("order").notNull(),
+  videoUrl: text("video_url"),
+  imageUrl: text("image_url"),
+  notes: text("notes"),
+  equipmentNeeded: text("equipment_needed").array(),
+});
+
 // Create insert schemas for all tables
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
 export const insertAthleteProfileSchema = createInsertSchema(athleteProfiles).omit({ id: true });
@@ -245,6 +279,8 @@ export const insertAthleteChallengeSchema = createInsertSchema(athleteChallenges
 export const insertRecoveryLogSchema = createInsertSchema(recoveryLogs).omit({ id: true, logDate: true });
 export const insertFanClubFollowerSchema = createInsertSchema(fanClubFollowers).omit({ id: true, followDate: true });
 export const insertLeaderboardEntrySchema = createInsertSchema(leaderboardEntries).omit({ id: true, updatedAt: true });
+export const insertWorkoutPlaylistSchema = createInsertSchema(workoutPlaylists).omit({ id: true, createdAt: true, lastUsed: true, timesUsed: true });
+export const insertWorkoutExerciseSchema = createInsertSchema(workoutExercises).omit({ id: true });
 export const insertBlogPostSchema = createInsertSchema(blogPosts, {
   publishDate: z.date().optional(),
 }).omit({ id: true });
@@ -308,3 +344,10 @@ export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
 
 export type FeaturedAthlete = typeof featuredAthletes.$inferSelect;
 export type InsertFeaturedAthlete = z.infer<typeof insertFeaturedAthleteSchema>;
+
+// Workout playlist types
+export type WorkoutPlaylist = typeof workoutPlaylists.$inferSelect;
+export type InsertWorkoutPlaylist = z.infer<typeof insertWorkoutPlaylistSchema>;
+
+export type WorkoutExercise = typeof workoutExercises.$inferSelect;
+export type InsertWorkoutExercise = z.infer<typeof insertWorkoutExerciseSchema>;
