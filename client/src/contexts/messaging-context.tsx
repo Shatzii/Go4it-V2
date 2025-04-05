@@ -36,9 +36,10 @@ export const MessagingProvider: React.FC<{ children: ReactNode }> = ({ children 
   useEffect(() => {
     if (!user) return;
 
-    // Create WebSocket connection
+    // Create WebSocket connection using the same host and protocol
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    const wsUrl = `${protocol}//${window.location.host}`;
+    console.log('Connecting to WebSocket at:', wsUrl);
     const newSocket = new WebSocket(wsUrl);
 
     // Socket event handlers

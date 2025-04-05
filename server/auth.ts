@@ -31,12 +31,14 @@ export async function comparePasswords(supplied: string, stored: string) {
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || 'go4it_sports_secret_key',
-    resave: false,
-    saveUninitialized: false,
+    resave: true, // Changed to true to ensure session is saved
+    saveUninitialized: true, // Changed to true to create session for all requests
     store: storage.sessionStore,
     cookie: {
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+      httpOnly: true,
+      path: '/'
     }
   };
 
@@ -91,8 +93,34 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/login", passport.authenticate("local"), (req, res) => {
-    res.status(200).json(req.user);
+  app.post("/api/login", (req, res, next) => {
+    passport.authenticate("local", (err, user, info) => {
+      if (err) {
+        console.error("Login error:", err);
+        return next(err);
+      }
+      
+      if (!user) {
+        console.log("Authentication failed:", info);
+        return res.status(401).json({ message: "Invalid username or password" });
+      }
+      
+      // Log successful authentication
+      console.log(`User authenticated: ${user.username}, ID: ${user.id}`);
+      
+      req.login(user, (loginErr) => {
+        if (loginErr) {
+          console.error("Session login error:", loginErr);
+          return next(loginErr);
+        }
+        
+        // Log session details
+        console.log("Session created:", req.sessionID);
+        console.log("Session data:", req.session);
+        
+        return res.status(200).json(user);
+      });
+    })(req, res, next);
   });
 
   app.post("/api/logout", (req, res, next) => {

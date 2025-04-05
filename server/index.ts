@@ -4,10 +4,19 @@ import { setupVite, serveStatic, log } from "./vite";
 import fs from "fs";
 import path from "path";
 import { createSchema } from "./create-schema";
+import cors from "cors";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Add CORS middleware to allow cross-origin requests
+app.use(cors({
+  origin: true, // Allow all origins
+  credentials: true, // Allow cookies to be sent
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(process.cwd(), "uploads");

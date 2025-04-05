@@ -46,12 +46,138 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Set up authentication with our centralized auth module
+  // Create HTTP server with WebSocket support
+  const server = createServer(app);
+  
+  // Create WebSocket server with simplified configuration
+  const wss = new WebSocketServer({ 
+    server,
+    // Disable compression to avoid potential errors
+    perMessageDeflate: false
+  });
+  
+  // Track connected clients with their user info
+  const clients = new Map<WebSocket, { userId: number, username: string, role: string }>();
+  
+  // WebSocket connection handler
+  wss.on('connection', (ws) => {
+    console.log('WebSocket connection established');
+    
+    // The client needs to authenticate after connection
+    ws.on('message', async (message: string) => {
+      try {
+        const data = JSON.parse(message.toString());
+        
+        // Handle client authentication
+        if (data.type === 'auth') {
+          const userId = data.userId;
+          const user = await storage.getUser(userId);
+          
+          if (!user) {
+            console.log(`WebSocket authentication failed for user ID: ${userId}`);
+            ws.send(JSON.stringify({ type: 'error', message: 'Authentication failed' }));
+            return;
+          }
+          
+          // Store client info
+          clients.set(ws, { 
+            userId: user.id, 
+            username: user.username, 
+            role: user.role 
+          });
+          
+          console.log(`WebSocket authenticated for user: ${user.username}`);
+          
+          // Send confirmation
+          ws.send(JSON.stringify({ 
+            type: 'auth_success',
+            message: 'Authentication successful' 
+          }));
+          
+          // Load unread messages
+          const messages = await storage.getMessages(userId);
+          const unreadMessages = messages.filter(msg => !msg.isRead && msg.recipientId === userId);
+          
+          if (unreadMessages.length > 0) {
+            ws.send(JSON.stringify({ 
+              type: 'unread_messages', 
+              count: unreadMessages.length,
+              messages: unreadMessages.map(msg => ({
+                id: msg.id,
+                senderId: msg.senderId,
+                recipientId: msg.recipientId,
+                content: msg.content,
+                createdAt: msg.createdAt,
+                isRead: msg.isRead
+              }))
+            }));
+          }
+          
+          return;
+        }
+        
+        // Handle other message types as needed
+      } catch (error) {
+        console.error('Error processing WebSocket message:', error);
+      }
+    });
+    
+    ws.on('close', () => {
+      clients.delete(ws);
+      console.log('WebSocket client disconnected');
+    });
+    
+    // Send initial connection confirmation
+    ws.send(JSON.stringify({ type: 'connected' }));
+  });
+  
+  // PUBLIC ROUTES: Register public endpoints BEFORE authentication setup
+  // This way these routes won't be affected by authentication middleware
+  
+  // Get featured video highlights (public endpoint)
+  app.get("/api/highlights/featured", async (req: Request, res: Response) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+      const highlights = await storage.getFeaturedVideoHighlights(limit);
+      return res.json(highlights);
+    } catch (error) {
+      console.error("Error fetching featured highlights:", error);
+      return res.status(500).json({ message: "Error fetching featured highlights" });
+    }
+  });
+  
+  // Now set up authentication AFTER public routes
   setupAuth(app);
-
-  // Add auth routes with the correct paths that match the client calls
-  app.post("/api/auth/login", passport.authenticate("local"), (req, res) => {
-    res.status(200).json({ user: req.user });
+  
+  // Add enhanced login route for better debugging
+  app.post("/api/auth/login", (req, res, next) => {
+    passport.authenticate("local", (err, user, info) => {
+      if (err) {
+        console.error("Login error:", err);
+        return next(err);
+      }
+      
+      if (!user) {
+        console.log("Authentication failed:", info);
+        return res.status(401).json({ message: "Invalid username or password" });
+      }
+      
+      // Log successful authentication
+      console.log(`User authenticated: ${user.username}, ID: ${user.id}`);
+      
+      req.login(user, (loginErr) => {
+        if (loginErr) {
+          console.error("Session login error:", loginErr);
+          return next(loginErr);
+        }
+        
+        // Log session details
+        console.log("Session created:", req.sessionID);
+        console.log("Session data:", req.session);
+        
+        return res.status(200).json({ user });
+      });
+    })(req, res, next);
   });
   
   app.post("/api/auth/register", async (req, res, next) => {
@@ -603,16 +729,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Public endpoint - explicitly set noAuth parameter
+  // Public endpoint - moved before isAuthenticated middleware is defined
   app.get("/api/highlights/featured", async (req: Request, res: Response) => {
     try {
-      // Log request details for debugging
-      console.log(`Processing /api/highlights/featured request, authenticated: ${req.isAuthenticated()}`);
-      
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
       const highlights = await storage.getFeaturedVideoHighlights(limit);
-      
-      // Return the data regardless of authentication
       return res.json(highlights);
     } catch (error) {
       console.error("Error fetching featured highlights:", error);
@@ -2779,15 +2900,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create HTTP server
-  const httpServer = createServer(app);
-  
-  // Setup WebSocket server
-  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
-  
-  // Store connected clients with their user info
-  const clients = new Map<WebSocket, { userId: number, username: string, role: string }>();
-  
+  // This section was removed to avoid duplicate WebSocket handlers
+  /* 
+  // The WebSocket server is already set up above, no need for another handler
   wss.on('connection', (ws: WebSocket, req) => {
     console.log('WebSocket connection established');
     
@@ -2941,6 +3056,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('WebSocket connection closed');
     });
   });
+  */
 
   // Blog Posts API Routes
   app.get("/api/blog-posts", async (req: Request, res: Response) => {
@@ -3803,5 +3919,5 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  return httpServer;
+  return server;
 }
