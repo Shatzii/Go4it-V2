@@ -92,10 +92,20 @@ export const ncaaEligibility = pgTable("ncaa_eligibility", {
   coreCoursesRequired: integer("core_courses_required").default(16),
   gpa: real("gpa"),
   gpaMeetsRequirement: boolean("gpa_meets_requirement").default(false),
-  testScores: text("test_scores"), // SAT/ACT scores
+  satScore: integer("sat_score"),
+  actScore: integer("act_score"),
   testScoresMeetRequirement: boolean("test_scores_meet_requirement").default(false),
+  minimumRequiredTestScore: integer("minimum_required_test_score"),
+  isInternationalStudent: boolean("is_international_student").default(false),
+  countryOfEducation: text("country_of_education"),
+  diplomaType: text("diploma_type"),
+  internationalGradeScale: text("international_grade_scale"), // A-F, 1-10, 1-20, etc.
+  hasTranslatedDocuments: boolean("has_translated_documents").default(false),
   amateurismStatus: text("amateurism_status").default("incomplete"), // incomplete, pending, verified
+  ncaaDivision: text("ncaa_division").default("division_i"), // division_i, division_ii
   overallEligibilityStatus: text("overall_eligibility_status").default("incomplete"), // incomplete, partial, complete
+  academicRedshirt: boolean("academic_redshirt").default(false),
+  qualificationPercentage: integer("qualification_percentage").default(0), // 0-100
   lastUpdated: timestamp("last_updated").defaultNow(),
 });
 
@@ -106,7 +116,11 @@ export const ncaaCoreCourses = pgTable("ncaa_core_courses", {
   courseName: text("course_name").notNull(),
   courseType: text("course_type").notNull(), // english, math, science, social_science, additional
   gradeEarned: text("grade_earned"),
+  originalGrade: text("original_grade"), // For international students, original grade before translation
+  translatedGrade: text("translated_grade"), // For international students, translated to US scale
+  gradePoints: real("grade_points"), // Calculated grade points for GPA
   creditHours: real("credit_hours").notNull(),
+  qualityPoints: real("quality_points"), // creditHours * gradePoints
   completed: boolean("completed").default(false),
   inProgress: boolean("in_progress").default(false),
   ncaaApproved: boolean("ncaa_approved").default(false),
@@ -114,7 +128,37 @@ export const ncaaCoreCourses = pgTable("ncaa_core_courses", {
   completionDate: date("completion_date"),
   yearTaken: integer("year_taken"),
   semesterTaken: text("semester_taken"), // fall, spring, summer
+  school: text("school"),
+  country: text("country"),
+  isInternationalCourse: boolean("is_international_course").default(false),
+  translationMethod: text("translation_method"), // How the grade was translated
   notes: text("notes"),
+});
+
+// International grade scale reference
+export const gradeScales = pgTable("grade_scales", {
+  id: serial("id").primaryKey(),
+  country: text("country").notNull(),
+  educationSystem: text("education_system").notNull(), // e.g., A-levels, IB, French Baccalaureate
+  originalScale: json("original_scale").notNull(), // JSON with original grading scale
+  usEquivalentScale: json("us_equivalent_scale").notNull(), // JSON with US equivalent
+  conversionFormula: text("conversion_formula"), // Formula to convert grades if applicable
+  notes: text("notes"),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+});
+
+// NCAA sliding scale reference data
+export const ncaaSlidingScales = pgTable("ncaa_sliding_scales", {
+  id: serial("id").primaryKey(),
+  effectiveDate: date("effective_date").notNull(),
+  division: text("division").notNull(), // division_i, division_ii
+  coreGpa: real("core_gpa").notNull(),
+  minSatScore: integer("min_sat_score"), // Minimum SAT score for this GPA level
+  minActScore: integer("min_act_score"), // Minimum ACT score for this GPA level
+  fullQualifierStatus: boolean("full_qualifier_status").default(true), // Whether this combination qualifies for full eligibility
+  academicRedshirtStatus: boolean("academic_redshirt_status").default(false), // Whether this combination qualifies for academic redshirt
+  notes: text("notes"),
+  isCurrentScale: boolean("is_current_scale").default(true),
 });
 
 // NCAA Document Management
@@ -480,7 +524,37 @@ export const insertCoachProfileSchema = createInsertSchema(coachProfiles).omit({
 export const insertVideoSchema = createInsertSchema(videos).omit({ id: true, uploadDate: true, analyzed: true });
 export const insertVideoAnalysisSchema = createInsertSchema(videoAnalyses).omit({ id: true, analysisDate: true });
 export const insertSportRecommendationSchema = createInsertSchema(sportRecommendations).omit({ id: true, recommendationDate: true });
-export const insertNcaaEligibilitySchema = createInsertSchema(ncaaEligibility).omit({ id: true, lastUpdated: true });
+export const insertNcaaEligibilitySchema = createInsertSchema(ncaaEligibility).omit({ 
+  id: true, 
+  lastUpdated: true,
+  qualificationPercentage: true // Calculated value, not user input
+});
+
+export const insertNcaaCoreCourseSchema = createInsertSchema(ncaaCoreCourses).omit({ 
+  id: true, 
+  qualityPoints: true, // Calculated value
+  gradePoints: true // Calculated value
+});
+
+export const insertGradeScaleSchema = createInsertSchema(gradeScales).omit({ 
+  id: true, 
+  lastUpdated: true 
+});
+
+export const insertNcaaSlidingScaleSchema = createInsertSchema(ncaaSlidingScales).omit({ 
+  id: true 
+});
+
+export const insertNcaaDocumentSchema = createInsertSchema(ncaaDocuments).omit({ 
+  id: true, 
+  uploadDate: true,
+  verificationDate: true 
+});
+
+export const insertNcaaRegistrationSchema = createInsertSchema(ncaaRegistration).omit({ 
+  id: true,
+  finalCertificationDate: true
+});
 export const insertCoachConnectionSchema = createInsertSchema(coachConnections).omit({ id: true, connectionDate: true, lastContact: true });
 export const insertAchievementSchema = createInsertSchema(achievements).omit({ id: true, earnedDate: true });
 export const insertMessageSchema = createInsertSchema(messages).omit({ id: true, createdAt: true, isRead: true });
@@ -553,6 +627,21 @@ export type InsertSportRecommendation = z.infer<typeof insertSportRecommendation
 
 export type NcaaEligibility = typeof ncaaEligibility.$inferSelect;
 export type InsertNcaaEligibility = z.infer<typeof insertNcaaEligibilitySchema>;
+
+export type NcaaCoreCourse = typeof ncaaCoreCourses.$inferSelect;
+export type InsertNcaaCoreCourse = z.infer<typeof insertNcaaCoreCourseSchema>;
+
+export type GradeScale = typeof gradeScales.$inferSelect;
+export type InsertGradeScale = z.infer<typeof insertGradeScaleSchema>;
+
+export type NcaaSlidingScale = typeof ncaaSlidingScales.$inferSelect;
+export type InsertNcaaSlidingScale = z.infer<typeof insertNcaaSlidingScaleSchema>;
+
+export type NcaaDocument = typeof ncaaDocuments.$inferSelect;
+export type InsertNcaaDocument = z.infer<typeof insertNcaaDocumentSchema>;
+
+export type NcaaRegistration = typeof ncaaRegistration.$inferSelect;
+export type InsertNcaaRegistration = z.infer<typeof insertNcaaRegistrationSchema>;
 
 export type CoachConnection = typeof coachConnections.$inferSelect;
 export type InsertCoachConnection = z.infer<typeof insertCoachConnectionSchema>;
