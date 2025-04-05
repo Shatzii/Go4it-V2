@@ -227,6 +227,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Public endpoint for non-authenticated users to submit agreements (like NDA)
+  app.post("/api/public/user-agreements", async (req: Request, res: Response) => {
+    try {
+      // For non-authenticated users, we just return success without storing in DB
+      // This allows the GlobalAgreementModal to function for guests
+      // When they register or log in, they'll be prompted to formally accept the agreement
+      
+      // Get client IP and user agent for logging purposes
+      const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+      const userAgent = req.headers['user-agent'];
+      
+      console.log(`Guest agreement accepted from IP: ${ipAddress}, UA: ${userAgent}`);
+      
+      return res.status(200).json({ success: true });
+    } catch (error) {
+      console.error("Error processing guest agreement:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+  
   // Now set up authentication AFTER public routes
   setupAuth(app);
   
