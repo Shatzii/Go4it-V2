@@ -24,6 +24,7 @@ import {
   // New imports for blog and featured athletes
   blogPosts, type BlogPost, type InsertBlogPost,
   siteImages, type SiteImage, type InsertSiteImage,
+  contentBlocks, type ContentBlock, type InsertContentBlock,
   featuredAthletes, type FeaturedAthlete, type InsertFeaturedAthlete,
   // New imports for workout playlists
   workoutPlaylists, type WorkoutPlaylist, type InsertWorkoutPlaylist,
@@ -69,6 +70,14 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, data: Partial<User>): Promise<User | undefined>;
+  
+  // Content Block operations
+  getContentBlocks(section?: string): Promise<ContentBlock[]>;
+  getContentBlocksByIdentifier(identifier: string): Promise<ContentBlock | undefined>;
+  getContentBlock(id: number): Promise<ContentBlock | undefined>;
+  createContentBlock(contentBlock: InsertContentBlock): Promise<ContentBlock>;
+  updateContentBlock(id: number, data: Partial<ContentBlock>): Promise<ContentBlock | undefined>;
+  deleteContentBlock(id: number): Promise<boolean>;
   
   // Athlete Star Profile operations
   getAthleteStarProfiles(filters?: { sport?: string, position?: string, starLevel?: number }): Promise<AthleteStarProfile[]>;
@@ -218,6 +227,14 @@ export interface IStorage {
   createBlogPost(post: InsertBlogPost): Promise<BlogPost>;
   updateBlogPost(id: number, data: Partial<BlogPost>): Promise<BlogPost | undefined>;
   deleteBlogPost(id: number): Promise<boolean>;
+
+  // Content Blocks operations
+  getContentBlocks(section?: string): Promise<ContentBlock[]>;
+  getContentBlocksByIdentifier(identifier: string): Promise<ContentBlock | undefined>;
+  getContentBlock(id: number): Promise<ContentBlock | undefined>;
+  createContentBlock(block: InsertContentBlock): Promise<ContentBlock>;
+  updateContentBlock(id: number, data: Partial<ContentBlock>): Promise<ContentBlock | undefined>;
+  deleteContentBlock(id: number): Promise<boolean>;
 
   // Featured Athletes operations
   getFeaturedAthletes(limit?: number): Promise<FeaturedAthlete[]>;
@@ -371,6 +388,7 @@ export class MemStorage implements IStorage {
   
   // Content components
   private blogPosts: Map<number, BlogPost>;
+  private contentBlocks: Map<number, ContentBlock>;
   private featuredAthletes: Map<number, FeaturedAthlete>;
   
   // Workout playlist components
@@ -424,6 +442,7 @@ export class MemStorage implements IStorage {
   private currentFanClubFollowerId: number;
   private currentLeaderboardEntryId: number;
   private currentBlogPostId: number;
+  private currentContentBlockId: number;
   private currentFeaturedAthleteId: number;
   private currentWorkoutPlaylistId: number;
   private currentWorkoutExerciseId: number;
@@ -487,6 +506,7 @@ export class MemStorage implements IStorage {
     
     // Initialize content component maps
     this.blogPosts = new Map();
+    this.contentBlocks = new Map();
     this.featuredAthletes = new Map();
     
     // Initialize workout playlist maps
@@ -540,6 +560,7 @@ export class MemStorage implements IStorage {
     this.currentFanClubFollowerId = 1;
     this.currentLeaderboardEntryId = 1;
     this.currentBlogPostId = 1;
+    this.currentContentBlockId = 1;
     this.currentFeaturedAthleteId = 1;
     this.currentWorkoutPlaylistId = 1;
     this.currentWorkoutExerciseId = 1;
@@ -1465,6 +1486,56 @@ export class MemStorage implements IStorage {
   
   async deleteBlogPost(id: number): Promise<boolean> {
     return this.blogPosts.delete(id);
+  }
+  
+  // ContentBlock operations
+  async getContentBlocks(section?: string): Promise<ContentBlock[]> {
+    if (section) {
+      return Array.from(this.contentBlocks.values()).filter(
+        (block) => block.section === section
+      );
+    }
+    return Array.from(this.contentBlocks.values());
+  }
+  
+  async getContentBlocksByIdentifier(identifier: string): Promise<ContentBlock | undefined> {
+    return Array.from(this.contentBlocks.values()).find(
+      (block) => block.identifier === identifier
+    );
+  }
+  
+  async getContentBlock(id: number): Promise<ContentBlock | undefined> {
+    return this.contentBlocks.get(id);
+  }
+  
+  async createContentBlock(contentBlock: InsertContentBlock): Promise<ContentBlock> {
+    const id = this.currentContentBlockId++;
+    const now = new Date();
+    const newContentBlock: ContentBlock = {
+      ...contentBlock,
+      id,
+      lastUpdated: now
+    };
+    this.contentBlocks.set(id, newContentBlock);
+    return newContentBlock;
+  }
+  
+  async updateContentBlock(id: number, data: Partial<ContentBlock>): Promise<ContentBlock | undefined> {
+    const contentBlock = this.contentBlocks.get(id);
+    if (!contentBlock) return undefined;
+    
+    const now = new Date();
+    const updatedContentBlock = { 
+      ...contentBlock, 
+      ...data, 
+      lastUpdated: now
+    };
+    this.contentBlocks.set(id, updatedContentBlock);
+    return updatedContentBlock;
+  }
+  
+  async deleteContentBlock(id: number): Promise<boolean> {
+    return this.contentBlocks.delete(id);
   }
   
   // Featured Athlete operations
@@ -3050,6 +3121,79 @@ export class MemStorage implements IStorage {
       tags: ["AI", "technology", "sports analytics", "motion analysis"]
     };
     this.blogPosts.set(blogPost3.id, blogPost3);
+    
+    // Add sample content blocks for "What Makes Us Different" section
+    const contentBlock1: ContentBlock = {
+      id: this.currentContentBlockId++,
+      identifier: "what-makes-us-different-intro",
+      title: "What Makes Us Different",
+      content: "At Go4It, we're not just another sports platform. Our unique approach combines cutting-edge technology with deep sports expertise to provide student-athletes with unprecedented opportunities for growth and exposure.",
+      section: "what-makes-us-different",
+      order: 1,
+      active: true,
+      lastUpdated: new Date(),
+      lastUpdatedBy: 3, // Admin user
+      metadata: {}
+    };
+    
+    const contentBlock2: ContentBlock = {
+      id: this.currentContentBlockId++,
+      identifier: "pillar-ai-powered-analysis",
+      title: "AI-Powered Analysis",
+      content: "Our proprietary AI technology analyzes your game film and training videos to provide detailed feedback on technique, positioning, and performance metrics that would typically require multiple coaches.",
+      section: "what-makes-us-different",
+      order: 2,
+      active: true,
+      lastUpdated: new Date(),
+      lastUpdatedBy: 3, // Admin user
+      metadata: { icon: "brain-circuit" }
+    };
+    
+    const contentBlock3: ContentBlock = {
+      id: this.currentContentBlockId++,
+      identifier: "pillar-verified-combines",
+      title: "Verified Combines",
+      content: "Our combines provide accurate, standardized measurements and assessments that are trusted by college recruiters and coaches across the country.",
+      section: "what-makes-us-different",
+      order: 3,
+      active: true,
+      lastUpdated: new Date(),
+      lastUpdatedBy: 3, // Admin user
+      metadata: { icon: "medal" }
+    };
+    
+    const contentBlock4: ContentBlock = {
+      id: this.currentContentBlockId++,
+      identifier: "pillar-direct-scout-connections",
+      title: "Direct Scout Connections",
+      content: "Get noticed by our network of scouts and recruiters who are actively searching for talent across all levels of competition.",
+      section: "what-makes-us-different",
+      order: 4,
+      active: true,
+      lastUpdated: new Date(),
+      lastUpdatedBy: 3, // Admin user
+      metadata: { icon: "user-search" }
+    };
+    
+    const contentBlock5: ContentBlock = {
+      id: this.currentContentBlockId++,
+      identifier: "pillar-personalized-development",
+      title: "Personalized Development",
+      content: "Our GAR (Growth, Achievement, Recognition) model creates a personalized development path that adapts to your unique strengths, goals, and progress.",
+      section: "what-makes-us-different",
+      order: 5,
+      active: true,
+      lastUpdated: new Date(),
+      lastUpdatedBy: 3, // Admin user
+      metadata: { icon: "line-chart" }
+    };
+    
+    // Add the content blocks to the map
+    this.contentBlocks.set(contentBlock1.id, contentBlock1);
+    this.contentBlocks.set(contentBlock2.id, contentBlock2);
+    this.contentBlocks.set(contentBlock3.id, contentBlock3);
+    this.contentBlocks.set(contentBlock4.id, contentBlock4);
+    this.contentBlocks.set(contentBlock5.id, contentBlock5);
     
     // Create sample featured athletes
     const featuredAthlete1: FeaturedAthlete = {

@@ -4052,5 +4052,108 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/settings/api-keys", isAuthenticated, saveApiKey);
   app.get("/api/settings/api-keys/status", isAuthenticated, getApiKeyStatus);
 
+  // Content Blocks API Routes
+  app.get("/api/content-blocks", async (req: Request, res: Response) => {
+    try {
+      const section = req.query.section as string;
+      const contentBlocks = await storage.getContentBlocks(section);
+      res.json(contentBlocks);
+    } catch (error) {
+      console.error("Error fetching content blocks:", error);
+      res.status(500).json({ message: "Error fetching content blocks" });
+    }
+  });
+
+  app.get("/api/content-blocks/identifier/:identifier", async (req: Request, res: Response) => {
+    try {
+      const identifier = req.params.identifier;
+      const contentBlock = await storage.getContentBlocksByIdentifier(identifier);
+      
+      if (!contentBlock) {
+        return res.status(404).json({ message: "Content block not found" });
+      }
+      
+      res.json(contentBlock);
+    } catch (error) {
+      console.error("Error fetching content block by identifier:", error);
+      res.status(500).json({ message: "Error fetching content block by identifier" });
+    }
+  });
+
+  app.get("/api/content-blocks/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const contentBlock = await storage.getContentBlock(id);
+      
+      if (!contentBlock) {
+        return res.status(404).json({ message: "Content block not found" });
+      }
+      
+      res.json(contentBlock);
+    } catch (error) {
+      console.error("Error fetching content block:", error);
+      res.status(500).json({ message: "Error fetching content block" });
+    }
+  });
+
+  app.post("/api/content-blocks", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as User;
+      const blockData = req.body;
+      
+      // Validate input
+      if (!blockData.identifier || !blockData.title || !blockData.content || !blockData.section) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+      
+      // Add the current user as the updater
+      blockData.lastUpdatedBy = user.id;
+      
+      const contentBlock = await storage.createContentBlock(blockData);
+      res.status(201).json(contentBlock);
+    } catch (error) {
+      console.error("Error creating content block:", error);
+      res.status(500).json({ message: "Error creating content block" });
+    }
+  });
+
+  app.put("/api/content-blocks/:id", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const user = req.user as User;
+      const blockData = req.body;
+      
+      // Add the current user as the updater
+      blockData.lastUpdatedBy = user.id;
+      
+      const contentBlock = await storage.updateContentBlock(id, blockData);
+      
+      if (!contentBlock) {
+        return res.status(404).json({ message: "Content block not found" });
+      }
+      
+      res.json(contentBlock);
+    } catch (error) {
+      console.error("Error updating content block:", error);
+      res.status(500).json({ message: "Error updating content block" });
+    }
+  });
+
+  app.delete("/api/content-blocks/:id", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteContentBlock(id);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Content block not found" });
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting content block:", error);
+      res.status(500).json({ message: "Error deleting content block" });
+    }
+  });
+
   return server;
 }

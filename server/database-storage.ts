@@ -906,6 +906,69 @@ export class DatabaseStorage implements IStorage {
     return result.count > 0;
   }
 
+  // Content Blocks operations
+  async getContentBlocks(section?: string): Promise<ContentBlock[]> {
+    if (section) {
+      return await db
+        .select()
+        .from(contentBlocks)
+        .where(eq(contentBlocks.section, section))
+        .orderBy(asc(contentBlocks.order));
+    }
+    return await db
+      .select()
+      .from(contentBlocks)
+      .orderBy(asc(contentBlocks.section), asc(contentBlocks.order));
+  }
+
+  async getContentBlocksByIdentifier(identifier: string): Promise<ContentBlock | undefined> {
+    const [block] = await db
+      .select()
+      .from(contentBlocks)
+      .where(eq(contentBlocks.identifier, identifier));
+    return block;
+  }
+
+  async getContentBlock(id: number): Promise<ContentBlock | undefined> {
+    const [block] = await db
+      .select()
+      .from(contentBlocks)
+      .where(eq(contentBlocks.id, id));
+    return block;
+  }
+
+  async createContentBlock(block: InsertContentBlock): Promise<ContentBlock> {
+    const now = new Date();
+    const [newBlock] = await db
+      .insert(contentBlocks)
+      .values({
+        ...block,
+        lastUpdated: now
+      })
+      .returning();
+    return newBlock;
+  }
+
+  async updateContentBlock(id: number, data: Partial<ContentBlock>): Promise<ContentBlock | undefined> {
+    const now = new Date();
+    const [updatedBlock] = await db
+      .update(contentBlocks)
+      .set({
+        ...data,
+        lastUpdated: now
+      })
+      .where(eq(contentBlocks.id, id))
+      .returning();
+    return updatedBlock;
+  }
+
+  async deleteContentBlock(id: number): Promise<boolean> {
+    const result = await db
+      .delete(contentBlocks)
+      .where(eq(contentBlocks.id, id));
+    return result.count > 0;
+  }
+
   // Featured Athletes operations
   async getFeaturedAthletes(limit: number = 4): Promise<FeaturedAthlete[]> {
     try {

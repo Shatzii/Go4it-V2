@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Star, ChevronRight, Clock, Trophy, Calendar, Video, Award, CheckCircle, MapPin } from "lucide-react";
+import { Star, ChevronRight, Clock, Trophy, Calendar, Video, Award, CheckCircle, MapPin, BrainCircuit, Medal, UserSearch, LineChart } from "lucide-react";
 import { useAuth } from "../contexts/auth-context";
 import { motion } from "framer-motion";
 
@@ -21,6 +21,19 @@ interface BlogPost {
   featured: boolean;
   slug: string;
   tags: string[];
+}
+
+interface ContentBlock {
+  id: number;
+  title: string;
+  content: string;
+  section: string;
+  identifier: string;
+  order: number | null;
+  active: boolean | null;
+  metadata: Record<string, any> | null;
+  lastUpdated: string | null;
+  lastUpdatedBy: number | null;
 }
 
 interface FeaturedAthlete {
@@ -43,6 +56,10 @@ interface FeaturedAthlete {
 export default function HomePage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("featured");
+
+  const { data: contentBlocks = [] } = useQuery<ContentBlock[]>({
+    queryKey: ["/api/content-blocks/section/what-makes-us-different"],
+  });
 
   const { data: blogPosts = [] } = useQuery<BlogPost[]>({
     queryKey: ["/api/blog-posts"],
