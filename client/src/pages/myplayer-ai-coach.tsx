@@ -459,17 +459,24 @@ export default function MyPlayerAICoach() {
                   />
                 </div>
                 <h3 className="font-semibold text-lg mt-3">Coach AI</h3>
-                <p className="text-sm text-muted-foreground">{activeCoachState.personality}</p>
+                <p className="text-sm text-muted-foreground">{activeCoachState?.personality || "Supportive and motivational"}</p>
               </div>
               
               <div>
                 <h4 className="text-sm font-medium mb-2">Specializations</h4>
                 <div className="flex flex-wrap gap-2">
-                  {activeCoachState.knowledgeAreas.map((area, idx) => (
-                    <Badge key={idx} variant="secondary" className="text-xs">
-                      {area}
-                    </Badge>
-                  ))}
+                  {activeCoachState?.knowledgeAreas && Array.isArray(activeCoachState.knowledgeAreas) ? 
+                    activeCoachState.knowledgeAreas.map((area, idx) => (
+                      <Badge key={idx} variant="secondary" className="text-xs">
+                        {area}
+                      </Badge>
+                    )) : 
+                    defaultCoachState.knowledgeAreas.map((area, idx) => (
+                      <Badge key={idx} variant="secondary" className="text-xs">
+                        {area}
+                      </Badge>
+                    ))
+                  }
                 </div>
               </div>
               
@@ -536,7 +543,7 @@ export default function MyPlayerAICoach() {
                 <CardContent className="flex-1 pt-6 pb-0 overflow-hidden">
                   <ScrollArea className="h-[500px] pr-4">
                     <div className="space-y-4">
-                      {activeMessages.map((message) => (
+                      {Array.isArray(activeMessages) && activeMessages.map((message) => (
                         <div
                           key={message.id}
                           className={`flex ${message.role === "coach" ? "justify-start" : "justify-end"}`}
@@ -583,9 +590,10 @@ export default function MyPlayerAICoach() {
                                 </CardHeader>
                                 <CardContent className="py-0 px-4">
                                   <ul className="list-disc list-inside space-y-1 text-sm">
-                                    {message.metadata?.items?.map((item, i) => (
+                                    {message.metadata?.items && Array.isArray(message.metadata.items) ? 
+                                    message.metadata.items.map((item, i) => (
                                       <li key={i}>{item}</li>
-                                    ))}
+                                    )) : null}
                                   </ul>
                                 </CardContent>
                                 <CardFooter className="py-3 px-4">
@@ -779,7 +787,7 @@ export default function MyPlayerAICoach() {
                   <CardDescription>Your personalized training schedules</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {activeTrainingPlans.length === 0 ? (
+                  {!activeTrainingPlans || !Array.isArray(activeTrainingPlans) || activeTrainingPlans.length === 0 ? (
                     <div className="py-8 text-center">
                       <Lightbulb className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
                       <h3 className="text-lg font-medium mb-1">No Training Plans Yet</h3>
@@ -794,7 +802,7 @@ export default function MyPlayerAICoach() {
                   ) : (
                     <div className="space-y-6">
                       <div className="flex overflow-x-auto pb-2 gap-4">
-                        {activeTrainingPlans.map((plan) => (
+                        {Array.isArray(activeTrainingPlans) && activeTrainingPlans.map((plan) => (
                           <Card 
                             key={plan.id} 
                             className={`border flex-shrink-0 w-64 ${plan === currentPlan ? "border-primary" : ""}`}
@@ -809,7 +817,9 @@ export default function MyPlayerAICoach() {
                                 {new Date(plan.createdAt).toLocaleDateString()}
                               </div>
                               <Badge variant="outline" className="text-xs">
-                                {plan.workouts.filter(w => w.completed).length}/{plan.workouts.length}
+                                {plan.workouts && Array.isArray(plan.workouts) 
+                                  ? `${plan.workouts.filter(w => w.completed).length}/${plan.workouts.length}`
+                                  : "0/0"}
                               </Badge>
                             </CardFooter>
                           </Card>
@@ -822,44 +832,48 @@ export default function MyPlayerAICoach() {
                           <p className="text-sm text-muted-foreground mb-4">{currentPlan.description}</p>
                           
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {currentPlan.workouts.map((workout, idx) => (
-                              <Card key={idx} className={`overflow-hidden ${workout.completed ? "border-green-500" : ""}`}>
-                                <div className="aspect-video bg-muted relative">
-                                  {workout.imageUrl ? (
-                                    <img 
-                                      src={workout.imageUrl} 
-                                      alt={workout.title} 
-                                      className="object-cover w-full h-full" 
-                                    />
-                                  ) : (
-                                    <div className="flex items-center justify-center h-full">
-                                      <Dumbbell className="h-8 w-8 text-muted-foreground" />
-                                    </div>
-                                  )}
-                                  <Badge 
-                                    className={`absolute top-2 right-2 ${workout.completed ? "bg-green-500" : ""}`}
-                                  >
-                                    Day {workout.day}
-                                  </Badge>
-                                </div>
-                                <CardHeader className="py-3 px-4">
-                                  <CardTitle className="text-base flex items-center">
-                                    {workout.completed && (
-                                      <CheckCircle2 className="h-4 w-4 mr-2 text-green-500" />
+                            {currentPlan.workouts && Array.isArray(currentPlan.workouts) ? (
+                              currentPlan.workouts.map((workout, idx) => (
+                                <Card key={idx} className={`overflow-hidden ${workout.completed ? "border-green-500" : ""}`}>
+                                  <div className="aspect-video bg-muted relative">
+                                    {workout.imageUrl ? (
+                                      <img 
+                                        src={workout.imageUrl} 
+                                        alt={workout.title} 
+                                        className="object-cover w-full h-full" 
+                                      />
+                                    ) : (
+                                      <div className="flex items-center justify-center h-full">
+                                        <Dumbbell className="h-8 w-8 text-muted-foreground" />
+                                      </div>
                                     )}
-                                    {workout.title}
-                                  </CardTitle>
-                                  <CardDescription>Focus: {workout.focus}</CardDescription>
-                                </CardHeader>
-                                <CardFooter className="py-3 px-4 flex justify-between">
-                                  {workout.completed ? (
-                                    <Button variant="outline" size="sm">View Details</Button>
-                                  ) : (
-                                    <Button size="sm">Start Workout</Button>
-                                  )}
-                                </CardFooter>
-                              </Card>
-                            ))}
+                                    <Badge 
+                                      className={`absolute top-2 right-2 ${workout.completed ? "bg-green-500" : ""}`}
+                                    >
+                                      Day {workout.day}
+                                    </Badge>
+                                  </div>
+                                  <CardHeader className="py-3 px-4">
+                                    <CardTitle className="text-base flex items-center">
+                                      {workout.completed && (
+                                        <CheckCircle2 className="h-4 w-4 mr-2 text-green-500" />
+                                      )}
+                                      {workout.title}
+                                    </CardTitle>
+                                    <CardDescription>Focus: {workout.focus}</CardDescription>
+                                  </CardHeader>
+                                  <CardFooter className="py-3 px-4 flex justify-between">
+                                    {workout.completed ? (
+                                      <Button variant="outline" size="sm">View Details</Button>
+                                    ) : (
+                                      <Button size="sm">Start Workout</Button>
+                                    )}
+                                  </CardFooter>
+                                </Card>
+                              ))
+                            ) : (
+                              <div className="text-sm text-muted-foreground">No workout data available</div>
+                            )}
                           </div>
                         </div>
                       )}
@@ -882,7 +896,7 @@ export default function MyPlayerAICoach() {
                   <CardDescription>Track your performance metrics over time</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {activeAssessments.length === 0 ? (
+                  {!activeAssessments || !Array.isArray(activeAssessments) || activeAssessments.length === 0 ? (
                     <div className="py-8 text-center">
                       <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
                       <h3 className="text-lg font-medium mb-1">No Assessments Yet</h3>
@@ -896,7 +910,7 @@ export default function MyPlayerAICoach() {
                     </div>
                   ) : (
                     <div className="space-y-6">
-                      {activeAssessments.map((assessment) => (
+                      {Array.isArray(activeAssessments) && activeAssessments.map((assessment) => (
                         <Card key={assessment.id} className="border">
                           <CardHeader className="pb-2">
                             <div className="flex justify-between items-start">
