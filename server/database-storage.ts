@@ -34,7 +34,8 @@ import {
   athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile,
   onboardingProgress, type OnboardingProgress, type InsertOnboardingProgress,
   athleteJourneyMap, type AthleteJourneyMap, type InsertAthleteJourneyMap,
-  journeyMilestones, type JourneyMilestone, type InsertJourneyMilestone
+  journeyMilestones, type JourneyMilestone, type InsertJourneyMilestone,
+  contentBlocks, type ContentBlock, type InsertContentBlock
 } from "@shared/schema";
 import { IStorage } from "./storage";
 import { db } from "./db";

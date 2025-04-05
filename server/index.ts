@@ -8,6 +8,7 @@ import cors from "cors";
 import { storage } from './storage';
 import { initializeBlogGeneration } from './blog-generator';
 import { openAIService } from './services/openai-service';
+import net from 'net';
 
 const app = express();
 app.use(express.json());
@@ -126,12 +127,12 @@ app.use((req, res, next) => {
   // It is the only port that is not firewalled.
   const findAvailablePort = async (startPort: number): Promise<number> => {
     return new Promise((resolve) => {
-      const server = require('net').createServer();
-      server.listen(startPort, '0.0.0.0', () => {
-        const port = (server.address() as any).port;
-        server.close(() => resolve(port));
+      const netServer = net.createServer();
+      netServer.listen(startPort, '0.0.0.0', () => {
+        const port = (netServer.address() as any).port;
+        netServer.close(() => resolve(port));
       });
-      server.on('error', () => {
+      netServer.on('error', () => {
         resolve(findAvailablePort(startPort + 1));
       });
     });
