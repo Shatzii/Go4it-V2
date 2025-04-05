@@ -33,6 +33,7 @@ import {
   insertFilmComparisonSchema,
   insertComparisonVideoSchema,
   insertComparisonAnalysisSchema,
+  insertVideoHighlightSchema,
   users,
 } from "@shared/schema";
 
@@ -442,6 +443,219 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching video analysis:", error);
       return res.status(500).json({ message: "Error fetching video analysis" });
+    }
+  });
+
+  // Video highlights routes
+  app.get("/api/videos/:id/highlights", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const videoId = parseInt(req.params.id);
+      const video = await storage.getVideo(videoId);
+      
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow access to own videos or admin access
+      if (video.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to view these highlights" });
+      }
+      
+      const highlights = await storage.getVideoHighlights(videoId);
+      return res.json(highlights);
+    } catch (error) {
+      console.error("Error fetching video highlights:", error);
+      return res.status(500).json({ message: "Error fetching video highlights" });
+    }
+  });
+
+  app.get("/api/highlights/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const highlightId = parseInt(req.params.id);
+      const highlight = await storage.getVideoHighlight(highlightId);
+      
+      if (!highlight) {
+        return res.status(404).json({ message: "Highlight not found" });
+      }
+      
+      // Fetch the related video to check permission
+      const video = await storage.getVideo(highlight.videoId);
+      
+      if (!video) {
+        return res.status(404).json({ message: "Original video not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow access to own video highlights or admin access
+      if (video.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to view this highlight" });
+      }
+      
+      return res.json(highlight);
+    } catch (error) {
+      console.error("Error fetching highlight:", error);
+      return res.status(500).json({ message: "Error fetching highlight" });
+    }
+  });
+
+  app.post("/api/videos/:id/highlights", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const videoId = parseInt(req.params.id);
+      const video = await storage.getVideo(videoId);
+      
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow creating highlights for own videos or admin access
+      if (video.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to create highlights for this video" });
+      }
+      
+      const highlightData = insertVideoHighlightSchema.parse({
+        ...req.body,
+        videoId,
+        userId: user.id
+      });
+      
+      const highlight = await storage.createVideoHighlight(highlightData);
+      return res.status(201).json(highlight);
+    } catch (error) {
+      console.error("Error creating video highlight:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/highlights/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const highlightId = parseInt(req.params.id);
+      const highlight = await storage.getVideoHighlight(highlightId);
+      
+      if (!highlight) {
+        return res.status(404).json({ message: "Highlight not found" });
+      }
+      
+      // Fetch the related video to check permission
+      const video = await storage.getVideo(highlight.videoId);
+      
+      if (!video) {
+        return res.status(404).json({ message: "Original video not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow updating own video highlights or admin access
+      if (video.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to update this highlight" });
+      }
+      
+      const updatedHighlight = await storage.updateVideoHighlight(highlightId, req.body);
+      
+      if (!updatedHighlight) {
+        return res.status(500).json({ message: "Failed to update highlight" });
+      }
+      
+      return res.json(updatedHighlight);
+    } catch (error) {
+      console.error("Error updating highlight:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/highlights/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const highlightId = parseInt(req.params.id);
+      const highlight = await storage.getVideoHighlight(highlightId);
+      
+      if (!highlight) {
+        return res.status(404).json({ message: "Highlight not found" });
+      }
+      
+      // Fetch the related video to check permission
+      const video = await storage.getVideo(highlight.videoId);
+      
+      if (!video) {
+        return res.status(404).json({ message: "Original video not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow deleting own video highlights or admin access
+      if (video.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to delete this highlight" });
+      }
+      
+      const result = await storage.deleteVideoHighlight(highlightId);
+      
+      if (!result) {
+        return res.status(500).json({ message: "Failed to delete highlight" });
+      }
+      
+      return res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting highlight:", error);
+      return res.status(500).json({ message: "Error deleting highlight" });
+    }
+  });
+
+  // Public endpoint - explicitly set noAuth parameter
+  app.get("/api/highlights/featured", async (req: Request, res: Response) => {
+    try {
+      // Log request details for debugging
+      console.log(`Processing /api/highlights/featured request, authenticated: ${req.isAuthenticated()}`);
+      
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+      const highlights = await storage.getFeaturedVideoHighlights(limit);
+      
+      // Return the data regardless of authentication
+      return res.json(highlights);
+    } catch (error) {
+      console.error("Error fetching featured highlights:", error);
+      return res.status(500).json({ message: "Error fetching featured highlights" });
+    }
+  });
+
+  // Generate video highlight with AI
+  app.post("/api/videos/:id/generate-highlight", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const videoId = parseInt(req.params.id);
+      const video = await storage.getVideo(videoId);
+      
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow generating highlights for own videos or admin access
+      if (video.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to generate highlights for this video" });
+      }
+      
+      const { startTime, endTime, title, description } = req.body;
+      
+      if (typeof startTime !== 'number' || typeof endTime !== 'number' || startTime >= endTime) {
+        return res.status(400).json({ message: "Invalid start or end time" });
+      }
+      
+      const highlight = await storage.generateVideoHighlight(videoId, {
+        startTime,
+        endTime,
+        title,
+        description,
+        userId: user.id,
+        aiGenerated: true
+      });
+      
+      return res.status(201).json(highlight);
+    } catch (error) {
+      console.error("Error generating video highlight:", error);
+      return res.status(400).json({ message: error.message });
     }
   });
 

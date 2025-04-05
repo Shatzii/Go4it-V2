@@ -46,7 +46,9 @@ import {
   // Combine Tour Events and registrations
   combineTourEvents, type CombineTourEvent, type InsertCombineTourEvent,
   registrations, type Registration, type InsertRegistration,
-  payments, type Payment, type InsertPayment
+  payments, type Payment, type InsertPayment,
+  // Video highlights
+  videoHighlights, type VideoHighlight, type InsertVideoHighlight
 } from "@shared/schema";
 
 import session from "express-session";
@@ -296,6 +298,22 @@ export interface IStorage {
   createPlayerEquipment(equipment: InsertPlayerEquipment): Promise<PlayerEquipment>;
   updatePlayerEquipment(id: number, data: Partial<PlayerEquipment>): Promise<PlayerEquipment | undefined>;
   incrementEquipmentUsage(id: number): Promise<PlayerEquipment | undefined>;
+  
+  // Video Highlight operations
+  getVideoHighlights(videoId: number): Promise<VideoHighlight[]>;
+  getVideoHighlight(id: number): Promise<VideoHighlight | undefined>;
+  createVideoHighlight(highlight: InsertVideoHighlight): Promise<VideoHighlight>;
+  updateVideoHighlight(id: number, data: Partial<VideoHighlight>): Promise<VideoHighlight | undefined>;
+  deleteVideoHighlight(id: number): Promise<boolean>;
+  getFeaturedVideoHighlights(limit?: number): Promise<VideoHighlight[]>;
+  generateVideoHighlight(videoId: number, options: {
+    startTime: number;
+    endTime: number;
+    title: string;
+    description?: string;
+    userId: number;
+    aiGenerated?: boolean;
+  }): Promise<VideoHighlight>;
 }
 
 import createMemoryStore from "memorystore";
@@ -2237,6 +2255,105 @@ export class MemStorage implements IStorage {
     };
     this.playerEquipment.set(id, updatedEquipment);
     return updatedEquipment;
+  }
+
+  // Video Highlight operations
+  private videoHighlights = new Map<number, VideoHighlight>();
+  private currentVideoHighlightId = 1;
+
+  async getVideoHighlights(videoId: number): Promise<VideoHighlight[]> {
+    const highlights: VideoHighlight[] = [];
+    for (const highlight of this.videoHighlights.values()) {
+      if (highlight.videoId === videoId) {
+        highlights.push(highlight);
+      }
+    }
+    return highlights.sort((a, b) => 
+      b.createdAt.getTime() - a.createdAt.getTime()
+    );
+  }
+
+  async getVideoHighlight(id: number): Promise<VideoHighlight | undefined> {
+    return this.videoHighlights.get(id);
+  }
+
+  async createVideoHighlight(highlight: InsertVideoHighlight): Promise<VideoHighlight> {
+    const now = new Date();
+    const newHighlight: VideoHighlight = {
+      id: this.currentVideoHighlightId++,
+      ...highlight,
+      createdAt: now,
+      views: 0,
+      likes: 0,
+      featured: false,
+      aiGenerated: highlight.aiGenerated || false
+    };
+    this.videoHighlights.set(newHighlight.id, newHighlight);
+    return newHighlight;
+  }
+
+  async updateVideoHighlight(id: number, data: Partial<VideoHighlight>): Promise<VideoHighlight | undefined> {
+    const highlight = this.videoHighlights.get(id);
+    if (!highlight) return undefined;
+    
+    const updatedHighlight = {
+      ...highlight,
+      ...data
+    };
+    this.videoHighlights.set(id, updatedHighlight);
+    return updatedHighlight;
+  }
+
+  async deleteVideoHighlight(id: number): Promise<boolean> {
+    return this.videoHighlights.delete(id);
+  }
+
+  async getFeaturedVideoHighlights(limit: number = 10): Promise<VideoHighlight[]> {
+    const highlights: VideoHighlight[] = [];
+    for (const highlight of this.videoHighlights.values()) {
+      if (highlight.featured) {
+        highlights.push(highlight);
+      }
+    }
+    return highlights
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(0, limit);
+  }
+
+  async generateVideoHighlight(videoId: number, options: {
+    startTime: number;
+    endTime: number;
+    title: string;
+    description?: string;
+    userId: number;
+    aiGenerated?: boolean;
+  }): Promise<VideoHighlight> {
+    // First verify that the video exists
+    const video = await this.getVideo(videoId);
+    if (!video) {
+      throw new Error("Video not found");
+    }
+    
+    // Create the highlight
+    const now = new Date();
+    const newHighlight: VideoHighlight = {
+      id: this.currentVideoHighlightId++,
+      videoId,
+      title: options.title,
+      description: options.description || null,
+      startTime: options.startTime,
+      endTime: options.endTime,
+      duration: options.endTime - options.startTime,
+      userId: options.userId,
+      createdAt: now,
+      aiGenerated: options.aiGenerated || false,
+      featured: false,
+      views: 0,
+      likes: 0
+    };
+    
+    this.videoHighlights.set(newHighlight.id, newHighlight);
+    return newHighlight;
   }
 
   // Method to seed some initial data for development
