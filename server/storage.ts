@@ -50,7 +50,9 @@ import {
   payments, type Payment, type InsertPayment,
   // API Keys
   // Video highlights
-  videoHighlights, type VideoHighlight, type InsertVideoHighlight
+  videoHighlights, type VideoHighlight, type InsertVideoHighlight,
+  // API Keys
+  apiKeys, type ApiKey, type InsertApiKey
 } from "@shared/schema";
 
 import { AnalysisResult } from "./openai";
