@@ -49,12 +49,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create HTTP server with WebSocket support
   const server = createServer(app);
   
-  // Create WebSocket server with simplified configuration
+  // Comment out WebSocket server configuration for now to debug the main HTTP app
+  // We'll reimplement WebSockets properly once the main application is working
+  /*
   const wss = new WebSocketServer({ 
     server,
-    // Disable compression to avoid potential errors
     perMessageDeflate: false
   });
+  */
+  
+  // Create a dummy variable to maintain code structure
+  const wss = { on: () => {} } as unknown as WebSocketServer;
   
   // Track connected clients with their user info
   const clients = new Map<WebSocket, { userId: number, username: string, role: string }>();
