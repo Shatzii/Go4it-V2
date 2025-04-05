@@ -458,6 +458,12 @@ export default function CMSPage() {
           >
             Image Manager
           </TabsTrigger>
+          <TabsTrigger 
+            value="athlete-profiles" 
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-500 data-[state=active]:text-white"
+          >
+            Athlete Profiles
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="image-manager" className="space-y-6">
@@ -476,6 +482,8 @@ export default function CMSPage() {
                   </SelectTrigger>
                   <SelectContent className="bg-gray-900 border-gray-700">
                     <SelectItem value="profiles">Athlete Profiles</SelectItem>
+                    <SelectItem value="athlete_headshots">Athlete Headshots</SelectItem>
+                    <SelectItem value="athlete_action">Athlete Action Shots</SelectItem>
                     <SelectItem value="blog">Blog Posts</SelectItem>
                     <SelectItem value="featured">Featured Content</SelectItem>
                     <SelectItem value="banners">Banners</SelectItem>
@@ -499,6 +507,71 @@ export default function CMSPage() {
             
             <CardContent>
               <ImageGallery category={selectedCategory} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="athlete-profiles" className="space-y-6">
+          <Card className="bg-gray-950 border-gray-800 shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-white">Athlete Profile Images</CardTitle>
+              <CardDescription>
+                Manage profile and action images for featured athletes
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent>
+              <div className="grid gap-6">
+                <div>
+                  <h3 className="text-lg font-medium text-white mb-2">Profile Headshots</h3>
+                  <p className="text-gray-400 text-sm mb-4">
+                    Upload high-quality headshots for athlete profiles. Recommended size: 500x500px, square format.
+                  </p>
+                  <ImageUploader category="athlete_headshots" />
+                  <div className="mt-6">
+                    <ImageGallery category="athlete_headshots" />
+                  </div>
+                </div>
+                
+                <div className="pt-6 border-t border-gray-800">
+                  <h3 className="text-lg font-medium text-white mb-2">Action Shots</h3>
+                  <p className="text-gray-400 text-sm mb-4">
+                    Upload action photos for athlete profile banners. Recommended size: 1200x400px, landscape format.
+                  </p>
+                  <ImageUploader category="athlete_action" />
+                  <div className="mt-6">
+                    <ImageGallery category="athlete_action" />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-gray-950 border-gray-800 shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-white">Manage Featured Athletes</CardTitle>
+              <CardDescription>
+                Update featured athletes displayed on the homepage
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent>
+              <div className="flex flex-col space-y-4">
+                <p className="text-gray-400">
+                  Select which athletes to feature on the homepage carousel. You can feature up to 8 athletes.
+                </p>
+                
+                <div className="bg-gray-900 border border-gray-800 rounded-md p-6 flex flex-col items-center justify-center">
+                  <div className="text-gray-500 mb-4 flex flex-col items-center">
+                    <Button 
+                      className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 mb-2"
+                    >
+                      Manage Featured Athletes
+                    </Button>
+                    <p className="text-sm">Use the dedicated interface to select and order featured athletes</p>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

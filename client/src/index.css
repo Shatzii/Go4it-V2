@@ -113,4 +113,14 @@
   .mobile-menu-overlay {
     backdrop-filter: blur(5px);
   }
+  
+  /* Hide scrollbar for carousel */
+  .hide-scrollbar {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
 }
