@@ -1,42 +1,102 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { BrainCircuit, Medal, UserSearch, LineChart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { BrainCircuit, Medal, UserSearch, LineChart, ChevronLeft, ChevronRight, Cpu, BadgeCheck, Users, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { useAuth } from "../contexts/auth-context";
+import { useQuery } from "@tanstack/react-query";
 
 interface WhatMakesUsDifferentProps {
   showTitle?: boolean;
   showHeroSection?: boolean;
 }
 
-const features = [
-  {
-    icon: BrainCircuit,
-    title: "GAR Score System",
-    description: "Get a 0–100 GAR Score backed by real data — physical, mental, and emotional metrics. Our AI algorithms analyze every aspect of your performance for a comprehensive rating."
-  },
-  {
-    icon: Medal,
-    title: "Total Player Analysis",
-    description: "From combine results to coachability and learning style — your GAR Analysis gives you the complete breakdown of strengths, weaknesses, and potential through advanced AI-powered metrics."
-  },
-  {
-    icon: UserSearch,
-    title: "AI Player Placement",
-    description: "Our AI maps your unique traits to your perfect sport and position using proprietary algorithms. We analyze thousands of data points to determine your optimal athletic path."
-  },
-  {
-    icon: LineChart,
-    title: "Performance Analytics",
-    description: "Our system uses cutting-edge AI to create a total analytics measurement framework, tracking your progress with actionable insights that help coaches, recruiters, and athletes see the complete picture."
-  }
-];
+interface ContentBlock {
+  id: number;
+  title: string;
+  content: string;
+  section: string;
+  identifier: string;
+  order: number | null;
+  active: boolean | null;
+  metadata: {
+    iconName?: string;
+    backgroundColor?: string;
+  } | null;
+  lastUpdated: string | null;
+  lastUpdatedBy: number | null;
+}
+
+// Icon mapping object
+const iconMap: Record<string, any> = {
+  'cpu': Cpu,
+  'badge-check': BadgeCheck,
+  'users': Users,
+  'trending-up': TrendingUp,
+  'brain-circuit': BrainCircuit,
+  'medal': Medal,
+  'user-search': UserSearch,
+  'line-chart': LineChart
+};
+
+// Define a feature type for type safety
+interface Feature {
+  icon: React.ComponentType<any>;
+  title: string;
+  description: string;
+  backgroundColor: string;
+}
 
 export function WhatMakesUsDifferent({ showTitle = true, showHeroSection = true }: WhatMakesUsDifferentProps) {
   const { user } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Fetch content blocks from the API
+  const { data: contentBlocks, isLoading, isError } = useQuery({
+    queryKey: ['/api/content-blocks/section'],
+    queryFn: async () => {
+      const response = await fetch('/api/content-blocks/section/what-makes-us-different');
+      if (!response.ok) {
+        throw new Error('Failed to fetch content blocks');
+      }
+      return response.json() as Promise<ContentBlock[]>;
+    }
+  });
+  
+  // Create features array from content blocks or use fallback if not loaded yet
+  const features: Feature[] = React.useMemo(() => {
+    if (!contentBlocks || contentBlocks.length === 0) {
+      return [
+        {
+          icon: Cpu,
+          title: "AI Motion Analysis",
+          description: "Our cutting-edge AI technology analyzes your motion mechanics with professional-grade accuracy.",
+          backgroundColor: 'bg-blue-100'
+        },
+        {
+          icon: BadgeCheck,
+          title: "Verified Combines",
+          description: "Participate in certified athletic combines where your performance metrics are verified by professionals.",
+          backgroundColor: 'bg-green-100'
+        }
+      ];
+    }
+
+    return contentBlocks.map(block => {
+      // Get the icon from the metadata or use a default
+      const IconComponent = block.metadata?.iconName 
+        ? iconMap[block.metadata.iconName] 
+        : BrainCircuit;
+        
+      return {
+        icon: IconComponent,
+        title: block.title,
+        description: block.content,
+        backgroundColor: block.metadata?.backgroundColor || 'bg-blue-100'
+      };
+    });
+  }, [contentBlocks]);
   
   const scrollToIndex = (index: number) => {
     const container = scrollContainerRef.current;
@@ -55,28 +115,32 @@ export function WhatMakesUsDifferent({ showTitle = true, showHeroSection = true 
   };
   
   const handleNext = () => {
+    if (features.length === 0) return;
     const nextIndex = (currentIndex + 1) % features.length;
     scrollToIndex(nextIndex);
   };
   
   const handlePrev = () => {
+    if (features.length === 0) return;
     const prevIndex = (currentIndex - 1 + features.length) % features.length;
     scrollToIndex(prevIndex);
   };
   
   // Automatically scroll every 5 seconds
   useEffect(() => {
+    if (features.length === 0) return; // Don't set up interval if no features
+    
     const interval = setInterval(() => {
       handleNext();
     }, 5000);
     
     return () => clearInterval(interval);
-  }, [currentIndex]);
+  }, [currentIndex, features.length]);
   
   // Handle scroll events to update currentIndex
   useEffect(() => {
     const container = scrollContainerRef.current;
-    if (!container) return;
+    if (!container || features.length === 0) return;
     
     const handleScroll = () => {
       const containerWidth = container.clientWidth;
@@ -89,7 +153,7 @@ export function WhatMakesUsDifferent({ showTitle = true, showHeroSection = true 
     
     container.addEventListener('scroll', handleScroll);
     return () => container.removeEventListener('scroll', handleScroll);
-  }, [currentIndex]);
+  }, [currentIndex, features.length]);
 
   return (
     <section className="py-16 border-t border-b border-gray-800 bg-black">

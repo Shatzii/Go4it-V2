@@ -2324,6 +2324,59 @@ export class DatabaseStorage implements IStorage {
       sets: 2,
       order: 3
     });
+    
+    // Create content blocks for "What Makes Us Different" section
+    await db.insert(contentBlocks).values({
+      identifier: "what-makes-us-different-ai-analysis",
+      title: "AI Motion Analysis",
+      content: "Our cutting-edge AI technology analyzes your motion mechanics with professional-grade accuracy, providing detailed feedback on your form, technique, and movement patterns.",
+      section: "what-makes-us-different",
+      order: 1,
+      active: true,
+      metadata: {
+        iconName: "cpu",
+        backgroundColor: "bg-blue-100"
+      }
+    });
+    
+    await db.insert(contentBlocks).values({
+      identifier: "what-makes-us-different-verified-combines",
+      title: "Verified Combines",
+      content: "Participate in certified athletic combines where your performance metrics are verified by professionals, giving college scouts reliable data they can trust.",
+      section: "what-makes-us-different",
+      order: 2,
+      active: true,
+      metadata: {
+        iconName: "badge-check",
+        backgroundColor: "bg-green-100"
+      }
+    });
+    
+    await db.insert(contentBlocks).values({
+      identifier: "what-makes-us-different-scout-connection",
+      title: "Direct Scout Connection",
+      content: "Get noticed by college scouts through our verified platform that connects talented athletes directly with college recruiting programs across the country.",
+      section: "what-makes-us-different",
+      order: 3,
+      active: true,
+      metadata: {
+        iconName: "users",
+        backgroundColor: "bg-yellow-100"
+      }
+    });
+    
+    await db.insert(contentBlocks).values({
+      identifier: "what-makes-us-different-personalized-development",
+      title: "Personalized Development",
+      content: "Receive tailored training programs and development paths based on your specific needs, goals, and athletic profile, helping you reach your full potential.",
+      section: "what-makes-us-different",
+      order: 4,
+      active: true,
+      metadata: {
+        iconName: "trending-up",
+        backgroundColor: "bg-purple-100"
+      }
+    });
   }
   
   // API Key operations
