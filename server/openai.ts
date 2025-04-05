@@ -4,21 +4,48 @@ import path from "path";
 import { storage } from "./storage";
 import { AthleteProfile } from "@shared/schema";
 import { v4 as uuidv4 } from 'uuid';
+import { openAIService } from './services/openai-service';
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-console.log("Initializing OpenAI client with API key from environment");
+console.log("Using OpenAI service for all OpenAI API calls");
 
-// Get API key from environment or use fallback for development only
-const apiKey = process.env.OPENAI_API_KEY;
-if (!apiKey || !apiKey.startsWith('sk-')) {
-  console.error("Warning: Invalid or missing OpenAI API key! Please set a valid OPENAI_API_KEY environment variable.");
-  console.error("API analysis features will not work without a valid key.");
+// Initialize a fallback client for compatibility with existing code
+let openai: OpenAI;
+
+// Function to get an OpenAI client instance - all API calls should use this
+async function getOpenAIClient(): Promise<OpenAI> {
+  try {
+    // Try to get client from service
+    return await openAIService.getClient();
+  } catch (error) {
+    console.error("Error getting OpenAI client from service:", error);
+    
+    // If we have a client already, use it
+    if (openai) {
+      return openai;
+    }
+    
+    // Create a fallback client with environment variable
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      throw new Error("No OpenAI API key available");
+    }
+    
+    openai = new OpenAI({ apiKey });
+    return openai;
+  }
 }
 
-// Create OpenAI client
-const openai = new OpenAI({ 
-  apiKey: apiKey
-});
+// Initialize immediately for backward compatibility
+(async () => {
+  try {
+    openai = await getOpenAIClient();
+  } catch (error) {
+    console.error("Failed to initialize OpenAI client:", error);
+    // Create an empty client that will throw proper errors when used
+    openai = new OpenAI({ apiKey: 'dummy_key_for_initialization' });
+  }
+})();
 
 // Function to generate athlete headshot images using DALL-E
 export async function generateAthleteImage(
@@ -46,7 +73,8 @@ export async function generateAthleteImage(
     This should be a professional-looking action portrait of a real high school/college athlete, similar to those used in college recruiting profiles.
     Focus on a realistic, natural expression, not posed or artificial-looking. Show them actively engaged in their sport.`;
     
-    const response = await openai.images.generate({
+    const client = await getOpenAIClient();
+    const response = await client.images.generate({
       model: "dall-e-3",
       prompt: prompt,
       n: 1,
@@ -263,9 +291,12 @@ export async function analyzeVideo(videoId: number, videoPath: string): Promise<
     
     const sportType = video.sportType || "basketball"; // Default to basketball if not specified
     
-    // Check if we have a valid API key
-    if (!apiKey || !apiKey.startsWith('sk-')) {
-      console.log("No valid OpenAI API key found, using mock analysis");
+    // Check if we have a valid OpenAI client
+    try {
+      // Try to get a client from our service
+      await getOpenAIClient();
+    } catch (error) {
+      console.log("No OpenAI API key found, using mock analysis");
       
       // Generate and save a mock analysis
       const mockAnalysis = generateMockAnalysis(sportType);
@@ -315,7 +346,8 @@ Keep in mind that this is for a student athlete who is looking to improve and po
 Focus on constructive feedback while being encouraging. Be specific about strengths and areas for improvement.
     `;
 
-    const response = await openai.chat.completions.create({
+    const client = await getOpenAIClient();
+    const response = await client.chat.completions.create({
       model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
       messages: [
         {
@@ -444,7 +476,8 @@ ${existingSports.size > 0 ? `Note: The athlete already has recommendations for t
 `;
 
     // Call OpenAI API
-    const response = await openai.chat.completions.create({
+    const client = await getOpenAIClient();
+    const response = await client.chat.completions.create({
       model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
       messages: [
         {
@@ -599,7 +632,8 @@ Remember that you're working with student athletes, primarily focused on develop
     ];
 
     // Call OpenAI API
-    const response = await openai.chat.completions.create({
+    const client = await getOpenAIClient();
+    const response = await client.chat.completions.create({
       model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
       messages,
       temperature: 0.7,
@@ -678,9 +712,12 @@ export async function analyzeWorkoutVerification(
     const exerciseType = checkpoint ? checkpoint.exerciseName : "general exercise";
     const targetReps = checkpoint ? checkpoint.targetAmount || 10 : 10;
     
-    // Check if we have a valid API key
-    if (!apiKey || !apiKey.startsWith('sk-')) {
-      console.log("No valid OpenAI API key found, using mock workout verification");
+    // Check if we have a valid OpenAI client
+    try {
+      // Try to get a client from our service
+      await getOpenAIClient();
+    } catch (error) {
+      console.log("No OpenAI API key found, using mock workout verification");
       
       // Generate mock workout verification
       const mockAnalysis = {
@@ -762,7 +799,8 @@ Be honest but encouraging in your assessment. Focus on constructive feedback tha
 `;
 
     // Use vision capabilities if we have video content
-    const visionResponse = await openai.chat.completions.create({
+    const client = await getOpenAIClient();
+    const visionResponse = await client.chat.completions.create({
       model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
       messages: [
         {
@@ -921,7 +959,8 @@ Keep your feedback concise - this is meant for real-time guidance during a worko
 `;
 
     // Call OpenAI API
-    const response = await openai.chat.completions.create({
+    const client = await getOpenAIClient();
+    const response = await client.chat.completions.create({
       model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
       messages: [
         {
@@ -1055,7 +1094,8 @@ If the athlete has specific sports interests, tailor exercises to improve sport-
 `;
 
     // Call OpenAI API
-    const response = await openai.chat.completions.create({
+    const client = await getOpenAIClient();
+    const response = await client.chat.completions.create({
       model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
       messages: [
         {
@@ -1258,7 +1298,8 @@ Focus on proper form and technique to prevent injuries.
 `;
 
     // Call OpenAI API
-    const response = await openai.chat.completions.create({
+    const client = await getOpenAIClient();
+    const response = await client.chat.completions.create({
       model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
       messages: [
         {
@@ -1339,7 +1380,8 @@ Be encouraging but honest - this is a student athlete who wants to improve, not 
 `;
 
     // Call OpenAI API
-    const response = await openai.chat.completions.create({
+    const client = await getOpenAIClient();
+    const response = await client.chat.completions.create({
       model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
       messages: [
         {
@@ -1451,7 +1493,8 @@ export async function verifyWorkoutVideo(verificationId: number, videoPath: stri
     ];
 
     // Make the API call to OpenAI
-    const completionResponse = await openai.chat.completions.create({
+    const client = await getOpenAIClient();
+    const completionResponse = await client.chat.completions.create({
       model: "gpt-4o",
       messages,
       temperature: 0.2,

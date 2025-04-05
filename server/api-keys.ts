@@ -3,10 +3,16 @@ import { storage } from "./storage";
 import { z } from "zod";
 
 // Schema for validating API key data
+// Use the same enum as in the shared schema
 const apiKeySchema = z.object({
-  keyType: z.enum(["openai", "stripe", "sendgrid", "twilio"]),
-  keyValue: z.string().min(10),
+  keyType: z.enum(['openai', 'stripe', 'sendgrid', 'twilio', 'google', 'aws', 'active', 'twitter', 'reddit_client_id', 'reddit_client_secret']),
+  keyValue: z.string().min(5),
 });
+
+// Validator for OpenAI keys - they should start with "sk-"
+const openaiKeyValidator = (key: string): boolean => {
+  return key.startsWith('sk-') && key.length > 20;
+};
 
 // Function to set an environment variable
 const setEnvironmentVariable = (key: string, value: string) => {
@@ -44,9 +50,16 @@ export const saveApiKey = async (req: Request, res: Response) => {
 
     const { keyType, keyValue } = result.data;
 
-    // Save the API key to database
+    // Additional validation for specific API keys
+    if (keyType === "openai" && !openaiKeyValidator(keyValue)) {
+      return res.status(400).json({
+        message: "Invalid OpenAI API key format. OpenAI keys should start with 'sk-'",
+      });
+    }
+
+    // Save the API key to database with explicit type
     await storage.saveApiKey({
-      keyType,
+      keyType: keyType as "openai" | "stripe" | "sendgrid" | "twilio" | "google" | "aws" | "active" | "twitter" | "reddit_client_id" | "reddit_client_secret",
       keyValue,
       isActive: true
     });
