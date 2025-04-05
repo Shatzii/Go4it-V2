@@ -5,6 +5,7 @@ import {
   videos, type Video, type InsertVideo,
   videoAnalyses, type VideoAnalysis, type InsertVideoAnalysis,
   sportRecommendations, type SportRecommendation, type InsertSportRecommendation,
+  apiKeys, type ApiKey, type InsertApiKey,
   ncaaEligibility, type NcaaEligibility, type InsertNcaaEligibility,
   ncaaCoreCourses, type NcaaCoreCourse, type InsertNcaaCoreCourse,
   gradeScales, type GradeScale, type InsertGradeScale,
@@ -47,6 +48,8 @@ import {
   combineTourEvents, type CombineTourEvent, type InsertCombineTourEvent,
   registrations, type Registration, type InsertRegistration,
   payments, type Payment, type InsertPayment,
+  // API Keys
+  apiKeys, type InsertApiKey,
   // Video highlights
   videoHighlights, type VideoHighlight, type InsertVideoHighlight
 } from "@shared/schema";
@@ -262,6 +265,14 @@ export interface IStorage {
   incrementSpotlightViews(id: number): Promise<SpotlightProfile | undefined>;
   likeSpotlightProfile(id: number): Promise<SpotlightProfile | undefined>;
   
+  // API Key operations
+  getApiKey(keyType: string): Promise<ApiKey | undefined>;
+  getAllApiKeys(): Promise<ApiKey[]>;
+  getApiKeyStatus(): Promise<Record<string, boolean>>;
+  saveApiKey(key: InsertApiKey): Promise<ApiKey>;
+  updateApiKey(keyType: string, data: Partial<ApiKey>): Promise<ApiKey | undefined>;
+  deleteApiKey(keyType: string): Promise<boolean>;
+  
   // MyPlayer XP System operations
   getPlayerProgress(userId: number): Promise<PlayerProgress | undefined>;
   createPlayerProgress(progress: InsertPlayerProgress): Promise<PlayerProgress>;
@@ -375,6 +386,7 @@ export class MemStorage implements IStorage {
   // Weight room equipment components
   private weightRoomEquipment: Map<number, WeightRoomEquipment>;
   private playerEquipment: Map<number, PlayerEquipment>;
+  private apiKeys: Map<string, ApiKey>;
   
   private currentUserId: number;
   private currentAthleteProfileId: number;
@@ -488,6 +500,7 @@ export class MemStorage implements IStorage {
     // Initialize weight room equipment maps
     this.weightRoomEquipment = new Map();
     this.playerEquipment = new Map();
+    this.apiKeys = new Map();
     
     this.currentUserId = 1;
     this.currentAthleteProfileId = 1;
