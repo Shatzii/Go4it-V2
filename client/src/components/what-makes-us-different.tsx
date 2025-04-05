@@ -129,10 +129,14 @@ export function WhatMakesUsDifferent({ showTitle = true, showHeroSection = true 
   // Removed auto-scrolling to prevent disruption of user experience
   // Manual scrolling is still available through navigation buttons and dots
   
-  // Handle scroll events to update currentIndex
+  // Handle scroll events and touch interactions to update currentIndex
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container || features.length === 0) return;
+    
+    // Variables for touch events
+    let touchStartX = 0;
+    let touchEndX = 0;
     
     const handleScroll = () => {
       const containerWidth = container.clientWidth;
@@ -143,28 +147,56 @@ export function WhatMakesUsDifferent({ showTitle = true, showHeroSection = true 
       }
     };
     
+    // Touch event handlers for mobile swipe
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartX = e.touches[0].clientX;
+    };
+    
+    const handleTouchEnd = (e: TouchEvent) => {
+      touchEndX = e.changedTouches[0].clientX;
+      const touchDiff = touchStartX - touchEndX;
+      
+      // If swipe was significant enough (40px threshold)
+      if (Math.abs(touchDiff) > 40) {
+        if (touchDiff > 0) {
+          // Swiped left - go to next
+          handleNext();
+        } else {
+          // Swiped right - go to previous
+          handlePrev();
+        }
+      }
+    };
+    
     container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
-  }, [currentIndex, features.length]);
+    container.addEventListener('touchstart', handleTouchStart);
+    container.addEventListener('touchend', handleTouchEnd);
+    
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [currentIndex, features.length, handleNext, handlePrev]);
 
   return (
     <section className="py-16 border-t border-b border-gray-800 bg-black">
       {/* Hero Section */}
       {showHeroSection && (
         <div className="text-center mb-14">
-          <h1 className="text-6xl font-bold mb-3 bg-gradient-to-r from-blue-400 to-cyan-300 text-transparent bg-clip-text drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-blue-400 to-cyan-300 text-transparent bg-clip-text drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]">
             GET VERIFIED
           </h1>
-          <h2 className="text-3xl font-semibold text-white mb-3">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-white mb-2 sm:mb-3">
             GAR Rating System
           </h2>
-          <p className="text-xl text-blue-400 max-w-3xl mx-auto">
-            The Ultimate AI-Powered Athlete Evaluation Framework
+          <p className="text-lg sm:text-xl text-blue-400 max-w-3xl mx-auto">
+            The Ultimate AI-Powered Athlete Evaluation
           </p>
           
-          <p className="text-xl mt-4 mb-0 max-w-3xl mx-auto text-gray-300">
-            Our revolutionary GAR Rating System uses artificial intelligence to analyze
-            physical metrics, cognitive abilities, and psychological factors for the most 
+          <p className="text-base sm:text-xl mt-3 sm:mt-4 mb-0 max-w-3xl mx-auto text-gray-300">
+            Our revolutionary GAR Rating System uses AI to analyze physical metrics, 
+            cognitive abilities, and psychological factors for the most 
             comprehensive athlete evaluation available.
           </p>
         </div>
@@ -220,17 +252,17 @@ export function WhatMakesUsDifferent({ showTitle = true, showHeroSection = true 
               return (
                 <Card 
                   key={index}
-                  className="feature-card flex-shrink-0 w-[280px] md:w-[350px] border border-gray-800 bg-gray-950 shadow-lg transform transition-all duration-300 snap-center hover:shadow-[0_0_15px_rgba(34,211,238,0.2)]"
+                  className="feature-card flex-shrink-0 w-[240px] sm:w-[280px] md:w-[350px] border border-gray-800 bg-gray-950 shadow-lg transform transition-all duration-300 snap-center hover:shadow-[0_0_15px_rgba(34,211,238,0.2)]"
                 >
-                  <CardContent className="p-6">
-                    <div className="flex flex-col items-center text-center gap-4">
-                      <div className="section-icon flex-shrink-0 w-24 h-24 relative my-4">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex flex-col items-center text-center gap-3">
+                      <div className="section-icon flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 relative my-2 sm:my-4">
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-cyan-400/20 rounded-full backdrop-blur-sm"></div>
-                        <Icon className="w-full h-full p-5 text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]" />
+                        <Icon className="w-full h-full p-4 sm:p-5 text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]" />
                       </div>
                       <div className="section-content">
-                        <h3 className="section-title text-2xl font-bold text-white mb-2">{feature.title}</h3>
-                        <p className="section-text text-gray-300">
+                        <h3 className="section-title text-xl sm:text-2xl font-bold text-white mb-1 sm:mb-2">{feature.title}</h3>
+                        <p className="section-text text-sm sm:text-base text-gray-300">
                           {feature.description}
                         </p>
                       </div>
