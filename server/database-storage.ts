@@ -1708,7 +1708,19 @@ export class DatabaseStorage implements IStorage {
         throw new Error("Video not found");
       }
       
-      // Create the highlight
+      // Import the VideoProcessor dynamically to avoid circular dependencies
+      const { VideoProcessor } = await import('./services/video-processor');
+      
+      // Process the video to create highlight clip
+      const { highlightPath, thumbnailPath } = await VideoProcessor.createHighlight(
+        video.filePath,
+        {
+          startTime: options.startTime,
+          endTime: options.endTime
+        }
+      );
+      
+      // Create the highlight record in the database
       const now = new Date();
       const [highlight] = await db
         .insert(videoHighlights)
@@ -1718,13 +1730,12 @@ export class DatabaseStorage implements IStorage {
           description: options.description || null,
           startTime: options.startTime,
           endTime: options.endTime,
-          duration: options.endTime - options.startTime,
-          userId: options.userId,
+          highlightPath, // Path to the generated highlight video
+          thumbnailPath, // Path to the generated thumbnail
           createdAt: now,
+          createdBy: options.userId,
           aiGenerated: options.aiGenerated || false,
-          featured: false,
-          views: 0,
-          likes: 0
+          featured: false
         })
         .returning();
         

@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { VideoPlayer } from "@/components/ui/video-player";
 import { Video, VideoAnalysis } from "@shared/schema";
-import { Info } from "lucide-react";
+import { Info, Scissors } from "lucide-react";
 import { useState } from "react";
+import { Link } from "wouter";
 
 interface VideoAnalysisCardProps {
   video: Video;
@@ -90,14 +91,25 @@ export function VideoAnalysisCard({ video, analysis }: VideoAnalysisCardProps) {
           </div>
         )}
         
-        <Button
-          className="w-full mt-4"
-          variant="secondary"
-          onClick={handleViewDetails}
-        >
-          <Info className="h-5 w-5 mr-2" />
-          View Detailed Analysis
-        </Button>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
+          <Button
+            variant="secondary"
+            onClick={handleViewDetails}
+          >
+            <Info className="h-4 w-4 mr-2" />
+            View Analysis
+          </Button>
+          
+          <Link href={`/highlight-generator/${video.id}`}>
+            <Button
+              variant="outline"
+              className="w-full"
+            >
+              <Scissors className="h-4 w-4 mr-2" />
+              Create Highlights
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   );
