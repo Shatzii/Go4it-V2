@@ -44,7 +44,7 @@ export function GlobalAgreementModal() {
           userAgent: navigator.userAgent
         });
       } else {
-        await apiRequest('/api/public/user-agreements', 'POST', {
+        await apiRequest('api/public/user-agreements', 'POST', {
           agreementType: 'nda',
           version: '1.0',
           ipAddress: 'client',
