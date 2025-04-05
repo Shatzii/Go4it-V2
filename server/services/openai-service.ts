@@ -1,190 +1,116 @@
+import { OpenAI } from 'openai';
 import { db } from '../db';
-import { apiKeys } from '../../shared/schema';
+import { apiKeys } from '@shared/schema';
 import { eq } from 'drizzle-orm';
-import OpenAI from 'openai';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 /**
- * OpenAI Service for centralized API key management and OpenAI client creation
+ * Service to manage OpenAI API interactions
+ * This centralizes all OpenAI functionality to ensure API key validation
+ * and consistent error handling
  */
 class OpenAIService {
-  private static instance: OpenAIService;
   private client: OpenAI | null = null;
-  private apiKey: string | undefined = undefined;
+  private apiKey: string | null = null;
   
-  private constructor() {
-    // Initialize with environment variable if available
-    this.apiKey = process.env.OPENAI_API_KEY;
-    if (this.apiKey) {
-      this.client = new OpenAI({ apiKey: this.apiKey });
-      console.log('OpenAI client initialized with API key from environment');
-    }
+  constructor() {
+    console.log('Using OpenAI service for all OpenAI API calls');
   }
   
   /**
-   * Get the singleton instance of OpenAIService
+   * Check if a valid OpenAI API key is available
+   * @returns Promise resolving to true if valid key is available
+   * @throws Error if no valid key is found
    */
-  public static getInstance(): OpenAIService {
-    if (!OpenAIService.instance) {
-      OpenAIService.instance = new OpenAIService();
-    }
-    return OpenAIService.instance;
+  async hasValidApiKey(): Promise<boolean> {
+    // Try to get a client, which will validate the key
+    await this.getClient();
+    return true;
   }
   
   /**
-   * Get the OpenAI client, initializing or refreshing if needed
+   * Get or create an OpenAI client with a valid API key
+   * @returns Promise resolving to an OpenAI client
+   * @throws Error if no valid key is found
    */
-  public async getClient(): Promise<OpenAI> {
-    // If we already have a client with a key, use it
-    if (this.client && this.apiKey) {
+  async getClient(): Promise<OpenAI> {
+    // Return existing client if we have one
+    if (this.client) {
       return this.client;
     }
     
-    // Try to get key from database
-    await this.refreshApiKey();
+    // Try to get API key from database
+    const apiKey = await this.getApiKeyFromDatabase();
     
-    // If we still don't have a key, throw an error
-    if (!this.apiKey) {
-      throw new Error('No OpenAI API key available. Please update the key in the admin panel or environment.');
+    if (!apiKey) {
+      throw new Error('No OpenAI API key found in the database or environment');
     }
     
-    // Create a new client with the API key if needed
-    if (!this.client) {
-      this.client = new OpenAI({ apiKey: this.apiKey });
+    // Create and verify the client
+    try {
+      this.client = new OpenAI({
+        apiKey,
+      });
+      
+      // Verify the key works with a simple models list request
+      await this.client.models.list();
+      
+      // Update last used timestamp
+      this.updateApiKeyLastUsed('openai').catch(err => {
+        console.error('Error updating API key last used timestamp:', err);
+      });
+      
+      // Store the key
+      this.apiKey = apiKey;
+      
+      return this.client;
+    } catch (error) {
+      console.error('Error validating OpenAI API key:', error);
+      this.client = null;
+      throw new Error('Invalid OpenAI API key');
     }
-    
-    return this.client;
   }
   
   /**
-   * Attempt to refresh the API key from the database
+   * Get the OpenAI API key from the database
+   * @returns Promise resolving to the API key or null if not found
    */
-  public async refreshApiKey(): Promise<boolean> {
+  private async getApiKeyFromDatabase(): Promise<string | null> {
     try {
-      // Get the API key from the database
-      const keys = await db
+      const result = await db
         .select()
         .from(apiKeys)
-        .where(eq(apiKeys.keyType, 'openai'));
-      
-      // If a key was found, use it
-      if (keys.length > 0) {
-        const keyValue = keys[0].keyValue;
-        if (keyValue && keyValue !== this.apiKey) {
-          this.apiKey = keyValue;
-          this.client = new OpenAI({ apiKey: this.apiKey });
-          console.log('OpenAI client refreshed with API key from database');
-          // Update the last used timestamp
-          await db
-            .update(apiKeys)
-            .set({ lastUsed: new Date() })
-            .where(eq(apiKeys.id, keys[0].id));
-          return true;
-        }
-        return !!this.apiKey; // Return true if we have an API key
-      }
-      
-      // If not found in DB but we have environment variable, persist it to DB
-      if (!keys.length && this.apiKey) {
-        await db
-          .insert(apiKeys)
-          .values({
-            keyType: 'openai',
-            keyValue: this.apiKey,
-            isActive: true,
-            lastUsed: new Date()
-          });
-        console.log('Saved environment API key to database');
-        return true;
-      }
-      
-      return false;
-    } catch (error) {
-      console.error('Error refreshing OpenAI API key:', error);
-      return !!this.apiKey; // Return true if we already have an API key
-    }
-  }
-  
-  /**
-   * Update the OpenAI API key in the database
-   */
-  public async updateApiKey(newKey: string): Promise<boolean> {
-    try {
-      // Update the key in the database
-      const result = await db
-        .update(apiKeys)
-        .set({ 
-          keyValue: newKey,
-          lastUsed: new Date(),
-          isActive: true
-        })
         .where(eq(apiKeys.keyType, 'openai'))
-        .returning();
+        .where(eq(apiKeys.isActive, true))
+        .limit(1);
       
-      // If no key exists, insert a new one
-      if (result.length === 0) {
-        const insertResult = await db
-          .insert(apiKeys)
-          .values({
-            keyType: 'openai',
-            keyValue: newKey,
-            isActive: true,
-            lastUsed: new Date()
-          })
-          .returning();
-        
-        if (insertResult.length === 0) {
-          return false;
-        }
+      if (result && result.length > 0) {
+        return result[0].keyValue;
       }
       
-      // Update the current client
-      this.apiKey = newKey;
-      this.client = new OpenAI({ apiKey: newKey });
-      console.log('OpenAI API key updated successfully');
-      
-      return true;
+      // Fallback to environment variable
+      return process.env.OPENAI_API_KEY || null;
     } catch (error) {
-      console.error('Error updating OpenAI API key:', error);
-      return false;
+      console.error('Error getting API key from database:', error);
+      // Fallback to environment variable
+      return process.env.OPENAI_API_KEY || null;
     }
   }
   
   /**
-   * Check if we have a valid API key
+   * Update the last used timestamp for an API key
+   * @param keyType The type of API key to update
    */
-  public async hasValidApiKey(): Promise<boolean> {
-    // If we don't have a client or key, try to refresh
-    if (!this.client || !this.apiKey) {
-      const refreshed = await this.refreshApiKey();
-      if (!refreshed) {
-        return false;
-      }
-    }
-    
-    return !!this.apiKey;
-  }
-  
-  /**
-   * Validate an OpenAI API key by making a simple request
-   */
-  public async validateApiKey(keyToValidate: string): Promise<boolean> {
+  private async updateApiKeyLastUsed(keyType: string): Promise<void> {
     try {
-      // Create a temporary client with the key to validate
-      const tempClient = new OpenAI({ apiKey: keyToValidate });
-      
-      // Make a simple models list request to validate the key
-      await tempClient.models.list();
-      
-      return true;
+      await db
+        .update(apiKeys)
+        .set({ lastUsed: new Date() })
+        .where(eq(apiKeys.keyType, keyType));
     } catch (error) {
-      console.error('API key validation failed:', error);
-      return false;
+      console.error('Error updating API key last used timestamp:', error);
     }
   }
 }
 
-// Export the singleton instance
-export const openAIService = OpenAIService.getInstance();
+// Export singleton instance
+export const openAIService = new OpenAIService();

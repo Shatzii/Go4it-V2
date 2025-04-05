@@ -7,6 +7,7 @@ import { generateSlug } from './utils';
 import cron from 'node-cron';
 import axios from 'axios';
 import { openAIService } from './services/openai-service';
+import { imageGenerationService } from './services/image-generation-service';
 
 // Function to get OpenAI client
 async function getOpenAIClient(): Promise<OpenAI> {
@@ -478,6 +479,21 @@ export async function createAIBlogPost(authorId: number): Promise<boolean> {
 
     // Generate a slug from the title
     const slug = generateSlug(blogContent.title);
+    
+    // Generate an image for the blog post
+    let coverImage;
+    try {
+      console.log(`Generating image for blog post: "${blogContent.title}"`);
+      coverImage = await imageGenerationService.generateBlogImage(
+        blogContent.title,
+        blogContent.category,
+        blogContent.tags
+      );
+      console.log(`Generated image path: ${coverImage}`);
+    } catch (error) {
+      console.error('Error generating blog image:', error);
+      coverImage = null;
+    }
 
     // Create blog post in database
     const blogData = {
@@ -489,7 +505,8 @@ export async function createAIBlogPost(authorId: number): Promise<boolean> {
       authorId: authorId,
       publishDate: new Date(),
       featured: Math.random() > 0.8, // 20% chance of being featured
-      tags: blogContent.tags
+      tags: blogContent.tags,
+      coverImage: coverImage
     };
 
     // Validate blog data
