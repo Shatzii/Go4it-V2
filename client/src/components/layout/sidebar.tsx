@@ -21,7 +21,13 @@ import {
   Maximize,
   Minimize,
   GitCompare,
-  Film
+  Film,
+  Video,
+  CalendarCheck,
+  UserCog,
+  Dumbbell,
+  Sparkles,
+  Bot
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -292,6 +298,82 @@ export default function Layout({ children }: LayoutProps) {
                     </a>
                   </Link>
                 </motion.li>
+                
+                <motion.li variants={menuItemVariants}>
+                  <Link href="/scoutvision-feed">
+                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/scoutvision-feed" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                      <Video className="h-5 w-5 mr-3" />
+                      ScoutVision Feed
+                    </a>
+                  </Link>
+                </motion.li>
+                
+                <motion.li variants={menuItemVariants}>
+                  <Link href="/coach-portal">
+                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/coach-portal" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                      <UserCog className="h-5 w-5 mr-3" />
+                      Coach Portal
+                    </a>
+                  </Link>
+                </motion.li>
+                
+                <motion.li variants={menuItemVariants}>
+                  <Link href="/combine-tour">
+                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/combine-tour" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                      <CalendarCheck className="h-5 w-5 mr-3" />
+                      Combine Tour
+                    </a>
+                  </Link>
+                </motion.li>
+                
+                <motion.li variants={menuItemVariants}>
+                  <Link href="/myplayer-xp">
+                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/myplayer-xp" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                      <Sparkles className="h-5 w-5 mr-3" />
+                      MyPlayer XP
+                    </a>
+                  </Link>
+                </motion.li>
+                
+                <motion.li variants={menuItemVariants}>
+                  <Link href="/weight-room">
+                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/weight-room" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                      <Dumbbell className="h-5 w-5 mr-3" />
+                      Weight Room
+                    </a>
+                  </Link>
+                </motion.li>
+                
+                <motion.li variants={menuItemVariants}>
+                  <Link href="/myplayer-star-path">
+                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/myplayer-star-path" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="0.5">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                      Star Path
+                    </a>
+                  </Link>
+                </motion.li>
+                
+                <motion.li variants={menuItemVariants}>
+                  <Link href="/myplayer-ai-coach">
+                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/myplayer-ai-coach" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                      <Bot className="h-5 w-5 mr-3" />
+                      AI Coach
+                    </a>
+                  </Link>
+                </motion.li>
+                
+                <motion.li variants={menuItemVariants}>
+                  <Link href="/nextup-spotlight">
+                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/nextup-spotlight" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" />
+                      </svg>
+                      NextUp Spotlight
+                    </a>
+                  </Link>
+                </motion.li>
 
                 {/* Admin section - only visible for admin users */}
                 {user && user.role === "admin" && (
@@ -508,6 +590,83 @@ export default function Layout({ children }: LayoutProps) {
                       </a>
                     </Link>
                   </motion.li>
+
+                  <motion.li variants={menuItemVariants}>
+                    <Link href="/scoutvision-feed">
+                      <a className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/scoutvision-feed" ? "active bg-primary" : ""}`}>
+                        <Video className="h-6 w-6 mr-3" />
+                        ScoutVision Feed
+                      </a>
+                    </Link>
+                  </motion.li>
+                  
+                  <motion.li variants={menuItemVariants}>
+                    <Link href="/coach-portal">
+                      <a className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/coach-portal" ? "active bg-primary" : ""}`}>
+                        <UserCog className="h-6 w-6 mr-3" />
+                        Coach Portal
+                      </a>
+                    </Link>
+                  </motion.li>
+                  
+                  <motion.li variants={menuItemVariants}>
+                    <Link href="/combine-tour">
+                      <a className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/combine-tour" ? "active bg-primary" : ""}`}>
+                        <CalendarCheck className="h-6 w-6 mr-3" />
+                        Combine Tour
+                      </a>
+                    </Link>
+                  </motion.li>
+                  
+                  <motion.li variants={menuItemVariants}>
+                    <Link href="/myplayer-xp">
+                      <a className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/myplayer-xp" ? "active bg-primary" : ""}`}>
+                        <Sparkles className="h-6 w-6 mr-3" />
+                        MyPlayer XP
+                      </a>
+                    </Link>
+                  </motion.li>
+                  
+                  <motion.li variants={menuItemVariants}>
+                    <Link href="/weight-room">
+                      <a className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/weight-room" ? "active bg-primary" : ""}`}>
+                        <Dumbbell className="h-6 w-6 mr-3" />
+                        Weight Room
+                      </a>
+                    </Link>
+                  </motion.li>
+                  
+                  <motion.li variants={menuItemVariants}>
+                    <Link href="/myplayer-star-path">
+                      <a className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/myplayer-star-path" ? "active bg-primary" : ""}`}>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-3" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="0.5">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                        </svg>
+                        Star Path
+                      </a>
+                    </Link>
+                  </motion.li>
+                  
+                  <motion.li variants={menuItemVariants}>
+                    <Link href="/myplayer-ai-coach">
+                      <a className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/myplayer-ai-coach" ? "active bg-primary" : ""}`}>
+                        <Bot className="h-6 w-6 mr-3" />
+                        AI Coach
+                      </a>
+                    </Link>
+                  </motion.li>
+                  
+                  <motion.li variants={menuItemVariants}>
+                    <Link href="/nextup-spotlight">
+                      <a className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/nextup-spotlight" ? "active bg-primary" : ""}`}>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" />
+                        </svg>
+                        NextUp Spotlight
+                      </a>
+                    </Link>
+                  </motion.li>
+                  
                   {user && user.role === "admin" && (
                     <motion.li variants={menuItemVariants}>
                       <Link href="/admin-dashboard">
