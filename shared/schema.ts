@@ -663,6 +663,13 @@ export const insertUserWithMeasurementSchema = insertUserSchema.extend({
 export const insertAthleteProfileSchema = createInsertSchema(athleteProfiles).omit({ id: true });
 export const insertCoachProfileSchema = createInsertSchema(coachProfiles).omit({ id: true });
 export const insertVideoSchema = createInsertSchema(videos).omit({ id: true, uploadDate: true, analyzed: true });
+
+// Adding a more flexible filePath validation
+export const insertVideoWithFileSchema = insertVideoSchema.extend({
+  filePath: z.string(),
+  sportType: z.string().optional(),
+  thumbnailPath: z.string().optional()
+});
 export const insertVideoAnalysisSchema = createInsertSchema(videoAnalyses).omit({ id: true, analysisDate: true });
 export const insertSportRecommendationSchema = createInsertSchema(sportRecommendations).omit({ id: true, recommendationDate: true });
 export const insertNcaaEligibilitySchema = createInsertSchema(ncaaEligibility).omit({ 
