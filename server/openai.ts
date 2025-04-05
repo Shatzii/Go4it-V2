@@ -643,8 +643,30 @@ export async function analyzeWorkoutVerification(
       return mockAnalysis;
     }
     
-    // Since we can't directly analyze the video in this implementation,
-    // we'll use OpenAI's GPT-4o to simulate a workout verification analysis
+    // Get the video file as base64 for OpenAI Vision analysis
+    // In production, we would use a better method to extract frames or process video
+    let base64Video;
+    try {
+      // For a real implementation, we would extract key frames from the video
+      // and send those frames to OpenAI instead of using a mock image
+      console.log("Reading video file for OpenAI analysis");
+      
+      if (fs.existsSync(videoPath)) {
+        // In a real implementation, we would extract multiple key frames here
+        // For now, we'll use a simple approach of reading the video file
+        const videoBuffer = fs.readFileSync(videoPath);
+        base64Video = videoBuffer.toString('base64');
+      } else {
+        console.warn(`Video file not found at path: ${videoPath}`);
+        throw new Error("Video file not found");
+      }
+    } catch (error) {
+      console.error("Error reading video file:", error);
+      throw new Error("Failed to read video file");
+    }
+    
+    // Use OpenAI's GPT-4o with vision capabilities to analyze the workout
+    console.log("Using OpenAI GPT-4o to analyze workout video");
     
     const analysisPrompt = `
 You are an expert fitness coach and exercise form analyst. You are reviewing a workout verification video of a student athlete performing ${exerciseType} exercise.
@@ -676,7 +698,8 @@ Generate a JSON response with the following structure:
 Be honest but encouraging in your assessment. Focus on constructive feedback that will help the athlete improve their form and performance.
 `;
 
-    const response = await openai.chat.completions.create({
+    // Use vision capabilities if we have video content
+    const visionResponse = await openai.chat.completions.create({
       model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
       messages: [
         {
@@ -685,14 +708,25 @@ Be honest but encouraging in your assessment. Focus on constructive feedback tha
         },
         {
           role: "user",
-          content: analysisPrompt
+          content: [
+            {
+              type: "text",
+              text: analysisPrompt
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:video/mp4;base64,${base64Video}`
+              }
+            }
+          ],
         }
       ],
       response_format: { type: "json_object" }
     });
 
-    // Parse the JSON response
-    const analysisResult = JSON.parse(response.choices[0].message.content || '{}');
+    // Parse the JSON response from the vision API
+    const analysisResult = JSON.parse(visionResponse.choices[0].message.content || '{}');
     
     // Validate and ensure all required fields are present
     if (!analysisResult.motionAnalysis) analysisResult.motionAnalysis = {};
