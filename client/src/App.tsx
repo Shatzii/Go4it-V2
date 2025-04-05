@@ -20,6 +20,7 @@ import AuthPage from "@/pages/auth-page";
 import AnalysisReport from "@/pages/analysis-report";
 import MessagingPage from "@/pages/messaging";
 import HomePage from "@/pages/home-page";
+import CMSPage from "@/pages/cms-page";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -115,6 +116,12 @@ function Router() {
       <Route path="/upload-video">
         {({ params }) => (
           <ProtectedRoute component={UploadVideo} />
+        )}
+      </Route>
+      
+      <Route path="/cms">
+        {({ params }) => (
+          <ProtectedRoute component={CMSPage} adminOnly={true} />
         )}
       </Route>
       

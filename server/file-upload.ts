@@ -1,88 +1,82 @@
-import multer from "multer";
-import path from "path";
-import fs from "fs";
-import { Request } from "express";
+import multer from 'multer';
+import fs from 'fs';
+import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
+import type { Request } from 'express';
 
-// Create uploads directories if they don't exist
-const createUploadDirectories = () => {
-  const uploadDir = path.join(process.cwd(), "uploads");
-  const videosDir = path.join(uploadDir, "videos");
-  const thumbnailsDir = path.join(uploadDir, "thumbnails");
-
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-  }
-  
-  if (!fs.existsSync(videosDir)) {
-    fs.mkdirSync(videosDir, { recursive: true });
-  }
-  
-  if (!fs.existsSync(thumbnailsDir)) {
-    fs.mkdirSync(thumbnailsDir, { recursive: true });
-  }
-};
-
-// Storage configuration for video uploads
+// Configure storage for multer
 const storage = multer.diskStorage({
   destination: (req: Request, file: Express.Multer.File, cb) => {
-    createUploadDirectories();
-    cb(null, path.join(process.cwd(), "uploads"));
+    // Get category from form data or use 'default'
+    const category = req.body.category || 'default';
+    
+    // Create category directory if it doesn't exist
+    const categoryPath = path.join(process.cwd(), 'uploads', category);
+    if (!fs.existsSync(categoryPath)) {
+      fs.mkdirSync(categoryPath, { recursive: true });
+    }
+    
+    cb(null, categoryPath);
   },
   filename: (req: Request, file: Express.Multer.File, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const fileExtension = path.extname(file.originalname);
-    const safeFilename = Buffer.from(file.originalname, 'latin1').toString('utf8')
-      .replace(/[^a-zA-Z0-9]/g, '-')
-      .replace(/-+/g, '-')
-      .toLowerCase();
-    
-    const finalFilename = `${safeFilename}-${uniqueSuffix}${fileExtension}`;
-    cb(null, finalFilename);
+    // Generate a unique filename to prevent overwriting
+    const uniqueFilename = `${Date.now()}-${uuidv4()}${path.extname(file.originalname)}`;
+    cb(null, uniqueFilename);
   }
 });
 
-// File filter to only allow video files
+// Filter files to only accept images
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  const allowedTypes = ["video/mp4", "video/quicktime", "video/webm"];
-  
-  if (allowedTypes.includes(file.mimetype)) {
+  // Accept only image files
+  if (file.mimetype.startsWith('image/')) {
     cb(null, true);
   } else {
-    cb(new Error("Invalid file type. Only MP4, MOV, and WebM videos are allowed."));
+    cb(new Error('Only image files are allowed'));
   }
 };
 
-// Create the multer upload middleware
+// Create uploader for video files
 export const fileUpload = multer({
-  storage,
-  fileFilter,
+  storage: storage,
   limits: {
-    fileSize: 50 * 1024 * 1024, // 50MB
+    fileSize: 100 * 1024 * 1024, // 100MB limit for videos
   }
 });
 
-// Helper function to move file from temp location to final destination
+// Create uploader for image files
+export const imageUpload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit for images
+  }
+});
+
+// Utility to move file to a different location
 export const moveUploadedFile = (
-  source: string,
-  destination: string
-): Promise<void> => {
+  sourcePath: string,
+  targetDir: string,
+  newFilename?: string
+): Promise<string> => {
   return new Promise((resolve, reject) => {
-    const destDir = path.dirname(destination);
-    if (!fs.existsSync(destDir)) {
-      fs.mkdirSync(destDir, { recursive: true });
+    // Create target directory if it doesn't exist
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
     }
     
-    const readStream = fs.createReadStream(source);
-    const writeStream = fs.createWriteStream(destination);
+    const filename = newFilename || path.basename(sourcePath);
+    const targetPath = path.join(targetDir, filename);
     
-    readStream.on("error", reject);
-    writeStream.on("error", reject);
-    writeStream.on("finish", () => {
-      fs.unlink(source, (err) => {
-        if (err) {
-          console.warn("Failed to remove temp file:", err);
-        }
-        resolve();
+    const readStream = fs.createReadStream(sourcePath);
+    const writeStream = fs.createWriteStream(targetPath);
+    
+    readStream.on('error', error => reject(error));
+    writeStream.on('error', error => reject(error));
+    writeStream.on('finish', () => {
+      // Remove the source file
+      fs.unlink(sourcePath, (err) => {
+        if (err) console.error('Error removing source file:', err);
+        resolve(targetPath);
       });
     });
     
@@ -90,12 +84,103 @@ export const moveUploadedFile = (
   });
 };
 
-// Generate a thumbnail from video using ffmpeg (mock implementation)
+// Utility to generate a thumbnail from an image
 export const generateThumbnail = async (
-  videoPath: string,
-  thumbnailPath: string
+  imagePath: string,
+  targetDir: string,
+  width: number = 200,
+  height: number = 200
 ): Promise<string> => {
-  // In a real application, we would use ffmpeg to generate a thumbnail
-  // For this implementation, we'll just return a placeholder image URL
-  return "https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80";
+  // This is a placeholder for actual thumbnail generation
+  // In a real implementation, you would use a library like Sharp
+  return new Promise((resolve, reject) => {
+    try {
+      const filename = `thumb-${path.basename(imagePath)}`;
+      const targetPath = path.join(targetDir, filename);
+      
+      // For now, just copy the file as a thumbnail
+      fs.copyFile(imagePath, targetPath, (err) => {
+        if (err) return reject(err);
+        resolve(targetPath);
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+// Function to get all uploaded images
+export const getUploadedImages = (category?: string): Promise<{ path: string, url: string, filename: string, category: string }[]> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const uploadsDir = path.join(process.cwd(), 'uploads');
+      let categories: string[];
+      
+      if (category) {
+        categories = [category];
+      } else {
+        // Get all category folders
+        categories = fs.readdirSync(uploadsDir).filter(item => {
+          const itemPath = path.join(uploadsDir, item);
+          return fs.statSync(itemPath).isDirectory();
+        });
+      }
+      
+      // Get files from each category
+      const allImages = categories.flatMap(cat => {
+        const categoryPath = path.join(uploadsDir, cat);
+        
+        // Skip if directory doesn't exist
+        if (!fs.existsSync(categoryPath)) {
+          return [];
+        }
+        
+        return fs.readdirSync(categoryPath)
+          .filter(file => {
+            // Only include image files
+            const extension = path.extname(file).toLowerCase();
+            return ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'].includes(extension);
+          })
+          .map(file => {
+            const filePath = `${cat}/${file}`;
+            return {
+              path: filePath,
+              url: `/uploads/${filePath}`,
+              filename: file,
+              category: cat
+            };
+          });
+      });
+      
+      resolve(allImages);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+// Function to delete an image
+export const deleteImage = (imagePath: string): Promise<boolean> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const fullPath = path.join(process.cwd(), 'uploads', imagePath);
+      
+      // Check if file exists
+      if (!fs.existsSync(fullPath)) {
+        reject(new Error('Image does not exist'));
+        return;
+      }
+      
+      // Delete the file
+      fs.unlink(fullPath, (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(true);
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
 };

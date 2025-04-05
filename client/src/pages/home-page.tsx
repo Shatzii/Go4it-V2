@@ -149,9 +149,6 @@ export default function HomePage() {
                     </div>
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-3">
-                    <div className="flex items-center gap-1">
-                      {renderStarRating(athlete.starRating)}
-                    </div>
                   </div>
                 </div>
                 
@@ -169,7 +166,10 @@ export default function HomePage() {
                     </div>
                     <div>
                       <CardTitle className="text-lg text-white">{athlete.name}</CardTitle>
-                      <p className="text-sm text-blue-400 font-medium">{athlete.sportPosition}</p>
+                      <p className="text-sm text-blue-400 font-medium mb-1">{athlete.sportPosition}</p>
+                      <div className="flex items-center gap-1">
+                        {renderStarRating(athlete.starRating)}
+                      </div>
                     </div>
                   </div>
                 </CardHeader>
