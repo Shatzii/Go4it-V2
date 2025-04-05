@@ -6,6 +6,62 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth-context";
 import { useMeasurement } from "@/contexts/measurement-context";
+
+// Define measurement system type if not exported from context
+type MeasurementSystem = "imperial" | "metric";
+
+// Type definitions for athlete profile data
+interface UserProfile {
+  id: number;
+  userId: number;
+  name: string;
+  email: string;
+  bio?: string;
+  profileImage?: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface AthleteProfile {
+  id: number;
+  userId: number;
+  school?: string;
+  graduationYear?: number;
+  height?: number;
+  weight?: number;
+  sportsInterest?: string[];
+  position?: string;
+  motionScore?: number;
+  profileCompletionPercentage: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface SportRecommendation {
+  id: number;
+  userId: number;
+  sport: string;
+  matchPercentage: number;
+  positionRecommendation?: string;
+  reasonForMatch?: string;
+  potentialLevel?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface VideoAnalysis {
+  id: number;
+  userId: number;
+  videoId: number;
+  overallScore: number;
+  techniqueFeedback: string;
+  feedback?: string;
+  improvementTips: string[];
+  analysisDate?: string;
+  createdAt: string;
+  updatedAt: string;
+}
 import { 
   ChevronLeft, 
   Star, 
@@ -90,25 +146,25 @@ export default function AthleteProfile() {
   const userId = parseInt(params.id);
 
   // Fetch the athlete's user profile
-  const { data: athlete, isLoading: isAthleteLoading } = useQuery({
+  const { data: athlete, isLoading: isAthleteLoading } = useQuery<UserProfile>({
     queryKey: ["/api/users", userId],
     enabled: !!userId,
   });
 
   // Fetch the athlete's profile details
-  const { data: athleteProfile, isLoading: isProfileLoading } = useQuery({
+  const { data: athleteProfile, isLoading: isProfileLoading } = useQuery<AthleteProfile>({
     queryKey: ["/api/athletes", userId, "profile"],
     enabled: !!userId,
   });
 
   // Fetch the athlete's sport recommendations
-  const { data: sportRecommendations, isLoading: isRecommendationsLoading } = useQuery({
+  const { data: sportRecommendations, isLoading: isRecommendationsLoading } = useQuery<SportRecommendation[]>({
     queryKey: ["/api/athletes", userId, "recommendations"],
     enabled: !!userId,
   });
 
   // Fetch the athlete's video analyses
-  const { data: videoAnalyses, isLoading: isAnalysesLoading } = useQuery({
+  const { data: videoAnalyses, isLoading: isAnalysesLoading } = useQuery<VideoAnalysis[]>({
     queryKey: ["/api/athletes", userId, "analyses"],
     enabled: !!userId,
   });
@@ -158,7 +214,7 @@ export default function AthleteProfile() {
         variant="ghost"
         size="sm"
         className="mb-6"
-        onClick={() => navigate(-1)}
+        onClick={() => navigate("/")}
       >
         <ChevronLeft className="mr-2 h-4 w-4" /> Back 
       </Button>
