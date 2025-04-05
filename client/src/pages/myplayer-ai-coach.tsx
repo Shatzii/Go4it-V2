@@ -235,7 +235,9 @@ export default function MyPlayerAICoach() {
   const activeCoachState = coachState || defaultCoachState;
   const activeMessages = messageHistory || defaultMessages;
   const activeAssessments = assessments || defaultAssessments;
-  const activeTrainingPlans = trainingPlans || defaultTrainingPlans;
+  // Ensure activeTrainingPlans is always an array
+  const activeTrainingPlans = Array.isArray(trainingPlans) ? trainingPlans : 
+                             (trainingPlans ? [trainingPlans] : defaultTrainingPlans);
   
   // Set the first training plan as current
   useEffect(() => {
