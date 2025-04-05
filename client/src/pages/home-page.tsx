@@ -218,7 +218,7 @@ export default function HomePage() {
                     
                     <CardFooter className="flex justify-between pt-0 px-3 pb-3">
                       <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-xs text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
-                        <Link href={`/profile/${athlete.userId}`}>Profile</Link>
+                        <Link href={`/profile/${athlete.userId}`}>View Profile</Link>
                       </Button>
                       <Button 
                         variant="ghost" 

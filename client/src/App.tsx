@@ -12,6 +12,7 @@ import Layout from "@/components/layout/sidebar";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
+import AthleteProfile from "@/pages/athlete-profile";
 import VideoAnalysis from "@/pages/video-analysis";
 import SportRecommendations from "@/pages/sport-recommendations";
 import CoachConnection from "@/pages/coach-connection";
@@ -282,6 +283,13 @@ function Router() {
       <Route path="/blog/:slug">
         {({ params }) => (
           <BlogPost />
+        )}
+      </Route>
+      
+      {/* Athlete Profile Page Route */}
+      <Route path="/profile/:id">
+        {({ params }) => (
+          <AthleteProfile />
         )}
       </Route>
       
