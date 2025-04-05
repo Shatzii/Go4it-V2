@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
+import websocketService from "@/services/websocket-service";
 
 interface User {
   id: number;
@@ -56,6 +57,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
           const data = await response.json();
           setUser(data.user);
           setActualRole(data.user.role); // Store the actual role
+          
+          // Initialize WebSocket connection if user is logged in
+          if (data.user && data.user.id) {
+            console.log('Initializing WebSocket connection for user:', data.user.id);
+            websocketService.connect(data.user.id);
+          }
         }
       } catch (error) {
         console.error("Auth check error:", error);
@@ -65,6 +72,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
 
     checkAuthStatus();
+    
+    // Cleanup WebSocket connection when component unmounts
+    return () => {
+      websocketService.disconnect();
+    };
   }, []);
 
   const login = async (username: string, password: string) => {
@@ -137,6 +149,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (userResponse?.data?.user) {
         setUser(userResponse.data.user);
         setActualRole(userResponse.data.user.role); // Store the actual role
+        
+        // Connect to WebSocket after login
+        websocketService.connect(userResponse.data.user.id);
+        
         toast({
           title: "Login successful", 
           description: `Welcome back, ${userResponse.data.user.name}!`,
@@ -167,6 +183,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const data = response.data;
       setUser(data.user);
       setActualRole(data.user.role); // Store the actual role
+      
+      // Connect to WebSocket after registration
+      if (data.user && data.user.id) {
+        websocketService.connect(data.user.id);
+      }
+      
       toast({
         title: "Registration successful",
         description: `Welcome, ${data.user.name}!`,
@@ -188,6 +210,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const logout = async () => {
     try {
       await apiRequest("POST", "/api/auth/logout", {});
+      
+      // Disconnect WebSocket when logging out
+      websocketService.disconnect();
+      
       setUser(null);
       setActualRole(null); // Clear the actual role
       toast({
