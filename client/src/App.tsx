@@ -19,6 +19,7 @@ import UploadVideo from "@/pages/upload-video";
 import AuthPage from "@/pages/auth-page";
 import AnalysisReport from "@/pages/analysis-report";
 import MessagingPage from "@/pages/messaging";
+import HomePage from "@/pages/home-page";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -55,7 +56,9 @@ function Router() {
     <Switch>
       <Route path="/auth" component={AuthPage} />
       
-      <Route path="/">
+      <Route path="/" component={HomePage} />
+      
+      <Route path="/dashboard">
         {({ params }) => (
           <ProtectedRoute component={Dashboard} />
         )}
@@ -125,9 +128,13 @@ function AppContent() {
   const { user } = useAuth();
   const [location] = useLocation();
 
-  // Don't render the layout for the auth page
+  // Don't render the layout for the auth page or home page
   if (location === "/auth") {
     return <AuthPage />;
+  }
+  
+  if (location === "/" && !user) {
+    return <HomePage />;
   }
 
   return (

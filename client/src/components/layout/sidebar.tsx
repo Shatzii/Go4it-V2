@@ -65,6 +65,15 @@ export default function Layout({ children }: LayoutProps) {
               <Link href="/">
                 <a className={`flex items-center p-2 rounded-lg ${location === "/" ? "bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
                   <Home className="h-5 w-5 mr-3" />
+                  Home
+                </a>
+              </Link>
+            </li>
+
+            <li>
+              <Link href="/dashboard">
+                <a className={`flex items-center p-2 rounded-lg ${location === "/dashboard" ? "bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                  <ChartBarStacked className="h-5 w-5 mr-3" />
                   Dashboard
                 </a>
               </Link>
@@ -219,6 +228,14 @@ export default function Layout({ children }: LayoutProps) {
                   <Link href="/">
                     <a className="flex items-center p-2 rounded-lg text-white text-lg">
                       <Home className="h-6 w-6 mr-3" />
+                      Home
+                    </a>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/dashboard">
+                    <a className="flex items-center p-2 rounded-lg text-white text-lg">
+                      <ChartBarStacked className="h-6 w-6 mr-3" />
                       Dashboard
                     </a>
                   </Link>
