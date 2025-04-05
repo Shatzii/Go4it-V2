@@ -251,6 +251,22 @@ export async function createSchema() {
       )
     `);
     
+    // Content blocks for site content management
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS content_blocks (
+        id SERIAL PRIMARY KEY,
+        identifier TEXT NOT NULL UNIQUE,
+        title TEXT NOT NULL,
+        content TEXT NOT NULL,
+        section TEXT NOT NULL,
+        "order" INTEGER DEFAULT 0,
+        active BOOLEAN DEFAULT TRUE,
+        last_updated TIMESTAMP DEFAULT NOW(),
+        last_updated_by INTEGER REFERENCES users(id),
+        metadata JSONB
+      )
+    `);
+    
     log('Schema creation completed', 'db');
   } catch (error) {
     log(`Error creating schema: ${error}`, 'db');
