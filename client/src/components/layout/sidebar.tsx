@@ -27,10 +27,21 @@ import {
   UserCog,
   Dumbbell,
   Sparkles,
-  Bot
+  Bot,
+  RefreshCw,
+  UserCircle2,
+  ShieldCheck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -38,7 +49,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
-  const { user, logout } = useAuth();
+  const { user, logout, switchRole, actualRole } = useAuth();
   const { unreadCount } = useMessaging();
   const { isFullscreen, toggleFullscreen } = useLayout();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -375,17 +386,65 @@ export default function Layout({ children }: LayoutProps) {
                     </Avatar>
                     <div>
                       <p className="font-medium text-sm">{user.name}</p>
-                      <p className="text-xs text-gray-300 capitalize">{user.role}</p>
+                      <div className="flex items-center">
+                        <p className="text-xs text-gray-300 capitalize">{user.role}</p>
+                        {/* Show role indicator if admin is viewing as another role */}
+                        {actualRole === 'admin' && user.role !== 'admin' && (
+                          <span className="text-xs text-yellow-300 ml-2">(Admin View)</span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    className="text-gray-300 hover:text-white hover:bg-gray-700"
-                    onClick={logout}
-                  >
-                    <LogOut className="h-5 w-5" />
-                  </Button>
+                  <div className="flex">
+                    {/* Role Switcher - only show for admins */}
+                    {actualRole === 'admin' && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            className="text-gray-300 hover:text-white hover:bg-gray-700 mr-1"
+                            title="Switch Role"
+                          >
+                            <RefreshCw className="h-5 w-5" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent side="top" align="end" className="w-48">
+                          <DropdownMenuLabel>Switch View Role</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem 
+                            className={user.role === 'admin' ? 'bg-muted' : ''}
+                            onClick={() => switchRole('admin')}
+                          >
+                            <ShieldCheck className="h-4 w-4 mr-2" />
+                            Admin
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            className={user.role === 'coach' ? 'bg-muted' : ''}
+                            onClick={() => switchRole('coach')}
+                          >
+                            <UserCog className="h-4 w-4 mr-2" />
+                            Coach
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            className={user.role === 'athlete' ? 'bg-muted' : ''}
+                            onClick={() => switchRole('athlete')}
+                          >
+                            <UserCircle2 className="h-4 w-4 mr-2" />
+                            Athlete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      className="text-gray-300 hover:text-white hover:bg-gray-700"
+                      onClick={logout}
+                    >
+                      <LogOut className="h-5 w-5" />
+                    </Button>
+                  </div>
                 </div>
               ) : (
                 <Link href="/login" className="flex items-center p-2 rounded-lg hover:bg-primary hover:bg-opacity-30 text-white">
@@ -634,17 +693,65 @@ export default function Layout({ children }: LayoutProps) {
                       </Avatar>
                       <div>
                         <p className="font-medium text-sm text-white">{user.name}</p>
-                        <p className="text-xs text-gray-300 capitalize">{user.role}</p>
+                        <div className="flex items-center">
+                          <p className="text-xs text-gray-300 capitalize">{user.role}</p>
+                          {/* Show role indicator if admin is viewing as another role */}
+                          {actualRole === 'admin' && user.role !== 'admin' && (
+                            <span className="text-xs text-yellow-300 ml-2">(Admin View)</span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      className="text-gray-300 hover:text-white"
-                      onClick={logout}
-                    >
-                      <LogOut className="h-5 w-5" />
-                    </Button>
+                    <div className="flex">
+                      {/* Role Switcher - only show for admins */}
+                      {actualRole === 'admin' && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
+                              className="text-gray-300 hover:text-white mr-1"
+                              title="Switch Role"
+                            >
+                              <RefreshCw className="h-5 w-5" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent side="top" align="end" className="w-48">
+                            <DropdownMenuLabel>Switch View Role</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              className={user.role === 'admin' ? 'bg-muted' : ''}
+                              onClick={() => switchRole('admin')}
+                            >
+                              <ShieldCheck className="h-4 w-4 mr-2" />
+                              Admin
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              className={user.role === 'coach' ? 'bg-muted' : ''}
+                              onClick={() => switchRole('coach')}
+                            >
+                              <UserCog className="h-4 w-4 mr-2" />
+                              Coach
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              className={user.role === 'athlete' ? 'bg-muted' : ''}
+                              onClick={() => switchRole('athlete')}
+                            >
+                              <UserCircle2 className="h-4 w-4 mr-2" />
+                              Athlete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        className="text-gray-300 hover:text-white"
+                        onClick={logout}
+                      >
+                        <LogOut className="h-5 w-5" />
+                      </Button>
+                    </div>
                   </div>
                 ) : (
                   <Link href="/login" className="flex items-center p-2 rounded-lg text-white">

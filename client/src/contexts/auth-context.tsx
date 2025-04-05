@@ -19,6 +19,8 @@ interface AuthContextType {
   register: (userData: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (data: Partial<User>) => Promise<void>;
+  switchRole: (role: 'athlete' | 'coach' | 'admin') => void;
+  actualRole: string | null; // Stores the actual user role
 }
 
 interface AuthProviderProps {
@@ -37,6 +39,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
+  const [actualRole, setActualRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const [, navigate] = useLocation();
@@ -52,6 +55,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (response.ok) {
           const data = await response.json();
           setUser(data.user);
+          setActualRole(data.user.role); // Store the actual role
         }
       } catch (error) {
         console.error("Auth check error:", error);
@@ -132,6 +136,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       if (userResponse?.data?.user) {
         setUser(userResponse.data.user);
+        setActualRole(userResponse.data.user.role); // Store the actual role
         toast({
           title: "Login successful", 
           description: `Welcome back, ${userResponse.data.user.name}!`,
@@ -161,6 +166,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const response = await apiRequest("POST", "/api/auth/register", userData);
       const data = response.data;
       setUser(data.user);
+      setActualRole(data.user.role); // Store the actual role
       toast({
         title: "Registration successful",
         description: `Welcome, ${data.user.name}!`,
@@ -183,12 +189,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       await apiRequest("POST", "/api/auth/logout", {});
       setUser(null);
+      setActualRole(null); // Clear the actual role
       toast({
         title: "Logout successful",
         description: "You have been logged out successfully",
       });
       navigate("/");
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Logout failed",
         description: "There was an issue logging out",
@@ -212,7 +219,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         title: "Profile updated",
         description: "Your profile has been updated successfully",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Update failed",
         description: error.message || "Failed to update profile",
@@ -222,6 +229,39 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  // Function to switch between roles (for admin users only)
+  const switchRole = (role: 'athlete' | 'coach' | 'admin') => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to switch roles",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Only admins can switch roles
+    if (actualRole !== 'admin') {
+      toast({
+        title: "Permission denied",
+        description: "Only administrators can switch roles",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Update the user object with the new role
+    setUser({
+      ...user,
+      role
+    });
+
+    toast({
+      title: "Role switched",
+      description: `You are now viewing the platform as ${role}`,
+    });
+  };
+
   const value = {
     user,
     loading,
@@ -229,6 +269,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     register,
     logout,
     updateUser,
+    switchRole,
+    actualRole,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
