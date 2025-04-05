@@ -5,7 +5,6 @@ import {
   videos, type Video, type InsertVideo,
   videoAnalyses, type VideoAnalysis, type InsertVideoAnalysis,
   sportRecommendations, type SportRecommendation, type InsertSportRecommendation,
-  apiKeys, type ApiKey, type InsertApiKey,
   ncaaEligibility, type NcaaEligibility, type InsertNcaaEligibility,
   ncaaCoreCourses, type NcaaCoreCourse, type InsertNcaaCoreCourse,
   gradeScales, type GradeScale, type InsertGradeScale,
@@ -24,6 +23,7 @@ import {
   leaderboardEntries, type LeaderboardEntry, type InsertLeaderboardEntry,
   // New imports for blog and featured athletes
   blogPosts, type BlogPost, type InsertBlogPost,
+  siteImages, type SiteImage, type InsertSiteImage,
   featuredAthletes, type FeaturedAthlete, type InsertFeaturedAthlete,
   // New imports for workout playlists
   workoutPlaylists, type WorkoutPlaylist, type InsertWorkoutPlaylist,
@@ -48,7 +48,6 @@ import {
   combineTourEvents, type CombineTourEvent, type InsertCombineTourEvent,
   registrations, type Registration, type InsertRegistration,
   payments, type Payment, type InsertPayment,
-  // API Keys
   // Video highlights
   videoHighlights, type VideoHighlight, type InsertVideoHighlight,
   // API Keys

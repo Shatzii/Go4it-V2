@@ -245,6 +245,17 @@ export const blogPosts = pgTable("blog_posts", {
   tags: text("tags").array(),
 });
 
+// Site images for logos, banners, backgrounds, etc.
+export const siteImages = pgTable("site_images", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  path: text("path").notNull(),
+  alt: text("alt").notNull(),
+  location: text("location").notNull(), // "logo", "header", "background", "footer-logo", "banner", "icon"
+  active: boolean("active").default(true),
+  uploadDate: timestamp("upload_date").defaultNow(),
+});
+
 // Featured athletes 
 export const featuredAthletes = pgTable("featured_athletes", {
   id: serial("id").primaryKey(),
@@ -662,6 +673,9 @@ export const insertFeaturedAthleteSchema = createInsertSchema(featuredAthletes, 
   featuredDate: z.date().optional(),
 }).omit({ id: true });
 
+// Site Images insert schema
+export const insertSiteImageSchema = createInsertSchema(siteImages).omit({ id: true, uploadDate: true });
+
 // Film Comparison feature insert schemas
 export const insertFilmComparisonSchema = createInsertSchema(filmComparisons).omit({ id: true, createdAt: true });
 export const insertComparisonVideoSchema = createInsertSchema(comparisonVideos).omit({ id: true });
@@ -764,6 +778,9 @@ export type InsertLeaderboardEntry = z.infer<typeof insertLeaderboardEntrySchema
 
 export type BlogPost = typeof blogPosts.$inferSelect;
 export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
+
+export type SiteImage = typeof siteImages.$inferSelect;
+export type InsertSiteImage = z.infer<typeof insertSiteImageSchema>;
 
 export type FeaturedAthlete = typeof featuredAthletes.$inferSelect;
 export type InsertFeaturedAthlete = z.infer<typeof insertFeaturedAthleteSchema>;
