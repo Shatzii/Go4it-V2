@@ -47,6 +47,7 @@ import MyPlayerAICoach from "@/pages/myplayer-ai-coach";
 import ScoutVisionFeed from "@/pages/scoutvision-feed";
 import CoachPortal from "@/pages/coach-portal";
 import Settings from "@/pages/settings";
+import BlogPost from "@/pages/blog-post";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -274,6 +275,13 @@ function Router() {
       <Route path="/settings">
         {({ params }) => (
           <ProtectedRoute component={Settings} />
+        )}
+      </Route>
+      
+      {/* Blog Post Page Route */}
+      <Route path="/blog/:slug">
+        {({ params }) => (
+          <BlogPost />
         )}
       </Route>
       

@@ -80,7 +80,6 @@ class OpenAIService {
         .select()
         .from(apiKeys)
         .where(eq(apiKeys.keyType, 'openai'))
-        .where(eq(apiKeys.isActive, true))
         .limit(1);
       
       if (result && result.length > 0) {
