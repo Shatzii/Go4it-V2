@@ -5,11 +5,13 @@ import { fileUpload, imageUpload, getUploadedImages, deleteImage } from "./file-
 import fs from "fs";
 import { analyzeVideo, generateSportRecommendations } from "./openai";
 import { hashPassword, comparePasswords } from "./database-storage";
+import activeNetworkService from "./active-network";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import multer from "multer";
 import path from "path";
 import { WebSocketServer, WebSocket } from 'ws';
+import { setupAuth } from "./auth";
 import { 
   insertUserSchema,
   insertAthleteProfileSchema,
@@ -34,10 +36,6 @@ import {
   users,
 } from "@shared/schema";
 
-import session from "express-session";
-import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local";
-
 // Create a file upload middleware
 const upload = multer({
   dest: path.join(process.cwd(), "uploads"),
@@ -47,201 +45,10 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup session middleware
-  app.use(
-    session({
-      secret: process.env.SESSION_SECRET || "supersecret",
-      resave: false,
-      saveUninitialized: true,
-      store: storage.sessionStore,
-      cookie: {
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax"
-      },
-    })
-  );
+  // Set up authentication with our centralized auth module
+  setupAuth(app);
 
-  // Setup passport
-  app.use(passport.initialize());
-  app.use(passport.session());
-
-  // Configure passport to use local strategy
-  passport.use(
-    new LocalStrategy(async (username, password, done) => {
-      try {
-        console.log("Attempting login for username:", username);
-        const [user] = await db
-          .select()
-          .from(users)
-          .where(eq(users.username, username));
-        
-        if (!user) {
-          console.log("User not found");
-          return done(null, false, { message: "Incorrect username" });
-        }
-        
-        const isValidPassword = await comparePasswords(password, user.password);
-        if (!isValidPassword) {
-          console.log("Invalid password");
-          return done(null, false, { message: "Incorrect password" });
-        }
-        
-        console.log("Login successful for:", username);
-        return done(null, user);
-      } catch (error) {
-        console.error("Login error:", error);
-        return done(error);
-      }
-    })
-  );
-
-  // Serialize and deserialize user
-  passport.serializeUser((user: any, done) => {
-    done(null, user.id);
-  });
-
-  passport.deserializeUser(async (id: number, done) => {
-    try {
-      const user = await storage.getUser(id);
-      done(null, user);
-    } catch (error) {
-      done(error);
-    }
-  });
-
-  // Authentication routes
-  app.post("/api/auth/register", async (req: Request, res: Response) => {
-    try {
-      const userData = insertUserSchema.parse(req.body);
-      
-      // Check if username or email already exists
-      const existingUsername = await storage.getUserByUsername(userData.username);
-      if (existingUsername) {
-        return res.status(400).json({ message: "Username already exists" });
-      }
-      
-      const existingEmail = await storage.getUserByEmail(userData.email);
-      if (existingEmail) {
-        return res.status(400).json({ message: "Email already exists" });
-      }
-      
-      // Hash password before storing
-      const hashedPassword = await hashPassword(userData.password);
-      
-      // Create user with hashed password
-      const user = await storage.createUser({
-        ...userData,
-        password: hashedPassword
-      });
-      
-      // Create profile based on role
-      if (userData.role === "athlete") {
-        await storage.createAthleteProfile({
-          userId: user.id,
-          height: 0,
-          weight: 0,
-          age: 0,
-          school: "",
-          graduationYear: 0,
-          sportsInterest: [],
-          motionScore: 0,
-          profileCompletionPercentage: 0,
-        });
-        
-        // Create initial NCAA eligibility
-        await storage.createNcaaEligibility({
-          userId: user.id,
-          coreCoursesCompleted: 0,
-          coreCoursesRequired: 16,
-          gpa: 0,
-          gpaMeetsRequirement: false,
-          testScores: "",
-          testScoresMeetRequirement: false,
-          amateurismStatus: "incomplete",
-          overallEligibilityStatus: "incomplete",
-        });
-      } else if (userData.role === "coach") {
-        await storage.createCoachProfile({
-          userId: user.id,
-          institution: "",
-          sports: [],
-          level: "",
-          experience: 0,
-          achievements: "",
-        });
-      }
-      
-      // Log in the user after registration
-      req.login(user, (err) => {
-        if (err) {
-          return res.status(500).json({ message: "Error logging in after registration" });
-        }
-        return res.status(201).json({
-          user: {
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            name: user.name,
-            role: user.role,
-          }
-        });
-      });
-    } catch (error) {
-      console.error("Registration error:", error);
-      return res.status(400).json({ message: error.message });
-    }
-  });
-
-  app.post("/api/auth/login", (req: Request, res: Response, next: Function) => {
-    passport.authenticate("local", (err, user, info) => {
-      if (err) {
-        return next(err);
-      }
-      if (!user) {
-        return res.status(401).json({ message: info.message || "Authentication failed" });
-      }
-      req.logIn(user, (err) => {
-        if (err) {
-          return next(err);
-        }
-        return res.json({
-          user: {
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            name: user.name,
-            role: user.role,
-          }
-        });
-      });
-    })(req, res, next);
-  });
-
-  app.post("/api/auth/logout", (req: Request, res: Response) => {
-    req.logout(function(err) {
-      if (err) {
-        return res.status(500).json({ message: "Error logging out" });
-      }
-      res.json({ message: "Logged out successfully" });
-    });
-  });
-
-  app.get("/api/auth/me", (req: Request, res: Response) => {
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: "Not authenticated" });
-    }
-    const user = req.user as any;
-    return res.json({
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-      }
-    });
-  });
+  // Authentication routes are now handled in auth.ts via setupAuth(app)
 
   // Middleware to check if user is authenticated
   const isAuthenticated = (req: Request, res: Response, next: Function) => {
@@ -2338,6 +2145,142 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deactivating equipment:", error);
       return res.status(500).json({ message: "Error deactivating equipment" });
+    }
+  });
+
+  // ===== Active Network Integration for Combine Tour Events =====
+
+  // Get all combine tour events
+  app.get("/api/combine-tour/events", async (req: Request, res: Response) => {
+    try {
+      const events = await storage.getCombineTourEvents();
+      return res.json(events);
+    } catch (error) {
+      console.error("Error fetching combine tour events:", error);
+      return res.status(500).json({ message: "Error fetching combine tour events" });
+    }
+  });
+
+  // Get a specific combine tour event
+  app.get("/api/combine-tour/events/:id", async (req: Request, res: Response) => {
+    try {
+      const eventId = parseInt(req.params.id);
+      const event = await storage.getCombineTourEvent(eventId);
+      
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      return res.json(event);
+    } catch (error) {
+      console.error("Error fetching combine tour event:", error);
+      return res.status(500).json({ message: "Error fetching combine tour event" });
+    }
+  });
+
+  // Create combine tour event (admin only)
+  app.post("/api/combine-tour/events", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const eventData = req.body;
+      
+      // Create event in Active Network first
+      const activeNetworkEvent = await activeNetworkService.createEvent({
+        name: eventData.name,
+        description: eventData.description,
+        location: eventData.location,
+        startDate: eventData.startDate,
+        endDate: eventData.endDate,
+        capacity: eventData.capacity,
+        fee: eventData.price
+      });
+      
+      // Add Active Network data to our event
+      const event = await storage.createCombineTourEvent({
+        ...eventData,
+        activeNetworkId: activeNetworkEvent.id,
+        registrationUrl: activeNetworkEvent.registrationUrl,
+        slug: eventData.name.toLowerCase().replace(/\s+/g, '-')
+      });
+      
+      return res.status(201).json(event);
+    } catch (error) {
+      console.error("Error creating combine tour event:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Update a combine tour event (admin only)
+  app.put("/api/combine-tour/events/:id", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const eventId = parseInt(req.params.id);
+      const eventData = req.body;
+      
+      // Get current event data
+      const currentEvent = await storage.getCombineTourEvent(eventId);
+      
+      if (!currentEvent) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      // Update event in our database
+      const updatedEvent = await storage.updateCombineTourEvent(eventId, eventData);
+      
+      return res.json(updatedEvent);
+    } catch (error) {
+      console.error("Error updating combine tour event:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Get registration URL for an event
+  app.get("/api/combine-tour/events/:id/register", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const eventId = parseInt(req.params.id);
+      
+      // Get registration URL from Active Network
+      const registrationInfo = await activeNetworkService.getRegistrationUrl(eventId);
+      
+      return res.json({
+        registrationUrl: registrationInfo.registrationUrl,
+        eventId,
+        activeNetworkId: registrationInfo.activeNetworkId
+      });
+    } catch (error) {
+      console.error("Error getting registration URL:", error);
+      return res.status(500).json({ message: "Error getting registration URL" });
+    }
+  });
+
+  // Check registration status for a user
+  app.get("/api/combine-tour/registration-status", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const eventId = parseInt(req.query.eventId as string);
+      
+      if (!eventId) {
+        return res.status(400).json({ message: "Event ID is required" });
+      }
+      
+      // Check registration status
+      const status = await activeNetworkService.checkRegistrationStatus(user.id, eventId);
+      
+      return res.json(status);
+    } catch (error) {
+      console.error("Error checking registration status:", error);
+      return res.status(500).json({ message: "Error checking registration status" });
+    }
+  });
+
+  // Webhook endpoint for Active Network callbacks
+  app.post("/api/combine-tour/webhook", async (req: Request, res: Response) => {
+    try {
+      // Process the webhook data from Active Network
+      const result = await activeNetworkService.processWebhook(req.body);
+      
+      return res.json(result);
+    } catch (error) {
+      console.error("Error processing webhook:", error);
+      return res.status(400).json({ message: error.message });
     }
   });
 

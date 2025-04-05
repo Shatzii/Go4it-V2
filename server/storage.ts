@@ -42,10 +42,19 @@ import {
   workoutVerificationCheckpoints, type WorkoutVerificationCheckpoint, type InsertWorkoutVerificationCheckpoint,
   // Weight room equipment
   weightRoomEquipment, type WeightRoomEquipment, type InsertWeightRoomEquipment,
-  playerEquipment, type PlayerEquipment, type InsertPlayerEquipment
+  playerEquipment, type PlayerEquipment, type InsertPlayerEquipment,
+  // Combine Tour Events and registrations
+  combineTourEvents, type CombineTourEvent, type InsertCombineTourEvent,
+  registrations, type Registration, type InsertRegistration,
+  payments, type Payment, type InsertPayment
 } from "@shared/schema";
 
+import session from "express-session";
+
 export interface IStorage {
+  // Session store for authentication
+  sessionStore: session.SessionStore;
+
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
@@ -289,7 +298,10 @@ export interface IStorage {
   incrementEquipmentUsage(id: number): Promise<PlayerEquipment | undefined>;
 }
 
+import createMemoryStore from "memorystore";
+
 export class MemStorage implements IStorage {
+  sessionStore: session.SessionStore;
   private users: Map<number, User>;
   private athleteProfiles: Map<number, AthleteProfile>;
   private coachProfiles: Map<number, CoachProfile>;
@@ -397,6 +409,12 @@ export class MemStorage implements IStorage {
   private currentPlayerEquipmentId: number;
 
   constructor() {
+    // Initialize the memorystore session store
+    const MemoryStore = createMemoryStore(session);
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000  // Prune expired entries every 24h
+    });
+    
     this.users = new Map();
     this.athleteProfiles = new Map();
     this.coachProfiles = new Map();
