@@ -6,6 +6,7 @@ import path from "path";
 import { createSchema } from "./create-schema";
 import cors from "cors";
 import { storage } from './storage';
+import { initializeBlogGeneration } from './blog-generator';
 
 const app = express();
 app.use(express.json());
@@ -129,5 +130,15 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    
+    // Initialize blog generation after server is running
+    if (process.env.OPENAI_API_KEY) {
+      log("Initializing AI blog generator...");
+      initializeBlogGeneration()
+        .then(() => log("AI blog generator initialized successfully"))
+        .catch(err => log(`Error initializing AI blog generator: ${err}`));
+    } else {
+      log("OpenAI API key not found. AI blog generation disabled.");
+    }
   });
 })();
