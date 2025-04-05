@@ -53,17 +53,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create HTTP server with WebSocket support
   const server = createServer(app);
   
-  // Comment out WebSocket server configuration for now to debug the main HTTP app
-  // We'll reimplement WebSockets properly once the main application is working
-  /*
+  // Set up WebSocket server on a distinct path to avoid conflicts with Vite's HMR
   const wss = new WebSocketServer({ 
-    server,
+    server, 
+    path: '/ws',
     perMessageDeflate: false
   });
-  */
-  
-  // Create a dummy variable to maintain code structure
-  const wss = { on: () => {} } as unknown as WebSocketServer;
   
   // Track connected clients with their user info
   const clients = new Map<WebSocket, { userId: number, username: string, role: string }>();
@@ -120,6 +115,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 isRead: msg.isRead
               }))
             }));
+          }
+          
+          return;
+        }
+        
+        // Handle chat messages
+        if (data.type === 'chat_message') {
+          const { content, recipientId, senderId, timestamp } = data;
+          
+          // Validate the sender
+          const clientInfo = clients.get(ws);
+          if (!clientInfo || clientInfo.userId !== senderId) {
+            ws.send(JSON.stringify({ 
+              type: 'error', 
+              message: 'Unauthorized message sender' 
+            }));
+            return;
+          }
+          
+          // Get sender info to include in forwarded messages
+          const sender = await storage.getUser(senderId);
+          if (!sender) {
+            ws.send(JSON.stringify({ 
+              type: 'error', 
+              message: 'Sender not found' 
+            }));
+            return;
+          }
+          
+          const outgoingMessage = {
+            type: 'chat_message',
+            senderId,
+            senderName: sender.name,
+            content,
+            timestamp,
+            recipientId: recipientId || null
+          };
+          
+          // Store the message in the database if needed
+          try {
+            await storage.createMessage({
+              senderId,
+              recipientId: recipientId || null,
+              content,
+              isRead: false
+            });
+          } catch (dbError) {
+            console.error('Error storing chat message:', dbError);
+            // Continue even if storage fails
+          }
+          
+          // Handle private message or broadcast
+          if (recipientId > 0) {
+            // Send to specific recipient
+            for (const [client, info] of clients.entries()) {
+              if (info.userId === recipientId) {
+                client.send(JSON.stringify(outgoingMessage));
+                break;
+              }
+            }
+            
+            // Also send confirmation back to the sender
+            ws.send(JSON.stringify({ 
+              type: 'message_sent', 
+              recipientId,
+              timestamp 
+            }));
+          } else {
+            // Broadcast to all connected clients except sender
+            for (const [client, info] of clients.entries()) {
+              if (client !== ws) {
+                client.send(JSON.stringify(outgoingMessage));
+              }
+            }
           }
           
           return;
@@ -4061,6 +4130,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching content blocks:", error);
       res.status(500).json({ message: "Error fetching content blocks" });
+    }
+  });
+
+  app.get("/api/content-blocks/section/:section", async (req: Request, res: Response) => {
+    try {
+      const section = req.params.section;
+      const contentBlocks = await storage.getContentBlocks(section);
+      res.json(contentBlocks);
+    } catch (error) {
+      console.error("Error fetching content blocks by section:", error);
+      res.status(500).json({ message: "Error fetching content blocks by section" });
     }
   });
 
