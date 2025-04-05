@@ -851,12 +851,17 @@ export class DatabaseStorage implements IStorage {
 
   // Featured Athletes operations
   async getFeaturedAthletes(limit: number = 4): Promise<FeaturedAthlete[]> {
-    return await db
-      .select()
-      .from(featuredAthletes)
-      .where(eq(featuredAthletes.active, true))
-      .orderBy(asc(featuredAthletes.order), desc(featuredAthletes.featuredDate))
-      .limit(limit);
+    try {
+      return await db
+        .select()
+        .from(featuredAthletes)
+        .where(eq(featuredAthletes.active, true))
+        .orderBy(desc(featuredAthletes.featuredDate))
+        .limit(limit);
+    } catch (error) {
+      console.error("Error in getFeaturedAthletes:", error);
+      return [];
+    }
   }
 
   async getFeaturedAthlete(id: number): Promise<FeaturedAthlete | undefined> {
