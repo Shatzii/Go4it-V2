@@ -23,6 +23,7 @@ import AnalysisReport from "@/pages/analysis-report";
 import MessagingPage from "@/pages/messaging";
 import HomePage from "@/pages/home-page";
 import CMSPage from "@/pages/cms-page";
+import TestAuth from "@/pages/test-auth";
 
 // Feature page imports
 import FilmComparison from "@/pages/film-comparison";
@@ -80,6 +81,8 @@ function Router() {
   return (
     <Switch>
       <Route path="/auth" component={AuthPage} />
+      
+      <Route path="/test-auth" component={TestAuth} />
       
       <Route path="/" component={HomePage} />
       
@@ -269,9 +272,13 @@ function AppContent() {
   const { user } = useAuth();
   const [location] = useLocation();
 
-  // Don't render the layout for the auth page or home page
+  // Don't render the layout for the auth page, test-auth, or home page
   if (location === "/auth") {
     return <AuthPage />;
+  }
+  
+  if (location === "/test-auth") {
+    return <TestAuth />;
   }
   
   if (location === "/" && !user) {
