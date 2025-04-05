@@ -86,23 +86,56 @@ export default function HomePage() {
           <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-blue-600 text-transparent bg-clip-text">
             GET VERIFIED
           </h1>
-          <h2 className="text-4xl font-bold text-white">
+          <h2 className="text-4xl font-bold text-white mb-4">
             Combine Tour
           </h2>
-        </div>
-        <div className="max-w-3xl mx-auto mb-8">
-          <img 
-            src="/assets/gar-rating.jpg" 
-            alt="GAR Rating System" 
-            className="rounded-lg shadow-xl mb-6"
-          />
-          <p className="text-xl text-gray-300">
-            Experience the future of athlete evaluation with our comprehensive GAR Rating System
+          <p className="text-xl text-blue-400 font-semibold">
+            The Future of Athlete Evaluation & Placement
           </p>
         </div>
+        <div className="max-w-4xl mx-auto mb-12 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          <div className="bg-gradient-to-r from-gray-900 to-gray-800 p-6 rounded-xl">
+            <h3 className="text-2xl font-bold mb-4 text-white">GAR Rating System</h3>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-blue-500/20 p-3 rounded-lg">
+                  <span className="text-blue-400 font-bold">60%</span>
+                </div>
+                <div className="text-left">
+                  <h4 className="font-semibold text-blue-400">Physical</h4>
+                  <p className="text-sm text-gray-300">Sprint, Agility, Strength & Coordination</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="bg-purple-500/20 p-3 rounded-lg">
+                  <span className="text-purple-400 font-bold">20%</span>
+                </div>
+                <div className="text-left">
+                  <h4 className="font-semibold text-purple-400">Cognitive</h4>
+                  <p className="text-sm text-gray-300">Decision-Making & Learning Style</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="bg-green-500/20 p-3 rounded-lg">
+                  <span className="text-green-400 font-bold">20%</span>
+                </div>
+                <div className="text-left">
+                  <h4 className="font-semibold text-green-400">Psychological</h4>
+                  <p className="text-sm text-gray-300">Confidence & Team Dynamics</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <img 
+              src="/assets/combine-hero.jpg" 
+              alt="Athletes at Combine" 
+              className="rounded-lg shadow-xl"
+            />
+          </div>
+        </div>
         <p className="text-xl mb-8 max-w-3xl mx-auto text-gray-300">
-          The AI-powered sports platform that helps athletes analyze their performance,
-          discover their best sports, and connect with coaches.
+          Our revolutionary GAR Rating System combines physical metrics, cognitive abilities, and psychological factors to provide the most comprehensive athlete evaluation available.
         </p>
         <div className="flex justify-center gap-4">
           {!user ? (
