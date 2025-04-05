@@ -82,9 +82,24 @@ export default function HomePage() {
     <div className="container mx-auto px-4 py-8">
       {/* Hero Section */}
       <section className="mb-16 text-center">
-        <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text">
-          Go4it: Unlock Your Athletic Potential
-        </h1>
+        <div className="mb-8">
+          <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-blue-600 text-transparent bg-clip-text">
+            GET VERIFIED
+          </h1>
+          <h2 className="text-4xl font-bold text-white">
+            Combine Tour
+          </h2>
+        </div>
+        <div className="max-w-3xl mx-auto mb-8">
+          <img 
+            src="/assets/gar-rating.jpg" 
+            alt="GAR Rating System" 
+            className="rounded-lg shadow-xl mb-6"
+          />
+          <p className="text-xl text-gray-300">
+            Experience the future of athlete evaluation with our comprehensive GAR Rating System
+          </p>
+        </div>
         <p className="text-xl mb-8 max-w-3xl mx-auto text-gray-300">
           The AI-powered sports platform that helps athletes analyze their performance,
           discover their best sports, and connect with coaches.
