@@ -4,14 +4,14 @@ import { storage } from "./storage";
 import { fileUpload, imageUpload, getUploadedImages, deleteImage } from "./file-upload";
 import fs from "fs";
 import { analyzeVideo, generateSportRecommendations } from "./openai";
-import { hashPassword, comparePasswords } from "./database-storage";
 import activeNetworkService from "./active-network";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import multer from "multer";
 import path from "path";
 import { WebSocketServer, WebSocket } from 'ws';
-import { setupAuth } from "./auth";
+import { setupAuth, hashPassword as authHashPassword } from "./auth";
+import passport from "passport";
 import { 
   insertUserSchema,
   insertAthleteProfileSchema,
@@ -48,7 +48,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication with our centralized auth module
   setupAuth(app);
 
-  // Authentication routes are now handled in auth.ts via setupAuth(app)
+  // Add auth routes with the correct paths that match the client calls
+  app.post("/api/auth/login", passport.authenticate("local"), (req, res) => {
+    res.status(200).json({ user: req.user });
+  });
+  
+  app.post("/api/auth/register", async (req, res, next) => {
+    try {
+      const existingUser = await storage.getUserByUsername(req.body.username);
+      if (existingUser) {
+        return res.status(400).json({ message: "Username already exists" });
+      }
+
+      const user = await storage.createUser({
+        ...req.body,
+        password: await authHashPassword(req.body.password),
+      });
+
+      req.login(user, (err) => {
+        if (err) return next(err);
+        res.status(201).json({ user });
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+  app.post("/api/auth/logout", (req, res, next) => {
+    req.logout((err) => {
+      if (err) return next(err);
+      res.sendStatus(200);
+    });
+  });
+  
+  app.get("/api/auth/me", (req, res) => {
+    if (!req.isAuthenticated()) return res.status(401).json({ message: "Not authenticated" });
+    res.json({ user: req.user });
+  });
+
+  // Authentication routes are now handled in auth.ts via setupAuth(app) and the routes above
 
   // Middleware to check if user is authenticated
   const isAuthenticated = (req: Request, res: Response, next: Function) => {
@@ -2296,13 +2334,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   wss.on('connection', (ws: WebSocket, req) => {
     console.log('WebSocket connection established');
     
-    // Handle authentication - extract session
-    const cookieHeader = req.headers.cookie;
-    if (!cookieHeader) {
-      ws.close(4001, 'Authentication required');
-      return;
-    }
-    
     // The client needs to authenticate after connection
     ws.on('message', async (message: string) => {
       try {
@@ -2314,6 +2345,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const user = await storage.getUser(userId);
           
           if (!user) {
+            console.log(`WebSocket authentication failed for user ID: ${userId}`);
             ws.send(JSON.stringify({ type: 'error', message: 'Authentication failed' }));
             return;
           }
@@ -2375,12 +2407,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const message = await storage.createMessage({
             senderId: clientInfo.userId,
             recipientId,
-            content,
-            isRead: false
+            content
           });
           
           // Find recipient if they're connected
-          for (const [clientWs, info] of clients.entries()) {
+          for (const [clientWs, info] of Array.from(clients.entries())) {
             if (info.userId === recipientId && clientWs.readyState === WebSocket.OPEN) {
               // Send to recipient
               clientWs.send(JSON.stringify({
@@ -2428,7 +2459,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
           
           // Notify sender if connected
-          for (const [clientWs, info] of clients.entries()) {
+          for (const [clientWs, info] of Array.from(clients.entries())) {
             if (info.userId === updatedMessage.senderId && clientWs.readyState === WebSocket.OPEN) {
               clientWs.send(JSON.stringify({
                 type: 'message_read_receipt',

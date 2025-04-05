@@ -45,10 +45,17 @@ export const MessagingProvider: React.FC<{ children: ReactNode }> = ({ children 
     newSocket.onopen = () => {
       console.log('WebSocket connection established');
       // Authenticate with the WebSocket server
-      newSocket.send(JSON.stringify({
-        type: 'auth',
-        userId: user.id
-      }));
+      setTimeout(() => {
+        try {
+          console.log('Sending auth message with userId:', user.id);
+          newSocket.send(JSON.stringify({
+            type: 'auth',
+            userId: user.id
+          }));
+        } catch (error) {
+          console.error('Error sending auth message:', error);
+        }
+      }, 500); // Small delay to ensure connection is fully established
     };
 
     newSocket.onclose = () => {
