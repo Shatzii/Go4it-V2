@@ -80,6 +80,14 @@ export default function HomePage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Logo */}
+      <div className="flex justify-start mb-8">
+        <img 
+          src="/assets/IMG_3534.jpeg" 
+          alt="Get Verified Logo" 
+          className="h-16 md:h-20"
+        />
+      </div>
       {/* Hero Section */}
       <section className="mb-16 text-center">
         <div className="mb-8">
