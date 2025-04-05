@@ -967,6 +967,137 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Player Story Mode - XP System API Routes
+  app.get("/api/player/progress", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      let progress = await storage.getPlayerProgress(user.id);
+      
+      // If no progress record exists, create one
+      if (!progress) {
+        progress = await storage.createPlayerProgress({
+          userId: user.id,
+          currentLevel: 1,
+          totalXp: 0,
+          levelXp: 0,
+          xpToNextLevel: 100,
+          streakDays: 0,
+          lastActive: new Date().toISOString(),
+        });
+      } else {
+        // Check if streak needs to be updated
+        const lastActive = new Date(progress.lastActive);
+        const now = new Date();
+        const daysSinceLastActive = Math.floor((now.getTime() - lastActive.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (daysSinceLastActive === 1) {
+          // If logged in the next day, increase streak
+          await storage.updatePlayerProgress(user.id, {
+            streakDays: progress.streakDays + 1,
+            lastActive: now.toISOString()
+          });
+          progress.streakDays += 1;
+          progress.lastActive = now.toISOString();
+        } else if (daysSinceLastActive > 1) {
+          // If more than a day has passed, reset streak
+          await storage.updatePlayerProgress(user.id, {
+            streakDays: 1,
+            lastActive: now.toISOString()
+          });
+          progress.streakDays = 1;
+          progress.lastActive = now.toISOString();
+        } else if (daysSinceLastActive === 0) {
+          // Update the last active timestamp only
+          await storage.updatePlayerProgress(user.id, {
+            lastActive: now.toISOString()
+          });
+          progress.lastActive = now.toISOString();
+        }
+      }
+      
+      return res.json(progress);
+    } catch (error) {
+      console.error("Error fetching player progress:", error);
+      return res.status(500).json({ message: "Error fetching player progress" });
+    }
+  });
+  
+  app.get("/api/player/xp/transactions", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const transactions = await storage.getXpTransactions(user.id);
+      return res.json(transactions);
+    } catch (error) {
+      console.error("Error fetching XP transactions:", error);
+      return res.status(500).json({ message: "Error fetching XP transactions" });
+    }
+  });
+  
+  app.post("/api/player/xp/add", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const { amount, type, description } = req.body;
+      
+      if (!amount || !type || !description) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+      
+      const xpTransaction = await storage.addXpToPlayer(user.id, amount, type, description);
+      return res.status(201).json(xpTransaction);
+    } catch (error) {
+      console.error("Error adding XP:", error);
+      return res.status(500).json({ message: "Error adding XP" });
+    }
+  });
+  
+  app.post("/api/player/xp/daily-login", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const progress = await storage.getPlayerProgress(user.id);
+      
+      if (!progress) {
+        return res.status(404).json({ message: "Player progress not found" });
+      }
+      
+      // Check if already claimed today
+      const lastActive = new Date(progress.lastActive);
+      const now = new Date();
+      const isSameDay = lastActive.getDate() === now.getDate() && 
+                        lastActive.getMonth() === now.getMonth() &&
+                        lastActive.getFullYear() === now.getFullYear();
+      
+      // If already claimed today, return error
+      if (isSameDay && progress.dailyLoginClaimed) {
+        return res.status(400).json({ message: "Daily login bonus already claimed today" });
+      }
+      
+      // Calculate bonus based on streak
+      const baseXp = 50;
+      const streakBonus = Math.min(progress.streakDays * 10, 100); // Cap streak bonus at 100 XP
+      const totalBonus = baseXp + streakBonus;
+      
+      // Add XP and mark as claimed
+      const xpTransaction = await storage.addXpToPlayer(
+        user.id, 
+        totalBonus, 
+        "login", 
+        `Daily login streak bonus (${progress.streakDays} days)`
+      );
+      
+      await storage.updatePlayerProgress(user.id, {
+        dailyLoginClaimed: true
+      });
+      
+      return res.status(201).json({
+        transaction: xpTransaction,
+        message: `Claimed ${totalBonus} XP for daily login`
+      });
+    } catch (error) {
+      console.error("Error claiming daily login bonus:", error);
+      return res.status(500).json({ message: "Error claiming daily login bonus" });
+    }
+  });
+  
   // Player Story Mode - Challenges API Routes
   app.get("/api/player/challenges", isAuthenticated, async (req: Request, res: Response) => {
     try {

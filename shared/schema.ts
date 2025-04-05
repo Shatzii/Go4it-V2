@@ -99,6 +99,51 @@ export const ncaaEligibility = pgTable("ncaa_eligibility", {
   lastUpdated: timestamp("last_updated").defaultNow(),
 });
 
+// NCAA Core Course tracking
+export const ncaaCoreCourses = pgTable("ncaa_core_courses", {
+  id: serial("id").primaryKey(),
+  eligibilityId: integer("eligibility_id").notNull().references(() => ncaaEligibility.id),
+  courseName: text("course_name").notNull(),
+  courseType: text("course_type").notNull(), // english, math, science, social_science, additional
+  gradeEarned: text("grade_earned"),
+  creditHours: real("credit_hours").notNull(),
+  completed: boolean("completed").default(false),
+  inProgress: boolean("in_progress").default(false),
+  ncaaApproved: boolean("ncaa_approved").default(false),
+  verificationStatus: text("verification_status").default("pending"), // pending, verified, rejected
+  completionDate: date("completion_date"),
+  yearTaken: integer("year_taken"),
+  semesterTaken: text("semester_taken"), // fall, spring, summer
+  notes: text("notes"),
+});
+
+// NCAA Document Management
+export const ncaaDocuments = pgTable("ncaa_documents", {
+  id: serial("id").primaryKey(),
+  eligibilityId: integer("eligibility_id").notNull().references(() => ncaaEligibility.id),
+  documentType: text("document_type").notNull(), // transcript, test_score, amateurism, medical, waiver
+  filePath: text("file_path").notNull(),
+  fileName: text("file_name").notNull(),
+  uploadDate: timestamp("upload_date").defaultNow(),
+  verificationStatus: text("verification_status").default("pending"), // pending, verified, rejected
+  verificationNotes: text("verification_notes"),
+  verifiedBy: integer("verified_by").references(() => users.id),
+  verificationDate: timestamp("verification_date"),
+});
+
+// NCAA Eligibility Center Registration
+export const ncaaRegistration = pgTable("ncaa_registration", {
+  id: serial("id").primaryKey(),
+  eligibilityId: integer("eligibility_id").notNull().references(() => ncaaEligibility.id),
+  ncaaId: text("ncaa_id"),
+  registrationDate: timestamp("registration_date"),
+  registrationStatus: text("registration_status").default("not_started"), // not_started, in_progress, completed
+  academicStatus: text("academic_status"), // qualifier, partial_qualifier, non_qualifier, pending
+  amateurismCertified: boolean("amateurism_certified").default(false),
+  divisionLevel: text("division_level"), // division_i, division_ii
+  finalCertificationDate: timestamp("final_certification_date"),
+});
+
 // Coach-athlete connections
 export const coachConnections = pgTable("coach_connections", {
   id: serial("id").primaryKey(),

@@ -1,10 +1,14 @@
 import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useMemo } from "react";
 import { 
   TrendingUp, 
   Trophy, 
@@ -18,7 +22,8 @@ import {
   Zap,
   ChevronRight,
   CheckCircle2,
-  XCircle
+  XCircle,
+  Users
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -34,48 +39,171 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 export default function MyPlayerXP() {
   const { user } = useAuth();
   const { toast } = useToast();
+  
+  // Fetch player progress data
+  const { data: progress, isLoading: isProgressLoading } = useQuery({
+    queryKey: ['/api/player/progress'],
+    enabled: !!user,
+  });
+  
+  // Fetch player skills
+  const { data: skills, isLoading: isSkillsLoading } = useQuery({
+    queryKey: ['/api/player/skills'],
+    enabled: !!user,
+  });
+  
+  // Fetch player badges
+  const { data: badges, isLoading: isBadgesLoading } = useQuery({
+    queryKey: ['/api/player/badges'],
+    enabled: !!user,
+  });
+  
+  // Fetch XP transactions
+  const { data: transactions, isLoading: isTransactionsLoading } = useQuery({
+    queryKey: ['/api/player/xp/transactions'],
+    enabled: !!user,
+  });
+  
+  // Fetch available challenges
+  const { data: availableChallenges, isLoading: isChallengesLoading } = useQuery({
+    queryKey: ['/api/player/challenges'],
+    enabled: !!user,
+  });
+  
+  // Fetch active challenges
+  const { data: activeChallenges, isLoading: isActiveChallengesLoading } = useQuery({
+    queryKey: ['/api/player/challenges/active'],
+    enabled: !!user,
+  });
+  
+  // Fetch leaderboard data
+  const { data: leaderboard, isLoading: isLeaderboardLoading } = useQuery({
+    queryKey: ['/api/player/leaderboard'],
+    enabled: !!user,
+  });
 
-  // This would be fetched from the API in a real implementation
-  const playerProgress = {
-    id: 1,
-    userId: user?.id || 1,
-    level: 24,
-    currentXp: 7850,
-    xpToNextLevel: 10000,
-    totalXp: 157850,
-    streak: 15,
-    lastActive: new Date().toISOString(),
-    skills: [
-      { name: "Ball Handling", level: 28, progress: 70 },
-      { name: "Shooting", level: 32, progress: 45 },
-      { name: "Defense", level: 22, progress: 80 },
-      { name: "Passing", level: 26, progress: 60 },
-      { name: "Speed", level: 24, progress: 30 },
-      { name: "Strength", level: 19, progress: 50 },
-    ],
-    badges: [
-      { id: 1, name: "Workout Warrior", description: "Complete 50 workouts", category: "Consistency", tier: "Gold", earned: true, progress: 100 },
-      { id: 2, name: "Film Student", description: "Watch 25 film comparison videos", category: "Analysis", tier: "Silver", earned: true, progress: 100 },
-      { id: 3, name: "Point Machine", description: "Record 10 games with 20+ points", category: "Performance", tier: "Bronze", earned: true, progress: 100 },
-      { id: 4, name: "Sharpshooter", description: "Maintain 40%+ 3PT shooting for a season", category: "Performance", tier: "None", earned: false, progress: 65 },
-      { id: 5, name: "Perfect Attendance", description: "Attend all team practices for a month", category: "Consistency", tier: "None", earned: false, progress: 75 },
-      { id: 6, name: "Highlight Reel", description: "Get featured in the weekly highlights", category: "Recognition", tier: "None", earned: false, progress: 40 },
-    ],
-    recentTransactions: [
-      { id: 1, date: "2024-04-05T10:30:00Z", amount: 250, type: "workout", description: "Completed advanced shooting drill" },
-      { id: 2, date: "2024-04-04T15:45:00Z", amount: 100, type: "login", description: "Daily login streak bonus (15 days)" },
-      { id: 3, date: "2024-04-03T19:20:00Z", amount: 500, type: "challenge", description: "Won 1v1 challenge against teammate" },
-      { id: 4, date: "2024-04-02T12:15:00Z", amount: 350, type: "film", description: "Analyzed game film and completed quiz" },
-      { id: 5, date: "2024-04-01T09:00:00Z", amount: 1000, type: "game", description: "Game performance: 24 points, 8 assists" },
-      { id: 6, date: "2024-03-31T16:30:00Z", amount: 150, type: "workout", description: "Completed leg day workout" },
-      { id: 7, date: "2024-03-30T14:00:00Z", amount: 200, type: "assessment", description: "Passed ball handling assessment" },
-    ],
-    availableChallenges: [
-      { id: 1, name: "Film Room Master", description: "Analyze 5 game films this week", reward: 500, difficulty: "Medium", deadline: "3 days left" },
-      { id: 2, name: "Conditioning Test", description: "Complete the beep test with level 12", reward: 750, difficulty: "Hard", deadline: "5 days left" },
-      { id: 3, name: "Free Throw Perfection", description: "Make 25 free throws in a row", reward: 300, difficulty: "Easy", deadline: "2 days left" },
-    ]
-  };
+  // If any data is loading, show skeleton UI
+  const isLoading = isProgressLoading || isSkillsLoading || isBadgesLoading || 
+                   isTransactionsLoading || isChallengesLoading || isLeaderboardLoading;
+  
+  // For daily login bonus - mutate to claim XP
+  const claimDailyLoginMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest('POST', '/api/player/xp/daily-login', {});
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Daily XP Claimed!',
+        description: 'You\'ve received your daily login bonus',
+      });
+      // Invalidate relevant queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ['/api/player/progress'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/player/xp/transactions'] });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Failed to claim XP',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  });
+  
+  // For accepting challenges
+  const acceptChallengeMutation = useMutation({
+    mutationFn: async (challengeId: number) => {
+      return await apiRequest('POST', `/api/player/challenges/${challengeId}/accept`, {});
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Challenge Accepted!',
+        description: 'Good luck completing this challenge',
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/player/challenges'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/player/challenges/active'] });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Failed to accept challenge',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  });
+  
+  // Create a complete player progress object that merges the fetched data
+  const playerProgress = useMemo(() => {
+    if (isLoading || !progress) return null;
+    
+    return {
+      ...progress,
+      currentXp: progress.levelXp || 0,
+      xpToNextLevel: progress.xpToNextLevel || 100,
+      level: progress.currentLevel || 1,
+      streak: progress.streakDays || 0,
+      skills: skills || [],
+      badges: badges || [],
+      recentTransactions: transactions || [],
+      availableChallenges: availableChallenges || [],
+      activeChallenges: activeChallenges || [],
+      leaderboard: leaderboard || []
+    };
+  }, [progress, skills, badges, transactions, availableChallenges, activeChallenges, leaderboard, isLoading]);
+
+  // Loading state
+  if (isLoading || !playerProgress) {
+    return (
+      <div className="container mx-auto py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="col-span-12 lg:col-span-4 space-y-6">
+            <Card>
+              <CardHeader className="pb-2">
+                <Skeleton className="h-8 w-32 mb-2" />
+                <Skeleton className="h-4 w-48" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-4 w-full mb-4" />
+                <div className="flex justify-between mt-6">
+                  <Skeleton className="h-10 w-16" />
+                  <Skeleton className="h-10 w-16" />
+                  <Skeleton className="h-10 w-16" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <Skeleton className="h-6 w-40 mb-2" />
+                <Skeleton className="h-4 w-full" />
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {[1, 2, 3, 4, 5, 6].map((_, i) => (
+                  <div key={i}>
+                    <div className="flex justify-between mb-1">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-4 w-16" />
+                    </div>
+                    <Skeleton className="h-2 w-full" />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+          <div className="col-span-12 lg:col-span-8">
+            <Skeleton className="h-10 w-full mb-6" />
+            <Card>
+              <CardHeader>
+                <Skeleton className="h-6 w-40 mb-2" />
+                <Skeleton className="h-4 w-full" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-64 w-full" />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Calculate percentage to next level
   const percentToNextLevel = (playerProgress.currentXp / playerProgress.xpToNextLevel) * 100;
@@ -330,8 +458,20 @@ export default function MyPlayerXP() {
                           </div>
                         </CardContent>
                         <CardFooter className="pt-0">
-                          <Button className="w-full" size="sm">
-                            Accept Challenge
+                          <Button 
+                            className="w-full" 
+                            size="sm"
+                            onClick={() => acceptChallengeMutation.mutate(challenge.id)}
+                            disabled={acceptChallengeMutation.isPending}
+                          >
+                            {acceptChallengeMutation.isPending ? (
+                              <>
+                                <span className="mr-2">Accepting...</span>
+                                <Activity className="h-4 w-4 animate-spin" />
+                              </>
+                            ) : (
+                              "Accept Challenge"
+                            )}
                           </Button>
                         </CardFooter>
                       </Card>
