@@ -84,6 +84,16 @@ export const sportRecommendations = pgTable("sport_recommendations", {
   recommendationDate: timestamp("recommendation_date").defaultNow(),
 });
 
+// API Keys for external services
+export const apiKeys = pgTable("api_keys", {
+  id: serial("id").primaryKey(),
+  keyType: text("key_type").notNull().unique(), // openai, stripe, sendgrid, twilio, etc.
+  keyValue: text("key_value").notNull(),
+  addedAt: timestamp("added_at").defaultNow(),
+  lastUsed: timestamp("last_used"),
+  isActive: boolean("is_active").default(true),
+});
+
 // NCAA Clearinghouse eligibility tracking
 export const ncaaEligibility = pgTable("ncaa_eligibility", {
   id: serial("id").primaryKey(),
@@ -834,3 +844,11 @@ export type InsertPayment = z.infer<typeof insertPaymentSchema>;
 // Video Highlight types
 export type VideoHighlight = typeof videoHighlights.$inferSelect;
 export type InsertVideoHighlight = z.infer<typeof insertVideoHighlightSchema>;
+
+// API Key schema and types
+export const insertApiKeySchema = createInsertSchema(apiKeys, {
+  keyType: z.enum(['openai', 'stripe', 'sendgrid', 'twilio', 'google', 'aws', 'active']),
+}).omit({ id: true, addedAt: true, lastUsed: true });
+
+export type ApiKey = typeof apiKeys.$inferSelect;
+export type InsertApiKey = z.infer<typeof insertApiKeySchema>;
