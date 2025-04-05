@@ -55,11 +55,18 @@ export function GlobalAgreementModal() {
       localStorage.setItem('nda_agreed', 'true');
       setHasAgreed(true);
       setOpen(false);
+      
+      // Direct users to the home page after accepting the NDA
+      // This allows them to browse content without needing to sign up immediately
+      window.location.href = '/';
     } catch (error) {
       console.error('Failed to save agreement:', error);
       localStorage.setItem('nda_agreed', 'true');
       setHasAgreed(true);
       setOpen(false);
+      
+      // Even if there's an error saving to the API, still direct users to home page
+      window.location.href = '/';
     } finally {
       setLoading(false);
     }

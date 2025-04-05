@@ -126,16 +126,8 @@ export function WhatMakesUsDifferent({ showTitle = true, showHeroSection = true 
     scrollToIndex(prevIndex);
   };
   
-  // Automatically scroll every 5 seconds
-  useEffect(() => {
-    if (features.length === 0) return; // Don't set up interval if no features
-    
-    const interval = setInterval(() => {
-      handleNext();
-    }, 5000);
-    
-    return () => clearInterval(interval);
-  }, [currentIndex, features.length]);
+  // Removed auto-scrolling to prevent disruption of user experience
+  // Manual scrolling is still available through navigation buttons and dots
   
   // Handle scroll events to update currentIndex
   useEffect(() => {
