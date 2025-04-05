@@ -18,7 +18,10 @@ import {
   blogPosts, type BlogPost, type InsertBlogPost,
   featuredAthletes, type FeaturedAthlete, type InsertFeaturedAthlete,
   workoutPlaylists, type WorkoutPlaylist, type InsertWorkoutPlaylist,
-  workoutExercises, type WorkoutExercise, type InsertWorkoutExercise
+  workoutExercises, type WorkoutExercise, type InsertWorkoutExercise,
+  filmComparisons, type FilmComparison, type InsertFilmComparison,
+  comparisonVideos, type ComparisonVideo, type InsertComparisonVideo,
+  comparisonAnalyses, type ComparisonAnalysis, type InsertComparisonAnalysis
 } from "@shared/schema";
 import { IStorage } from "./storage";
 import { db } from "./db";
@@ -1161,6 +1164,128 @@ export class DatabaseStorage implements IStorage {
     }
     
     return playlist;
+  }
+
+  // Film Comparison operations
+  async getFilmComparisons(userId: number): Promise<FilmComparison[]> {
+    return await db
+      .select()
+      .from(filmComparisons)
+      .where(eq(filmComparisons.userId, userId))
+      .orderBy(desc(filmComparisons.createdAt));
+  }
+
+  async getFilmComparison(id: number): Promise<FilmComparison | undefined> {
+    const [comparison] = await db
+      .select()
+      .from(filmComparisons)
+      .where(eq(filmComparisons.id, id));
+    return comparison;
+  }
+
+  async createFilmComparison(comparison: InsertFilmComparison): Promise<FilmComparison> {
+    const now = new Date();
+    const [newComparison] = await db
+      .insert(filmComparisons)
+      .values({
+        ...comparison,
+        createdAt: now
+      })
+      .returning();
+    return newComparison;
+  }
+
+  async updateFilmComparison(id: number, data: Partial<FilmComparison>): Promise<FilmComparison | undefined> {
+    const [comparison] = await db
+      .update(filmComparisons)
+      .set(data)
+      .where(eq(filmComparisons.id, id))
+      .returning();
+    return comparison;
+  }
+
+  async deleteFilmComparison(id: number): Promise<boolean> {
+    // First delete any videos associated with this comparison
+    await db
+      .delete(comparisonVideos)
+      .where(eq(comparisonVideos.comparisonId, id));
+    
+    // Then delete any analyses associated with this comparison
+    await db
+      .delete(comparisonAnalyses)
+      .where(eq(comparisonAnalyses.comparisonId, id));
+    
+    // Finally delete the comparison itself
+    const result = await db
+      .delete(filmComparisons)
+      .where(eq(filmComparisons.id, id));
+    
+    return result.count > 0;
+  }
+
+  async getComparisonVideos(comparisonId: number): Promise<ComparisonVideo[]> {
+    return await db
+      .select()
+      .from(comparisonVideos)
+      .where(eq(comparisonVideos.comparisonId, comparisonId))
+      .orderBy(asc(comparisonVideos.order));
+  }
+
+  async getComparisonVideo(id: number): Promise<ComparisonVideo | undefined> {
+    const [video] = await db
+      .select()
+      .from(comparisonVideos)
+      .where(eq(comparisonVideos.id, id));
+    return video;
+  }
+
+  async createComparisonVideo(video: InsertComparisonVideo): Promise<ComparisonVideo> {
+    const [newVideo] = await db
+      .insert(comparisonVideos)
+      .values(video)
+      .returning();
+    return newVideo;
+  }
+
+  async updateComparisonVideo(id: number, data: Partial<ComparisonVideo>): Promise<ComparisonVideo | undefined> {
+    const [video] = await db
+      .update(comparisonVideos)
+      .set(data)
+      .where(eq(comparisonVideos.id, id))
+      .returning();
+    return video;
+  }
+
+  async deleteComparisonVideo(id: number): Promise<boolean> {
+    const result = await db
+      .delete(comparisonVideos)
+      .where(eq(comparisonVideos.id, id));
+    return result.count > 0;
+  }
+
+  async getComparisonAnalysis(comparisonId: number): Promise<ComparisonAnalysis | undefined> {
+    const [analysis] = await db
+      .select()
+      .from(comparisonAnalyses)
+      .where(eq(comparisonAnalyses.comparisonId, comparisonId));
+    return analysis;
+  }
+
+  async createComparisonAnalysis(analysis: InsertComparisonAnalysis): Promise<ComparisonAnalysis> {
+    const [newAnalysis] = await db
+      .insert(comparisonAnalyses)
+      .values(analysis)
+      .returning();
+    return newAnalysis;
+  }
+
+  async updateComparisonAnalysis(id: number, data: Partial<ComparisonAnalysis>): Promise<ComparisonAnalysis | undefined> {
+    const [analysis] = await db
+      .update(comparisonAnalyses)
+      .set(data)
+      .where(eq(comparisonAnalyses.id, id))
+      .returning();
+    return analysis;
   }
 
   // Method to seed initial data
