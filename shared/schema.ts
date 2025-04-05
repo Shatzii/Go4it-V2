@@ -1180,5 +1180,225 @@ export type InsertMusicUserPreference = z.infer<typeof insertMusicUserPreference
 export type ArtistNilDeal = typeof artistNilDeals.$inferSelect;
 export type InsertArtistNilDeal = z.infer<typeof insertArtistNilDealSchema>;
 
+// Go4It Podcast feature
+export const podcastShows = pgTable("podcast_shows", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  coverImage: text("cover_image"),
+  creatorId: integer("creator_id").notNull().references(() => users.id),
+  isGroupShow: boolean("is_group_show").default(false),
+  categories: text("categories").array(),
+  tags: text("tags").array(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  isActive: boolean("is_active").default(true),
+  isExplicit: boolean("is_explicit").default(false),
+  rssFeedUrl: text("rss_feed_url"),
+  websiteUrl: text("website_url"),
+  sportCategories: text("sport_categories").array(),
+  showFormat: text("show_format"), // interview, solo, panel, etc.
+  episodeFrequency: text("episode_frequency"), // weekly, biweekly, monthly
+  subscriberCount: integer("subscriber_count").default(0),
+  totalListens: integer("total_listens").default(0),
+  featuredPosition: integer("featured_position"), // For editorial featuring on homepage
+});
+
+export const podcastHosts = pgTable("podcast_hosts", {
+  id: serial("id").primaryKey(),
+  showId: integer("show_id").notNull().references(() => podcastShows.id),
+  userId: integer("user_id").notNull().references(() => users.id),
+  role: text("role").default("host"), // host, co-host, guest host, producer
+  bio: text("bio"),
+  joinedAt: timestamp("joined_at").defaultNow(),
+  leftAt: timestamp("left_at"), // If the host leaves the show
+  isActive: boolean("is_active").default(true),
+});
+
+export const podcastEpisodes = pgTable("podcast_episodes", {
+  id: serial("id").primaryKey(),
+  showId: integer("show_id").notNull().references(() => podcastShows.id),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  audioFilePath: text("audio_file_path").notNull(),
+  duration: integer("duration").notNull(), // Duration in seconds
+  publishDate: timestamp("publish_date").defaultNow(),
+  episodeNumber: integer("episode_number"),
+  seasonNumber: integer("season_number").default(1),
+  coverImage: text("cover_image"),
+  isExplicit: boolean("is_explicit").default(false),
+  listenCount: integer("listen_count").default(0),
+  isPublished: boolean("is_published").default(true),
+  showNotes: text("show_notes"),
+  highlights: jsonb("highlights"), // Timestamps with descriptions for key moments
+  transcriptPath: text("transcript_path"),
+  isHighlightEpisode: boolean("is_highlight_episode").default(false),
+});
+
+export const podcastGuests = pgTable("podcast_guests", {
+  id: serial("id").primaryKey(),
+  episodeId: integer("episode_id").notNull().references(() => podcastEpisodes.id),
+  guestName: text("guest_name").notNull(),
+  userId: integer("user_id").references(() => users.id), // Optional - if guest is a Go4It user
+  bio: text("bio"),
+  title: text("title"), // e.g., "Head Coach", "NFL Analyst", "College Recruit"
+  instagramHandle: text("instagram_handle"),
+  twitterHandle: text("twitter_handle"),
+  websiteUrl: text("website_url"),
+  imageUrl: text("image_url"),
+  topicDiscussed: text("topic_discussed"),
+  appearanceStartTime: integer("appearance_start_time"), // Timestamp in seconds when guest first speaks
+});
+
+export const podcastComments = pgTable("podcast_comments", {
+  id: serial("id").primaryKey(),
+  episodeId: integer("episode_id").notNull().references(() => podcastEpisodes.id),
+  userId: integer("user_id").notNull().references(() => users.id),
+  content: text("content").notNull(),
+  timestamp: integer("timestamp"), // Timestamp in the episode this comment refers to
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  parentCommentId: integer("parent_comment_id").references(() => podcastComments.id), // For replies
+  likes: integer("likes").default(0),
+  isEdited: boolean("is_edited").default(false),
+  isRemoved: boolean("is_removed").default(false),
+});
+
+export const podcastSubscriptions = pgTable("podcast_subscriptions", {
+  id: serial("id").primaryKey(),
+  showId: integer("show_id").notNull().references(() => podcastShows.id),
+  userId: integer("user_id").notNull().references(() => users.id),
+  subscribedAt: timestamp("subscribed_at").defaultNow(),
+  notificationsEnabled: boolean("notifications_enabled").default(true),
+});
+
+export const podcastListeningHistory = pgTable("podcast_listening_history", {
+  id: serial("id").primaryKey(),
+  episodeId: integer("episode_id").notNull().references(() => podcastEpisodes.id),
+  userId: integer("user_id").notNull().references(() => users.id),
+  lastPosition: integer("last_position").default(0), // Last playback position in seconds
+  completed: boolean("completed").default(false), // If user finished the episode
+  listenDate: timestamp("listen_date").defaultNow(),
+  device: text("device"), // Device used for listening
+  listenDuration: integer("listen_duration"), // How long they listened in seconds
+});
+
+export const podcastTopics = pgTable("podcast_topics", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().unique(),
+  description: text("description"),
+  iconName: text("icon_name"), // For UI display
+  category: text("category"), // Broader category this topic falls under
+  popular: boolean("popular").default(false), // For trending topics
+});
+
+export const podcastEpisodeTopics = pgTable("podcast_episode_topics", {
+  id: serial("id").primaryKey(),
+  episodeId: integer("episode_id").notNull().references(() => podcastEpisodes.id),
+  topicId: integer("topic_id").notNull().references(() => podcastTopics.id),
+});
+
+export const podcastCollaborationRequests = pgTable("podcast_collaboration_requests", {
+  id: serial("id").primaryKey(),
+  showId: integer("show_id").notNull().references(() => podcastShows.id),
+  senderId: integer("sender_id").notNull().references(() => users.id),
+  recipientId: integer("recipient_id").notNull().references(() => users.id),
+  status: text("status").notNull().default("pending"), // pending, accepted, declined
+  requestNote: text("request_note"),
+  responseNote: text("response_note"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  proposedDate: timestamp("proposed_date"),
+  proposedTopic: text("proposed_topic"),
+});
+
+// Create insert schemas for podcast tables
+export const insertPodcastShowSchema = createInsertSchema(podcastShows).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  subscriberCount: true,
+  totalListens: true,
+});
+
+export const insertPodcastHostSchema = createInsertSchema(podcastHosts).omit({
+  id: true,
+  joinedAt: true,
+});
+
+export const insertPodcastEpisodeSchema = createInsertSchema(podcastEpisodes).omit({
+  id: true,
+  publishDate: true,
+  listenCount: true,
+});
+
+export const insertPodcastGuestSchema = createInsertSchema(podcastGuests).omit({
+  id: true,
+});
+
+export const insertPodcastCommentSchema = createInsertSchema(podcastComments).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  likes: true,
+  isEdited: true,
+  isRemoved: true,
+});
+
+export const insertPodcastSubscriptionSchema = createInsertSchema(podcastSubscriptions).omit({
+  id: true,
+  subscribedAt: true,
+});
+
+export const insertPodcastListeningHistorySchema = createInsertSchema(podcastListeningHistory).omit({
+  id: true,
+  listenDate: true,
+});
+
+export const insertPodcastTopicSchema = createInsertSchema(podcastTopics).omit({
+  id: true,
+});
+
+export const insertPodcastEpisodeTopicSchema = createInsertSchema(podcastEpisodeTopics).omit({
+  id: true,
+});
+
+export const insertPodcastCollaborationRequestSchema = createInsertSchema(podcastCollaborationRequests).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Podcast feature types
+export type PodcastShow = typeof podcastShows.$inferSelect;
+export type InsertPodcastShow = z.infer<typeof insertPodcastShowSchema>;
+
+export type PodcastHost = typeof podcastHosts.$inferSelect;
+export type InsertPodcastHost = z.infer<typeof insertPodcastHostSchema>;
+
+export type PodcastEpisode = typeof podcastEpisodes.$inferSelect;
+export type InsertPodcastEpisode = z.infer<typeof insertPodcastEpisodeSchema>;
+
+export type PodcastGuest = typeof podcastGuests.$inferSelect;
+export type InsertPodcastGuest = z.infer<typeof insertPodcastGuestSchema>;
+
+export type PodcastComment = typeof podcastComments.$inferSelect;
+export type InsertPodcastComment = z.infer<typeof insertPodcastCommentSchema>;
+
+export type PodcastSubscription = typeof podcastSubscriptions.$inferSelect;
+export type InsertPodcastSubscription = z.infer<typeof insertPodcastSubscriptionSchema>;
+
+export type PodcastListeningHistory = typeof podcastListeningHistory.$inferSelect;
+export type InsertPodcastListeningHistory = z.infer<typeof insertPodcastListeningHistorySchema>;
+
+export type PodcastTopic = typeof podcastTopics.$inferSelect;
+export type InsertPodcastTopic = z.infer<typeof insertPodcastTopicSchema>;
+
+export type PodcastEpisodeTopic = typeof podcastEpisodeTopics.$inferSelect;
+export type InsertPodcastEpisodeTopic = z.infer<typeof insertPodcastEpisodeTopicSchema>;
+
+export type PodcastCollaborationRequest = typeof podcastCollaborationRequests.$inferSelect;
+export type InsertPodcastCollaborationRequest = z.infer<typeof insertPodcastCollaborationRequestSchema>;
+
 export type UserAgreement = typeof userAgreements.$inferSelect;
 export type InsertUserAgreement = z.infer<typeof insertUserAgreementSchema>;
