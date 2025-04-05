@@ -256,6 +256,20 @@ export const siteImages = pgTable("site_images", {
   uploadDate: timestamp("upload_date").defaultNow(),
 });
 
+// Content blocks for editable site content like "What Makes Us Different" section
+export const contentBlocks = pgTable("content_blocks", {
+  id: serial("id").primaryKey(),
+  identifier: text("identifier").notNull().unique(), // unique key to identify this content block
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  section: text("section").notNull(), // e.g., "home", "about", "services"
+  order: integer("order").default(0),
+  active: boolean("active").default(true),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  lastUpdatedBy: integer("last_updated_by").references(() => users.id),
+  metadata: jsonb("metadata"), // for storing additional structured data
+});
+
 // Featured athletes 
 export const featuredAthletes = pgTable("featured_athletes", {
   id: serial("id").primaryKey(),
@@ -706,6 +720,9 @@ export const insertFeaturedAthleteSchema = createInsertSchema(featuredAthletes, 
 // Site Images insert schema
 export const insertSiteImageSchema = createInsertSchema(siteImages).omit({ id: true, uploadDate: true });
 
+// Content Blocks insert schema
+export const insertContentBlockSchema = createInsertSchema(contentBlocks).omit({ id: true, lastUpdated: true, lastUpdatedBy: true });
+
 // Film Comparison feature insert schemas
 export const insertFilmComparisonSchema = createInsertSchema(filmComparisons).omit({ id: true, createdAt: true });
 export const insertComparisonVideoSchema = createInsertSchema(comparisonVideos).omit({ id: true });
@@ -811,6 +828,9 @@ export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
 
 export type SiteImage = typeof siteImages.$inferSelect;
 export type InsertSiteImage = z.infer<typeof insertSiteImageSchema>;
+
+export type ContentBlock = typeof contentBlocks.$inferSelect;
+export type InsertContentBlock = z.infer<typeof insertContentBlockSchema>;
 
 export type FeaturedAthlete = typeof featuredAthletes.$inferSelect;
 export type InsertFeaturedAthlete = z.infer<typeof insertFeaturedAthleteSchema>;
