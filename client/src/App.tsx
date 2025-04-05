@@ -27,6 +27,7 @@ import CMSPage from "@/pages/cms-page";
 import FilmComparison from "@/pages/film-comparison";
 import FilmComparisonCreate from "@/pages/film-comparison-create";
 import FilmComparisonDetail from "@/pages/film-comparison-detail";
+import FilmComparisonEdit from "@/pages/film-comparison-edit";
 import NextUpSpotlight from "@/pages/nextup-spotlight";
 import SpotlightProfile from "@/pages/spotlight-profile";
 import SpotlightCreate from "@/pages/spotlight-create";
@@ -160,7 +161,7 @@ function Router() {
       
       <Route path="/film-comparison-edit/:id">
         {({ params }) => (
-          <ProtectedRoute component={FilmComparisonDetail} />
+          <ProtectedRoute component={FilmComparisonEdit} />
         )}
       </Route>
       

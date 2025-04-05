@@ -28,6 +28,9 @@ import {
   insertFeaturedAthleteSchema,
   insertWorkoutPlaylistSchema,
   insertWorkoutExerciseSchema,
+  insertFilmComparisonSchema,
+  insertComparisonVideoSchema,
+  insertComparisonAnalysisSchema,
   users,
 } from "@shared/schema";
 
@@ -2877,6 +2880,285 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching home feed:", error);
       res.status(500).json({ message: "Error fetching home feed" });
+    }
+  });
+
+  // Film Comparison routes
+  app.get("/api/film-comparisons", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const comparisons = await storage.getFilmComparisons(user.id);
+      res.json(comparisons);
+    } catch (error) {
+      console.error("Error fetching film comparisons:", error);
+      res.status(500).json({ message: "Error fetching film comparisons" });
+    }
+  });
+
+  app.get("/api/film-comparisons/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const comparisonId = parseInt(req.params.id);
+      const comparison = await storage.getFilmComparison(comparisonId);
+      
+      if (!comparison) {
+        return res.status(404).json({ message: "Film comparison not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow access to own comparisons or admin access
+      if (comparison.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to view this comparison" });
+      }
+      
+      // Get videos associated with this comparison
+      const videos = await storage.getComparisonVideos(comparisonId);
+      
+      // Get analysis if it exists
+      const analysis = await storage.getComparisonAnalysis(comparisonId);
+      
+      return res.json({
+        comparison,
+        videos,
+        analysis
+      });
+    } catch (error) {
+      console.error("Error fetching film comparison:", error);
+      res.status(500).json({ message: "Error fetching film comparison" });
+    }
+  });
+
+  app.post("/api/film-comparisons", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const comparisonData = insertFilmComparisonSchema.parse({
+        ...req.body,
+        userId: user.id
+      });
+      
+      const comparison = await storage.createFilmComparison(comparisonData);
+      res.status(201).json(comparison);
+    } catch (error) {
+      console.error("Error creating film comparison:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/film-comparisons/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const comparisonId = parseInt(req.params.id);
+      const comparison = await storage.getFilmComparison(comparisonId);
+      
+      if (!comparison) {
+        return res.status(404).json({ message: "Film comparison not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow updating own comparisons or admin access
+      if (comparison.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to update this comparison" });
+      }
+      
+      const updatedComparison = await storage.updateFilmComparison(comparisonId, req.body);
+      res.json(updatedComparison);
+    } catch (error) {
+      console.error("Error updating film comparison:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/film-comparisons/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const comparisonId = parseInt(req.params.id);
+      const comparison = await storage.getFilmComparison(comparisonId);
+      
+      if (!comparison) {
+        return res.status(404).json({ message: "Film comparison not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow deleting own comparisons or admin access
+      if (comparison.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to delete this comparison" });
+      }
+      
+      const success = await storage.deleteFilmComparison(comparisonId);
+      
+      if (success) {
+        res.status(200).json({ message: "Film comparison deleted successfully" });
+      } else {
+        res.status(500).json({ message: "Error deleting film comparison" });
+      }
+    } catch (error) {
+      console.error("Error deleting film comparison:", error);
+      res.status(500).json({ message: "Error deleting film comparison" });
+    }
+  });
+
+  // Comparison Video routes
+  app.post("/api/film-comparisons/:id/videos", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const comparisonId = parseInt(req.params.id);
+      const comparison = await storage.getFilmComparison(comparisonId);
+      
+      if (!comparison) {
+        return res.status(404).json({ message: "Film comparison not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow adding videos to own comparisons or admin access
+      if (comparison.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to modify this comparison" });
+      }
+      
+      const videoData = insertComparisonVideoSchema.parse({
+        ...req.body,
+        comparisonId
+      });
+      
+      const video = await storage.createComparisonVideo(videoData);
+      res.status(201).json(video);
+    } catch (error) {
+      console.error("Error adding comparison video:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/comparison-videos/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const videoId = parseInt(req.params.id);
+      const video = await storage.getComparisonVideo(videoId);
+      
+      if (!video) {
+        return res.status(404).json({ message: "Comparison video not found" });
+      }
+      
+      // Get the comparison to check permissions
+      const comparison = await storage.getFilmComparison(video.comparisonId);
+      
+      if (!comparison) {
+        return res.status(404).json({ message: "Film comparison not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow updating videos in own comparisons or admin access
+      if (comparison.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to modify this comparison" });
+      }
+      
+      const updatedVideo = await storage.updateComparisonVideo(videoId, req.body);
+      res.json(updatedVideo);
+    } catch (error) {
+      console.error("Error updating comparison video:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/comparison-videos/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const videoId = parseInt(req.params.id);
+      const video = await storage.getComparisonVideo(videoId);
+      
+      if (!video) {
+        return res.status(404).json({ message: "Comparison video not found" });
+      }
+      
+      // Get the comparison to check permissions
+      const comparison = await storage.getFilmComparison(video.comparisonId);
+      
+      if (!comparison) {
+        return res.status(404).json({ message: "Film comparison not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow deleting videos in own comparisons or admin access
+      if (comparison.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to modify this comparison" });
+      }
+      
+      const success = await storage.deleteComparisonVideo(videoId);
+      
+      if (success) {
+        res.status(200).json({ message: "Comparison video deleted successfully" });
+      } else {
+        res.status(500).json({ message: "Error deleting comparison video" });
+      }
+    } catch (error) {
+      console.error("Error deleting comparison video:", error);
+      res.status(500).json({ message: "Error deleting comparison video" });
+    }
+  });
+
+  // Comparison Analysis routes
+  app.post("/api/film-comparisons/:id/analysis", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const comparisonId = parseInt(req.params.id);
+      const comparison = await storage.getFilmComparison(comparisonId);
+      
+      if (!comparison) {
+        return res.status(404).json({ message: "Film comparison not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow adding analysis to own comparisons or admin access
+      if (comparison.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to modify this comparison" });
+      }
+      
+      // Check if analysis already exists
+      const existingAnalysis = await storage.getComparisonAnalysis(comparisonId);
+      if (existingAnalysis) {
+        return res.status(400).json({ message: "Analysis already exists for this comparison" });
+      }
+      
+      const analysisData = insertComparisonAnalysisSchema.parse({
+        ...req.body,
+        comparisonId
+      });
+      
+      const analysis = await storage.createComparisonAnalysis(analysisData);
+      res.status(201).json(analysis);
+    } catch (error) {
+      console.error("Error creating comparison analysis:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/comparison-analyses/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const analysisId = parseInt(req.params.id);
+      
+      // Get the analysis and related comparison to check permissions
+      const analysis = await storage.getComparisonAnalysis(req.body.comparisonId);
+      
+      if (!analysis) {
+        return res.status(404).json({ message: "Comparison analysis not found" });
+      }
+      
+      const comparison = await storage.getFilmComparison(analysis.comparisonId);
+      
+      if (!comparison) {
+        return res.status(404).json({ message: "Film comparison not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow updating analysis for own comparisons or admin access
+      if (comparison.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to modify this analysis" });
+      }
+      
+      const updatedAnalysis = await storage.updateComparisonAnalysis(analysisId, req.body);
+      res.json(updatedAnalysis);
+    } catch (error) {
+      console.error("Error updating comparison analysis:", error);
+      res.status(400).json({ message: error.message });
     }
   });
 
