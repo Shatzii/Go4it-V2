@@ -9,7 +9,6 @@ import { db } from "./db";
 import { eq } from "drizzle-orm";
 import multer from "multer";
 import path from "path";
-import fs from "fs";
 import { WebSocketServer, WebSocket } from 'ws';
 import { 
   insertUserSchema,
@@ -27,6 +26,8 @@ import {
   insertLeaderboardEntrySchema,
   insertBlogPostSchema,
   insertFeaturedAthleteSchema,
+  insertWorkoutPlaylistSchema,
+  insertWorkoutExerciseSchema,
   users,
 } from "@shared/schema";
 
@@ -1600,6 +1601,259 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deactivating featured athlete:", error);
       res.status(500).json({ message: "Error deactivating featured athlete" });
+    }
+  });
+  
+  // Workout Playlist Routes
+  app.get("/api/workout-playlists", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = req.user!.id;
+      const playlists = await storage.getWorkoutPlaylists(userId);
+      res.json(playlists);
+    } catch (error) {
+      console.error("Error retrieving workout playlists:", error);
+      res.status(500).json({ message: "Error retrieving workout playlists" });
+    }
+  });
+  
+  app.get("/api/workout-playlists/public", async (req: Request, res: Response) => {
+    try {
+      const workoutType = req.query.workoutType as string | undefined;
+      const intensityLevel = req.query.intensityLevel as string | undefined;
+      const playlists = await storage.getPublicWorkoutPlaylists(workoutType, intensityLevel);
+      res.json(playlists);
+    } catch (error) {
+      console.error("Error retrieving public workout playlists:", error);
+      res.status(500).json({ message: "Error retrieving public workout playlists" });
+    }
+  });
+  
+  app.get("/api/workout-playlists/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const playlistId = parseInt(req.params.id);
+      const playlist = await storage.getWorkoutPlaylist(playlistId);
+      
+      if (!playlist) {
+        return res.status(404).json({ message: "Workout playlist not found" });
+      }
+      
+      // If this is not a public playlist, ensure the user has access
+      if (!playlist.isPublic && playlist.userId !== req.user!.id) {
+        return res.status(403).json({ message: "You don't have permission to access this playlist" });
+      }
+      
+      res.json(playlist);
+    } catch (error) {
+      console.error("Error retrieving workout playlist:", error);
+      res.status(500).json({ message: "Error retrieving workout playlist" });
+    }
+  });
+  
+  app.post("/api/workout-playlists", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const playlistData = insertWorkoutPlaylistSchema.parse({
+        ...req.body,
+        userId: req.user!.id
+      });
+      
+      const newPlaylist = await storage.createWorkoutPlaylist(playlistData);
+      res.status(201).json(newPlaylist);
+    } catch (error) {
+      console.error("Error creating workout playlist:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+  
+  app.put("/api/workout-playlists/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const playlistId = parseInt(req.params.id);
+      const existingPlaylist = await storage.getWorkoutPlaylist(playlistId);
+      
+      if (!existingPlaylist) {
+        return res.status(404).json({ message: "Workout playlist not found" });
+      }
+      
+      if (existingPlaylist.userId !== req.user!.id) {
+        return res.status(403).json({ message: "You don't have permission to update this playlist" });
+      }
+      
+      const updatedPlaylist = await storage.updateWorkoutPlaylist(playlistId, req.body);
+      res.json(updatedPlaylist);
+    } catch (error) {
+      console.error("Error updating workout playlist:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+  
+  app.delete("/api/workout-playlists/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const playlistId = parseInt(req.params.id);
+      const existingPlaylist = await storage.getWorkoutPlaylist(playlistId);
+      
+      if (!existingPlaylist) {
+        return res.status(404).json({ message: "Workout playlist not found" });
+      }
+      
+      if (existingPlaylist.userId !== req.user!.id) {
+        return res.status(403).json({ message: "You don't have permission to delete this playlist" });
+      }
+      
+      const success = await storage.deleteWorkoutPlaylist(playlistId);
+      
+      if (!success) {
+        return res.status(500).json({ message: "Failed to delete workout playlist" });
+      }
+      
+      res.json({ message: "Workout playlist deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting workout playlist:", error);
+      res.status(500).json({ message: "Error deleting workout playlist" });
+    }
+  });
+  
+  app.post("/api/workout-playlists/:id/use", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const playlistId = parseInt(req.params.id);
+      const existingPlaylist = await storage.getWorkoutPlaylist(playlistId);
+      
+      if (!existingPlaylist) {
+        return res.status(404).json({ message: "Workout playlist not found" });
+      }
+      
+      const updatedPlaylist = await storage.incrementPlaylistUsage(playlistId);
+      res.json(updatedPlaylist);
+    } catch (error) {
+      console.error("Error updating playlist usage:", error);
+      res.status(500).json({ message: "Error updating playlist usage" });
+    }
+  });
+  
+  app.get("/api/workout-playlists/:id/exercises", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const playlistId = parseInt(req.params.id);
+      const playlist = await storage.getWorkoutPlaylist(playlistId);
+      
+      if (!playlist) {
+        return res.status(404).json({ message: "Workout playlist not found" });
+      }
+      
+      // If this is not a public playlist, ensure the user has access
+      if (!playlist.isPublic && playlist.userId !== req.user!.id) {
+        return res.status(403).json({ message: "You don't have permission to access this playlist" });
+      }
+      
+      const exercises = await storage.getWorkoutExercises(playlistId);
+      res.json(exercises);
+    } catch (error) {
+      console.error("Error retrieving workout exercises:", error);
+      res.status(500).json({ message: "Error retrieving workout exercises" });
+    }
+  });
+  
+  app.post("/api/workout-playlists/:id/exercises", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const playlistId = parseInt(req.params.id);
+      const playlist = await storage.getWorkoutPlaylist(playlistId);
+      
+      if (!playlist) {
+        return res.status(404).json({ message: "Workout playlist not found" });
+      }
+      
+      if (playlist.userId !== req.user!.id) {
+        return res.status(403).json({ message: "You don't have permission to add exercises to this playlist" });
+      }
+      
+      const exerciseData = insertWorkoutExerciseSchema.parse({
+        ...req.body,
+        playlistId
+      });
+      
+      const newExercise = await storage.createWorkoutExercise(exerciseData);
+      res.status(201).json(newExercise);
+    } catch (error) {
+      console.error("Error creating workout exercise:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+  
+  app.put("/api/workout-exercises/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const exerciseId = parseInt(req.params.id);
+      // We need to check if the user owns the playlist that contains this exercise
+      const exercise = await storage.getWorkoutExercises(exerciseId);
+      
+      if (!exercise) {
+        return res.status(404).json({ message: "Workout exercise not found" });
+      }
+      
+      // Get the playlist to check ownership
+      const playlist = await storage.getWorkoutPlaylist(exercise.playlistId);
+      if (!playlist || playlist.userId !== req.user!.id) {
+        return res.status(403).json({ message: "You don't have permission to update this exercise" });
+      }
+      
+      const updatedExercise = await storage.updateWorkoutExercise(exerciseId, req.body);
+      res.json(updatedExercise);
+    } catch (error) {
+      console.error("Error updating workout exercise:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+  
+  app.delete("/api/workout-exercises/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const exerciseId = parseInt(req.params.id);
+      // We need to check if the user owns the playlist that contains this exercise
+      const exercise = await storage.getWorkoutExercises(exerciseId);
+      
+      if (!exercise) {
+        return res.status(404).json({ message: "Workout exercise not found" });
+      }
+      
+      // Get the playlist to check ownership
+      const playlist = await storage.getWorkoutPlaylist(exercise.playlistId);
+      if (!playlist || playlist.userId !== req.user!.id) {
+        return res.status(403).json({ message: "You don't have permission to delete this exercise" });
+      }
+      
+      const success = await storage.deleteWorkoutExercise(exerciseId);
+      
+      if (!success) {
+        return res.status(500).json({ message: "Failed to delete workout exercise" });
+      }
+      
+      res.json({ message: "Workout exercise deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting workout exercise:", error);
+      res.status(500).json({ message: "Error deleting workout exercise" });
+    }
+  });
+  
+  app.post("/api/workout-playlists/generate", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = req.user!.id;
+      const { workoutType, intensityLevel, duration, targets } = req.body;
+      
+      // Validate required fields
+      if (!workoutType || !intensityLevel || !duration || !targets || !Array.isArray(targets) || targets.length === 0) {
+        return res.status(400).json({ message: "Missing required fields. Please provide workoutType, intensityLevel, duration and targets array." });
+      }
+      
+      // Get user profile for personalized recommendations if available
+      const athleteProfile = await storage.getAthleteProfileByUserId(userId);
+      
+      const generatedPlaylist = await storage.generateAIWorkoutPlaylist(userId, {
+        workoutType,
+        intensityLevel,
+        duration,
+        targets,
+        userProfile: athleteProfile
+      });
+      
+      res.status(201).json(generatedPlaylist);
+    } catch (error) {
+      console.error("Error generating AI workout playlist:", error);
+      res.status(500).json({ message: "Error generating AI workout playlist" });
     }
   });
   

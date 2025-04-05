@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/contexts/auth-context";
 import { useMessaging } from "@/contexts/messaging-context";
+import { useLayout } from "@/contexts/layout-context";
 import MobileNav from "./mobile-nav";
 import {
   Home,
@@ -15,7 +16,9 @@ import {
   LogIn,
   Plus,
   ChartBarStacked,
-  MessageSquare
+  MessageSquare,
+  Maximize,
+  Minimize
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -28,6 +31,7 @@ export default function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
   const { user, logout } = useAuth();
   const { unreadCount } = useMessaging();
+  const { isFullscreen, toggleFullscreen } = useLayout();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Close mobile menu when location changes
@@ -49,13 +53,22 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Sidebar Navigation (Desktop) */}
-      <aside className="hidden md:flex flex-col w-64 bg-neutral dark:bg-neutral-dark text-white">
-        <div className="p-4 border-b border-neutral-light border-opacity-20">
+      <aside className={`hidden ${isFullscreen ? "md:hidden" : "md:flex"} flex-col w-64 bg-neutral dark:bg-neutral-dark text-white`}>
+        <div className="p-4 border-b border-neutral-light border-opacity-20 flex items-center justify-between">
           <img 
             src="/assets/IMG_3534.jpeg" 
             alt="Go4It Sports Logo" 
             className="h-12 mix-blend-screen"
           />
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="text-white"
+            onClick={toggleFullscreen}
+            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+          >
+            <Maximize className="h-5 w-5" />
+          </Button>
         </div>
 
         <nav className="flex-1 p-4">
@@ -196,14 +209,25 @@ export default function Layout({ children }: LayoutProps) {
             </svg>
             GoForIt AI
           </h1>
-          <Button 
-            variant="ghost" 
-            size="icon"
-            className="text-white"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            <Menu className="h-6 w-6" />
-          </Button>
+          <div className="flex items-center">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="text-white mr-2"
+              onClick={toggleFullscreen}
+              title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+            >
+              {isFullscreen ? <Minimize className="h-5 w-5" /> : <Maximize className="h-5 w-5" />}
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="text-white"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              <Menu className="h-6 w-6" />
+            </Button>
+          </div>
         </header>
 
         {/* Mobile Menu */}
@@ -340,6 +364,21 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         )}
 
+        {/* Fullscreen toggle for desktop when sidebar is hidden */}
+        {isFullscreen && (
+          <div className="hidden md:block absolute top-4 right-4 z-10">
+            <Button 
+              variant="outline" 
+              size="icon"
+              className="bg-neutral/80 text-white hover:bg-neutral hover:text-white"
+              onClick={toggleFullscreen}
+              title="Exit Fullscreen"
+            >
+              <Minimize className="h-5 w-5" />
+            </Button>
+          </div>
+        )}
+        
         {/* Content */}
         <div className="p-4 md:p-8">
           {children}
