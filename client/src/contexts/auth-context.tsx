@@ -34,6 +34,7 @@ interface RegisterData {
   email: string;
   name: string;
   role: string;
+  agreedToTerms?: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

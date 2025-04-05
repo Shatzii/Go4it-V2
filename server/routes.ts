@@ -39,6 +39,7 @@ import {
   insertComparisonAnalysisSchema,
   insertVideoHighlightSchema,
   insertAthleteStarProfileSchema,
+  insertUserAgreementSchema,
   users,
   athleteStarProfiles,
 } from "@shared/schema";
@@ -291,6 +292,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/auth/me", (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).json({ message: "Not authenticated" });
     res.json({ user: req.user });
+  });
+
+  // User agreement routes
+  app.get("/api/user-agreements/:userId", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const requestUser = req.user as any;
+      
+      // Only allow viewing own agreement or admins can view any
+      if (userId !== requestUser.id && requestUser.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to view this agreement" });
+      }
+      
+      const agreement = await storage.getUserAgreement(userId);
+      
+      if (!agreement) {
+        return res.status(404).json({ message: "No agreement found for this user" });
+      }
+      
+      return res.json(agreement);
+    } catch (error) {
+      console.error("Error fetching user agreement:", error);
+      return res.status(500).json({ message: "Error fetching user agreement" });
+    }
+  });
+
+  app.post("/api/user-agreements", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const agreement = insertUserAgreementSchema.parse({
+        ...req.body,
+        userId: user.id
+      });
+      
+      // Get client IP and user agent
+      const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+      const userAgent = req.headers['user-agent'];
+      
+      // Create agreement with IP and user agent for legal tracking
+      const newAgreement = await storage.createUserAgreement({
+        ...agreement,
+        ipAddress: ipAddress ? String(ipAddress) : null,
+        userAgent: userAgent ? String(userAgent) : null
+      });
+      
+      return res.status(201).json(newAgreement);
+    } catch (error) {
+      console.error("Error creating user agreement:", error);
+      return res.status(400).json({ message: error.message });
+    }
   });
 
   // Authentication routes are now handled in auth.ts via setupAuth(app) and the routes above

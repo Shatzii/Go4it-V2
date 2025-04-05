@@ -1,4 +1,4 @@
-import { Twilio } from 'twilio';
+import twilio from 'twilio';
 
 interface SMSOptions {
   to: string;
@@ -7,7 +7,7 @@ interface SMSOptions {
 }
 
 class SMSService {
-  private client: Twilio | null = null;
+  private client: any = null;
   private defaultPhoneNumber: string | null = null;
   private isConfigured: boolean = false;
 
@@ -21,7 +21,7 @@ class SMSService {
     const phoneNumber = process.env.TWILIO_PHONE_NUMBER;
 
     if (accountSid && authToken) {
-      this.client = new Twilio(accountSid, authToken);
+      this.client = twilio(accountSid, authToken);
       this.defaultPhoneNumber = phoneNumber || null;
       this.isConfigured = true;
       console.log('SMS service initialized successfully');

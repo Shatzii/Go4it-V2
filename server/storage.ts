@@ -58,7 +58,9 @@ import {
   // Onboarding and journey mapping
   onboardingProgress, type OnboardingProgress, type InsertOnboardingProgress,
   athleteJourneyMap, type AthleteJourneyMap, type InsertAthleteJourneyMap,
-  journeyMilestones, type JourneyMilestone, type InsertJourneyMilestone
+  journeyMilestones, type JourneyMilestone, type InsertJourneyMilestone,
+  // User agreements
+  userAgreements, type UserAgreement, type InsertUserAgreement
 } from "@shared/schema";
 
 import { AnalysisResult } from "./openai";
@@ -74,6 +76,10 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, data: Partial<User>): Promise<User | undefined>;
+  
+  // User Agreement operations
+  getUserAgreement(userId: number): Promise<UserAgreement | undefined>;
+  createUserAgreement(agreement: InsertUserAgreement): Promise<UserAgreement>;
   
   // Content Block operations
   getContentBlocks(section?: string): Promise<ContentBlock[]>;
@@ -387,6 +393,7 @@ export class MemStorage implements IStorage {
   private videoAnalyses: Map<number, VideoAnalysis>;
   private sportRecommendations: Map<number, SportRecommendation>;
   private ncaaEligibility: Map<number, NcaaEligibility>;
+  private userAgreements: Map<number, UserAgreement>;
   
   // NCAA related components
   private ncaaCoreCourses: Map<number, NcaaCoreCourse>;
@@ -495,6 +502,7 @@ export class MemStorage implements IStorage {
   private currentAthleteJourneyMapId: number;
   private journeyMilestones: Map<number, JourneyMilestone>;
   private currentJourneyMilestoneId: number;
+  private currentUserAgreementId: number;
   
   constructor() {
     // Initialize the memorystore session store
@@ -511,6 +519,7 @@ export class MemStorage implements IStorage {
     this.videoAnalyses = new Map();
     this.sportRecommendations = new Map();
     this.ncaaEligibility = new Map();
+    this.userAgreements = new Map();
     
     // Initialize NCAA related component maps
     this.ncaaCoreCourses = new Map();
@@ -609,6 +618,7 @@ export class MemStorage implements IStorage {
     this.currentOnboardingProgressId = 1;
     this.currentAthleteJourneyMapId = 1;
     this.currentJourneyMilestoneId = 1;
+    this.currentUserAgreementId = 1;
     
     // Initialize with sample data for testing
     this.seedInitialData();
@@ -1069,6 +1079,25 @@ export class MemStorage implements IStorage {
   
   async deleteNcaaRegistration(id: number): Promise<boolean> {
     return this.ncaaRegistrations.delete(id);
+  }
+  
+  // User Agreement operations
+  async getUserAgreement(userId: number): Promise<UserAgreement | undefined> {
+    return Array.from(this.userAgreements.values()).find(
+      (agreement) => agreement.userId === userId
+    );
+  }
+
+  async createUserAgreement(agreement: InsertUserAgreement): Promise<UserAgreement> {
+    const id = this.currentUserAgreementId++;
+    const now = new Date();
+    const userAgreement: UserAgreement = { 
+      ...agreement, 
+      id, 
+      acceptedAt: now 
+    };
+    this.userAgreements.set(id, userAgreement);
+    return userAgreement;
   }
   
   // NCAA Eligibility Checking Helpers
