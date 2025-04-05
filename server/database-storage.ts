@@ -2259,6 +2259,14 @@ export class DatabaseStorage implements IStorage {
       .from(apiKeys)
       .orderBy(asc(apiKeys.keyType));
   }
+  
+  async getAllActiveApiKeys(): Promise<ApiKey[]> {
+    return await db
+      .select()
+      .from(apiKeys)
+      .where(eq(apiKeys.isActive, true))
+      .orderBy(asc(apiKeys.keyType));
+  }
 
   async getApiKeyStatus(): Promise<Record<string, boolean>> {
     const keys = await this.getAllApiKeys();

@@ -2364,8 +2364,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Use OpenAI to analyze the workout video
-      const { verifyWorkoutVideo } = await import('./openai');
-      const analysis = await verifyWorkoutVideo(verificationId, videoPath);
+      const { analyzeWorkoutVerification } = await import('./openai');
+      const analysis = await analyzeWorkoutVerification(verificationId, videoPath);
       
       // Update the checkpoint if provided
       if (checkpointId) {
