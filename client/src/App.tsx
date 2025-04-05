@@ -24,7 +24,7 @@ import MessagingPage from "@/pages/messaging";
 import HomePage from "@/pages/home-page";
 import CMSPage from "@/pages/cms-page";
 
-// New feature page imports
+// Feature page imports
 import FilmComparison from "@/pages/film-comparison";
 import FilmComparisonCreate from "@/pages/film-comparison-create";
 import FilmComparisonDetail from "@/pages/film-comparison-detail";
@@ -37,6 +37,13 @@ import WorkoutVerification from "@/pages/workout-verification";
 import VerificationDetail from "@/pages/verification-detail";
 import SubmitVerification from "@/pages/submit-verification";
 import WeightRoom from "@/pages/weight-room";
+import CombineTour from "@/pages/combine-tour";
+
+// New feature page imports - Phase 2
+import MyPlayerStarPath from "@/pages/myplayer-star-path";
+import MyPlayerAICoach from "@/pages/myplayer-ai-coach";
+import ScoutVisionFeed from "@/pages/scoutvision-feed";
+import CoachPortal from "@/pages/coach-portal";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -185,10 +192,22 @@ function Router() {
         )}
       </Route>
       
-      {/* MyPlayer XP System Route */}
+      {/* MyPlayer Experience System Routes */}
       <Route path="/myplayer-xp">
         {({ params }) => (
           <ProtectedRoute component={MyPlayerXP} />
+        )}
+      </Route>
+      
+      <Route path="/myplayer-star-path">
+        {({ params }) => (
+          <ProtectedRoute component={MyPlayerStarPath} />
+        )}
+      </Route>
+      
+      <Route path="/myplayer-ai-coach">
+        {({ params }) => (
+          <ProtectedRoute component={MyPlayerAICoach} />
         )}
       </Route>
       
@@ -215,6 +234,27 @@ function Router() {
       <Route path="/weight-room">
         {({ params }) => (
           <ProtectedRoute component={WeightRoom} />
+        )}
+      </Route>
+      
+      {/* ScoutVision Feed Route */}
+      <Route path="/scoutvision-feed">
+        {({ params }) => (
+          <ProtectedRoute component={ScoutVisionFeed} />
+        )}
+      </Route>
+      
+      {/* Combine Tour Route */}
+      <Route path="/combine-tour">
+        {({ params }) => (
+          <ProtectedRoute component={CombineTour} />
+        )}
+      </Route>
+      
+      {/* Coach Portal Route */}
+      <Route path="/coach-portal">
+        {({ params }) => (
+          <ProtectedRoute component={CoachPortal} />
         )}
       </Route>
       
