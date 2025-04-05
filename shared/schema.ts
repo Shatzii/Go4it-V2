@@ -71,6 +71,7 @@ export const videoAnalyses = pgTable("video_analyses", {
   feedback: text("feedback").notNull(),
   improvementTips: text("improvement_tips").array(),
   keyFrameTimestamps: real("key_frame_timestamps").array(), // timestamps of key moments in the video
+  garScores: json("gar_scores"), // Detailed GAR scoring breakdown by category
 });
 
 // User agreements table to track acceptance of terms
@@ -344,6 +345,60 @@ export const recoveryLogs = pgTable("recovery_logs", {
   hydrationLevel: integer("hydration_level"), // 1-10
   notes: text("notes"),
   overallRecoveryScore: integer("overall_recovery_score"), // 0-100
+});
+
+// GAR Rating System tables
+export const garCategories = pgTable("gar_categories", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  sportType: text("sport_type").notNull(), // basketball, football, soccer, etc.
+  positionType: text("position_type"), // specific position (quarterback, center, etc.)
+  displayOrder: integer("display_order").default(0),
+  icon: text("icon"), // Icon identifier
+  color: text("color"), // Hex color for visualization
+  createdAt: timestamp("created_at").defaultNow(),
+  active: boolean("active").default(true),
+});
+
+// GAR sub-categories for more detailed breakdowns
+export const garSubcategories = pgTable("gar_subcategories", {
+  id: serial("id").primaryKey(),
+  categoryId: integer("category_id").notNull().references(() => garCategories.id),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  displayOrder: integer("display_order").default(0),
+  icon: text("icon"),
+  color: text("color"),
+  maxScore: integer("max_score").default(100), // Maximum possible score
+  createdAt: timestamp("created_at").defaultNow(),
+  active: boolean("active").default(true),
+});
+
+// GAR Athlete Ratings - stores the individual ratings for an athlete
+export const garAthleteRatings = pgTable("gar_athlete_ratings", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  videoAnalysisId: integer("video_analysis_id").notNull().references(() => videoAnalyses.id),
+  categoryId: integer("category_id").notNull().references(() => garCategories.id),
+  subcategoryId: integer("subcategory_id").references(() => garSubcategories.id),
+  score: integer("score").notNull(), // 0-100
+  percentileRank: integer("percentile_rank"), // Athlete's percentile compared to peers
+  previousScore: integer("previous_score"), // For tracking improvement
+  scoreDate: timestamp("score_date").defaultNow(),
+  notes: text("notes"),
+  confidence: integer("confidence").default(90), // AI confidence in the score (0-100)
+});
+
+// GAR Rating History - tracks athlete progress over time
+export const garRatingHistory = pgTable("gar_rating_history", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  videoAnalysisId: integer("video_analysis_id").references(() => videoAnalyses.id),
+  totalGarScore: integer("total_gar_score").notNull(), // Overall score
+  categoryScores: json("category_scores").notNull(), // JSON with scores by category
+  calculatedDate: timestamp("calculated_date").defaultNow(),
+  starRating: integer("star_rating").notNull().default(0), // 1-5 star rating derived from GAR score
 });
 
 // Star rating athlete profiles for benchmarking standard levels
