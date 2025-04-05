@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/auth-context";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import { 
   ChartBarStacked, 
   ChartBar, 
@@ -18,6 +21,13 @@ import {
   ArrowUpRight,
   ArrowDownRight, 
   PersonStanding,
+  FileText,
+  Newspaper,
+  PenTool,
+  Sparkles,
+  Trash2,
+  RefreshCw,
+  Clock
 } from "lucide-react";
 import {
   Table,
@@ -34,6 +44,9 @@ export default function AdminDashboard() {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("overview");
+  const [generatingBlog, setGeneratingBlog] = useState(false);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   // Fetch admin stats
   const { data: stats, isLoading: statsLoading } = useQuery({
@@ -63,6 +76,38 @@ export default function AdminDashboard() {
   const { data: videos, isLoading: videosLoading } = useQuery({
     queryKey: ["/api/admin/videos"],
     enabled: !!user && user.role === "admin" && activeTab === "videos",
+  });
+
+  // Fetch blog posts
+  const { data: blogPosts, isLoading: blogPostsLoading } = useQuery({
+    queryKey: ["/api/blog-posts"],
+    enabled: !!user && user.role === "admin" && activeTab === "content",
+  });
+
+  // Mutation to generate a blog post
+  const generateBlogMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("/api/admin/blog-posts/generate", "POST");
+      return response;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Blog Post Generated",
+        description: "A new AI-generated blog post has been created successfully.",
+        variant: "default",
+      });
+      setGeneratingBlog(false);
+      queryClient.invalidateQueries({ queryKey: ["/api/blog-posts"] });
+    },
+    onError: (error) => {
+      console.error("Error generating blog post:", error);
+      toast({
+        title: "Generation Failed",
+        description: "There was a problem generating the blog post. Please try again.",
+        variant: "destructive",
+      });
+      setGeneratingBlog(false);
+    }
   });
 
   if (!user) {
@@ -138,11 +183,12 @@ export default function AdminDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-4 mb-6">
+        <TabsList className="grid grid-cols-5 mb-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="athletes">Athletes</TabsTrigger>
           <TabsTrigger value="coaches">Coaches</TabsTrigger>
           <TabsTrigger value="videos">Videos</TabsTrigger>
+          <TabsTrigger value="content">Content</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
@@ -621,6 +667,168 @@ export default function AdminDashboard() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Content Tab - Blog Management */}
+        <TabsContent value="content">
+          <div className="grid gap-6">
+            {/* Blog Management Section */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center">
+                    <Newspaper className="h-5 w-5 mr-2" />
+                    Blog Management
+                  </CardTitle>
+                  <CardDescription>
+                    Manage and create blog posts for the platform
+                  </CardDescription>
+                </div>
+                <Button 
+                  onClick={() => {
+                    setGeneratingBlog(true);
+                    generateBlogMutation.mutate();
+                  }}
+                  disabled={generatingBlog}
+                  className="flex items-center gap-2"
+                >
+                  {generatingBlog ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4" />
+                      Generate AI Blog Post
+                    </>
+                  )}
+                </Button>
+              </CardHeader>
+              <CardContent>
+                {blogPostsLoading ? (
+                  <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading blog posts...</p>
+                  </div>
+                ) : blogPosts && blogPosts.length > 0 ? (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Published</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filterItems(blogPosts)
+                        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                        .map((post) => (
+                          <TableRow key={post.id}>
+                            <TableCell className="font-medium">
+                              <div className="flex items-center">
+                                <div className="w-10 h-10 rounded overflow-hidden mr-3 flex-shrink-0">
+                                  {post.featuredImage ? (
+                                    <img 
+                                      src={post.featuredImage} 
+                                      alt={post.title}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                                      <FileText className="h-4 w-4 text-gray-500" />
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="truncate max-w-[250px]">
+                                  <p className="font-medium truncate" title={post.title}>
+                                    {post.title}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {post.isAiGenerated && (
+                                      <Badge variant="outline" className="mr-2 text-xs">
+                                        <Sparkles className="h-3 w-3 mr-1" /> AI Generated
+                                      </Badge>
+                                    )}
+                                  </p>
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="secondary" className="capitalize">
+                                {post.category}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              {post.status === "published" ? (
+                                <Badge variant="success" className="bg-green-100 text-green-800">
+                                  Published
+                                </Badge>
+                              ) : (
+                                <Badge variant="outline">Draft</Badge>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center">
+                                <Clock className="h-3 w-3 mr-1 text-muted-foreground" />
+                                <span className="text-sm">{formatDate(post.publishedAt || post.createdAt)}</span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-2">
+                                <Button variant="outline" size="sm" asChild>
+                                  <Link href={`/blog/${post.slug}`}>
+                                    View
+                                  </Link>
+                                </Button>
+                                <Button variant="outline" size="sm">
+                                  Edit
+                                </Button>
+                                <Button variant="outline" size="sm" className="text-red-500 hover:text-red-700">
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <div className="text-center py-12">
+                    <FileText className="h-16 w-16 mx-auto text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium mb-2">No blog posts found</h3>
+                    <p className="text-gray-600 mb-6">
+                      {searchQuery ? 
+                        "No blog posts match your search criteria." : 
+                        "Start by creating your first blog post."}
+                    </p>
+                    <Button 
+                      onClick={() => {
+                        setGeneratingBlog(true);
+                        generateBlogMutation.mutate();
+                      }}
+                      disabled={generatingBlog}
+                      className="flex items-center gap-2"
+                    >
+                      {generatingBlog ? (
+                        <>
+                          <RefreshCw className="h-4 w-4 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="h-4 w-4" />
+                          Generate AI Blog Post
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

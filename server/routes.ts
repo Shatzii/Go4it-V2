@@ -3188,6 +3188,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Manual trigger for AI blog post generation (admin only)
+  app.post("/api/admin/blog-posts/generate", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const { createAIBlogPost } = await import('./blog-generator');
+      const adminUserId = req.user!.id;
+      
+      const success = await createAIBlogPost(adminUserId);
+      
+      if (success) {
+        res.status(201).json({ 
+          success: true, 
+          message: "New AI blog post generated successfully" 
+        });
+      } else {
+        res.status(500).json({ 
+          success: false, 
+          message: "Failed to generate blog post. Check OpenAI API key and server logs." 
+        });
+      }
+    } catch (error) {
+      console.error("Error generating AI blog post:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Error generating AI blog post", 
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+  
   // Featured Athletes API Routes
   app.get("/api/featured-athletes", async (req: Request, res: Response) => {
     try {
