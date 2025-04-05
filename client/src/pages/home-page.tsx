@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Star, ChevronRight, Clock, Trophy, Calendar, Video } from "lucide-react";
 import { useAuth } from "../contexts/auth-context";
 
@@ -93,46 +94,43 @@ export default function HomePage() {
             The Future of Athlete Evaluation & Placement
           </p>
         </div>
-        <div className="max-w-4xl mx-auto mb-12 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-          <div className="bg-gradient-to-r from-gray-900 to-gray-800 p-6 rounded-xl">
-            <h3 className="text-2xl font-bold mb-4 text-white">GAR Rating System</h3>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-blue-500/20 p-3 rounded-lg">
-                  <span className="text-blue-400 font-bold">60%</span>
-                </div>
-                <div className="text-left">
-                  <h4 className="font-semibold text-blue-400">Physical</h4>
-                  <p className="text-sm text-gray-300">Sprint, Agility, Strength & Coordination</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="bg-purple-500/20 p-3 rounded-lg">
-                  <span className="text-purple-400 font-bold">20%</span>
-                </div>
-                <div className="text-left">
-                  <h4 className="font-semibold text-purple-400">Cognitive</h4>
-                  <p className="text-sm text-gray-300">Decision-Making & Learning Style</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="bg-green-500/20 p-3 rounded-lg">
-                  <span className="text-green-400 font-bold">20%</span>
-                </div>
-                <div className="text-left">
-                  <h4 className="font-semibold text-green-400">Psychological</h4>
-                  <p className="text-sm text-gray-300">Confidence & Team Dynamics</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div>
-            <img 
-              src="/assets/combine-hero.jpg" 
-              alt="Athletes at Combine" 
-              className="rounded-lg shadow-xl"
-            />
-          </div>
+        <div className="max-w-6xl mx-auto mb-12">
+          <Carousel className="w-full">
+            <CarouselContent>
+              <CarouselItem className="md:basis-1/2">
+                <Card className="bg-gradient-to-r from-gray-900 to-gray-800">
+                  <CardHeader>
+                    <CardTitle>Physical (60%)</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-300">Sprint, Agility, Strength & Coordination</p>
+                  </CardContent>
+                </Card>
+              </CarouselItem>
+              <CarouselItem className="md:basis-1/2">
+                <Card className="bg-gradient-to-r from-gray-900 to-gray-800">
+                  <CardHeader>
+                    <CardTitle>Cognitive (20%)</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-300">Decision-Making & Learning Style</p>
+                  </CardContent>
+                </Card>
+              </CarouselItem>
+              <CarouselItem className="md:basis-1/2">
+                <Card className="bg-gradient-to-r from-gray-900 to-gray-800">
+                  <CardHeader>
+                    <CardTitle>Psychological (20%)</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-300">Confidence & Team Dynamics</p>
+                  </CardContent>
+                </Card>
+              </CarouselItem>
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </div>
         <p className="text-xl mb-8 max-w-3xl mx-auto text-gray-300">
           Our revolutionary GAR Rating System combines physical metrics, cognitive abilities, and psychological factors to provide the most comprehensive athlete evaluation available.
@@ -165,8 +163,10 @@ export default function HomePage() {
         </div>
 
         {featuredAthletes.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredAthletes.map((athlete) => (
+          <Carousel className="w-full">
+            <CarouselContent>
+              {featuredAthletes.map((athlete) => (
+                <CarouselItem key={athlete.id} className="md:basis-1/3">
               <Card key={athlete.id} className="overflow-hidden border-0 bg-gradient-to-b from-gray-800/60 to-gray-900 shadow-lg">
                 <div className="relative h-48 overflow-hidden">
                   <img
@@ -208,8 +208,12 @@ export default function HomePage() {
                   </Button>
                 </CardFooter>
               </Card>
-            ))}
-          </div>
+            </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         ) : (
           <div className="flex justify-center items-center p-12 border border-gray-700 rounded-lg bg-gray-800/30">
             <p className="text-gray-400">No featured athletes available</p>
@@ -235,8 +239,12 @@ export default function HomePage() {
           </TabsList>
 
           <TabsContent value="featured" className="mt-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {(activeTab === "featured" ? featuredBlogPosts : blogPosts)
+            <Carousel className="w-full">
+              <CarouselContent>
+                {(activeTab === "featured" ? featuredBlogPosts : blogPosts)
+                  .filter(post => post.featured)
+                  .map((post) => (
+                    <CarouselItem key={post.id} className="md:basis-1/3">
                 .filter(post => post.featured)
                 .map((post) => (
                   <Card key={post.id} className="overflow-hidden border-0 bg-gradient-to-b from-gray-800/60 to-gray-900 shadow-lg">
@@ -268,8 +276,12 @@ export default function HomePage() {
                       </Button>
                     </CardFooter>
                   </Card>
-                ))}
-            </div>
+                </CarouselItem>
+                  ))}
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
           </TabsContent>
 
           {["training", "nutrition", "recruiting"].map((category) => (
