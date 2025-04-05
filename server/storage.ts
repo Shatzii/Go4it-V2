@@ -54,7 +54,11 @@ import {
   // API Keys
   apiKeys, type ApiKey, type InsertApiKey,
   // Athlete star profiles
-  athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile
+  athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile,
+  // Onboarding and journey mapping
+  onboardingProgress, type OnboardingProgress, type InsertOnboardingProgress,
+  athleteJourneyMap, type AthleteJourneyMap, type InsertAthleteJourneyMap,
+  journeyMilestones, type JourneyMilestone, type InsertJourneyMilestone
 } from "@shared/schema";
 
 import { AnalysisResult } from "./openai";
@@ -83,6 +87,23 @@ export interface IStorage {
   getAthleteStarProfiles(filters?: { sport?: string, position?: string, starLevel?: number }): Promise<AthleteStarProfile[]>;
   getAthleteStarProfile(id: number): Promise<AthleteStarProfile | undefined>;
   createAthleteStarProfile(profile: InsertAthleteStarProfile): Promise<AthleteStarProfile>;
+  
+  // Onboarding Tutorial operations
+  getOnboardingProgress(userId: number): Promise<OnboardingProgress | undefined>;
+  createOnboardingProgress(progress: InsertOnboardingProgress): Promise<OnboardingProgress>;
+  updateOnboardingProgress(userId: number, data: Partial<OnboardingProgress>): Promise<OnboardingProgress | undefined>;
+  
+  // Athlete Journey Map operations
+  getAthleteJourneyMap(userId: number): Promise<AthleteJourneyMap | undefined>;
+  createAthleteJourneyMap(journeyMap: InsertAthleteJourneyMap): Promise<AthleteJourneyMap>;
+  updateAthleteJourneyMap(userId: number, data: Partial<AthleteJourneyMap>): Promise<AthleteJourneyMap | undefined>;
+  
+  // Journey Milestone operations
+  getJourneyMilestones(journeyMapId: number): Promise<JourneyMilestone[]>;
+  getJourneyMilestone(id: number): Promise<JourneyMilestone | undefined>;
+  createJourneyMilestone(milestone: InsertJourneyMilestone): Promise<JourneyMilestone>;
+  updateJourneyMilestone(id: number, data: Partial<JourneyMilestone>): Promise<JourneyMilestone | undefined>;
+  deleteJourneyMilestone(id: number): Promise<boolean>;
   
   // Athlete Profile operations
   getAthleteProfile(userId: number): Promise<AthleteProfile | undefined>;
@@ -468,6 +489,12 @@ export class MemStorage implements IStorage {
   private currentWeightRoomEquipmentId: number;
   private currentPlayerEquipmentId: number;
   private currentAthleteStarProfileId: number;
+  private onboardingProgress: Map<number, OnboardingProgress>;
+  private currentOnboardingProgressId: number;
+  private athleteJourneyMap: Map<number, AthleteJourneyMap>;
+  private currentAthleteJourneyMapId: number;
+  private journeyMilestones: Map<number, JourneyMilestone>;
+  private currentJourneyMilestoneId: number;
   
   constructor() {
     // Initialize the memorystore session store
@@ -534,6 +561,9 @@ export class MemStorage implements IStorage {
     this.weightRoomEquipment = new Map();
     this.playerEquipment = new Map();
     this.apiKeys = new Map();
+    this.onboardingProgress = new Map();
+    this.athleteJourneyMap = new Map();
+    this.journeyMilestones = new Map();
     
     this.currentUserId = 1;
     this.currentAthleteProfileId = 1;
@@ -576,6 +606,9 @@ export class MemStorage implements IStorage {
     this.currentWeightRoomEquipmentId = 1;
     this.currentPlayerEquipmentId = 1;
     this.currentAthleteStarProfileId = 1;
+    this.currentOnboardingProgressId = 1;
+    this.currentAthleteJourneyMapId = 1;
+    this.currentJourneyMilestoneId = 1;
     
     // Initialize with sample data for testing
     this.seedInitialData();
