@@ -124,7 +124,20 @@ app.use((req, res, next) => {
   // ALWAYS serve the app on port 5000
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
-  const port = 5000;
+  const findAvailablePort = async (startPort: number): Promise<number> => {
+    return new Promise((resolve) => {
+      const server = require('net').createServer();
+      server.listen(startPort, '0.0.0.0', () => {
+        const port = (server.address() as any).port;
+        server.close(() => resolve(port));
+      });
+      server.on('error', () => {
+        resolve(findAvailablePort(startPort + 1));
+      });
+    });
+  };
+
+  const port = await findAvailablePort(5000);
   server.listen({
     port,
     host: "0.0.0.0",
