@@ -54,7 +54,7 @@ export default function Layout({ children }: LayoutProps) {
           <img 
             src="/assets/IMG_3534.jpeg" 
             alt="Go4It Sports Logo" 
-            className="h-12"
+            className="h-12 mix-blend-screen"
           />
         </div>
 
