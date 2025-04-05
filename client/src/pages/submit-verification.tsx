@@ -151,16 +151,20 @@ export default function SubmitVerification() {
           formData.append('notes', payload.notes);
         }
         
+        // Add mediaUrls as a JSON string
+        if (payload.mediaUrls && payload.mediaUrls.length > 0) {
+          formData.append('mediaUrls', JSON.stringify(payload.mediaUrls));
+        }
+        
         if (payload.checkpoints && payload.checkpoints.length > 0) {
           formData.append('checkpoints', JSON.stringify(payload.checkpoints));
         }
         
-        // Set custom headers to remove the default Content-Type: application/json
-        const options = {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        };
+        // Don't set Content-Type header - let the browser set it with the boundary
+        // The browser will automatically set the correct multipart/form-data with boundary
+        const options = {};
+        
+        console.log("Sending workout verification data with mediaUrls:", payload.mediaUrls);
         
         return apiRequest('POST', '/api/workout-verifications', formData, options);
       } catch (error) {
