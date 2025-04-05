@@ -1,7 +1,9 @@
 import OpenAI from "openai";
 import fs from "fs";
+import path from "path";
 import { storage } from "./storage";
 import { AthleteProfile } from "@shared/schema";
+import { v4 as uuidv4 } from 'uuid';
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 console.log("Initializing OpenAI client with API key from environment");
@@ -17,6 +19,67 @@ if (!apiKey || !apiKey.startsWith('sk-')) {
 const openai = new OpenAI({ 
   apiKey: apiKey
 });
+
+// Function to generate athlete headshot images using DALL-E
+export async function generateAthleteImage(
+  sport: string, 
+  position: string, 
+  starLevel: number
+): Promise<string> {
+  try {
+    console.log(`Generating athlete image for ${position} in ${sport} (${starLevel} stars)`);
+    
+    // Ensure the uploads directory exists
+    const uploadsDir = path.join(process.cwd(), 'uploads', 'athletes');
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+    
+    // Define quality based on star level
+    const quality = starLevel >= 4 ? "hd" : "standard";
+    
+    // Create a descriptive prompt for the specific sport and position
+    // Ensure it focuses on generating a realistic student athlete photo
+    const prompt = `A realistic photograph portrait of a student athlete playing ${sport} as a ${position}. 
+    They are ${starLevel >= 4 ? 'elite-level' : starLevel >= 3 ? 'varsity-level' : 'junior varsity level'}. 
+    The image should be a close-up headshot showing their face clearly while they're wearing appropriate uniform/gear for ${sport}. 
+    This should be a professional-looking action portrait of a real high school/college athlete, similar to those used in college recruiting profiles.
+    Focus on a realistic, natural expression, not posed or artificial-looking. Show them actively engaged in their sport.`;
+    
+    const response = await openai.images.generate({
+      model: "dall-e-3",
+      prompt: prompt,
+      n: 1,
+      size: "1024x1024",
+      quality: quality,
+      style: "natural"
+    });
+    
+    // Get the image URL from the response
+    const imageUrl = response.data[0].url;
+    if (!imageUrl) {
+      throw new Error("No image URL returned from OpenAI");
+    }
+    
+    // Download the image and save it locally
+    const response1 = await fetch(imageUrl);
+    const arrayBuffer = await response1.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    
+    // Create a unique filename
+    const uniqueFilename = `${sport.toLowerCase()}_${position.toLowerCase()}_${starLevel}star_${uuidv4().substring(0, 8)}.png`;
+    const imagePath = path.join(uploadsDir, uniqueFilename);
+    
+    // Write the buffer to the file
+    fs.writeFileSync(imagePath, buffer);
+    
+    // Return the path relative to uploads directory
+    return `/uploads/athletes/${uniqueFilename}`;
+  } catch (error: any) {
+    console.error("Error generating athlete image:", error);
+    throw new Error(`Failed to generate athlete image: ${error?.message || 'Unknown error'}`);
+  }
+}
 
 export interface MotionData {
   elbowAlignment?: number;

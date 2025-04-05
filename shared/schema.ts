@@ -320,6 +320,27 @@ export const recoveryLogs = pgTable("recovery_logs", {
   overallRecoveryScore: integer("overall_recovery_score"), // 0-100
 });
 
+// Star rating athlete profiles for benchmarking standard levels
+export const athleteStarProfiles = pgTable("athlete_star_profiles", {
+  id: serial("id").primaryKey(),
+  profileId: text("profile_id").notNull().unique(), // The original ID from the JSON file (e.g., foo_qua_5star_1)
+  userId: integer("user_id").references(() => users.id), // If connected to a user account
+  name: text("name").notNull(),
+  starLevel: integer("star_level").notNull(), // 1-5 stars
+  sport: text("sport").notNull(),
+  position: text("position").notNull(),
+  ageGroup: text("age_group"),
+  metrics: jsonb("metrics").notNull(), // Height, weight, forty, vertical, GPA, etc.
+  traits: jsonb("traits").notNull(), // Movement, mental, resilience traits
+  filmExpectations: text("film_expectations").array(),
+  trainingFocus: text("training_focus").array(),
+  avatar: text("avatar").notNull(), // Path to headshot image
+  rank: text("rank"),
+  xpLevel: integer("xp_level").default(0),
+  active: boolean("active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Fan club followers
 export const fanClubFollowers = pgTable("fan_club_followers", {
   id: serial("id").primaryKey(),
@@ -869,3 +890,10 @@ export const insertApiKeySchema = createInsertSchema(apiKeys, {
 
 export type ApiKey = typeof apiKeys.$inferSelect;
 export type InsertApiKey = z.infer<typeof insertApiKeySchema>;
+
+export const insertAthleteStarProfileSchema = createInsertSchema(athleteStarProfiles).omit({ 
+  id: true, 
+  createdAt: true 
+});
+export type AthleteStarProfile = typeof athleteStarProfiles.$inferSelect;
+export type InsertAthleteStarProfile = z.infer<typeof insertAthleteStarProfileSchema>;

@@ -35,7 +35,9 @@ import {
   insertComparisonVideoSchema,
   insertComparisonAnalysisSchema,
   insertVideoHighlightSchema,
+  insertAthleteStarProfileSchema,
   users,
+  athleteStarProfiles,
 } from "@shared/schema";
 
 // Create a file upload middleware
@@ -3922,6 +3924,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating comparison analysis:", error);
       res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Athlete Star Profiles routes
+  app.get("/api/athlete-profiles/stars", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { sport, position, starLevel } = req.query;
+      
+      // Create a base query
+      let query = db.select().from(athleteStarProfiles);
+      
+      // Add filters conditionally
+      if (sport) {
+        query = query.where(eq(athleteStarProfiles.sport, sport as string));
+      }
+      
+      if (position) {
+        query = query.where(eq(athleteStarProfiles.position, position as string));
+      }
+      
+      if (starLevel) {
+        const level = parseInt(starLevel as string);
+        if (!isNaN(level)) {
+          query = query.where(eq(athleteStarProfiles.starLevel, level));
+        }
+      }
+      
+      const profiles = await query;
+      
+      return res.json(profiles);
+    } catch (error) {
+      console.error("Error fetching athlete star profiles:", error);
+      return res.status(500).json({ message: "Error fetching athlete star profiles" });
+    }
+  });
+  
+  app.get("/api/athlete-profiles/stars/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      // Use the id column, not profileId
+      const [profile] = await db
+        .select()
+        .from(athleteStarProfiles)
+        .where(eq(athleteStarProfiles.id, id));
+      
+      if (!profile) {
+        return res.status(404).json({ message: "Athlete star profile not found" });
+      }
+      
+      return res.json(profile);
+    } catch (error) {
+      console.error("Error fetching athlete star profile:", error);
+      return res.status(500).json({ message: "Error fetching athlete star profile" });
+    }
+  });
+  
+  app.post("/api/admin/athlete-profiles/generate", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const { generateProfiles } = await import('./generate-athlete-profiles');
+      const profiles = await generateProfiles();
+      
+      return res.json({ 
+        message: `Successfully generated ${profiles.length} athlete profiles.`,
+        count: profiles.length
+      });
+    } catch (error) {
+      console.error("Error generating athlete profiles:", error);
+      return res.status(500).json({ message: "Error generating athlete profiles: " + error.message });
     }
   });
 
