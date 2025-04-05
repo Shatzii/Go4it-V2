@@ -1881,28 +1881,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.post("/api/workout-verifications", isAuthenticated, upload.array("media", 10), async (req: Request, res: Response) => {
+  app.post("/api/workout-verifications", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const user = req.user as any;
       
-      // Process uploaded files
-      const files = req.files as Express.Multer.File[];
-      const mediaUrls: string[] = [];
+      // We're now using mediaUrls directly passed from the frontend
+      // They point to videos that were already uploaded and processed
+      let mediaUrls: string[] = [];
       
-      if (files && files.length > 0) {
-        // Create a more permanent location for the files
-        const uploadsDir = path.join(process.cwd(), "uploads", "verifications");
-        if (!fs.existsSync(uploadsDir)) {
-          fs.mkdirSync(uploadsDir, { recursive: true });
-        }
-        
-        // Process each file
-        for (const file of files) {
-          const filename = `${Date.now()}-${path.basename(file.originalname)}`;
-          const filePath = path.join(uploadsDir, filename);
-          
-          fs.renameSync(file.path, filePath);
-          mediaUrls.push(`/uploads/verifications/${filename}`);
+      if (req.body.mediaUrls) {
+        // If it's an array, use it directly
+        if (Array.isArray(req.body.mediaUrls)) {
+          mediaUrls = req.body.mediaUrls;
+        } 
+        // If it's a JSON string, parse it
+        else if (typeof req.body.mediaUrls === 'string') {
+          try {
+            mediaUrls = JSON.parse(req.body.mediaUrls);
+          } catch (e) {
+            console.error("Error parsing mediaUrls:", e);
+          }
         }
       }
       

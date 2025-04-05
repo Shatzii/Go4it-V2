@@ -135,7 +135,29 @@ export default function SubmitVerification() {
       checkpoints?: any[];
     }) => {
       try {
-        return apiRequest('POST', '/api/workout-verifications', payload);
+        // Create FormData object for multipart/form-data submission
+        const formData = new FormData();
+        formData.append('workoutTitle', payload.title);
+        formData.append('workoutType', payload.workoutType);
+        formData.append('duration', payload.duration.toString());
+        formData.append('description', payload.description);
+        
+        if (payload.notes) {
+          formData.append('notes', payload.notes);
+        }
+        
+        if (payload.checkpoints && payload.checkpoints.length > 0) {
+          formData.append('checkpoints', JSON.stringify(payload.checkpoints));
+        }
+        
+        // Set custom headers to remove the default Content-Type: application/json
+        const options = {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        };
+        
+        return apiRequest('POST', '/api/workout-verifications', formData, options);
       } catch (error) {
         console.error("Create verification error:", error);
         throw error;
