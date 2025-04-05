@@ -1918,11 +1918,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const verificationData = {
         userId: user.id,
         title: req.body.workoutTitle || req.body.title, // Support both field names for robustness
-        workoutType: req.body.workoutType,
-        description: req.body.description,
-        duration: parseInt(req.body.duration) || 0,
         verificationStatus: "pending",
-        mediaUrls: mediaUrls,
+        duration: parseInt(req.body.duration) || 0,
+        proofType: 'video', // We're using video for verification
+        proofData: mediaUrls.length > 0 ? mediaUrls[0] : '', // Use the first video URL
+        notes: req.body.description || '',
+        verificationMethod: 'AI', // Using AI for verification
       };
       
       const verification = await storage.createWorkoutVerification(verificationData);
