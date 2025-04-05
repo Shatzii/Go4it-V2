@@ -28,6 +28,10 @@ import {
   insertChallengeSchema,
   insertAthleteChallengeSchema,
   insertRecoveryLogSchema,
+  videoHighlights,
+  highlightGeneratorConfigs,
+  insertVideoHighlightSchema,
+  insertHighlightGeneratorConfigSchema,
   insertFanClubFollowerSchema,
   insertLeaderboardEntrySchema,
   insertBlogPostSchema,
@@ -37,11 +41,11 @@ import {
   insertFilmComparisonSchema,
   insertComparisonVideoSchema,
   insertComparisonAnalysisSchema,
-  insertVideoHighlightSchema,
   insertAthleteStarProfileSchema,
   insertUserAgreementSchema,
   users,
   athleteStarProfiles,
+  videos,
 } from "@shared/schema";
 
 // Create a file upload middleware
@@ -928,6 +932,236 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error generating video highlight:", error);
       return res.status(400).json({ message: error.message });
+    }
+  });
+  
+  // AI HIGHLIGHT GENERATOR ROUTES
+  
+  // Get all highlight generator configurations
+  app.get("/api/highlight-generator/configs", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      // Get all configurations
+      const configs = await db.select().from(highlightGeneratorConfigs).orderBy(highlightGeneratorConfigs.createdAt);
+      return res.json(configs);
+    } catch (error) {
+      console.error("Error fetching highlight generator configs:", error);
+      return res.status(500).json({ message: "Error fetching highlight generator configurations" });
+    }
+  });
+  
+  // Get highlight generator configuration by ID
+  app.get("/api/highlight-generator/configs/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const configId = parseInt(req.params.id);
+      const [config] = await db.select().from(highlightGeneratorConfigs).where(eq(highlightGeneratorConfigs.id, configId));
+      
+      if (!config) {
+        return res.status(404).json({ message: "Highlight generator configuration not found" });
+      }
+      
+      return res.json(config);
+    } catch (error) {
+      console.error("Error fetching highlight generator config:", error);
+      return res.status(500).json({ message: "Error fetching highlight generator configuration" });
+    }
+  });
+  
+  // Create new highlight generator configuration
+  app.post("/api/highlight-generator/configs", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      
+      // Only allow admins to create configs
+      if (user.role !== "admin") {
+        return res.status(403).json({ message: "Only admins can create highlight generator configurations" });
+      }
+      
+      const configData = insertHighlightGeneratorConfigSchema.parse({
+        ...req.body,
+        createdBy: user.id
+      });
+      
+      const [newConfig] = await db.insert(highlightGeneratorConfigs).values(configData).returning();
+      
+      return res.status(201).json(newConfig);
+    } catch (error) {
+      console.error("Error creating highlight generator config:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+  
+  // Update highlight generator configuration
+  app.put("/api/highlight-generator/configs/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const configId = parseInt(req.params.id);
+      const user = req.user as any;
+      
+      // Only allow admins to update configs
+      if (user.role !== "admin") {
+        return res.status(403).json({ message: "Only admins can update highlight generator configurations" });
+      }
+      
+      // Check if config exists
+      const [existingConfig] = await db.select().from(highlightGeneratorConfigs).where(eq(highlightGeneratorConfigs.id, configId));
+      
+      if (!existingConfig) {
+        return res.status(404).json({ message: "Highlight generator configuration not found" });
+      }
+      
+      // Update config
+      const [updatedConfig] = await db
+        .update(highlightGeneratorConfigs)
+        .set(req.body)
+        .where(eq(highlightGeneratorConfigs.id, configId))
+        .returning();
+      
+      return res.json(updatedConfig);
+    } catch (error) {
+      console.error("Error updating highlight generator config:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+  
+  // Delete highlight generator configuration
+  app.delete("/api/highlight-generator/configs/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const configId = parseInt(req.params.id);
+      const user = req.user as any;
+      
+      // Only allow admins to delete configs
+      if (user.role !== "admin") {
+        return res.status(403).json({ message: "Only admins can delete highlight generator configurations" });
+      }
+      
+      // Check if config exists
+      const [existingConfig] = await db.select().from(highlightGeneratorConfigs).where(eq(highlightGeneratorConfigs.id, configId));
+      
+      if (!existingConfig) {
+        return res.status(404).json({ message: "Highlight generator configuration not found" });
+      }
+      
+      // Delete config
+      await db.delete(highlightGeneratorConfigs).where(eq(highlightGeneratorConfigs.id, configId));
+      
+      return res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting highlight generator config:", error);
+      return res.status(500).json({ message: "Error deleting highlight generator configuration" });
+    }
+  });
+  
+  // Run highlight generator for a video with a specific configuration
+  app.post("/api/highlight-generator/run/:videoId/:configId", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const videoId = parseInt(req.params.videoId);
+      const configId = parseInt(req.params.configId);
+      const user = req.user as any;
+      
+      // Get the video
+      const video = await storage.getVideo(videoId);
+      
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+      
+      // Only allow generating highlights for own videos or admin access
+      if (video.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to generate highlights for this video" });
+      }
+      
+      // Get the config
+      const [config] = await db.select().from(highlightGeneratorConfigs).where(eq(highlightGeneratorConfigs.id, configId));
+      
+      if (!config) {
+        return res.status(404).json({ message: "Highlight generator configuration not found" });
+      }
+      
+      if (!config.active) {
+        return res.status(400).json({ message: "This highlight generator configuration is not active" });
+      }
+      
+      // Start the highlight generation process
+      // This would be processed with a queue or background job in production
+      // For now, we'll do it synchronously
+      
+      // Generate dummy detection points (in real implementation, this would use AI to detect highlight moments)
+      // This is a simplified demonstration
+      const videoDuration = video.duration || 300; // Default to 5 min if no duration
+      const detectableEvents = config.detectableEvents || {};
+      
+      const detectedHighlights = [];
+      
+      // Generate 1-3 random highlight segments based on configuration
+      const numHighlights = Math.min(
+        Math.floor(Math.random() * 3) + 1, 
+        config.maxHighlightsPerVideo || 3
+      );
+      
+      for (let i = 0; i < numHighlights; i++) {
+        // Create a highlight of random length within the config min/max duration
+        const highlightDuration = Math.floor(
+          Math.random() * (config.maxDuration - config.minDuration) + config.minDuration
+        );
+        
+        // Random start time that ensures the highlight fits within the video
+        const maxStartTime = Math.max(0, videoDuration - highlightDuration - 1);
+        const startTime = Math.floor(Math.random() * maxStartTime);
+        const endTime = startTime + highlightDuration;
+        
+        // Generate a quality score between config.qualityThreshold and 100
+        const qualityScore = Math.floor(
+          Math.random() * (100 - config.qualityThreshold) + config.qualityThreshold
+        );
+        
+        // Pick a random skill from the highlight types
+        const primarySkill = config.highlightTypes && config.highlightTypes.length > 0
+          ? config.highlightTypes[Math.floor(Math.random() * config.highlightTypes.length)]
+          : "general play";
+        
+        // Random skill level 50-95
+        const skillLevel = Math.floor(Math.random() * 45) + 50;
+        
+        // Create AI analysis notes
+        const aiAnalysisNotes = `Detected ${primarySkill} with confidence ${qualityScore}%. Skill level rated ${skillLevel}/100.`;
+        
+        // Save the highlight to the database
+        const highlight = {
+          videoId,
+          title: `${video.title} - ${primarySkill} Highlight`,
+          description: `AI-generated highlight showing ${primarySkill} from ${video.title}`,
+          startTime,
+          endTime,
+          highlightPath: video.filePath, // In real implementation, this would be a new file
+          thumbnailPath: video.thumbnailPath,
+          createdBy: user.id,
+          aiGenerated: true,
+          tags: [config.sportType, primarySkill],
+          qualityScore,
+          primarySkill,
+          skillLevel,
+          gameContext: "practice",
+          aiAnalysisNotes
+        };
+        
+        // Create the highlight in the database
+        const [createdHighlight] = await db.insert(videoHighlights).values(highlight).returning();
+        detectedHighlights.push(createdHighlight);
+      }
+      
+      // Update the configuration's lastRun timestamp
+      await db
+        .update(highlightGeneratorConfigs)
+        .set({ lastRun: new Date() })
+        .where(eq(highlightGeneratorConfigs.id, configId));
+      
+      return res.status(201).json({
+        message: `Generated ${detectedHighlights.length} highlights`,
+        highlights: detectedHighlights
+      });
+      
+    } catch (error) {
+      console.error("Error running highlight generator:", error);
+      return res.status(500).json({ message: "Error running highlight generator" });
     }
   });
 

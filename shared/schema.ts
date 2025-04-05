@@ -462,6 +462,110 @@ export const cityInfluencerDiscoveries = pgTable("city_influencer_discoveries", 
   pastPerformance: json("past_performance"), // Metrics from past partnerships
 });
 
+// Transfer Portal Monitoring System
+export const transferPortalMonitors = pgTable("transfer_portal_monitors", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  active: boolean("active").default(true),
+  sportType: text("sport_type").notNull(), // basketball, football, soccer, etc.
+  divisions: text("divisions").array(), // NCAA D1, D2, D3, NAIA, JUCO, etc.
+  conferences: text("conferences").array(), // SEC, Big Ten, ACC, etc.
+  monitorType: text("monitor_type").notNull(), // roster-changes, player-portal-entries, commitment-flips
+  updateFrequency: integer("update_frequency").default(360), // seconds between updates (default: 6 minutes)
+  lastRunAt: timestamp("last_run_at"),
+  alertThreshold: integer("alert_threshold").default(3), // Number of changes to trigger alert
+  notifyCoaches: boolean("notify_coaches").default(true),
+  positionGroups: text("position_groups").array(), // QB, RB, WR, etc. for football
+  createdAt: timestamp("created_at").defaultNow(),
+  createdBy: integer("created_by").references(() => users.id),
+  transferCount: integer("transfer_count").default(0), // Number of transfers detected
+});
+
+// NCAA Team Rosters
+export const ncaaTeamRosters = pgTable("ncaa_team_rosters", {
+  id: serial("id").primaryKey(),
+  school: text("school").notNull(),
+  mascot: text("mascot"),
+  conference: text("conference").notNull(),
+  division: text("division").notNull(), // D1, D2, D3
+  sport: text("sport").notNull(),
+  season: text("season").notNull(), // 2024-2025
+  rosterCount: integer("roster_count"), // Current player count
+  scholarshipCount: integer("scholarship_count"), // Current scholarship count
+  scholarshipLimit: integer("scholarship_limit"), // Max allowed scholarships
+  rosterPositionCounts: json("roster_position_counts"), // Count by position
+  rosterStatus: text("roster_status"), // normal, low, overstocked
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  logoUrl: text("logo_url"),
+  teamUrl: text("team_url"),
+  coachingStaff: json("coaching_staff"),
+  positionNeeds: json("position_needs"), // Current recruiting needs by position
+  transfersIn: integer("transfers_in").default(0), // Count of incoming transfers
+  transfersOut: integer("transfers_out").default(0), // Count of outgoing transfers
+  recentRosterChanges: json("recent_roster_changes"),
+  academicRequirements: json("academic_requirements"), // Min GPA, test scores, etc.
+  priorityRecruitingAreas: text("priority_recruiting_areas").array(), // States/regions
+});
+
+// NCAA Transfer Portal Entries
+export const transferPortalEntries = pgTable("transfer_portal_entries", {
+  id: serial("id").primaryKey(),
+  playerName: text("player_name").notNull(),
+  previousSchool: text("previous_school").notNull(),
+  sport: text("sport").notNull(),
+  position: text("position").notNull(),
+  eligibilityRemaining: text("eligibility_remaining"), // "1 year", "2 years", etc.
+  height: text("height"),
+  weight: text("weight"),
+  hometown: text("hometown"),
+  highSchool: text("high_school"),
+  starRating: integer("star_rating"), // Original recruiting stars (1-5)
+  portalEntryDate: timestamp("portal_entry_date").notNull(),
+  lastSeasonStats: json("last_season_stats"),
+  careerStats: json("career_stats"),
+  academicInfo: json("academic_info"), // GPA, major, graduation status
+  injuryHistory: json("injury_history"),
+  videoHighlights: text("video_highlights").array(),
+  portalStatus: text("portal_status").default("active"), // active, committed, withdrawn
+  committedTo: text("committed_to"),
+  commitDate: timestamp("commit_date"),
+  bestFitSchools: text("best_fit_schools").array(), // AI-generated recommendations
+  fitReasons: json("fit_reasons"), // Reasons for recommended schools
+  transferRating: integer("transfer_rating"), // AI-calculated impact rating (1-100)
+  notes: text("notes"),
+  socialMediaHandles: json("social_media_handles"),
+  contactInfo: json("contact_info"),
+  agentName: text("agent_name"),
+  portalDeadline: timestamp("portal_deadline"),
+  niLDeals: json("nil_deals"), // Previous NIL arrangements
+  lastUpdated: timestamp("last_updated").defaultNow(),
+});
+
+// Coach Recruiting Boards - Tracks coach interest in transfer portal players
+export const coachRecruitingBoards = pgTable("coach_recruiting_boards", {
+  id: serial("id").primaryKey(),
+  coachId: integer("coach_id").notNull().references(() => users.id),
+  transferId: integer("transfer_id").notNull().references(() => transferPortalEntries.id),
+  interestLevel: integer("interest_level").notNull().default(0), // 0-100
+  notes: text("notes"),
+  status: text("status").notNull().default("tracking"), // tracking, contacted, visiting, offered, committed
+  priority: text("priority").default("medium"), // low, medium, high, top
+  needsFit: integer("needs_fit").default(0), // 0-100 how well player fits team needs
+  academicFit: integer("academic_fit").default(0), // 0-100 academic fit
+  cultureFit: integer("culture_fit").default(0), // 0-100 culture fit
+  talentFit: integer("talent_fit").default(0), // 0-100 talent evaluation
+  overallFit: integer("overall_fit").default(0), // 0-100 combined fit score
+  lastContactDate: timestamp("last_contact_date"),
+  nextContactDate: timestamp("next_contact_date"),
+  visitScheduled: timestamp("visit_scheduled"),
+  offerDetails: json("offer_details"),
+  competingSchools: text("competing_schools").array(),
+  commitmentChance: integer("commitment_chance").default(0), // 0-100 AI prediction
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const athleteDiscoveries = pgTable("athlete_discoveries", {
   id: serial("id").primaryKey(),
   scoutId: integer("scout_id").references(() => socialMediaScouts.id),
@@ -781,6 +885,36 @@ export const videoHighlights = pgTable("video_highlights", {
   aiGenerated: boolean("ai_generated").default(false), // Whether this was auto-generated by AI
   featured: boolean("featured").default(false), // Whether this is a featured highlight
   tags: text("tags").array(), // Tags for categorizing highlights
+  homePageEligible: boolean("home_page_eligible").default(false), // Can be featured on homepage
+  viewCount: integer("view_count").default(0), // Number of views
+  likesCount: integer("likes_count").default(0), // Number of likes
+  qualityScore: integer("quality_score").default(0), // AI-rated quality (0-100)
+  primarySkill: text("primary_skill"), // Main skill showcased (dunking, passing, etc.)
+  skillLevel: integer("skill_level").default(0), // 1-100 rating of skill shown
+  gameContext: text("game_context"), // Context of the play (game-winning, etc.)
+  aiAnalysisNotes: text("ai_analysis_notes"), // AI notes about the highlight
+});
+
+// AI Highlight Generator Configurations
+export const highlightGeneratorConfigs = pgTable("highlight_generator_configs", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  active: boolean("active").default(true),
+  sportType: text("sport_type").notNull(), // basketball, football, etc.
+  highlightTypes: text("highlight_types").array(), // dunks, 3-pointers, tackles, goals, etc.
+  minDuration: integer("min_duration").default(8), // In seconds
+  maxDuration: integer("max_duration").default(30), // In seconds
+  maxHighlightsPerVideo: integer("max_highlights_per_video").default(3),
+  qualityThreshold: integer("quality_threshold").default(70), // 0-100 minimum quality to feature
+  detectableEvents: json("detectable_events"), // JSON with events to detect by sport
+  createdBy: integer("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  lastRun: timestamp("last_run"),
+  useThumbnailFrame: text("use_thumbnail_frame").default("best"), // "start", "middle", "best"
+  addTextOverlay: boolean("add_text_overlay").default(true),
+  addMusicTrack: boolean("add_music_track").default(false),
+  musicCategory: text("music_category").default("highEnergy"), // Options for music style
 });
 
 export const workoutVerificationCheckpoints = pgTable("workout_verification_checkpoints", {
@@ -996,6 +1130,11 @@ export const insertVideoHighlightSchema = createInsertSchema(videoHighlights).om
   id: true, createdAt: true
 });
 
+// Highlight Generator Config insert schema
+export const insertHighlightGeneratorConfigSchema = createInsertSchema(highlightGeneratorConfigs).omit({
+  id: true, createdAt: true, lastRun: true
+});
+
 // Export types for insert and select operations
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -1150,6 +1289,10 @@ export type InsertPayment = z.infer<typeof insertPaymentSchema>;
 // Video Highlight types
 export type VideoHighlight = typeof videoHighlights.$inferSelect;
 export type InsertVideoHighlight = z.infer<typeof insertVideoHighlightSchema>;
+
+// Highlight Generator types
+export type HighlightGeneratorConfig = typeof highlightGeneratorConfigs.$inferSelect;
+export type InsertHighlightGeneratorConfig = z.infer<typeof insertHighlightGeneratorConfigSchema>;
 
 // API Key schema and types
 export const insertApiKeySchema = createInsertSchema(apiKeys, {
