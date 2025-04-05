@@ -433,6 +433,15 @@ export const comparisonAnalyses = pgTable("comparison_analyses", {
   recommendations: text("recommendations").array(),
   aiGeneratedNotes: text("ai_generated_notes"),
   techniqueBreakdown: json("technique_breakdown"),
+  // Football coach specific analyses
+  playAssignments: json("play_assignments"), // Expected assignments for each player
+  assignmentGrades: json("assignment_grades"), // How well each player executed their assignment (0-100)
+  bustedCoverage: boolean("busted_coverage").default(false),
+  bustedCoverageDetails: json("busted_coverage_details"), // Details about coverage breakdowns
+  playerComparisons: json("player_comparisons"), // Size, speed, competition level comparisons
+  performanceRating: json("performance_rating"), // True rating based on performance metrics
+  recommendedExamples: json("recommended_examples"), // URLs to recommended technique examples
+  defenseAnalysis: json("defense_analysis"), // Analysis of defensive scheme and execution
 });
 
 // NextUp Spotlight feature
