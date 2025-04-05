@@ -28,7 +28,8 @@ import {
   workoutVerifications, type WorkoutVerification, type InsertWorkoutVerification,
   workoutVerificationCheckpoints, type WorkoutVerificationCheckpoint, type InsertWorkoutVerificationCheckpoint,
   weightRoomEquipment, type WeightRoomEquipment, type InsertWeightRoomEquipment,
-  playerEquipment, type PlayerEquipment, type InsertPlayerEquipment
+  playerEquipment, type PlayerEquipment, type InsertPlayerEquipment,
+  videoHighlights, type VideoHighlight, type InsertVideoHighlight
 } from "@shared/schema";
 import { IStorage } from "./storage";
 import { db } from "./db";
@@ -1562,6 +1563,132 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error(`Error in incrementEquipmentUsage for ID ${id}:`, error);
       return undefined;
+    }
+  }
+  
+  // Video Highlight operations
+  async getVideoHighlights(videoId: number): Promise<VideoHighlight[]> {
+    try {
+      return await db
+        .select()
+        .from(videoHighlights)
+        .where(eq(videoHighlights.videoId, videoId))
+        .orderBy(desc(videoHighlights.createdAt));
+    } catch (error) {
+      console.error(`Error in getVideoHighlights for video ${videoId}:`, error);
+      return [];
+    }
+  }
+
+  async getVideoHighlight(id: number): Promise<VideoHighlight | undefined> {
+    try {
+      const [highlight] = await db
+        .select()
+        .from(videoHighlights)
+        .where(eq(videoHighlights.id, id));
+      return highlight;
+    } catch (error) {
+      console.error(`Error in getVideoHighlight for ID ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async createVideoHighlight(highlight: InsertVideoHighlight): Promise<VideoHighlight> {
+    try {
+      const now = new Date();
+      const [newHighlight] = await db
+        .insert(videoHighlights)
+        .values({
+          ...highlight,
+          createdAt: now
+        })
+        .returning();
+      return newHighlight;
+    } catch (error) {
+      console.error(`Error in createVideoHighlight:`, error);
+      throw error;
+    }
+  }
+
+  async updateVideoHighlight(id: number, data: Partial<VideoHighlight>): Promise<VideoHighlight | undefined> {
+    try {
+      const [highlight] = await db
+        .update(videoHighlights)
+        .set(data)
+        .where(eq(videoHighlights.id, id))
+        .returning();
+      return highlight;
+    } catch (error) {
+      console.error(`Error in updateVideoHighlight for ID ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async deleteVideoHighlight(id: number): Promise<boolean> {
+    try {
+      const result = await db
+        .delete(videoHighlights)
+        .where(eq(videoHighlights.id, id));
+      return result.count > 0;
+    } catch (error) {
+      console.error(`Error in deleteVideoHighlight for ID ${id}:`, error);
+      return false;
+    }
+  }
+
+  async getFeaturedVideoHighlights(limit: number = 10): Promise<VideoHighlight[]> {
+    try {
+      return await db
+        .select()
+        .from(videoHighlights)
+        .where(eq(videoHighlights.featured, true))
+        .orderBy(desc(videoHighlights.createdAt))
+        .limit(limit);
+    } catch (error) {
+      console.error(`Error in getFeaturedVideoHighlights:`, error);
+      return [];
+    }
+  }
+
+  async generateVideoHighlight(videoId: number, options: {
+    startTime: number;
+    endTime: number;
+    title: string;
+    description?: string;
+    userId: number;
+    aiGenerated?: boolean;
+  }): Promise<VideoHighlight> {
+    try {
+      // First verify that the video exists
+      const video = await this.getVideo(videoId);
+      if (!video) {
+        throw new Error("Video not found");
+      }
+      
+      // Create the highlight
+      const now = new Date();
+      const [highlight] = await db
+        .insert(videoHighlights)
+        .values({
+          videoId,
+          title: options.title,
+          description: options.description || null,
+          startTime: options.startTime,
+          endTime: options.endTime,
+          duration: options.endTime - options.startTime,
+          userId: options.userId,
+          createdAt: now,
+          aiGenerated: options.aiGenerated || false,
+          featured: false,
+          views: 0,
+          likes: 0
+        })
+        .returning();
+        
+      return highlight;
+    } catch (error) {
+      console.error(`Error in generateVideoHighlight for video ${videoId}:`, error);
+      throw error;
     }
   }
   
