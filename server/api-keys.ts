@@ -5,7 +5,7 @@ import { z } from "zod";
 // Schema for validating API key data
 const apiKeySchema = z.object({
   keyType: z.enum(["openai", "stripe", "sendgrid", "twilio"]),
-  value: z.string().min(10),
+  keyValue: z.string().min(10),
 });
 
 // Function to set an environment variable
@@ -42,18 +42,18 @@ export const saveApiKey = async (req: Request, res: Response) => {
       });
     }
 
-    const { keyType, value } = result.data;
+    const { keyType, keyValue } = result.data;
 
     // Save the API key to database
     await storage.saveApiKey({
       keyType,
-      value,
-      userId: req.user.id
+      keyValue,
+      isActive: true
     });
 
     // Set the environment variable
     const envKey = getEnvKeyName(keyType);
-    setEnvironmentVariable(envKey, value);
+    setEnvironmentVariable(envKey, keyValue);
 
     // Return success
     return res.status(200).json({ message: `${keyType} API key saved successfully` });

@@ -5,6 +5,7 @@ import {
   videos, type Video, type InsertVideo,
   videoAnalyses, type VideoAnalysis, type InsertVideoAnalysis,
   sportRecommendations, type SportRecommendation, type InsertSportRecommendation,
+  apiKeys, type ApiKey, type InsertApiKey,
   ncaaEligibility, type NcaaEligibility, type InsertNcaaEligibility,
   coachConnections, type CoachConnection, type InsertCoachConnection,
   achievements, type Achievement, type InsertAchievement,
@@ -38,6 +39,7 @@ import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
+import { AnalysisResult } from "./openai";
 
 const scryptAsync = promisify(scrypt);
 
@@ -262,6 +264,44 @@ export class DatabaseStorage implements IStorage {
       .returning();
     
     return videoAnalysis;
+  }
+  
+  async saveVideoAnalysis(videoId: number, analysis: AnalysisResult): Promise<VideoAnalysis> {
+    // Check if an analysis already exists for this video
+    const existingAnalysis = await this.getVideoAnalysisByVideoId(videoId);
+    
+    if (existingAnalysis) {
+      // Update existing analysis
+      const now = new Date();
+      
+      const [updatedAnalysis] = await db
+        .update(videoAnalyses)
+        .set({
+          motionData: analysis.motionData,
+          overallScore: analysis.overallScore,
+          feedback: analysis.feedback,
+          improvementTips: analysis.improvementTips,
+          keyFrameTimestamps: analysis.keyFrameTimestamps,
+          analysisDate: now
+        })
+        .where(eq(videoAnalyses.id, existingAnalysis.id))
+        .returning();
+      
+      return updatedAnalysis;
+    } else {
+      // Create new analysis
+      const newAnalysis: InsertVideoAnalysis = {
+        videoId,
+        motionData: analysis.motionData,
+        overallScore: analysis.overallScore,
+        feedback: analysis.feedback,
+        improvementTips: analysis.improvementTips,
+        keyFrameTimestamps: analysis.keyFrameTimestamps
+      };
+      
+      // Update the video's analyzed flag is handled in createVideoAnalysis
+      return this.createVideoAnalysis(newAnalysis);
+    }
   }
   
   // Sport Recommendation operations
@@ -2202,5 +2242,100 @@ export class DatabaseStorage implements IStorage {
       sets: 2,
       order: 3
     });
+  }
+  
+  // API Key operations
+  async getApiKey(keyType: string): Promise<ApiKey | undefined> {
+    const [apiKey] = await db
+      .select()
+      .from(apiKeys)
+      .where(eq(apiKeys.keyType, keyType));
+    return apiKey;
+  }
+
+  async getAllApiKeys(): Promise<ApiKey[]> {
+    return await db
+      .select()
+      .from(apiKeys)
+      .orderBy(asc(apiKeys.keyType));
+  }
+
+  async getApiKeyStatus(): Promise<Record<string, boolean>> {
+    const keys = await this.getAllApiKeys();
+    const keyTypes = ["openai", "stripe", "sendgrid", "twilio", "google", "aws", "active"];
+    const result: Record<string, boolean> = {};
+    
+    for (const keyType of keyTypes) {
+      result[keyType] = keys.some(key => key.keyType === keyType && key.isActive);
+    }
+    
+    return result;
+  }
+
+  async saveApiKey(key: InsertApiKey): Promise<ApiKey> {
+    const now = new Date();
+    
+    // Check if key already exists
+    const existingKey = await this.getApiKey(key.keyType);
+    
+    if (existingKey) {
+      // Update existing key
+      const [updatedKey] = await db
+        .update(apiKeys)
+        .set({
+          keyValue: key.keyValue,
+          isActive: key.isActive,
+          lastUsed: now
+        })
+        .where(eq(apiKeys.keyType, key.keyType))
+        .returning();
+      
+      // If this is an OpenAI key, set the environment variable
+      if (key.keyType === "openai" && process.env) {
+        process.env.OPENAI_API_KEY = key.keyValue;
+      }
+      
+      return updatedKey;
+    } else {
+      // Insert new key
+      const [newApiKey] = await db
+        .insert(apiKeys)
+        .values({
+          keyType: key.keyType,
+          keyValue: key.keyValue,
+          addedAt: now,
+          isActive: key.isActive ?? true
+        })
+        .returning();
+      
+      // If this is an OpenAI key, set the environment variable
+      if (key.keyType === "openai" && process.env) {
+        process.env.OPENAI_API_KEY = key.keyValue;
+      }
+      
+      return newApiKey;
+    }
+  }
+
+  async updateApiKey(keyType: string, data: Partial<ApiKey>): Promise<ApiKey | undefined> {
+    if (data.keyValue && keyType === "openai" && process.env) {
+      process.env.OPENAI_API_KEY = data.keyValue;
+    }
+    
+    const [updatedKey] = await db
+      .update(apiKeys)
+      .set(data)
+      .where(eq(apiKeys.keyType, keyType))
+      .returning();
+    
+    return updatedKey;
+  }
+
+  async deleteApiKey(keyType: string): Promise<boolean> {
+    const result = await db
+      .delete(apiKeys)
+      .where(eq(apiKeys.keyType, keyType));
+    
+    return result.count > 0;
   }
 }
