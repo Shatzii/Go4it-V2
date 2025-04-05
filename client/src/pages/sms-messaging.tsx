@@ -12,7 +12,8 @@ import { MessageSquare, PhoneCall, Users, InfoIcon, Bell } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { checkSmsStatus } from '@/services/sms-service';
 import { useQuery } from '@tanstack/react-query';
-import { askSecrets } from '@/lib/ask-secrets';
+// This functionality will be implemented later
+// import { askSecrets } from '@/lib/ask-secrets';
 import { Button } from '@/components/ui/button';
 
 export default function SmsMessagingPage() {
@@ -28,11 +29,8 @@ export default function SmsMessagingPage() {
   
   // Handle requesting Twilio credentials
   const handleRequestCredentials = () => {
-    askSecrets([
-      'TWILIO_ACCOUNT_SID',
-      'TWILIO_AUTH_TOKEN',
-      'TWILIO_PHONE_NUMBER',
-    ], 'SMS messaging requires Twilio credentials to function properly. Please provide these credentials to enable SMS functionality.');
+    alert('To enable SMS functionality, please configure Twilio credentials in the environment variables (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER)');
+    // This will be implemented with the askSecrets function in the future
   };
   
   return (
