@@ -103,6 +103,11 @@ export default function SubmitVerification() {
       const formData = new FormData();
       formData.append('video', file);
       
+      // Add these fields to comply with the upload endpoint's expected format
+      formData.append('title', 'Workout Verification Video');
+      formData.append('description', 'Video uploaded for workout verification');
+      formData.append('sportType', 'general');
+      
       try {
         const response = await apiRequest('POST', '/api/videos/upload', formData);
         

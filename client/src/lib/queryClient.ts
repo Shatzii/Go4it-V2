@@ -10,14 +10,20 @@ export const apiRequest = async (
   options?: any
 ) => {
   try {
+    // Default headers
+    const headers: Record<string, string> = {};
+    
+    // Only set Content-Type to application/json if data is not FormData
+    if (!(data instanceof FormData)) {
+      headers['Content-Type'] = 'application/json';
+    }
+    
     const response = await axios({
       method,
       url: `${baseURL}${url}`,
       data,
       withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers,
       timeout: 10000, // Added timeout
       ...options,
     });

@@ -1907,11 +1907,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create verification
       const verificationData = {
         userId: user.id,
-        workoutTitle: req.body.workoutTitle,
+        title: req.body.workoutTitle || req.body.title, // Support both field names for robustness
         workoutType: req.body.workoutType,
         description: req.body.description,
         duration: parseInt(req.body.duration) || 0,
-        status: "pending",
+        verificationStatus: "pending",
         mediaUrls: mediaUrls,
       };
       
@@ -2012,6 +2012,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Use OpenAI to analyze the workout video
+      const { verifyWorkoutVideo } = await import('./openai');
       const analysis = await verifyWorkoutVideo(verificationId, videoPath);
       
       // Update the checkpoint if provided
