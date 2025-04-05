@@ -72,14 +72,18 @@ export default function HomePage() {
     });
   };
 
+  // Convert 1-100 GAR score to a visual representation
   const renderStarRating = (rating: number) => {
+    // Calculate how many full stars to show based on GAR score (1-100 scale)
+    const normalizedRating = Math.min(5, Math.max(0, Math.round(rating / 20)));
+    
     return Array(5)
       .fill(0)
       .map((_, i) => (
         <Star
           key={i}
           className={`h-4 w-4 ${
-            i < rating 
+            i < normalizedRating 
               ? "text-cyan-400 fill-cyan-400 drop-shadow-[0_0_4px_rgba(34,211,238,0.8)]" 
               : "text-gray-700"
           }`}
@@ -147,13 +151,13 @@ export default function HomePage() {
             {/* Right Shadow Overlay */}
             <div className="absolute right-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-gray-950 to-transparent pointer-events-none"></div>
             
-            {/* Carousel */}
-            <div className="overflow-x-auto pb-4 hide-scrollbar">
-              <div className="flex space-x-6 px-2 min-w-max">
+            {/* Carousel - Mobile Friendly */}
+            <div className="overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4">
+              <div className="flex gap-3 md:gap-6 min-w-max">
                 {featuredAthletes.map((athlete) => (
                   <Card 
                     key={athlete.id} 
-                    className="flex-shrink-0 w-[300px] overflow-hidden border border-gray-800 bg-black shadow-lg transform transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_15px_rgba(34,211,238,0.3)]"
+                    className="flex-shrink-0 w-[250px] sm:w-[280px] md:w-[300px] overflow-hidden border border-gray-800 bg-black shadow-lg transform transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_15px_rgba(34,211,238,0.3)]"
                   >
                     <div className="relative h-48 overflow-hidden">
                       <img
@@ -179,7 +183,7 @@ export default function HomePage() {
                             alt={athlete.name}
                             className="w-14 h-14 rounded-full object-cover border-2 border-blue-500 shadow-[0_0_8px_rgba(34,211,238,0.4)]"
                           />
-                          <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-xs font-bold rounded-full w-7 h-7 flex items-center justify-center shadow-[0_0_8px_rgba(34,211,238,0.5)]">
+                          <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-xs font-bold rounded-full w-8 h-8 flex items-center justify-center shadow-[0_0_8px_rgba(34,211,238,0.5)] border border-white">
                             {athlete.starRating}
                           </div>
                         </div>
@@ -204,8 +208,11 @@ export default function HomePage() {
                           <span className="text-sm text-white">{athlete.sportPosition.split(' ').slice(1).join(' ')}</span>
                         </div>
                         <div className="flex flex-col text-right">
-                          <span className="text-xs text-gray-400">RATING</span>
-                          <span className="text-sm text-cyan-400 font-bold">{athlete.starRating}.0</span>
+                          <span className="text-xs text-gray-400">GAR SCORE</span>
+                          <span className="text-sm text-cyan-400 font-bold flex items-center justify-end">
+                            {athlete.starRating}
+                            <span className="text-xs text-gray-400 ml-1">/100</span>
+                          </span>
                         </div>
                       </div>
                       <p className="text-gray-300 text-sm line-clamp-3">{athlete.highlightText}</p>
