@@ -7,7 +7,7 @@ import { generateSlug } from './utils';
 import cron from 'node-cron';
 import axios from 'axios';
 import { openAIService } from './services/openai-service';
-import { imageGenerationService } from './services/image-generation-service';
+import { imageSearchService } from './services/image-search-service';
 
 // Function to get OpenAI client
 async function getOpenAIClient(): Promise<OpenAI> {
@@ -480,18 +480,16 @@ export async function createAIBlogPost(authorId: number): Promise<boolean> {
     // Generate a slug from the title
     const slug = generateSlug(blogContent.title);
     
-    // Generate an image for the blog post
+    // Find a relevant image for the blog post from the web
     let coverImage;
     try {
-      console.log(`Generating image for blog post: "${blogContent.title}"`);
-      coverImage = await imageGenerationService.generateBlogImage(
-        blogContent.title,
-        blogContent.category,
-        blogContent.tags
-      );
-      console.log(`Generated image path: ${coverImage}`);
+      console.log(`Finding image for blog post: "${blogContent.title}"`);
+      // Create a search term using the title and tags
+      const searchTerms = `${blogContent.category} ${blogContent.tags.slice(0, 3).join(' ')}`;
+      coverImage = await imageSearchService.getSportsImage(searchTerms);
+      console.log(`Found image URL: ${coverImage}`);
     } catch (error) {
-      console.error('Error generating blog image:', error);
+      console.error('Error finding blog image:', error);
       coverImage = null;
     }
 
