@@ -38,7 +38,7 @@ export default function FilmComparisonDetail() {
   const runAnalysisMutation = useMutation({
     mutationFn: async () => {
       const res = await apiRequest("POST", `/api/film-comparisons/${id}/analyze`);
-      return await res.json();
+      return res.data; // Axios response already contains data property
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/film-comparisons', id] });
@@ -102,7 +102,7 @@ export default function FilmComparisonDetail() {
   const deleteMutation = useMutation({
     mutationFn: async () => {
       const res = await apiRequest("DELETE", `/api/film-comparisons/${id}`);
-      return res.ok;
+      return res.data;
     },
     onSuccess: () => {
       toast({
