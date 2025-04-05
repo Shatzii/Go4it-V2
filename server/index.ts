@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import fs from "fs";
 import path from "path";
+import { createSchema } from "./create-schema";
 
 const app = express();
 app.use(express.json());
@@ -48,6 +49,14 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  try {
+    // Create database schema if needed
+    await createSchema();
+    log("Database schema created successfully", "db");
+  } catch (error) {
+    log(`Error creating database schema: ${error}`, "db");
+  }
+  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

@@ -391,24 +391,29 @@ export const workoutVerificationCheckpoints = pgTable("workout_verification_chec
 export const weightRoomEquipment = pgTable("weight_room_equipment", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  category: text("category").notNull(), // cardio, strength, plyometric, recovery
-  description: text("description").notNull(),
-  imageUrl: text("image_url").notNull(),
-  model3dUrl: text("model_3d_url"),
-  unlockLevel: integer("unlock_level").default(1),
+  description: text("description"),
+  equipmentType: text("equipment_type").notNull(), // strength, cardio, agility, plyometric, functional
+  difficultyLevel: text("difficulty_level").notNull(), // beginner, intermediate, advanced
+  targetMuscles: text("target_muscles").array(),
+  baseXp: integer("base_xp").notNull(),
+  iconPath: text("icon_path").notNull(),
+  modelPath: text("model_path"),
+  price: integer("price").notNull().default(0),
+  unlockLevel: integer("unlock_level").notNull().default(1),
   isPremium: boolean("is_premium").default(false),
-  baseStats: json("base_stats"), // strength, endurance, speed, etc. boosts
 });
 
 export const playerEquipment = pgTable("player_equipment", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
   equipmentId: integer("equipment_id").notNull().references(() => weightRoomEquipment.id),
-  unlockDate: timestamp("unlock_date").defaultNow(),
-  usageCount: integer("usage_count").default(0),
-  isFavorite: boolean("is_favorite").default(false),
-  personalBest: json("personal_best"), // Records for the equipment
+  acquiredDate: timestamp("acquired_date").defaultNow(),
+  level: integer("level").notNull().default(1),
+  timesUsed: integer("times_used").default(0),
   lastUsed: timestamp("last_used"),
+  isFavorite: boolean("is_favorite").default(false),
+  customName: text("custom_name"),
+  usageStreak: integer("usage_streak").default(0),
 });
 
 // Create insert schemas for all tables
@@ -466,7 +471,7 @@ export const insertWorkoutVerificationCheckpointSchema = createInsertSchema(work
 // MyPlayer UI Weight Room insert schemas
 export const insertWeightRoomEquipmentSchema = createInsertSchema(weightRoomEquipment).omit({ id: true });
 export const insertPlayerEquipmentSchema = createInsertSchema(playerEquipment).omit({ 
-  id: true, unlockDate: true, lastUsed: true 
+  id: true, acquiredDate: true, lastUsed: true,
 });
 
 // Export types for insert and select operations

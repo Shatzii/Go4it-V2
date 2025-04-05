@@ -230,3 +230,239 @@ ${existingSports.size > 0 ? `Note: The athlete already has recommendations for t
 }
 
 // Note: We've replaced the mock analysis functions with real OpenAI-powered analysis
+
+// Function to generate weight room workout recommendations
+export async function generateWeightRoomPlan(
+  userId: number,
+  equipmentList: any[],
+  level: number,
+  goals: string[] = ["Strength", "Speed", "Endurance"]
+): Promise<any> {
+  try {
+    console.log(`Generating weight room plan for user ${userId} at level ${level}`);
+    
+    // Get the user's progress
+    const playerProgress = await storage.getPlayerProgress(userId);
+    if (!playerProgress) {
+      throw new Error("Player progress not found");
+    }
+    
+    // Get the user's equipment
+    const playerEquipment = await storage.getPlayerEquipment(userId);
+    const availableEquipment = equipmentList
+      .filter(eq => {
+        // Check if player has this equipment
+        return playerEquipment.some(pe => pe.equipmentId === eq.id);
+      })
+      .map(eq => ({
+        name: eq.name,
+        category: eq.category,
+        id: eq.id,
+        difficultyLevel: eq.difficultyLevel
+      }));
+    
+    // Check if player has any equipment
+    if (availableEquipment.length === 0) {
+      // Recommend equipment that's appropriate for their level
+      const recommendedEquipment = equipmentList
+        .filter(eq => eq.unlockLevel <= playerProgress.currentLevel)
+        .slice(0, 3)
+        .map(eq => ({
+          name: eq.name,
+          category: eq.category,
+          id: eq.id,
+          unlockLevel: eq.unlockLevel,
+          difficultyLevel: eq.difficultyLevel,
+          description: eq.description
+        }));
+      
+      return {
+        hasEquipment: false,
+        playerLevel: playerProgress.currentLevel,
+        recommendedEquipment
+      };
+    }
+    
+    // Create a prompt for OpenAI
+    const workoutPrompt = `
+You are an expert athletic trainer designing a personalized weight room workout plan for a student athlete.
+
+ATHLETE PROFILE:
+- Skill Level: ${level} out of 10
+- Current XP Level: ${playerProgress.currentLevel}
+- Athletic Goals: ${goals.join(', ')}
+
+AVAILABLE EQUIPMENT:
+${JSON.stringify(availableEquipment, null, 2)}
+
+TASK:
+Create a personalized 30-minute weight room workout routine that will help this athlete improve based on their goals and available equipment.
+
+The workout should include:
+1. A 5-minute warm-up
+2. 3-4 main exercises using their available equipment
+3. A 3-minute cool-down
+
+For each exercise, provide:
+- Equipment to use (from their available list)
+- Number of sets
+- Number of reps per set
+- Rest time between sets
+- A form tip to help them perform the exercise correctly
+- How this exercise contributes to their athletic goals
+
+Return your response as a JSON object with the following structure:
+{
+  "warmup": {
+    "duration": "5 minutes",
+    "description": "Detailed warmup instructions"
+  },
+  "exercises": [
+    {
+      "name": "Exercise name",
+      "equipmentId": equipment ID number,
+      "sets": number of sets,
+      "reps": number of reps per set,
+      "rest": "rest time in seconds",
+      "formTip": "Key form tip for proper execution",
+      "benefit": "How this helps their athletic goals"
+    },
+    ...
+  ],
+  "cooldown": {
+    "duration": "3 minutes",
+    "description": "Detailed cooldown instructions"
+  },
+  "progressionTip": "Advice on how to progress to more advanced workouts",
+  "expectedXpGain": number between 20-50
+}
+
+Make sure the exercises are appropriate for their skill level (${level}/10) and use only equipment from their available list.
+Focus on proper form and technique to prevent injuries.
+`;
+
+    // Call OpenAI API
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
+      messages: [
+        {
+          role: "system",
+          content: "You are an expert athletic trainer and strength coach specializing in youth and collegiate athletic development."
+        },
+        {
+          role: "user",
+          content: workoutPrompt
+        }
+      ],
+      response_format: { type: "json_object" }
+    });
+
+    // Parse the JSON response
+    const workoutPlan = JSON.parse(response.choices[0].message.content || '{}');
+    
+    return {
+      hasEquipment: true,
+      playerLevel: playerProgress.currentLevel,
+      workoutPlan
+    };
+    
+  } catch (error: any) {
+    console.error("Error generating weight room plan:", error);
+    throw new Error(`Failed to generate weight room plan: ${error?.message || 'Unknown error'}`);
+  }
+}
+
+// Function to provide AI coaching feedback on weight room form
+export async function getFormFeedback(
+  userId: number,
+  equipmentId: number,
+  formDescription: string
+): Promise<any> {
+  try {
+    console.log(`Generating form feedback for user ${userId} using equipment ${equipmentId}`);
+    
+    // Get the equipment details
+    const equipment = await storage.getWeightRoomEquipmentById(equipmentId);
+    if (!equipment) {
+      throw new Error("Equipment not found");
+    }
+    
+    // Create a prompt for OpenAI
+    const feedbackPrompt = `
+You are a professional strength and conditioning coach providing feedback on a student athlete's weight room form.
+
+EQUIPMENT BEING USED:
+Name: ${equipment.name}
+Category: ${equipment.category}
+Difficulty Level: ${equipment.difficultyLevel}/10
+
+ATHLETE'S FORM DESCRIPTION:
+${formDescription}
+
+TASK:
+Provide detailed, constructive feedback on the athlete's form when using this equipment.
+
+Your feedback should include:
+1. Overall form quality assessment (on a scale of 1-10)
+2. What they're doing correctly
+3. 2-3 specific form corrections they should make
+4. How proper form will improve their results and reduce injury risk
+5. One advanced tip they can focus on once they master the basics
+
+Return your response as a JSON object with the following structure:
+{
+  "formScore": number between 1-10,
+  "strengths": ["What they're doing well", ...],
+  "corrections": ["Specific correction 1", "Specific correction 2", ...],
+  "safetyTip": "Important safety consideration",
+  "advancedTip": "One advanced technique to focus on later",
+  "overallFeedback": "Summary feedback paragraph"
+}
+
+Be encouraging but honest - this is a student athlete who wants to improve, not a professional.
+`;
+
+    // Call OpenAI API
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
+      messages: [
+        {
+          role: "system",
+          content: "You are an expert strength and conditioning coach specializing in proper form and technique for student athletes."
+        },
+        {
+          role: "user",
+          content: feedbackPrompt
+        }
+      ],
+      response_format: { type: "json_object" }
+    });
+
+    // Parse the JSON response
+    const feedback = JSON.parse(response.choices[0].message.content || '{}');
+    
+    // Add XP for submitting form for feedback
+    const xpAmount = Math.floor(10 + (feedback.formScore || 5) * 2);
+    await storage.addXpToPlayer(
+      userId,
+      xpAmount,
+      "form_feedback",
+      `Form feedback for ${equipment.name}`,
+      String(equipmentId)
+    );
+    
+    return {
+      equipment: {
+        id: equipment.id,
+        name: equipment.name,
+        category: equipment.category
+      },
+      feedback,
+      xpAwarded: xpAmount
+    };
+    
+  } catch (error: any) {
+    console.error("Error generating form feedback:", error);
+    throw new Error(`Failed to generate form feedback: ${error?.message || 'Unknown error'}`);
+  }
+}

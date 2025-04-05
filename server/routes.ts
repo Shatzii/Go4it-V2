@@ -2053,7 +2053,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const newPlayerEquipment = await storage.createPlayerEquipment({
         userId: user.id,
         equipmentId: equipment.id,
-        isActive: false
+        isFavorite: false
       });
       
       return res.status(201).json(newPlayerEquipment);
@@ -2081,7 +2081,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Update equipment to active status
-      const updatedEquipment = await storage.updatePlayerEquipment(equipmentId, { isActive: true });
+      const updatedEquipment = await storage.updatePlayerEquipment(equipmentId, { isFavorite: true });
       
       // Increment usage count
       await storage.incrementEquipmentUsage(equipmentId);
@@ -2122,7 +2122,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Update equipment to inactive status
-      const updatedEquipment = await storage.updatePlayerEquipment(equipmentId, { isActive: false });
+      const updatedEquipment = await storage.updatePlayerEquipment(equipmentId, { isFavorite: false });
       
       return res.json(updatedEquipment);
     } catch (error) {
