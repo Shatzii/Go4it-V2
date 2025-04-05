@@ -2001,6 +2001,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // AI Coach Routes for Weight Room
+  app.get("/api/weight-room/ai-coach/workout-plan", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = (req.user as any).id;
+      const skillLevel = parseInt(req.query.level as string) || 1;
+      const goals = req.query.goals ? String(req.query.goals).split(',') : ["Strength", "Speed", "Endurance"];
+      
+      // Get all available equipment
+      const equipmentList = await storage.getWeightRoomEquipment();
+      
+      // Generate personalized workout plan with OpenAI
+      const { generateWeightRoomPlan } = await import('./openai');
+      const workoutPlan = await generateWeightRoomPlan(userId, equipmentList, skillLevel, goals);
+      
+      return res.json(workoutPlan);
+    } catch (error) {
+      console.error("Error generating AI workout plan:", error);
+      return res.status(500).json({ message: "Error generating AI workout plan" });
+    }
+  });
+  
+  app.post("/api/weight-room/ai-coach/form-feedback", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = (req.user as any).id;
+      const { equipmentId, formDescription } = req.body;
+      
+      if (!equipmentId || !formDescription) {
+        return res.status(400).json({ message: "Equipment ID and form description are required" });
+      }
+      
+      // Get form feedback using OpenAI
+      const { getFormFeedback } = await import('./openai');
+      const feedback = await getFormFeedback(userId, equipmentId, formDescription);
+      
+      return res.json(feedback);
+    } catch (error) {
+      console.error("Error generating form feedback:", error);
+      return res.status(500).json({ message: "Error generating form feedback" });
+    }
+  });
+  
   app.get("/api/player/equipment", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const user = req.user as any;
