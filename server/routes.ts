@@ -12,6 +12,7 @@ import path from "path";
 import { WebSocketServer, WebSocket } from 'ws';
 import { setupAuth, hashPassword as authHashPassword } from "./auth";
 import passport from "passport";
+import { saveApiKey, getApiKeyStatus } from "./api-keys";
 import { 
   insertUserSchema,
   insertAthleteProfileSchema,
@@ -3923,6 +3924,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(400).json({ message: error.message });
     }
   });
+
+  // API Key management routes
+  app.post("/api/settings/api-keys", isAuthenticated, saveApiKey);
+  app.get("/api/settings/api-keys/status", isAuthenticated, getApiKeyStatus);
 
   return server;
 }
