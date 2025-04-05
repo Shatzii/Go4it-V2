@@ -2131,7 +2131,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Get previous messages to provide context
-      const previousMessages = []; // In a real implementation, get from database
+      const previousMessages: any[] = []; // In a real implementation, get from database
       
       // Import the AI coach function
       const { generateAICoachResponse } = await import('./openai');
@@ -2250,7 +2250,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Check if player already has this equipment
       const playerEquipment = await storage.getPlayerEquipment(user.id);
-      const alreadyOwned = playerEquipment.some(item => item.equipmentId === equipmentId);
+      const alreadyOwned = playerEquipment.some((item: any) => item.equipmentId === equipmentId);
       
       if (alreadyOwned) {
         return res.status(400).json({ message: "Player already owns this equipment" });
@@ -2263,7 +2263,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Player progress not found" });
       }
       
-      if (progress.level < equipment.unlockLevel) {
+      if (progress.currentLevel < equipment.unlockLevel) {
         return res.status(400).json({ 
           message: `Player must reach level ${equipment.unlockLevel} to unlock this equipment`
         });

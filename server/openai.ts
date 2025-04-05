@@ -705,7 +705,7 @@ export async function generateWeightRoomPlan(
     const availableEquipment = equipmentList
       .filter(eq => {
         // Check if player has this equipment
-        return playerEquipment.some(pe => pe.equipmentId === eq.id);
+        return playerEquipment.some((pe: any) => pe.equipmentId === eq.id);
       })
       .map(eq => ({
         name: eq.name,
