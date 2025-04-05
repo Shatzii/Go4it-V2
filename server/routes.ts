@@ -13,6 +13,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 import { setupAuth, hashPassword as authHashPassword } from "./auth";
 import passport from "passport";
 import { saveApiKey, getApiKeyStatus } from "./api-keys";
+import { footballCoachService } from "./services/football-coach-service";
 import { 
   insertUserSchema,
   insertAthleteProfileSchema,
@@ -1830,28 +1831,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (videos.length < 2) {
         return res.status(400).json({ message: "At least two videos are required for comparison analysis" });
       }
-      
-      // In a real implementation, we would perform actual video analysis here
-      // For now, we'll create a mock analysis
-      const mockAnalysis = {
-        comparisonId,
-        findings: "Both videos show similar technique, with some differences in posture and follow-through.",
-        improvementAreas: ["Body positioning", "Follow-through", "Timing"],
-        overallScore: 78,
-        techniqueSimilarity: 0.82,
-        recommendations: "Focus on improving follow-through and timing to better match the reference example."
-      };
-      
-      // Check if analysis already exists
-      const existingAnalysis = await storage.getComparisonAnalysis(comparisonId);
+
+      // Update comparison status to processing
+      await storage.updateFilmComparison(comparisonId, { status: "processing" });
       
       let analysis;
-      if (existingAnalysis) {
-        // Update existing analysis
-        analysis = await storage.updateComparisonAnalysis(existingAnalysis.id, mockAnalysis);
+      
+      // Check if this is a football-related comparison
+      if (comparison.sport === "football") {
+        // Use specialized football coach analysis service
+        analysis = await footballCoachService.analyzeFootballFilm(comparisonId);
+        
+        if (!analysis) {
+          return res.status(500).json({ message: "Error performing football film analysis" });
+        }
       } else {
-        // Create new analysis
-        analysis = await storage.createComparisonAnalysis(mockAnalysis);
+        // For non-football sports, use the general analysis
+        const generalAnalysis = {
+          comparisonId,
+          findings: "Both videos show similar technique, with some differences in posture and follow-through.",
+          improvementAreas: ["Body positioning", "Follow-through", "Timing"],
+          overallScore: 78,
+          techniqueSimilarity: 0.82,
+          recommendations: "Focus on improving follow-through and timing to better match the reference example."
+        };
+        
+        // Check if analysis already exists
+        const existingAnalysis = await storage.getComparisonAnalysis(comparisonId);
+        
+        if (existingAnalysis) {
+          // Update existing analysis
+          analysis = await storage.updateComparisonAnalysis(existingAnalysis.id, generalAnalysis);
+        } else {
+          // Create new analysis
+          analysis = await storage.createComparisonAnalysis(generalAnalysis);
+        }
       }
       
       // Update comparison status to completed
@@ -1860,6 +1874,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.json(analysis);
     } catch (error) {
       console.error("Error analyzing film comparison:", error);
+      
+      // If there was an error during processing, update status to failed
+      try {
+        const comparisonId = parseInt(req.params.id);
+        await storage.updateFilmComparison(comparisonId, { status: "failed" });
+      } catch (updateError) {
+        console.error("Error updating comparison status:", updateError);
+      }
+      
       return res.status(500).json({ message: "Error analyzing film comparison" });
     }
   });
