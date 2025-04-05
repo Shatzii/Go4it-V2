@@ -19,7 +19,9 @@ import {
   ChartBarStacked,
   MessageSquare,
   Maximize,
-  Minimize
+  Minimize,
+  GitCompare,
+  Film
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -235,6 +237,15 @@ export default function Layout({ children }: LayoutProps) {
                 </motion.li>
 
                 <motion.li variants={menuItemVariants}>
+                  <Link href="/film-comparison">
+                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/film-comparison" || location.startsWith("/film-comparison-") ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                      <GitCompare className="h-5 w-5 mr-3" />
+                      Film Comparison
+                    </a>
+                  </Link>
+                </motion.li>
+
+                <motion.li variants={menuItemVariants}>
                   <Link href="/sport-recommendations">
                     <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/sport-recommendations" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
                       <Award className="h-5 w-5 mr-3" />
@@ -442,6 +453,14 @@ export default function Layout({ children }: LayoutProps) {
                       <a className="flex items-center p-2 rounded-lg text-white text-lg">
                         <FileVideo className="h-6 w-6 mr-3" />
                         Video Analysis
+                      </a>
+                    </Link>
+                  </motion.li>
+                  <motion.li variants={menuItemVariants}>
+                    <Link href="/film-comparison">
+                      <a className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/film-comparison" || location.startsWith("/film-comparison-") ? "active bg-primary" : ""}`}>
+                        <GitCompare className="h-6 w-6 mr-3" />
+                        Film Comparison
                       </a>
                     </Link>
                   </motion.li>
