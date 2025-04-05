@@ -21,7 +21,23 @@ import {
   featuredAthletes, type FeaturedAthlete, type InsertFeaturedAthlete,
   // New imports for workout playlists
   workoutPlaylists, type WorkoutPlaylist, type InsertWorkoutPlaylist,
-  workoutExercises, type WorkoutExercise, type InsertWorkoutExercise
+  workoutExercises, type WorkoutExercise, type InsertWorkoutExercise,
+  // Film comparison imports
+  filmComparisons, type FilmComparison, type InsertFilmComparison,
+  comparisonVideos, type ComparisonVideo, type InsertComparisonVideo,
+  comparisonAnalyses, type ComparisonAnalysis, type InsertComparisonAnalysis,
+  // Spotlight profiles
+  spotlightProfiles, type SpotlightProfile, type InsertSpotlightProfile,
+  // MyPlayer XP system 
+  playerProgress, type PlayerProgress, type InsertPlayerProgress,
+  xpTransactions, type XpTransaction, type InsertXpTransaction,
+  playerBadges, type PlayerBadge, type InsertPlayerBadge,
+  // Workout verification 
+  workoutVerifications, type WorkoutVerification, type InsertWorkoutVerification,
+  workoutVerificationCheckpoints, type WorkoutVerificationCheckpoint, type InsertWorkoutVerificationCheckpoint,
+  // Weight room equipment
+  weightRoomEquipment, type WeightRoomEquipment, type InsertWeightRoomEquipment,
+  playerEquipment, type PlayerEquipment, type InsertPlayerEquipment
 } from "@shared/schema";
 
 export interface IStorage {
@@ -165,6 +181,70 @@ export interface IStorage {
     targets: string[];
     userProfile?: AthleteProfile;
   }): Promise<WorkoutPlaylist>;
+  
+  // Film Comparison operations
+  getFilmComparisons(userId: number): Promise<FilmComparison[]>;
+  getFilmComparison(id: number): Promise<FilmComparison | undefined>;
+  createFilmComparison(comparison: InsertFilmComparison): Promise<FilmComparison>;
+  updateFilmComparison(id: number, data: Partial<FilmComparison>): Promise<FilmComparison | undefined>;
+  deleteFilmComparison(id: number): Promise<boolean>;
+  getComparisonVideos(comparisonId: number): Promise<ComparisonVideo[]>;
+  getComparisonVideo(id: number): Promise<ComparisonVideo | undefined>;
+  createComparisonVideo(video: InsertComparisonVideo): Promise<ComparisonVideo>;
+  updateComparisonVideo(id: number, data: Partial<ComparisonVideo>): Promise<ComparisonVideo | undefined>;
+  deleteComparisonVideo(id: number): Promise<boolean>;
+  getComparisonAnalysis(comparisonId: number): Promise<ComparisonAnalysis | undefined>;
+  createComparisonAnalysis(analysis: InsertComparisonAnalysis): Promise<ComparisonAnalysis>;
+  updateComparisonAnalysis(id: number, data: Partial<ComparisonAnalysis>): Promise<ComparisonAnalysis | undefined>;
+  
+  // NextUp Spotlight operations
+  getSpotlightProfiles(limit?: number, offset?: number): Promise<SpotlightProfile[]>;
+  getFeaturedSpotlightProfiles(limit?: number): Promise<SpotlightProfile[]>;
+  getSpotlightProfilesByCategory(category: string, limit?: number): Promise<SpotlightProfile[]>;
+  getSpotlightProfile(id: number): Promise<SpotlightProfile | undefined>;
+  getSpotlightProfileByUserId(userId: number): Promise<SpotlightProfile | undefined>;
+  createSpotlightProfile(profile: InsertSpotlightProfile): Promise<SpotlightProfile>;
+  updateSpotlightProfile(id: number, data: Partial<SpotlightProfile>): Promise<SpotlightProfile | undefined>;
+  deleteSpotlightProfile(id: number): Promise<boolean>;
+  incrementSpotlightViews(id: number): Promise<SpotlightProfile | undefined>;
+  likeSpotlightProfile(id: number): Promise<SpotlightProfile | undefined>;
+  
+  // MyPlayer XP System operations
+  getPlayerProgress(userId: number): Promise<PlayerProgress | undefined>;
+  createPlayerProgress(progress: InsertPlayerProgress): Promise<PlayerProgress>;
+  updatePlayerProgress(userId: number, data: Partial<PlayerProgress>): Promise<PlayerProgress | undefined>;
+  addXpToPlayer(userId: number, amount: number, type: string, description: string, sourceId?: string): Promise<{ 
+    progress: PlayerProgress, 
+    transaction: XpTransaction,
+    leveledUp: boolean 
+  }>;
+  getXpTransactions(userId: number, limit?: number): Promise<XpTransaction[]>;
+  getPlayerBadges(userId: number): Promise<PlayerBadge[]>;
+  getPlayerBadgesByCategory(userId: number, category: string): Promise<PlayerBadge[]>;
+  createPlayerBadge(badge: InsertPlayerBadge): Promise<PlayerBadge>;
+  updatePlayerBadge(id: number, data: Partial<PlayerBadge>): Promise<PlayerBadge | undefined>;
+  
+  // MyPlayer Workout Verification operations
+  getWorkoutVerifications(userId: number): Promise<WorkoutVerification[]>;
+  getPendingWorkoutVerifications(): Promise<WorkoutVerification[]>;
+  getWorkoutVerification(id: number): Promise<WorkoutVerification | undefined>;
+  createWorkoutVerification(verification: InsertWorkoutVerification): Promise<WorkoutVerification>;
+  updateWorkoutVerification(id: number, data: Partial<WorkoutVerification>): Promise<WorkoutVerification | undefined>;
+  verifyWorkout(id: number, verifierId: number, status: string, notes?: string): Promise<WorkoutVerification | undefined>;
+  getWorkoutVerificationCheckpoints(verificationId: number): Promise<WorkoutVerificationCheckpoint[]>;
+  createWorkoutVerificationCheckpoint(checkpoint: InsertWorkoutVerificationCheckpoint): Promise<WorkoutVerificationCheckpoint>;
+  updateWorkoutVerificationCheckpoint(id: number, data: Partial<WorkoutVerificationCheckpoint>): Promise<WorkoutVerificationCheckpoint | undefined>;
+  
+  // MyPlayer UI Weight Room operations
+  getWeightRoomEquipment(category?: string): Promise<WeightRoomEquipment[]>;
+  getWeightRoomEquipmentById(id: number): Promise<WeightRoomEquipment | undefined>;
+  createWeightRoomEquipment(equipment: InsertWeightRoomEquipment): Promise<WeightRoomEquipment>;
+  updateWeightRoomEquipment(id: number, data: Partial<WeightRoomEquipment>): Promise<WeightRoomEquipment | undefined>;
+  getPlayerEquipment(userId: number): Promise<PlayerEquipment[]>;
+  getPlayerEquipmentById(id: number): Promise<PlayerEquipment | undefined>;
+  createPlayerEquipment(equipment: InsertPlayerEquipment): Promise<PlayerEquipment>;
+  updatePlayerEquipment(id: number, data: Partial<PlayerEquipment>): Promise<PlayerEquipment | undefined>;
+  incrementEquipmentUsage(id: number): Promise<PlayerEquipment | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -195,6 +275,27 @@ export class MemStorage implements IStorage {
   private workoutPlaylists: Map<number, WorkoutPlaylist>;
   private workoutExercises: Map<number, WorkoutExercise>;
   
+  // Film comparison components
+  private filmComparisons: Map<number, FilmComparison>;
+  private comparisonVideos: Map<number, ComparisonVideo>;
+  private comparisonAnalyses: Map<number, ComparisonAnalysis>;
+  
+  // Spotlight profile components
+  private spotlightProfiles: Map<number, SpotlightProfile>;
+  
+  // MyPlayer XP system components
+  private playerProgress: Map<number, PlayerProgress>;
+  private xpTransactions: Map<number, XpTransaction>;
+  private playerBadges: Map<number, PlayerBadge>;
+  
+  // Workout verification components
+  private workoutVerifications: Map<number, WorkoutVerification>;
+  private workoutVerificationCheckpoints: Map<number, WorkoutVerificationCheckpoint>;
+  
+  // Weight room equipment components
+  private weightRoomEquipment: Map<number, WeightRoomEquipment>;
+  private playerEquipment: Map<number, PlayerEquipment>;
+  
   private currentUserId: number;
   private currentAthleteProfileId: number;
   private currentCoachProfileId: number;
@@ -215,6 +316,27 @@ export class MemStorage implements IStorage {
   private currentFeaturedAthleteId: number;
   private currentWorkoutPlaylistId: number;
   private currentWorkoutExerciseId: number;
+  
+  // Film comparison IDs
+  private currentFilmComparisonId: number;
+  private currentComparisonVideoId: number;
+  private currentComparisonAnalysisId: number;
+  
+  // Spotlight profile IDs
+  private currentSpotlightProfileId: number;
+  
+  // MyPlayer XP system IDs
+  private currentPlayerProgressId: number;
+  private currentXpTransactionId: number;
+  private currentPlayerBadgeId: number;
+  
+  // Workout verification IDs
+  private currentWorkoutVerificationId: number;
+  private currentWorkoutVerificationCheckpointId: number;
+  
+  // Weight room equipment IDs
+  private currentWeightRoomEquipmentId: number;
+  private currentPlayerEquipmentId: number;
 
   constructor() {
     this.users = new Map();
@@ -244,6 +366,27 @@ export class MemStorage implements IStorage {
     this.workoutPlaylists = new Map();
     this.workoutExercises = new Map();
     
+    // Initialize film comparison maps
+    this.filmComparisons = new Map();
+    this.comparisonVideos = new Map();
+    this.comparisonAnalyses = new Map();
+    
+    // Initialize spotlight profile maps
+    this.spotlightProfiles = new Map();
+    
+    // Initialize MyPlayer XP system maps
+    this.playerProgress = new Map();
+    this.xpTransactions = new Map();
+    this.playerBadges = new Map();
+    
+    // Initialize workout verification maps
+    this.workoutVerifications = new Map();
+    this.workoutVerificationCheckpoints = new Map();
+    
+    // Initialize weight room equipment maps
+    this.weightRoomEquipment = new Map();
+    this.playerEquipment = new Map();
+    
     this.currentUserId = 1;
     this.currentAthleteProfileId = 1;
     this.currentCoachProfileId = 1;
@@ -264,6 +407,17 @@ export class MemStorage implements IStorage {
     this.currentFeaturedAthleteId = 1;
     this.currentWorkoutPlaylistId = 1;
     this.currentWorkoutExerciseId = 1;
+    this.currentFilmComparisonId = 1;
+    this.currentComparisonVideoId = 1;
+    this.currentComparisonAnalysisId = 1;
+    this.currentSpotlightProfileId = 1;
+    this.currentPlayerProgressId = 1;
+    this.currentXpTransactionId = 1;
+    this.currentPlayerBadgeId = 1;
+    this.currentWorkoutVerificationId = 1;
+    this.currentWorkoutVerificationCheckpointId = 1;
+    this.currentWeightRoomEquipmentId = 1;
+    this.currentPlayerEquipmentId = 1;
     
     // Initialize with sample data for testing
     this.seedInitialData();
@@ -1141,6 +1295,567 @@ export class MemStorage implements IStorage {
     }
     
     return playlist;
+  }
+
+  // Film Comparison operations
+  async getFilmComparisons(userId: number): Promise<FilmComparison[]> {
+    return Array.from(this.filmComparisons.values()).filter(
+      (comparison) => comparison.userId === userId
+    );
+  }
+  
+  async getFilmComparison(id: number): Promise<FilmComparison | undefined> {
+    return this.filmComparisons.get(id);
+  }
+  
+  async createFilmComparison(comparison: InsertFilmComparison): Promise<FilmComparison> {
+    const id = this.currentFilmComparisonId++;
+    const now = new Date();
+    const filmComparison: FilmComparison = {
+      ...comparison,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.filmComparisons.set(id, filmComparison);
+    return filmComparison;
+  }
+  
+  async updateFilmComparison(id: number, data: Partial<FilmComparison>): Promise<FilmComparison | undefined> {
+    const comparison = this.filmComparisons.get(id);
+    if (!comparison) return undefined;
+    
+    const now = new Date();
+    const updatedComparison = {
+      ...comparison,
+      ...data,
+      updatedAt: now
+    };
+    this.filmComparisons.set(id, updatedComparison);
+    return updatedComparison;
+  }
+  
+  async deleteFilmComparison(id: number): Promise<boolean> {
+    return this.filmComparisons.delete(id);
+  }
+  
+  async getComparisonVideos(comparisonId: number): Promise<ComparisonVideo[]> {
+    return Array.from(this.comparisonVideos.values()).filter(
+      (video) => video.comparisonId === comparisonId
+    );
+  }
+  
+  async getComparisonVideo(id: number): Promise<ComparisonVideo | undefined> {
+    return this.comparisonVideos.get(id);
+  }
+  
+  async createComparisonVideo(video: InsertComparisonVideo): Promise<ComparisonVideo> {
+    const id = this.currentComparisonVideoId++;
+    const now = new Date();
+    const comparisonVideo: ComparisonVideo = {
+      ...video,
+      id,
+      uploadDate: now
+    };
+    this.comparisonVideos.set(id, comparisonVideo);
+    return comparisonVideo;
+  }
+  
+  async updateComparisonVideo(id: number, data: Partial<ComparisonVideo>): Promise<ComparisonVideo | undefined> {
+    const video = this.comparisonVideos.get(id);
+    if (!video) return undefined;
+    
+    const updatedVideo = {
+      ...video,
+      ...data
+    };
+    this.comparisonVideos.set(id, updatedVideo);
+    return updatedVideo;
+  }
+  
+  async deleteComparisonVideo(id: number): Promise<boolean> {
+    return this.comparisonVideos.delete(id);
+  }
+  
+  async getComparisonAnalysis(comparisonId: number): Promise<ComparisonAnalysis | undefined> {
+    return Array.from(this.comparisonAnalyses.values()).find(
+      (analysis) => analysis.comparisonId === comparisonId
+    );
+  }
+  
+  async createComparisonAnalysis(analysis: InsertComparisonAnalysis): Promise<ComparisonAnalysis> {
+    const id = this.currentComparisonAnalysisId++;
+    const now = new Date();
+    const comparisonAnalysis: ComparisonAnalysis = {
+      ...analysis,
+      id,
+      analysisDate: now
+    };
+    this.comparisonAnalyses.set(id, comparisonAnalysis);
+    return comparisonAnalysis;
+  }
+  
+  async updateComparisonAnalysis(id: number, data: Partial<ComparisonAnalysis>): Promise<ComparisonAnalysis | undefined> {
+    const analysis = this.comparisonAnalyses.get(id);
+    if (!analysis) return undefined;
+    
+    const updatedAnalysis = {
+      ...analysis,
+      ...data
+    };
+    this.comparisonAnalyses.set(id, updatedAnalysis);
+    return updatedAnalysis;
+  }
+  
+  // NextUp Spotlight operations
+  async getSpotlightProfiles(limit?: number, offset?: number): Promise<SpotlightProfile[]> {
+    let profiles = Array.from(this.spotlightProfiles.values());
+    
+    if (offset) {
+      profiles = profiles.slice(offset);
+    }
+    
+    if (limit) {
+      profiles = profiles.slice(0, limit);
+    }
+    
+    return profiles;
+  }
+  
+  async getFeaturedSpotlightProfiles(limit?: number): Promise<SpotlightProfile[]> {
+    let profiles = Array.from(this.spotlightProfiles.values())
+      .filter(profile => profile.featured)
+      .sort((a, b) => b.views - a.views);
+    
+    if (limit) {
+      profiles = profiles.slice(0, limit);
+    }
+    
+    return profiles;
+  }
+  
+  async getSpotlightProfilesByCategory(category: string, limit?: number): Promise<SpotlightProfile[]> {
+    let profiles = Array.from(this.spotlightProfiles.values())
+      .filter(profile => profile.sportCategory === category)
+      .sort((a, b) => b.views - a.views);
+    
+    if (limit) {
+      profiles = profiles.slice(0, limit);
+    }
+    
+    return profiles;
+  }
+  
+  async getSpotlightProfile(id: number): Promise<SpotlightProfile | undefined> {
+    return this.spotlightProfiles.get(id);
+  }
+  
+  async getSpotlightProfileByUserId(userId: number): Promise<SpotlightProfile | undefined> {
+    return Array.from(this.spotlightProfiles.values()).find(
+      (profile) => profile.userId === userId
+    );
+  }
+  
+  async createSpotlightProfile(profile: InsertSpotlightProfile): Promise<SpotlightProfile> {
+    const id = this.currentSpotlightProfileId++;
+    const now = new Date();
+    const spotlightProfile: SpotlightProfile = {
+      ...profile,
+      id,
+      createdAt: now,
+      updatedAt: now,
+      views: 0,
+      likes: 0,
+      featured: false
+    };
+    this.spotlightProfiles.set(id, spotlightProfile);
+    return spotlightProfile;
+  }
+  
+  async updateSpotlightProfile(id: number, data: Partial<SpotlightProfile>): Promise<SpotlightProfile | undefined> {
+    const profile = this.spotlightProfiles.get(id);
+    if (!profile) return undefined;
+    
+    const now = new Date();
+    const updatedProfile = {
+      ...profile,
+      ...data,
+      updatedAt: now
+    };
+    this.spotlightProfiles.set(id, updatedProfile);
+    return updatedProfile;
+  }
+  
+  async deleteSpotlightProfile(id: number): Promise<boolean> {
+    return this.spotlightProfiles.delete(id);
+  }
+  
+  async incrementSpotlightViews(id: number): Promise<SpotlightProfile | undefined> {
+    const profile = this.spotlightProfiles.get(id);
+    if (!profile) return undefined;
+    
+    const updatedProfile = {
+      ...profile,
+      views: profile.views + 1
+    };
+    this.spotlightProfiles.set(id, updatedProfile);
+    return updatedProfile;
+  }
+  
+  async likeSpotlightProfile(id: number): Promise<SpotlightProfile | undefined> {
+    const profile = this.spotlightProfiles.get(id);
+    if (!profile) return undefined;
+    
+    const updatedProfile = {
+      ...profile,
+      likes: profile.likes + 1
+    };
+    this.spotlightProfiles.set(id, updatedProfile);
+    return updatedProfile;
+  }
+  
+  // MyPlayer XP System operations
+  async getPlayerProgress(userId: number): Promise<PlayerProgress | undefined> {
+    return Array.from(this.playerProgress.values()).find(
+      (progress) => progress.userId === userId
+    );
+  }
+  
+  async createPlayerProgress(progress: InsertPlayerProgress): Promise<PlayerProgress> {
+    const id = this.currentPlayerProgressId++;
+    const now = new Date();
+    const playerProgress: PlayerProgress = {
+      ...progress,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.playerProgress.set(id, playerProgress);
+    return playerProgress;
+  }
+  
+  async updatePlayerProgress(userId: number, data: Partial<PlayerProgress>): Promise<PlayerProgress | undefined> {
+    const progress = Array.from(this.playerProgress.values()).find(
+      (progress) => progress.userId === userId
+    );
+    
+    if (!progress) return undefined;
+    
+    const now = new Date();
+    const updatedProgress = {
+      ...progress,
+      ...data,
+      updatedAt: now
+    };
+    this.playerProgress.set(progress.id, updatedProgress);
+    return updatedProgress;
+  }
+  
+  async addXpToPlayer(userId: number, amount: number, type: string, description: string, sourceId?: string): Promise<{ 
+    progress: PlayerProgress, 
+    transaction: XpTransaction,
+    leveledUp: boolean 
+  }> {
+    // Get the player's progress
+    let progress = await this.getPlayerProgress(userId);
+    
+    // If no progress exists, create initial progress
+    if (!progress) {
+      progress = await this.createPlayerProgress({
+        userId,
+        level: 1,
+        totalXp: 0,
+        currentLevelXp: 0,
+        nextLevelXp: 100,
+        streak: 0
+      });
+    }
+    
+    // Calculate new values
+    const newTotalXp = progress.totalXp + amount;
+    const newCurrentLevelXp = progress.currentLevelXp + amount;
+    
+    let leveledUp = false;
+    let newLevel = progress.level;
+    let newNextLevelXp = progress.nextLevelXp;
+    let remainingXp = 0;
+    
+    // Check if level up occurred
+    if (newCurrentLevelXp >= progress.nextLevelXp) {
+      leveledUp = true;
+      newLevel = progress.level + 1;
+      remainingXp = newCurrentLevelXp - progress.nextLevelXp;
+      newNextLevelXp = Math.round(progress.nextLevelXp * 1.5); // Increase XP required for next level
+    }
+    
+    // Update the player's progress
+    const updatedProgress = await this.updatePlayerProgress(userId, {
+      totalXp: newTotalXp,
+      currentLevelXp: leveledUp ? remainingXp : newCurrentLevelXp,
+      level: newLevel,
+      nextLevelXp: leveledUp ? newNextLevelXp : progress.nextLevelXp
+    });
+    
+    // Create an XP transaction record
+    const transaction = await this.createXpTransaction({
+      userId,
+      amount,
+      type,
+      description,
+      sourceId,
+      awarded: new Date()
+    });
+    
+    return {
+      progress: updatedProgress!,
+      transaction,
+      leveledUp
+    };
+  }
+  
+  async getXpTransactions(userId: number, limit?: number): Promise<XpTransaction[]> {
+    let transactions = Array.from(this.xpTransactions.values())
+      .filter(tx => tx.userId === userId)
+      .sort((a, b) => new Date(b.awarded).getTime() - new Date(a.awarded).getTime());
+    
+    if (limit) {
+      transactions = transactions.slice(0, limit);
+    }
+    
+    return transactions;
+  }
+  
+  async createXpTransaction(transaction: InsertXpTransaction): Promise<XpTransaction> {
+    const id = this.currentXpTransactionId++;
+    const xpTransaction: XpTransaction = {
+      ...transaction,
+      id
+    };
+    this.xpTransactions.set(id, xpTransaction);
+    return xpTransaction;
+  }
+  
+  async getPlayerBadges(userId: number): Promise<PlayerBadge[]> {
+    return Array.from(this.playerBadges.values()).filter(
+      (badge) => badge.userId === userId
+    );
+  }
+  
+  async getPlayerBadgesByCategory(userId: number, category: string): Promise<PlayerBadge[]> {
+    return Array.from(this.playerBadges.values()).filter(
+      (badge) => badge.userId === userId && badge.category === category
+    );
+  }
+  
+  async createPlayerBadge(badge: InsertPlayerBadge): Promise<PlayerBadge> {
+    const id = this.currentPlayerBadgeId++;
+    const now = new Date();
+    const playerBadge: PlayerBadge = {
+      ...badge,
+      id,
+      earnedAt: now
+    };
+    this.playerBadges.set(id, playerBadge);
+    return playerBadge;
+  }
+  
+  async updatePlayerBadge(id: number, data: Partial<PlayerBadge>): Promise<PlayerBadge | undefined> {
+    const badge = this.playerBadges.get(id);
+    if (!badge) return undefined;
+    
+    const updatedBadge = {
+      ...badge,
+      ...data
+    };
+    this.playerBadges.set(id, updatedBadge);
+    return updatedBadge;
+  }
+  
+  // MyPlayer Workout Verification operations
+  async getWorkoutVerifications(userId: number): Promise<WorkoutVerification[]> {
+    return Array.from(this.workoutVerifications.values()).filter(
+      (verification) => verification.userId === userId
+    );
+  }
+  
+  async getPendingWorkoutVerifications(): Promise<WorkoutVerification[]> {
+    return Array.from(this.workoutVerifications.values()).filter(
+      (verification) => verification.status === 'pending'
+    );
+  }
+  
+  async getWorkoutVerification(id: number): Promise<WorkoutVerification | undefined> {
+    return this.workoutVerifications.get(id);
+  }
+  
+  async createWorkoutVerification(verification: InsertWorkoutVerification): Promise<WorkoutVerification> {
+    const id = this.currentWorkoutVerificationId++;
+    const now = new Date();
+    const workoutVerification: WorkoutVerification = {
+      ...verification,
+      id,
+      submittedAt: now,
+      status: 'pending',
+      verifiedAt: null,
+      verifierId: null,
+      verifierNotes: null
+    };
+    this.workoutVerifications.set(id, workoutVerification);
+    return workoutVerification;
+  }
+  
+  async updateWorkoutVerification(id: number, data: Partial<WorkoutVerification>): Promise<WorkoutVerification | undefined> {
+    const verification = this.workoutVerifications.get(id);
+    if (!verification) return undefined;
+    
+    const updatedVerification = {
+      ...verification,
+      ...data
+    };
+    this.workoutVerifications.set(id, updatedVerification);
+    return updatedVerification;
+  }
+  
+  async verifyWorkout(id: number, verifierId: number, status: string, notes?: string): Promise<WorkoutVerification | undefined> {
+    const verification = this.workoutVerifications.get(id);
+    if (!verification) return undefined;
+    
+    const now = new Date();
+    const updatedVerification = {
+      ...verification,
+      status,
+      verifierId,
+      verifierNotes: notes || null,
+      verifiedAt: now
+    };
+    this.workoutVerifications.set(id, updatedVerification);
+    
+    // If approved, award XP to the user
+    if (status === 'approved') {
+      await this.addXpToPlayer(
+        verification.userId, 
+        50, 
+        'workout_verification',
+        `Workout "${verification.workoutTitle}" verified`,
+        String(id)
+      );
+    }
+    
+    return updatedVerification;
+  }
+  
+  async getWorkoutVerificationCheckpoints(verificationId: number): Promise<WorkoutVerificationCheckpoint[]> {
+    return Array.from(this.workoutVerificationCheckpoints.values()).filter(
+      (checkpoint) => checkpoint.verificationId === verificationId
+    );
+  }
+  
+  async createWorkoutVerificationCheckpoint(checkpoint: InsertWorkoutVerificationCheckpoint): Promise<WorkoutVerificationCheckpoint> {
+    const id = this.currentWorkoutVerificationCheckpointId++;
+    const workoutVerificationCheckpoint: WorkoutVerificationCheckpoint = {
+      ...checkpoint,
+      id
+    };
+    this.workoutVerificationCheckpoints.set(id, workoutVerificationCheckpoint);
+    return workoutVerificationCheckpoint;
+  }
+  
+  async updateWorkoutVerificationCheckpoint(id: number, data: Partial<WorkoutVerificationCheckpoint>): Promise<WorkoutVerificationCheckpoint | undefined> {
+    const checkpoint = this.workoutVerificationCheckpoints.get(id);
+    if (!checkpoint) return undefined;
+    
+    const updatedCheckpoint = {
+      ...checkpoint,
+      ...data
+    };
+    this.workoutVerificationCheckpoints.set(id, updatedCheckpoint);
+    return updatedCheckpoint;
+  }
+  
+  // MyPlayer UI Weight Room operations
+  async getWeightRoomEquipment(category?: string): Promise<WeightRoomEquipment[]> {
+    let equipment = Array.from(this.weightRoomEquipment.values());
+    
+    if (category) {
+      equipment = equipment.filter(
+        (item) => item.category === category
+      );
+    }
+    
+    return equipment;
+  }
+  
+  async getWeightRoomEquipmentById(id: number): Promise<WeightRoomEquipment | undefined> {
+    return this.weightRoomEquipment.get(id);
+  }
+  
+  async createWeightRoomEquipment(equipment: InsertWeightRoomEquipment): Promise<WeightRoomEquipment> {
+    const id = this.currentWeightRoomEquipmentId++;
+    const weightRoomEquipment: WeightRoomEquipment = {
+      ...equipment,
+      id
+    };
+    this.weightRoomEquipment.set(id, weightRoomEquipment);
+    return weightRoomEquipment;
+  }
+  
+  async updateWeightRoomEquipment(id: number, data: Partial<WeightRoomEquipment>): Promise<WeightRoomEquipment | undefined> {
+    const equipment = this.weightRoomEquipment.get(id);
+    if (!equipment) return undefined;
+    
+    const updatedEquipment = {
+      ...equipment,
+      ...data
+    };
+    this.weightRoomEquipment.set(id, updatedEquipment);
+    return updatedEquipment;
+  }
+  
+  async getPlayerEquipment(userId: number): Promise<PlayerEquipment[]> {
+    return Array.from(this.playerEquipment.values()).filter(
+      (equipment) => equipment.userId === userId
+    );
+  }
+  
+  async getPlayerEquipmentById(id: number): Promise<PlayerEquipment | undefined> {
+    return this.playerEquipment.get(id);
+  }
+  
+  async createPlayerEquipment(equipment: InsertPlayerEquipment): Promise<PlayerEquipment> {
+    const id = this.currentPlayerEquipmentId++;
+    const now = new Date();
+    const playerEquipment: PlayerEquipment = {
+      ...equipment,
+      id,
+      equippedAt: now,
+      timesUsed: 0
+    };
+    this.playerEquipment.set(id, playerEquipment);
+    return playerEquipment;
+  }
+  
+  async updatePlayerEquipment(id: number, data: Partial<PlayerEquipment>): Promise<PlayerEquipment | undefined> {
+    const equipment = this.playerEquipment.get(id);
+    if (!equipment) return undefined;
+    
+    const updatedEquipment = {
+      ...equipment,
+      ...data
+    };
+    this.playerEquipment.set(id, updatedEquipment);
+    return updatedEquipment;
+  }
+  
+  async incrementEquipmentUsage(id: number): Promise<PlayerEquipment | undefined> {
+    const equipment = this.playerEquipment.get(id);
+    if (!equipment) return undefined;
+    
+    const updatedEquipment = {
+      ...equipment,
+      timesUsed: (equipment.timesUsed || 0) + 1
+    };
+    this.playerEquipment.set(id, updatedEquipment);
+    return updatedEquipment;
   }
 
   // Method to seed some initial data for development
