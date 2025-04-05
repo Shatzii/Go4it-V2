@@ -49,8 +49,9 @@ import {
   combineTourEvents, type CombineTourEvent, type InsertCombineTourEvent,
   registrations, type Registration, type InsertRegistration,
   payments, type Payment, type InsertPayment,
-  // Video highlights
+  // Video highlights and generator configs
   videoHighlights, type VideoHighlight, type InsertVideoHighlight,
+  highlightGeneratorConfigs, type HighlightGeneratorConfig, type InsertHighlightGeneratorConfig,
   // API Keys
   apiKeys, type ApiKey, type InsertApiKey,
   // Athlete star profiles

@@ -8,6 +8,8 @@ import cors from "cors";
 import { storage } from './storage';
 import { initializeBlogGeneration } from './blog-generator';
 import { openAIService } from './services/openai-service';
+import { transferPortalService } from './services/transfer-portal-service';
+import { athleteScoutService } from './services/athlete-scout-service';
 import net from 'net';
 
 const app = express();
@@ -148,15 +150,87 @@ app.use((req, res, next) => {
     
     // Initialize OpenAI service and blog generation
     openAIService.hasValidApiKey()
-      .then(hasKey => {
+      .then(async hasKey => {
         if (hasKey) {
           log("✅ OpenAI API key validated successfully");
           
           // Now initialize the blog generator
           log("Initializing AI blog generator...");
-          initializeBlogGeneration()
-            .then(() => log("AI blog generator initialized successfully"))
-            .catch(err => log(`Error initializing AI blog generator: ${err}`));
+          try {
+            await initializeBlogGeneration();
+            log("AI blog generator initialized successfully");
+            
+            // Initialize Transfer Portal Service
+            log("Initializing Transfer Portal Service...");
+            const transferPortalInitialized = await transferPortalService.initialize();
+            log(`Transfer Portal Service initialization ${transferPortalInitialized ? 'successful' : 'failed'}`);
+            
+            // Initialize Athlete Scout Service
+            log("Initializing Athlete Scout Service...");
+            const athleteScoutInitialized = await athleteScoutService.initialize();
+            log(`Athlete Scout Service initialization ${athleteScoutInitialized ? 'successful' : 'failed'}`);
+            
+            // Create default monitors and scouts if none exist
+            try {
+              // Create a default transfer portal monitor for Football
+              const initialMonitor = await transferPortalService.createMonitor(
+                "NCAA Football Transfer Portal Tracker",
+                "Monitors NCAA football transfer portal for new entries and roster changes",
+                "football",
+                "player-portal-entries",
+                1, // Admin user ID
+                {
+                  divisions: ["D1-FBS", "D1-FCS", "D2"],
+                  conferences: ["SEC", "Big Ten", "ACC", "Big 12", "Pac-12"],
+                  updateFrequency: 360, // 6 minutes
+                  positionGroups: ["QB", "RB", "WR", "TE", "OL", "DL", "LB", "CB", "S"]
+                }
+              );
+              
+              if (initialMonitor) {
+                log("Created initial Football Transfer Portal monitor");
+              }
+              
+              // Create a default athlete scout
+              const initialScout = await athleteScoutService.createScout(
+                "National Football & Basketball Talent Scout",
+                "Discovers promising football and basketball athletes on social media",
+                1, // Admin user ID
+                {
+                  sportFocus: ["football", "basketball"],
+                  platformsToSearch: ["instagram", "tiktok", "twitter"],
+                  ageRangeMin: 14,
+                  ageRangeMax: 18
+                }
+              );
+              
+              if (initialScout) {
+                log("Created initial Athlete Social Media scout");
+              }
+              
+              // Create a default media partnership scout
+              const initialMediaScout = await athleteScoutService.createMediaScout(
+                "Sports Podcast & Instagram Partnership Scout",
+                "Discovers sports media outlets for cross-promotion opportunities",
+                1, // Admin user ID
+                ["podcast", "instagram", "youtube"], // Media types
+                ["football", "basketball", "multi-sport"], // Sport focus
+                {
+                  followerThreshold: 5000,
+                  keywordsToTrack: ["athlete", "recruiting", "high school", "college", "sports"]
+                }
+              );
+              
+              if (initialMediaScout) {
+                log("Created initial Media Partnership scout");
+              }
+            } catch (err) {
+              log(`Error creating default scouts/monitors: ${err}`);
+            }
+            
+          } catch (err) {
+            log(`Error initializing AI blog generator: ${err}`);
+          }
         } else {
           log("⚠️ No valid OpenAI API key found. AI features will be limited.");
           log("Please update the API key in the admin panel or set OPENAI_API_KEY environment variable.");
