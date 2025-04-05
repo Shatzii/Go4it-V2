@@ -1013,5 +1013,172 @@ export type InsertAthleteJourneyMap = z.infer<typeof insertAthleteJourneyMapSche
 export type JourneyMilestone = typeof journeyMilestones.$inferSelect;
 export type InsertJourneyMilestone = z.infer<typeof insertJourneyMilestoneSchema>;
 
+// Go4It Radio - Music streaming feature
+export const musicArtists = pgTable("music_artists", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  artistUsername: text("artist_username").notNull().unique(),
+  email: text("email").notNull(),
+  bio: text("bio"),
+  profileImage: text("profile_image"),
+  coverImage: text("cover_image"),
+  socialLinks: jsonb("social_links"),
+  genres: text("genres").array(),
+  verifiedArtist: boolean("verified_artist").default(false),
+  userId: integer("user_id").references(() => users.id), // Optional link to Go4It user account
+  createdAt: timestamp("created_at").defaultNow(),
+  active: boolean("active").default(true),
+});
+
+export const musicTracks = pgTable("music_tracks", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  artistId: integer("artist_id").notNull().references(() => musicArtists.id),
+  filePath: text("file_path").notNull(),
+  coverArt: text("cover_art"),
+  duration: integer("duration").notNull(), // Duration in seconds
+  uploadDate: timestamp("upload_date").defaultNow(),
+  releaseDate: date("release_date"),
+  genres: text("genres").array(),
+  tags: text("tags").array(),
+  isExplicit: boolean("is_explicit").default(false),
+  isApproved: boolean("is_approved").default(false),
+  featuredArtists: text("featured_artists").array(),
+  description: text("description"),
+  lyrics: text("lyrics"),
+  plays: integer("plays").default(0),
+  likes: integer("likes").default(0),
+  bpm: integer("bpm"), // Beats per minute
+  mood: text("mood").array(), // energetic, calm, etc.
+  sportMatchCategories: text("sport_match_categories").array(), // e.g., "workout", "pregame", "cooldown", "focus"
+  active: boolean("active").default(true),
+});
+
+export const musicPlaylists = pgTable("music_playlists", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  creatorId: integer("creator_id").notNull().references(() => users.id),
+  coverImage: text("cover_image"),
+  isPublic: boolean("is_public").default(true),
+  categories: text("categories").array(), // workout, pregame, etc.
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  likes: integer("likes").default(0),
+  followers: integer("followers").default(0),
+  sportAssociation: text("sport_association").array(), // basketball, football, etc.
+  trainingPhase: text("training_phase").array(), // warmup, high-intensity, recovery, etc.
+  active: boolean("active").default(true),
+});
+
+export const playlistTracks = pgTable("playlist_tracks", {
+  id: serial("id").primaryKey(),
+  playlistId: integer("playlist_id").notNull().references(() => musicPlaylists.id),
+  trackId: integer("track_id").notNull().references(() => musicTracks.id),
+  addedAt: timestamp("added_at").defaultNow(),
+  position: integer("position").notNull(),
+});
+
+export const musicListeningHistory = pgTable("music_listening_history", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  trackId: integer("track_id").notNull().references(() => musicTracks.id),
+  playedAt: timestamp("played_at").defaultNow(),
+  playDuration: integer("play_duration"), // How long user listened in seconds
+  completedPlay: boolean("completed_play").default(false),
+  contextType: text("context_type"), // e.g., "playlist", "radio", "profile", "workout"
+  contextId: integer("context_id"), // ID of the context (playlist ID, workout ID)
+});
+
+export const musicUserPreferences = pgTable("music_user_preferences", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id).unique(),
+  favoriteGenres: text("favorite_genres").array(),
+  favoriteMoods: text("favorite_moods").array(),
+  favoriteArtists: integer("favorite_artists").array(), // Array of artist IDs
+  favoriteTracks: integer("favorite_tracks").array(), // Array of track IDs
+  dislikedTracks: integer("disliked_tracks").array(), // Array of track IDs
+  explicitContentAllowed: boolean("explicit_content_allowed").default(false),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const artistNilDeals = pgTable("artist_nil_deals", {
+  id: serial("id").primaryKey(),
+  artistId: integer("artist_id").notNull().references(() => musicArtists.id),
+  athleteId: integer("athlete_id").notNull().references(() => users.id),
+  dealType: text("deal_type").notNull(), // promotion, exclusive, feature, etc.
+  startDate: date("start_date").notNull(),
+  endDate: date("end_date"),
+  dealTerms: jsonb("deal_terms"),
+  dealStatus: text("deal_status").notNull().default("pending"), // pending, active, completed, cancelled
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  active: boolean("active").default(true),
+});
+
+// Create insert schemas for music tables
+export const insertMusicArtistSchema = createInsertSchema(musicArtists).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertMusicTrackSchema = createInsertSchema(musicTracks).omit({
+  id: true,
+  uploadDate: true,
+  plays: true,
+  likes: true,
+});
+
+export const insertMusicPlaylistSchema = createInsertSchema(musicPlaylists).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  likes: true,
+  followers: true,
+});
+
+export const insertPlaylistTrackSchema = createInsertSchema(playlistTracks).omit({
+  id: true,
+  addedAt: true,
+});
+
+export const insertMusicListeningHistorySchema = createInsertSchema(musicListeningHistory).omit({
+  id: true,
+  playedAt: true,
+});
+
+export const insertMusicUserPreferencesSchema = createInsertSchema(musicUserPreferences).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export const insertArtistNilDealSchema = createInsertSchema(artistNilDeals).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Music feature types
+export type MusicArtist = typeof musicArtists.$inferSelect;
+export type InsertMusicArtist = z.infer<typeof insertMusicArtistSchema>;
+
+export type MusicTrack = typeof musicTracks.$inferSelect;
+export type InsertMusicTrack = z.infer<typeof insertMusicTrackSchema>;
+
+export type MusicPlaylist = typeof musicPlaylists.$inferSelect;
+export type InsertMusicPlaylist = z.infer<typeof insertMusicPlaylistSchema>;
+
+export type PlaylistTrack = typeof playlistTracks.$inferSelect;
+export type InsertPlaylistTrack = z.infer<typeof insertPlaylistTrackSchema>;
+
+export type MusicListeningHistory = typeof musicListeningHistory.$inferSelect;
+export type InsertMusicListeningHistory = z.infer<typeof insertMusicListeningHistorySchema>;
+
+export type MusicUserPreference = typeof musicUserPreferences.$inferSelect;
+export type InsertMusicUserPreference = z.infer<typeof insertMusicUserPreferencesSchema>;
+
+export type ArtistNilDeal = typeof artistNilDeals.$inferSelect;
+export type InsertArtistNilDeal = z.infer<typeof insertArtistNilDealSchema>;
+
 export type UserAgreement = typeof userAgreements.$inferSelect;
 export type InsertUserAgreement = z.infer<typeof insertUserAgreementSchema>;
