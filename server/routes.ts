@@ -293,6 +293,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!req.isAuthenticated()) return res.status(401).json({ message: "Not authenticated" });
     res.json({ user: req.user });
   });
+  
+  // Middleware to check if user is authenticated
+  const isAuthenticated = (req: Request, res: Response, next: Function) => {
+    if (req.isAuthenticated()) {
+      return next();
+    }
+    return res.status(401).json({ message: "Not authenticated" });
+  };
+
+  // Middleware to check if user is an admin
+  const isAdmin = (req: Request, res: Response, next: Function) => {
+    if (req.isAuthenticated() && (req.user as any).role === "admin") {
+      return next();
+    }
+    return res.status(403).json({ message: "Not authorized" });
+  };
 
   // User agreement routes
   app.get("/api/user-agreements/:userId", isAuthenticated, async (req: Request, res: Response) => {
@@ -345,22 +361,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Authentication routes are now handled in auth.ts via setupAuth(app) and the routes above
-
-  // Middleware to check if user is authenticated
-  const isAuthenticated = (req: Request, res: Response, next: Function) => {
-    if (req.isAuthenticated()) {
-      return next();
-    }
-    return res.status(401).json({ message: "Not authenticated" });
-  };
-
-  // Middleware to check if user is an admin
-  const isAdmin = (req: Request, res: Response, next: Function) => {
-    if (req.isAuthenticated() && (req.user as any).role === "admin") {
-      return next();
-    }
-    return res.status(403).json({ message: "Not authorized" });
-  };
   
   // Routes for listing athletes and coaches for messaging
   app.get("/api/athletes/list", isAuthenticated, async (req: Request, res: Response) => {

@@ -25,7 +25,7 @@ import MessagingPage from "@/pages/messaging";
 import HomePage from "@/pages/home-page";
 import CMSPage from "@/pages/cms-page";
 import TestAuth from "@/pages/test-auth";
-import { SmsMessagingPage } from "@/pages/sms-messaging";
+import SmsMessagingPage from "@/pages/sms-messaging";
 
 // Feature page imports
 import FilmComparison from "@/pages/film-comparison";
