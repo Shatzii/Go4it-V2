@@ -296,45 +296,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Hero Section */}
-      <section className="mb-16 text-center">
-        <div className="mb-6">
-          <h1 className="text-6xl font-bold mb-3 bg-gradient-to-r from-blue-400 to-cyan-300 text-transparent bg-clip-text drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]">
-            GET VERIFIED
-          </h1>
-          <h2 className="text-3xl font-semibold text-white mb-3">
-            Athlete Evaluation System
-          </h2>
-          <p className="text-xl text-blue-400">
-            The Future of Sports Performance Analysis
-          </p>
-        </div>
-        
-        <p className="text-xl mb-8 max-w-3xl mx-auto text-gray-300">
-          Our revolutionary GAR Rating System combines physical metrics, cognitive abilities, and 
-          psychological factors to provide the most comprehensive athlete evaluation.
-        </p>
-        
-        <div className="flex justify-center gap-4">
-          {!user ? (
-            <>
-              <Button asChild size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-400 hover:opacity-90 drop-shadow-[0_0_10px_rgba(34,211,238,0.4)]">
-                <Link href="/auth">Get Started</Link>
-              </Button>
-              <Button variant="outline" size="lg" className="border-blue-500 text-blue-400 hover:text-blue-300">
-                Learn More
-              </Button>
-            </>
-          ) : (
-            <Button asChild size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-400 hover:opacity-90 drop-shadow-[0_0_10px_rgba(34,211,238,0.4)]">
-              <Link href="/dashboard">Go to Dashboard</Link>
-            </Button>
-          )}
-        </div>
-      </section>
-
-      {/* What Makes Us Different Section */}
-      <WhatMakesUsDifferent />
+      {/* Combined Hero and What Makes Us Different Section */}
+      <WhatMakesUsDifferent showHeroSection={true} showTitle={false} />
 
       {/* Featured Athletes Section */}
       <section className="mb-16">

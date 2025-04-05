@@ -2,35 +2,39 @@ import React, { useState, useRef, useEffect } from 'react';
 import { BrainCircuit, Medal, UserSearch, LineChart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
+import { useAuth } from "../contexts/auth-context";
 
 interface WhatMakesUsDifferentProps {
   showTitle?: boolean;
+  showHeroSection?: boolean;
 }
 
 const features = [
   {
     icon: BrainCircuit,
-    title: "Score Smarter.",
-    description: "Get a 0–100 GAR Score backed by real data — physical, mental, and emotional. See your star rating (1–5) light up as you grow."
+    title: "GAR Score System",
+    description: "Get a 0–100 GAR Score backed by real data — physical, mental, and emotional metrics. Our AI algorithms analyze every aspect of your performance for a comprehensive rating."
   },
   {
     icon: Medal,
-    title: "Your Full Breakdown.",
-    description: "From combine results to coachability and learning style — your GAR Analysis gives you the blueprint to train smarter and level up faster."
+    title: "Total Player Analysis",
+    description: "From combine results to coachability and learning style — your GAR Analysis gives you the complete breakdown of strengths, weaknesses, and potential through advanced AI-powered metrics."
   },
   {
     icon: UserSearch,
-    title: "Play Where You Belong.",
-    description: "Our AI maps your unique traits to your perfect sport and position. Whether you're a striker or a safety, we'll show you your best fit."
+    title: "AI Player Placement",
+    description: "Our AI maps your unique traits to your perfect sport and position using proprietary algorithms. We analyze thousands of data points to determine your optimal athletic path."
   },
   {
     icon: LineChart,
-    title: "Track Your Growth.",
-    description: "See your progress visually with performance analytics and custom dashboards. Set goals, track achievements, and celebrate every milestone."
+    title: "Performance Analytics",
+    description: "Our system uses cutting-edge AI to create a total analytics measurement framework, tracking your progress with actionable insights that help coaches, recruiters, and athletes see the complete picture."
   }
 ];
 
-export function WhatMakesUsDifferent({ showTitle = true }: WhatMakesUsDifferentProps) {
+export function WhatMakesUsDifferent({ showTitle = true, showHeroSection = true }: WhatMakesUsDifferentProps) {
+  const { user } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   
@@ -89,12 +93,34 @@ export function WhatMakesUsDifferent({ showTitle = true }: WhatMakesUsDifferentP
 
   return (
     <section className="py-16 border-t border-b border-gray-800 bg-black">
-      {showTitle && (
+      {/* Hero Section */}
+      {showHeroSection && (
+        <div className="text-center mb-14">
+          <h1 className="text-6xl font-bold mb-3 bg-gradient-to-r from-blue-400 to-cyan-300 text-transparent bg-clip-text drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]">
+            GET VERIFIED
+          </h1>
+          <h2 className="text-3xl font-semibold text-white mb-3">
+            GAR Rating System
+          </h2>
+          <p className="text-xl text-blue-400 max-w-3xl mx-auto">
+            The Ultimate AI-Powered Athlete Evaluation Framework
+          </p>
+          
+          <p className="text-xl mt-4 mb-0 max-w-3xl mx-auto text-gray-300">
+            Our revolutionary GAR Rating System uses artificial intelligence to analyze
+            physical metrics, cognitive abilities, and psychological factors for the most 
+            comprehensive athlete evaluation available.
+          </p>
+        </div>
+      )}
+
+      {/* Feature Title */}
+      {showTitle && !showHeroSection && (
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-white">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
-              What Makes Us
-            </span> Different
+              The GAR
+            </span> Rating System
           </h2>
         </div>
       )}
@@ -170,6 +196,19 @@ export function WhatMakesUsDifferent({ showTitle = true }: WhatMakesUsDifferentP
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
+        </div>
+
+        {/* CTA Button */}
+        <div className="flex justify-center mt-10">
+          {!user ? (
+            <Button asChild size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-400 hover:opacity-90 drop-shadow-[0_0_10px_rgba(34,211,238,0.4)] text-lg font-semibold">
+              <Link href="/auth">Get Verified Today</Link>
+            </Button>
+          ) : (
+            <Button asChild size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-400 hover:opacity-90 drop-shadow-[0_0_10px_rgba(34,211,238,0.4)] text-lg font-semibold">
+              <Link href="/dashboard">View My GAR Rating</Link>
+            </Button>
+          )}
         </div>
       </div>
     </section>
