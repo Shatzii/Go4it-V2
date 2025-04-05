@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, json, real, date, jsonb, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, json, real, date, jsonb, uuid, numeric } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -512,6 +512,65 @@ export const playerEquipment = pgTable("player_equipment", {
   usageStreak: integer("usage_streak").default(0),
 });
 
+/* Combine Tour Events Table */
+export const combineTourEvents = pgTable(
+  "combine_tour_events",
+  {
+    id: serial("id").primaryKey(),
+    name: text("name").notNull(),
+    description: text("description"),
+    location: text("location").notNull(),
+    address: text("address").notNull(),
+    city: text("city").notNull(),
+    state: text("state").notNull(),
+    zipCode: text("zip_code").notNull(),
+    startDate: timestamp("start_date").notNull(),
+    endDate: timestamp("end_date").notNull(),
+    registrationDeadline: timestamp("registration_deadline"),
+    maximumAttendees: integer("maximum_attendees"),
+    currentAttendees: integer("current_attendees").default(0),
+    price: numeric("price").notNull(),
+    slug: text("slug").notNull().unique(),
+    status: text("status").default("draft"), // draft, published, cancelled, completed
+    featuredImage: text("featured_image"),
+    activeNetworkId: text("active_network_id"),
+    registrationUrl: text("registration_url"),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow()
+  }
+);
+
+/* Registrations Table */
+export const registrations = pgTable(
+  "registrations",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id").references(() => users.id),
+    eventId: integer("event_id").references(() => combineTourEvents.id),
+    status: text("status").default("pending"), // pending, confirmed, cancelled, waitlisted
+    externalId: text("external_id"), // ID in Active Network
+    registeredAt: timestamp("registered_at").defaultNow(),
+    paymentStatus: text("payment_status").default("unpaid"), // unpaid, processing, paid, refunded
+    notes: text("notes"),
+    checkInTime: timestamp("check_in_time"),
+    completedAt: timestamp("completed_at")
+  }
+);
+
+/* Payments Table */
+export const payments = pgTable(
+  "payments",
+  {
+    id: serial("id").primaryKey(),
+    registrationId: integer("registration_id").references(() => registrations.id),
+    amount: numeric("amount").notNull(),
+    externalId: text("external_id"), // ID from Active Network
+    status: text("status").notNull(), // pending, completed, failed, refunded
+    processedAt: timestamp("processed_at").defaultNow(),
+    refundedAt: timestamp("refunded_at")
+  }
+);
+
 // Create insert schemas for all tables
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
 
@@ -721,3 +780,31 @@ export type InsertWeightRoomEquipment = z.infer<typeof insertWeightRoomEquipment
 
 export type PlayerEquipment = typeof playerEquipment.$inferSelect;
 export type InsertPlayerEquipment = z.infer<typeof insertPlayerEquipmentSchema>;
+
+// Active Network payment integration types
+export const insertCombineTourEventSchema = createInsertSchema(combineTourEvents).omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true, 
+  currentAttendees: true 
+});
+export const insertRegistrationSchema = createInsertSchema(registrations).omit({ 
+  id: true, 
+  registeredAt: true,
+  checkInTime: true,
+  completedAt: true
+});
+export const insertPaymentSchema = createInsertSchema(payments).omit({ 
+  id: true, 
+  processedAt: true,
+  refundedAt: true
+});
+
+export type CombineTourEvent = typeof combineTourEvents.$inferSelect;
+export type InsertCombineTourEvent = z.infer<typeof insertCombineTourEventSchema>;
+
+export type Registration = typeof registrations.$inferSelect;
+export type InsertRegistration = z.infer<typeof insertRegistrationSchema>;
+
+export type Payment = typeof payments.$inferSelect;
+export type InsertPayment = z.infer<typeof insertPaymentSchema>;
