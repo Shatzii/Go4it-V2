@@ -5,8 +5,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Star, ChevronRight, Clock, Trophy, Calendar, Video, Award, CheckCircle } from "lucide-react";
+import { Star, ChevronRight, Clock, Trophy, Calendar, Video, Award, CheckCircle, MapPin } from "lucide-react";
 import { useAuth } from "../contexts/auth-context";
+import { motion } from "framer-motion";
 
 interface BlogPost {
   id: number;
@@ -444,6 +445,200 @@ export default function HomePage() {
               </p>
             </CardContent>
           </Card>
+        </div>
+      </section>
+
+      {/* Get Verified Combine Tour 2025 Section */}
+      <section className="mb-16">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-bold text-white">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
+              Get Verified
+            </span> Combine Tour 2025
+          </h2>
+          <Button asChild variant="ghost" className="flex items-center gap-1 text-blue-400 hover:text-blue-300">
+            <Link href="/combine-tour">Learn More <ChevronRight className="h-4 w-4" /></Link>
+          </Button>
+        </div>
+
+        <div className="relative bg-gray-900/50 p-6 rounded-xl border border-blue-900/50 overflow-hidden mb-6">
+          <div className="absolute inset-0 bg-[url('/images/combine-tour-map.png')] bg-cover bg-center opacity-30 mix-blend-lighten"></div>
+          
+          <div className="relative z-10">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-white mb-4">Experience the Future of Athletic Assessment</h3>
+              <p className="text-gray-300 max-w-3xl mx-auto">
+                Our revolutionary combine tour is coming to major cities across the globe. Get your athletic abilities assessed with our AI-powered GAR Rating System and showcase your talents to recruiters worldwide.
+              </p>
+            </div>
+
+            <div className="relative">
+              {/* Left Shadow Overlay */}
+              <div className="absolute left-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-r from-gray-950 to-transparent pointer-events-none"></div>
+              
+              {/* Right Shadow Overlay */}
+              <div className="absolute right-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-gray-950 to-transparent pointer-events-none"></div>
+
+              {/* City Cards Scrolling Menu */}
+              <div className="overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4">
+                <div className="flex gap-5 min-w-max">
+                  {/* Atlanta Card */}
+                  <div className="flex-shrink-0 w-[280px]">
+                    <Card className="border border-blue-900/50 bg-gradient-to-b from-gray-900 to-black overflow-hidden shadow-[0_0_20px_rgba(34,211,238,0.2)] transform transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_25px_rgba(34,211,238,0.3)]">
+                      <div className="p-5 border-b border-blue-900/30 relative">
+                        <div className="absolute top-3 right-3 bg-blue-500/90 text-white text-xs font-bold rounded-full px-2 py-1 shadow-[0_0_8px_rgba(34,211,238,0.4)]">
+                          25 Spots Left
+                        </div>
+                        <h3 className="text-3xl font-bold text-cyan-400 drop-shadow-[0_0_4px_rgba(34,211,238,0.7)] mb-1 flex items-center">
+                          <MapPin className="h-6 w-6 mr-2 text-cyan-400" strokeWidth={2.5} />
+                          ATLANTA
+                        </h3>
+                        <p className="text-gray-300">Mercedes-Benz Stadium</p>
+                        <div className="text-sm text-gray-400 mt-1">August 7-8, 2025</div>
+                      </div>
+                      <div className="p-5">
+                        <div className="flex justify-between text-sm mb-4">
+                          <div>
+                            <div className="text-gray-400">Registration Fee</div>
+                            <div className="text-white font-bold">$249</div>
+                          </div>
+                          <div>
+                            <div className="text-gray-400">Capacity</div>
+                            <div className="text-white font-bold">150 Athletes</div>
+                          </div>
+                          <div>
+                            <div className="text-gray-400">Status</div>
+                            <div className="text-green-400 font-bold">Open</div>
+                          </div>
+                        </div>
+                        <Button className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold shadow-[0_0_15px_rgba(34,211,238,0.4)]">
+                          Register Now
+                        </Button>
+                      </div>
+                    </Card>
+                  </div>
+                  
+                  {/* Vienna Card */}
+                  <div className="flex-shrink-0 w-[280px]">
+                    <Card className="border border-blue-900/50 bg-gradient-to-b from-gray-900 to-black overflow-hidden shadow-[0_0_20px_rgba(34,211,238,0.2)] transform transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_25px_rgba(34,211,238,0.3)]">
+                      <div className="p-5 border-b border-blue-900/30 relative">
+                        <div className="absolute top-3 right-3 bg-blue-500/90 text-white text-xs font-bold rounded-full px-2 py-1 shadow-[0_0_8px_rgba(34,211,238,0.4)]">
+                          10 Spots Left
+                        </div>
+                        <h3 className="text-3xl font-bold text-cyan-400 drop-shadow-[0_0_4px_rgba(34,211,238,0.7)] mb-1 flex items-center">
+                          <MapPin className="h-6 w-6 mr-2 text-cyan-400" strokeWidth={2.5} />
+                          VIENNA
+                        </h3>
+                        <p className="text-gray-300">Ernst-Happel-Stadion</p>
+                        <div className="text-sm text-gray-400 mt-1">September 12-13, 2025</div>
+                      </div>
+                      <div className="p-5">
+                        <div className="flex justify-between text-sm mb-4">
+                          <div>
+                            <div className="text-gray-400">Registration Fee</div>
+                            <div className="text-white font-bold">€225</div>
+                          </div>
+                          <div>
+                            <div className="text-gray-400">Capacity</div>
+                            <div className="text-white font-bold">120 Athletes</div>
+                          </div>
+                          <div>
+                            <div className="text-gray-400">Status</div>
+                            <div className="text-green-400 font-bold">Open</div>
+                          </div>
+                        </div>
+                        <Button className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold shadow-[0_0_15px_rgba(34,211,238,0.4)]">
+                          Register Now
+                        </Button>
+                      </div>
+                    </Card>
+                  </div>
+                  
+                  {/* Paris Card */}
+                  <div className="flex-shrink-0 w-[280px]">
+                    <Card className="border border-blue-900/50 bg-gradient-to-b from-gray-900 to-black overflow-hidden shadow-[0_0_20px_rgba(34,211,238,0.2)] transform transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_25px_rgba(34,211,238,0.3)]">
+                      <div className="p-5 border-b border-blue-900/30 relative">
+                        <div className="absolute top-3 right-3 bg-amber-500/90 text-white text-xs font-bold rounded-full px-2 py-1 shadow-[0_0_8px_rgba(251,191,36,0.4)]">
+                          Almost Full
+                        </div>
+                        <h3 className="text-3xl font-bold text-cyan-400 drop-shadow-[0_0_4px_rgba(34,211,238,0.7)] mb-1 flex items-center">
+                          <MapPin className="h-6 w-6 mr-2 text-cyan-400" strokeWidth={2.5} />
+                          PARIS
+                        </h3>
+                        <p className="text-gray-300">Stade de France</p>
+                        <div className="text-sm text-gray-400 mt-1">October 15-16, 2025</div>
+                      </div>
+                      <div className="p-5">
+                        <div className="flex justify-between text-sm mb-4">
+                          <div>
+                            <div className="text-gray-400">Registration Fee</div>
+                            <div className="text-white font-bold">€245</div>
+                          </div>
+                          <div>
+                            <div className="text-gray-400">Capacity</div>
+                            <div className="text-white font-bold">140 Athletes</div>
+                          </div>
+                          <div>
+                            <div className="text-gray-400">Status</div>
+                            <div className="text-amber-400 font-bold">Limited</div>
+                          </div>
+                        </div>
+                        <Button className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold shadow-[0_0_15px_rgba(34,211,238,0.4)]">
+                          Register Now
+                        </Button>
+                      </div>
+                    </Card>
+                  </div>
+                  
+                  {/* Mexico City Card */}
+                  <div className="flex-shrink-0 w-[280px]">
+                    <Card className="border border-blue-900/50 bg-gradient-to-b from-gray-900 to-black overflow-hidden shadow-[0_0_20px_rgba(34,211,238,0.2)] transform transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_25px_rgba(34,211,238,0.3)]">
+                      <div className="p-5 border-b border-blue-900/30 relative">
+                        <div className="absolute top-3 right-3 bg-blue-500/90 text-white text-xs font-bold rounded-full px-2 py-1 shadow-[0_0_8px_rgba(34,211,238,0.4)]">
+                          40 Spots Left
+                        </div>
+                        <h3 className="text-3xl font-bold text-cyan-400 drop-shadow-[0_0_4px_rgba(34,211,238,0.7)] mb-1 flex items-center">
+                          <MapPin className="h-6 w-6 mr-2 text-cyan-400" strokeWidth={2.5} />
+                          MEXICO CITY
+                        </h3>
+                        <p className="text-gray-300">Estadio Azteca</p>
+                        <div className="text-sm text-gray-400 mt-1">November 3-4, 2025</div>
+                      </div>
+                      <div className="p-5">
+                        <div className="flex justify-between text-sm mb-4">
+                          <div>
+                            <div className="text-gray-400">Registration Fee</div>
+                            <div className="text-white font-bold">$210</div>
+                          </div>
+                          <div>
+                            <div className="text-gray-400">Capacity</div>
+                            <div className="text-white font-bold">130 Athletes</div>
+                          </div>
+                          <div>
+                            <div className="text-gray-400">Status</div>
+                            <div className="text-green-400 font-bold">Open</div>
+                          </div>
+                        </div>
+                        <Button className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold shadow-[0_0_15px_rgba(34,211,238,0.4)]">
+                          Register Now
+                        </Button>
+                      </div>
+                    </Card>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Navigation Dots */}
+              <div className="flex justify-center mt-4 space-x-2">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div 
+                    key={i} 
+                    className={`h-2 w-2 rounded-full ${i === 0 ? 'bg-blue-400' : 'bg-gray-700'} transition-all duration-300`}
+                  ></div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
