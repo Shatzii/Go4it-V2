@@ -1814,6 +1814,83 @@ export class DatabaseStorage implements IStorage {
     }
   }
   
+  // Highlight Generator Config operations
+  async getHighlightGeneratorConfigs(): Promise<HighlightGeneratorConfig[]> {
+    try {
+      return await db.select().from(highlightGeneratorConfigs);
+    } catch (error) {
+      console.error("Error in getHighlightGeneratorConfigs:", error);
+      throw error;
+    }
+  }
+  
+  async getHighlightGeneratorConfigsBySport(sportType: string): Promise<HighlightGeneratorConfig[]> {
+    try {
+      return await db.select().from(highlightGeneratorConfigs)
+        .where(eq(highlightGeneratorConfigs.sportType, sportType));
+    } catch (error) {
+      console.error(`Error in getHighlightGeneratorConfigsBySport for sport ${sportType}:`, error);
+      throw error;
+    }
+  }
+  
+  async getHighlightGeneratorConfig(id: number): Promise<HighlightGeneratorConfig | undefined> {
+    try {
+      const [config] = await db.select().from(highlightGeneratorConfigs)
+        .where(eq(highlightGeneratorConfigs.id, id));
+      return config;
+    } catch (error) {
+      console.error(`Error in getHighlightGeneratorConfig with id ${id}:`, error);
+      throw error;
+    }
+  }
+  
+  async createHighlightGeneratorConfig(config: InsertHighlightGeneratorConfig): Promise<HighlightGeneratorConfig> {
+    try {
+      const [newConfig] = await db.insert(highlightGeneratorConfigs)
+        .values(config)
+        .returning();
+      return newConfig;
+    } catch (error) {
+      console.error("Error in createHighlightGeneratorConfig:", error);
+      throw error;
+    }
+  }
+  
+  async updateHighlightGeneratorConfig(id: number, data: Partial<HighlightGeneratorConfig>): Promise<HighlightGeneratorConfig | undefined> {
+    try {
+      const [updatedConfig] = await db.update(highlightGeneratorConfigs)
+        .set(data)
+        .where(eq(highlightGeneratorConfigs.id, id))
+        .returning();
+      return updatedConfig;
+    } catch (error) {
+      console.error(`Error in updateHighlightGeneratorConfig with id ${id}:`, error);
+      throw error;
+    }
+  }
+  
+  async deleteHighlightGeneratorConfig(id: number): Promise<boolean> {
+    try {
+      const result = await db.delete(highlightGeneratorConfigs)
+        .where(eq(highlightGeneratorConfigs.id, id));
+      return result.count > 0;
+    } catch (error) {
+      console.error(`Error in deleteHighlightGeneratorConfig with id ${id}:`, error);
+      throw error;
+    }
+  }
+  
+  async getActiveHighlightGeneratorConfigs(): Promise<HighlightGeneratorConfig[]> {
+    try {
+      return await db.select().from(highlightGeneratorConfigs)
+        .where(eq(highlightGeneratorConfigs.active, true));
+    } catch (error) {
+      console.error("Error in getActiveHighlightGeneratorConfigs:", error);
+      throw error;
+    }
+  }
+  
   // Workout Verification operations
   async getWorkoutVerifications(userId: number): Promise<WorkoutVerification[]> {
     try {

@@ -380,6 +380,15 @@ export interface IStorage {
     userId: number;
     aiGenerated?: boolean;
   }): Promise<VideoHighlight>;
+  
+  // Highlight Generator Config operations
+  getHighlightGeneratorConfigs(): Promise<HighlightGeneratorConfig[]>;
+  getHighlightGeneratorConfigsBySport(sportType: string): Promise<HighlightGeneratorConfig[]>;
+  getHighlightGeneratorConfig(id: number): Promise<HighlightGeneratorConfig | undefined>;
+  createHighlightGeneratorConfig(config: InsertHighlightGeneratorConfig): Promise<HighlightGeneratorConfig>;
+  updateHighlightGeneratorConfig(id: number, data: Partial<HighlightGeneratorConfig>): Promise<HighlightGeneratorConfig | undefined>;
+  deleteHighlightGeneratorConfig(id: number): Promise<boolean>;
+  getActiveHighlightGeneratorConfigs(): Promise<HighlightGeneratorConfig[]>;
 }
 
 import createMemoryStore from "memorystore";
@@ -2497,6 +2506,10 @@ export class MemStorage implements IStorage {
   // Video Highlight operations
   private videoHighlights = new Map<number, VideoHighlight>();
   private currentVideoHighlightId = 1;
+  
+  // Highlight Generator Config operations
+  private highlightGeneratorConfigs = new Map<number, HighlightGeneratorConfig>();
+  private currentHighlightGeneratorConfigId = 1;
 
   async getVideoHighlights(videoId: number): Promise<VideoHighlight[]> {
     const highlights: VideoHighlight[] = [];
@@ -2591,6 +2604,64 @@ export class MemStorage implements IStorage {
     
     this.videoHighlights.set(newHighlight.id, newHighlight);
     return newHighlight;
+  }
+
+  // Highlight Generator Config operations
+  async getHighlightGeneratorConfigs(): Promise<HighlightGeneratorConfig[]> {
+    return Array.from(this.highlightGeneratorConfigs.values());
+  }
+
+  async getHighlightGeneratorConfigsBySport(sportType: string): Promise<HighlightGeneratorConfig[]> {
+    const configs: HighlightGeneratorConfig[] = [];
+    for (const config of this.highlightGeneratorConfigs.values()) {
+      if (config.sportType === sportType) {
+        configs.push(config);
+      }
+    }
+    return configs;
+  }
+
+  async getHighlightGeneratorConfig(id: number): Promise<HighlightGeneratorConfig | undefined> {
+    return this.highlightGeneratorConfigs.get(id);
+  }
+
+  async createHighlightGeneratorConfig(config: InsertHighlightGeneratorConfig): Promise<HighlightGeneratorConfig> {
+    const id = this.currentHighlightGeneratorConfigId++;
+    const now = new Date();
+    const newConfig: HighlightGeneratorConfig = {
+      ...config,
+      id,
+      createdAt: now,
+      lastRun: null
+    };
+    this.highlightGeneratorConfigs.set(id, newConfig);
+    return newConfig;
+  }
+
+  async updateHighlightGeneratorConfig(id: number, data: Partial<HighlightGeneratorConfig>): Promise<HighlightGeneratorConfig | undefined> {
+    const config = this.highlightGeneratorConfigs.get(id);
+    if (!config) return undefined;
+    
+    const updatedConfig = {
+      ...config,
+      ...data
+    };
+    this.highlightGeneratorConfigs.set(id, updatedConfig);
+    return updatedConfig;
+  }
+
+  async deleteHighlightGeneratorConfig(id: number): Promise<boolean> {
+    return this.highlightGeneratorConfigs.delete(id);
+  }
+
+  async getActiveHighlightGeneratorConfigs(): Promise<HighlightGeneratorConfig[]> {
+    const configs: HighlightGeneratorConfig[] = [];
+    for (const config of this.highlightGeneratorConfigs.values()) {
+      if (config.active) {
+        configs.push(config);
+      }
+    }
+    return configs;
   }
 
   // API Key operations
