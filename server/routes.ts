@@ -1243,6 +1243,891 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Film Comparison Feature API Routes
+  app.get("/api/film-comparisons", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const comparisons = await storage.getFilmComparisons(user.id);
+      return res.json(comparisons);
+    } catch (error) {
+      console.error("Error fetching film comparisons:", error);
+      return res.status(500).json({ message: "Error fetching film comparisons" });
+    }
+  });
+  
+  app.get("/api/film-comparisons/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const comparisonId = parseInt(req.params.id);
+      const comparison = await storage.getFilmComparison(comparisonId);
+      
+      if (!comparison) {
+        return res.status(404).json({ message: "Film comparison not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow access to own comparisons unless public or admin
+      if (comparison.userId !== user.id && !comparison.isPublic && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to view this comparison" });
+      }
+      
+      // Get videos associated with this comparison
+      const videos = await storage.getComparisonVideos(comparisonId);
+      
+      // Get analysis if it exists
+      const analysis = await storage.getComparisonAnalysis(comparisonId);
+      
+      return res.json({
+        comparison,
+        videos,
+        analysis
+      });
+    } catch (error) {
+      console.error("Error fetching film comparison:", error);
+      return res.status(500).json({ message: "Error fetching film comparison" });
+    }
+  });
+  
+  app.post("/api/film-comparisons", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      
+      const comparisonData = {
+        ...req.body,
+        userId: user.id,
+      };
+      
+      const comparison = await storage.createFilmComparison(comparisonData);
+      return res.status(201).json(comparison);
+    } catch (error) {
+      console.error("Error creating film comparison:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+  
+  app.put("/api/film-comparisons/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const comparisonId = parseInt(req.params.id);
+      const comparison = await storage.getFilmComparison(comparisonId);
+      
+      if (!comparison) {
+        return res.status(404).json({ message: "Film comparison not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow updating own comparisons unless admin
+      if (comparison.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to update this comparison" });
+      }
+      
+      const updatedComparison = await storage.updateFilmComparison(comparisonId, req.body);
+      return res.json(updatedComparison);
+    } catch (error) {
+      console.error("Error updating film comparison:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+  
+  app.delete("/api/film-comparisons/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const comparisonId = parseInt(req.params.id);
+      const comparison = await storage.getFilmComparison(comparisonId);
+      
+      if (!comparison) {
+        return res.status(404).json({ message: "Film comparison not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow deleting own comparisons unless admin
+      if (comparison.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to delete this comparison" });
+      }
+      
+      const success = await storage.deleteFilmComparison(comparisonId);
+      
+      if (success) {
+        return res.json({ message: "Film comparison deleted successfully" });
+      } else {
+        return res.status(500).json({ message: "Error deleting film comparison" });
+      }
+    } catch (error) {
+      console.error("Error deleting film comparison:", error);
+      return res.status(500).json({ message: "Error deleting film comparison" });
+    }
+  });
+  
+  // Comparison videos endpoints
+  app.post("/api/film-comparisons/:id/videos", isAuthenticated, upload.single("video"), async (req: Request, res: Response) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No video file uploaded" });
+      }
+      
+      const comparisonId = parseInt(req.params.id);
+      const comparison = await storage.getFilmComparison(comparisonId);
+      
+      if (!comparison) {
+        return res.status(404).json({ message: "Film comparison not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow adding videos to own comparisons unless admin
+      if (comparison.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to add videos to this comparison" });
+      }
+      
+      // Create a more permanent location for the file
+      const uploadsDir = path.join(process.cwd(), "uploads", "comparisons");
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+      }
+      
+      const filename = `${Date.now()}-${path.basename(req.file.originalname)}`;
+      const filePath = path.join(uploadsDir, filename);
+      
+      fs.renameSync(req.file.path, filePath);
+      
+      // Create comparison video entry
+      const videoData = {
+        comparisonId,
+        title: req.body.title || "Untitled Video",
+        description: req.body.description || "",
+        filePath: `/uploads/comparisons/${filename}`,
+        videoType: req.body.videoType || "reference",
+        athlete: req.body.athlete || "",
+        order: parseInt(req.body.order) || 1,
+      };
+      
+      const video = await storage.createComparisonVideo(videoData);
+      return res.status(201).json(video);
+    } catch (error) {
+      console.error("Error adding comparison video:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+  
+  app.delete("/api/comparison-videos/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const videoId = parseInt(req.params.id);
+      const video = await storage.getComparisonVideo(videoId);
+      
+      if (!video) {
+        return res.status(404).json({ message: "Comparison video not found" });
+      }
+      
+      const comparison = await storage.getFilmComparison(video.comparisonId);
+      
+      if (!comparison) {
+        return res.status(404).json({ message: "Film comparison not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow deleting videos from own comparisons unless admin
+      if (comparison.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to delete videos from this comparison" });
+      }
+      
+      const success = await storage.deleteComparisonVideo(videoId);
+      
+      if (success) {
+        return res.json({ message: "Comparison video deleted successfully" });
+      } else {
+        return res.status(500).json({ message: "Error deleting comparison video" });
+      }
+    } catch (error) {
+      console.error("Error deleting comparison video:", error);
+      return res.status(500).json({ message: "Error deleting comparison video" });
+    }
+  });
+  
+  // Comparison analysis endpoints
+  app.post("/api/film-comparisons/:id/analyze", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const comparisonId = parseInt(req.params.id);
+      const comparison = await storage.getFilmComparison(comparisonId);
+      
+      if (!comparison) {
+        return res.status(404).json({ message: "Film comparison not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow analysis of own comparisons unless admin
+      if (comparison.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to analyze this comparison" });
+      }
+      
+      const videos = await storage.getComparisonVideos(comparisonId);
+      
+      if (videos.length < 2) {
+        return res.status(400).json({ message: "At least two videos are required for comparison analysis" });
+      }
+      
+      // In a real implementation, we would perform actual video analysis here
+      // For now, we'll create a mock analysis
+      const mockAnalysis = {
+        comparisonId,
+        findings: "Both videos show similar technique, with some differences in posture and follow-through.",
+        improvementAreas: ["Body positioning", "Follow-through", "Timing"],
+        overallScore: 78,
+        techniqueSimilarity: 0.82,
+        recommendations: "Focus on improving follow-through and timing to better match the reference example."
+      };
+      
+      // Check if analysis already exists
+      const existingAnalysis = await storage.getComparisonAnalysis(comparisonId);
+      
+      let analysis;
+      if (existingAnalysis) {
+        // Update existing analysis
+        analysis = await storage.updateComparisonAnalysis(existingAnalysis.id, mockAnalysis);
+      } else {
+        // Create new analysis
+        analysis = await storage.createComparisonAnalysis(mockAnalysis);
+      }
+      
+      // Update comparison status to completed
+      await storage.updateFilmComparison(comparisonId, { status: "completed" });
+      
+      return res.json(analysis);
+    } catch (error) {
+      console.error("Error analyzing film comparison:", error);
+      return res.status(500).json({ message: "Error analyzing film comparison" });
+    }
+  });
+  
+  // NextUp Spotlight Feature API Routes
+  app.get("/api/spotlight-profiles", async (req: Request, res: Response) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+      const offset = req.query.offset ? parseInt(req.query.offset as string) : undefined;
+      const category = req.query.category as string | undefined;
+      
+      let profiles;
+      if (category) {
+        profiles = await storage.getSpotlightProfilesByCategory(category, limit);
+      } else {
+        profiles = await storage.getSpotlightProfiles(limit, offset);
+      }
+      
+      return res.json(profiles);
+    } catch (error) {
+      console.error("Error fetching spotlight profiles:", error);
+      return res.status(500).json({ message: "Error fetching spotlight profiles" });
+    }
+  });
+  
+  app.get("/api/spotlight-profiles/featured", async (req: Request, res: Response) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+      const profiles = await storage.getFeaturedSpotlightProfiles(limit);
+      return res.json(profiles);
+    } catch (error) {
+      console.error("Error fetching featured spotlight profiles:", error);
+      return res.status(500).json({ message: "Error fetching featured spotlight profiles" });
+    }
+  });
+  
+  app.get("/api/spotlight-profiles/:id", async (req: Request, res: Response) => {
+    try {
+      const profileId = parseInt(req.params.id);
+      const profile = await storage.getSpotlightProfile(profileId);
+      
+      if (!profile) {
+        return res.status(404).json({ message: "Spotlight profile not found" });
+      }
+      
+      // Increment view count
+      await storage.incrementSpotlightViews(profileId);
+      
+      // Get user details
+      const user = await storage.getUser(profile.userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "Profile user not found" });
+      }
+      
+      return res.json({
+        ...profile,
+        user: {
+          id: user.id,
+          username: user.username,
+          name: user.name,
+          profileImage: user.profileImage
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching spotlight profile:", error);
+      return res.status(500).json({ message: "Error fetching spotlight profile" });
+    }
+  });
+  
+  app.post("/api/spotlight-profiles/:id/like", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const profileId = parseInt(req.params.id);
+      const profile = await storage.getSpotlightProfile(profileId);
+      
+      if (!profile) {
+        return res.status(404).json({ message: "Spotlight profile not found" });
+      }
+      
+      const updatedProfile = await storage.likeSpotlightProfile(profileId);
+      return res.json(updatedProfile);
+    } catch (error) {
+      console.error("Error liking spotlight profile:", error);
+      return res.status(500).json({ message: "Error liking spotlight profile" });
+    }
+  });
+  
+  app.post("/api/spotlight-profiles", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      
+      // Check if user already has a spotlight profile
+      const existingProfile = await storage.getSpotlightProfileByUserId(user.id);
+      
+      if (existingProfile) {
+        return res.status(400).json({ message: "User already has a spotlight profile" });
+      }
+      
+      const profileData = {
+        ...req.body,
+        userId: user.id,
+      };
+      
+      const profile = await storage.createSpotlightProfile(profileData);
+      return res.status(201).json(profile);
+    } catch (error) {
+      console.error("Error creating spotlight profile:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+  
+  app.put("/api/spotlight-profiles/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const profileId = parseInt(req.params.id);
+      const profile = await storage.getSpotlightProfile(profileId);
+      
+      if (!profile) {
+        return res.status(404).json({ message: "Spotlight profile not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow updating own profile unless admin
+      if (profile.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to update this profile" });
+      }
+      
+      const updatedProfile = await storage.updateSpotlightProfile(profileId, req.body);
+      return res.json(updatedProfile);
+    } catch (error) {
+      console.error("Error updating spotlight profile:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+  
+  app.delete("/api/spotlight-profiles/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const profileId = parseInt(req.params.id);
+      const profile = await storage.getSpotlightProfile(profileId);
+      
+      if (!profile) {
+        return res.status(404).json({ message: "Spotlight profile not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow deleting own profile unless admin
+      if (profile.userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to delete this profile" });
+      }
+      
+      const success = await storage.deleteSpotlightProfile(profileId);
+      
+      if (success) {
+        return res.json({ message: "Spotlight profile deleted successfully" });
+      } else {
+        return res.status(500).json({ message: "Error deleting spotlight profile" });
+      }
+    } catch (error) {
+      console.error("Error deleting spotlight profile:", error);
+      return res.status(500).json({ message: "Error deleting spotlight profile" });
+    }
+  });
+  
+  // MyPlayer XP System API Routes
+  app.get("/api/player/progress", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const progress = await storage.getPlayerProgress(user.id);
+      
+      if (!progress) {
+        // Create initial progress if none exists
+        const newProgress = await storage.createPlayerProgress({
+          userId: user.id,
+          level: 1,
+          totalXp: 0,
+          currentLevelXp: 0,
+          nextLevelXp: 100,
+          streak: 0
+        });
+        return res.json(newProgress);
+      }
+      
+      return res.json(progress);
+    } catch (error) {
+      console.error("Error fetching player progress:", error);
+      return res.status(500).json({ message: "Error fetching player progress" });
+    }
+  });
+  
+  app.get("/api/player/xp/transactions", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+      const transactions = await storage.getXpTransactions(user.id, limit);
+      return res.json(transactions);
+    } catch (error) {
+      console.error("Error fetching XP transactions:", error);
+      return res.status(500).json({ message: "Error fetching XP transactions" });
+    }
+  });
+  
+  app.post("/api/player/xp/award", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      
+      // Only admins or coaches can award XP
+      if (user.role !== "admin" && user.role !== "coach") {
+        return res.status(403).json({ message: "Not authorized to award XP" });
+      }
+      
+      const { userId, amount, type, description, sourceId } = req.body;
+      
+      if (!userId || !amount || !type || !description) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+      
+      const result = await storage.addXpToPlayer(userId, amount, type, description, sourceId);
+      return res.json(result);
+    } catch (error) {
+      console.error("Error awarding XP:", error);
+      return res.status(500).json({ message: "Error awarding XP" });
+    }
+  });
+  
+  app.post("/api/player/xp/daily-login", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      
+      // Check if already got XP for today
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const recentTransactions = await storage.getXpTransactions(user.id, 10);
+      const alreadyAwarded = recentTransactions.some(tx => {
+        const txDate = new Date(tx.awarded);
+        txDate.setHours(0, 0, 0, 0);
+        return txDate.getTime() === today.getTime() && tx.type === "daily_login";
+      });
+      
+      if (alreadyAwarded) {
+        return res.status(400).json({ message: "Already received daily login XP today" });
+      }
+      
+      // Award XP for daily login
+      const result = await storage.addXpToPlayer(
+        user.id,
+        25,
+        "daily_login",
+        "Daily login bonus"
+      );
+      
+      return res.json(result);
+    } catch (error) {
+      console.error("Error processing daily login XP:", error);
+      return res.status(500).json({ message: "Error processing daily login XP" });
+    }
+  });
+  
+  app.get("/api/player/badges", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const category = req.query.category as string | undefined;
+      
+      let badges;
+      if (category) {
+        badges = await storage.getPlayerBadgesByCategory(user.id, category);
+      } else {
+        badges = await storage.getPlayerBadges(user.id);
+      }
+      
+      return res.json(badges);
+    } catch (error) {
+      console.error("Error fetching player badges:", error);
+      return res.status(500).json({ message: "Error fetching player badges" });
+    }
+  });
+  
+  app.post("/api/player/badges", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      
+      // Only admins or coaches can award badges directly
+      if (user.role !== "admin" && user.role !== "coach") {
+        return res.status(403).json({ message: "Not authorized to award badges" });
+      }
+      
+      const badgeData = {
+        ...req.body,
+        userId: req.body.userId || user.id,
+      };
+      
+      const badge = await storage.createPlayerBadge(badgeData);
+      
+      // Award XP for earning a badge
+      await storage.addXpToPlayer(
+        badgeData.userId,
+        50,
+        "badge_earned",
+        `Earned ${badgeData.name} badge`,
+        String(badge.id)
+      );
+      
+      return res.status(201).json(badge);
+    } catch (error) {
+      console.error("Error creating player badge:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+  
+  // MyPlayer Workout Verification API Routes
+  app.get("/api/workout-verifications", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const verifications = await storage.getWorkoutVerifications(user.id);
+      return res.json(verifications);
+    } catch (error) {
+      console.error("Error fetching workout verifications:", error);
+      return res.status(500).json({ message: "Error fetching workout verifications" });
+    }
+  });
+  
+  app.get("/api/workout-verifications/pending", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      
+      // Only coaches and admins can view all pending verifications
+      if (user.role !== "coach" && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to view all pending verifications" });
+      }
+      
+      const verifications = await storage.getPendingWorkoutVerifications();
+      return res.json(verifications);
+    } catch (error) {
+      console.error("Error fetching pending workout verifications:", error);
+      return res.status(500).json({ message: "Error fetching pending workout verifications" });
+    }
+  });
+  
+  app.get("/api/workout-verifications/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const verificationId = parseInt(req.params.id);
+      const verification = await storage.getWorkoutVerification(verificationId);
+      
+      if (!verification) {
+        return res.status(404).json({ message: "Workout verification not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow access to own verifications or coach/admin access
+      if (verification.userId !== user.id && user.role !== "coach" && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to view this verification" });
+      }
+      
+      // Get checkpoints associated with this verification
+      const checkpoints = await storage.getWorkoutVerificationCheckpoints(verificationId);
+      
+      return res.json({
+        verification,
+        checkpoints
+      });
+    } catch (error) {
+      console.error("Error fetching workout verification:", error);
+      return res.status(500).json({ message: "Error fetching workout verification" });
+    }
+  });
+  
+  app.post("/api/workout-verifications", isAuthenticated, upload.array("media", 10), async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      
+      // Process uploaded files
+      const files = req.files as Express.Multer.File[];
+      const mediaUrls: string[] = [];
+      
+      if (files && files.length > 0) {
+        // Create a more permanent location for the files
+        const uploadsDir = path.join(process.cwd(), "uploads", "verifications");
+        if (!fs.existsSync(uploadsDir)) {
+          fs.mkdirSync(uploadsDir, { recursive: true });
+        }
+        
+        // Process each file
+        for (const file of files) {
+          const filename = `${Date.now()}-${path.basename(file.originalname)}`;
+          const filePath = path.join(uploadsDir, filename);
+          
+          fs.renameSync(file.path, filePath);
+          mediaUrls.push(`/uploads/verifications/${filename}`);
+        }
+      }
+      
+      // Create verification
+      const verificationData = {
+        userId: user.id,
+        workoutTitle: req.body.workoutTitle,
+        workoutType: req.body.workoutType,
+        description: req.body.description,
+        duration: parseInt(req.body.duration) || 0,
+        status: "pending",
+        mediaUrls: mediaUrls,
+      };
+      
+      const verification = await storage.createWorkoutVerification(verificationData);
+      
+      // Create checkpoints if provided
+      if (req.body.checkpoints) {
+        let checkpoints;
+        try {
+          checkpoints = JSON.parse(req.body.checkpoints);
+        } catch (e) {
+          return res.status(400).json({ message: "Invalid checkpoints data format" });
+        }
+        
+        if (Array.isArray(checkpoints)) {
+          for (const checkpoint of checkpoints) {
+            await storage.createWorkoutVerificationCheckpoint({
+              verificationId: verification.id,
+              exerciseName: checkpoint.exerciseName,
+              isCompleted: checkpoint.isCompleted || false,
+              completedAmount: checkpoint.completedAmount,
+              targetAmount: checkpoint.targetAmount,
+              feedback: checkpoint.feedback || "",
+              mediaProof: checkpoint.mediaProof || "",
+              checkpointOrder: checkpoint.checkpointOrder || 0,
+            });
+          }
+        }
+      }
+      
+      return res.status(201).json(verification);
+    } catch (error) {
+      console.error("Error creating workout verification:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+  
+  app.post("/api/workout-verifications/:id/verify", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const verificationId = parseInt(req.params.id);
+      const verification = await storage.getWorkoutVerification(verificationId);
+      
+      if (!verification) {
+        return res.status(404).json({ message: "Workout verification not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only coaches and admins can verify workouts
+      if (user.role !== "coach" && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to verify workouts" });
+      }
+      
+      const { status, notes } = req.body;
+      
+      if (!status || (status !== "approved" && status !== "rejected")) {
+        return res.status(400).json({ message: "Invalid status value" });
+      }
+      
+      const updatedVerification = await storage.verifyWorkout(
+        verificationId,
+        user.id,
+        status,
+        notes
+      );
+      
+      return res.json(updatedVerification);
+    } catch (error) {
+      console.error("Error verifying workout:", error);
+      return res.status(500).json({ message: "Error verifying workout" });
+    }
+  });
+  
+  // MyPlayer UI Weight Room API Routes
+  app.get("/api/weight-room/equipment", async (req: Request, res: Response) => {
+    try {
+      const category = req.query.category as string | undefined;
+      const equipment = await storage.getWeightRoomEquipment(category);
+      return res.json(equipment);
+    } catch (error) {
+      console.error("Error fetching weight room equipment:", error);
+      return res.status(500).json({ message: "Error fetching weight room equipment" });
+    }
+  });
+  
+  app.get("/api/weight-room/equipment/:id", async (req: Request, res: Response) => {
+    try {
+      const equipmentId = parseInt(req.params.id);
+      const equipment = await storage.getWeightRoomEquipmentById(equipmentId);
+      
+      if (!equipment) {
+        return res.status(404).json({ message: "Equipment not found" });
+      }
+      
+      return res.json(equipment);
+    } catch (error) {
+      console.error("Error fetching weight room equipment:", error);
+      return res.status(500).json({ message: "Error fetching weight room equipment" });
+    }
+  });
+  
+  app.get("/api/player/equipment", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const equipment = await storage.getPlayerEquipment(user.id);
+      return res.json(equipment);
+    } catch (error) {
+      console.error("Error fetching player equipment:", error);
+      return res.status(500).json({ message: "Error fetching player equipment" });
+    }
+  });
+  
+  app.post("/api/player/equipment", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      
+      const { equipmentId } = req.body;
+      
+      if (!equipmentId) {
+        return res.status(400).json({ message: "Equipment ID is required" });
+      }
+      
+      const equipment = await storage.getWeightRoomEquipmentById(equipmentId);
+      
+      if (!equipment) {
+        return res.status(404).json({ message: "Equipment not found" });
+      }
+      
+      // Check if player already has this equipment
+      const playerEquipment = await storage.getPlayerEquipment(user.id);
+      const alreadyOwned = playerEquipment.some(item => item.equipmentId === equipmentId);
+      
+      if (alreadyOwned) {
+        return res.status(400).json({ message: "Player already owns this equipment" });
+      }
+      
+      // Check if player has reached required level
+      const progress = await storage.getPlayerProgress(user.id);
+      
+      if (!progress) {
+        return res.status(400).json({ message: "Player progress not found" });
+      }
+      
+      if (progress.level < equipment.unlockLevel) {
+        return res.status(400).json({ 
+          message: `Player must reach level ${equipment.unlockLevel} to unlock this equipment`
+        });
+      }
+      
+      // Create player equipment record
+      const newPlayerEquipment = await storage.createPlayerEquipment({
+        userId: user.id,
+        equipmentId: equipment.id,
+        isActive: false
+      });
+      
+      return res.status(201).json(newPlayerEquipment);
+    } catch (error) {
+      console.error("Error acquiring equipment:", error);
+      return res.status(400).json({ message: error.message });
+    }
+  });
+  
+  app.put("/api/player/equipment/:id/activate", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const equipmentId = parseInt(req.params.id);
+      const user = req.user as any;
+      
+      // Get the player equipment
+      const playerEquipment = await storage.getPlayerEquipmentById(equipmentId);
+      
+      if (!playerEquipment) {
+        return res.status(404).json({ message: "Player equipment not found" });
+      }
+      
+      // Verify ownership
+      if (playerEquipment.userId !== user.id) {
+        return res.status(403).json({ message: "Not authorized to activate this equipment" });
+      }
+      
+      // Update equipment to active status
+      const updatedEquipment = await storage.updatePlayerEquipment(equipmentId, { isActive: true });
+      
+      // Increment usage count
+      await storage.incrementEquipmentUsage(equipmentId);
+      
+      // Award XP for first time using equipment
+      if ((playerEquipment.timesUsed || 0) === 0) {
+        await storage.addXpToPlayer(
+          user.id,
+          15,
+          "equipment_use",
+          `First time using ${equipmentId}`,
+          String(equipmentId)
+        );
+      }
+      
+      return res.json(updatedEquipment);
+    } catch (error) {
+      console.error("Error activating equipment:", error);
+      return res.status(500).json({ message: "Error activating equipment" });
+    }
+  });
+  
+  app.put("/api/player/equipment/:id/deactivate", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const equipmentId = parseInt(req.params.id);
+      const user = req.user as any;
+      
+      // Get the player equipment
+      const playerEquipment = await storage.getPlayerEquipmentById(equipmentId);
+      
+      if (!playerEquipment) {
+        return res.status(404).json({ message: "Player equipment not found" });
+      }
+      
+      // Verify ownership
+      if (playerEquipment.userId !== user.id) {
+        return res.status(403).json({ message: "Not authorized to deactivate this equipment" });
+      }
+      
+      // Update equipment to inactive status
+      const updatedEquipment = await storage.updatePlayerEquipment(equipmentId, { isActive: false });
+      
+      return res.json(updatedEquipment);
+    } catch (error) {
+      console.error("Error deactivating equipment:", error);
+      return res.status(500).json({ message: "Error deactivating equipment" });
+    }
+  });
+
   // Create HTTP server
   const httpServer = createServer(app);
   

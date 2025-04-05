@@ -23,6 +23,19 @@ import MessagingPage from "@/pages/messaging";
 import HomePage from "@/pages/home-page";
 import CMSPage from "@/pages/cms-page";
 
+// New feature page imports
+import FilmComparison from "@/pages/film-comparison";
+import FilmComparisonCreate from "@/pages/film-comparison-create";
+import FilmComparisonDetail from "@/pages/film-comparison-detail";
+import NextUpSpotlight from "@/pages/nextup-spotlight";
+import SpotlightProfile from "@/pages/spotlight-profile";
+import SpotlightCreate from "@/pages/spotlight-create";
+import MyPlayerXP from "@/pages/myplayer-xp";
+import WorkoutVerification from "@/pages/workout-verification";
+import VerificationDetail from "@/pages/verification-detail";
+import SubmitVerification from "@/pages/submit-verification";
+import WeightRoom from "@/pages/weight-room";
+
 interface ProtectedRouteProps {
   component: React.ComponentType;
   adminOnly?: boolean;
@@ -123,6 +136,83 @@ function Router() {
       <Route path="/cms">
         {({ params }) => (
           <ProtectedRoute component={CMSPage} adminOnly={true} />
+        )}
+      </Route>
+      
+      {/* Film Comparison Feature Routes */}
+      <Route path="/film-comparison">
+        {({ params }) => (
+          <ProtectedRoute component={FilmComparison} />
+        )}
+      </Route>
+      
+      <Route path="/film-comparison-create">
+        {({ params }) => (
+          <ProtectedRoute component={FilmComparisonCreate} />
+        )}
+      </Route>
+      
+      <Route path="/film-comparison/:id">
+        {({ params }) => (
+          <ProtectedRoute component={FilmComparisonDetail} />
+        )}
+      </Route>
+      
+      <Route path="/film-comparison-edit/:id">
+        {({ params }) => (
+          <ProtectedRoute component={FilmComparisonDetail} />
+        )}
+      </Route>
+      
+      {/* NextUp Spotlight Feature Routes */}
+      <Route path="/nextup-spotlight">
+        {({ params }) => (
+          <ProtectedRoute component={NextUpSpotlight} />
+        )}
+      </Route>
+      
+      <Route path="/spotlight-profile/:id">
+        {({ params }) => (
+          <ProtectedRoute component={SpotlightProfile} />
+        )}
+      </Route>
+      
+      <Route path="/spotlight-create">
+        {({ params }) => (
+          <ProtectedRoute component={SpotlightCreate} />
+        )}
+      </Route>
+      
+      {/* MyPlayer XP System Route */}
+      <Route path="/myplayer-xp">
+        {({ params }) => (
+          <ProtectedRoute component={MyPlayerXP} />
+        )}
+      </Route>
+      
+      {/* MyPlayer Workout Verification Routes */}
+      <Route path="/workout-verification">
+        {({ params }) => (
+          <ProtectedRoute component={WorkoutVerification} />
+        )}
+      </Route>
+      
+      <Route path="/verification/:id">
+        {({ params }) => (
+          <ProtectedRoute component={VerificationDetail} />
+        )}
+      </Route>
+      
+      <Route path="/submit-verification">
+        {({ params }) => (
+          <ProtectedRoute component={SubmitVerification} />
+        )}
+      </Route>
+      
+      {/* MyPlayer UI Weight Room Route */}
+      <Route path="/weight-room">
+        {({ params }) => (
+          <ProtectedRoute component={WeightRoom} />
         )}
       </Route>
       

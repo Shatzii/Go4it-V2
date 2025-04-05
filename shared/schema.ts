@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, json, real, date, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, json, real, date, jsonb, uuid } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -260,6 +260,157 @@ export const workoutExercises = pgTable("workout_exercises", {
   equipmentNeeded: text("equipment_needed").array(),
 });
 
+// Film Comparison feature
+export const filmComparisons = pgTable("film_comparisons", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  title: text("title").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow(),
+  isPublic: boolean("is_public").default(false),
+  comparisonType: text("comparison_type").notNull(), // self, pro, teammate
+  status: text("status").notNull().default("draft"), // draft, completed, shared
+  tags: text("tags").array(),
+});
+
+export const comparisonVideos = pgTable("comparison_videos", {
+  id: serial("id").primaryKey(),
+  comparisonId: integer("comparison_id").notNull().references(() => filmComparisons.id),
+  videoId: integer("video_id").references(() => videos.id),
+  externalVideoUrl: text("external_video_url"),
+  athleteName: text("athlete_name"),
+  videoType: text("video_type").notNull(), // base, comparison
+  order: integer("order").default(0),
+  notes: text("notes"),
+  keyPoints: text("key_points").array(),
+  markups: json("markups"), // Stores drawing data for the video
+});
+
+export const comparisonAnalyses = pgTable("comparison_analyses", {
+  id: serial("id").primaryKey(),
+  comparisonId: integer("comparison_id").notNull().references(() => filmComparisons.id),
+  analysisDate: timestamp("analysis_date").defaultNow(),
+  similarityScore: integer("similarity_score"), // 0-100
+  differences: json("differences"), // Key differences in technique
+  recommendations: text("recommendations").array(),
+  aiGeneratedNotes: text("ai_generated_notes"),
+  techniqueBreakdown: json("technique_breakdown"),
+});
+
+// NextUp Spotlight feature
+export const spotlightProfiles = pgTable("spotlight_profiles", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  title: text("title").notNull(),
+  summary: text("summary").notNull(),
+  story: text("story").notNull(),
+  coverImage: text("cover_image").notNull(),
+  mediaGallery: text("media_gallery").array(),
+  spotlightDate: timestamp("spotlight_date").defaultNow(),
+  featured: boolean("featured").default(false),
+  status: text("status").notNull().default("pending"), // pending, approved, archived
+  approvedBy: integer("approved_by").references(() => users.id),
+  views: integer("views").default(0),
+  likes: integer("likes").default(0),
+  isTrending: boolean("is_trending").default(false),
+  category: text("category").notNull(), // Rising Star, Comeback Story, etc.
+});
+
+// MyPlayer XP System
+export const playerProgress = pgTable("player_progress", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  currentLevel: integer("current_level").notNull().default(1),
+  totalXp: integer("total_xp").notNull().default(0),
+  levelXp: integer("level_xp").notNull().default(0),
+  xpToNextLevel: integer("xp_to_next_level").notNull().default(100),
+  rank: text("rank").notNull().default("Rookie"),
+  lifetimeAchievements: integer("lifetime_achievements").default(0),
+  streakDays: integer("streak_days").default(0),
+  lastActive: timestamp("last_active").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const xpTransactions = pgTable("xp_transactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  amount: integer("amount").notNull(),
+  transactionType: text("transaction_type").notNull(), // workout, challenge, video, analysis, etc.
+  sourceId: text("source_id"), // ID of the source that generated XP
+  description: text("description").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  multiplier: real("multiplier").default(1.0),
+});
+
+export const playerBadges = pgTable("player_badges", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  badgeId: text("badge_id").notNull(),
+  badgeName: text("badge_name").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(), // athletic, academic, leadership, etc.
+  tier: text("tier").notNull().default("bronze"), // bronze, silver, gold, platinum
+  isActive: boolean("is_active").default(true),
+  iconPath: text("icon_path").notNull(),
+  earnedAt: timestamp("earned_at").defaultNow(),
+  progress: integer("progress").default(100), // Percentage of completion
+});
+
+// MyPlayer Workout Verification
+export const workoutVerifications = pgTable("workout_verifications", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  workoutId: integer("workout_id").references(() => workoutPlaylists.id),
+  title: text("title").notNull(),
+  submissionDate: timestamp("submission_date").defaultNow(),
+  verificationStatus: text("verification_status").notNull().default("pending"), // pending, approved, rejected
+  verifiedBy: integer("verified_by").references(() => users.id),
+  verificationDate: timestamp("verification_date"),
+  verificationMethod: text("verification_method"), // coach, AI, photo, video
+  proofType: text("proof_type"), // photo, video, coach-verified, location
+  proofData: text("proof_data"), // URL or data for verification
+  notes: text("notes"),
+  xpEarned: integer("xp_earned").default(0),
+  duration: integer("duration"), // in minutes
+  recoveryImpact: integer("recovery_impact"), // 1-10
+});
+
+export const workoutVerificationCheckpoints = pgTable("workout_verification_checkpoints", {
+  id: serial("id").primaryKey(),
+  verificationId: integer("verification_id").notNull().references(() => workoutVerifications.id),
+  exerciseName: text("exercise_name").notNull(),
+  isCompleted: boolean("is_completed").default(false),
+  completedAmount: integer("completed_amount"), // reps or time
+  targetAmount: integer("target_amount"), // target reps or time
+  feedback: text("feedback"),
+  mediaProof: text("media_proof"), // URL to proof media
+  checkpointOrder: integer("checkpoint_order").notNull(),
+});
+
+// MyPlayer UI Weight Room
+export const weightRoomEquipment = pgTable("weight_room_equipment", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  category: text("category").notNull(), // cardio, strength, plyometric, recovery
+  description: text("description").notNull(),
+  imageUrl: text("image_url").notNull(),
+  model3dUrl: text("model_3d_url"),
+  unlockLevel: integer("unlock_level").default(1),
+  isPremium: boolean("is_premium").default(false),
+  baseStats: json("base_stats"), // strength, endurance, speed, etc. boosts
+});
+
+export const playerEquipment = pgTable("player_equipment", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  equipmentId: integer("equipment_id").notNull().references(() => weightRoomEquipment.id),
+  unlockDate: timestamp("unlock_date").defaultNow(),
+  usageCount: integer("usage_count").default(0),
+  isFavorite: boolean("is_favorite").default(false),
+  personalBest: json("personal_best"), // Records for the equipment
+  lastUsed: timestamp("last_used"),
+});
+
 // Create insert schemas for all tables
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
 export const insertAthleteProfileSchema = createInsertSchema(athleteProfiles).omit({ id: true });
@@ -288,6 +439,35 @@ export const insertBlogPostSchema = createInsertSchema(blogPosts, {
 export const insertFeaturedAthleteSchema = createInsertSchema(featuredAthletes, {
   featuredDate: z.date().optional(),
 }).omit({ id: true });
+
+// Film Comparison feature insert schemas
+export const insertFilmComparisonSchema = createInsertSchema(filmComparisons).omit({ id: true, createdAt: true });
+export const insertComparisonVideoSchema = createInsertSchema(comparisonVideos).omit({ id: true });
+export const insertComparisonAnalysisSchema = createInsertSchema(comparisonAnalyses).omit({ id: true, analysisDate: true });
+
+// NextUp Spotlight feature insert schema
+export const insertSpotlightProfileSchema = createInsertSchema(spotlightProfiles, {
+  spotlightDate: z.date().optional(),
+}).omit({ id: true, views: true, likes: true });
+
+// MyPlayer XP System insert schemas
+export const insertPlayerProgressSchema = createInsertSchema(playerProgress).omit({ 
+  id: true, lastActive: true, updatedAt: true 
+});
+export const insertXpTransactionSchema = createInsertSchema(xpTransactions).omit({ id: true, createdAt: true });
+export const insertPlayerBadgeSchema = createInsertSchema(playerBadges).omit({ id: true, earnedAt: true });
+
+// MyPlayer Workout Verification insert schemas
+export const insertWorkoutVerificationSchema = createInsertSchema(workoutVerifications).omit({ 
+  id: true, submissionDate: true, verificationDate: true 
+});
+export const insertWorkoutVerificationCheckpointSchema = createInsertSchema(workoutVerificationCheckpoints).omit({ id: true });
+
+// MyPlayer UI Weight Room insert schemas
+export const insertWeightRoomEquipmentSchema = createInsertSchema(weightRoomEquipment).omit({ id: true });
+export const insertPlayerEquipmentSchema = createInsertSchema(playerEquipment).omit({ 
+  id: true, unlockDate: true, lastUsed: true 
+});
 
 // Export types for insert and select operations
 export type User = typeof users.$inferSelect;
@@ -351,3 +531,41 @@ export type InsertWorkoutPlaylist = z.infer<typeof insertWorkoutPlaylistSchema>;
 
 export type WorkoutExercise = typeof workoutExercises.$inferSelect;
 export type InsertWorkoutExercise = z.infer<typeof insertWorkoutExerciseSchema>;
+
+// Film Comparison feature types
+export type FilmComparison = typeof filmComparisons.$inferSelect;
+export type InsertFilmComparison = z.infer<typeof insertFilmComparisonSchema>;
+
+export type ComparisonVideo = typeof comparisonVideos.$inferSelect;
+export type InsertComparisonVideo = z.infer<typeof insertComparisonVideoSchema>;
+
+export type ComparisonAnalysis = typeof comparisonAnalyses.$inferSelect;
+export type InsertComparisonAnalysis = z.infer<typeof insertComparisonAnalysisSchema>;
+
+// NextUp Spotlight feature types
+export type SpotlightProfile = typeof spotlightProfiles.$inferSelect;
+export type InsertSpotlightProfile = z.infer<typeof insertSpotlightProfileSchema>;
+
+// MyPlayer XP System types
+export type PlayerProgress = typeof playerProgress.$inferSelect;
+export type InsertPlayerProgress = z.infer<typeof insertPlayerProgressSchema>;
+
+export type XpTransaction = typeof xpTransactions.$inferSelect;
+export type InsertXpTransaction = z.infer<typeof insertXpTransactionSchema>;
+
+export type PlayerBadge = typeof playerBadges.$inferSelect;
+export type InsertPlayerBadge = z.infer<typeof insertPlayerBadgeSchema>;
+
+// MyPlayer Workout Verification types
+export type WorkoutVerification = typeof workoutVerifications.$inferSelect;
+export type InsertWorkoutVerification = z.infer<typeof insertWorkoutVerificationSchema>;
+
+export type WorkoutVerificationCheckpoint = typeof workoutVerificationCheckpoints.$inferSelect;
+export type InsertWorkoutVerificationCheckpoint = z.infer<typeof insertWorkoutVerificationCheckpointSchema>;
+
+// MyPlayer UI Weight Room types
+export type WeightRoomEquipment = typeof weightRoomEquipment.$inferSelect;
+export type InsertWeightRoomEquipment = z.infer<typeof insertWeightRoomEquipmentSchema>;
+
+export type PlayerEquipment = typeof playerEquipment.$inferSelect;
+export type InsertPlayerEquipment = z.infer<typeof insertPlayerEquipmentSchema>;
