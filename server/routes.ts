@@ -345,6 +345,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get athlete profile by ID
+  app.get("/api/athletes/:id/profile", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const requestUser = req.user as any;
+      
+      // Only allow viewing own profile unless admin
+      if (userId !== requestUser.id && requestUser.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to view this profile" });
+      }
+      
+      const profile = await storage.getAthleteProfile(userId);
+      
+      if (!profile) {
+        return res.status(404).json({ message: "Athlete profile not found" });
+      }
+      
+      return res.json(profile);
+    } catch (error) {
+      console.error("Error fetching athlete profile:", error);
+      return res.status(500).json({ message: "Error fetching athlete profile data" });
+    }
+  });
+
   // Update athlete profile
   app.put("/api/athletes/:id/profile", isAuthenticated, async (req: Request, res: Response) => {
     try {
@@ -357,10 +381,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const profileData = insertAthleteProfileSchema.parse(req.body);
+      
+      // Check if profile exists
+      let profile = await storage.getAthleteProfile(userId);
+      
+      if (!profile) {
+        // Create new profile if it doesn't exist
+        profile = await storage.createAthleteProfile({
+          userId,
+          ...profileData
+        });
+        return res.status(201).json(profile);
+      }
+      
+      // Update existing profile
       const updatedProfile = await storage.updateAthleteProfile(userId, profileData);
       
       if (!updatedProfile) {
-        return res.status(404).json({ message: "Athlete profile not found" });
+        return res.status(500).json({ message: "Failed to update athlete profile" });
       }
       
       return res.json(updatedProfile);
