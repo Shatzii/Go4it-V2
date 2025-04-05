@@ -5,9 +5,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Star, ChevronRight, Clock, Trophy, Calendar, Video, Award, CheckCircle, MapPin, BrainCircuit, Medal, UserSearch, LineChart } from "lucide-react";
+import { Star, ChevronRight, Clock, Trophy, Calendar, Video, Award, CheckCircle, MapPin } from "lucide-react";
 import { useAuth } from "../contexts/auth-context";
 import { motion } from "framer-motion";
+import { WhatMakesUsDifferent } from "@/components/what-makes-us-different";
 
 interface BlogPost {
   id: number;
@@ -147,6 +148,9 @@ export default function HomePage() {
           )}
         </div>
       </section>
+
+      {/* What Makes Us Different Section */}
+      <WhatMakesUsDifferent />
 
       {/* Featured Athletes Section */}
       <section className="mb-16">
