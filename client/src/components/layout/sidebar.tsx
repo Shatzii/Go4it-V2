@@ -333,6 +333,13 @@ export default function Layout({ children }: LayoutProps) {
                 </motion.li>
                 
                 <motion.li variants={menuItemVariants}>
+                  <Link href="/workout-verification" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/workout-verification" || location === "/submit-verification" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <CalendarCheck className="h-5 w-5 mr-3" />
+                    Workout Verification
+                  </Link>
+                </motion.li>
+                
+                <motion.li variants={menuItemVariants}>
                   <Link href="/nextup-spotlight" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/nextup-spotlight" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" />
@@ -583,6 +590,13 @@ export default function Layout({ children }: LayoutProps) {
                     <Link href="/myplayer-ai-coach" className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/myplayer-ai-coach" ? "active bg-primary" : ""}`}>
                       <Bot className="h-6 w-6 mr-3" />
                       AI Coach
+                    </Link>
+                  </motion.li>
+                  
+                  <motion.li variants={menuItemVariants}>
+                    <Link href="/workout-verification" className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/workout-verification" || location === "/submit-verification" ? "active bg-primary" : ""}`}>
+                      <CalendarCheck className="h-6 w-6 mr-3" />
+                      Workout Verification
                     </Link>
                   </motion.li>
                   

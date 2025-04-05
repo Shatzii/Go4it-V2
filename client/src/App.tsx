@@ -67,6 +67,7 @@ function ProtectedRoute({ component: Component, adminOnly = false }: ProtectedRo
     return null;
   }
 
+  // Admin can access all pages, even role-specific ones
   if (adminOnly && user.role !== "admin") {
     navigate("/");
     return null;
