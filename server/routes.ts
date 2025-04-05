@@ -14,6 +14,7 @@ import { setupAuth, hashPassword as authHashPassword } from "./auth";
 import passport from "passport";
 import { saveApiKey, getApiKeyStatus } from "./api-keys";
 import { footballCoachService } from "./services/football-coach-service";
+import { sendSms, checkSmsStatus, sendVerificationCode, verifyCode, sendNotification } from './services/sms-routes';
 import { 
   insertUserSchema,
   insertAthleteProfileSchema,
@@ -4121,6 +4122,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API Key management routes
   app.post("/api/settings/api-keys", isAuthenticated, saveApiKey);
   app.get("/api/settings/api-keys/status", isAuthenticated, getApiKeyStatus);
+  
+  // SMS Messaging Routes
+  app.post("/api/sms/send", isAuthenticated, sendSms);
+  app.get("/api/sms/status", isAuthenticated, checkSmsStatus);
+  app.post("/api/sms/verify-phone", isAuthenticated, sendVerificationCode);
+  app.post("/api/sms/verify-code", isAuthenticated, verifyCode);
+  app.post("/api/sms/notification", isAuthenticated, sendNotification);
 
   // Content Blocks API Routes
   app.get("/api/content-blocks", async (req: Request, res: Response) => {

@@ -18,6 +18,7 @@ export const users = pgTable("users", {
   role: text("role").notNull().default("athlete"), // athlete, coach, admin
   profileImage: text("profile_image"),
   bio: text("bio"),
+  phoneNumber: text("phone_number"),
   createdAt: timestamp("created_at").defaultNow(),
   measurementSystem: text("measurement_system").default("metric"), // 'metric' or 'imperial'
 });
