@@ -1453,6 +1453,118 @@ export class DatabaseStorage implements IStorage {
     return updatedBadge;
   }
   
+  // Weight Room Equipment operations
+  async getWeightRoomEquipment(category?: string): Promise<WeightRoomEquipment[]> {
+    try {
+      let query = db.select().from(weightRoomEquipment);
+      
+      if (category) {
+        query = query.where(eq(weightRoomEquipment.category, category));
+      }
+      
+      return await query;
+    } catch (error) {
+      console.error("Error in getWeightRoomEquipment", error);
+      return [];
+    }
+  }
+  
+  async getWeightRoomEquipmentById(id: number): Promise<WeightRoomEquipment | undefined> {
+    try {
+      const [result] = await db.select().from(weightRoomEquipment).where(eq(weightRoomEquipment.id, id)).limit(1);
+      return result;
+    } catch (error) {
+      console.error(`Error in getWeightRoomEquipmentById for ID ${id}:`, error);
+      return undefined;
+    }
+  }
+  
+  async createWeightRoomEquipment(equipment: InsertWeightRoomEquipment): Promise<WeightRoomEquipment> {
+    try {
+      const [result] = await db.insert(weightRoomEquipment).values(equipment).returning();
+      return result;
+    } catch (error) {
+      console.error("Error in createWeightRoomEquipment:", error);
+      throw new Error("Failed to create weight room equipment");
+    }
+  }
+  
+  async updateWeightRoomEquipment(id: number, data: Partial<WeightRoomEquipment>): Promise<WeightRoomEquipment | undefined> {
+    try {
+      const [result] = await db.update(weightRoomEquipment)
+        .set(data)
+        .where(eq(weightRoomEquipment.id, id))
+        .returning();
+      return result;
+    } catch (error) {
+      console.error(`Error in updateWeightRoomEquipment for ID ${id}:`, error);
+      return undefined;
+    }
+  }
+  
+  // Player Equipment operations
+  async getPlayerEquipment(userId: number): Promise<PlayerEquipment[]> {
+    try {
+      return await db.select().from(playerEquipment).where(eq(playerEquipment.userId, userId));
+    } catch (error) {
+      console.error(`Error in getPlayerEquipment for user ${userId}:`, error);
+      return [];
+    }
+  }
+  
+  async getPlayerEquipmentById(id: number): Promise<PlayerEquipment | undefined> {
+    try {
+      const [result] = await db.select().from(playerEquipment).where(eq(playerEquipment.id, id)).limit(1);
+      return result;
+    } catch (error) {
+      console.error(`Error in getPlayerEquipmentById for ID ${id}:`, error);
+      return undefined;
+    }
+  }
+  
+  async createPlayerEquipment(equipment: InsertPlayerEquipment): Promise<PlayerEquipment> {
+    try {
+      const [result] = await db.insert(playerEquipment).values(equipment).returning();
+      return result;
+    } catch (error) {
+      console.error("Error in createPlayerEquipment:", error);
+      throw new Error("Failed to create player equipment");
+    }
+  }
+  
+  async updatePlayerEquipment(id: number, data: Partial<PlayerEquipment>): Promise<PlayerEquipment | undefined> {
+    try {
+      const [result] = await db.update(playerEquipment)
+        .set(data)
+        .where(eq(playerEquipment.id, id))
+        .returning();
+      return result;
+    } catch (error) {
+      console.error(`Error in updatePlayerEquipment for ID ${id}:`, error);
+      return undefined;
+    }
+  }
+  
+  async incrementEquipmentUsage(id: number): Promise<PlayerEquipment | undefined> {
+    try {
+      const equipment = await this.getPlayerEquipmentById(id);
+      if (!equipment) {
+        return undefined;
+      }
+      
+      const timesUsed = (equipment.timesUsed || 0) + 1;
+      const [result] = await db.update(playerEquipment)
+        .set({ timesUsed, lastUsed: new Date() })
+        .where(eq(playerEquipment.id, id))
+        .returning();
+        
+      return result;
+    } catch (error) {
+      console.error(`Error in incrementEquipmentUsage for ID ${id}:`, error);
+      return undefined;
+    }
+  }
+  
   // Method to seed initial data
   async seedInitialData() {
     // Check if we already have users
