@@ -73,6 +73,17 @@ export const videoAnalyses = pgTable("video_analyses", {
   keyFrameTimestamps: real("key_frame_timestamps").array(), // timestamps of key moments in the video
 });
 
+// User agreements table to track acceptance of terms
+export const userAgreements = pgTable("user_agreements", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  agreementType: text("agreement_type").notNull(), // nda, terms, privacy, etc.
+  version: text("version").notNull(), // Version of the agreement
+  acceptedAt: timestamp("accepted_at").defaultNow(),
+  ipAddress: text("ip_address"), // IP address of the user when accepted
+  userAgent: text("user_agent"), // Browser/device info
+});
+
 // Sport recommendations for athletes
 export const sportRecommendations = pgTable("sport_recommendations", {
   id: serial("id").primaryKey(),
@@ -656,6 +667,7 @@ export const payments = pgTable(
 
 // Create insert schemas for all tables
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
+export const insertUserAgreementSchema = createInsertSchema(userAgreements).omit({ id: true, acceptedAt: true });
 
 // Extend the insertUserSchema with validation for measurementSystem
 export const insertUserWithMeasurementSchema = insertUserSchema.extend({
@@ -1000,3 +1012,6 @@ export type InsertAthleteJourneyMap = z.infer<typeof insertAthleteJourneyMapSche
 
 export type JourneyMilestone = typeof journeyMilestones.$inferSelect;
 export type InsertJourneyMilestone = z.infer<typeof insertJourneyMilestoneSchema>;
+
+export type UserAgreement = typeof userAgreements.$inferSelect;
+export type InsertUserAgreement = z.infer<typeof insertUserAgreementSchema>;

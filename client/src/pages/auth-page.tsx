@@ -10,6 +10,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, Video, Award } from "lucide-react";
+import { AgreementDialog } from "@/components/agreement-dialog";
+import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -22,6 +24,9 @@ const registerSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   role: z.enum(["athlete", "coach"]),
+  agreedToTerms: z.boolean().refine((val) => val === true, {
+    message: "You must agree to the terms and conditions to register",
+  }),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -32,6 +37,9 @@ export default function AuthPage() {
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState<string>("login");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAgreement, setShowAgreement] = useState(false);
+  const [pendingRegistration, setPendingRegistration] = useState<RegisterFormValues | null>(null);
+  const { toast } = useToast();
 
   // Redirect if already logged in
   useEffect(() => {
@@ -56,6 +64,7 @@ export default function AuthPage() {
       email: "",
       password: "",
       role: "athlete",
+      agreedToTerms: false,
     },
   });
 
@@ -73,10 +82,43 @@ export default function AuthPage() {
   const onRegisterSubmit = async (data: RegisterFormValues) => {
     setIsSubmitting(true);
     try {
-      await register(data);
+      // Show the NDA agreement dialog
+      setPendingRegistration(data);
+      setShowAgreement(true);
     } catch (error) {
       console.error("Registration error:", error);
-    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  const handleAgreementClosed = () => {
+    setShowAgreement(false);
+    setIsSubmitting(false);
+  };
+  
+  const handleAgreementAccepted = async () => {
+    try {
+      if (pendingRegistration) {
+        // Update the registration data with agreement acceptance
+        const registrationData = {
+          ...pendingRegistration,
+          agreedToTerms: true
+        };
+        
+        // Complete the registration process
+        await register(registrationData);
+        
+        // Reset state
+        setPendingRegistration(null);
+        setShowAgreement(false);
+      }
+    } catch (error) {
+      console.error("Registration error after agreement:", error);
+      toast({
+        title: "Registration failed",
+        description: "There was a problem completing your registration. Please try again.",
+        variant: "destructive"
+      });
       setIsSubmitting(false);
     }
   };
@@ -312,6 +354,14 @@ export default function AuthPage() {
           </Card>
         </div>
       </div>
+      
+      {/* Non-Disclosure Agreement Modal */}
+      <AgreementDialog 
+        open={showAgreement} 
+        onClose={handleAgreementClosed}
+        onAccept={handleAgreementAccepted}
+        agreementType="nda"
+      />
     </div>
   );
 }
