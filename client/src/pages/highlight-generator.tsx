@@ -29,17 +29,18 @@ export default function HighlightGenerator() {
   const [playerTab, setPlayerTab] = useState<string>('original');
 
   // Fetch video data
+  const videoId = parseInt(id);
   const { data: video, isLoading: videoLoading, error: videoError } = useQuery({
-    queryKey: ['/api/videos', parseInt(id)],
-    queryFn: async () => await apiRequest(`/api/videos/${id}`),
-    enabled: !!id,
+    queryKey: ['/api/videos', videoId],
+    queryFn: async () => await apiRequest(`/api/videos/${videoId}`),
+    enabled: !!videoId && !isNaN(videoId),
   });
 
   // Fetch video highlights
   const { data: highlights, isLoading: highlightsLoading, error: highlightsError } = useQuery({
-    queryKey: ['/api/videos', parseInt(id), 'highlights'],
-    queryFn: async () => await apiRequest(`/api/videos/${id}/highlights`),
-    enabled: !!id,
+    queryKey: ['/api/videos', videoId, 'highlights'],
+    queryFn: async () => await apiRequest(`/api/videos/${videoId}/highlights`),
+    enabled: !!videoId && !isNaN(videoId),
   });
 
   // Create highlight mutation
@@ -50,7 +51,7 @@ export default function HighlightGenerator() {
       startTime: number;
       endTime: number;
     }) => {
-      return await apiRequest(`/api/videos/${id}/generate-highlight`, {
+      return await apiRequest(`/api/videos/${videoId}/generate-highlight`, {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
@@ -63,7 +64,7 @@ export default function HighlightGenerator() {
         title: 'Highlight created',
         description: 'Your highlight has been successfully created.',
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/videos', parseInt(id), 'highlights'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/videos', videoId, 'highlights'] });
       setPlayerTab('highlights');
     },
     onError: (error: any) => {
