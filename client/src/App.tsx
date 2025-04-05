@@ -39,6 +39,7 @@ import VerificationDetail from "@/pages/verification-detail";
 import SubmitVerification from "@/pages/submit-verification";
 import WeightRoom from "@/pages/weight-room";
 import CombineTour from "@/pages/combine-tour";
+import HighlightGenerator from "@/pages/highlight-generator";
 
 // New feature page imports - Phase 2
 import MyPlayerStarPath from "@/pages/myplayer-star-path";
@@ -108,6 +109,12 @@ function Router() {
       <Route path="/video-analysis/:id">
         {({ params }) => (
           <ProtectedRoute component={AnalysisReport} />
+        )}
+      </Route>
+      
+      <Route path="/highlight-generator/:id">
+        {({ params }) => (
+          <ProtectedRoute component={HighlightGenerator} />
         )}
       </Route>
       
