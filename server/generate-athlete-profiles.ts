@@ -24,11 +24,12 @@ export async function generateProfiles() {
     }
     
     // Get all JSON files in the temp_extract directory
-    const extractDir = path.join(process.cwd(), 'temp_extract');
+    const extractDir = path.join(process.cwd(), '..', 'temp_extract');
     if (!fs.existsSync(extractDir)) {
       console.error('Extract directory not found. Please unzip the athlete profiles first.');
       return [];
     }
+    console.log(`Using extract directory: ${extractDir}`);
     
     const files = fs.readdirSync(extractDir)
       .filter(file => file.endsWith('.json'));
@@ -69,16 +70,12 @@ export async function generateProfiles() {
         
         console.log(`Created user account for ${profileData.name}`);
         
-        // Generate an authentic headshot image using OpenAI DALL-E
-        const avatarPath = await generateAthleteImage(
-          profileData.sport,
-          profileData.position,
-          profileData.star_level
-        );
+        // Use a default avatar path instead of generating with OpenAI
+        const avatarPath = `/uploads/default_avatar_${Math.floor(Math.random() * 5) + 1}.png`;
         
-        console.log(`Generated headshot image for ${profileData.name} at ${avatarPath}`);
+        console.log(`Using default avatar for ${profileData.name}`);
         
-        // Update the user with the avatar
+        // Update the user with the default avatar
         await db
           .update(users)
           .set({ profileImage: avatarPath })
@@ -119,7 +116,7 @@ export async function generateProfiles() {
       }
     }
     
-    console.log(`Successfully generated ${generatedProfiles.length} athlete profiles with authentic headshots.`);
+    console.log(`Successfully generated ${generatedProfiles.length} athlete profiles with default avatars.`);
     return generatedProfiles;
     
   } catch (error: unknown) {
@@ -128,15 +125,13 @@ export async function generateProfiles() {
   }
 }
 
-// Execute if this file is run directly
-if (require.main === module) {
-  generateProfiles()
-    .then(() => {
-      console.log('Athlete profile generation completed.');
-      process.exit(0);
-    })
-    .catch((error: unknown) => {
-      console.error('Athlete profile generation failed:', error);
-      process.exit(1);
-    });
-}
+// Execute directly
+generateProfiles()
+  .then(() => {
+    console.log('Athlete profile generation completed.');
+    process.exit(0);
+  })
+  .catch((error: unknown) => {
+    console.error('Athlete profile generation failed:', error);
+    process.exit(1);
+  });
