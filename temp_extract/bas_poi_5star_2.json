@@ -1,0 +1,42 @@
+{
+  "id": "bas_poi_5star_2",
+  "name": "Star 5 - Point Guard #2",
+  "star_level": 5,
+  "sport": "Basketball",
+  "position": "Point Guard",
+  "age_group": "16-18",
+  "metrics": {
+    "height": "6'0",
+    "weight": "190 lbs",
+    "forty_yard_dash": "4.5s",
+    "vertical": "34\"",
+    "gpa": "3.6"
+  },
+  "traits": {
+    "movement": [
+      "explosive",
+      "fluid hips"
+    ],
+    "mental": [
+      "leader",
+      "quick processor"
+    ],
+    "resilience": [
+      "confident",
+      "clutch"
+    ]
+  },
+  "film_expectations": [
+    "Explosive first step",
+    "High motor throughout play",
+    "Football IQ in real-time"
+  ],
+  "training_focus": [
+    "Footwork drills",
+    "Reaction training",
+    "Decision-making under pressure"
+  ],
+  "avatar": "https://placehold.co/200x200?text=Ba5*2",
+  "rank": "Top 500 in region",
+  "xp_level": 2500
+}
