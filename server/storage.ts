@@ -1827,8 +1827,9 @@ export class MemStorage implements IStorage {
     const playerEquipment: PlayerEquipment = {
       ...equipment,
       id,
-      equippedAt: now,
-      timesUsed: 0
+      acquiredDate: now,
+      timesUsed: 0,
+      lastUsed: null
     };
     this.playerEquipment.set(id, playerEquipment);
     return playerEquipment;
@@ -1850,9 +1851,11 @@ export class MemStorage implements IStorage {
     const equipment = this.playerEquipment.get(id);
     if (!equipment) return undefined;
     
+    const now = new Date();
     const updatedEquipment = {
       ...equipment,
-      timesUsed: (equipment.timesUsed || 0) + 1
+      timesUsed: (equipment.timesUsed || 0) + 1,
+      lastUsed: now
     };
     this.playerEquipment.set(id, updatedEquipment);
     return updatedEquipment;
