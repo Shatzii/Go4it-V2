@@ -347,6 +347,169 @@ export const recoveryLogs = pgTable("recovery_logs", {
   overallRecoveryScore: integer("overall_recovery_score"), // 0-100
 });
 
+// Social Media Scouting & Recruitment Tools
+export const socialMediaScouts = pgTable("social_media_scouts", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  active: boolean("active").default(true),
+  lastRunAt: timestamp("last_run_at"),
+  sportFocus: text("sport_focus").array(), // basketball, football, soccer, etc.
+  ageRangeMin: integer("age_range_min").default(12),
+  ageRangeMax: integer("age_range_max").default(18),
+  locationFocus: text("location_focus").array(), // States or regions to search
+  keywordsToTrack: text("keywords_to_track").array(),
+  platformsToSearch: text("platforms_to_search").array(), // instagram, twitter, tiktok, etc.
+  createdAt: timestamp("created_at").defaultNow(),
+  createdBy: integer("created_by").references(() => users.id),
+  discoveryCount: integer("discovery_count").default(0), // How many athletes discovered
+});
+
+// Media Partnership Scouts - finds media outlets, podcasts, Instagram pages for cross-branding
+export const mediaPartnershipScouts = pgTable("media_partnership_scouts", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  active: boolean("active").default(true),
+  lastRunAt: timestamp("last_run_at"),
+  sportFocus: text("sport_focus").array(), // Which sports to focus on
+  mediaTypes: text("media_types").array(), // podcast, instagram, youtube, tiktok, newsletter, blog, etc.
+  followerThreshold: integer("follower_threshold").default(10000), // Minimum followers/subscribers
+  locationFocus: text("location_focus").array(), // Geographic focus
+  keywordsToTrack: text("keywords_to_track").array(), // Relevant keywords
+  exclusionTerms: text("exclusion_terms").array(), // Terms to avoid
+  createdAt: timestamp("created_at").defaultNow(),
+  createdBy: integer("created_by").references(() => users.id),
+  discoveryCount: integer("discovery_count").default(0),
+});
+
+// Media Partnership Discoveries
+export const mediaPartnerDiscoveries = pgTable("media_partner_discoveries", {
+  id: serial("id").primaryKey(),
+  scoutId: integer("scout_id").references(() => mediaPartnershipScouts.id),
+  name: text("name").notNull(), // Name of the media outlet/podcast/page
+  platform: text("platform").notNull(), // instagram, podcast, youtube, etc.
+  url: text("url").notNull(), // Profile/channel URL
+  contactName: text("contact_name"), // Name of primary contact
+  contactEmail: text("contact_email"),
+  contactPhone: text("contact_phone"),
+  followerCount: integer("follower_count"),
+  audienceType: text("audience_type"), // athletes, coaches, parents, fans, etc.
+  averageEngagement: real("average_engagement"), // Percentage of followers who engage
+  sports: text("sports").array(), // Sports they cover
+  location: text("location"), // Geographic base
+  recentTopics: text("recent_topics").array(), // Recent trending topics
+  contentQuality: integer("content_quality").default(0), // AI-rated quality score (0-100)
+  relevanceScore: integer("relevance_score").default(0), // AI-rated relevance to platform (0-100)
+  partnershipPotential: integer("partnership_potential").default(0), // AI-rated potential (0-100)
+  discoveredAt: timestamp("discovered_at").defaultNow(),
+  lastCheckedAt: timestamp("last_checked_at").defaultNow(),
+  status: text("status").default("new"), // new, contacted, negotiating, partnered, rejected
+  assignedTo: integer("assigned_to").references(() => users.id),
+  notes: text("notes"),
+  partnershipTerms: json("partnership_terms"), // Details of any established partnership
+  partnershipStartDate: timestamp("partnership_start_date"),
+  partnershipEndDate: timestamp("partnership_end_date"),
+  partnershipResults: json("partnership_results"), // Metrics from the partnership
+});
+
+// City Influencer Scouts - finds top sports influencers in each city for Get Verified Combine events
+export const cityInfluencerScouts = pgTable("city_influencer_scouts", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  active: boolean("active").default(true),
+  lastRunAt: timestamp("last_run_at"),
+  city: text("city").notNull(), // Target city
+  state: text("state").notNull(), // State/province
+  sportFocus: text("sport_focus").array(), // basketball, football, soccer, etc.
+  platforms: text("platforms").array(), // instagram, tiktok, youtube, etc.
+  minFollowers: integer("min_followers").default(5000),
+  maxInfluencers: integer("max_influencers").default(10), // Number of top influencers to identify
+  createdAt: timestamp("created_at").defaultNow(),
+  createdBy: integer("created_by").references(() => users.id),
+  discoveryCount: integer("discovery_count").default(0),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  combineEventId: integer("combine_event_id"), // Link to combine event if applicable
+});
+
+// City Influencer Discoveries
+export const cityInfluencerDiscoveries = pgTable("city_influencer_discoveries", {
+  id: serial("id").primaryKey(),
+  scoutId: integer("scout_id").references(() => cityInfluencerScouts.id),
+  name: text("name").notNull(),
+  username: text("username").notNull(),
+  platform: text("platform").notNull(),
+  url: text("url").notNull(),
+  bio: text("bio"),
+  followerCount: integer("follower_count"),
+  engagementRate: real("engagement_rate"), // Average engagement percentage
+  audienceDemo: json("audience_demo"), // Demographics of audience
+  sports: text("sports").array(),
+  localityScore: integer("locality_score").default(0), // How connected to the local area (0-100)
+  influenceRank: integer("influence_rank"), // Rank within the city (1-10)
+  contactEmail: text("contact_email"),
+  contactPhone: text("contact_phone"),
+  discoveredAt: timestamp("discovered_at").defaultNow(),
+  lastCheckedAt: timestamp("last_checked_at").defaultNow(),
+  status: text("status").default("new"), // new, contacted, confirmed, declined
+  assignedTo: integer("assigned_to").references(() => users.id),
+  notes: text("notes"),
+  combineRole: text("combine_role"), // Role at the Get Verified Combine
+  compensation: json("compensation"), // Compensation details
+  mediaDeliverables: text("media_deliverables").array(), // Content they'll create
+  contractStatus: text("contract_status").default("none"), // none, pending, signed
+  pastPerformance: json("past_performance"), // Metrics from past partnerships
+});
+
+export const athleteDiscoveries = pgTable("athlete_discoveries", {
+  id: serial("id").primaryKey(),
+  scoutId: integer("scout_id").references(() => socialMediaScouts.id),
+  fullName: text("full_name").notNull(),
+  username: text("username").notNull(),
+  platform: text("platform").notNull(), // instagram, twitter, tiktok, etc.
+  profileUrl: text("profile_url").notNull(),
+  email: text("email"),
+  phone: text("phone"),
+  estimatedAge: integer("estimated_age"),
+  location: text("location"),
+  schoolName: text("school_name"),
+  graduationYear: integer("graduation_year"),
+  sports: text("sports").array(),
+  positions: text("positions").array(),
+  bio: text("bio"),
+  followerCount: integer("follower_count"),
+  postCount: integer("post_count"),
+  highlights: text("highlights").array(), // Key accomplishments mentioned
+  discoveredAt: timestamp("discovered_at").defaultNow(),
+  lastCheckedAt: timestamp("last_checked_at").defaultNow(),
+  status: text("status").default("new"), // new, contacted, responded, converted, rejected
+  assignedTo: integer("assigned_to").references(() => users.id),
+  notes: text("notes"),
+  potentialRating: integer("potential_rating"), // 1-5 initial assessment
+  confidence: integer("confidence").default(70), // How confident is the AI in this match (0-100)
+  mediaUrls: text("media_urls").array(), // URLs to key media found
+  contactAttempts: integer("contact_attempts").default(0),
+  convertedToUserId: integer("converted_to_user_id").references(() => users.id),
+});
+
+export const socialMediaAudits = pgTable("social_media_audits", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  auditDate: timestamp("audit_date").defaultNow(),
+  overallScore: integer("overall_score").notNull(), // 0-100
+  platformsAnalyzed: text("platforms_analyzed").array(),
+  contentAnalysis: json("content_analysis"), // Analysis of posts, comments, etc.
+  redFlagCount: integer("red_flag_count").default(0),
+  redFlagItems: json("red_flag_items"),
+  improvementSuggestions: text("improvement_suggestions").array(),
+  positiveHighlights: json("positive_highlights"),
+  recruitmentImpactScore: integer("recruitment_impact_score"), // How this affects recruiting (0-100)
+  reportGeneratedBy: integer("report_generated_by").references(() => users.id),
+  sharedWithUser: boolean("shared_with_user").default(false),
+  userAcknowledged: boolean("user_acknowledged").default(false),
+});
+
 // GAR Rating System tables
 export const garCategories = pgTable("gar_categories", {
   id: serial("id").primaryKey(),
