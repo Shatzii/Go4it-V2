@@ -316,6 +316,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Upload video endpoint
   app.post("/api/videos/upload", isAuthenticated, videoUpload.single("video"), async (req: Request, res: Response) => {
     try {
+      console.log("Video upload received:", req.file ? "File present" : "No file");
+      console.log("Request body:", req.body);
+      console.log("User:", req.user ? `ID: ${(req.user as any).id}, Role: ${(req.user as any).role}` : "No user");
+      
       if (!req.file) {
         return res.status(400).json({ message: "No video file uploaded" });
       }
@@ -1884,6 +1888,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/workout-verifications", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const user = req.user as any;
+      
+      console.log("Workout verification request:", {
+        user: user ? { id: user.id, role: user.role } : 'No user',
+        bodyKeys: Object.keys(req.body),
+        mediaUrls: req.body.mediaUrls ? 'Present' : 'Not present'
+      });
       
       // We're now using mediaUrls directly passed from the frontend
       // They point to videos that were already uploaded and processed

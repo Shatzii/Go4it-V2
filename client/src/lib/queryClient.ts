@@ -10,6 +10,9 @@ export const apiRequest = async (
   options?: any
 ) => {
   try {
+    console.log(`Making ${method} request to ${url}`, 
+      data instanceof FormData ? 'FormData' : data);
+    
     // Default headers
     const headers: Record<string, string> = {};
     
@@ -18,21 +21,35 @@ export const apiRequest = async (
       headers['Content-Type'] = 'application/json';
     }
     
+    // For FormData, make sure we don't set any Content-Type ourselves
+    // The browser needs to set it with the correct multipart boundary
+    
     const response = await axios({
       method,
       url: `${baseURL}${url}`,
       data,
       withCredentials: true,
       headers,
-      timeout: 10000, // Added timeout
+      timeout: 30000, // Increased timeout for video uploads
       ...options,
     });
+    
+    console.log(`Request to ${url} successful`, response.status);
     return response;
   } catch (error: any) {
+    console.error("API request error details:", {
+      url,
+      method,
+      errorName: error.name,
+      errorMessage: error.message,
+      responseStatus: error.response?.status,
+      responseData: error.response?.data
+    });
+    
     if (!error.response) {
       throw new Error('Network error - Please check your connection');
     } else if (error.response?.status === 401) {
-      //Handle 401 specifically if needed.  Could redirect or show a login prompt.
+      // Handle 401 specifically if needed.  Could redirect or show a login prompt.
       throw new Error('Unauthorized. Please login.')
     }
     else if (error.response?.data?.message) {
