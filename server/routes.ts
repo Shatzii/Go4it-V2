@@ -19,6 +19,7 @@ import {
   insertAthleteProfileSchema,
   insertCoachProfileSchema,
   insertVideoSchema,
+  insertVideoWithFileSchema,
   insertNcaaEligibilitySchema,
   insertCoachConnectionSchema,
   insertMessageSchema,
@@ -544,7 +545,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       fs.renameSync(req.file.path, filePath);
       
       // Create video entry
-      const videoData = insertVideoSchema.parse({
+      const videoData = insertVideoWithFileSchema.parse({
         userId: user.id,
         title,
         description,
