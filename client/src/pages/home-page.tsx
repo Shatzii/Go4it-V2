@@ -333,6 +333,9 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* What Makes Us Different Section */}
+      <WhatMakesUsDifferent />
+
       {/* Featured Athletes Section */}
       <section className="mb-16">
         <div className="flex justify-between items-center mb-6">
@@ -597,58 +600,6 @@ export default function HomePage() {
         </Tabs>
       </section>
 
-      {/* Key Features Section */}
-      <section className="mb-16">
-        <h2 className="text-3xl font-bold mb-8 text-center text-white">
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
-            What Makes Us
-          </span> Different
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Card className="bg-black border border-gray-800 shadow-lg transform transition-all duration-300 hover:shadow-[0_0_12px_rgba(34,211,238,0.3)]">
-            <CardHeader>
-              <div className="bg-gradient-to-r from-blue-500/20 to-cyan-500/20 w-12 h-12 rounded-lg flex items-center justify-center mb-4 shadow-[0_0_10px_rgba(34,211,238,0.3)]">
-                <Video className="h-6 w-6 text-cyan-400" />
-              </div>
-              <CardTitle className="text-white">AI Video Analysis</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-400">
-                Upload your performance videos and get instant AI-powered analysis with personalized feedback and improvement tips.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-black border border-gray-800 shadow-lg transform transition-all duration-300 hover:shadow-[0_0_12px_rgba(34,211,238,0.3)]">
-            <CardHeader>
-              <div className="bg-gradient-to-r from-blue-500/20 to-cyan-500/20 w-12 h-12 rounded-lg flex items-center justify-center mb-4 shadow-[0_0_10px_rgba(34,211,238,0.3)]">
-                <Trophy className="h-6 w-6 text-cyan-400" />
-              </div>
-              <CardTitle className="text-white">Sport Matching</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-400">
-                Discover which sports best match your physical attributes, skills, and personal preferences through our advanced matching system.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-black border border-gray-800 shadow-lg transform transition-all duration-300 hover:shadow-[0_0_12px_rgba(34,211,238,0.3)]">
-            <CardHeader>
-              <div className="bg-gradient-to-r from-blue-500/20 to-cyan-500/20 w-12 h-12 rounded-lg flex items-center justify-center mb-4 shadow-[0_0_10px_rgba(34,211,238,0.3)]">
-                <Award className="h-6 w-6 text-cyan-400" />
-              </div>
-              <CardTitle className="text-white">NCAA Eligibility</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-400">
-                Track your path to NCAA eligibility with our comprehensive clearinghouse tools and guidance for student-athletes.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
 
       {/* Get Verified Combine Tour 2025 Section */}
       <section className="mb-16">
