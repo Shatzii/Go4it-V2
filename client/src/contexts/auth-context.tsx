@@ -153,11 +153,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // Connect to WebSocket after login
         websocketService.connect(userResponse.data.user.id);
         
-        toast({
-          title: "Login successful", 
-          description: `Welcome back, ${userResponse.data.user.name}!`,
-        });
-        navigate("/");
+        // Delay navigation slightly to ensure all state updates are complete
+        setTimeout(() => {
+          toast({
+            title: "Login successful", 
+            description: `Welcome back, ${userResponse.data.user.name}!`,
+          });
+          navigate("/");
+        }, 300);
       } else {
         throw new Error("Failed to get user data");
       }
@@ -189,11 +192,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         websocketService.connect(data.user.id);
       }
       
-      toast({
-        title: "Registration successful",
-        description: `Welcome, ${data.user.name}!`,
-      });
-      navigate("/");
+      // Delay navigation slightly to ensure all state updates are complete
+      setTimeout(() => {
+        toast({
+          title: "Registration successful",
+          description: `Welcome, ${data.user.name}!`,
+        });
+        navigate("/");
+      }, 300);
     } catch (error: any) {
       console.error("Registration error:", error);
       toast({
@@ -216,11 +222,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       setUser(null);
       setActualRole(null); // Clear the actual role
-      toast({
-        title: "Logout successful",
-        description: "You have been logged out successfully",
-      });
-      navigate("/");
+      
+      // Delay navigation slightly to ensure all state updates are complete
+      setTimeout(() => {
+        toast({
+          title: "Logout successful",
+          description: "You have been logged out successfully",
+        });
+        navigate("/");
+      }, 300);
     } catch (error: any) {
       toast({
         title: "Logout failed",
