@@ -207,182 +207,146 @@ export default function Layout({ children }: LayoutProps) {
                 }}
               >
                 <motion.li variants={menuItemVariants}>
-                  <Link href="/">
-                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
-                      <Home className="h-5 w-5 mr-3" />
-                      Home
-                    </a>
+                  <Link href="/" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <Home className="h-5 w-5 mr-3" />
+                    Home
                   </Link>
                 </motion.li>
 
                 <motion.li variants={menuItemVariants}>
-                  <Link href="/dashboard">
-                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/dashboard" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
-                      <ChartBarStacked className="h-5 w-5 mr-3" />
-                      Dashboard
-                    </a>
+                  <Link href="/dashboard" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/dashboard" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <ChartBarStacked className="h-5 w-5 mr-3" />
+                    Dashboard
                   </Link>
                 </motion.li>
 
                 <motion.li variants={menuItemVariants}>
-                  <Link href="/profile">
-                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/profile" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
-                      <User className="h-5 w-5 mr-3" />
-                      My Profile
-                    </a>
+                  <Link href="/profile" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/profile" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <User className="h-5 w-5 mr-3" />
+                    My Profile
                   </Link>
                 </motion.li>
 
                 <motion.li variants={menuItemVariants}>
-                  <Link href="/video-analysis">
-                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/video-analysis" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
-                      <FileVideo className="h-5 w-5 mr-3" />
-                      Video Analysis
-                    </a>
+                  <Link href="/video-analysis" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/video-analysis" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <FileVideo className="h-5 w-5 mr-3" />
+                    Video Analysis
                   </Link>
                 </motion.li>
 
                 <motion.li variants={menuItemVariants}>
-                  <Link href="/film-comparison">
-                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/film-comparison" || location.startsWith("/film-comparison-") ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
-                      <GitCompare className="h-5 w-5 mr-3" />
-                      Film Comparison
-                    </a>
+                  <Link href="/film-comparison" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/film-comparison" || location.startsWith("/film-comparison-") ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <GitCompare className="h-5 w-5 mr-3" />
+                    Film Comparison
                   </Link>
                 </motion.li>
 
                 <motion.li variants={menuItemVariants}>
-                  <Link href="/sport-recommendations">
-                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/sport-recommendations" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
-                      <Award className="h-5 w-5 mr-3" />
-                      Sport Recommendations
-                    </a>
+                  <Link href="/sport-recommendations" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/sport-recommendations" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <Award className="h-5 w-5 mr-3" />
+                    Sport Recommendations
                   </Link>
                 </motion.li>
 
                 <motion.li variants={menuItemVariants}>
-                  <Link href="/coach-connection">
-                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/coach-connection" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
-                      <Users className="h-5 w-5 mr-3" />
-                      Coach Connection
-                    </a>
+                  <Link href="/coach-connection" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/coach-connection" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <Users className="h-5 w-5 mr-3" />
+                    Coach Connection
                   </Link>
                 </motion.li>
 
                 <motion.li variants={menuItemVariants}>
-                  <Link href="/ncaa-clearinghouse">
-                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/ncaa-clearinghouse" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
-                      <BookOpen className="h-5 w-5 mr-3" />
-                      NCAA Clearinghouse
-                    </a>
+                  <Link href="/ncaa-clearinghouse" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/ncaa-clearinghouse" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <BookOpen className="h-5 w-5 mr-3" />
+                    NCAA Clearinghouse
                   </Link>
                 </motion.li>
 
                 <motion.li variants={menuItemVariants}>
-                  <Link href="/messaging">
-                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/messaging" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
-                      <div className="relative mr-3">
-                        <MessageSquare className="h-5 w-5" />
-                        {unreadCount > 0 && (
-                          <motion.span 
-                            className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                          >
-                            {unreadCount > 99 ? '99+' : unreadCount}
-                          </motion.span>
-                        )}
-                      </div>
-                      Messaging
-                    </a>
+                  <Link href="/messaging" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/messaging" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <div className="relative mr-3">
+                      <MessageSquare className="h-5 w-5" />
+                      {unreadCount > 0 && (
+                        <motion.span 
+                          className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                        >
+                          {unreadCount > 99 ? '99+' : unreadCount}
+                        </motion.span>
+                      )}
+                    </div>
+                    Messaging
                   </Link>
                 </motion.li>
                 
                 <motion.li variants={menuItemVariants}>
-                  <Link href="/scoutvision-feed">
-                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/scoutvision-feed" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
-                      <Video className="h-5 w-5 mr-3" />
-                      ScoutVision Feed
-                    </a>
+                  <Link href="/scoutvision-feed" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/scoutvision-feed" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <Video className="h-5 w-5 mr-3" />
+                    ScoutVision Feed
                   </Link>
                 </motion.li>
                 
                 <motion.li variants={menuItemVariants}>
-                  <Link href="/coach-portal">
-                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/coach-portal" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
-                      <UserCog className="h-5 w-5 mr-3" />
-                      Coach Portal
-                    </a>
+                  <Link href="/coach-portal" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/coach-portal" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <UserCog className="h-5 w-5 mr-3" />
+                    Coach Portal
                   </Link>
                 </motion.li>
                 
                 <motion.li variants={menuItemVariants}>
-                  <Link href="/combine-tour">
-                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/combine-tour" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
-                      <CalendarCheck className="h-5 w-5 mr-3" />
-                      Combine Tour
-                    </a>
+                  <Link href="/combine-tour" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/combine-tour" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <CalendarCheck className="h-5 w-5 mr-3" />
+                    Combine Tour
                   </Link>
                 </motion.li>
                 
                 <motion.li variants={menuItemVariants}>
-                  <Link href="/myplayer-xp">
-                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/myplayer-xp" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
-                      <Sparkles className="h-5 w-5 mr-3" />
-                      MyPlayer XP
-                    </a>
+                  <Link href="/myplayer-xp" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/myplayer-xp" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <Sparkles className="h-5 w-5 mr-3" />
+                    MyPlayer XP
                   </Link>
                 </motion.li>
                 
                 <motion.li variants={menuItemVariants}>
-                  <Link href="/weight-room">
-                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/weight-room" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
-                      <Dumbbell className="h-5 w-5 mr-3" />
-                      Weight Room
-                    </a>
+                  <Link href="/weight-room" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/weight-room" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <Dumbbell className="h-5 w-5 mr-3" />
+                    Weight Room
                   </Link>
                 </motion.li>
                 
                 <motion.li variants={menuItemVariants}>
-                  <Link href="/myplayer-star-path">
-                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/myplayer-star-path" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="0.5">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      Star Path
-                    </a>
+                  <Link href="/myplayer-star-path" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/myplayer-star-path" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="0.5">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                    Star Path
                   </Link>
                 </motion.li>
                 
                 <motion.li variants={menuItemVariants}>
-                  <Link href="/myplayer-ai-coach">
-                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/myplayer-ai-coach" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
-                      <Bot className="h-5 w-5 mr-3" />
-                      AI Coach
-                    </a>
+                  <Link href="/myplayer-ai-coach" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/myplayer-ai-coach" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <Bot className="h-5 w-5 mr-3" />
+                    AI Coach
                   </Link>
                 </motion.li>
                 
                 <motion.li variants={menuItemVariants}>
-                  <Link href="/nextup-spotlight">
-                    <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/nextup-spotlight" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" />
-                      </svg>
-                      NextUp Spotlight
-                    </a>
+                  <Link href="/nextup-spotlight" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/nextup-spotlight" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" />
+                    </svg>
+                    NextUp Spotlight
                   </Link>
                 </motion.li>
 
                 {/* Admin section - only visible for admin users */}
                 {user && user.role === "admin" && (
                   <motion.li variants={menuItemVariants}>
-                    <Link href="/admin-dashboard">
-                      <a className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/admin-dashboard" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
-                        <ChartBarStacked className="h-5 w-5 mr-3" />
-                        Admin Dashboard
-                      </a>
+                    <Link href="/admin-dashboard" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/admin-dashboard" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                      <ChartBarStacked className="h-5 w-5 mr-3" />
+                      Admin Dashboard
                     </Link>
                   </motion.li>
                 )}
@@ -417,11 +381,9 @@ export default function Layout({ children }: LayoutProps) {
                   </Button>
                 </div>
               ) : (
-                <Link href="/login">
-                  <a className="flex items-center p-2 rounded-lg hover:bg-primary hover:bg-opacity-30 text-white">
-                    <LogIn className="h-5 w-5 mr-3" />
-                    Login
-                  </a>
+                <Link href="/login" className="flex items-center p-2 rounded-lg hover:bg-primary hover:bg-opacity-30 text-white">
+                  <LogIn className="h-5 w-5 mr-3" />
+                  Login
                 </Link>
               )}
             </motion.div>
@@ -507,173 +469,137 @@ export default function Layout({ children }: LayoutProps) {
               <nav className="p-4">
                 <motion.ul className="space-y-4">
                   <motion.li variants={menuItemVariants}>
-                    <Link href="/">
-                      <a className={`flex items-center p-2 rounded-lg sidebar-link text-white text-lg ${location === "/" ? "active bg-primary" : ""}`}>
-                        <Home className="h-6 w-6 mr-3" />
-                        Home
-                      </a>
+                    <Link href="/" className={`flex items-center p-2 rounded-lg sidebar-link text-white text-lg ${location === "/" ? "active bg-primary" : ""}`}>
+                      <Home className="h-6 w-6 mr-3" />
+                      Home
                     </Link>
                   </motion.li>
                   <motion.li variants={menuItemVariants}>
-                    <Link href="/dashboard">
-                      <a className="flex items-center p-2 rounded-lg text-white text-lg">
-                        <ChartBarStacked className="h-6 w-6 mr-3" />
-                        Dashboard
-                      </a>
+                    <Link href="/dashboard" className="flex items-center p-2 rounded-lg text-white text-lg">
+                      <ChartBarStacked className="h-6 w-6 mr-3" />
+                      Dashboard
                     </Link>
                   </motion.li>
                   <motion.li variants={menuItemVariants}>
-                    <Link href="/profile">
-                      <a className="flex items-center p-2 rounded-lg text-white text-lg">
-                        <User className="h-6 w-6 mr-3" />
-                        My Profile
-                      </a>
+                    <Link href="/profile" className="flex items-center p-2 rounded-lg text-white text-lg">
+                      <User className="h-6 w-6 mr-3" />
+                      My Profile
                     </Link>
                   </motion.li>
                   <motion.li variants={menuItemVariants}>
-                    <Link href="/video-analysis">
-                      <a className="flex items-center p-2 rounded-lg text-white text-lg">
-                        <FileVideo className="h-6 w-6 mr-3" />
-                        Video Analysis
-                      </a>
+                    <Link href="/video-analysis" className="flex items-center p-2 rounded-lg text-white text-lg">
+                      <FileVideo className="h-6 w-6 mr-3" />
+                      Video Analysis
                     </Link>
                   </motion.li>
                   <motion.li variants={menuItemVariants}>
-                    <Link href="/film-comparison">
-                      <a className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/film-comparison" || location.startsWith("/film-comparison-") ? "active bg-primary" : ""}`}>
-                        <GitCompare className="h-6 w-6 mr-3" />
-                        Film Comparison
-                      </a>
+                    <Link href="/film-comparison" className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/film-comparison" || location.startsWith("/film-comparison-") ? "active bg-primary" : ""}`}>
+                      <GitCompare className="h-6 w-6 mr-3" />
+                      Film Comparison
                     </Link>
                   </motion.li>
                   <motion.li variants={menuItemVariants}>
-                    <Link href="/sport-recommendations">
-                      <a className="flex items-center p-2 rounded-lg text-white text-lg">
-                        <Award className="h-6 w-6 mr-3" />
-                        Sport Recommendations
-                      </a>
+                    <Link href="/sport-recommendations" className="flex items-center p-2 rounded-lg text-white text-lg">
+                      <Award className="h-6 w-6 mr-3" />
+                      Sport Recommendations
                     </Link>
                   </motion.li>
                   <motion.li variants={menuItemVariants}>
-                    <Link href="/coach-connection">
-                      <a className="flex items-center p-2 rounded-lg text-white text-lg">
-                        <Users className="h-6 w-6 mr-3" />
-                        Coach Connection
-                      </a>
+                    <Link href="/coach-connection" className="flex items-center p-2 rounded-lg text-white text-lg">
+                      <Users className="h-6 w-6 mr-3" />
+                      Coach Connection
                     </Link>
                   </motion.li>
                   <motion.li variants={menuItemVariants}>
-                    <Link href="/ncaa-clearinghouse">
-                      <a className="flex items-center p-2 rounded-lg text-white text-lg">
-                        <BookOpen className="h-6 w-6 mr-3" />
-                        NCAA Clearinghouse
-                      </a>
+                    <Link href="/ncaa-clearinghouse" className="flex items-center p-2 rounded-lg text-white text-lg">
+                      <BookOpen className="h-6 w-6 mr-3" />
+                      NCAA Clearinghouse
                     </Link>
                   </motion.li>
                   <motion.li variants={menuItemVariants}>
-                    <Link href="/messaging">
-                      <a className="flex items-center p-2 rounded-lg text-white text-lg">
-                        <div className="relative mr-3">
-                          <MessageSquare className="h-6 w-6" />
-                          {unreadCount > 0 && (
-                            <motion.span 
-                              className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              transition={{ type: "spring", stiffness: 500, damping: 30, delay: 0.3 }}
-                            >
-                              {unreadCount > 99 ? '99+' : unreadCount}
-                            </motion.span>
-                          )}
-                        </div>
-                        Messaging
-                      </a>
+                    <Link href="/messaging" className="flex items-center p-2 rounded-lg text-white text-lg">
+                      <div className="relative mr-3">
+                        <MessageSquare className="h-6 w-6" />
+                        {unreadCount > 0 && (
+                          <motion.span 
+                            className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 500, damping: 30, delay: 0.3 }}
+                          >
+                            {unreadCount > 99 ? '99+' : unreadCount}
+                          </motion.span>
+                        )}
+                      </div>
+                      Messaging
                     </Link>
                   </motion.li>
 
                   <motion.li variants={menuItemVariants}>
-                    <Link href="/scoutvision-feed">
-                      <a className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/scoutvision-feed" ? "active bg-primary" : ""}`}>
-                        <Video className="h-6 w-6 mr-3" />
-                        ScoutVision Feed
-                      </a>
+                    <Link href="/scoutvision-feed" className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/scoutvision-feed" ? "active bg-primary" : ""}`}>
+                      <Video className="h-6 w-6 mr-3" />
+                      ScoutVision Feed
                     </Link>
                   </motion.li>
                   
                   <motion.li variants={menuItemVariants}>
-                    <Link href="/coach-portal">
-                      <a className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/coach-portal" ? "active bg-primary" : ""}`}>
-                        <UserCog className="h-6 w-6 mr-3" />
-                        Coach Portal
-                      </a>
+                    <Link href="/coach-portal" className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/coach-portal" ? "active bg-primary" : ""}`}>
+                      <UserCog className="h-6 w-6 mr-3" />
+                      Coach Portal
                     </Link>
                   </motion.li>
                   
                   <motion.li variants={menuItemVariants}>
-                    <Link href="/combine-tour">
-                      <a className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/combine-tour" ? "active bg-primary" : ""}`}>
-                        <CalendarCheck className="h-6 w-6 mr-3" />
-                        Combine Tour
-                      </a>
+                    <Link href="/combine-tour" className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/combine-tour" ? "active bg-primary" : ""}`}>
+                      <CalendarCheck className="h-6 w-6 mr-3" />
+                      Combine Tour
                     </Link>
                   </motion.li>
                   
                   <motion.li variants={menuItemVariants}>
-                    <Link href="/myplayer-xp">
-                      <a className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/myplayer-xp" ? "active bg-primary" : ""}`}>
-                        <Sparkles className="h-6 w-6 mr-3" />
-                        MyPlayer XP
-                      </a>
+                    <Link href="/myplayer-xp" className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/myplayer-xp" ? "active bg-primary" : ""}`}>
+                      <Sparkles className="h-6 w-6 mr-3" />
+                      MyPlayer XP
                     </Link>
                   </motion.li>
                   
                   <motion.li variants={menuItemVariants}>
-                    <Link href="/weight-room">
-                      <a className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/weight-room" ? "active bg-primary" : ""}`}>
-                        <Dumbbell className="h-6 w-6 mr-3" />
-                        Weight Room
-                      </a>
+                    <Link href="/weight-room" className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/weight-room" ? "active bg-primary" : ""}`}>
+                      <Dumbbell className="h-6 w-6 mr-3" />
+                      Weight Room
                     </Link>
                   </motion.li>
                   
                   <motion.li variants={menuItemVariants}>
-                    <Link href="/myplayer-star-path">
-                      <a className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/myplayer-star-path" ? "active bg-primary" : ""}`}>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-3" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="0.5">
-                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                        </svg>
-                        Star Path
-                      </a>
+                    <Link href="/myplayer-star-path" className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/myplayer-star-path" ? "active bg-primary" : ""}`}>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-3" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="0.5">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                      Star Path
                     </Link>
                   </motion.li>
                   
                   <motion.li variants={menuItemVariants}>
-                    <Link href="/myplayer-ai-coach">
-                      <a className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/myplayer-ai-coach" ? "active bg-primary" : ""}`}>
-                        <Bot className="h-6 w-6 mr-3" />
-                        AI Coach
-                      </a>
+                    <Link href="/myplayer-ai-coach" className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/myplayer-ai-coach" ? "active bg-primary" : ""}`}>
+                      <Bot className="h-6 w-6 mr-3" />
+                      AI Coach
                     </Link>
                   </motion.li>
                   
                   <motion.li variants={menuItemVariants}>
-                    <Link href="/nextup-spotlight">
-                      <a className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/nextup-spotlight" ? "active bg-primary" : ""}`}>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" />
-                        </svg>
-                        NextUp Spotlight
-                      </a>
+                    <Link href="/nextup-spotlight" className={`flex items-center p-2 rounded-lg text-white text-lg ${location === "/nextup-spotlight" ? "active bg-primary" : ""}`}>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" />
+                      </svg>
+                      NextUp Spotlight
                     </Link>
                   </motion.li>
                   
                   {user && user.role === "admin" && (
                     <motion.li variants={menuItemVariants}>
-                      <Link href="/admin-dashboard">
-                        <a className="flex items-center p-2 rounded-lg text-white text-lg">
-                          <ChartBarStacked className="h-6 w-6 mr-3" />
-                          Admin Dashboard
-                        </a>
+                      <Link href="/admin-dashboard" className="flex items-center p-2 rounded-lg text-white text-lg">
+                        <ChartBarStacked className="h-6 w-6 mr-3" />
+                        Admin Dashboard
                       </Link>
                     </motion.li>
                   )}
@@ -707,11 +633,9 @@ export default function Layout({ children }: LayoutProps) {
                     </Button>
                   </div>
                 ) : (
-                  <Link href="/login">
-                    <a className="flex items-center p-2 rounded-lg text-white">
-                      <LogIn className="h-5 w-5 mr-3" />
-                      Login
-                    </a>
+                  <Link href="/login" className="flex items-center p-2 rounded-lg text-white">
+                    <LogIn className="h-5 w-5 mr-3" />
+                    Login
                   </Link>
                 )}
               </motion.div>
