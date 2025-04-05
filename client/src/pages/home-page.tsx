@@ -157,78 +157,76 @@ export default function HomePage() {
                 {featuredAthletes.map((athlete) => (
                   <Card 
                     key={athlete.id} 
-                    className="flex-shrink-0 w-[250px] sm:w-[280px] md:w-[300px] overflow-hidden border border-gray-800 bg-black shadow-lg transform transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_15px_rgba(34,211,238,0.3)]"
+                    className="flex-shrink-0 w-[220px] sm:w-[240px] md:w-[260px] overflow-hidden border border-gray-800 bg-black shadow-lg transform transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_15px_rgba(34,211,238,0.3)]"
                   >
-                    <div className="relative h-48 overflow-hidden">
+                    <div className="relative h-36 overflow-hidden">
                       <img
                         src={athlete.coverImage}
                         alt={athlete.name}
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute top-3 right-3 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-md py-1 px-2 text-sm text-white font-bold shadow-[0_0_10px_rgba(34,211,238,0.6)]">
+                      <div className="absolute top-2 right-2 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-md py-1 px-2 text-xs text-white font-bold shadow-[0_0_10px_rgba(34,211,238,0.6)]">
                         <div className="flex items-center gap-1">
                           <CheckCircle className="h-3 w-3" />
                           <span>VERIFIED</span>
                         </div>
                       </div>
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-3">
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-2">
                       </div>
                     </div>
                     
-                    <CardHeader className="pb-2 border-b border-gray-800">
+                    <CardHeader className="pb-2 pt-3 px-3 border-b border-gray-800">
                       <div className="flex items-center gap-3">
-                        <div className="relative">
+                        <div className="relative flex-shrink-0">
                           <img
                             src={athlete.profileImage}
                             alt={athlete.name}
-                            className="w-14 h-14 rounded-full object-cover border-2 border-blue-500 shadow-[0_0_8px_rgba(34,211,238,0.4)]"
+                            className="w-12 h-12 rounded-full object-cover border-2 border-blue-500 shadow-[0_0_8px_rgba(34,211,238,0.4)]"
                           />
-                          <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-xs font-bold rounded-full w-8 h-8 flex items-center justify-center shadow-[0_0_8px_rgba(34,211,238,0.5)] border border-white">
+                          <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-[0_0_8px_rgba(34,211,238,0.5)] border border-white">
                             {athlete.starRating}
                           </div>
                         </div>
-                        <div>
-                          <CardTitle className="text-lg text-white">{athlete.name}</CardTitle>
-                          <p className="text-sm text-blue-400 font-medium mb-1">{athlete.sportPosition}</p>
-                          <div className="flex items-center gap-1">
+                        <div className="min-w-0">
+                          <CardTitle className="text-base text-white truncate">{athlete.name}</CardTitle>
+                          <p className="text-xs text-blue-400 font-medium truncate">{athlete.sportPosition}</p>
+                          <div className="flex items-center gap-1 mt-1">
                             {renderStarRating(athlete.starRating)}
                           </div>
                         </div>
                       </div>
                     </CardHeader>
                     
-                    <CardContent className="py-3">
-                      <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-800">
+                    <CardContent className="py-2 px-3">
+                      <div className="flex items-center justify-between mb-2 pb-2 border-b border-gray-800">
                         <div className="flex flex-col">
                           <span className="text-xs text-gray-400">SPORT</span>
-                          <span className="text-sm text-white">{athlete.sportPosition.split(' ')[0]}</span>
+                          <span className="text-xs text-white">{athlete.sportPosition.split(' ')[0]}</span>
                         </div>
                         <div className="flex flex-col text-center">
                           <span className="text-xs text-gray-400">POSITION</span>
-                          <span className="text-sm text-white">{athlete.sportPosition.split(' ').slice(1).join(' ')}</span>
+                          <span className="text-xs text-white">{athlete.sportPosition.split(' ').slice(1).join(' ')}</span>
                         </div>
                         <div className="flex flex-col text-right">
-                          <span className="text-xs text-gray-400">GAR SCORE</span>
-                          <span className="text-sm text-cyan-400 font-bold flex items-center justify-end">
-                            {athlete.starRating}
-                            <span className="text-xs text-gray-400 ml-1">/100</span>
+                          <span className="text-xs text-gray-400">GAR</span>
+                          <span className="text-xs text-cyan-400 font-bold">
+                            {athlete.starRating}/100
                           </span>
                         </div>
                       </div>
-                      <p className="text-gray-300 text-sm line-clamp-3">{athlete.highlightText}</p>
                     </CardContent>
                     
-                    <CardFooter className="flex justify-between pt-0">
-                      <Button asChild variant="ghost" size="sm" className="text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
-                        <Link href={`/profile/${athlete.userId}`}>View Profile</Link>
+                    <CardFooter className="flex justify-between pt-0 px-3 pb-3">
+                      <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-xs text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
+                        <Link href={`/profile/${athlete.userId}`}>Profile</Link>
                       </Button>
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className="flex items-center gap-1 text-blue-400 hover:text-blue-300 hover:bg-blue-900/20"
+                        className="h-7 px-2 flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 hover:bg-blue-900/20"
                         disabled={!athlete.featuredVideo}
                       >
-                        <Video className="h-4 w-4" /> Highlights
+                        <Video className="h-3 w-3" /> Highlights
                       </Button>
                     </CardFooter>
                   </Card>
@@ -275,79 +273,121 @@ export default function HomePage() {
           </TabsList>
 
           <TabsContent value="featured" className="mt-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {(activeTab === "featured" ? featuredBlogPosts : blogPosts)
-                .filter(post => post.featured)
-                .map((post) => (
-                  <Card key={post.id} className="overflow-hidden border border-gray-800 bg-black shadow-lg transform transition-all duration-300 hover:shadow-[0_0_10px_rgba(34,211,238,0.2)]">
-                    {post.coverImage && (
-                      <div className="h-48 overflow-hidden">
-                        <img
-                          src={post.coverImage}
-                          alt={post.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )}
-                    <CardHeader>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge variant="secondary" className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">{post.category}</Badge>
-                        <div className="flex items-center text-sm text-gray-400">
-                          <Clock className="mr-1 h-3 w-3" />
-                          {formatDate(post.publishDate)}
-                        </div>
-                      </div>
-                      <CardTitle className="text-xl text-white">{post.title}</CardTitle>
-                      <CardDescription className="line-clamp-2 text-gray-400">
-                        {post.summary}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardFooter>
-                      <Button asChild variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
-                        <Link href={`/blog/${post.slug}`}>Read Article</Link>
-                      </Button>
-                    </CardFooter>
-                  </Card>
+            <div className="relative">
+              {/* Left Shadow Overlay */}
+              <div className="absolute left-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-r from-gray-950 to-transparent pointer-events-none"></div>
+              
+              {/* Right Shadow Overlay */}
+              <div className="absolute right-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-gray-950 to-transparent pointer-events-none"></div>
+              
+              {/* Carousel - Mobile Friendly */}
+              <div className="overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4">
+                <div className="flex gap-4 min-w-max">
+                  {(activeTab === "featured" ? featuredBlogPosts : blogPosts)
+                    .filter(post => post.featured)
+                    .map((post) => (
+                      <Card key={post.id} className="flex-shrink-0 w-[280px] sm:w-[320px] overflow-hidden border border-gray-800 bg-black shadow-lg transform transition-all duration-300 hover:shadow-[0_0_10px_rgba(34,211,238,0.2)]">
+                        {post.coverImage && (
+                          <div className="h-40 overflow-hidden">
+                            <img
+                              src={post.coverImage}
+                              alt={post.title}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        <CardHeader className="pb-2">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge variant="secondary" className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">{post.category}</Badge>
+                            <div className="flex items-center text-sm text-gray-400">
+                              <Clock className="mr-1 h-3 w-3" />
+                              {formatDate(post.publishDate)}
+                            </div>
+                          </div>
+                          <CardTitle className="text-lg text-white line-clamp-1">{post.title}</CardTitle>
+                          <CardDescription className="line-clamp-2 text-gray-400 text-sm">
+                            {post.summary}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardFooter className="pt-0">
+                          <Button asChild variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
+                            <Link href={`/blog/${post.slug}`}>Read Article</Link>
+                          </Button>
+                        </CardFooter>
+                      </Card>
+                    ))}
+                </div>
+              </div>
+              
+              {/* Navigation Dots */}
+              <div className="flex justify-center mt-4 space-x-2">
+                {Array.from({ length: Math.min(Math.ceil((activeTab === "featured" ? featuredBlogPosts : blogPosts).filter(post => post.featured).length / 4), 3) }).map((_, i) => (
+                  <div 
+                    key={i} 
+                    className={`h-2 w-2 rounded-full ${i === 0 ? 'bg-blue-400' : 'bg-gray-700'} transition-all duration-300`}
+                  ></div>
                 ))}
+              </div>
             </div>
           </TabsContent>
 
           {["training", "nutrition", "recruiting"].map((category) => (
             <TabsContent key={category} value={category} className="mt-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {blogPosts
-                  .filter((post) => post.category.toLowerCase() === category)
-                  .map((post) => (
-                    <Card key={post.id} className="overflow-hidden border border-gray-800 bg-black shadow-lg">
-                      {post.coverImage && (
-                        <div className="h-48 overflow-hidden">
-                          <img
-                            src={post.coverImage}
-                            alt={post.title}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      )}
-                      <CardHeader>
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="secondary" className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">{post.category}</Badge>
-                          <div className="flex items-center text-sm text-gray-400">
-                            <Clock className="mr-1 h-3 w-3" />
-                            {formatDate(post.publishDate)}
-                          </div>
-                        </div>
-                        <CardTitle className="text-xl text-white">{post.title}</CardTitle>
-                        <CardDescription className="line-clamp-2 text-gray-400">
-                          {post.summary}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardFooter>
-                        <Button asChild variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
-                          <Link href={`/blog/${post.slug}`}>Read Article</Link>
-                        </Button>
-                      </CardFooter>
-                    </Card>
+              <div className="relative">
+                {/* Left Shadow Overlay */}
+                <div className="absolute left-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-r from-gray-950 to-transparent pointer-events-none"></div>
+                
+                {/* Right Shadow Overlay */}
+                <div className="absolute right-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-gray-950 to-transparent pointer-events-none"></div>
+                
+                {/* Carousel - Mobile Friendly */}
+                <div className="overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4">
+                  <div className="flex gap-4 min-w-max">
+                    {blogPosts
+                      .filter((post) => post.category.toLowerCase() === category)
+                      .map((post) => (
+                        <Card key={post.id} className="flex-shrink-0 w-[280px] sm:w-[320px] overflow-hidden border border-gray-800 bg-black shadow-lg transform transition-all duration-300 hover:shadow-[0_0_10px_rgba(34,211,238,0.2)]">
+                          {post.coverImage && (
+                            <div className="h-40 overflow-hidden">
+                              <img
+                                src={post.coverImage}
+                                alt={post.title}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+                          <CardHeader className="pb-2">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Badge variant="secondary" className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">{post.category}</Badge>
+                              <div className="flex items-center text-sm text-gray-400">
+                                <Clock className="mr-1 h-3 w-3" />
+                                {formatDate(post.publishDate)}
+                              </div>
+                            </div>
+                            <CardTitle className="text-lg text-white line-clamp-1">{post.title}</CardTitle>
+                            <CardDescription className="line-clamp-2 text-gray-400 text-sm">
+                              {post.summary}
+                            </CardDescription>
+                          </CardHeader>
+                          <CardFooter className="pt-0">
+                            <Button asChild variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
+                              <Link href={`/blog/${post.slug}`}>Read Article</Link>
+                            </Button>
+                          </CardFooter>
+                        </Card>
+                      ))}
+                  </div>
+                </div>
+                
+                {/* Navigation Dots */}
+                <div className="flex justify-center mt-4 space-x-2">
+                  {Array.from({ length: Math.min(Math.ceil(blogPosts.filter((post) => post.category.toLowerCase() === category).length / 4), 3) }).map((_, i) => (
+                    <div 
+                      key={i} 
+                      className={`h-2 w-2 rounded-full ${i === 0 ? 'bg-blue-400' : 'bg-gray-700'} transition-all duration-300`}
+                    ></div>
                   ))}
+                </div>
               </div>
             </TabsContent>
           ))}
