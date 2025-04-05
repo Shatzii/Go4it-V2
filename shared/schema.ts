@@ -926,3 +926,68 @@ export const insertAthleteStarProfileSchema = createInsertSchema(athleteStarProf
 });
 export type AthleteStarProfile = typeof athleteStarProfiles.$inferSelect;
 export type InsertAthleteStarProfile = z.infer<typeof insertAthleteStarProfileSchema>;
+
+// Onboarding Tutorial Progress
+export const onboardingProgress = pgTable("onboarding_progress", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id).unique(),
+  isCompleted: boolean("is_completed").notNull().default(false),
+  currentStep: integer("current_step").notNull().default(1),
+  totalSteps: integer("total_steps").notNull().default(5),
+  lastUpdated: timestamp("last_updated").notNull().defaultNow(),
+  completedSections: text("completed_sections").array(),
+  skippedSections: text("skipped_sections").array(),
+});
+
+// Athlete Journey Map
+export const athleteJourneyMap = pgTable("athlete_journey_map", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id).unique(),
+  currentPhase: text("current_phase").notNull(),
+  startedAt: timestamp("started_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  timeline: jsonb("timeline").notNull(),
+  goals: jsonb("goals").notNull(),
+  milestones: jsonb("milestones").notNull(),
+});
+
+// Journey Milestones
+export const journeyMilestones = pgTable("journey_milestones", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  journeyMapId: integer("journey_map_id").notNull().references(() => athleteJourneyMap.id),
+  title: text("title").notNull(),
+  description: text("description"),
+  targetDate: timestamp("target_date"),
+  isCompleted: boolean("is_completed").notNull().default(false),
+  completedAt: timestamp("completed_at"),
+  type: text("type").notNull(), // athletic, academic, personal
+  priority: integer("priority").notNull().default(1),
+});
+
+// Insert schemas for the new tables
+export const insertOnboardingProgressSchema = createInsertSchema(onboardingProgress).omit({
+  id: true,
+  lastUpdated: true
+});
+
+export const insertAthleteJourneyMapSchema = createInsertSchema(athleteJourneyMap).omit({
+  id: true,
+  startedAt: true,
+  updatedAt: true
+});
+
+export const insertJourneyMilestoneSchema = createInsertSchema(journeyMilestones).omit({
+  id: true,
+  completedAt: true
+});
+
+// Types for the new tables
+export type OnboardingProgress = typeof onboardingProgress.$inferSelect;
+export type InsertOnboardingProgress = z.infer<typeof insertOnboardingProgressSchema>;
+
+export type AthleteJourneyMap = typeof athleteJourneyMap.$inferSelect;
+export type InsertAthleteJourneyMap = z.infer<typeof insertAthleteJourneyMapSchema>;
+
+export type JourneyMilestone = typeof journeyMilestones.$inferSelect;
+export type InsertJourneyMilestone = z.infer<typeof insertJourneyMilestoneSchema>;

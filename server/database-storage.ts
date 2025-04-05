@@ -31,7 +31,10 @@ import {
   weightRoomEquipment, type WeightRoomEquipment, type InsertWeightRoomEquipment,
   playerEquipment, type PlayerEquipment, type InsertPlayerEquipment,
   videoHighlights, type VideoHighlight, type InsertVideoHighlight,
-  athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile
+  athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile,
+  onboardingProgress, type OnboardingProgress, type InsertOnboardingProgress,
+  athleteJourneyMap, type AthleteJourneyMap, type InsertAthleteJourneyMap,
+  journeyMilestones, type JourneyMilestone, type InsertJourneyMilestone
 } from "@shared/schema";
 import { IStorage } from "./storage";
 import { db } from "./db";
@@ -2468,5 +2471,129 @@ export class DatabaseStorage implements IStorage {
       .returning();
     
     return newProfile;
+  }
+  
+  // Onboarding Progress operations
+  async getOnboardingProgress(userId: number): Promise<OnboardingProgress | undefined> {
+    const [progress] = await db
+      .select()
+      .from(onboardingProgress)
+      .where(eq(onboardingProgress.userId, userId));
+      
+    return progress;
+  }
+  
+  async createOnboardingProgress(progress: InsertOnboardingProgress): Promise<OnboardingProgress> {
+    const now = new Date();
+    
+    const [newProgress] = await db
+      .insert(onboardingProgress)
+      .values({
+        ...progress,
+        lastUpdated: now
+      })
+      .returning();
+    
+    return newProgress;
+  }
+  
+  async updateOnboardingProgress(userId: number, data: Partial<OnboardingProgress>): Promise<OnboardingProgress | undefined> {
+    const now = new Date();
+    
+    const [updatedProgress] = await db
+      .update(onboardingProgress)
+      .set({
+        ...data,
+        lastUpdated: now
+      })
+      .where(eq(onboardingProgress.userId, userId))
+      .returning();
+    
+    return updatedProgress;
+  }
+  
+  // Athlete Journey Map operations
+  async getAthleteJourneyMap(userId: number): Promise<AthleteJourneyMap | undefined> {
+    const [journeyMap] = await db
+      .select()
+      .from(athleteJourneyMap)
+      .where(eq(athleteJourneyMap.userId, userId));
+      
+    return journeyMap;
+  }
+  
+  async createAthleteJourneyMap(journeyMap: InsertAthleteJourneyMap): Promise<AthleteJourneyMap> {
+    const now = new Date();
+    
+    const [newJourneyMap] = await db
+      .insert(athleteJourneyMap)
+      .values({
+        ...journeyMap,
+        startedAt: now,
+        updatedAt: now
+      })
+      .returning();
+    
+    return newJourneyMap;
+  }
+  
+  async updateAthleteJourneyMap(userId: number, data: Partial<AthleteJourneyMap>): Promise<AthleteJourneyMap | undefined> {
+    const now = new Date();
+    
+    const [updatedJourneyMap] = await db
+      .update(athleteJourneyMap)
+      .set({
+        ...data,
+        updatedAt: now
+      })
+      .where(eq(athleteJourneyMap.userId, userId))
+      .returning();
+    
+    return updatedJourneyMap;
+  }
+  
+  // Journey Milestone operations
+  async getJourneyMilestones(journeyMapId: number): Promise<JourneyMilestone[]> {
+    return await db
+      .select()
+      .from(journeyMilestones)
+      .where(eq(journeyMilestones.journeyMapId, journeyMapId))
+      .orderBy(asc(journeyMilestones.priority));
+  }
+  
+  async getJourneyMilestone(id: number): Promise<JourneyMilestone | undefined> {
+    const [milestone] = await db
+      .select()
+      .from(journeyMilestones)
+      .where(eq(journeyMilestones.id, id));
+      
+    return milestone;
+  }
+  
+  async createJourneyMilestone(milestone: InsertJourneyMilestone): Promise<JourneyMilestone> {
+    const [newMilestone] = await db
+      .insert(journeyMilestones)
+      .values(milestone)
+      .returning();
+    
+    return newMilestone;
+  }
+  
+  async updateJourneyMilestone(id: number, data: Partial<JourneyMilestone>): Promise<JourneyMilestone | undefined> {
+    const [updatedMilestone] = await db
+      .update(journeyMilestones)
+      .set(data)
+      .where(eq(journeyMilestones.id, id))
+      .returning();
+    
+    return updatedMilestone;
+  }
+  
+  async deleteJourneyMilestone(id: number): Promise<boolean> {
+    const result = await db
+      .delete(journeyMilestones)
+      .where(eq(journeyMilestones.id, id));
+      
+    return result.count > 0;
   }
 }
