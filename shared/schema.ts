@@ -2,6 +2,12 @@ import { pgTable, text, serial, integer, boolean, timestamp, json, real, date, j
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Type for measurement system preference
+export type MeasurementSystem = 'metric' | 'imperial';
+
+// Zod validation for MeasurementSystem
+export const measurementSystemSchema = z.enum(['metric', 'imperial']);
+
 // User table (for both athletes and coaches)
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -13,6 +19,7 @@ export const users = pgTable("users", {
   profileImage: text("profile_image"),
   bio: text("bio"),
   createdAt: timestamp("created_at").defaultNow(),
+  measurementSystem: text("measurement_system").default("metric"), // 'metric' or 'imperial'
 });
 
 // Specific athlete profile information
@@ -418,6 +425,11 @@ export const playerEquipment = pgTable("player_equipment", {
 
 // Create insert schemas for all tables
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
+
+// Extend the insertUserSchema with validation for measurementSystem
+export const insertUserWithMeasurementSchema = insertUserSchema.extend({
+  measurementSystem: measurementSystemSchema.optional().default('metric'),
+});
 export const insertAthleteProfileSchema = createInsertSchema(athleteProfiles).omit({ id: true });
 export const insertCoachProfileSchema = createInsertSchema(coachProfiles).omit({ id: true });
 export const insertVideoSchema = createInsertSchema(videos).omit({ id: true, uploadDate: true, analyzed: true });
@@ -477,6 +489,7 @@ export const insertPlayerEquipmentSchema = createInsertSchema(playerEquipment).o
 // Export types for insert and select operations
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export type InsertUserWithMeasurement = z.infer<typeof insertUserWithMeasurementSchema>;
 
 export type AthleteProfile = typeof athleteProfiles.$inferSelect;
 export type InsertAthleteProfile = z.infer<typeof insertAthleteProfileSchema>;
