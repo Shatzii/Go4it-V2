@@ -6,11 +6,20 @@ import { eq } from 'drizzle-orm';
 import { generateSlug } from './utils';
 import cron from 'node-cron';
 import axios from 'axios';
+import { openAIService } from './services/openai-service';
 
-// OpenAI client setup
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || '',
-});
+// Function to get OpenAI client
+async function getOpenAIClient(): Promise<OpenAI> {
+  try {
+    return await openAIService.getClient();
+  } catch (error) {
+    console.error("Error getting OpenAI client:", error);
+    // Fallback to environment variable
+    return new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY || '',
+    });
+  }
+}
 
 // Social media API configuration
 // These will be set from the apiKeys table or environment variables
@@ -280,6 +289,9 @@ export async function generateBlogPost(): Promise<GeneratedBlogContent | null> {
                     }
                     Make the content informative, engaging, and professional.`;
     
+    // Get the OpenAI client from our service
+    const openai = await getOpenAIClient();
+    
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
@@ -332,9 +344,11 @@ export async function generateBlogPost(): Promise<GeneratedBlogContent | null> {
  */
 export async function createAIBlogPost(authorId: number): Promise<boolean> {
   try {
-    // Check if OpenAI API key is configured
-    if (!process.env.OPENAI_API_KEY) {
-      console.error('OpenAI API key not configured. Set OPENAI_API_KEY environment variable.');
+    // Check if OpenAI API key is available
+    try {
+      await openAIService.hasValidApiKey();
+    } catch (error) {
+      console.error('OpenAI API key not available:', error);
       return false;
     }
 

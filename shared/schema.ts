@@ -87,7 +87,7 @@ export const sportRecommendations = pgTable("sport_recommendations", {
 // API Keys for external services
 export const apiKeys = pgTable("api_keys", {
   id: serial("id").primaryKey(),
-  keyType: text("key_type").notNull().unique(), // openai, stripe, sendgrid, twilio, etc.
+  keyType: text("key_type").notNull().unique(), // openai, stripe, sendgrid, twilio, twitter, reddit_client_id, reddit_client_secret, etc.
   keyValue: text("key_value").notNull(),
   addedAt: timestamp("added_at").defaultNow(),
   lastUsed: timestamp("last_used"),
@@ -885,7 +885,7 @@ export type InsertVideoHighlight = z.infer<typeof insertVideoHighlightSchema>;
 
 // API Key schema and types
 export const insertApiKeySchema = createInsertSchema(apiKeys, {
-  keyType: z.enum(['openai', 'stripe', 'sendgrid', 'twilio', 'google', 'aws', 'active']),
+  keyType: z.enum(['openai', 'stripe', 'sendgrid', 'twilio', 'google', 'aws', 'active', 'twitter', 'reddit_client_id', 'reddit_client_secret']),
 }).omit({ id: true, addedAt: true, lastUsed: true });
 
 export type ApiKey = typeof apiKeys.$inferSelect;
