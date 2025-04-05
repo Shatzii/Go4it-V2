@@ -1871,7 +1871,10 @@ export class DatabaseStorage implements IStorage {
     // Check if we already have users
     const existingUsers = await db.select().from(users);
     if (existingUsers.length > 0) {
-      console.log("Data already seeded, skipping...");
+      console.log("Basic data already seeded, checking for realistic athletes...");
+      // Import and run the athlete seeding function
+      const { seedRealisticAthletes } = await import('./seed-athletes');
+      await seedRealisticAthletes();
       return;
     }
     // Create sample users (1 athlete, 2 coaches, 1 admin)
