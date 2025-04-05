@@ -115,12 +115,12 @@
   }
   
   /* Hide scrollbar for carousel */
-  .hide-scrollbar {
+  .hide-scrollbar, .scrollbar-hide {
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
   }
   
-  .hide-scrollbar::-webkit-scrollbar {
+  .hide-scrollbar::-webkit-scrollbar, .scrollbar-hide::-webkit-scrollbar {
     display: none; /* Chrome, Safari and Opera */
   }
 }
