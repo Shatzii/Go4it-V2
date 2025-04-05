@@ -1,7 +1,8 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { fileUpload } from "./file-upload";
+import { fileUpload, imageUpload, getUploadedImages, deleteImage } from "./file-upload";
+import fs from "fs";
 import { analyzeVideo, generateSportRecommendations } from "./openai";
 import { hashPassword, comparePasswords } from "./database-storage";
 import { db } from "./db";
@@ -1603,6 +1604,110 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Home feed API - combines blog posts and featured athletes for the dashboard
+  // CMS Image Management Routes
+  app.get("/api/cms/images", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const category = req.query.category as string | undefined;
+      const images = await getUploadedImages(category);
+      return res.json(images);
+    } catch (error) {
+      console.error("Error fetching images:", error);
+      return res.status(500).json({ message: "Error fetching images" });
+    }
+  });
+
+  app.post("/api/cms/images/upload", isAuthenticated, imageUpload.single("image"), async (req: Request, res: Response) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No image file uploaded" });
+      }
+      
+      const category = req.body.category || 'images';
+      const relativePath = path.relative(process.cwd(), req.file.path);
+      const url = `/${relativePath.split(path.sep).join('/')}`;
+      
+      return res.status(201).json({
+        url,
+        path: relativePath,
+        filename: req.file.filename,
+        category,
+        originalname: req.file.originalname,
+        size: req.file.size
+      });
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      return res.status(500).json({ message: "Error uploading image" });
+    }
+  });
+
+  app.delete("/api/cms/images/:path(*)", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const imagePath = req.params.path;
+      const success = await deleteImage(imagePath);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Image not found or could not be deleted" });
+      }
+      
+      return res.json({ message: "Image deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      return res.status(500).json({ message: "Error deleting image" });
+    }
+  });
+
+  // User Profile Image Update
+  app.post("/api/users/:id/profile-image", isAuthenticated, imageUpload.single("image"), async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const user = req.user as any;
+      
+      // Only allow updating own profile image unless admin
+      if (userId !== user.id && user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to update this profile" });
+      }
+      
+      if (!req.file) {
+        return res.status(400).json({ message: "No image file uploaded" });
+      }
+      
+      const relativePath = path.relative(process.cwd(), req.file.path);
+      const profileImageUrl = `/${relativePath.split(path.sep).join('/')}`;
+      
+      // Update the user's profile image
+      const updatedUser = await storage.updateUser(userId, { profileImage: profileImageUrl });
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      return res.json({
+        id: updatedUser.id,
+        profileImage: updatedUser.profileImage
+      });
+    } catch (error) {
+      console.error("Error updating profile image:", error);
+      return res.status(500).json({ message: "Error updating profile image" });
+    }
+  });
+
+  // Add a route for checking if the CMS system is working
+  app.get("/api/cms/status", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const uploadsDir = path.join(process.cwd(), "uploads");
+      const dirExists = fs.existsSync(uploadsDir);
+      
+      return res.json({
+        status: "operational",
+        uploadsDirectoryExists: dirExists,
+        categories: ["profiles", "blog", "featured", "banners"]
+      });
+    } catch (error) {
+      console.error("Error checking CMS status:", error);
+      return res.status(500).json({ message: "Error checking CMS status" });
+    }
+  });
+
   app.get("/api/feed", async (req: Request, res: Response) => {
     try {
       // Get featured blog posts
