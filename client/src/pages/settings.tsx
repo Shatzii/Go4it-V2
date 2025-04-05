@@ -56,7 +56,7 @@ export default function SettingsPage() {
         method: 'POST',
         data: {
           keyType,
-          value: apiKeys[keyType]
+          keyValue: apiKeys[keyType]
         }
       });
 

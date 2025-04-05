@@ -18,7 +18,7 @@ const openai = new OpenAI({
   apiKey: apiKey
 });
 
-interface MotionData {
+export interface MotionData {
   elbowAlignment?: number;
   releasePoint?: number;
   followThrough?: number;
@@ -32,7 +32,7 @@ interface MotionData {
   [key: string]: any;
 }
 
-interface AnalysisResult {
+export interface AnalysisResult {
   motionData: MotionData;
   overallScore: number;
   feedback: string;
