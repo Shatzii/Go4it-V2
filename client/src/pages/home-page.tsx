@@ -111,8 +111,8 @@ export default function HomePage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Combined Hero and What Makes Us Different Section */}
+    <div className="container mx-auto px-3 py-4 sm:px-4 sm:py-8">
+      {/* Mobile-optimized Hero and What Makes Us Different Section */}
       <WhatMakesUsDifferent showHeroSection={true} showTitle={false} />
 
       {/* Featured Athletes Section */}
