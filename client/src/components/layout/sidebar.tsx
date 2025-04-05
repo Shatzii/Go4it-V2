@@ -51,12 +51,11 @@ export default function Layout({ children }: LayoutProps) {
       {/* Sidebar Navigation (Desktop) */}
       <aside className="hidden md:flex flex-col w-64 bg-neutral dark:bg-neutral-dark text-white">
         <div className="p-4 border-b border-neutral-light border-opacity-20">
-          <h1 className="font-heading font-bold text-2xl flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mr-2 text-secondary" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
-            </svg>
-            GoForIt AI
-          </h1>
+          <img 
+            src="/assets/IMG_3534.jpeg" 
+            alt="Go4It Sports Logo" 
+            className="h-12"
+          />
         </div>
 
         <nav className="flex-1 p-4">
