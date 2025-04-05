@@ -231,6 +231,459 @@ ${existingSports.size > 0 ? `Note: The athlete already has recommendations for t
 
 // Note: We've replaced the mock analysis functions with real OpenAI-powered analysis
 
+// AI Coach functions
+interface CoachMessage {
+  role: string;
+  content: string;
+  metadata?: any;
+}
+
+// Function to generate AI coach responses for the MyPlayer feature
+export async function generateAICoachResponse(
+  userId: number,
+  userMessage: string,
+  messageHistory: CoachMessage[] = []
+): Promise<CoachMessage> {
+  try {
+    console.log(`Generating AI coach response for user ${userId}`);
+    
+    // Get the athlete profile if available
+    const athleteProfile = await storage.getAthleteProfile(userId);
+    
+    // Get the user's progress data
+    const playerProgress = await storage.getPlayerProgress(userId);
+    
+    // Format athlete info for context
+    const athleteInfo = athleteProfile ? {
+      age: athleteProfile.age || 18,
+      height: athleteProfile.height || 175, // in cm
+      weight: athleteProfile.weight || 70, // in kg
+      sports: athleteProfile.sportsInterest || [],
+      experience: "beginner" // Default to beginner since experienceLevel isn't in schema
+    } : {
+      experience: "beginner"
+    };
+    
+    // Format player progress for context
+    const progressInfo = playerProgress ? {
+      level: playerProgress.currentLevel,
+      xpTotal: playerProgress.totalXp,
+      focusAreas: ["Overall Fitness"] // Default focus areas since skillsFocus isn't in schema
+    } : {
+      level: 1,
+      xpTotal: 0,
+      focusAreas: ["Overall Fitness"]
+    };
+    
+    // Get recent video analyses if available
+    const videos = await storage.getVideosByUser(userId);
+    const recentAnalyses = [];
+    
+    for (const video of videos.slice(0, 3)) {
+      const analysis = await storage.getVideoAnalysisByVideoId(video.id);
+      if (analysis) {
+        recentAnalyses.push({
+          sport: video.sportType,
+          score: analysis.overallScore,
+          feedback: analysis.feedback,
+          improvementAreas: analysis.improvementTips
+        });
+      }
+    }
+    
+    // Format message history for context - ensure types match OpenAI's requirements
+    const formattedHistory = messageHistory.map(msg => ({
+      role: msg.role === "coach" ? "assistant" as const : "user" as const,
+      content: msg.content
+    }));
+    
+    // Create a system prompt for the AI coach
+    const systemPrompt = `
+You are an AI sports coach and performance specialist named Coach AI, embedded in the GetVerified platform. 
+Your goal is to guide student athletes through personalized training, technique improvements, and performance analysis.
+
+ATHLETE PROFILE:
+${JSON.stringify(athleteInfo, null, 2)}
+
+PROGRESS INFO:
+${JSON.stringify(progressInfo, null, 2)}
+
+${recentAnalyses.length > 0 ? `RECENT PERFORMANCE ANALYSIS:
+${JSON.stringify(recentAnalyses, null, 2)}` : ''}
+
+Your coaching style should be:
+- Motivational and positive, but honest about areas for improvement
+- Focused on proper technique and injury prevention
+- Adaptable to the athlete's current level (${progressInfo.level}/10)
+- Specific and actionable with personalized advice
+- Educational about sports science concepts when relevant
+
+You can provide various types of assistance:
+1. Answer questions about training, technique, and athletic development
+2. Create personalized training plans for different goals
+3. Analyze technique descriptions and provide feedback
+4. Explain sport-specific skills and drills
+5. Give advice on recovery, nutrition, and mental preparation
+6. Interpret performance data when shared by the athlete
+
+If the user asks for a workout or training plan, create a structured plan with:
+- Specific exercises with sets, reps, and rest periods
+- Clear progression path
+- Focus areas tailored to their sport interests
+- Explanation of how each component improves performance
+
+For form analysis, provide:
+- Specific corrections
+- Key technique points
+- Safety considerations
+- Progressive skill development
+
+Remember that you're working with student athletes, primarily focused on development and improvement, not professional performance.
+`;
+
+    // Messages to send to the API with proper type definitions
+    const messages = [
+      { role: "system" as const, content: systemPrompt },
+      ...formattedHistory,
+      { role: "user" as const, content: userMessage }
+    ];
+
+    // Call OpenAI API
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
+      messages,
+      temperature: 0.7,
+      max_tokens: 1000
+    });
+
+    // Get the content from the response
+    const content = response.choices[0].message.content || "I'm sorry, I couldn't process that request.";
+    
+    // Check if it's a workout or training plan response
+    let metadata = undefined;
+    
+    // Look for structured workout data patterns
+    if (
+      (userMessage.toLowerCase().includes("workout") || 
+       userMessage.toLowerCase().includes("training plan") ||
+       userMessage.toLowerCase().includes("program") ||
+       userMessage.toLowerCase().includes("routine")) &&
+      (content.includes("Day 1") || content.includes("Week 1") || content.includes("Sets:") || content.includes("Reps:"))
+    ) {
+      // Extract training plan structure
+      metadata = {
+        type: "workout",
+        title: extractWorkoutTitle(content),
+        items: extractWorkoutItems(content)
+      };
+    }
+    
+    // Generate XP for interacting with the AI coach
+    await storage.addXpToPlayer(
+      userId,
+      10, // Base XP for interaction
+      "ai_coach",
+      "Interacted with AI Coach",
+      undefined
+    );
+    
+    // Return the coach message
+    return {
+      role: "coach",
+      content,
+      metadata
+    };
+    
+  } catch (error: any) {
+    console.error("Error generating AI coach response:", error);
+    throw new Error(`Failed to generate AI coach response: ${error?.message || 'Unknown error'}`);
+  }
+}
+
+// Function to generate a real-time workout assessment
+export async function generateRealTimeWorkoutFeedback(
+  userId: number,
+  exerciseType: string,
+  performanceData: any
+): Promise<any> {
+  try {
+    console.log(`Generating real-time feedback for ${exerciseType} workout`);
+    
+    // Get the athlete profile if available
+    const athleteProfile = await storage.getAthleteProfile(userId);
+    
+    // Prepare performance data for the prompt
+    const formattedPerformanceData = {
+      exerciseType,
+      ...performanceData
+    };
+    
+    // Create a prompt for OpenAI
+    const feedbackPrompt = `
+You are an expert real-time workout coach providing immediate feedback on a student athlete's exercise performance.
+
+EXERCISE INFORMATION:
+Type: ${exerciseType}
+
+PERFORMANCE DATA:
+${JSON.stringify(formattedPerformanceData, null, 2)}
+
+ATHLETE PROFILE:
+${athleteProfile ? JSON.stringify({
+  age: athleteProfile.age || 18,
+  height: athleteProfile.height || 175,
+  weight: athleteProfile.weight || 70,
+  experience: "beginner" // We don't have experienceLevel in the schema
+}, null, 2) : "Beginner level athlete"}
+
+TASK:
+Provide immediate, actionable feedback on the athlete's current exercise performance.
+
+Your feedback should include:
+1. What they're doing well
+2. One specific adjustment to improve form or effectiveness
+3. A motivational cue to maintain energy and focus
+4. A safety tip if relevant
+
+Return your response as a JSON object with the following structure:
+{
+  "positiveFeedback": "What they're doing well",
+  "adjustment": "Specific form correction or technique adjustment",
+  "motivationalCue": "Short motivational phrase",
+  "safetyTip": "Important safety consideration if needed",
+  "overallAssessment": "Brief overall assessment of performance"
+}
+
+Keep your feedback concise - this is meant for real-time guidance during a workout.
+`;
+
+    // Call OpenAI API
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
+      messages: [
+        {
+          role: "system" as const,
+          content: "You are an expert athletic trainer providing real-time workout feedback."
+        },
+        {
+          role: "user" as const,
+          content: feedbackPrompt
+        }
+      ],
+      response_format: { type: "json_object" }
+    });
+
+    // Parse the JSON response
+    const feedback = JSON.parse(response.choices[0].message.content || '{}');
+    
+    return feedback;
+    
+  } catch (error: any) {
+    console.error("Error generating real-time workout feedback:", error);
+    throw new Error(`Failed to generate real-time workout feedback: ${error?.message || 'Unknown error'}`);
+  }
+}
+
+// Function to create personalized training plans based on goals and profile
+export async function generatePersonalizedTrainingPlan(
+  userId: number,
+  goals: string[] = ["Overall Performance"],
+  durationWeeks: number = 4,
+  daysPerWeek: number = 3,
+  focusAreas: string[] = []
+): Promise<any> {
+  try {
+    console.log(`Generating personalized training plan for user ${userId}`);
+    
+    // Get the athlete profile
+    const athleteProfile = await storage.getAthleteProfile(userId);
+    if (!athleteProfile) {
+      throw new Error("Athlete profile not found");
+    }
+    
+    // Get the player progress
+    const playerProgress = await storage.getPlayerProgress(userId);
+    const athleteLevel = playerProgress ? playerProgress.currentLevel : 1;
+    
+    // Format athlete info for the prompt
+    const athleteInfo = {
+      age: athleteProfile.age || 18,
+      height: athleteProfile.height || 175,
+      weight: athleteProfile.weight || 70,
+      sports: athleteProfile.sportsInterest || [],
+      experience: "beginner", // Default to beginner since experienceLevel isn't in schema
+      skillLevel: athleteLevel
+    };
+    
+    // Create a prompt for OpenAI
+    const planPrompt = `
+You are an expert athletic trainer creating a personalized training plan for a student athlete.
+
+ATHLETE PROFILE:
+${JSON.stringify(athleteInfo, null, 2)}
+
+TRAINING PLAN PARAMETERS:
+- Goals: ${goals.join(', ')}
+- Duration: ${durationWeeks} weeks
+- Frequency: ${daysPerWeek} days per week
+- Focus Areas: ${focusAreas.length > 0 ? focusAreas.join(', ') : 'General athletic development'}
+
+TASK:
+Create a comprehensive, progressive training plan that will help this athlete improve based on their profile, goals, and focus areas.
+
+The training plan should include:
+1. An overall description of the training approach
+2. Weekly breakdown of workouts
+3. Day-by-day exercise prescriptions
+4. Progression scheme throughout the program
+5. Key performance indicators to track
+
+For each workout, include:
+- Warm-up activities
+- Main exercises with sets, reps, and rest periods
+- Cool-down/recovery activities
+- Training tips specific to that workout
+
+Return your response as a JSON object with the following structure:
+{
+  "planTitle": "Name of the training plan",
+  "planDescription": "Overall description and approach",
+  "weeks": [
+    {
+      "weekNumber": 1,
+      "focus": "Focus for this week",
+      "progressionNotes": "How this week builds on previous training",
+      "days": [
+        {
+          "dayNumber": 1,
+          "type": "Type of training (e.g., Strength, Speed, Recovery)",
+          "warmup": "Warm-up routine description",
+          "exercises": [
+            {
+              "name": "Exercise name",
+              "sets": number of sets,
+              "reps": "reps description (e.g., '10 reps' or '30 seconds')",
+              "rest": "rest period in seconds",
+              "notes": "Form cues or important details",
+              "progressionTip": "How to progress this exercise"
+            },
+            ...more exercises
+          ],
+          "cooldown": "Cool-down routine description",
+          "tips": "Tips specific to this workout day"
+        },
+        ...more days
+      ]
+    },
+    ...more weeks
+  ],
+  "keyPerformanceIndicators": [
+    "KPI 1 to track progress",
+    "KPI 2 to track progress",
+    ...
+  ],
+  "nutritionTips": "General nutrition advice for this plan",
+  "recoveryRecommendations": "Recovery recommendations during this program"
+}
+
+Make sure the plan is appropriate for their age (${athleteInfo.age}), experience level (${athleteInfo.experience}), and skill level (${athleteInfo.skillLevel}/10).
+Focus on proper progression to prevent injuries while maximizing improvement.
+If the athlete has specific sports interests, tailor exercises to improve sport-specific performance.
+`;
+
+    // Call OpenAI API
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
+      messages: [
+        {
+          role: "system" as const,
+          content: "You are an expert athletic trainer and sports science specialist creating personalized training programs for athletes."
+        },
+        {
+          role: "user" as const,
+          content: planPrompt
+        }
+      ],
+      response_format: { type: "json_object" }
+    });
+
+    // Parse the JSON response
+    const trainingPlan = JSON.parse(response.choices[0].message.content || '{}');
+    
+    // Add XP for generating a training plan
+    await storage.addXpToPlayer(
+      userId,
+      50, // Significant XP for getting a full training plan
+      "training_plan",
+      `Generated ${trainingPlan.planTitle || 'personalized training plan'}`,
+      undefined
+    );
+    
+    return trainingPlan;
+    
+  } catch (error: any) {
+    console.error("Error generating personalized training plan:", error);
+    throw new Error(`Failed to generate personalized training plan: ${error?.message || 'Unknown error'}`);
+  }
+}
+
+// Helper Functions
+function extractWorkoutTitle(content: string): string {
+  // Look for patterns that might be a title
+  const titlePatterns = [
+    /[#*]+\s*(.*?training plan.*?|.*?workout.*?|.*?program.*?)\s*[#*]*/i,
+    /(?:^|\n)#+\s*(.*?training plan.*?|.*?workout.*?|.*?program.*?)\s*(?:\n|$)/i,
+    /(?:^|\n)[A-Z][\w\s&-]+(?:TRAINING|WORKOUT|PROGRAM|PLAN)[\w\s&-]*(?:\n|$)/,
+    /(?:^|\n)["']*([\w\s&-]+(?:Training|Workout|Program|Plan)[\w\s&-]*)["']*(?:\n|$)/i
+  ];
+  
+  for (const pattern of titlePatterns) {
+    const match = content.match(pattern);
+    if (match && match[1]) {
+      return match[1].trim();
+    }
+  }
+  
+  // If no specific title pattern is found, use a default with some text from the beginning
+  const firstLine = content.split('\n')[0].trim();
+  return firstLine.length > 5 ? firstLine : "Personalized Training Plan";
+}
+
+function extractWorkoutItems(content: string): string[] {
+  // Extract key workout components
+  const items: string[] = [];
+  
+  // Common patterns in workout descriptions
+  const patterns = [
+    /(?:^|\n)[-*•]?\s*((?:Day|Week)\s+\d+:.*?)(?:\n|$)/g,
+    /(?:^|\n)[-*•]?\s*((?:Strength|Cardio|HIIT|Speed|Agility|Recovery|Mobility).*?)(?:\n|$)/g,
+    /(?:^|\n)[-*•]?\s*((?:\d+[x×]|\d+\s+sets).*?)(?:\n|$)/g,
+    /(?:^|\n)[-*•]?\s*((?:\d+\s+reps|seconds).*?)(?:\n|$)/g
+  ];
+  
+  // Collect up to 5 key items
+  for (const pattern of patterns) {
+    let match;
+    while ((match = pattern.exec(content)) !== null && items.length < 5) {
+      if (match[1] && !items.includes(match[1].trim())) {
+        items.push(match[1].trim());
+      }
+    }
+  }
+  
+  // If we didn't find enough items, add some general categories
+  if (items.length < 3) {
+    const contentLower = content.toLowerCase();
+    if (contentLower.includes("warm")) items.push("Proper warm-up included");
+    if (contentLower.includes("strength") || contentLower.includes("weight")) items.push("Strength training components");
+    if (contentLower.includes("cardio") || contentLower.includes("endurance")) items.push("Cardiovascular conditioning");
+    if (contentLower.includes("mobility") || contentLower.includes("flexibility")) items.push("Mobility and flexibility work");
+    if (contentLower.includes("recovery") || contentLower.includes("rest")) items.push("Recovery protocols included");
+  }
+  
+  return items.slice(0, 5); // Return maximum 5 items
+}
+
 // Function to generate weight room workout recommendations
 export async function generateWeightRoomPlan(
   userId: number,
@@ -346,11 +799,11 @@ Focus on proper form and technique to prevent injuries.
       model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
       messages: [
         {
-          role: "system",
+          role: "system" as const,
           content: "You are an expert athletic trainer and strength coach specializing in youth and collegiate athletic development."
         },
         {
-          role: "user",
+          role: "user" as const,
           content: workoutPrompt
         }
       ],
@@ -427,11 +880,11 @@ Be encouraging but honest - this is a student athlete who wants to improve, not 
       model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
       messages: [
         {
-          role: "system",
+          role: "system" as const,
           content: "You are an expert strength and conditioning coach specializing in proper form and technique for student athletes."
         },
         {
-          role: "user",
+          role: "user" as const,
           content: feedbackPrompt
         }
       ],

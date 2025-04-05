@@ -2067,6 +2067,171 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // AI Coach API Routes
+  app.get("/api/player/ai-coach/state", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      
+      // Get the player's coach settings
+      // In a real implementation, this would come from the database
+      // For now, we'll return default settings
+      const coachState = {
+        personality: "Supportive and motivational",
+        specialization: "Performance Development",
+        activeTab: "chat",
+        knowledgeAreas: ["Technique Analysis", "Training Programs", "Recovery", "Nutrition", "Sports Psychology"],
+        experienceLevel: "intermediate",
+        lastInteraction: new Date()
+      };
+      
+      return res.json(coachState);
+    } catch (error) {
+      console.error("Error fetching AI coach state:", error);
+      return res.status(500).json({ message: "Error fetching AI coach state" });
+    }
+  });
+  
+  app.get("/api/player/ai-coach/messages", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      
+      // For this implementation, we'll start with a welcome message
+      // In a real implementation, this would query the database for conversation history
+      const messages = [
+        {
+          id: "1",
+          role: "coach",
+          content: "Hey there! I'm your AI Coach. I'm here to help you improve your performance, analyze your technique, and create personalized training plans.",
+          timestamp: new Date(Date.now() - 86400000),
+          type: "text"
+        },
+        {
+          id: "2", 
+          role: "coach",
+          content: "What would you like to work on today?",
+          timestamp: new Date(Date.now() - 86400000),
+          type: "text"
+        }
+      ];
+      
+      return res.json(messages);
+    } catch (error) {
+      console.error("Error fetching AI coach messages:", error);
+      return res.status(500).json({ message: "Error fetching AI coach messages" });
+    }
+  });
+  
+  app.post("/api/player/ai-coach/messages", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const { content } = req.body;
+      
+      if (!content) {
+        return res.status(400).json({ message: "Message content is required" });
+      }
+      
+      // Get previous messages to provide context
+      const previousMessages = []; // In a real implementation, get from database
+      
+      // Import the AI coach function
+      const { generateAICoachResponse } = await import('./openai');
+      
+      // Generate AI response
+      const response = await generateAICoachResponse(user.id, content, previousMessages);
+      
+      // Format the response
+      const userMessage = {
+        id: Date.now().toString(),
+        role: "user",
+        content: content,
+        timestamp: new Date(),
+        type: "text"
+      };
+      
+      const coachMessage = {
+        id: (Date.now() + 1).toString(),
+        role: "coach",
+        content: response.content,
+        timestamp: new Date(),
+        type: response.metadata ? "workout" : "text",
+        metadata: response.metadata
+      };
+      
+      // In a real implementation, save these messages to the database
+      
+      return res.json([userMessage, coachMessage]);
+    } catch (error) {
+      console.error("Error generating AI coach response:", error);
+      return res.status(500).json({ message: "Error generating AI coach response" });
+    }
+  });
+  
+  app.post("/api/player/ai-coach/messages/:messageId/rate", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const messageId = req.params.messageId;
+      const { isHelpful } = req.body;
+      
+      if (typeof isHelpful !== 'boolean') {
+        return res.status(400).json({ message: "Rating must be true or false" });
+      }
+      
+      // In a real implementation, save this rating to the database
+      // For now, just return success
+      
+      return res.json({ success: true, messageId });
+    } catch (error) {
+      console.error("Error rating AI coach message:", error);
+      return res.status(500).json({ message: "Error rating AI coach message" });
+    }
+  });
+  
+  app.post("/api/player/ai-coach/realtime-feedback", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const { exerciseType, performanceData } = req.body;
+      
+      if (!exerciseType || !performanceData) {
+        return res.status(400).json({ message: "Exercise type and performance data are required" });
+      }
+      
+      // Import the real-time feedback function
+      const { generateRealTimeWorkoutFeedback } = await import('./openai');
+      
+      // Generate real-time feedback
+      const feedback = await generateRealTimeWorkoutFeedback(user.id, exerciseType, performanceData);
+      
+      return res.json(feedback);
+    } catch (error) {
+      console.error("Error generating real-time feedback:", error);
+      return res.status(500).json({ message: "Error generating real-time feedback" });
+    }
+  });
+  
+  app.post("/api/player/ai-coach/training-plan", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const { goals, durationWeeks, daysPerWeek, focusAreas } = req.body;
+      
+      // Import the training plan generator
+      const { generatePersonalizedTrainingPlan } = await import('./openai');
+      
+      // Generate a personalized training plan
+      const trainingPlan = await generatePersonalizedTrainingPlan(
+        user.id,
+        goals || ["Overall Performance"],
+        durationWeeks || 4,
+        daysPerWeek || 3,
+        focusAreas || []
+      );
+      
+      return res.json(trainingPlan);
+    } catch (error) {
+      console.error("Error generating training plan:", error);
+      return res.status(500).json({ message: "Error generating training plan" });
+    }
+  });
+  
   app.post("/api/player/equipment", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const user = req.user as any;
