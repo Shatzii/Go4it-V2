@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import HighlightConfigManager from "@/components/admin/highlight-config-manager";
 import { 
   ChartBarStacked, 
   ChartBar, 
@@ -669,9 +670,12 @@ export default function AdminDashboard() {
           </Card>
         </TabsContent>
 
-        {/* Content Tab - Blog Management */}
+        {/* Content Tab - Blog & Highlight Management */}
         <TabsContent value="content">
           <div className="grid gap-6">
+            {/* Highlight Generator Configurations */}
+            <HighlightConfigManager />
+
             {/* Blog Management Section */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
