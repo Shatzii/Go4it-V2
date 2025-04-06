@@ -48,7 +48,7 @@ export default function SpotlightProfile() {
     image: null,
     coverImage: null,
     bio: "I'm a dedicated point guard with strong ball-handling skills and court vision. My basketball journey started at age 6, and I've been working hard to improve every aspect of my game. I dream of playing college basketball and eventually reaching the NBA. Currently averaging 21.5 points and 8.3 assists per game while maintaining a 3.8 GPA.",
-    highlights: "Breaking ankles with his crossover since 2020",
+    tagline: "Breaking ankles with his crossover since 2020",
     stats: {
       points: 21.5,
       assists: 8.3,
