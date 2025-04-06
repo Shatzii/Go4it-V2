@@ -1,7 +1,12 @@
-// This bridge handles the ESM/CommonJS compatibility for @replit/vite-plugin-cartographer
-// Import the actual cartographer plugin
-import * as cartographerModule from "@replit/vite-plugin-cartographer";
+// This bridge creates a dummy cartographer function to avoid import issues
+// Instead of trying to import from the problematic module, we create a dummy function
 
-// Re-export as both named and default export
-export const cartographer = cartographerModule.cartographer;
+export function cartographer() {
+  return {
+    name: 'cartographer-dummy',
+    apply: () => {},
+    enforce: 'pre',
+  };
+}
+
 export default cartographer;

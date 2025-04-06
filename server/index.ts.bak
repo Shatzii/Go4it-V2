@@ -6,7 +6,6 @@ import path from "path";
 import { createSchema } from "./create-schema";
 import cors from "cors";
 import { storage } from './storage';
-import { getAllActiveApiKeys } from './getAllActiveApiKeys';
 import { initializeBlogGeneration } from './blog-generator';
 import { openAIService } from './services/openai-service';
 import { transferPortalService } from './services/transfer-portal-service';
@@ -72,7 +71,7 @@ app.use((req, res, next) => {
     
     // Load API keys from database
     try {
-      const apiKeys = await getAllActiveApiKeys();
+      const apiKeys = await storage.getAllActiveApiKeys();
       if (apiKeys && apiKeys.length > 0) {
         log(`Loading ${apiKeys.length} API keys from database`);
         
