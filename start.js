@@ -1,7 +1,3 @@
-// This script starts a simple API server for database operations
-// without trying to use the Vite development server
-// This is a workaround for issues with ESM/CommonJS compatibility
-
 import express from 'express';
 import cors from 'cors';
 import session from 'express-session';
@@ -9,14 +5,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import MemoryStore from 'memorystore';
 import fs from 'fs';
-import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from 'postgres';
 
 // Setup proper __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-console.log('Starting Go4It Sports server with database connection...');
 
 // Connect to the database
 const DATABASE_URL = process.env.DATABASE_URL;
@@ -25,17 +18,16 @@ if (!DATABASE_URL) {
   process.exit(1);
 }
 
-// Setting up the drizzle connection
-let sql;
-let db;
 try {
   console.log(`Connecting to database: ${DATABASE_URL}`);
-  sql = postgres(DATABASE_URL);
-  db = drizzle(sql);
+  const sql = postgres(DATABASE_URL);
   
   // Test connection
   const result = await sql`SELECT current_timestamp as time`;
   console.log("Database connection successful:", result[0].time);
+  
+  // Close the connection
+  await sql.end();
 } catch (error) {
   console.error("Database connection error:", error);
   process.exit(1);
@@ -74,8 +66,19 @@ app.get('/api/test', (req, res) => {
 // Test database connectivity
 app.get('/api/db-test', async (req, res) => {
   try {
+    // Check if DATABASE_URL exists
+    if (!process.env.DATABASE_URL) {
+      return res.status(500).json({ error: 'DATABASE_URL not set' });
+    }
+    
+    // Import postgres dynamically
+    const sql = postgres(process.env.DATABASE_URL);
+    
     // Test connection with a simple query
     const result = await sql`SELECT current_timestamp as time`;
+    
+    // Close connection
+    await sql.end();
     
     return res.json({ 
       success: true, 
@@ -91,7 +94,7 @@ app.get('/api/db-test', async (req, res) => {
   }
 });
 
-// Serve static files if they exist
+// Serve static files
 const staticPath = path.join(__dirname, 'client', 'dist');
 if (fs.existsSync(staticPath)) {
   app.use(express.static(staticPath));
@@ -100,46 +103,8 @@ if (fs.existsSync(staticPath)) {
   console.log(`Static path ${staticPath} not found. Only API routes will be available.`);
 }
 
-// For any other GET request, serve the index.html file if it exists
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api/')) {
-    return next();
-  }
-  
-  const indexPath = path.join(__dirname, 'client', 'dist', 'index.html');
-  if (fs.existsSync(indexPath)) {
-    res.sendFile(indexPath);
-  } else {
-    next();
-  }
-});
-
-// Graceful shutdown
-process.on("SIGINT", async () => {
-  console.log("Shutting down server...");
-  try {
-    await sql.end();
-    console.log("Database connection closed");
-  } catch (err) {
-    console.error("Error closing database connection:", err);
-  }
-  process.exit(0);
-});
-
-process.on("SIGTERM", async () => {
-  console.log("Terminating server...");
-  try {
-    await sql.end();
-    console.log("Database connection closed");
-  } catch (err) {
-    console.error("Error closing database connection:", err);
-  }
-  process.exit(0);
-});
-
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Go4It Sports server running at http://0.0.0.0:${PORT}`);
-  console.log(`API available at http://0.0.0.0:${PORT}/api/test`);
+  console.log(`Server running at http://0.0.0.0:${PORT}`);
 });

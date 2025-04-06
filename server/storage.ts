@@ -368,10 +368,13 @@ export interface IStorage {
   // Video Highlight operations
   getVideoHighlights(videoId: number): Promise<VideoHighlight[]>;
   getVideoHighlight(id: number): Promise<VideoHighlight | undefined>;
+  getVideoHighlightsByVideoId(videoId: number): Promise<VideoHighlight[]>;
   createVideoHighlight(highlight: InsertVideoHighlight): Promise<VideoHighlight>;
   updateVideoHighlight(id: number, data: Partial<VideoHighlight>): Promise<VideoHighlight | undefined>;
   deleteVideoHighlight(id: number): Promise<boolean>;
   getFeaturedVideoHighlights(limit?: number): Promise<VideoHighlight[]>;
+  getFeaturedHighlights(limit?: number): Promise<VideoHighlight[]>;
+  getHomePageEligibleHighlights(limit?: number): Promise<VideoHighlight[]>;
   generateVideoHighlight(videoId: number, options: {
     startTime: number;
     endTime: number;
@@ -389,6 +392,8 @@ export interface IStorage {
   updateHighlightGeneratorConfig(id: number, data: Partial<HighlightGeneratorConfig>): Promise<HighlightGeneratorConfig | undefined>;
   deleteHighlightGeneratorConfig(id: number): Promise<boolean>;
   getActiveHighlightGeneratorConfigs(): Promise<HighlightGeneratorConfig[]>;
+  getUnanalyzedVideosForHighlights(): Promise<Video[]>;
+  getUsersByRole(role: string): Promise<User[]>;
 }
 
 import createMemoryStore from "memorystore";
@@ -2569,6 +2574,44 @@ export class MemStorage implements IStorage {
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .slice(0, limit);
   }
+  
+  async getFeaturedHighlights(limit: number = 10): Promise<VideoHighlight[]> {
+    const highlights: VideoHighlight[] = [];
+    for (const highlight of this.videoHighlights.values()) {
+      if (highlight.featured) {
+        highlights.push(highlight);
+      }
+    }
+    return highlights
+      .sort((a, b) => {
+        // First sort by quality score
+        if (b.qualityScore !== a.qualityScore) {
+          return b.qualityScore - a.qualityScore;
+        }
+        // If quality scores are equal, sort by creation date
+        return b.createdAt.getTime() - a.createdAt.getTime();
+      })
+      .slice(0, limit);
+  }
+  
+  async getHomePageEligibleHighlights(limit: number = 5): Promise<VideoHighlight[]> {
+    const highlights: VideoHighlight[] = [];
+    for (const highlight of this.videoHighlights.values()) {
+      if (highlight.featured && highlight.homePageEligible) {
+        highlights.push(highlight);
+      }
+    }
+    return highlights
+      .sort((a, b) => {
+        // First sort by quality score
+        if (b.qualityScore !== a.qualityScore) {
+          return b.qualityScore - a.qualityScore;
+        }
+        // If quality scores are equal, sort by creation date
+        return b.createdAt.getTime() - a.createdAt.getTime();
+      })
+      .slice(0, limit);
+  }
 
   async generateVideoHighlight(videoId: number, options: {
     startTime: number;
@@ -3548,6 +3591,84 @@ export class MemStorage implements IStorage {
     for (const exercise of flexExercises) {
       this.workoutExercises.set(exercise.id, exercise);
     }
+  }
+  
+  // Additional highlight generator methods
+  async getVideoHighlightsByVideoId(videoId: number): Promise<VideoHighlight[]> {
+    const highlights: VideoHighlight[] = [];
+    for (const highlight of this.videoHighlights.values()) {
+      if (highlight.videoId === videoId) {
+        highlights.push(highlight);
+      }
+    }
+    return highlights.sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+  }
+  
+  async getFeaturedHighlights(limit: number = 10): Promise<VideoHighlight[]> {
+    const highlights: VideoHighlight[] = [];
+    for (const highlight of this.videoHighlights.values()) {
+      if (highlight.featured) {
+        highlights.push(highlight);
+      }
+    }
+    return highlights
+      .sort((a, b) => {
+        // First sort by quality score
+        if (b.qualityScore !== a.qualityScore) {
+          return b.qualityScore - a.qualityScore;
+        }
+        // If quality scores are equal, sort by creation date
+        return b.createdAt.getTime() - a.createdAt.getTime();
+      })
+      .slice(0, limit);
+  }
+  
+  async getHomePageEligibleHighlights(limit: number = 5): Promise<VideoHighlight[]> {
+    const highlights: VideoHighlight[] = [];
+    for (const highlight of this.videoHighlights.values()) {
+      if (highlight.featured && highlight.homePageEligible) {
+        highlights.push(highlight);
+      }
+    }
+    return highlights
+      .sort((a, b) => {
+        // First sort by quality score
+        if (b.qualityScore !== a.qualityScore) {
+          return b.qualityScore - a.qualityScore;
+        }
+        // If quality scores are equal, sort by creation date
+        return b.createdAt.getTime() - a.createdAt.getTime();
+      })
+      .slice(0, limit);
+  }
+  
+  async getUnanalyzedVideosForHighlights(): Promise<Video[]> {
+    const unanalyzedVideos: Video[] = [];
+    for (const video of this.videos.values()) {
+      if (video.analyzed && !video.highlightsGenerated) {
+        unanalyzedVideos.push(video);
+      }
+    }
+    return unanalyzedVideos
+      .sort((a, b) => {
+        if (!a.uploadDate || !b.uploadDate) return 0;
+        return b.uploadDate.getTime() - a.uploadDate.getTime();
+      })
+      .slice(0, 10);
+  }
+  
+  async getUsersByRole(role: string): Promise<User[]> {
+    const usersWithRole: User[] = [];
+    for (const user of this.users.values()) {
+      if (user.role === role) {
+        usersWithRole.push(user);
+      }
+    }
+    return usersWithRole.sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
   }
 }
 
