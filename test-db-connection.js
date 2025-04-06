@@ -1,5 +1,5 @@
 // Simple script to test database connection
-import { testConnection } from './server/db-wrapper.js';
+import { testConnection } from './server/db-wrapper.ts';
 
 async function main() {
   console.log('Testing database connection...');

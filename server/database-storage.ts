@@ -1,40 +1,22 @@
-/**
- * Database Storage Implementation
- * 
- * This provides an implementation of the IStorage interface that uses
- * our PostgreSQL database through Drizzle ORM.
- */
-
-import {
+import { 
   users, type User, type InsertUser,
-  videos, type Video, type InsertVideo,
   videoHighlights, type VideoHighlight, type InsertVideoHighlight,
   highlightGeneratorConfigs, type HighlightGeneratorConfig, type InsertHighlightGeneratorConfig,
+  videos, type Video, type InsertVideo
 } from "@shared/schema";
-import { db } from "./db.fixed";
-import { eq, and, desc, sql, InferSelectModel } from "drizzle-orm";
-import { IStorage } from "./storage";
-import session from "express-session";
-import createMemoryStore from "memorystore";
+import { db } from "./db";
+import { eq, desc, and } from "drizzle-orm";
 
-// Create session store for authentication (using memory store for now)
-const MemoryStore = createMemoryStore(session);
+// Interface from storage.ts is reused, but we're only implementing essential methods for now
 
-export class DatabaseStorage implements IStorage {
-  // Session store for authentication
-  public sessionStore = new MemoryStore({
-    checkPeriod: 86400000, // prune expired entries every 24h
-  });
-
-  // We'll implement just the highlight generator related functions for now
+export class DatabaseStorage {
   
-  // Get all video highlights for a specific video
+  // Video Highlight methods
   async getVideoHighlightsByVideoId(videoId: number): Promise<VideoHighlight[]> {
     try {
       const highlights = await db.select()
         .from(videoHighlights)
-        .where(eq(videoHighlights.videoId, videoId))
-        .orderBy(desc(videoHighlights.createdAt));
+        .where(eq(videoHighlights.videoId, videoId));
       
       return highlights;
     } catch (error) {
@@ -43,28 +25,20 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // Create a new video highlight
   async createVideoHighlight(highlight: InsertVideoHighlight): Promise<VideoHighlight> {
-    try {
-      const [newHighlight] = await db.insert(videoHighlights)
-        .values(highlight)
-        .returning();
-      
-      return newHighlight;
-    } catch (error) {
-      console.error('Database error in createVideoHighlight:', error);
-      throw new Error(`Failed to create video highlight: ${error.message}`);
-    }
+    const [newHighlight] = await db
+      .insert(videoHighlights)
+      .values(highlight)
+      .returning();
+    
+    return newHighlight;
   }
-  
-  // Update an existing video highlight
+
   async updateVideoHighlight(id: number, data: Partial<VideoHighlight>): Promise<VideoHighlight | undefined> {
     try {
-      const [updatedHighlight] = await db.update(videoHighlights)
-        .set({
-          ...data,
-          updatedAt: new Date()
-        })
+      const [updatedHighlight] = await db
+        .update(videoHighlights)
+        .set(data)
         .where(eq(videoHighlights.id, id))
         .returning();
       
@@ -74,11 +48,11 @@ export class DatabaseStorage implements IStorage {
       return undefined;
     }
   }
-  
-  // Delete a video highlight
+
   async deleteVideoHighlight(id: number): Promise<boolean> {
     try {
-      await db.delete(videoHighlights)
+      await db
+        .delete(videoHighlights)
         .where(eq(videoHighlights.id, id));
       
       return true;
@@ -87,9 +61,22 @@ export class DatabaseStorage implements IStorage {
       return false;
     }
   }
-  
-  // Get all featured video highlights
+
   async getFeaturedVideoHighlights(limit: number = 10): Promise<VideoHighlight[]> {
+    try {
+      const highlights = await db.select()
+        .from(videoHighlights)
+        .where(eq(videoHighlights.featured, true))
+        .limit(limit);
+      
+      return highlights;
+    } catch (error) {
+      console.error('Database error in getFeaturedVideoHighlights:', error);
+      return [];
+    }
+  }
+
+  async getFeaturedHighlights(limit: number = 10): Promise<VideoHighlight[]> {
     try {
       const highlights = await db.select()
         .from(videoHighlights)
@@ -99,17 +86,11 @@ export class DatabaseStorage implements IStorage {
       
       return highlights;
     } catch (error) {
-      console.error('Database error in getFeaturedVideoHighlights:', error);
+      console.error('Database error in getFeaturedHighlights:', error);
       return [];
     }
   }
-  
-  // Alias method for backward compatibility
-  async getFeaturedHighlights(limit: number = 10): Promise<VideoHighlight[]> {
-    return this.getFeaturedVideoHighlights(limit);
-  }
-  
-  // Get all homepage-eligible highlights
+
   async getHomePageEligibleHighlights(limit: number = 6): Promise<VideoHighlight[]> {
     try {
       const highlights = await db.select()
@@ -117,7 +98,7 @@ export class DatabaseStorage implements IStorage {
         .where(
           and(
             eq(videoHighlights.featured, true),
-            eq(videoHighlights.homePageEligible, true)
+            eq(videoHighlights.qualityScore, 5)
           )
         )
         .orderBy(desc(videoHighlights.createdAt))
@@ -129,58 +110,8 @@ export class DatabaseStorage implements IStorage {
       return [];
     }
   }
-  
-  // Generate a video highlight
-  async generateVideoHighlight(videoId: number, options: {
-    startTime: number;
-    endTime: number;
-    title: string;
-    description?: string;
-    tags?: string[];
-    qualityScore?: number;
-    primarySkill?: string;
-    skillLevel?: number;
-    featured?: boolean;
-    homePageEligible?: boolean;
-  }): Promise<VideoHighlight> {
-    try {
-      // In a real implementation, this would call ffmpeg to extract the highlight clip
-      // and generate a thumbnail, for now we just simulate the paths
-      const uniqueId = Date.now().toString();
-      const sanitizedTitle = options.title.toLowerCase().replace(/[^a-z0-9]/g, '-').substring(0, 20);
-      
-      const highlightPath = `/uploads/highlights/${sanitizedTitle}-${uniqueId}.mp4`;
-      const thumbnailPath = `/uploads/thumbnails/${sanitizedTitle}-${uniqueId}.jpg`;
-      
-      // Create the highlight record
-      const highlight: InsertVideoHighlight = {
-        videoId,
-        title: options.title,
-        description: options.description || '',
-        startTime: options.startTime,
-        endTime: options.endTime,
-        highlightPath,
-        thumbnailPath,
-        aiGenerated: false,
-        tags: options.tags || [],
-        qualityScore: options.qualityScore || 75,
-        primarySkill: options.primarySkill || '',
-        skillLevel: options.skillLevel || 50,
-        featured: options.featured || false,
-        homePageEligible: options.homePageEligible || false,
-        createdBy: 1, // Default to admin user for now
-      };
-      
-      // Save to database
-      const newHighlight = await this.createVideoHighlight(highlight);
-      return newHighlight;
-    } catch (error) {
-      console.error('Database error in generateVideoHighlight:', error);
-      throw new Error(`Failed to generate video highlight: ${error.message}`);
-    }
-  }
-  
-  // Get all highlight generator configurations
+
+  // Highlight Generator Config methods
   async getHighlightGeneratorConfigs(): Promise<HighlightGeneratorConfig[]> {
     try {
       const configs = await db.select()
@@ -192,8 +123,7 @@ export class DatabaseStorage implements IStorage {
       return [];
     }
   }
-  
-  // Get highlight generator configurations by sport
+
   async getHighlightGeneratorConfigsBySport(sportType: string): Promise<HighlightGeneratorConfig[]> {
     try {
       const configs = await db.select()
@@ -206,8 +136,7 @@ export class DatabaseStorage implements IStorage {
       return [];
     }
   }
-  
-  // Get a specific highlight generator configuration
+
   async getHighlightGeneratorConfig(id: number): Promise<HighlightGeneratorConfig | undefined> {
     try {
       const [config] = await db.select()
@@ -220,29 +149,21 @@ export class DatabaseStorage implements IStorage {
       return undefined;
     }
   }
-  
-  // Create a new highlight generator configuration
+
   async createHighlightGeneratorConfig(config: InsertHighlightGeneratorConfig): Promise<HighlightGeneratorConfig> {
-    try {
-      const [newConfig] = await db.insert(highlightGeneratorConfigs)
-        .values(config)
-        .returning();
-      
-      return newConfig;
-    } catch (error) {
-      console.error('Database error in createHighlightGeneratorConfig:', error);
-      throw new Error(`Failed to create highlight generator config: ${error.message}`);
-    }
+    const [newConfig] = await db
+      .insert(highlightGeneratorConfigs)
+      .values(config)
+      .returning();
+    
+    return newConfig;
   }
-  
-  // Update an existing highlight generator configuration
+
   async updateHighlightGeneratorConfig(id: number, data: Partial<HighlightGeneratorConfig>): Promise<HighlightGeneratorConfig | undefined> {
     try {
-      const [updatedConfig] = await db.update(highlightGeneratorConfigs)
-        .set({
-          ...data,
-          updatedAt: new Date()
-        })
+      const [updatedConfig] = await db
+        .update(highlightGeneratorConfigs)
+        .set(data)
         .where(eq(highlightGeneratorConfigs.id, id))
         .returning();
       
@@ -252,11 +173,11 @@ export class DatabaseStorage implements IStorage {
       return undefined;
     }
   }
-  
-  // Delete a highlight generator configuration
+
   async deleteHighlightGeneratorConfig(id: number): Promise<boolean> {
     try {
-      await db.delete(highlightGeneratorConfigs)
+      await db
+        .delete(highlightGeneratorConfigs)
         .where(eq(highlightGeneratorConfigs.id, id));
       
       return true;
@@ -265,8 +186,7 @@ export class DatabaseStorage implements IStorage {
       return false;
     }
   }
-  
-  // Get active highlight generator configurations
+
   async getActiveHighlightGeneratorConfigs(): Promise<HighlightGeneratorConfig[]> {
     try {
       const configs = await db.select()
@@ -279,28 +199,21 @@ export class DatabaseStorage implements IStorage {
       return [];
     }
   }
-  
-  // Get unanalyzed videos for highlights
+
   async getUnanalyzedVideosForHighlights(): Promise<Video[]> {
     try {
-      // Look for videos that have been uploaded but not yet analyzed
-      const videosToAnalyze = await db.select()
+      const unanalyzedVideos = await db.select()
         .from(videos)
-        .where(
-          and(
-            eq(videos.analyzed, false),
-            eq(videos.processingStatus, 'complete')
-          )
-        );
+        .where(eq(videos.analyzed, false));
       
-      return videosToAnalyze;
+      return unanalyzedVideos;
     } catch (error) {
       console.error('Database error in getUnanalyzedVideosForHighlights:', error);
       return [];
     }
   }
-  
-  // Get all users with a specific role
+
+  // User methods
   async getUsersByRole(role: string): Promise<User[]> {
     try {
       const usersWithRole = await db.select()
@@ -313,8 +226,8 @@ export class DatabaseStorage implements IStorage {
       return [];
     }
   }
-  
-  // Get a specific video
+
+  // Video methods
   async getVideo(id: number): Promise<Video | undefined> {
     try {
       const [video] = await db.select()
@@ -327,8 +240,7 @@ export class DatabaseStorage implements IStorage {
       return undefined;
     }
   }
-  
-  // Get videos by user
+
   async getVideosByUser(userId: number): Promise<Video[]> {
     try {
       const userVideos = await db.select()
@@ -341,25 +253,20 @@ export class DatabaseStorage implements IStorage {
       return [];
     }
   }
-  
-  // Create a new video
+
   async createVideo(video: InsertVideo): Promise<Video> {
-    try {
-      const [newVideo] = await db.insert(videos)
-        .values(video)
-        .returning();
-      
-      return newVideo;
-    } catch (error) {
-      console.error('Database error in createVideo:', error);
-      throw new Error(`Failed to create video: ${error.message}`);
-    }
+    const [newVideo] = await db
+      .insert(videos)
+      .values(video)
+      .returning();
+    
+    return newVideo;
   }
 
-  // Update a video
   async updateVideo(id: number, data: Partial<Video>): Promise<Video | undefined> {
     try {
-      const [updatedVideo] = await db.update(videos)
+      const [updatedVideo] = await db
+        .update(videos)
         .set(data)
         .where(eq(videos.id, id))
         .returning();
@@ -370,10 +277,8 @@ export class DatabaseStorage implements IStorage {
       return undefined;
     }
   }
-  
-  // Required methods for the IStorage interface
-  // These are placeholders and should be implemented properly
-  
+
+  // User methods
   async getUser(id: number): Promise<User | undefined> {
     try {
       const [user] = await db.select()
@@ -386,7 +291,7 @@ export class DatabaseStorage implements IStorage {
       return undefined;
     }
   }
-  
+
   async getUserByUsername(username: string): Promise<User | undefined> {
     try {
       const [user] = await db.select()
@@ -399,7 +304,7 @@ export class DatabaseStorage implements IStorage {
       return undefined;
     }
   }
-  
+
   async getUserByEmail(email: string): Promise<User | undefined> {
     try {
       const [user] = await db.select()
@@ -412,27 +317,21 @@ export class DatabaseStorage implements IStorage {
       return undefined;
     }
   }
-  
+
   async createUser(user: InsertUser): Promise<User> {
-    try {
-      const [newUser] = await db.insert(users)
-        .values(user)
-        .returning();
-      
-      return newUser;
-    } catch (error) {
-      console.error('Database error in createUser:', error);
-      throw new Error(`Failed to create user: ${error.message}`);
-    }
+    const [newUser] = await db
+      .insert(users)
+      .values(user)
+      .returning();
+    
+    return newUser;
   }
-  
+
   async updateUser(id: number, data: Partial<User>): Promise<User | undefined> {
     try {
-      const [updatedUser] = await db.update(users)
-        .set({
-          ...data,
-          updatedAt: new Date()
-        })
+      const [updatedUser] = await db
+        .update(users)
+        .set(data)
         .where(eq(users.id, id))
         .returning();
       
@@ -443,7 +342,8 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-
+  // Add other methods as needed based on project requirements
+}
 
 // Export a singleton instance
 export const dbStorage = new DatabaseStorage();

@@ -1,13 +1,13 @@
 // TypeScript version of the highlight generator test
 import { initializeHighlightGenerationSystem, forceGenerateHighlights } from './server/highlight-generator.fixed';
-import { dbStorage } from './server/database-storage';
-import { InsertUser, InsertVideo } from '@shared/schema';
+import { storage } from './server/storage';
+import { InsertUser, InsertVideo } from './shared/schema';
 
 // Create a test video if needed
 async function createTestVideoIfNeeded() {
   try {
     // Check if we have any admin users
-    const adminUsers = await dbStorage.getUsersByRole('admin');
+    const adminUsers = await storage.getUsersByRole('admin');
     
     let adminId: number;
     
@@ -18,13 +18,12 @@ async function createTestVideoIfNeeded() {
       const adminUser: InsertUser = {
         username: 'admin',
         email: 'admin@go4itsports.com',
-        passwordHash: '$2a$10$JrqxnGS1wPzJhNP7ibVYYeIeBnlLHLDe/pZCaPoRQOr4P3vYHWBxy', // hash for 'password123'
+        password: 'password123',
         role: 'admin',
-        firstName: 'Admin',
-        lastName: 'User'
+        name: 'Admin User'
       };
       
-      const createdAdmin = await dbStorage.createUser(adminUser);
+      const createdAdmin = await storage.createUser(adminUser);
       adminId = createdAdmin.id;
       console.log("Created admin user:", adminId);
     } else {
@@ -33,7 +32,7 @@ async function createTestVideoIfNeeded() {
     }
     
     // Check for existing videos
-    const testVideos = await dbStorage.getVideosByUser(adminId); 
+    const testVideos = await storage.getVideosByUser(adminId); 
     if (testVideos && testVideos.length > 0) {
       console.log(`Found ${testVideos.length} existing videos`);
       return { video: testVideos[0], adminId };
@@ -48,12 +47,10 @@ async function createTestVideoIfNeeded() {
       filePath: "/uploads/videos/test-basketball-game.mp4",
       thumbnailPath: "/uploads/thumbnails/test-basketball-game.jpg",
       userId: adminId,
-      sportType: "basketball",
-      analyzed: false,
-      processingStatus: "complete"
+      sportType: "basketball"
     };
     
-    const createdVideo = await dbStorage.createVideo(testVideo);
+    const createdVideo = await storage.createVideo(testVideo);
     console.log("Created test video:", createdVideo.id);
     
     return { video: createdVideo, adminId };
@@ -87,7 +84,7 @@ async function main() {
     
     if (result.success) {
       // Check if any highlights were generated
-      const highlights = await dbStorage.getVideoHighlightsByVideoId(video.id);
+      const highlights = await storage.getVideoHighlightsByVideoId(video.id);
       console.log(`Generated ${highlights.length} highlights for video ${video.id}`);
       
       // Print out highlight details
