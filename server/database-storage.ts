@@ -2727,4 +2727,134 @@ export class DatabaseStorage implements IStorage {
       
     return result.count > 0;
   }
+
+  // Video Highlight operations
+  async getVideoHighlight(id: number): Promise<VideoHighlight | undefined> {
+    const [highlight] = await db
+      .select()
+      .from(videoHighlights)
+      .where(eq(videoHighlights.id, id));
+    return highlight;
+  }
+
+  async getVideoHighlightsByVideoId(videoId: number): Promise<VideoHighlight[]> {
+    return await db
+      .select()
+      .from(videoHighlights)
+      .where(eq(videoHighlights.videoId, videoId))
+      .orderBy(desc(videoHighlights.createdAt));
+  }
+
+  async createVideoHighlight(highlight: InsertVideoHighlight): Promise<VideoHighlight> {
+    const [newHighlight] = await db
+      .insert(videoHighlights)
+      .values(highlight)
+      .returning();
+    return newHighlight;
+  }
+
+  async updateVideoHighlight(id: number, data: Partial<VideoHighlight>): Promise<VideoHighlight | undefined> {
+    const [updatedHighlight] = await db
+      .update(videoHighlights)
+      .set(data)
+      .where(eq(videoHighlights.id, id))
+      .returning();
+    return updatedHighlight;
+  }
+
+  async deleteVideoHighlight(id: number): Promise<boolean> {
+    const result = await db
+      .delete(videoHighlights)
+      .where(eq(videoHighlights.id, id));
+    return result.count > 0;
+  }
+
+  async getFeaturedHighlights(limit: number = 10): Promise<VideoHighlight[]> {
+    return await db
+      .select()
+      .from(videoHighlights)
+      .where(eq(videoHighlights.featured, true))
+      .orderBy(desc(videoHighlights.qualityScore), desc(videoHighlights.createdAt))
+      .limit(limit);
+  }
+
+  async getHomePageEligibleHighlights(limit: number = 5): Promise<VideoHighlight[]> {
+    return await db
+      .select()
+      .from(videoHighlights)
+      .where(and(
+        eq(videoHighlights.homePageEligible, true),
+        eq(videoHighlights.featured, true)
+      ))
+      .orderBy(desc(videoHighlights.qualityScore), desc(videoHighlights.createdAt))
+      .limit(limit);
+  }
+
+  // Highlight Generator Config operations
+  async getHighlightGeneratorConfig(id: number): Promise<HighlightGeneratorConfig | undefined> {
+    const [config] = await db
+      .select()
+      .from(highlightGeneratorConfigs)
+      .where(eq(highlightGeneratorConfigs.id, id));
+    return config;
+  }
+
+  async getHighlightGeneratorConfigs(): Promise<HighlightGeneratorConfig[]> {
+    return await db
+      .select()
+      .from(highlightGeneratorConfigs)
+      .orderBy(asc(highlightGeneratorConfigs.name));
+  }
+
+  async getActiveHighlightGeneratorConfigs(): Promise<HighlightGeneratorConfig[]> {
+    return await db
+      .select()
+      .from(highlightGeneratorConfigs)
+      .where(eq(highlightGeneratorConfigs.active, true))
+      .orderBy(asc(highlightGeneratorConfigs.name));
+  }
+
+  async createHighlightGeneratorConfig(config: InsertHighlightGeneratorConfig): Promise<HighlightGeneratorConfig> {
+    const [newConfig] = await db
+      .insert(highlightGeneratorConfigs)
+      .values(config)
+      .returning();
+    return newConfig;
+  }
+
+  async updateHighlightGeneratorConfig(id: number, data: Partial<HighlightGeneratorConfig>): Promise<HighlightGeneratorConfig | undefined> {
+    const [updatedConfig] = await db
+      .update(highlightGeneratorConfigs)
+      .set(data)
+      .where(eq(highlightGeneratorConfigs.id, id))
+      .returning();
+    return updatedConfig;
+  }
+
+  async deleteHighlightGeneratorConfig(id: number): Promise<boolean> {
+    const result = await db
+      .delete(highlightGeneratorConfigs)
+      .where(eq(highlightGeneratorConfigs.id, id));
+    return result.count > 0;
+  }
+
+  async getUnanalyzedVideosForHighlights(): Promise<Video[]> {
+    return await db
+      .select()
+      .from(videos)
+      .where(and(
+        isNull(videos.highlightsGenerated),
+        eq(videos.analyzed, true) // Only process videos that have been analyzed
+      ))
+      .orderBy(desc(videos.uploadDate))
+      .limit(10); // Process in batches of 10
+  }
+
+  async getUsersByRole(role: string): Promise<User[]> {
+    return await db
+      .select()
+      .from(users)
+      .where(eq(users.role, role))
+      .orderBy(asc(users.name));
+  }
 }
