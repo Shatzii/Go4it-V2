@@ -1,12 +1,11 @@
 // This is a simple wrapper to start the application
-// It doesn't use tsx, just plain node.js to avoid the vite.config.ts issue
+// It uses CommonJS syntax to avoid ES module issues
 
 console.log('Starting Go4It Sports Platform...');
 
-import { exec } from 'child_process';
-import os from 'os';
-import fs from 'fs';
-import path from 'path';
+const { exec } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
 // Create a modified vite.config.js file without the problematic import
 function createModifiedViteConfig() {
@@ -66,7 +65,7 @@ createModifiedViteConfig();
 
 // Start the application using tsx but with a specific command line
 // that bypasses the problematic vite.config.ts
-const command = 'NODE_OPTIONS="--no-warnings" tsx --tsconfig ./tsconfig.json --experimental-specifier-resolution=node ./server/index.fixed.ts';
+const command = 'NODE_OPTIONS="--no-warnings" npx tsx --tsconfig ./tsconfig.json --experimental-specifier-resolution=node ./server/index.fixed.ts';
 
 console.log('Running command:', command);
 

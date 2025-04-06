@@ -11,7 +11,7 @@ import OpenAI from "openai";
 import fs from "fs";
 import path from "path";
 import { v4 as uuidv4 } from 'uuid';
-import { dbStorage } from "./database-storage";
+import { storage } from "./storage";
 import { 
   HighlightGeneratorConfig, 
   InsertVideoHighlight, 
@@ -237,13 +237,13 @@ export async function generateHighlightsForVideo(
     console.log(`Generating highlights for video ${videoId} using config ${configId}`);
     
     // Get the video data
-    const video = await dbStorage.getVideo(videoId);
+    const video = await storage.getVideo(videoId);
     if (!video) {
       throw new Error(`Video with ID ${videoId} not found`);
     }
     
     // Get the generator configuration
-    const config = await dbStorage.getHighlightGeneratorConfig(configId);
+    const config = await storage.getHighlightGeneratorConfig(configId);
     if (!config) {
       throw new Error(`Highlight generator config with ID ${configId} not found`);
     }
@@ -302,12 +302,12 @@ export async function generateHighlightsForVideo(
       };
       
       // Save to database
-      const savedHighlight = await dbStorage.createVideoHighlight(newHighlight);
+      const savedHighlight = await storage.createVideoHighlight(newHighlight);
       highlightIds.push(savedHighlight.id);
     }
     
     // Update the last run timestamp for the config
-    await dbStorage.updateHighlightGeneratorConfig(configId, {
+    await storage.updateHighlightGeneratorConfig(configId, {
       lastRun: new Date()
     });
     
@@ -339,7 +339,7 @@ export async function processUnanalyzedVideos(adminUserId: number): Promise<{
     console.log("Processing unanalyzed videos for highlight generation");
     
     // Get all active configurations
-    const activeConfigs = await dbStorage.getActiveHighlightGeneratorConfigs();
+    const activeConfigs = await storage.getActiveHighlightGeneratorConfigs();
     if (!activeConfigs || activeConfigs.length === 0) {
       return {
         success: true,
@@ -350,7 +350,7 @@ export async function processUnanalyzedVideos(adminUserId: number): Promise<{
     }
     
     // Get all unanalyzed videos
-    const unanalyzedVideos = await dbStorage.getUnanalyzedVideosForHighlights();
+    const unanalyzedVideos = await storage.getUnanalyzedVideosForHighlights();
     if (!unanalyzedVideos || unanalyzedVideos.length === 0) {
       return {
         success: true,
@@ -367,8 +367,8 @@ export async function processUnanalyzedVideos(adminUserId: number): Promise<{
     
     for (const video of unanalyzedVideos) {
       // Find the best configuration for this video
-      const bestConfig = activeConfigs.find(c => c.sportType === video.sportType) || 
-                       activeConfigs.find(c => c.sportType === 'any');
+      const bestConfig = activeConfigs.find((c: HighlightGeneratorConfig) => c.sportType === video.sportType) || 
+                       activeConfigs.find((c: HighlightGeneratorConfig) => c.sportType === 'any');
       
       if (!bestConfig) {
         console.log(`No suitable configuration found for video ${video.id} (${video.sportType || 'unspecified sport'})`);
@@ -382,7 +382,7 @@ export async function processUnanalyzedVideos(adminUserId: number): Promise<{
         totalHighlights += result.highlightCount;
         
         // Mark the video as analyzed for highlights
-        await dbStorage.updateVideo(video.id, { analyzed: true });
+        await storage.updateVideo(video.id, { analyzed: true });
       } else {
         console.error(`Failed to generate highlights for video ${video.id}: ${result.message}`);
       }
@@ -426,7 +426,7 @@ async function createDefaultConfigurations(adminUserId: number) {
     console.log("Creating default highlight generator configurations");
     
     // Basketball configuration
-    await dbStorage.createHighlightGeneratorConfig({
+    await storage.createHighlightGeneratorConfig({
       name: "Basketball Highlight Generator",
       description: "Identifies key moments in basketball games including scoring plays, defensive stops, and skillful moves",
       sportType: "basketball",
@@ -437,11 +437,10 @@ async function createDefaultConfigurations(adminUserId: number) {
       maxDuration: 15,
       qualityThreshold: 70,
       maxHighlightsPerVideo: 5,
-      minHighlightInterval: 20,
     });
     
     // Football configuration
-    await dbStorage.createHighlightGeneratorConfig({
+    await storage.createHighlightGeneratorConfig({
       name: "Football Highlight Generator",
       description: "Identifies key moments in football games including touchdowns, big plays, and defensive stops",
       sportType: "football",
@@ -452,11 +451,10 @@ async function createDefaultConfigurations(adminUserId: number) {
       maxDuration: 20,
       qualityThreshold: 75,
       maxHighlightsPerVideo: 5,
-      minHighlightInterval: 30,
     });
     
     // Soccer configuration
-    await dbStorage.createHighlightGeneratorConfig({
+    await storage.createHighlightGeneratorConfig({
       name: "Soccer Highlight Generator",
       description: "Identifies key moments in soccer matches including goals, saves, and skillful play",
       sportType: "soccer",
@@ -467,11 +465,10 @@ async function createDefaultConfigurations(adminUserId: number) {
       maxDuration: 15,
       qualityThreshold: 70,
       maxHighlightsPerVideo: 6,
-      minHighlightInterval: 20,
     });
     
     // Generic configuration for other sports
-    await dbStorage.createHighlightGeneratorConfig({
+    await storage.createHighlightGeneratorConfig({
       name: "Generic Sports Highlight Generator",
       description: "General-purpose configuration for identifying exciting moments in any sport",
       sportType: "any",
@@ -482,7 +479,6 @@ async function createDefaultConfigurations(adminUserId: number) {
       maxDuration: 20,
       qualityThreshold: 75,
       maxHighlightsPerVideo: 4,
-      minHighlightInterval: 25,
     });
     
     console.log("Successfully created default highlight generator configurations");
@@ -496,14 +492,14 @@ async function createDefaultConfigurations(adminUserId: number) {
 export async function initializeHighlightGenerationSystem() {
   try {
     // Check if we have at least one admin user
-    const adminUsers = await dbStorage.getUsersByRole('admin');
+    const adminUsers = await storage.getUsersByRole('admin');
     if (!adminUsers || adminUsers.length === 0) {
       console.log("No admin users found, can't initialize highlight generation system");
       return false;
     }
     
     // Check if we have any configuration
-    const existingConfigs = await dbStorage.getHighlightGeneratorConfigs();
+    const existingConfigs = await storage.getHighlightGeneratorConfigs();
     
     // If no configs exist, create default configurations
     if (!existingConfigs || existingConfigs.length === 0) {
@@ -528,7 +524,7 @@ export async function forceGenerateHighlights(videoId: number, adminUserId: numb
 }> {
   try {
     // Get the video
-    const video = await dbStorage.getVideo(videoId);
+    const video = await storage.getVideo(videoId);
     if (!video) {
       return {
         success: false,
@@ -537,9 +533,9 @@ export async function forceGenerateHighlights(videoId: number, adminUserId: numb
     }
     
     // Find the best configuration for this video
-    const configs = await dbStorage.getActiveHighlightGeneratorConfigs();
-    const bestConfig = configs.find(c => c.sportType === video.sportType) || 
-                       configs.find(c => c.sportType === 'any');
+    const configs = await storage.getActiveHighlightGeneratorConfigs();
+    const bestConfig = configs.find((c: HighlightGeneratorConfig) => c.sportType === video.sportType) || 
+                       configs.find((c: HighlightGeneratorConfig) => c.sportType === 'any');
     
     if (!bestConfig) {
       return {
@@ -553,7 +549,7 @@ export async function forceGenerateHighlights(videoId: number, adminUserId: numb
     
     if (result.success) {
       // Mark the video as analyzed
-      await dbStorage.updateVideo(videoId, { analyzed: true });
+      await storage.updateVideo(videoId, { analyzed: true });
       
       return {
         success: true,

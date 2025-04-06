@@ -10,9 +10,14 @@ if (!DATABASE_URL) {
   throw new Error("DATABASE_URL is not defined");
 }
 
-// Connect to the database
+// Connect to the database with SSL enabled
 log(`Connecting to database: ${DATABASE_URL}`, "db");
-export const connection = postgres(DATABASE_URL);
+export const connection = postgres(DATABASE_URL, {
+  ssl: {
+    rejectUnauthorized: false,
+    require: true
+  }
+});
 export const db = drizzle(connection);
 
 // Setup graceful shutdown

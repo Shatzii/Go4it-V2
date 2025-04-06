@@ -1,7 +1,7 @@
 // Simple Express server to test database connection
-import express from 'express';
-import { db } from './server/db.js';
-import { sql } from 'drizzle-orm';
+const express = require('express');
+const { db } = require('./server/db.fixed.ts');
+const { sql } = require('drizzle-orm');
 
 const app = express();
 const port = 3001;
