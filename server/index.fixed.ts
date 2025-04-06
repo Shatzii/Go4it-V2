@@ -1,12 +1,11 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
+import { setupVite, serveStatic, log } from "./vite.fixed";
 import fs from "fs";
 import path from "path";
 import { createSchema } from "./create-schema";
 import cors from "cors";
 import { storage } from './storage';
-import { getAllActiveApiKeys } from './getAllActiveApiKeys';
 import { initializeBlogGeneration } from './blog-generator';
 import { openAIService } from './services/openai-service';
 import { transferPortalService } from './services/transfer-portal-service';
@@ -72,7 +71,7 @@ app.use((req, res, next) => {
     
     // Load API keys from database
     try {
-      const apiKeys = await getAllActiveApiKeys();
+      const apiKeys = await storage.getAllActiveApiKeys();
       if (apiKeys && apiKeys.length > 0) {
         log(`Loading ${apiKeys.length} API keys from database`);
         
@@ -125,9 +124,7 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
+  // Find available port for the server
   const findAvailablePort = async (startPort: number): Promise<number> => {
     return new Promise((resolve) => {
       const netServer = net.createServer();
@@ -141,13 +138,14 @@ app.use((req, res, next) => {
     });
   };
 
-  const port = await findAvailablePort(5000);
+  // Start server on port 3000 (or next available port)
+  const port = await findAvailablePort(3000);
   server.listen({
     port,
     host: "0.0.0.0",
     reusePort: true,
   }, () => {
-    log(`serving on port ${port}`);
+    log(`Server running on http://0.0.0.0:${port}`);
     
     // Initialize OpenAI service and blog generation
     openAIService.hasValidApiKey()
@@ -170,64 +168,6 @@ app.use((req, res, next) => {
             log("Initializing Athlete Scout Service...");
             const athleteScoutInitialized = await athleteScoutService.initialize();
             log(`Athlete Scout Service initialization ${athleteScoutInitialized ? 'successful' : 'failed'}`);
-            
-            // Create default monitors and scouts if none exist
-            try {
-              // Create a default transfer portal monitor for Football
-              const initialMonitor = await transferPortalService.createMonitor(
-                "NCAA Football Transfer Portal Tracker",
-                "Monitors NCAA football transfer portal for new entries and roster changes",
-                "football",
-                "player-portal-entries",
-                1, // Admin user ID
-                {
-                  divisions: ["D1-FBS", "D1-FCS", "D2"],
-                  conferences: ["SEC", "Big Ten", "ACC", "Big 12", "Pac-12"],
-                  updateFrequency: 360, // 6 minutes
-                  positionGroups: ["QB", "RB", "WR", "TE", "OL", "DL", "LB", "CB", "S"]
-                }
-              );
-              
-              if (initialMonitor) {
-                log("Created initial Football Transfer Portal monitor");
-              }
-              
-              // Create a default athlete scout
-              const initialScout = await athleteScoutService.createScout(
-                "National Football & Basketball Talent Scout",
-                "Discovers promising football and basketball athletes on social media",
-                1, // Admin user ID
-                {
-                  sportFocus: ["football", "basketball"],
-                  platformsToSearch: ["instagram", "tiktok", "twitter"],
-                  ageRangeMin: 14,
-                  ageRangeMax: 18
-                }
-              );
-              
-              if (initialScout) {
-                log("Created initial Athlete Social Media scout");
-              }
-              
-              // Create a default media partnership scout
-              const initialMediaScout = await athleteScoutService.createMediaScout(
-                "Sports Podcast & Instagram Partnership Scout",
-                "Discovers sports media outlets for cross-promotion opportunities",
-                1, // Admin user ID
-                ["podcast", "instagram", "youtube"], // Media types
-                ["football", "basketball", "multi-sport"], // Sport focus
-                {
-                  followerThreshold: 5000,
-                  keywordsToTrack: ["athlete", "recruiting", "high school", "college", "sports"]
-                }
-              );
-              
-              if (initialMediaScout) {
-                log("Created initial Media Partnership scout");
-              }
-            } catch (err) {
-              log(`Error creating default scouts/monitors: ${err}`);
-            }
             
           } catch (err) {
             log(`Error initializing AI blog generator: ${err}`);
