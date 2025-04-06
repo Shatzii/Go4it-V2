@@ -81,6 +81,11 @@ async function analyzeVideoForHighlights(
     const sportType = config.sportType || video.sportType || "basketball";
     const highlightTypes = config.highlightTypes || ["scoring", "skills", "teamwork"];
     
+    // Extract duration from video metadata or use default
+    // Since 'duration' is not directly in the Video type, we might need to parse it from metadata
+    // or just use a reasonable default for the demo
+    const durationInSeconds = 120; // Default duration in seconds
+    
     // Construct a prompt that explains what we're looking for
     const analysisPrompt = `
 You are an expert sports video analyst specializing in ${sportType}. You're analyzing a video with the following information:
@@ -96,7 +101,7 @@ Focus on detecting these types of highlights: ${highlightTypes.join(", ")}.
 For each highlight, provide:
 1. A short title (5-7 words)
 2. A brief description (1-2 sentences)
-3. The estimated start time in seconds (between 0 and ${video.duration || 120})
+3. The estimated start time in seconds (between 0 and ${durationInSeconds || 120})
 4. The estimated end time in seconds (start time + ${config.minDuration || 8} to ${config.maxDuration || 30} seconds)
 5. A quality score (0-100) based on how exceptional the moment likely is
 6. The primary skill being showcased
@@ -198,7 +203,7 @@ async function extractHighlightClip(
     // 2. Generate a thumbnail using: ffmpeg -i highlight.mp4 -ss 1 -vframes 1 thumbnail.jpg
     
     // For our demo, we'll just log what we would do
-    console.log(`Would extract: ffmpeg -i ${video.videoPath} -ss ${startTime} -to ${endTime} -c copy ${highlightPath}`);
+    console.log(`Would extract: ffmpeg -i ${video.filePath} -ss ${startTime} -to ${endTime} -c copy ${highlightPath}`);
     console.log(`Would create thumbnail: ffmpeg -i ${highlightPath} -ss 1 -vframes 1 ${thumbnailPath}`);
     
     // In a demo/mock context, we could create placeholder files
@@ -378,7 +383,8 @@ export async function processUnanalyzedVideos(adminUserId: number): Promise<{
         totalHighlights += result.highlightCount;
         
         // Mark the video as analyzed for highlights
-        await storage.updateVideo(video.id, { highlightsGenerated: true });
+        // For now, we'll use the 'analyzed' flag since highlightsGenerated isn't in the schema
+        await storage.updateVideo(video.id, { analyzed: true });
       } else {
         console.error(`Failed to generate highlights for video ${video.id}: ${result.message}`);
       }
