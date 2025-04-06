@@ -2,7 +2,8 @@ import {
   users, type User, type InsertUser,
   videoHighlights, type VideoHighlight, type InsertVideoHighlight,
   highlightGeneratorConfigs, type HighlightGeneratorConfig, type InsertHighlightGeneratorConfig,
-  videos, type Video, type InsertVideo
+  videos, type Video, type InsertVideo,
+  apiKeys, type ApiKey
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, sql } from "drizzle-orm";
@@ -47,6 +48,9 @@ export interface IStorage {
 
   // User operations by role
   getUsersByRole(role: string): Promise<User[]>;
+  
+  // API Key operations
+  getAllActiveApiKeys(): Promise<ApiKey[]>;
 }
 
 // Direct database implementation
@@ -217,12 +221,7 @@ export class DatabaseStorage implements IStorage {
   async getUnanalyzedVideosForHighlights(): Promise<Video[]> {
     return await db.select()
       .from(videos)
-      .where(
-        and(
-          eq(videos.analyzed, false),
-          eq(videos.processingStatus, 'complete')
-        )
-      );
+      .where(eq(videos.analyzed, false));
   }
 
   // User operations by role
@@ -230,6 +229,18 @@ export class DatabaseStorage implements IStorage {
     return await db.select()
       .from(users)
       .where(eq(users.role, role));
+  }
+  
+  // API Key operations
+  async getAllActiveApiKeys(): Promise<ApiKey[]> {
+    try {
+      return await db.select()
+        .from(apiKeys)
+        .where(eq(apiKeys.isActive, true));
+    } catch (error) {
+      console.error('Database error in getAllActiveApiKeys:', error);
+      return [];
+    }
   }
 }
 
