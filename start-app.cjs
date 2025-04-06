@@ -56,12 +56,9 @@ function createModifiedViteConfig() {
 }
 
 // Set required environment variables
-process.env.VITE_CONFIG_PATH = './vite.config.simple.js';
+process.env.VITE_CONFIG_PATH = './vite.config.fixed.ts';
 process.env.NODE_ENV = 'development';
 process.env.DEBUG = '*';
-
-// Create the modified vite config
-createModifiedViteConfig();
 
 // Start the application using tsx but with a specific command line
 // that bypasses the problematic vite.config.ts
@@ -72,7 +69,7 @@ console.log('Running command:', command);
 const child = exec(command, {
   env: {
     ...process.env,
-    VITE_CONFIG_PATH: './vite.config.simple.js',
+    VITE_CONFIG_PATH: './vite.config.fixed.ts',
     NODE_OPTIONS: '--no-warnings'
   }
 });
