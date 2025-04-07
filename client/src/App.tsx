@@ -93,6 +93,9 @@ function Router() {
       
       <Route path="/" component={HomePage} />
       
+      {/* Add /app route to handle NDA redirection */}
+      <Route path="/app" component={HomePage} />
+      
       <Route path="/dashboard">
         {({ params }) => (
           <ProtectedRoute component={Dashboard} />
@@ -329,7 +332,8 @@ function AppContent() {
     return <TestAuth />;
   }
   
-  if (location === "/" && !user) {
+  // Handle both root and /app routes for the homepage
+  if ((location === "/" || location === "/app") && !user) {
     return <HomePage />;
   }
 
