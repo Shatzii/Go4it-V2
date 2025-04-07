@@ -21,8 +21,13 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Serve the HTML frontend
+// Serve the NDA page as the initial screen
 app.get('/', (req, res) => {
+  res.sendFile(path.join(process.cwd(), 'nda.html'));
+});
+
+// Serve the main HTML frontend
+app.get('/index.html', (req, res) => {
   res.sendFile(path.join(process.cwd(), 'index.html'));
 });
 
