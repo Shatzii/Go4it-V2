@@ -407,10 +407,10 @@ export const mediaPartnerDiscoveries = pgTable("media_partner_discoveries", {
   status: text("status").default("new"), // new, contacted, negotiating, partnered, rejected
   assignedTo: integer("assigned_to").references(() => users.id),
   notes: text("notes"),
-  partnershipTerms: json("partnership_terms"), // Details of any established partnership
+  partnershipTerms: text("partnership_terms"), // Details of any established partnership
   partnershipStartDate: timestamp("partnership_start_date"),
   partnershipEndDate: timestamp("partnership_end_date"),
-  partnershipResults: json("partnership_results"), // Metrics from the partnership
+  partnershipResults: json("partnership_results") // Metrics from the partnership
 });
 
 // City Influencer Scouts - finds top sports influencers in each city for Get Verified Combine events
