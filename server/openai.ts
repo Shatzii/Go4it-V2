@@ -904,29 +904,16 @@ export async function generateAICoachResponse(
   try {
     console.log(`Generating AI coach response for user ${userId}`);
     
-    // Get the athlete profile if available
-    const athleteProfile = await storage.getAthleteProfile(userId);
+    // Create a default athlete profile instead of trying to fetch one that doesn't exist yet
+    // In the future, when athlete profiles are implemented, this code can be updated
     
-    // Get the user's progress data
-    const playerProgress = await storage.getPlayerProgress(userId);
-    
-    // Format athlete info for context
-    const athleteInfo = athleteProfile ? {
-      age: athleteProfile.age || 18,
-      height: athleteProfile.height || 175, // in cm
-      weight: athleteProfile.weight || 70, // in kg
-      sports: athleteProfile.sportsInterest || [],
-      experience: "beginner" // Default to beginner since experienceLevel isn't in schema
-    } : {
+    // Format athlete info with sensible defaults
+    const athleteInfo = {
       experience: "beginner"
     };
     
-    // Format player progress for context
-    const progressInfo = playerProgress ? {
-      level: playerProgress.currentLevel,
-      xpTotal: playerProgress.totalXp,
-      focusAreas: ["Overall Fitness"] // Default focus areas since skillsFocus isn't in schema
-    } : {
+    // Use default player progress since we can't fetch it yet
+    const progressInfo = {
       level: 1,
       xpTotal: 0,
       focusAreas: ["Overall Fitness"]
@@ -1036,7 +1023,11 @@ Remember that you're working with student athletes, primarily focused on develop
       };
     }
     
-    // Generate XP for interacting with the AI coach
+    // We'll implement XP tracking in the future
+    // For now, just log that the player would earn XP
+    console.log(`Player ${userId} would earn 10 XP for interacting with AI Coach`);
+    // When we implement the player progress system, we can uncomment this:
+    /*
     await storage.addXpToPlayer(
       userId,
       10, // Base XP for interaction
@@ -1044,6 +1035,7 @@ Remember that you're working with student athletes, primarily focused on develop
       "Interacted with AI Coach",
       undefined
     );
+    */
     
     // Return the coach message
     return {
