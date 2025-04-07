@@ -34,6 +34,22 @@ if (!fs.existsSync(uploadsDir)) {
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
+// Serve the NDA page as the first screen
+app.get('/', (req, res, next) => {
+  const ndaPath = path.join(process.cwd(), 'nda.html');
+  if (fs.existsSync(ndaPath)) {
+    res.sendFile(ndaPath);
+  } else {
+    next(); // Proceed to the next middleware/route handler
+  }
+});
+
+// Route for the main application after NDA acceptance
+app.get('/app', (req, res, next) => {
+  // This will be handled by Vite or the static file middleware
+  next();
+});
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
