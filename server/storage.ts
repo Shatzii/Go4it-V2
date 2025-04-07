@@ -117,6 +117,17 @@ export interface IStorage {
   getCombineTourEvent(id: number): Promise<CombineTourEvent | undefined>;
   createCombineTourEvent(event: InsertCombineTourEvent): Promise<CombineTourEvent>;
   updateCombineTourEvent(id: number, data: Partial<CombineTourEvent>): Promise<CombineTourEvent | undefined>;
+  
+  // AI Coach and Player features - stubs for future implementation
+  getAthleteProfile(userId: number): Promise<any | undefined>;
+  getPlayerProgress(userId: number): Promise<any | undefined>;
+  getPlayerEquipment(userId: number): Promise<any[]>;
+  getWorkoutVerification(userId: number): Promise<any | undefined>;
+  getWorkoutVerificationCheckpoints(verificationId: number): Promise<any[]>;
+  updateWorkoutVerification(verificationId: number, data: any): Promise<any>;
+  getWeightRoomEquipmentById(equipmentId: number): Promise<any | undefined>;
+  addXpToPlayer(userId: number, amount: number, source: string, reason: string, metadata?: any): Promise<boolean>;
+  getSportRecommendations(userId: number): Promise<any[]>;
 }
 
 // Direct database implementation
@@ -424,6 +435,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getBlogPostsByTags(tags: string[], limit: number = 10): Promise<BlogPost[]> {
+    // Use array contains operator to find blog posts with any of the provided tags
     return await db.select()
       .from(blogPosts)
       .where(sql`${blogPosts.tags} && ${tags}`)
@@ -453,11 +465,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Featured Athletes operations
-  async getFeaturedAthletes(limit: number = 6): Promise<FeaturedAthlete[]> {
+  async getFeaturedAthletes(limit: number = 10): Promise<FeaturedAthlete[]> {
     return await db.select()
       .from(featuredAthletes)
-      .where(eq(featuredAthletes.active, true))
-      .orderBy(featuredAthletes.order)
+      .orderBy(desc(featuredAthletes.featured))
       .limit(limit);
   }
 
@@ -500,20 +511,19 @@ export class DatabaseStorage implements IStorage {
   async getGarCategories(): Promise<GarCategory[]> {
     return await db.select()
       .from(garCategories)
-      .where(eq(garCategories.active, true))
-      .orderBy(garCategories.displayOrder);
+      .orderBy(garCategories.order);
   }
 
   async getGarCategoriesBySport(sportType: string): Promise<GarCategory[]> {
     return await db.select()
       .from(garCategories)
       .where(
-        and(
-          eq(garCategories.active, true),
-          eq(garCategories.sportType, sportType)
+        or(
+          eq(garCategories.sportType, sportType),
+          eq(garCategories.sportType, "all")
         )
       )
-      .orderBy(garCategories.displayOrder);
+      .orderBy(garCategories.order);
   }
 
   async getGarCategory(id: number): Promise<GarCategory | undefined> {
@@ -527,13 +537,8 @@ export class DatabaseStorage implements IStorage {
   async getGarSubcategories(categoryId: number): Promise<GarSubcategory[]> {
     return await db.select()
       .from(garSubcategories)
-      .where(
-        and(
-          eq(garSubcategories.active, true),
-          eq(garSubcategories.categoryId, categoryId)
-        )
-      )
-      .orderBy(garSubcategories.displayOrder);
+      .where(eq(garSubcategories.categoryId, categoryId))
+      .orderBy(garSubcategories.order);
   }
 
   async getGarSubcategory(id: number): Promise<GarSubcategory | undefined> {
@@ -548,7 +553,7 @@ export class DatabaseStorage implements IStorage {
     return await db.select()
       .from(garAthleteRatings)
       .where(eq(garAthleteRatings.userId, userId))
-      .orderBy(desc(garAthleteRatings.scoreDate));
+      .orderBy(desc(garAthleteRatings.updatedAt));
   }
 
   async getGarAthleteRatingsByCategory(userId: number, categoryId: number): Promise<GarAthleteRating[]> {
@@ -560,7 +565,7 @@ export class DatabaseStorage implements IStorage {
           eq(garAthleteRatings.categoryId, categoryId)
         )
       )
-      .orderBy(desc(garAthleteRatings.scoreDate));
+      .orderBy(desc(garAthleteRatings.updatedAt));
   }
 
   async getLatestGarAthleteRating(userId: number, categoryId: number): Promise<GarAthleteRating | undefined> {
@@ -572,7 +577,7 @@ export class DatabaseStorage implements IStorage {
           eq(garAthleteRatings.categoryId, categoryId)
         )
       )
-      .orderBy(desc(garAthleteRatings.scoreDate))
+      .orderBy(desc(garAthleteRatings.updatedAt))
       .limit(1);
     return rating;
   }
@@ -582,7 +587,7 @@ export class DatabaseStorage implements IStorage {
     return await db.select()
       .from(garRatingHistory)
       .where(eq(garRatingHistory.userId, userId))
-      .orderBy(desc(garRatingHistory.calculatedDate))
+      .orderBy(desc(garRatingHistory.timestamp))
       .limit(limit);
   }
 
@@ -590,7 +595,7 @@ export class DatabaseStorage implements IStorage {
     const [history] = await db.select()
       .from(garRatingHistory)
       .where(eq(garRatingHistory.userId, userId))
-      .orderBy(desc(garRatingHistory.calculatedDate))
+      .orderBy(desc(garRatingHistory.timestamp))
       .limit(1);
     return history;
   }
@@ -611,45 +616,28 @@ export class DatabaseStorage implements IStorage {
   }
 
   async saveVideoAnalysis(videoId: number, analysisData: any): Promise<VideoAnalysis> {
-    // First, check if an analysis already exists for this video
+    // Check if analysis already exists for the video
     const existingAnalysis = await this.getVideoAnalysisByVideoId(videoId);
-
+    
     if (existingAnalysis) {
-      // Update the existing analysis
+      // Update existing analysis
       const [updatedAnalysis] = await db.update(videoAnalyses)
         .set({
-          motionData: analysisData.motionData,
-          overallScore: analysisData.overallScore,
-          feedback: analysisData.feedback,
-          improvementTips: analysisData.improvementTips,
-          keyFrameTimestamps: analysisData.keyFrameTimestamps,
-          garScores: analysisData.garScores
+          ...analysisData,
+          updatedAt: new Date()
         })
-        .where(eq(videoAnalyses.id, existingAnalysis.id))
+        .where(eq(videoAnalyses.videoId, videoId))
         .returning();
-      
-      // Also update the video to mark it as analyzed
-      await this.updateVideo(videoId, { analyzed: true });
-      
       return updatedAnalysis;
     } else {
-      // Create a new analysis
-      const [createdAnalysis] = await db.insert(videoAnalyses)
+      // Create new analysis
+      const [newAnalysis] = await db.insert(videoAnalyses)
         .values({
           videoId,
-          motionData: analysisData.motionData,
-          overallScore: analysisData.overallScore,
-          feedback: analysisData.feedback,
-          improvementTips: analysisData.improvementTips,
-          keyFrameTimestamps: analysisData.keyFrameTimestamps,
-          garScores: analysisData.garScores
+          ...analysisData
         })
         .returning();
-      
-      // Update the video to mark it as analyzed
-      await this.updateVideo(videoId, { analyzed: true });
-      
-      return createdAnalysis;
+      return newAnalysis;
     }
   }
 
@@ -676,15 +664,130 @@ export class DatabaseStorage implements IStorage {
 
   async updateCombineTourEvent(id: number, data: Partial<CombineTourEvent>): Promise<CombineTourEvent | undefined> {
     const [updatedEvent] = await db.update(combineTourEvents)
-      .set({
-        ...data,
-        updatedAt: new Date()
-      })
+      .set(data)
       .where(eq(combineTourEvents.id, id))
       .returning();
     return updatedEvent;
   }
+  
+  // AI Coach and Player features - stub implementations
+  async getAthleteProfile(userId: number): Promise<any | undefined> {
+    console.log(`[STUB] Getting athlete profile for user ID: ${userId}`);
+    // Return a default profile object until we implement the actual tables
+    return {
+      userId,
+      height: 175, // Default height in cm
+      weight: 70,  // Default weight in kg
+      age: 16,     // Default age
+      school: "High School",
+      graduationYear: new Date().getFullYear() + 2,
+      sportsInterest: ["basketball", "football", "track"],
+      motionScore: 75
+    };
+  }
+
+  async getPlayerProgress(userId: number): Promise<any | undefined> {
+    console.log(`[STUB] Getting player progress for user ID: ${userId}`);
+    // Return a default progress object until we implement the actual tables
+    return {
+      userId,
+      currentLevel: 1,
+      xpTotal: 0,
+      xpCurrentLevel: 0,
+      xpForNextLevel: 100,
+      badges: [],
+      achievements: [],
+      lastActive: new Date(),
+      focusAreas: ["Overall Fitness"]
+    };
+  }
+
+  async getPlayerEquipment(userId: number): Promise<any[]> {
+    console.log(`[STUB] Getting player equipment for user ID: ${userId}`);
+    // Return a default equipment array until we implement the actual tables
+    return [
+      {
+        id: 1,
+        type: "shoes",
+        name: "Basic Training Shoes",
+        stats: { speed: 5, agility: 5 },
+        equipped: true
+      },
+      {
+        id: 2,
+        type: "shirt",
+        name: "Training Jersey",
+        stats: { endurance: 5 },
+        equipped: true
+      }
+    ];
+  }
+
+  async getWorkoutVerification(userId: number): Promise<any | undefined> {
+    console.log(`[STUB] Getting workout verification for user ID: ${userId}`);
+    // Return a default verification object until we implement the actual tables
+    return {
+      id: 1,
+      userId,
+      workoutType: "cardio",
+      startTime: new Date(Date.now() - 3600000), // 1 hour ago
+      endTime: new Date(),
+      status: "completed",
+      calories: 350,
+      steps: 7500,
+      distance: 5.2,
+      verified: true
+    };
+  }
+
+  async getWorkoutVerificationCheckpoints(verificationId: number): Promise<any[]> {
+    console.log(`[STUB] Getting workout verification checkpoints for verification ID: ${verificationId}`);
+    // Return default checkpoint data until we implement the actual tables
+    return [
+      { id: 1, verificationId, timestamp: new Date(Date.now() - 3600000 + 900000), data: { distance: 1.3, heartRate: 120 } },
+      { id: 2, verificationId, timestamp: new Date(Date.now() - 3600000 + 1800000), data: { distance: 2.6, heartRate: 145 } },
+      { id: 3, verificationId, timestamp: new Date(Date.now() - 3600000 + 2700000), data: { distance: 3.9, heartRate: 155 } },
+      { id: 4, verificationId, timestamp: new Date(Date.now() - 3600000 + 3600000), data: { distance: 5.2, heartRate: 130 } }
+    ];
+  }
+
+  async updateWorkoutVerification(verificationId: number, data: any): Promise<any> {
+    console.log(`[STUB] Updating workout verification ID: ${verificationId} with data:`, data);
+    // Mock response until we implement the actual tables
+    return {
+      id: verificationId,
+      ...data,
+      updatedAt: new Date()
+    };
+  }
+
+  async getWeightRoomEquipmentById(equipmentId: number): Promise<any | undefined> {
+    console.log(`[STUB] Getting weight room equipment ID: ${equipmentId}`);
+    // Return default equipment data until we implement the actual tables
+    const equipments: Record<number, any> = {
+      1: { id: 1, name: "Bench Press", type: "strength", muscleGroups: ["chest", "triceps"], difficulty: "intermediate" },
+      2: { id: 2, name: "Squat Rack", type: "strength", muscleGroups: ["legs", "core"], difficulty: "intermediate" },
+      3: { id: 3, name: "Pull-up Bar", type: "bodyweight", muscleGroups: ["back", "biceps"], difficulty: "beginner" }
+    };
+    return equipments[equipmentId];
+  }
+
+  async addXpToPlayer(userId: number, amount: number, source: string, reason: string, metadata?: any): Promise<boolean> {
+    console.log(`[STUB] Adding ${amount} XP to user ID: ${userId} from ${source}: ${reason}`);
+    // In a real implementation, we would update a player_progress table
+    // For now just return true to indicate success
+    return true;
+  }
+
+  async getSportRecommendations(userId: number): Promise<any[]> {
+    console.log(`[STUB] Getting sport recommendations for user ID: ${userId}`);
+    // Return default recommendations until we implement the actual system
+    return [
+      { sport: "Basketball", confidence: 0.85, reasons: ["Good height", "Quick reflexes"] },
+      { sport: "Soccer", confidence: 0.75, reasons: ["Good endurance", "Leg strength"] },
+      { sport: "Track & Field", confidence: 0.70, reasons: ["Speed", "Jumping ability"] }
+    ];
+  }
 }
 
-// Export a singleton instance
 export const storage = new DatabaseStorage();

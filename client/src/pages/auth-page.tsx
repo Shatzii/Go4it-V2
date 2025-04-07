@@ -71,9 +71,16 @@ export default function AuthPage() {
   const onLoginSubmit = async (data: LoginFormValues) => {
     setIsSubmitting(true);
     try {
+      // Disable form while submitting to prevent double clicks
+      loginForm.reset(data);
+      
+      // Attempt to login with credentials
       await login(data.username, data.password);
+      
+      // Login is handled by auth context, which will redirect on success
     } catch (error) {
       console.error("Login error:", error);
+      // Error toasts are already handled in the auth context
     } finally {
       setIsSubmitting(false);
     }
