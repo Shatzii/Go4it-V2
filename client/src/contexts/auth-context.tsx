@@ -141,8 +141,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
       }
       
-      // Normal login flow
+      // Normal login flow - use a timeout to prevent hanging login requests
+      let loginCompleted = false;
+      const loginTimeout = setTimeout(() => {
+        if (!loginCompleted) {
+          console.warn("Login request timed out after 15 seconds");
+          toast({
+            title: "Login took too long",
+            description: "The server is taking too long to respond. Please try again.",
+            variant: "destructive",
+          });
+          setLoading(false);
+        }
+      }, 15000); // 15 second timeout
+      
       try {
+        // First, ensure any existing session is cleared to prevent conflicts
+        try {
+          await apiRequest("/api/auth/logout", { method: "POST" });
+        } catch (logoutError) {
+          // Ignore logout errors during login - just trying to clean state
+          console.log("Ignoring cleanup logout error during login flow");
+        }
+        
+        // Perform login request
         await apiRequest("/api/auth/login", { 
           method: "POST", 
           data: { username, password } 
@@ -150,6 +172,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         
         // After successful login, fetch the user data
         const userResponse = await apiRequest("/api/auth/me");
+        
+        // Clear the timeout as login was successful
+        loginCompleted = true;
+        clearTimeout(loginTimeout);
         
         if (userResponse?.user) {
           // Set user data before trying to initialize WebSocket to avoid race conditions
@@ -176,6 +202,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
           throw new Error("Failed to get user data");
         }
       } catch (apiError: any) {
+        // Clear the timeout as login completed (with error)
+        loginCompleted = true;
+        clearTimeout(loginTimeout);
+        
         console.error("API request error during login:", apiError);
         throw new Error(apiError.message || "Login failed. Please try again.");
       }
@@ -241,51 +271,75 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const logout = async () => {
+    // Set up a timeout to ensure logout completes even if requests hang
+    let logoutCompleted = false;
+    const logoutTimeout = setTimeout(() => {
+      if (!logoutCompleted) {
+        console.warn("Logout operation timed out after 5 seconds, forcing client-side logout");
+        completeClientSideLogout();
+      }
+    }, 5000); // 5 second timeout for the entire logout process
+    
+    // Helper function to ensure consistent client-side state cleanup
+    const completeClientSideLogout = () => {
+      if (logoutCompleted) return; // Prevent duplicate execution
+      
+      logoutCompleted = true;
+      clearTimeout(logoutTimeout);
+      
+      // Always clear user state
+      setUser(null);
+      setActualRole(null);
+      
+      // Navigate to home page
+      navigate("/");
+    };
+    
     try {
-      // Attempt to disconnect WebSocket first - but continue even if this fails
+      // First disconnect WebSocket
       try {
         websocketService.disconnect();
       } catch (wsError) {
         console.error("WebSocket disconnect error:", wsError);
-        // Don't stop logout if WebSocket disconnect fails
+        // Continue with logout process regardless of WebSocket errors
       }
       
-      // Send logout request to server
+      // Then send logout request to server
       try {
         await apiRequest("/api/auth/logout", {
           method: "POST"
         });
+        
+        // Show success message only after successful server-side logout
+        toast({
+          title: "Logout successful",
+          description: "You have been logged out successfully",
+        });
       } catch (logoutError) {
         console.error("Logout API error:", logoutError);
-        // Continue with client-side logout even if server logout fails
+        
+        // Show a different message if server logout fails
+        toast({
+          title: "Logout notice",
+          description: "You have been logged out on this device, but there may have been an issue with the server",
+          variant: "destructive",
+        });
       }
       
-      // Always clear user state regardless of server response
-      setUser(null);
-      setActualRole(null); // Clear the actual role
-      
-      // Show logout confirmation
-      toast({
-        title: "Logout successful",
-        description: "You have been logged out successfully",
-      });
-      
-      // Navigate to home page
-      navigate("/");
+      // Complete the logout process
+      completeClientSideLogout();
     } catch (error: any) {
       console.error("Unexpected logout error:", error);
       
-      // Still attempt to clear user state even if there's an error
-      setUser(null);
-      setActualRole(null);
-      
+      // Show generic error message
       toast({
         title: "Logout notice",
-        description: "You have been logged out, but there may have been an issue with the server",
+        description: "You have been logged out, but there was an unexpected error",
+        variant: "destructive",
       });
       
-      // Navigate to home page even if there's an error
-      navigate("/");
+      // Still ensure client-side logout completes
+      completeClientSideLogout();
     }
   };
 
