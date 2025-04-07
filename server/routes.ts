@@ -44,6 +44,7 @@ import passport from "passport";
 import { saveApiKey, getApiKeyStatus } from "./api-keys";
 import { footballCoachService } from "./services/football-coach-service";
 import { sendSms, checkSmsStatus, sendVerificationCode, verifyCode, sendNotification } from './services/sms-routes';
+import aiCoachRoutes from './routes/ai-coach-routes';
 import { 
   insertUserSchema,
   insertAthleteProfileSchema,
@@ -4579,6 +4580,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/sms/verify-phone", isAuthenticated, sendVerificationCode);
   app.post("/api/sms/verify-code", isAuthenticated, verifyCode);
   app.post("/api/sms/notification", isAuthenticated, sendNotification);
+  
+  // AI Coach Routes
+  app.use("/api/ai-coach", isAuthenticated, aiCoachRoutes);
 
   // Content Blocks API Routes
   app.get("/api/content-blocks", async (req: Request, res: Response) => {
