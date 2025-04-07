@@ -668,6 +668,25 @@ export const garRatingHistory = pgTable("gar_rating_history", {
   starRating: integer("star_rating").notNull().default(0), // 1-5 star rating derived from GAR score
 });
 
+// Create insert schemas for GAR-related tables
+export const insertGarCategorySchema = createInsertSchema(garCategories).omit({ id: true, createdAt: true });
+export const insertGarSubcategorySchema = createInsertSchema(garSubcategories).omit({ id: true, createdAt: true });
+export const insertGarAthleteRatingSchema = createInsertSchema(garAthleteRatings).omit({ id: true, scoreDate: true });
+export const insertGarRatingHistorySchema = createInsertSchema(garRatingHistory).omit({ id: true, calculatedDate: true });
+
+// Define types for insert operations
+export type GarCategory = typeof garCategories.$inferSelect;
+export type InsertGarCategory = z.infer<typeof insertGarCategorySchema>;
+
+export type GarSubcategory = typeof garSubcategories.$inferSelect;
+export type InsertGarSubcategory = z.infer<typeof insertGarSubcategorySchema>;
+
+export type GarAthleteRating = typeof garAthleteRatings.$inferSelect;
+export type InsertGarAthleteRating = z.infer<typeof insertGarAthleteRatingSchema>;
+
+export type GarRatingHistory = typeof garRatingHistory.$inferSelect;
+export type InsertGarRatingHistory = z.infer<typeof insertGarRatingHistorySchema>;
+
 // Star rating athlete profiles for benchmarking standard levels
 export const athleteStarProfiles = pgTable("athlete_star_profiles", {
   id: serial("id").primaryKey(),

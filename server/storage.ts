@@ -6,7 +6,12 @@ import {
   apiKeys, type ApiKey,
   contentBlocks, type ContentBlock, type InsertContentBlock,
   blogPosts, type BlogPost, type InsertBlogPost,
-  featuredAthletes, type FeaturedAthlete, type InsertFeaturedAthlete
+  featuredAthletes, type FeaturedAthlete, type InsertFeaturedAthlete,
+  garCategories, type GarCategory, type InsertGarCategory,
+  garSubcategories, type GarSubcategory, type InsertGarSubcategory,
+  garAthleteRatings, type GarAthleteRating, type InsertGarAthleteRating,
+  garRatingHistory, type GarRatingHistory, type InsertGarRatingHistory,
+  videoAnalyses, type VideoAnalysis
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, sql, like, inArray } from "drizzle-orm";
@@ -82,6 +87,28 @@ export interface IStorage {
   createFeaturedAthlete(featuredAthlete: InsertFeaturedAthlete): Promise<FeaturedAthlete>;
   updateFeaturedAthlete(id: number, data: Partial<FeaturedAthlete>): Promise<FeaturedAthlete | undefined>;
   deleteFeaturedAthlete(id: number): Promise<boolean>;
+  
+  // GAR Categories operations
+  getGarCategories(): Promise<GarCategory[]>;
+  getGarCategoriesBySport(sportType: string): Promise<GarCategory[]>;
+  getGarCategory(id: number): Promise<GarCategory | undefined>;
+  
+  // GAR Subcategories operations
+  getGarSubcategories(categoryId: number): Promise<GarSubcategory[]>;
+  getGarSubcategory(id: number): Promise<GarSubcategory | undefined>;
+  
+  // GAR Athlete Ratings operations
+  getGarAthleteRatingsByUser(userId: number): Promise<GarAthleteRating[]>;
+  getGarAthleteRatingsByCategory(userId: number, categoryId: number): Promise<GarAthleteRating[]>;
+  getLatestGarAthleteRating(userId: number, categoryId: number): Promise<GarAthleteRating | undefined>;
+  
+  // GAR Rating History operations
+  getGarRatingHistoryByUser(userId: number, limit?: number): Promise<GarRatingHistory[]>;
+  getLatestGarRatingHistory(userId: number): Promise<GarRatingHistory | undefined>;
+  
+  // Video Analysis operations
+  getVideoAnalysis(id: number): Promise<VideoAnalysis | undefined>;
+  getVideoAnalysisByVideoId(videoId: number): Promise<VideoAnalysis | undefined>;
 }
 
 // Direct database implementation
@@ -441,6 +468,120 @@ export class DatabaseStorage implements IStorage {
     const result = await db.delete(featuredAthletes)
       .where(eq(featuredAthletes.id, id));
     return true; // If no error was thrown, we consider it successful
+  }
+
+  // GAR Categories operations
+  async getGarCategories(): Promise<GarCategory[]> {
+    return await db.select()
+      .from(garCategories)
+      .where(eq(garCategories.active, true))
+      .orderBy(garCategories.displayOrder);
+  }
+
+  async getGarCategoriesBySport(sportType: string): Promise<GarCategory[]> {
+    return await db.select()
+      .from(garCategories)
+      .where(
+        and(
+          eq(garCategories.active, true),
+          eq(garCategories.sportType, sportType)
+        )
+      )
+      .orderBy(garCategories.displayOrder);
+  }
+
+  async getGarCategory(id: number): Promise<GarCategory | undefined> {
+    const [category] = await db.select()
+      .from(garCategories)
+      .where(eq(garCategories.id, id));
+    return category;
+  }
+
+  // GAR Subcategories operations
+  async getGarSubcategories(categoryId: number): Promise<GarSubcategory[]> {
+    return await db.select()
+      .from(garSubcategories)
+      .where(
+        and(
+          eq(garSubcategories.active, true),
+          eq(garSubcategories.categoryId, categoryId)
+        )
+      )
+      .orderBy(garSubcategories.displayOrder);
+  }
+
+  async getGarSubcategory(id: number): Promise<GarSubcategory | undefined> {
+    const [subcategory] = await db.select()
+      .from(garSubcategories)
+      .where(eq(garSubcategories.id, id));
+    return subcategory;
+  }
+
+  // GAR Athlete Ratings operations
+  async getGarAthleteRatingsByUser(userId: number): Promise<GarAthleteRating[]> {
+    return await db.select()
+      .from(garAthleteRatings)
+      .where(eq(garAthleteRatings.userId, userId))
+      .orderBy(desc(garAthleteRatings.scoreDate));
+  }
+
+  async getGarAthleteRatingsByCategory(userId: number, categoryId: number): Promise<GarAthleteRating[]> {
+    return await db.select()
+      .from(garAthleteRatings)
+      .where(
+        and(
+          eq(garAthleteRatings.userId, userId),
+          eq(garAthleteRatings.categoryId, categoryId)
+        )
+      )
+      .orderBy(desc(garAthleteRatings.scoreDate));
+  }
+
+  async getLatestGarAthleteRating(userId: number, categoryId: number): Promise<GarAthleteRating | undefined> {
+    const [rating] = await db.select()
+      .from(garAthleteRatings)
+      .where(
+        and(
+          eq(garAthleteRatings.userId, userId),
+          eq(garAthleteRatings.categoryId, categoryId)
+        )
+      )
+      .orderBy(desc(garAthleteRatings.scoreDate))
+      .limit(1);
+    return rating;
+  }
+
+  // GAR Rating History operations
+  async getGarRatingHistoryByUser(userId: number, limit: number = 10): Promise<GarRatingHistory[]> {
+    return await db.select()
+      .from(garRatingHistory)
+      .where(eq(garRatingHistory.userId, userId))
+      .orderBy(desc(garRatingHistory.calculatedDate))
+      .limit(limit);
+  }
+
+  async getLatestGarRatingHistory(userId: number): Promise<GarRatingHistory | undefined> {
+    const [history] = await db.select()
+      .from(garRatingHistory)
+      .where(eq(garRatingHistory.userId, userId))
+      .orderBy(desc(garRatingHistory.calculatedDate))
+      .limit(1);
+    return history;
+  }
+
+  // Video Analysis operations
+  async getVideoAnalysis(id: number): Promise<VideoAnalysis | undefined> {
+    const [analysis] = await db.select()
+      .from(videoAnalyses)
+      .where(eq(videoAnalyses.id, id));
+    return analysis;
+  }
+
+  async getVideoAnalysisByVideoId(videoId: number): Promise<VideoAnalysis | undefined> {
+    const [analysis] = await db.select()
+      .from(videoAnalyses)
+      .where(eq(videoAnalyses.videoId, videoId));
+    return analysis;
   }
 }
 
