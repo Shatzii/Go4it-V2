@@ -51,6 +51,7 @@ import ScoutVisionFeed from "@/pages/scoutvision-feed";
 import CoachPortal from "@/pages/coach-portal";
 import Settings from "@/pages/settings";
 import BlogPost from "@/pages/blog-post";
+import GarScorePage from "@/pages/gar-score";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -292,6 +293,13 @@ function Router() {
       <Route path="/blog/:slug">
         {({ params }) => (
           <BlogPost />
+        )}
+      </Route>
+      
+      {/* GAR Score Page Route */}
+      <Route path="/gar-score">
+        {({ params }) => (
+          <ProtectedRoute component={GarScorePage} />
         )}
       </Route>
       

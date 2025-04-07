@@ -43,9 +43,17 @@ import {
   insertComparisonAnalysisSchema,
   insertAthleteStarProfileSchema,
   insertUserAgreementSchema,
+  insertGarCategorySchema,
+  insertGarSubcategorySchema,
+  insertGarAthleteRatingSchema,
+  insertGarRatingHistorySchema,
   users,
   athleteStarProfiles,
   videos,
+  garCategories,
+  garSubcategories,
+  garAthleteRatings,
+  garRatingHistory,
 } from "@shared/schema";
 
 // Create a file upload middleware
@@ -4546,6 +4554,158 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting content block:", error);
       res.status(500).json({ message: "Error deleting content block" });
+    }
+  });
+
+  // GAR Score Visualization Routes
+
+  // Get all GAR categories
+  app.get("/api/gar/categories", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const sportType = req.query.sport as string;
+      let categories;
+      
+      if (sportType) {
+        categories = await storage.getGarCategoriesBySport(sportType);
+      } else {
+        categories = await storage.getGarCategories();
+      }
+      
+      return res.json(categories);
+    } catch (error) {
+      console.error("Error fetching GAR categories:", error);
+      return res.status(500).json({ message: "Error fetching GAR categories" });
+    }
+  });
+
+  // Get a specific GAR category
+  app.get("/api/gar/categories/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const category = await storage.getGarCategory(id);
+      
+      if (!category) {
+        return res.status(404).json({ message: "GAR category not found" });
+      }
+      
+      return res.json(category);
+    } catch (error) {
+      console.error("Error fetching GAR category:", error);
+      return res.status(500).json({ message: "Error fetching GAR category" });
+    }
+  });
+
+  // Get subcategories for a category
+  app.get("/api/gar/categories/:id/subcategories", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const categoryId = parseInt(req.params.id);
+      const subcategories = await storage.getGarSubcategories(categoryId);
+      
+      return res.json(subcategories);
+    } catch (error) {
+      console.error("Error fetching GAR subcategories:", error);
+      return res.status(500).json({ message: "Error fetching GAR subcategories" });
+    }
+  });
+
+  // Get GAR ratings for a user
+  app.get("/api/gar/users/:userId/ratings", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const user = req.user as any;
+      
+      // Only allow viewing own ratings unless admin or coach
+      if (userId !== user.id && user.role !== "admin" && user.role !== "coach") {
+        return res.status(403).json({ message: "Not authorized to view these ratings" });
+      }
+      
+      const categoryId = req.query.categoryId ? parseInt(req.query.categoryId as string) : undefined;
+      
+      let ratings;
+      if (categoryId) {
+        ratings = await storage.getGarAthleteRatingsByCategory(userId, categoryId);
+      } else {
+        ratings = await storage.getGarAthleteRatingsByUser(userId);
+      }
+      
+      return res.json(ratings);
+    } catch (error) {
+      console.error("Error fetching GAR ratings:", error);
+      return res.status(500).json({ message: "Error fetching GAR ratings" });
+    }
+  });
+
+  // Get GAR rating history for a user
+  app.get("/api/gar/users/:userId/history", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const user = req.user as any;
+      
+      // Only allow viewing own history unless admin or coach
+      if (userId !== user.id && user.role !== "admin" && user.role !== "coach") {
+        return res.status(403).json({ message: "Not authorized to view this history" });
+      }
+      
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+      const history = await storage.getGarRatingHistoryByUser(userId, limit);
+      
+      return res.json(history);
+    } catch (error) {
+      console.error("Error fetching GAR rating history:", error);
+      return res.status(500).json({ message: "Error fetching GAR rating history" });
+    }
+  });
+
+  // Get latest GAR rating for a user
+  app.get("/api/gar/users/:userId/latest", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const user = req.user as any;
+      
+      // Only allow viewing own data unless admin or coach
+      if (userId !== user.id && user.role !== "admin" && user.role !== "coach") {
+        return res.status(403).json({ message: "Not authorized to view this data" });
+      }
+      
+      const latestHistory = await storage.getLatestGarRatingHistory(userId);
+      
+      if (!latestHistory) {
+        return res.status(404).json({ message: "No GAR ratings found for this user" });
+      }
+      
+      return res.json(latestHistory);
+    } catch (error) {
+      console.error("Error fetching latest GAR rating:", error);
+      return res.status(500).json({ message: "Error fetching latest GAR rating" });
+    }
+  });
+  
+  // Get GAR data for a video analysis
+  app.get("/api/gar/videos/:videoId/analysis", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const videoId = parseInt(req.params.videoId);
+      
+      // Check if user has access to this video
+      const video = await storage.getVideo(videoId);
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+      
+      const user = req.user as any;
+      if (video.userId !== user.id && user.role !== "admin" && user.role !== "coach") {
+        return res.status(403).json({ message: "Not authorized to access this video analysis" });
+      }
+      
+      const analysis = await storage.getVideoAnalysisByVideoId(videoId);
+      
+      if (!analysis) {
+        return res.status(404).json({ message: "No analysis found for this video" });
+      }
+      
+      return res.json(analysis);
+    } catch (error) {
+      console.error("Error fetching video analysis:", error);
+      return res.status(500).json({ message: "Error fetching video analysis" });
     }
   });
 

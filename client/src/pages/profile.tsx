@@ -9,6 +9,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { insertAthleteProfileSchema } from "@shared/schema";
 import { formatHeight, formatWeight } from "@/lib/unit-conversion";
+import { GarVisualization } from "@/components/gar/gar-visualization";
+import { Button } from "@/components/ui/button";
+import { ChevronRight } from "lucide-react";
+import { Link } from "wouter";
 
 import {
   Form,
@@ -19,7 +23,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -233,10 +236,13 @@ export default function Profile() {
           </div>
           
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="personal">Personal Information</TabsTrigger>
               {user.role === "athlete" && (
                 <TabsTrigger value="athletic">Athletic Information</TabsTrigger>
+              )}
+              {user.role === "athlete" && (
+                <TabsTrigger value="gar">GAR Score</TabsTrigger>
               )}
             </TabsList>
             
@@ -477,6 +483,37 @@ export default function Profile() {
                         </Button>
                       </form>
                     </Form>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            )}
+            
+            {user.role === "athlete" && (
+              <TabsContent value="gar">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>GAR Score</CardTitle>
+                    <CardDescription>
+                      Your Go4it Athletic Rating performance metrics and analysis
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="mb-4">
+                      <GarVisualization userId={user.id} />
+                    </div>
+                    
+                    <div className="flex justify-between mt-8">
+                      <Button variant="outline" onClick={() => setActiveTab("athletic")}>
+                        Back to Athletic Information
+                      </Button>
+                      
+                      <Link href="/gar-score">
+                        <Button className="flex items-center gap-2">
+                          Detailed GAR Dashboard
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </Link>
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
