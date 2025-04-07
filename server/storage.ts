@@ -3,10 +3,13 @@ import {
   videoHighlights, type VideoHighlight, type InsertVideoHighlight,
   highlightGeneratorConfigs, type HighlightGeneratorConfig, type InsertHighlightGeneratorConfig,
   videos, type Video, type InsertVideo,
-  apiKeys, type ApiKey
+  apiKeys, type ApiKey,
+  contentBlocks, type ContentBlock, type InsertContentBlock,
+  blogPosts, type BlogPost, type InsertBlogPost,
+  featuredAthletes, type FeaturedAthlete, type InsertFeaturedAthlete
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, sql } from "drizzle-orm";
+import { eq, and, desc, sql, like, inArray } from "drizzle-orm";
 import MemoryStore from "memorystore";
 import session from "express-session";
 
@@ -51,6 +54,34 @@ export interface IStorage {
   
   // API Key operations
   getAllActiveApiKeys(): Promise<ApiKey[]>;
+  
+  // Content Blocks operations
+  getContentBlocks(): Promise<ContentBlock[]>;
+  getContentBlocksBySection(section: string): Promise<ContentBlock[]>;
+  getContentBlockById(id: number): Promise<ContentBlock | undefined>;
+  getContentBlockByIdentifier(identifier: string): Promise<ContentBlock | undefined>;
+  createContentBlock(contentBlock: InsertContentBlock): Promise<ContentBlock>;
+  updateContentBlock(id: number, data: Partial<ContentBlock>): Promise<ContentBlock | undefined>;
+  deleteContentBlock(id: number): Promise<boolean>;
+  
+  // Blog Posts operations
+  getBlogPosts(limit?: number): Promise<BlogPost[]>;
+  getFeaturedBlogPosts(limit?: number): Promise<BlogPost[]>;
+  getBlogPostById(id: number): Promise<BlogPost | undefined>;
+  getBlogPostBySlug(slug: string): Promise<BlogPost | undefined>;
+  getBlogPostsByCategory(category: string, limit?: number): Promise<BlogPost[]>;
+  getBlogPostsByTags(tags: string[], limit?: number): Promise<BlogPost[]>;
+  createBlogPost(blogPost: InsertBlogPost): Promise<BlogPost>;
+  updateBlogPost(id: number, data: Partial<BlogPost>): Promise<BlogPost | undefined>;
+  deleteBlogPost(id: number): Promise<boolean>;
+  
+  // Featured Athletes operations
+  getFeaturedAthletes(limit?: number): Promise<FeaturedAthlete[]>;
+  getFeaturedAthleteById(id: number): Promise<FeaturedAthlete | undefined>;
+  getFeaturedAthleteByUserId(userId: number): Promise<FeaturedAthlete | undefined>;
+  createFeaturedAthlete(featuredAthlete: InsertFeaturedAthlete): Promise<FeaturedAthlete>;
+  updateFeaturedAthlete(id: number, data: Partial<FeaturedAthlete>): Promise<FeaturedAthlete | undefined>;
+  deleteFeaturedAthlete(id: number): Promise<boolean>;
 }
 
 // Direct database implementation
@@ -241,6 +272,175 @@ export class DatabaseStorage implements IStorage {
       console.error('Database error in getAllActiveApiKeys:', error);
       return [];
     }
+  }
+
+  // Content Blocks operations
+  async getContentBlocks(): Promise<ContentBlock[]> {
+    return await db.select()
+      .from(contentBlocks)
+      .where(eq(contentBlocks.active, true))
+      .orderBy(contentBlocks.order);
+  }
+
+  async getContentBlocksBySection(section: string): Promise<ContentBlock[]> {
+    return await db.select()
+      .from(contentBlocks)
+      .where(
+        and(
+          eq(contentBlocks.active, true),
+          eq(contentBlocks.section, section)
+        )
+      )
+      .orderBy(contentBlocks.order);
+  }
+
+  async getContentBlockById(id: number): Promise<ContentBlock | undefined> {
+    const [block] = await db.select()
+      .from(contentBlocks)
+      .where(eq(contentBlocks.id, id));
+    return block;
+  }
+
+  async getContentBlockByIdentifier(identifier: string): Promise<ContentBlock | undefined> {
+    const [block] = await db.select()
+      .from(contentBlocks)
+      .where(eq(contentBlocks.identifier, identifier));
+    return block;
+  }
+
+  async createContentBlock(contentBlock: InsertContentBlock): Promise<ContentBlock> {
+    const [createdBlock] = await db.insert(contentBlocks)
+      .values(contentBlock)
+      .returning();
+    return createdBlock;
+  }
+
+  async updateContentBlock(id: number, data: Partial<ContentBlock>): Promise<ContentBlock | undefined> {
+    const [updatedBlock] = await db.update(contentBlocks)
+      .set({
+        ...data,
+        lastUpdated: new Date()
+      })
+      .where(eq(contentBlocks.id, id))
+      .returning();
+    return updatedBlock;
+  }
+
+  async deleteContentBlock(id: number): Promise<boolean> {
+    const result = await db.delete(contentBlocks)
+      .where(eq(contentBlocks.id, id));
+    return true; // If no error was thrown, we consider it successful
+  }
+
+  // Blog Posts operations
+  async getBlogPosts(limit: number = 10): Promise<BlogPost[]> {
+    return await db.select()
+      .from(blogPosts)
+      .orderBy(desc(blogPosts.publishDate))
+      .limit(limit);
+  }
+
+  async getFeaturedBlogPosts(limit: number = 5): Promise<BlogPost[]> {
+    return await db.select()
+      .from(blogPosts)
+      .where(eq(blogPosts.featured, true))
+      .orderBy(desc(blogPosts.publishDate))
+      .limit(limit);
+  }
+
+  async getBlogPostById(id: number): Promise<BlogPost | undefined> {
+    const [post] = await db.select()
+      .from(blogPosts)
+      .where(eq(blogPosts.id, id));
+    return post;
+  }
+
+  async getBlogPostBySlug(slug: string): Promise<BlogPost | undefined> {
+    const [post] = await db.select()
+      .from(blogPosts)
+      .where(eq(blogPosts.slug, slug));
+    return post;
+  }
+
+  async getBlogPostsByCategory(category: string, limit: number = 10): Promise<BlogPost[]> {
+    return await db.select()
+      .from(blogPosts)
+      .where(eq(blogPosts.category, category))
+      .orderBy(desc(blogPosts.publishDate))
+      .limit(limit);
+  }
+
+  async getBlogPostsByTags(tags: string[], limit: number = 10): Promise<BlogPost[]> {
+    return await db.select()
+      .from(blogPosts)
+      .where(sql`${blogPosts.tags} && ${tags}`)
+      .orderBy(desc(blogPosts.publishDate))
+      .limit(limit);
+  }
+
+  async createBlogPost(blogPost: InsertBlogPost): Promise<BlogPost> {
+    const [createdPost] = await db.insert(blogPosts)
+      .values(blogPost)
+      .returning();
+    return createdPost;
+  }
+
+  async updateBlogPost(id: number, data: Partial<BlogPost>): Promise<BlogPost | undefined> {
+    const [updatedPost] = await db.update(blogPosts)
+      .set(data)
+      .where(eq(blogPosts.id, id))
+      .returning();
+    return updatedPost;
+  }
+
+  async deleteBlogPost(id: number): Promise<boolean> {
+    const result = await db.delete(blogPosts)
+      .where(eq(blogPosts.id, id));
+    return true; // If no error was thrown, we consider it successful
+  }
+
+  // Featured Athletes operations
+  async getFeaturedAthletes(limit: number = 6): Promise<FeaturedAthlete[]> {
+    return await db.select()
+      .from(featuredAthletes)
+      .where(eq(featuredAthletes.active, true))
+      .orderBy(featuredAthletes.order)
+      .limit(limit);
+  }
+
+  async getFeaturedAthleteById(id: number): Promise<FeaturedAthlete | undefined> {
+    const [athlete] = await db.select()
+      .from(featuredAthletes)
+      .where(eq(featuredAthletes.id, id));
+    return athlete;
+  }
+
+  async getFeaturedAthleteByUserId(userId: number): Promise<FeaturedAthlete | undefined> {
+    const [athlete] = await db.select()
+      .from(featuredAthletes)
+      .where(eq(featuredAthletes.userId, userId));
+    return athlete;
+  }
+
+  async createFeaturedAthlete(featuredAthlete: InsertFeaturedAthlete): Promise<FeaturedAthlete> {
+    const [createdAthlete] = await db.insert(featuredAthletes)
+      .values(featuredAthlete)
+      .returning();
+    return createdAthlete;
+  }
+
+  async updateFeaturedAthlete(id: number, data: Partial<FeaturedAthlete>): Promise<FeaturedAthlete | undefined> {
+    const [updatedAthlete] = await db.update(featuredAthletes)
+      .set(data)
+      .where(eq(featuredAthletes.id, id))
+      .returning();
+    return updatedAthlete;
+  }
+
+  async deleteFeaturedAthlete(id: number): Promise<boolean> {
+    const result = await db.delete(featuredAthletes)
+      .where(eq(featuredAthletes.id, id));
+    return true; // If no error was thrown, we consider it successful
   }
 }
 

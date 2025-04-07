@@ -212,6 +212,14 @@
   
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // Check if NDA was already accepted, redirect if it was
+      if (localStorage.getItem('ndaAccepted') === 'true') {
+        // Only redirect if this is the NDA page
+        if (window.location.pathname === '/' || window.location.pathname === '/nda.html') {
+          window.location.href = '/';
+        }
+      }
+      
       const agreeCheckbox = document.getElementById('agree-checkbox');
       const continueBtn = document.getElementById('continue-btn');
       
@@ -229,8 +237,9 @@
         if (agreeCheckbox.checked) {
           // Store acceptance in localStorage
           localStorage.setItem('ndaAccepted', 'true');
+          localStorage.setItem('ndaAcceptedDate', new Date().toISOString());
           // Redirect to main platform
-          window.location.href = 'index.html';
+          window.location.href = '/';
         } else {
           e.preventDefault();
           alert('You must agree to the NDA before continuing.');
