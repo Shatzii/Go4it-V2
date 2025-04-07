@@ -117,9 +117,19 @@ async function updateDatabaseColumns() {
           ALTER TABLE athlete_discoveries ADD COLUMN status TEXT DEFAULT 'new';
           RAISE NOTICE 'Added status column to athlete_discoveries';
         END IF;
+        
+        -- Check if assigned_to column exists in athlete_discoveries
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name = 'athlete_discoveries' 
+          AND column_name = 'assigned_to'
+        ) THEN
+          ALTER TABLE athlete_discoveries ADD COLUMN assigned_to INTEGER;
+          RAISE NOTICE 'Added assigned_to column to athlete_discoveries';
+        END IF;
       END $$;
     `);
-    console.log("✅ Updated athlete_discoveries table with phone and location columns");
+    console.log("✅ Updated athlete_discoveries table with all required columns");
 
     // Add missing columns to media_partner_discoveries table
     await db.execute(`
@@ -213,6 +223,16 @@ async function updateDatabaseColumns() {
         ) THEN
           ALTER TABLE media_partner_discoveries ADD COLUMN partnership_terms TEXT;
           RAISE NOTICE 'Added partnership_terms column to media_partner_discoveries';
+        END IF;
+
+        -- Check if partnership_start_date column exists in media_partner_discoveries
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name = 'media_partner_discoveries' 
+          AND column_name = 'partnership_start_date'
+        ) THEN
+          ALTER TABLE media_partner_discoveries ADD COLUMN partnership_start_date TIMESTAMP;
+          RAISE NOTICE 'Added partnership_start_date column to media_partner_discoveries';
         END IF;
       END $$;
     `);
