@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, type ApiRequestOptions } from "@/lib/api";
 import { useLocation } from "wouter";
 import websocketService from "@/services/websocket-service";
 
@@ -142,23 +142,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
       
       // Normal login flow
-      await apiRequest("POST", "/api/auth/login", { username, password });
+      await apiRequest("/api/auth/login", { 
+        method: "POST", 
+        data: { username, password } 
+      });
       
       // After successful login, fetch the user data
-      const userResponse = await apiRequest("GET", "/api/auth/me");
+      const userResponse = await apiRequest("/api/auth/me");
       
-      if (userResponse?.data?.user) {
-        setUser(userResponse.data.user);
-        setActualRole(userResponse.data.user.role); // Store the actual role
+      if (userResponse?.user) {
+        setUser(userResponse.user);
+        setActualRole(userResponse.user.role); // Store the actual role
         
         // Connect to WebSocket after login
-        websocketService.connect(userResponse.data.user.id);
+        websocketService.connect(userResponse.user.id);
         
         // Delay navigation slightly to ensure all state updates are complete
         setTimeout(() => {
           toast({
             title: "Login successful", 
-            description: `Welcome back, ${userResponse.data.user.name}!`,
+            description: `Welcome back, ${userResponse.user.name}!`,
           });
           navigate("/");
         }, 300);
@@ -167,8 +170,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     } catch (error: any) {
       console.error("Login error:", error);
-      const errorMessage = error.response?.data?.message || 
-                         error.message || 
+      const errorMessage = error.message || 
                          "Invalid username or password";
       toast({
         title: "Login failed",
@@ -183,21 +185,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const register = async (userData: RegisterData) => {
     try {
       setLoading(true);
-      const response = await apiRequest("POST", "/api/auth/register", userData);
-      const data = response.data;
-      setUser(data.user);
-      setActualRole(data.user.role); // Store the actual role
+      const response = await apiRequest("/api/auth/register", {
+        method: "POST",
+        data: userData
+      });
+      setUser(response.user);
+      setActualRole(response.user.role); // Store the actual role
       
       // Connect to WebSocket after registration
-      if (data.user && data.user.id) {
-        websocketService.connect(data.user.id);
+      if (response.user && response.user.id) {
+        websocketService.connect(response.user.id);
       }
       
       // Delay navigation slightly to ensure all state updates are complete
       setTimeout(() => {
         toast({
           title: "Registration successful",
-          description: `Welcome, ${data.user.name}!`,
+          description: `Welcome, ${response.user.name}!`,
         });
         navigate("/");
       }, 300);
@@ -216,7 +220,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = async () => {
     try {
-      await apiRequest("POST", "/api/auth/logout", {});
+      await apiRequest("/api/auth/logout", {
+        method: "POST"
+      });
       
       // Disconnect WebSocket when logging out
       websocketService.disconnect();
