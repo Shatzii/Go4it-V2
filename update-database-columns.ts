@@ -127,6 +127,16 @@ async function updateDatabaseColumns() {
           ALTER TABLE athlete_discoveries ADD COLUMN assigned_to INTEGER;
           RAISE NOTICE 'Added assigned_to column to athlete_discoveries';
         END IF;
+        
+        -- Check if confidence column exists in athlete_discoveries
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name = 'athlete_discoveries' 
+          AND column_name = 'confidence'
+        ) THEN
+          ALTER TABLE athlete_discoveries ADD COLUMN confidence INTEGER DEFAULT 70;
+          RAISE NOTICE 'Added confidence column to athlete_discoveries';
+        END IF;
       END $$;
     `);
     console.log("✅ Updated athlete_discoveries table with all required columns");
@@ -233,6 +243,16 @@ async function updateDatabaseColumns() {
         ) THEN
           ALTER TABLE media_partner_discoveries ADD COLUMN partnership_start_date TIMESTAMP;
           RAISE NOTICE 'Added partnership_start_date column to media_partner_discoveries';
+        END IF;
+        
+        -- Check if partnership_end_date column exists in media_partner_discoveries
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name = 'media_partner_discoveries' 
+          AND column_name = 'partnership_end_date'
+        ) THEN
+          ALTER TABLE media_partner_discoveries ADD COLUMN partnership_end_date TIMESTAMP;
+          RAISE NOTICE 'Added partnership_end_date column to media_partner_discoveries';
         END IF;
       END $$;
     `);
