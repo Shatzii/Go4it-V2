@@ -109,6 +109,7 @@ export interface IStorage {
   // Video Analysis operations
   getVideoAnalysis(id: number): Promise<VideoAnalysis | undefined>;
   getVideoAnalysisByVideoId(videoId: number): Promise<VideoAnalysis | undefined>;
+  saveVideoAnalysis(videoId: number, analysisData: any): Promise<VideoAnalysis>;
 }
 
 // Direct database implementation
@@ -582,6 +583,49 @@ export class DatabaseStorage implements IStorage {
       .from(videoAnalyses)
       .where(eq(videoAnalyses.videoId, videoId));
     return analysis;
+  }
+
+  async saveVideoAnalysis(videoId: number, analysisData: any): Promise<VideoAnalysis> {
+    // First, check if an analysis already exists for this video
+    const existingAnalysis = await this.getVideoAnalysisByVideoId(videoId);
+
+    if (existingAnalysis) {
+      // Update the existing analysis
+      const [updatedAnalysis] = await db.update(videoAnalyses)
+        .set({
+          motionData: analysisData.motionData,
+          overallScore: analysisData.overallScore,
+          feedback: analysisData.feedback,
+          improvementTips: analysisData.improvementTips,
+          keyFrameTimestamps: analysisData.keyFrameTimestamps,
+          garScores: analysisData.garScores
+        })
+        .where(eq(videoAnalyses.id, existingAnalysis.id))
+        .returning();
+      
+      // Also update the video to mark it as analyzed
+      await this.updateVideo(videoId, { analyzed: true });
+      
+      return updatedAnalysis;
+    } else {
+      // Create a new analysis
+      const [createdAnalysis] = await db.insert(videoAnalyses)
+        .values({
+          videoId,
+          motionData: analysisData.motionData,
+          overallScore: analysisData.overallScore,
+          feedback: analysisData.feedback,
+          improvementTips: analysisData.improvementTips,
+          keyFrameTimestamps: analysisData.keyFrameTimestamps,
+          garScores: analysisData.garScores
+        })
+        .returning();
+      
+      // Update the video to mark it as analyzed
+      await this.updateVideo(videoId, { analyzed: true });
+      
+      return createdAnalysis;
+    }
   }
 }
 

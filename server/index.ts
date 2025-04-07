@@ -45,16 +45,20 @@ app.get('/', (req, res, next) => {
 });
 
 // Route for the main application after NDA acceptance
-app.get('/app', (req, res) => {
-  // Serve the client/index.html file for the app route
-  const clientIndexPath = path.join(process.cwd(), 'client', 'index.html');
-  if (fs.existsSync(clientIndexPath)) {
-    res.sendFile(clientIndexPath);
-  } else {
-    // Fallback to vite handling
-    res.redirect('/');
-  }
-});
+// Let Vite handle this route in development mode
+// Only explicitly handle it in production mode
+if (app.get("env") !== "development") {
+  app.get('/app', (req, res) => {
+    // Serve the client/index.html file for the app route
+    const clientIndexPath = path.join(process.cwd(), 'client', 'index.html');
+    if (fs.existsSync(clientIndexPath)) {
+      res.sendFile(clientIndexPath);
+    } else {
+      // Fallback to vite handling
+      res.redirect('/');
+    }
+  });
+}
 
 app.use((req, res, next) => {
   const start = Date.now();
