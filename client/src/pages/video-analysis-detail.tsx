@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,11 +9,9 @@ import { Progress } from "@/components/ui/progress";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts";
 import { Video, VideoAnalysis, videoAnalyses, videos } from "@shared/schema";
 import { PlayAnalysisResult } from "@shared/schema";
-import { useQueryClient } from "@/lib/query-client";
+import { queryClient } from "@/lib/query-client";
 import { apiRequest } from "@/lib/api";
-import { Card as VideoCard } from "lucide-react";
-import { Loader2 } from "lucide-react";
-import { ChevronRight, BarChart2, Medal, FileVideo, Activity, Play, CheckCircle2, Dumbbell, Brain, GitBranch } from "lucide-react";
+import { Loader2, ChevronRight, BarChart2, Medal, FileVideo, Activity, Play, CheckCircle2, Dumbbell, Brain, GitBranch } from "lucide-react";
 
 // Component for the GAR score visualization
 function GARScoreVisualization({ garScores }: { garScores: any }) {
@@ -386,7 +384,7 @@ export default function VideoAnalysisDetail() {
             <Card>
               <CardContent className="py-8">
                 <div className="text-center text-muted-foreground">
-                  <VideoCard className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <FileVideo className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>Play analysis not available for this video.</p>
                 </div>
               </CardContent>
