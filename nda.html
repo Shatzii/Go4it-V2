@@ -216,7 +216,7 @@
       if (localStorage.getItem('ndaAccepted') === 'true') {
         // Only redirect if this is the NDA page
         if (window.location.pathname === '/' || window.location.pathname === '/nda.html') {
-          window.location.href = '/';
+          window.location.href = '/app';
         }
       }
       
@@ -239,7 +239,7 @@
           localStorage.setItem('ndaAccepted', 'true');
           localStorage.setItem('ndaAcceptedDate', new Date().toISOString());
           // Redirect to main platform
-          window.location.href = '/';
+          window.location.href = '/app';
         } else {
           e.preventDefault();
           alert('You must agree to the NDA before continuing.');
