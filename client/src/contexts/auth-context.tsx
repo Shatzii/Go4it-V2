@@ -156,15 +156,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }, 15000); // 15 second timeout
       
       try {
-        // First, ensure any existing session is cleared to prevent conflicts
-        try {
-          await apiRequest("/api/auth/logout", { method: "POST" });
-        } catch (logoutError) {
-          // Ignore logout errors during login - just trying to clean state
-          console.log("Ignoring cleanup logout error during login flow");
-        }
-        
-        // Perform login request
+        // Perform login request directly without trying to logout first
+        // This prevents the momentary "denial" that users see
         await apiRequest("/api/auth/login", { 
           method: "POST", 
           data: { username, password } 
