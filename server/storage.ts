@@ -124,11 +124,29 @@ export class DatabaseStorage implements IStorage {
   sessionStore: any;
 
   constructor() {
-    // Create a memory store for session management
-    const MemoryStoreSession = MemoryStore(session);
-    this.sessionStore = new MemoryStoreSession({
-      checkPeriod: 86400000 // prune expired entries every 24h
-    });
+    try {
+      // Use PostgreSQL for session storage instead of memory store
+      const PgStore = require('connect-pg-simple')(session);
+      
+      this.sessionStore = new PgStore({
+        conString: process.env.DATABASE_URL,
+        tableName: 'session', // Use the session table
+        createTableIfMissing: true,
+        // Added options for better reliability
+        pruneSessionInterval: 60 * 15, // Prune every 15 minutes (in seconds)
+        errorLog: console.error.bind(console, 'PostgreSQL session store error:')
+      });
+      
+      console.log('PostgreSQL session store initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize PostgreSQL session store, falling back to memory store:', error);
+      
+      // Fallback to memory store in case of connection issues
+      const MemoryStoreSession = MemoryStore(session);
+      this.sessionStore = new MemoryStoreSession({
+        checkPeriod: 86400000 // prune expired entries every 24h
+      });
+    }
   }
 
   // User operations
