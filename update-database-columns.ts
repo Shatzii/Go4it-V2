@@ -147,6 +147,16 @@ async function updateDatabaseColumns() {
           ALTER TABLE athlete_discoveries ADD COLUMN contact_attempts INTEGER DEFAULT 0;
           RAISE NOTICE 'Added contact_attempts column to athlete_discoveries';
         END IF;
+        
+        -- Check if converted_to_user_id column exists in athlete_discoveries
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name = 'athlete_discoveries' 
+          AND column_name = 'converted_to_user_id'
+        ) THEN
+          ALTER TABLE athlete_discoveries ADD COLUMN converted_to_user_id INTEGER REFERENCES users(id);
+          RAISE NOTICE 'Added converted_to_user_id column to athlete_discoveries';
+        END IF;
       END $$;
     `);
     console.log("✅ Updated athlete_discoveries table with all required columns");
