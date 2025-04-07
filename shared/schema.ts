@@ -319,16 +319,71 @@ export const featuredAthletes = pgTable("featured_athletes", {
   active: boolean("active").default(true),
 });
 
-// Skills for athlete's skill tree
+// Skill tree nodes definition (parent skills)
+export const skillTreeNodes = pgTable("skill_tree_nodes", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  sportType: text("sport_type"), // null for general athletic skills
+  position: text("position"), // null for skills not specific to a position
+  category: text("category").notNull(), // speed, strength, agility, technique, sport-specific, etc.
+  level: integer("level").notNull().default(1), // Skill tree level (top level = 1)
+  xpToUnlock: integer("xp_to_unlock").default(0), // XP needed to unlock this skill
+  iconPath: text("icon_path"), // Visual representation for the skill tree
+  unlockRequirement: text("unlock_requirement"), // Description of requirements to unlock
+  sortOrder: integer("sort_order").default(0), // Order within the same level
+  createdAt: timestamp("created_at").defaultNow(),
+  isActive: boolean("is_active").default(true),
+});
+
+// Skill tree relationships (connects parent skills to child skills)
+export const skillTreeRelationships = pgTable("skill_tree_relationships", {
+  id: serial("id").primaryKey(),
+  parentId: integer("parent_id").references(() => skillTreeNodes.id),
+  childId: integer("child_id").notNull().references(() => skillTreeNodes.id),
+  requirement: text("requirement"), // e.g., "parent must be level 3"
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Player-specific skill progress (athlete's actual skills)
 export const skills = pgTable("skills", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
+  skillNodeId: integer("skill_node_id").notNull().references(() => skillTreeNodes.id),
   skillName: text("skill_name").notNull(),
   skillCategory: text("skill_category").notNull(), // speed, strength, agility, technique, etc
   skillLevel: integer("skill_level").notNull().default(0), // 0-5 rating
+  isUnlocked: boolean("is_unlocked").default(false),
   xpPoints: integer("xp_points").notNull().default(0),
   nextLevelXp: integer("next_level_xp").notNull().default(100),
   updatedAt: timestamp("updated_at").defaultNow(),
+  lastPracticed: timestamp("last_practiced"),
+});
+
+// Training drills for skills
+export const trainingDrills = pgTable("training_drills", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  skillNodeId: integer("skill_node_id").references(() => skillTreeNodes.id),
+  difficulty: text("difficulty").notNull(), // beginner, intermediate, advanced
+  sportType: text("sport_type"), // null for general athletic drills
+  position: text("position"), // null for drills not specific to a position
+  category: text("category").notNull(), // speed, strength, agility, etc.
+  duration: integer("duration").notNull(), // in minutes
+  equipment: text("equipment").array(), // required equipment
+  targetMuscles: text("target_muscles").array(), // muscles targeted
+  videoUrl: text("video_url"), // demonstration video
+  imageUrl: text("image_url"), // illustration image
+  instructions: text("instructions").notNull(), // step-by-step instructions
+  tips: text("tips").array(), // coaching tips
+  variations: text("variations").array(), // variations of the drill
+  xpReward: integer("xp_reward").notNull().default(10), // XP earned for completing
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  isAiGenerated: boolean("is_ai_generated").default(false),
+  aiPromptUsed: text("ai_prompt_used"), // Store the prompt used to generate this drill
+  sourceId: text("source_id"), // ID of original source if imported
 });
 
 // Challenges for workout and training gamification
@@ -1114,7 +1169,10 @@ export const insertAchievementSchema = createInsertSchema(achievements).omit({ i
 export const insertMessageSchema = createInsertSchema(messages).omit({ id: true, createdAt: true, isRead: true });
 
 // New schema for story mode components
-export const insertSkillSchema = createInsertSchema(skills).omit({ id: true, updatedAt: true });
+export const insertSkillTreeNodeSchema = createInsertSchema(skillTreeNodes).omit({ id: true, createdAt: true });
+export const insertSkillTreeRelationshipSchema = createInsertSchema(skillTreeRelationships).omit({ id: true, createdAt: true });
+export const insertSkillSchema = createInsertSchema(skills).omit({ id: true, updatedAt: true, lastPracticed: true });
+export const insertTrainingDrillSchema = createInsertSchema(trainingDrills).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertChallengeSchema = createInsertSchema(challenges).omit({ id: true, createdAt: true });
 export const insertAthleteChallengeSchema = createInsertSchema(athleteChallenges).omit({ id: true, startedAt: true, completedAt: true });
 export const insertRecoveryLogSchema = createInsertSchema(recoveryLogs).omit({ id: true, logDate: true });
@@ -1223,8 +1281,17 @@ export type Message = typeof messages.$inferSelect;
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
 
 // Story mode component types
+export type SkillTreeNode = typeof skillTreeNodes.$inferSelect;
+export type InsertSkillTreeNode = z.infer<typeof insertSkillTreeNodeSchema>;
+
+export type SkillTreeRelationship = typeof skillTreeRelationships.$inferSelect;
+export type InsertSkillTreeRelationship = z.infer<typeof insertSkillTreeRelationshipSchema>;
+
 export type Skill = typeof skills.$inferSelect;
 export type InsertSkill = z.infer<typeof insertSkillSchema>;
+
+export type TrainingDrill = typeof trainingDrills.$inferSelect;
+export type InsertTrainingDrill = z.infer<typeof insertTrainingDrillSchema>;
 
 export type Challenge = typeof challenges.$inferSelect;
 export type InsertChallenge = z.infer<typeof insertChallengeSchema>;
