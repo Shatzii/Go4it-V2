@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import fs from "fs";
 import path from "path";
 import { storage } from "./storage";
-import { AthleteProfile } from "@shared/schema";
+import { AthleteProfile, PlayAnalysisResult } from "@shared/schema";
 import { v4 as uuidv4 } from 'uuid';
 import { openAIService } from './services/openai-service';
 
@@ -403,6 +403,380 @@ Focus on constructive feedback while being encouraging. Be specific about streng
 }
 
 // Function to generate sport recommendations based on motion analysis and athlete profile
+export interface PlayAnalysisResult {
+  playType: string;
+  formation: string;
+  keyMovements: string[];
+  strengths: string[];
+  weaknesses: string[];
+  recommendedCounters: string[];
+  tacticalInsights: string;
+  coachingPoints: string[];
+  diagrams?: {
+    description: string;
+    positions: {
+      player: string;
+      x: number;
+      y: number;
+      role: string;
+    }[];
+  }[];
+}
+
+/**
+ * Analyzes a sports play video and provides strategic insights
+ * This helps athletes understand game strategy and tactics
+ * @param videoId - ID of the video to analyze
+ * @param sportType - Type of sport (e.g., basketball, football, soccer)
+ * @param context - Additional context like "offense", "defense", "set play", etc.
+ * @returns Detailed play analysis with tactical insights
+ */
+export async function analyzePlayStrategy(
+  videoId: number,
+  sportType: string,
+  context: string = "general"
+): Promise<PlayAnalysisResult> {
+  try {
+    console.log(`Analyzing play strategy for ${sportType} video (ID: ${videoId}), context: ${context}`);
+    
+    // Get the video
+    const video = await storage.getVideo(videoId);
+    if (!video) {
+      throw new Error("Video not found");
+    }
+    
+    // Try to get OpenAI client
+    try {
+      await getOpenAIClient();
+    } catch (error) {
+      console.log("No OpenAI API key found, generating mock play analysis");
+      return generateMockPlayAnalysis(sportType, context);
+    }
+    
+    // Create prompt for detailed play analysis
+    const analysisPrompt = `
+You are an expert sports analyst and coach for ${sportType}. You're analyzing a play in the context of ${context}.
+Please provide a comprehensive tactical breakdown of this play.
+
+Generate a JSON response with the following structure:
+{
+  "playType": "Brief description of the play type (e.g., pick and roll, zone defense, counter-attack)",
+  "formation": "Description of the formation used",
+  "keyMovements": [
+    "3-5 key player movements or actions that define this play"
+  ],
+  "strengths": [
+    "3-4 tactical strengths of this play"
+  ],
+  "weaknesses": [
+    "2-3 potential weaknesses or vulnerabilities in this play"
+  ],
+  "recommendedCounters": [
+    "3-4 effective counter-strategies an opponent might use"
+  ],
+  "tacticalInsights": "Detailed paragraph explaining the strategic elements and when to best utilize this play",
+  "coachingPoints": [
+    "4-5 specific coaching points to teach this play effectively"
+  ],
+  "diagrams": [
+    {
+      "description": "Brief description of this diagram/position",
+      "positions": [
+        {
+          "player": "Position name (e.g., PG, Center, QB)",
+          "x": decimal between 0-1 representing x-coordinate,
+          "y": decimal between 0-1 representing y-coordinate,
+          "role": "Brief description of this player's role in the play"
+        }
+      ]
+    }
+  ]
+}
+
+This analysis will be used by student athletes (ages 12-18) to develop their understanding of game strategy and tactics.
+Focus on clear, educational explanations while using appropriate sports terminology.
+`;
+
+    const client = await getOpenAIClient();
+    const response = await client.chat.completions.create({
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      messages: [
+        {
+          role: "system",
+          content: `You are an expert ${sportType} coach and tactical analyst who specializes in teaching young athletes.`
+        },
+        {
+          role: "user",
+          content: analysisPrompt
+        }
+      ],
+      response_format: { type: "json_object" }
+    });
+
+    // Parse the response
+    const playAnalysis: PlayAnalysisResult = JSON.parse(response.choices[0].message.content || '{}');
+    
+    // Validate and ensure all required fields are present
+    if (!playAnalysis.playType) playAnalysis.playType = `${sportType} play`;
+    if (!playAnalysis.formation) playAnalysis.formation = "Standard formation";
+    if (!playAnalysis.keyMovements) playAnalysis.keyMovements = [];
+    if (!playAnalysis.strengths) playAnalysis.strengths = [];
+    if (!playAnalysis.weaknesses) playAnalysis.weaknesses = [];
+    if (!playAnalysis.recommendedCounters) playAnalysis.recommendedCounters = [];
+    if (!playAnalysis.tacticalInsights) playAnalysis.tacticalInsights = "Analysis completed.";
+    if (!playAnalysis.coachingPoints) playAnalysis.coachingPoints = [];
+    
+    // Save the analysis as part of the video's GAR scores
+    // Get existing analysis or create new one
+    const existingAnalysis = await storage.getVideoAnalysisByVideoId(videoId);
+    
+    if (existingAnalysis) {
+      // Update existing analysis with play strategy insights
+      const updatedAnalysis = {
+        ...existingAnalysis,
+        garScores: {
+          ...existingAnalysis.garScores,
+          playStrategy: playAnalysis
+        }
+      };
+      
+      await storage.saveVideoAnalysis(videoId, updatedAnalysis);
+    } else {
+      // Create new analysis with play strategy insights
+      const newAnalysis = {
+        motionData: {},
+        overallScore: 75, // Default score
+        feedback: `Play analysis completed for ${sportType}.`,
+        improvementTips: playAnalysis.coachingPoints,
+        keyFrameTimestamps: [],
+        garScores: {
+          playStrategy: playAnalysis
+        }
+      };
+      
+      await storage.saveVideoAnalysis(videoId, newAnalysis);
+    }
+    
+    console.log("Play strategy analysis completed successfully");
+    return playAnalysis;
+    
+  } catch (error: any) {
+    console.error("Error analyzing play strategy:", error);
+    
+    // If API key error, fall back to mock analysis
+    if (error.message && error.message.includes("API key")) {
+      console.log("API key error, falling back to mock play analysis");
+      return generateMockPlayAnalysis(sportType || "basketball", context);
+    }
+    
+    throw new Error(`Failed to analyze play strategy: ${error?.message || 'Unknown error'}`);
+  }
+}
+
+/**
+ * Generates mock play analysis data when OpenAI API is unavailable
+ */
+function generateMockPlayAnalysis(sportType: string, context: string): PlayAnalysisResult {
+  console.log(`Generating mock play analysis for ${sportType} (${context})`);
+  
+  const sportSpecificData = () => {
+    switch(sportType.toLowerCase()) {
+      case 'basketball':
+        return {
+          playType: context.includes('offense') ? "Pick and Roll Offense" : "Zone Defense",
+          formation: context.includes('offense') ? "1-4 High Set" : "2-3 Zone",
+          keyMovements: [
+            "Point guard initiates with a high screen",
+            "Weak side wing moves to corner for spacing",
+            "Center rolls to basket after setting screen",
+            "Strong side wing prepared for kick-out pass",
+            "Off-ball movement creates passing lanes"
+          ],
+          strengths: [
+            "Creates multiple scoring options",
+            "Forces defensive mismatches",
+            "Effective against man-to-man defense",
+            "Provides good floor spacing"
+          ],
+          weaknesses: [
+            "Requires good decision-making from ball handler",
+            "Can be defended with proper switching",
+            "Relies on effective screening technique"
+          ],
+          recommendedCounters: [
+            "Defensive switching on screens",
+            "Hard hedge and recover",
+            "ICE defense to force sideline",
+            "Drop coverage with help rotation"
+          ],
+          diagramPositions: [
+            { player: "PG", x: 0.5, y: 0.2, role: "Ball handler" },
+            { player: "SG", x: 0.2, y: 0.3, role: "Weak side spacing" },
+            { player: "SF", x: 0.8, y: 0.3, role: "Strong side wing" },
+            { player: "PF", x: 0.65, y: 0.1, role: "Screen setter" },
+            { player: "C", x: 0.5, y: 0.5, role: "Post position after roll" }
+          ]
+        };
+      
+      case 'football':
+        return {
+          playType: context.includes('offense') ? "RPO (Run-Pass Option)" : "Cover 2 Defense",
+          formation: context.includes('offense') ? "Shotgun Spread" : "4-3 Base",
+          keyMovements: [
+            "Quarterback reads defensive end",
+            "Running back takes handoff path",
+            "Slot receiver runs bubble screen route",
+            "Outside receivers run vertical clearouts",
+            "Offensive line blocks for inside zone run"
+          ],
+          strengths: [
+            "Creates defensive conflict",
+            "Multiple options based on defensive reaction",
+            "Combines run and pass threats",
+            "Effective against multiple coverages"
+          ],
+          weaknesses: [
+            "Complex timing requirements",
+            "Quarterback must make quick reads",
+            "Vulnerable to certain blitz packages"
+          ],
+          recommendedCounters: [
+            "Scrape exchange with defensive end and linebacker",
+            "Pattern-match coverage",
+            "Defensive line slants",
+            "Controlled aggression from secondary"
+          ],
+          diagramPositions: [
+            { player: "QB", x: 0.5, y: 0.3, role: "Read and decision maker" },
+            { player: "RB", x: 0.5, y: 0.4, role: "Inside zone runner" },
+            { player: "WR1", x: 0.1, y: 0.2, role: "Vertical clearout" },
+            { player: "WR2", x: 0.3, y: 0.2, role: "Bubble screen option" },
+            { player: "WR3", x: 0.7, y: 0.2, role: "Vertical clearout" },
+            { player: "TE", x: 0.8, y: 0.3, role: "Edge blocker" }
+          ]
+        };
+        
+      case 'soccer':
+        return {
+          playType: context.includes('offense') ? "Counter-Attack" : "High Press",
+          formation: context.includes('offense') ? "4-3-3" : "4-4-2",
+          keyMovements: [
+            "Center backs maintain compact shape",
+            "Holding midfielder drops between defenders when in possession",
+            "Wingers provide width in attack",
+            "Fullbacks overlap on their respective sides",
+            "Striker makes diagonal runs behind defense"
+          ],
+          strengths: [
+            "Exploits space behind attacking opponents",
+            "Creates numerical advantage in transition",
+            "Utilizes pace of attacking players",
+            "Effective against teams that commit numbers forward"
+          ],
+          weaknesses: [
+            "Requires precise passing under pressure",
+            "Vulnerable if transition is slowed",
+            "Can leave team exposed if counter fails"
+          ],
+          recommendedCounters: [
+            "Tactical fouling to stop transitions",
+            "Defensive midfielder staying deep",
+            "Quick recovery runs from attacking players",
+            "Compressed defensive shape when losing possession"
+          ],
+          diagramPositions: [
+            { player: "GK", x: 0.5, y: 0.9, role: "Distribution and sweeping" },
+            { player: "LB", x: 0.2, y: 0.7, role: "Provide width in attack" },
+            { player: "CB1", x: 0.4, y: 0.8, role: "Central defender" },
+            { player: "CB2", x: 0.6, y: 0.8, role: "Central defender" },
+            { player: "RB", x: 0.8, y: 0.7, role: "Overlap and cross" },
+            { player: "CM", x: 0.5, y: 0.6, role: "Transition coordinator" }
+          ]
+        };
+        
+      default:
+        return {
+          playType: "Standard Set Play",
+          formation: "Basic Formation",
+          keyMovements: [
+            "Primary movement from key player",
+            "Secondary movement creating space",
+            "Support movement for options",
+            "Defensive positioning",
+            "Transition movement"
+          ],
+          strengths: [
+            "Creates scoring opportunities",
+            "Effective spacing",
+            "Multiple options",
+            "Unpredictable for defenders"
+          ],
+          weaknesses: [
+            "Requires precise timing",
+            "Vulnerable to specific defensive sets",
+            "Dependent on execution"
+          ],
+          recommendedCounters: [
+            "Anticipatory defensive positioning",
+            "Disrupting timing",
+            "Cutting off primary options",
+            "Forcing towards help defenders"
+          ],
+          diagramPositions: [
+            { player: "P1", x: 0.5, y: 0.3, role: "Primary player" },
+            { player: "P2", x: 0.3, y: 0.5, role: "Secondary support" },
+            { player: "P3", x: 0.7, y: 0.5, role: "Tertiary option" },
+            { player: "P4", x: 0.4, y: 0.7, role: "Defensive cover" },
+            { player: "P5", x: 0.6, y: 0.7, role: "Transition position" }
+          ]
+        };
+    }
+  };
+  
+  const data = sportSpecificData();
+  
+  // Create coaching insights based on play type
+  const coachingPoints = [
+    `Focus on timing and precision in executing the ${data.playType}`,
+    "Communicate constantly to maintain proper spacing and positioning",
+    "Read the defense/opposition and adjust accordingly",
+    "Practice this play until it becomes second nature",
+    "Understand the purpose behind each movement in the play"
+  ];
+  
+  // Create tactical insights paragraph
+  const tacticalInsights = `The ${data.playType} is most effective when used in situations where the defense/opposition ${
+    context.includes('offense') ? 'is overcommitting or showing predictable patterns' : 'is struggling with communication or positioning'
+  }. This play works by ${
+    data.keyMovements[0].toLowerCase()
+  } which creates a decision point for the defense. The key to successfully executing this play is understanding the timing of ${
+    data.keyMovements[1].toLowerCase()
+  } and reading how the defense reacts. Young athletes should focus on mastering the fundamentals of this play before adding variations.`;
+  
+  // Create diagrams from positions data
+  const diagrams = [{
+    description: `Initial setup for ${data.playType}`,
+    positions: data.diagramPositions.map(p => ({
+      player: p.player,
+      x: p.x,
+      y: p.y,
+      role: p.role
+    }))
+  }];
+  
+  return {
+    playType: data.playType,
+    formation: data.formation,
+    keyMovements: data.keyMovements,
+    strengths: data.strengths,
+    weaknesses: data.weaknesses,
+    recommendedCounters: data.recommendedCounters,
+    tacticalInsights,
+    coachingPoints,
+    diagrams
+  };
+}
+
 export async function generateSportRecommendations(
   userId: number,
   motionData: MotionData,

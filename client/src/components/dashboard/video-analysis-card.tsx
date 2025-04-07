@@ -34,9 +34,8 @@ export function VideoAnalysisCard({ video, analysis }: VideoAnalysisCardProps) {
     );
   }
 
-  const handleViewDetails = () => {
-    window.location.href = `/video-analysis/${video.id}`;
-  };
+  // Use Link component from wouter instead of direct window manipulation
+  // This maintains SPA behavior
 
   return (
     <div className="bg-neutral-light bg-opacity-30 rounded-lg overflow-hidden">
@@ -92,13 +91,15 @@ export function VideoAnalysisCard({ video, analysis }: VideoAnalysisCardProps) {
         )}
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
-          <Button
-            variant="secondary"
-            onClick={handleViewDetails}
-          >
-            <Info className="h-4 w-4 mr-2" />
-            View Analysis
-          </Button>
+          <Link href={`/video-analysis-detail/${video.id}`}>
+            <Button
+              variant="secondary"
+              className="w-full"
+            >
+              <Info className="h-4 w-4 mr-2" />
+              View Analysis
+            </Button>
+          </Link>
           
           <Link href={`/highlight-generator/${video.id}`}>
             <Button

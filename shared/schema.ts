@@ -8,6 +8,27 @@ export type MeasurementSystem = 'metric' | 'imperial';
 // Zod validation for MeasurementSystem
 export const measurementSystemSchema = z.enum(['metric', 'imperial']);
 
+// Play analysis result interface
+export interface PlayAnalysisResult {
+  playType: string;
+  formation: string;
+  keyMovements: string[];
+  strengths: string[];
+  weaknesses: string[];
+  recommendedCounters: string[];
+  tacticalInsights: string;
+  coachingPoints: string[];
+  diagrams?: {
+    description: string;
+    positions: {
+      player: string;
+      x: number;
+      y: number;
+      role: string;
+    }[];
+  }[];
+}
+
 // User table (for both athletes and coaches)
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
