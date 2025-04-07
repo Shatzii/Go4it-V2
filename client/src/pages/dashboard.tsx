@@ -24,7 +24,7 @@ export default function Dashboard() {
           <CardContent>
             <p className="mb-4">Please login or register to continue.</p>
             <div className="flex gap-4">
-              <Link href="/login">
+              <Link href="/auth">
                 <a className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
                   Login
                 </a>

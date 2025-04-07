@@ -447,7 +447,7 @@ export default function Layout({ children }: LayoutProps) {
                   </div>
                 </div>
               ) : (
-                <Link href="/login" className="flex items-center p-2 rounded-lg hover:bg-primary hover:bg-opacity-30 text-white">
+                <Link href="/auth" className="flex items-center p-2 rounded-lg hover:bg-primary hover:bg-opacity-30 text-white">
                   <LogIn className="h-5 w-5 mr-3" />
                   Login
                 </Link>
@@ -754,7 +754,7 @@ export default function Layout({ children }: LayoutProps) {
                     </div>
                   </div>
                 ) : (
-                  <Link href="/login" className="flex items-center p-2 rounded-lg text-white">
+                  <Link href="/auth" className="flex items-center p-2 rounded-lg text-white">
                     <LogIn className="h-5 w-5 mr-3" />
                     Login
                   </Link>

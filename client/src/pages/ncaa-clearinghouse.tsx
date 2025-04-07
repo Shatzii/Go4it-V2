@@ -148,7 +148,7 @@ export default function NcaaClearinghouse() {
         <p className="text-gray-600 mb-6">
           Please log in to track your NCAA eligibility
         </p>
-        <Link href="/login">
+        <Link href="/auth">
           <Button>Log In</Button>
         </Link>
       </div>

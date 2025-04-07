@@ -127,7 +127,7 @@ export default function CoachConnection() {
         <p className="text-gray-600 mb-6">
           Please log in to connect with coaches or athletes
         </p>
-        <Link href="/login">
+        <Link href="/auth">
           <Button>Log In</Button>
         </Link>
       </div>
