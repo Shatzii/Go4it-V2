@@ -81,7 +81,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const login = async (username: string, password: string) => {
+    // Track state to prevent showing conflicting toasts
+    let loginSuccess = false;
+    let errorToastShown = false;
+    let loginCompleted = false;
+    
     try {
+      // Set loading state when starting login
       setLoading(true);
       
       // Special case handling for test accounts
@@ -141,24 +147,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
       }
       
-      // Normal login flow - use a timeout to prevent hanging login requests
-      let loginCompleted = false;
+      // Set up timeout to prevent hanging login requests
       const loginTimeout = setTimeout(() => {
         if (!loginCompleted) {
           console.warn("Login request timed out after 15 seconds");
-          toast({
-            title: "Login took too long",
-            description: "The server is taking too long to respond. Please try again.",
-            variant: "destructive",
-          });
+          
+          // Only show error toast if we haven't shown success yet
+          if (!loginSuccess && !errorToastShown) {
+            errorToastShown = true;
+            toast({
+              title: "Login took too long",
+              description: "The server is taking too long to respond. Please try again.",
+              variant: "destructive",
+            });
+          }
           setLoading(false);
         }
       }, 15000); // 15 second timeout
       
       try {
-        // Perform login request directly without trying to logout first
-        // This prevents the momentary "denial" that users see
-        await apiRequest("/api/auth/login", { 
+        // Clear any existing user data before sending the request
+        setUser(null);
+        
+        // Perform login request without trying to logout first
+        const loginResponse = await apiRequest("/api/auth/login", { 
           method: "POST", 
           data: { username, password } 
         });
@@ -166,36 +178,41 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // After successful login, fetch the user data
         const userResponse = await apiRequest("/api/auth/me");
         
-        // Clear the timeout as login was successful
+        // Mark login as complete for the timeout handler
         loginCompleted = true;
         clearTimeout(loginTimeout);
         
         if (userResponse?.user) {
-          // Set user data before trying to initialize WebSocket to avoid race conditions
-          setUser(userResponse.user);
-          setActualRole(userResponse.user.role); // Store the actual role
+          // Mark login as successful to prevent error toasts
+          loginSuccess = true;
           
-          // Connect to WebSocket after login - use try/catch to prevent WebSocket issues from breaking login
+          // Set user data in state - this will update UI immediately
+          setUser(userResponse.user);
+          setActualRole(userResponse.user.role);
+          
+          // Connect to WebSocket after login - in a try/catch so it doesn't break the login process
           try {
             websocketService.connect(userResponse.user.id);
           } catch (wsError) {
             console.error("WebSocket connection error:", wsError);
-            // Don't block login process if websocket fails
+            // Don't block login if websocket connection fails
           }
           
-          // Show success toast immediately but wait to navigate
-          toast({
-            title: "Login successful", 
-            description: `Welcome back, ${userResponse.user.name}!`,
-          });
+          // Show success toast
+          if (!errorToastShown) {
+            toast({
+              title: "Login successful", 
+              description: `Welcome back, ${userResponse.user.name}!`,
+            });
+          }
           
-          // Only navigate after state has been updated
+          // Navigate home
           navigate("/");
         } else {
           throw new Error("Failed to get user data");
         }
       } catch (apiError: any) {
-        // Clear the timeout as login completed (with error)
+        // Mark login as complete for the timeout handler
         loginCompleted = true;
         clearTimeout(loginTimeout);
         
@@ -204,14 +221,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     } catch (error: any) {
       console.error("Login error:", error);
-      const errorMessage = error.message || 
-                         "Invalid username or password";
-      toast({
-        title: "Login failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      
+      // Only show error toast if we haven't shown success
+      if (!loginSuccess && !errorToastShown) {
+        errorToastShown = true;
+        
+        const errorMessage = error.message || "Invalid username or password";
+        toast({
+          title: "Login failed",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
+      
+      // Rethrow for the component to handle
+      throw error;
     } finally {
+      // Always reset loading state
       setLoading(false);
     }
   };
