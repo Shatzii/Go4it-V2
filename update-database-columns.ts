@@ -57,6 +57,46 @@ async function updateDatabaseColumns() {
           ALTER TABLE athlete_discoveries ADD COLUMN bio TEXT;
           RAISE NOTICE 'Added bio column to athlete_discoveries';
         END IF;
+        
+        -- Check if post_count column exists in athlete_discoveries
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name = 'athlete_discoveries' 
+          AND column_name = 'post_count'
+        ) THEN
+          ALTER TABLE athlete_discoveries ADD COLUMN post_count INTEGER;
+          RAISE NOTICE 'Added post_count column to athlete_discoveries';
+        END IF;
+        
+        -- Check if highlights column exists in athlete_discoveries
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name = 'athlete_discoveries' 
+          AND column_name = 'highlights'
+        ) THEN
+          ALTER TABLE athlete_discoveries ADD COLUMN highlights TEXT[];
+          RAISE NOTICE 'Added highlights column to athlete_discoveries';
+        END IF;
+        
+        -- Check if media_urls column exists in athlete_discoveries
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name = 'athlete_discoveries' 
+          AND column_name = 'media_urls'
+        ) THEN
+          ALTER TABLE athlete_discoveries ADD COLUMN media_urls TEXT[];
+          RAISE NOTICE 'Added media_urls column to athlete_discoveries';
+        END IF;
+        
+        -- Check if discovered_at column exists in athlete_discoveries
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name = 'athlete_discoveries' 
+          AND column_name = 'discovered_at'
+        ) THEN
+          ALTER TABLE athlete_discoveries ADD COLUMN discovered_at TIMESTAMP DEFAULT NOW();
+          RAISE NOTICE 'Added discovered_at column to athlete_discoveries';
+        END IF;
       END $$;
     `);
     console.log("✅ Updated athlete_discoveries table with phone and location columns");
@@ -113,6 +153,26 @@ async function updateDatabaseColumns() {
         ) THEN
           ALTER TABLE media_partner_discoveries ADD COLUMN recent_topics TEXT[];
           RAISE NOTICE 'Added recent_topics column to media_partner_discoveries';
+        END IF;
+        
+        -- Check if location column exists in media_partner_discoveries
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name = 'media_partner_discoveries' 
+          AND column_name = 'location'
+        ) THEN
+          ALTER TABLE media_partner_discoveries ADD COLUMN location TEXT;
+          RAISE NOTICE 'Added location column to media_partner_discoveries';
+        END IF;
+        
+        -- Check if assigned_to column exists in media_partner_discoveries
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name = 'media_partner_discoveries' 
+          AND column_name = 'assigned_to'
+        ) THEN
+          ALTER TABLE media_partner_discoveries ADD COLUMN assigned_to INTEGER;
+          RAISE NOTICE 'Added assigned_to column to media_partner_discoveries';
         END IF;
       END $$;
     `);
