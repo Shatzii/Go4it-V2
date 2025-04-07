@@ -11,7 +11,8 @@ import {
   garSubcategories, type GarSubcategory, type InsertGarSubcategory,
   garAthleteRatings, type GarAthleteRating, type InsertGarAthleteRating,
   garRatingHistory, type GarRatingHistory, type InsertGarRatingHistory,
-  videoAnalyses, type VideoAnalysis
+  videoAnalyses, type VideoAnalysis,
+  combineTourEvents, type CombineTourEvent, type InsertCombineTourEvent
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, sql, like, inArray } from "drizzle-orm";
@@ -110,6 +111,12 @@ export interface IStorage {
   getVideoAnalysis(id: number): Promise<VideoAnalysis | undefined>;
   getVideoAnalysisByVideoId(videoId: number): Promise<VideoAnalysis | undefined>;
   saveVideoAnalysis(videoId: number, analysisData: any): Promise<VideoAnalysis>;
+  
+  // Combine Tour Events operations
+  getCombineTourEvents(): Promise<CombineTourEvent[]>;
+  getCombineTourEvent(id: number): Promise<CombineTourEvent | undefined>;
+  createCombineTourEvent(event: InsertCombineTourEvent): Promise<CombineTourEvent>;
+  updateCombineTourEvent(id: number, data: Partial<CombineTourEvent>): Promise<CombineTourEvent | undefined>;
 }
 
 // Direct database implementation
@@ -626,6 +633,38 @@ export class DatabaseStorage implements IStorage {
       
       return createdAnalysis;
     }
+  }
+
+  // Combine Tour Events operations
+  async getCombineTourEvents(): Promise<CombineTourEvent[]> {
+    return await db.select()
+      .from(combineTourEvents)
+      .orderBy(combineTourEvents.startDate);
+  }
+
+  async getCombineTourEvent(id: number): Promise<CombineTourEvent | undefined> {
+    const [event] = await db.select()
+      .from(combineTourEvents)
+      .where(eq(combineTourEvents.id, id));
+    return event;
+  }
+
+  async createCombineTourEvent(event: InsertCombineTourEvent): Promise<CombineTourEvent> {
+    const [createdEvent] = await db.insert(combineTourEvents)
+      .values(event)
+      .returning();
+    return createdEvent;
+  }
+
+  async updateCombineTourEvent(id: number, data: Partial<CombineTourEvent>): Promise<CombineTourEvent | undefined> {
+    const [updatedEvent] = await db.update(combineTourEvents)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(eq(combineTourEvents.id, id))
+      .returning();
+    return updatedEvent;
   }
 }
 

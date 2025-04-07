@@ -10,6 +10,35 @@ import { eq } from "drizzle-orm";
 import multer from "multer";
 import path from "path";
 import { WebSocketServer, WebSocket } from 'ws';
+
+// Helper function to determine event status
+function getEventStatus(event: any): 'upcoming' | 'filling_fast' | 'sold_out' | 'past' {
+  const now = new Date();
+  const eventDate = new Date(event.startDate);
+  
+  // Past event
+  if (eventDate < now) {
+    return 'past';
+  }
+  
+  // Check capacity if maximum attendees is set
+  if (event.maximumAttendees) {
+    const spotsAvailable = event.maximumAttendees - (event.currentAttendees || 0);
+    
+    // Sold out
+    if (spotsAvailable <= 0) {
+      return 'sold_out';
+    }
+    
+    // Filling fast (less than 20% spots remaining)
+    if (spotsAvailable / event.maximumAttendees < 0.2) {
+      return 'filling_fast';
+    }
+  }
+  
+  // Default: upcoming
+  return 'upcoming';
+}
 import { setupAuth, hashPassword as authHashPassword } from "./auth";
 import passport from "passport";
 import { saveApiKey, getApiKeyStatus } from "./api-keys";
@@ -3222,6 +3251,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching combine tour events:", error);
       return res.status(500).json({ message: "Error fetching combine tour events" });
+    }
+  });
+  
+  // Add compatibility route for the front-end
+  app.get("/api/combine/events", async (req: Request, res: Response) => {
+    try {
+      const events = await storage.getCombineTourEvents();
+      
+      // Convert events to the format expected by the front-end
+      const formattedEvents = events.map(event => ({
+        id: event.id,
+        name: event.name,
+        location: `${event.location}, ${event.city}, ${event.state}`,
+        date: event.startDate,
+        registrationDeadline: event.registrationDeadline,
+        spotsAvailable: event.maximumAttendees ? event.maximumAttendees - (event.currentAttendees || 0) : 0,
+        totalSpots: event.maximumAttendees || 0,
+        price: parseFloat(event.price?.toString() || "0"),
+        testingTypes: ["physical", "cognitive", "psychological"], // Default testing types
+        description: event.description || "",
+        status: getEventStatus(event),
+        isRegistered: false // This would be determined by user registration data
+      }));
+      
+      return res.json(formattedEvents);
+    } catch (error) {
+      console.error("Error fetching combine events:", error);
+      return res.status(500).json({ message: "Error fetching combine events" });
+    }
+  });
+  
+  // Registration endpoint for combine events
+  app.post("/api/combine/register/:eventId", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const eventId = parseInt(req.params.eventId);
+      const userId = (req.user as any).id;
+      
+      // Get the event details
+      const event = await storage.getCombineTourEvent(eventId);
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      // Check if the event is full
+      if (event.maximumAttendees && event.currentAttendees && event.currentAttendees >= event.maximumAttendees) {
+        return res.status(400).json({ message: "This event is already sold out" });
+      }
+      
+      // Check if registration deadline has passed
+      const now = new Date();
+      const deadline = event.registrationDeadline ? new Date(event.registrationDeadline) : null;
+      if (deadline && deadline < now) {
+        return res.status(400).json({ message: "Registration deadline has passed" });
+      }
+      
+      // Forward to Active Network to process registration
+      const registrationResult = await activeNetworkService.registerForEvent(userId, eventId);
+      
+      // Update our internal event attendance count
+      await storage.updateCombineTourEvent(eventId, {
+        currentAttendees: (event.currentAttendees || 0) + 1
+      });
+      
+      return res.status(200).json({
+        success: true,
+        message: "Registration successful",
+        registrationData: registrationResult
+      });
+      
+    } catch (error) {
+      console.error("Error registering for combine event:", error);
+      return res.status(500).json({ 
+        message: "Error processing registration",
+        error: error instanceof Error ? error.message : String(error)
+      });
     }
   });
 

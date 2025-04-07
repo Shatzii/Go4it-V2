@@ -244,6 +244,80 @@ class ActiveNetworkService {
       throw error;
     }
   }
+  
+  /**
+   * Register a user for an event
+   * @param userId The ID of the user registering
+   * @param eventId The ID of the event in our system
+   * @returns Registration details
+   */
+  async registerForEvent(userId: number, eventId: number) {
+    try {
+      // First, get the event details from our database
+      const [event] = await db
+        .select()
+        .from(combineTourEvents)
+        .where(eq(combineTourEvents.id, eventId));
+      
+      if (!event) {
+        throw new Error(`Event with ID ${eventId} not found`);
+      }
+      
+      // Check if the user is already registered
+      const [existingRegistration] = await db
+        .select()
+        .from(registrations)
+        .where(eq(registrations.userId, userId) && eq(registrations.eventId, eventId));
+      
+      if (existingRegistration) {
+        return {
+          success: true,
+          alreadyRegistered: true,
+          registrationId: existingRegistration.id,
+          status: existingRegistration.status,
+          paymentStatus: existingRegistration.paymentStatus,
+          message: "You are already registered for this event"
+        };
+      }
+      
+      // In a real implementation, this would call Active Network API to register the user
+      // const response = await this.axios.post(`/api/events/${event.activeNetworkId}/registrations`, {
+      //   userId,
+      //   eventId,
+      //   // Additional registration details would go here
+      // });
+      
+      // For our demo, simulate a successful registration
+      const activeNetworkRegistrationId = `active-registration-${Date.now()}`;
+      
+      // Create a registration record in our database
+      const [registration] = await db
+        .insert(registrations)
+        .values({
+          userId,
+          eventId,
+          status: 'registered',
+          externalId: activeNetworkRegistrationId,
+          registeredAt: new Date(),
+          paymentStatus: 'pending'
+        })
+        .returning();
+      
+      return {
+        success: true,
+        registrationId: registration.id,
+        eventId,
+        activeNetworkRegistrationId,
+        status: 'registered',
+        paymentStatus: 'pending',
+        paymentUrl: `https://www.active.com/payment/${activeNetworkRegistrationId}`,
+        message: "Registration successful! Please complete payment to secure your spot."
+      };
+    } catch (error) {
+      console.error('Error registering for event:', error);
+      throw error;
+    }
+  }
 }
 
 // Create the Active Network service instance
