@@ -1,5 +1,5 @@
 import { Switch, Route, useLocation } from "wouter";
-import { queryClient } from "./lib/queryClient";
+import { queryClient } from "./lib/query-client";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider, useAuth } from "./contexts/auth-context";
@@ -15,6 +15,7 @@ import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import AthleteProfile from "@/pages/athlete-profile";
 import VideoAnalysis from "@/pages/video-analysis";
+import VideoAnalysisDetail from "@/pages/video-analysis-detail";
 import SportRecommendations from "@/pages/sport-recommendations";
 import CoachConnection from "@/pages/coach-connection";
 import NcaaClearinghouse from "@/pages/ncaa-clearinghouse";
@@ -117,6 +118,12 @@ function Router() {
       <Route path="/video-analysis/:id">
         {({ params }) => (
           <ProtectedRoute component={AnalysisReport} />
+        )}
+      </Route>
+      
+      <Route path="/video-analysis-detail/:id">
+        {({ params }) => (
+          <ProtectedRoute component={VideoAnalysisDetail} />
         )}
       </Route>
       

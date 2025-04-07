@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { fileUpload, imageUpload, videoUpload, getUploadedImages, deleteImage } from "./file-upload";
 import fs from "fs";
-import { analyzeVideo, generateSportRecommendations } from "./openai";
+import { analyzeVideo, generateSportRecommendations, analyzePlayStrategy } from "./openai";
 import activeNetworkService from "./active-network";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
@@ -732,6 +732,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching video analysis:", error);
       return res.status(500).json({ message: "Error fetching video analysis" });
+    }
+  });
+
+  // Play strategy analysis endpoint
+  app.post("/api/videos/:id/analyze-play", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const videoId = parseInt(req.params.id);
+      const video = await storage.getVideo(videoId);
+      
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow access to own videos or admin/coach access
+      if (video.userId !== user.id && user.role !== "admin" && user.role !== "coach") {
+        return res.status(403).json({ message: "Not authorized to analyze this video" });
+      }
+      
+      // Get sport type from video or request body
+      const sportType = req.body.sportType || video.sportType || "basketball";
+      
+      // Get context from request body (offense, defense, etc.)
+      const context = req.body.context || "general";
+      
+      // Analyze the play strategy
+      const playAnalysis = await analyzePlayStrategy(videoId, sportType, context);
+      
+      return res.json(playAnalysis);
+    } catch (error) {
+      console.error("Error analyzing play strategy:", error);
+      return res.status(500).json({ message: "Error analyzing play strategy" });
     }
   });
 
