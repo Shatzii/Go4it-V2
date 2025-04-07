@@ -97,6 +97,16 @@ async function updateDatabaseColumns() {
           ALTER TABLE athlete_discoveries ADD COLUMN discovered_at TIMESTAMP DEFAULT NOW();
           RAISE NOTICE 'Added discovered_at column to athlete_discoveries';
         END IF;
+        
+        -- Check if last_checked_at column exists in athlete_discoveries
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name = 'athlete_discoveries' 
+          AND column_name = 'last_checked_at'
+        ) THEN
+          ALTER TABLE athlete_discoveries ADD COLUMN last_checked_at TIMESTAMP DEFAULT NOW();
+          RAISE NOTICE 'Added last_checked_at column to athlete_discoveries';
+        END IF;
       END $$;
     `);
     console.log("✅ Updated athlete_discoveries table with phone and location columns");
@@ -173,6 +183,16 @@ async function updateDatabaseColumns() {
         ) THEN
           ALTER TABLE media_partner_discoveries ADD COLUMN assigned_to INTEGER;
           RAISE NOTICE 'Added assigned_to column to media_partner_discoveries';
+        END IF;
+        
+        -- Check if notes column exists in media_partner_discoveries
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name = 'media_partner_discoveries' 
+          AND column_name = 'notes'
+        ) THEN
+          ALTER TABLE media_partner_discoveries ADD COLUMN notes TEXT;
+          RAISE NOTICE 'Added notes column to media_partner_discoveries';
         END IF;
       END $$;
     `);
