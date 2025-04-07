@@ -142,31 +142,42 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
       
       // Normal login flow
-      await apiRequest("/api/auth/login", { 
-        method: "POST", 
-        data: { username, password } 
-      });
-      
-      // After successful login, fetch the user data
-      const userResponse = await apiRequest("/api/auth/me");
-      
-      if (userResponse?.user) {
-        setUser(userResponse.user);
-        setActualRole(userResponse.user.role); // Store the actual role
+      try {
+        await apiRequest("/api/auth/login", { 
+          method: "POST", 
+          data: { username, password } 
+        });
         
-        // Connect to WebSocket after login
-        websocketService.connect(userResponse.user.id);
+        // After successful login, fetch the user data
+        const userResponse = await apiRequest("/api/auth/me");
         
-        // Delay navigation slightly to ensure all state updates are complete
-        setTimeout(() => {
+        if (userResponse?.user) {
+          // Set user data before trying to initialize WebSocket to avoid race conditions
+          setUser(userResponse.user);
+          setActualRole(userResponse.user.role); // Store the actual role
+          
+          // Connect to WebSocket after login - use try/catch to prevent WebSocket issues from breaking login
+          try {
+            websocketService.connect(userResponse.user.id);
+          } catch (wsError) {
+            console.error("WebSocket connection error:", wsError);
+            // Don't block login process if websocket fails
+          }
+          
+          // Show success toast immediately but wait to navigate
           toast({
             title: "Login successful", 
             description: `Welcome back, ${userResponse.user.name}!`,
           });
+          
+          // Only navigate after state has been updated
           navigate("/");
-        }, 300);
-      } else {
-        throw new Error("Failed to get user data");
+        } else {
+          throw new Error("Failed to get user data");
+        }
+      } catch (apiError: any) {
+        console.error("API request error during login:", apiError);
+        throw new Error(apiError.message || "Login failed. Please try again.");
       }
     } catch (error: any) {
       console.error("Login error:", error);
@@ -189,22 +200,33 @@ export function AuthProvider({ children }: AuthProviderProps) {
         method: "POST",
         data: userData
       });
+      
+      if (!response || !response.user) {
+        throw new Error("Registration failed. No user data received.");
+      }
+      
+      // Set user data before trying to initialize WebSocket to avoid race conditions
       setUser(response.user);
       setActualRole(response.user.role); // Store the actual role
       
-      // Connect to WebSocket after registration
+      // Connect to WebSocket after registration - use try/catch to prevent WebSocket issues from breaking registration
       if (response.user && response.user.id) {
-        websocketService.connect(response.user.id);
+        try {
+          websocketService.connect(response.user.id);
+        } catch (wsError) {
+          console.error("WebSocket connection error during registration:", wsError);
+          // Don't block registration process if websocket fails
+        }
       }
       
-      // Delay navigation slightly to ensure all state updates are complete
-      setTimeout(() => {
-        toast({
-          title: "Registration successful",
-          description: `Welcome, ${response.user.name}!`,
-        });
-        navigate("/");
-      }, 300);
+      // Show success toast immediately
+      toast({
+        title: "Registration successful",
+        description: `Welcome, ${response.user.name}!`,
+      });
+      
+      // Navigate after state has been updated
+      navigate("/");
     } catch (error: any) {
       console.error("Registration error:", error);
       toast({
@@ -220,30 +242,50 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = async () => {
     try {
-      await apiRequest("/api/auth/logout", {
-        method: "POST"
-      });
+      // Attempt to disconnect WebSocket first - but continue even if this fails
+      try {
+        websocketService.disconnect();
+      } catch (wsError) {
+        console.error("WebSocket disconnect error:", wsError);
+        // Don't stop logout if WebSocket disconnect fails
+      }
       
-      // Disconnect WebSocket when logging out
-      websocketService.disconnect();
+      // Send logout request to server
+      try {
+        await apiRequest("/api/auth/logout", {
+          method: "POST"
+        });
+      } catch (logoutError) {
+        console.error("Logout API error:", logoutError);
+        // Continue with client-side logout even if server logout fails
+      }
       
+      // Always clear user state regardless of server response
       setUser(null);
       setActualRole(null); // Clear the actual role
       
-      // Delay navigation slightly to ensure all state updates are complete
-      setTimeout(() => {
-        toast({
-          title: "Logout successful",
-          description: "You have been logged out successfully",
-        });
-        navigate("/");
-      }, 300);
-    } catch (error: any) {
+      // Show logout confirmation
       toast({
-        title: "Logout failed",
-        description: "There was an issue logging out",
-        variant: "destructive",
+        title: "Logout successful",
+        description: "You have been logged out successfully",
       });
+      
+      // Navigate to home page
+      navigate("/");
+    } catch (error: any) {
+      console.error("Unexpected logout error:", error);
+      
+      // Still attempt to clear user state even if there's an error
+      setUser(null);
+      setActualRole(null);
+      
+      toast({
+        title: "Logout notice",
+        description: "You have been logged out, but there may have been an issue with the server",
+      });
+      
+      // Navigate to home page even if there's an error
+      navigate("/");
     }
   };
 
