@@ -14,6 +14,8 @@ import {
   videoAnalyses, type VideoAnalysis,
   combineTourEvents, type CombineTourEvent, type InsertCombineTourEvent,
   userTokens, type UserToken, type InsertUserToken,
+  // Athlete Star Profiles
+  athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile,
   // NCAA Schools database tables
   ncaaSchools, type NcaaSchool, type InsertNcaaSchool,
   athleticDepartments, type AthleticDepartment, type InsertAthleticDepartment,
@@ -25,6 +27,8 @@ import { db } from "./db";
 import { eq, and, or, desc, sql, like, inArray } from "drizzle-orm";
 import MemoryStore from "memorystore";
 import session from "express-session";
+import pg from 'pg';
+import connectPgSimple from 'connect-pg-simple';
 
 export interface IStorage {
   // Session store
@@ -197,7 +201,7 @@ export class DatabaseStorage implements IStorage {
   constructor() {
     try {
       // Use PostgreSQL for session storage instead of memory store
-      const PgStore = require('connect-pg-simple')(session);
+      const PgStore = connectPgSimple(session);
       
       this.sessionStore = new PgStore({
         conString: process.env.DATABASE_URL,

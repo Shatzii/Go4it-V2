@@ -43,7 +43,7 @@ app.use((req, res, next) => {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'X-Forwarded-For': req.ip,
+          'X-Forwarded-For': String(req.ip || ''),
           'Host': new URL(baseUrl).host,
         },
         body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
