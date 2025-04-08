@@ -370,22 +370,10 @@ function AppContent() {
     return <HomePage />;
   }
   
-  // Explicitly handle /app route - change to home page
+  // Updated: Don't redirect /app route anymore - instead render the home page directly
+  // This ensures the NDA will be shown on every login and prevents redirect loops
   if (location === "/app") {
-    // Use setTimeout to avoid immediate navigation which could cause rendering issues
-    setTimeout(() => {
-      setLocation("/");
-    }, 10);
-    
-    // Return a loading indicator while redirecting to prevent flashing
-    return (
-      <div className="flex items-center justify-center h-screen w-screen bg-black">
-        <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-white text-lg">Redirecting...</p>
-        </div>
-      </div>
-    );
+    return <HomePage />;
   }
 
   return (

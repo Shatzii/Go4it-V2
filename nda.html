@@ -212,13 +212,10 @@
   
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Check if NDA was already accepted, redirect if it was
-      if (localStorage.getItem('ndaAccepted') === 'true') {
-        // Only redirect if this is the NDA page
-        if (window.location.pathname === '/' || window.location.pathname === '/nda.html') {
-          window.location.href = '/app';
-        }
-      }
+      // IMPORTANT: Per client requirement, ALWAYS show the NDA regardless of previous acceptance
+      // Clear any previous NDA acceptance
+      localStorage.removeItem('ndaAccepted');
+      localStorage.removeItem('ndaAcceptedDate');
       
       const agreeCheckbox = document.getElementById('agree-checkbox');
       const continueBtn = document.getElementById('continue-btn');

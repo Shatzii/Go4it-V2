@@ -25,37 +25,19 @@ export function GlobalAgreementModal() {
     try {
       // Wrap in try-catch to prevent any storage errors from causing white screen
       
-      // Safety guard for issue where NDA was causing white screen
-      // If user has already clicked "I Agree" on a previous session, accept
-      // Don't require NDA if user already agreed in a previous session
-      if (localStorage.getItem('nda_agreed') === 'true') {
-        // Ensure session storage is also marked as agreed
-        sessionStorage.setItem('nda_agreed_session', 'true');
-        setHasAgreed(true);
-        setOpen(false);
-        return;
-      }
-
-      // Only after checking the override above, handle regular cases
-      if (user) {
-        // Force the NDA to show for every user session by checking session storage
-        // instead of localStorage (which persists longer)
-        const hasAgreedThisSession = sessionStorage.getItem('nda_agreed_session') === 'true';
-        
-        // For logged in users, we require per-session agreement unless overridden above
-        const shouldShowAgreement = !hasAgreedThisSession;
-        
-        setHasAgreed(!shouldShowAgreement);
-        setOpen(shouldShowAgreement);
-      } else {
-        // For non-logged in users, check if they've ever agreed
-        const hasAgreedToNDA = localStorage.getItem('nda_agreed') === 'true';
-        setHasAgreed(hasAgreedToNDA);
-        
-        if (!hasAgreedToNDA) {
-          setOpen(true);
-        }
-      }
+      // MODIFIED: ALWAYS show the NDA for every login, regardless of previous acceptance
+      // This is a critical change requested by the client
+      
+      // First, clear any previous acceptance to ensure it shows every time
+      localStorage.removeItem('nda_agreed');
+      sessionStorage.removeItem('nda_agreed_session');
+      
+      // Always show the agreement popup on every page load
+      setHasAgreed(false);
+      setOpen(true);
+      
+      // NOTE: We're completely bypassing all previous acceptance logic to force
+      // the NDA to always appear on every login, as requested by the client
     } catch (error) {
       // If anything goes wrong with storage, don't block the app
       console.error('Error in NDA agreement modal:', error);
