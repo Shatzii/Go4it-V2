@@ -36,6 +36,8 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, data: Partial<User>): Promise<User | undefined>;
+  getAllUsers(): Promise<User[]>;
+  getAllAthletes(): Promise<User[]>;
   
   // Video operations
   getVideo(id: number): Promise<Video | undefined>;
@@ -245,6 +247,62 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, id))
       .returning();
     return updatedUser;
+  }
+  
+  async getAllUsers(): Promise<User[]> {
+    try {
+      return await db.select()
+        .from(users)
+        .orderBy(desc(users.createdAt));
+    } catch (error) {
+      console.error('Database error in getAllUsers:', error);
+      return [];
+    }
+  }
+  
+  async getAllAthletes(): Promise<User[]> {
+    try {
+      const athleteUsers = await db.select()
+        .from(users)
+        .where(eq(users.role, 'athlete'))
+        .orderBy(desc(users.createdAt));
+        
+      // Also look for any athletes in athleteStarProfiles that might not be directly in users table
+      const starProfiles = await db.select({
+        profile: athleteStarProfiles,
+        userId: athleteStarProfiles.userId
+      })
+      .from(athleteStarProfiles)
+      .where(
+        and(
+          eq(athleteStarProfiles.active, true),
+          sql`${athleteStarProfiles.userId} IS NOT NULL`
+        )
+      );
+      
+      // Create a set of already included user IDs
+      const includedUserIds = new Set(athleteUsers.map(user => user.id));
+      
+      // Find additional user IDs from star profiles
+      const additionalUserIds = starProfiles
+        .filter(profile => profile.userId && !includedUserIds.has(profile.userId))
+        .map(profile => profile.userId);
+      
+      // If there are additional user IDs, fetch them
+      if (additionalUserIds.length > 0) {
+        const additionalUsers = await db.select()
+          .from(users)
+          .where(inArray(users.id, additionalUserIds));
+          
+        // Combine the results
+        return [...athleteUsers, ...additionalUsers];
+      }
+      
+      return athleteUsers;
+    } catch (error) {
+      console.error('Database error in getAllAthletes:', error);
+      return [];
+    }
   }
 
   // Video operations

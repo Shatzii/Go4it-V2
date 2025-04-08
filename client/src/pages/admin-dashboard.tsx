@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import HighlightConfigManager from "@/components/admin/highlight-config-manager";
+import ProfileImageUpdater from "@/components/admin/ProfileImageUpdater";
 import { 
   ChartBarStacked, 
   ChartBar, 
@@ -184,8 +185,9 @@ export default function AdminDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-5 mb-6">
+        <TabsList className="grid grid-cols-6 mb-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="athletes">Athletes</TabsTrigger>
           <TabsTrigger value="coaches">Coaches</TabsTrigger>
           <TabsTrigger value="videos">Videos</TabsTrigger>
@@ -433,6 +435,122 @@ export default function AdminDashboard() {
               </p>
             </div>
           )}
+        </TabsContent>
+
+        {/* Users Tab */}
+        <TabsContent value="users">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Users className="h-5 w-5 mr-2" />
+                User Management
+              </CardTitle>
+              <CardDescription>
+                Manage all user accounts and update profile information
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {usersLoading ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                  <p className="text-gray-600">Loading users...</p>
+                </div>
+              ) : allUsers && allUsers.length > 0 ? (
+                <div className="space-y-6">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>User</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead>Joined</TableHead>
+                        <TableHead className="text-right">Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filterItems(allUsers).map((user) => (
+                        <TableRow key={user.id}>
+                          <TableCell className="font-medium">
+                            <div className="flex items-center">
+                              <Avatar className="h-8 w-8 mr-3">
+                                <AvatarImage src={user.profileImage} alt={user.name} />
+                                <AvatarFallback>
+                                  {user.name.split(" ").map((n) => n[0]).join("").toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <p className="font-medium">{user.name}</p>
+                                <p className="text-xs text-muted-foreground">@{user.username}</p>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>{user.email}</TableCell>
+                          <TableCell>
+                            <span className="capitalize bg-primary bg-opacity-10 text-primary px-2 py-1 rounded-full text-xs">
+                              {user.role}
+                            </span>
+                          </TableCell>
+                          <TableCell>{formatDate(user.createdAt)}</TableCell>
+                          <TableCell className="text-right">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="mr-2"
+                              onClick={() => {
+                                // Logic to open user profile view
+                                console.log("Viewing user profile:", user.id);
+                              }}
+                            >
+                              View
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                // Logic to handle editing user profile
+                                console.log("Edit user profile:", user.id);
+                              }}
+                            >
+                              Edit
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+
+                  <div className="bg-gray-50 p-6 rounded-lg">
+                    <h3 className="text-lg font-medium mb-4">Update Profile Image</h3>
+                    <div className="flex flex-col items-center space-y-4">
+                      <p className="text-sm text-muted-foreground">
+                        Select a user above and click "Edit" to update their profile image,
+                        or use this form to update any user by entering their ID manually.
+                      </p>
+                      <ProfileImageUpdater 
+                        userId={1} // Default to first user as an example
+                        username="admin" // Using admin as default example
+                        currentImageUrl="/assets/images/default-profile.png"
+                        onSuccess={(updatedUser) => {
+                          queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+                          toast({
+                            title: "Profile updated",
+                            description: `Successfully updated ${updatedUser.username}'s profile image`,
+                            variant: "default",
+                          });
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Users className="h-16 w-16 mx-auto text-gray-400 mb-4" />
+                  <h3 className="text-lg font-medium mb-2">No users found</h3>
+                  <p className="text-gray-600">No user accounts match your search criteria.</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* Athletes Tab */}
