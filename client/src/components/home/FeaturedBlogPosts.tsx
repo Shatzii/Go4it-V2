@@ -26,10 +26,24 @@ export default function FeaturedBlogPosts() {
 
   const { data: blogPosts = [], isLoading: isLoadingAll } = useQuery<BlogPost[]>({
     queryKey: ["/api/blog-posts"],
+    queryFn: async () => {
+      const response = await fetch('http://localhost:5000/api/blog-posts');
+      if (!response.ok) {
+        throw new Error('Failed to fetch blog posts');
+      }
+      return response.json();
+    }
   });
 
   const { data: featuredBlogPosts = [], isLoading: isLoadingFeatured } = useQuery<BlogPost[]>({
     queryKey: ["/api/blog-posts/featured"],
+    queryFn: async () => {
+      const response = await fetch('http://localhost:5000/api/blog-posts/featured');
+      if (!response.ok) {
+        throw new Error('Failed to fetch featured blog posts');
+      }
+      return response.json();
+    }
   });
 
   const formatDate = (dateString: string) => {
@@ -49,8 +63,10 @@ export default function FeaturedBlogPosts() {
             Blog
           </span> & News
         </h2>
-        <Button variant="ghost" className="flex items-center gap-1 text-blue-400 hover:text-blue-300">
-          View All <ChevronRight className="h-4 w-4" />
+        <Button asChild variant="ghost" className="flex items-center gap-1 text-blue-400 hover:text-blue-300">
+          <Link href="/blog">
+            View All <ChevronRight className="h-4 w-4" />
+          </Link>
         </Button>
       </div>
 

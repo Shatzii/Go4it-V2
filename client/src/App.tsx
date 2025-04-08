@@ -53,6 +53,7 @@ import ScoutVisionFeed from "@/pages/scoutvision-feed";
 import CoachPortal from "@/pages/coach-portal";
 import Settings from "@/pages/settings";
 import BlogPost from "@/pages/blog-post";
+import BlogList from "@/pages/blog-list";
 import GarScorePage from "@/pages/gar-score";
 
 interface ProtectedRouteProps {
@@ -302,7 +303,13 @@ function Router() {
         )}
       </Route>
       
-      {/* Blog Post Page Route */}
+      {/* Blog Routes */}
+      <Route path="/blog">
+        {({ params }) => (
+          <BlogList />
+        )}
+      </Route>
+      
       <Route path="/blog/:slug">
         {({ params }) => (
           <BlogPost />
