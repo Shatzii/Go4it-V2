@@ -328,7 +328,7 @@ function Router() {
 
 function AppContent() {
   const { user } = useAuth();
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
 
   // Don't render the layout for the auth page, test-auth, or home page
   if (location === "/auth") {
@@ -344,9 +344,13 @@ function AppContent() {
     return <HomePage />;
   }
   
-  // Explicitly handle /app route by redirecting to root for better navigation
+  // Explicitly handle /app route - change to home page
   if (location === "/app") {
-    navigate("/");
+    // Use setTimeout to avoid immediate navigation which could cause rendering issues
+    setTimeout(() => {
+      setLocation("/");
+    }, 10);
+    
     // Return a loading indicator while redirecting to prevent flashing
     return (
       <div className="flex items-center justify-center h-full">
