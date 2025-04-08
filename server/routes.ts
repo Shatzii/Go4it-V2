@@ -39,6 +39,55 @@ function getEventStatus(event: any): 'upcoming' | 'filling_fast' | 'sold_out' | 
   // Default: upcoming
   return 'upcoming';
 }
+
+/**
+ * Helper function to get upcoming combine tour events by JavaScript filtering
+ */
+async function getUpcomingEvents(limit: number = 10): Promise<any[]> {
+  try {
+    // Get all events
+    const allEvents = await storage.getCombineTourEvents();
+    const currentDate = new Date();
+    
+    // Filter for upcoming events
+    const upcomingEvents = allEvents
+      .filter(event => 
+        new Date(event.startDate) > currentDate && 
+        event.status === "published"
+      )
+      .slice(0, limit);
+      
+    return upcomingEvents;
+  } catch (error) {
+    console.error("Error fetching upcoming events:", error);
+    return [];
+  }
+}
+
+/**
+ * Helper function to get past combine tour events by JavaScript filtering
+ */
+async function getPastEvents(limit: number = 10): Promise<any[]> {
+  try {
+    // Get all events
+    const allEvents = await storage.getCombineTourEvents();
+    const currentDate = new Date();
+    
+    // Filter for past events
+    const pastEvents = allEvents
+      .filter(event => 
+        new Date(event.endDate) < currentDate && 
+        event.status === "published"
+      )
+      .sort((a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime())
+      .slice(0, limit);
+      
+    return pastEvents;
+  } catch (error) {
+    console.error("Error fetching past events:", error);
+    return [];
+  }
+}
 import { setupAuth, hashPassword as authHashPassword } from "./auth";
 import passport from "passport";
 import { saveApiKey, getApiKeyStatus } from "./api-keys";
@@ -3461,6 +3510,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Add compatibility route for the front-end
+  // Helper function for getting upcoming events using JavaScript filtering
+  async function getUpcomingEvents(limit: number = 10): Promise<any[]> {
+    try {
+      // Get all events
+      const allEvents = await storage.getCombineTourEvents();
+      const currentDate = new Date();
+      
+      // Filter for upcoming events
+      const upcomingEvents = allEvents
+        .filter(event => 
+          new Date(event.startDate) > currentDate
+        )
+        .slice(0, limit);
+        
+      return upcomingEvents;
+    } catch (error) {
+      console.error("Error fetching upcoming events:", error);
+      return [];
+    }
+  }
+  
+  // Helper function for getting past events using JavaScript filtering
+  async function getPastEvents(limit: number = 10): Promise<any[]> {
+    try {
+      // Get all events
+      const allEvents = await storage.getCombineTourEvents();
+      const currentDate = new Date();
+      
+      // Filter for past events
+      const pastEvents = allEvents
+        .filter(event => 
+          new Date(event.startDate) < currentDate
+        )
+        .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())
+        .slice(0, limit);
+        
+      return pastEvents;
+    } catch (error) {
+      console.error("Error fetching past events:", error);
+      return [];
+    }
+  }
+
   app.get("/api/combine/events", async (req: Request, res: Response) => {
     try {
       const events = await storage.getCombineTourEvents();
@@ -3485,6 +3577,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching combine events:", error);
       return res.status(500).json({ message: "Error fetching combine events" });
+    }
+  });
+  
+  // Add endpoints for upcoming and past events using JavaScript filtering
+  app.get("/api/combine-tour-events/:status", async (req: Request, res: Response) => {
+    try {
+      const status = req.params.status;
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+      
+      let events = [];
+      if (status === 'upcoming') {
+        events = await getUpcomingEvents(limit);
+      } else if (status === 'past') {
+        events = await getPastEvents(limit);
+      } else {
+        return res.status(400).json({ message: "Invalid status parameter. Use 'upcoming' or 'past'." });
+      }
+      
+      // Convert events to the format expected by the front-end
+      const formattedEvents = events.map(event => ({
+        id: event.id,
+        name: event.name,
+        location: `${event.location}, ${event.city}, ${event.state}`,
+        date: event.startDate,
+        registrationDeadline: event.registrationDeadline,
+        spotsAvailable: event.maximumAttendees ? event.maximumAttendees - (event.currentAttendees || 0) : 0,
+        totalSpots: event.maximumAttendees || 0,
+        price: parseFloat(event.price?.toString() || "0"),
+        testingTypes: ["physical", "cognitive", "psychological"], // Default testing types
+        description: event.description || "",
+        status: getEventStatus(event),
+        isRegistered: false // This would be determined by user registration data
+      }));
+      
+      return res.json(formattedEvents);
+    } catch (error) {
+      console.error(`Error fetching ${req.params.status} combine events:`, error);
+      return res.status(500).json({ message: `Error fetching ${req.params.status} combine events` });
     }
   });
   
@@ -5286,8 +5416,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/combine-tour/events/status/upcoming", async (req: Request, res: Response) => {
     try {
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
-      const events = await storage.getUpcomingCombineTourEvents(limit);
-      return res.json(events);
+      
+      // Get all events and filter in JavaScript
+      const allEvents = await storage.getCombineTourEvents();
+      const currentDate = new Date();
+      
+      // Filter for upcoming events
+      const upcomingEvents = allEvents.filter(event => 
+        new Date(event.startDate) > currentDate && 
+        event.status === "published"
+      ).slice(0, limit);
+      
+      return res.json(upcomingEvents);
     } catch (error) {
       console.error("Error fetching upcoming combine tour events:", error);
       return res.status(500).json({ message: "Error fetching upcoming combine tour events" });
@@ -5298,8 +5438,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/combine-tour/events/status/past", async (req: Request, res: Response) => {
     try {
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
-      const events = await storage.getPastCombineTourEvents(limit);
-      return res.json(events);
+      
+      // Get all events and filter in JavaScript
+      const allEvents = await storage.getCombineTourEvents();
+      const currentDate = new Date();
+      
+      // Filter for past events
+      const pastEvents = allEvents.filter(event => 
+        new Date(event.endDate) < currentDate && 
+        event.status === "published"
+      )
+      .sort((a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime())
+      .slice(0, limit);
+      
+      return res.json(pastEvents);
     } catch (error) {
       console.error("Error fetching past combine tour events:", error);
       return res.status(500).json({ message: "Error fetching past combine tour events" });
@@ -5331,8 +5483,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
-      const events = await storage.getCombineTourEventsByStatus(status, limit);
-      return res.json(events);
+      const allEvents = await storage.getCombineTourEvents();
+      const currentDate = new Date();
+      
+      let filteredEvents: any[] = [];
+      
+      // Filter events based on status
+      switch (status) {
+        case 'upcoming':
+          filteredEvents = allEvents.filter(event => 
+            new Date(event.startDate) > currentDate && 
+            event.status === "published"
+          );
+          break;
+        case 'past':
+          filteredEvents = allEvents.filter(event => 
+            new Date(event.endDate) < currentDate && 
+            event.status === "published"
+          );
+          filteredEvents.sort((a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime());
+          break;
+        case 'filling_fast':
+          filteredEvents = allEvents.filter(event => {
+            if (!event.maximumAttendees || !event.currentAttendees) return false;
+            
+            return new Date(event.startDate) > currentDate && 
+                   event.status === "published" &&
+                   event.currentAttendees / event.maximumAttendees >= 0.75 &&
+                   event.currentAttendees < event.maximumAttendees;
+          });
+          break;
+        case 'sold_out':
+          filteredEvents = allEvents.filter(event => {
+            if (!event.maximumAttendees || !event.currentAttendees) return false;
+            
+            return new Date(event.startDate) > currentDate && 
+                   event.status === "published" &&
+                   event.currentAttendees >= event.maximumAttendees;
+          });
+          break;
+      }
+      
+      return res.json(filteredEvents.slice(0, limit));
     } catch (error) {
       console.error("Error fetching combine tour events by status:", error);
       return res.status(500).json({ message: "Error fetching combine tour events by status" });

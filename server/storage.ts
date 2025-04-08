@@ -754,7 +754,7 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getUpcomingCombineTourEvents(limit: number = 10): Promise<CombineTourEvent[]> {
-    const currentDate = new Date();
+    const currentDate = new Date().toISOString();
     return await db.select()
       .from(combineTourEvents)
       .where(
@@ -768,7 +768,7 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getPastCombineTourEvents(limit: number = 10): Promise<CombineTourEvent[]> {
-    const currentDate = new Date();
+    const currentDate = new Date().toISOString();
     return await db.select()
       .from(combineTourEvents)
       .where(
@@ -790,7 +790,7 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getCombineTourEventsByStatus(status: string, limit: number = 10): Promise<CombineTourEvent[]> {
-    const currentDate = new Date();
+    const currentDate = new Date().toISOString();
     let query = db.select().from(combineTourEvents);
     
     switch (status) {
