@@ -7,7 +7,7 @@ import { MessagingProvider } from "./contexts/messaging-context";
 import { LayoutProvider } from "./contexts/layout-context";
 import { MeasurementProvider } from "./contexts/measurement-context";
 import { Loader2 } from "lucide-react";
-import { GlobalAgreementModal } from "@/components/global-agreement-modal";
+// REMOVED: import { GlobalAgreementModal } from "@/components/global-agreement-modal";
 
 import Layout from "@/components/layout/sidebar";
 import NotFound from "@/pages/not-found";
@@ -390,7 +390,7 @@ function App() {
         <MessagingProvider>
           <LayoutProvider>
             <MeasurementProvider>
-              <GlobalAgreementModal />
+              {/* REMOVED: <GlobalAgreementModal /> */}
               <AppContent />
               <Toaster />
             </MeasurementProvider>
