@@ -13,7 +13,13 @@ import {
   garRatingHistory, type GarRatingHistory, type InsertGarRatingHistory,
   videoAnalyses, type VideoAnalysis,
   combineTourEvents, type CombineTourEvent, type InsertCombineTourEvent,
-  userTokens, type UserToken, type InsertUserToken
+  userTokens, type UserToken, type InsertUserToken,
+  // NCAA Schools database tables
+  ncaaSchools, type NcaaSchool, type InsertNcaaSchool,
+  athleticDepartments, type AthleticDepartment, type InsertAthleticDepartment,
+  sportPrograms, type SportProgram, type InsertSportProgram,
+  coachingStaff, type CoachingStaff, type InsertCoachingStaff,
+  recruitingContacts, type RecruitingContact, type InsertRecruitingContact
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc, sql, like, inArray } from "drizzle-orm";
@@ -138,6 +144,42 @@ export interface IStorage {
   revokeUserToken(id: number): Promise<UserToken | undefined>;
   revokeAllUserTokens(userId: number): Promise<boolean>;
   updateUserTokenLastUsed(id: number): Promise<UserToken | undefined>;
+  
+  // NCAA Schools database operations
+  getNcaaSchools(limit?: number): Promise<NcaaSchool[]>;
+  getNcaaSchoolById(id: number): Promise<NcaaSchool | undefined>;
+  getNcaaSchoolsByDivision(division: string): Promise<NcaaSchool[]>;
+  getNcaaSchoolsByState(state: string): Promise<NcaaSchool[]>;
+  getNcaaSchoolsByConference(conference: string): Promise<NcaaSchool[]>;
+  createNcaaSchool(school: InsertNcaaSchool): Promise<NcaaSchool>;
+  updateNcaaSchool(id: number, data: Partial<NcaaSchool>): Promise<NcaaSchool | undefined>;
+  
+  // Athletic Department operations
+  getAthleticDepartmentsBySchool(schoolId: number): Promise<AthleticDepartment[]>;
+  getAthleticDepartmentById(id: number): Promise<AthleticDepartment | undefined>;
+  createAthleticDepartment(department: InsertAthleticDepartment): Promise<AthleticDepartment>;
+  updateAthleticDepartment(id: number, data: Partial<AthleticDepartment>): Promise<AthleticDepartment | undefined>;
+  
+  // Sport Program operations
+  getSportProgramsBySchool(schoolId: number): Promise<SportProgram[]>;
+  getSportProgramById(id: number): Promise<SportProgram | undefined>;
+  getSportProgramsBySport(sport: string): Promise<SportProgram[]>;
+  getSportProgramsByDivision(division: string): Promise<SportProgram[]>;
+  createSportProgram(program: InsertSportProgram): Promise<SportProgram>;
+  updateSportProgram(id: number, data: Partial<SportProgram>): Promise<SportProgram | undefined>;
+  
+  // Coaching Staff operations
+  getCoachingStaffByProgram(programId: number): Promise<CoachingStaff[]>;
+  getCoachingStaffById(id: number): Promise<CoachingStaff | undefined>;
+  createCoachingStaff(staff: InsertCoachingStaff): Promise<CoachingStaff>;
+  updateCoachingStaff(id: number, data: Partial<CoachingStaff>): Promise<CoachingStaff | undefined>;
+  
+  // Recruiting Contact operations
+  getRecruitingContactsByProgram(programId: number): Promise<RecruitingContact[]>;
+  getRecruitingContactById(id: number): Promise<RecruitingContact | undefined>;
+  getRecruitingContactsByRegion(region: string): Promise<RecruitingContact[]>;
+  createRecruitingContact(contact: InsertRecruitingContact): Promise<RecruitingContact>;
+  updateRecruitingContact(id: number, data: Partial<RecruitingContact>): Promise<RecruitingContact | undefined>;
 }
 
 // Direct database implementation
@@ -885,6 +927,221 @@ export class DatabaseStorage implements IStorage {
       .where(eq(userTokens.id, id))
       .returning();
     return updatedToken;
+  }
+
+  // NCAA Schools database operations
+  async getNcaaSchools(limit: number = 100): Promise<NcaaSchool[]> {
+    return await db.select()
+      .from(ncaaSchools)
+      .orderBy(ncaaSchools.name)
+      .limit(limit);
+  }
+  
+  async getNcaaSchoolById(id: number): Promise<NcaaSchool | undefined> {
+    const [school] = await db.select()
+      .from(ncaaSchools)
+      .where(eq(ncaaSchools.id, id));
+    return school;
+  }
+  
+  async getNcaaSchoolsByDivision(division: string): Promise<NcaaSchool[]> {
+    return await db.select()
+      .from(ncaaSchools)
+      .where(eq(ncaaSchools.division, division))
+      .orderBy(ncaaSchools.name);
+  }
+  
+  async getNcaaSchoolsByState(state: string): Promise<NcaaSchool[]> {
+    return await db.select()
+      .from(ncaaSchools)
+      .where(eq(ncaaSchools.state, state))
+      .orderBy(ncaaSchools.name);
+  }
+  
+  async getNcaaSchoolsByConference(conference: string): Promise<NcaaSchool[]> {
+    return await db.select()
+      .from(ncaaSchools)
+      .where(eq(ncaaSchools.conference, conference))
+      .orderBy(ncaaSchools.name);
+  }
+  
+  async createNcaaSchool(school: InsertNcaaSchool): Promise<NcaaSchool> {
+    const [createdSchool] = await db.insert(ncaaSchools)
+      .values({
+        ...school,
+        lastUpdated: new Date()
+      })
+      .returning();
+    return createdSchool;
+  }
+  
+  async updateNcaaSchool(id: number, data: Partial<NcaaSchool>): Promise<NcaaSchool | undefined> {
+    const [updatedSchool] = await db.update(ncaaSchools)
+      .set({
+        ...data,
+        lastUpdated: new Date()
+      })
+      .where(eq(ncaaSchools.id, id))
+      .returning();
+    return updatedSchool;
+  }
+  
+  // Athletic Department operations
+  async getAthleticDepartmentsBySchool(schoolId: number): Promise<AthleticDepartment[]> {
+    return await db.select()
+      .from(athleticDepartments)
+      .where(eq(athleticDepartments.schoolId, schoolId));
+  }
+  
+  async getAthleticDepartmentById(id: number): Promise<AthleticDepartment | undefined> {
+    const [department] = await db.select()
+      .from(athleticDepartments)
+      .where(eq(athleticDepartments.id, id));
+    return department;
+  }
+  
+  async createAthleticDepartment(department: InsertAthleticDepartment): Promise<AthleticDepartment> {
+    const [createdDepartment] = await db.insert(athleticDepartments)
+      .values({
+        ...department,
+        lastUpdated: new Date()
+      })
+      .returning();
+    return createdDepartment;
+  }
+  
+  async updateAthleticDepartment(id: number, data: Partial<AthleticDepartment>): Promise<AthleticDepartment | undefined> {
+    const [updatedDepartment] = await db.update(athleticDepartments)
+      .set({
+        ...data,
+        lastUpdated: new Date()
+      })
+      .where(eq(athleticDepartments.id, id))
+      .returning();
+    return updatedDepartment;
+  }
+  
+  // Sport Program operations
+  async getSportProgramsBySchool(schoolId: number): Promise<SportProgram[]> {
+    return await db.select()
+      .from(sportPrograms)
+      .where(eq(sportPrograms.schoolId, schoolId));
+  }
+  
+  async getSportProgramById(id: number): Promise<SportProgram | undefined> {
+    const [program] = await db.select()
+      .from(sportPrograms)
+      .where(eq(sportPrograms.id, id));
+    return program;
+  }
+  
+  async getSportProgramsBySport(sport: string): Promise<SportProgram[]> {
+    return await db.select()
+      .from(sportPrograms)
+      .where(eq(sportPrograms.sport, sport));
+  }
+  
+  async getSportProgramsByDivision(division: string): Promise<SportProgram[]> {
+    return await db.select()
+      .from(sportPrograms)
+      .where(eq(sportPrograms.division, division));
+  }
+  
+  async createSportProgram(program: InsertSportProgram): Promise<SportProgram> {
+    const [createdProgram] = await db.insert(sportPrograms)
+      .values({
+        ...program,
+        lastUpdated: new Date()
+      })
+      .returning();
+    return createdProgram;
+  }
+  
+  async updateSportProgram(id: number, data: Partial<SportProgram>): Promise<SportProgram | undefined> {
+    const [updatedProgram] = await db.update(sportPrograms)
+      .set({
+        ...data,
+        lastUpdated: new Date()
+      })
+      .where(eq(sportPrograms.id, id))
+      .returning();
+    return updatedProgram;
+  }
+  
+  // Coaching Staff operations
+  async getCoachingStaffByProgram(programId: number): Promise<CoachingStaff[]> {
+    return await db.select()
+      .from(coachingStaff)
+      .where(eq(coachingStaff.sportProgramId, programId));
+  }
+  
+  async getCoachingStaffById(id: number): Promise<CoachingStaff | undefined> {
+    const [staff] = await db.select()
+      .from(coachingStaff)
+      .where(eq(coachingStaff.id, id));
+    return staff;
+  }
+  
+  async createCoachingStaff(staff: InsertCoachingStaff): Promise<CoachingStaff> {
+    const [createdStaff] = await db.insert(coachingStaff)
+      .values({
+        ...staff,
+        lastUpdated: new Date()
+      })
+      .returning();
+    return createdStaff;
+  }
+  
+  async updateCoachingStaff(id: number, data: Partial<CoachingStaff>): Promise<CoachingStaff | undefined> {
+    const [updatedStaff] = await db.update(coachingStaff)
+      .set({
+        ...data,
+        lastUpdated: new Date()
+      })
+      .where(eq(coachingStaff.id, id))
+      .returning();
+    return updatedStaff;
+  }
+  
+  // Recruiting Contact operations
+  async getRecruitingContactsByProgram(programId: number): Promise<RecruitingContact[]> {
+    return await db.select()
+      .from(recruitingContacts)
+      .where(eq(recruitingContacts.sportProgramId, programId));
+  }
+  
+  async getRecruitingContactById(id: number): Promise<RecruitingContact | undefined> {
+    const [contact] = await db.select()
+      .from(recruitingContacts)
+      .where(eq(recruitingContacts.id, id));
+    return contact;
+  }
+  
+  async getRecruitingContactsByRegion(region: string): Promise<RecruitingContact[]> {
+    return await db.select()
+      .from(recruitingContacts)
+      .where(sql`${recruitingContacts.regions} @> ARRAY[${region}]::text[]`);
+  }
+  
+  async createRecruitingContact(contact: InsertRecruitingContact): Promise<RecruitingContact> {
+    const [createdContact] = await db.insert(recruitingContacts)
+      .values({
+        ...contact,
+        lastUpdated: new Date()
+      })
+      .returning();
+    return createdContact;
+  }
+  
+  async updateRecruitingContact(id: number, data: Partial<RecruitingContact>): Promise<RecruitingContact | undefined> {
+    const [updatedContact] = await db.update(recruitingContacts)
+      .set({
+        ...data,
+        lastUpdated: new Date()
+      })
+      .where(eq(recruitingContacts.id, id))
+      .returning();
+    return updatedContact;
   }
 }
 
