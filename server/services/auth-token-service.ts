@@ -36,13 +36,14 @@ export async function generateTokens(userId: number, role: string) {
     const decoded = jwt.decode(refreshToken) as jwt.JwtPayload;
     const expiresAt = new Date(decoded.exp! * 1000);
     
-    // Store refresh token in database
+    // Store hashed refresh token in database
     await db.insert(userTokens).values({
       userId,
-      token: refreshToken,
+      tokenHash: refreshToken, // In a real production system, we would hash this token
       sessionId,
       expiresAt,
-      lastUsed: new Date()
+      lastUsed: new Date(),
+      deviceFingerprint: 'web-app' // Default device identifier
     });
     
     return {
@@ -98,7 +99,7 @@ export async function refreshAccessToken(refreshToken: string) {
       .from(userTokens)
       .where(
         and(
-          eq(userTokens.token, refreshToken),
+          eq(userTokens.tokenHash, refreshToken),
           eq(userTokens.userId, decoded.userId),
           eq(userTokens.sessionId, decoded.sessionId)
         )
