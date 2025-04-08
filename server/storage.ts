@@ -596,7 +596,7 @@ export class DatabaseStorage implements IStorage {
   async getGarCategories(): Promise<GarCategory[]> {
     return await db.select()
       .from(garCategories)
-      .orderBy(garCategories.order);
+      .orderBy(garCategories.displayOrder);
   }
 
   async getGarCategoriesBySport(sportType: string): Promise<GarCategory[]> {
@@ -608,7 +608,7 @@ export class DatabaseStorage implements IStorage {
           eq(garCategories.sportType, "all")
         )
       )
-      .orderBy(garCategories.order);
+      .orderBy(garCategories.displayOrder);
   }
 
   async getGarCategory(id: number): Promise<GarCategory | undefined> {
@@ -623,7 +623,7 @@ export class DatabaseStorage implements IStorage {
     return await db.select()
       .from(garSubcategories)
       .where(eq(garSubcategories.categoryId, categoryId))
-      .orderBy(garSubcategories.order);
+      .orderBy(garSubcategories.displayOrder);
   }
 
   async getGarSubcategory(id: number): Promise<GarSubcategory | undefined> {
@@ -638,7 +638,7 @@ export class DatabaseStorage implements IStorage {
     return await db.select()
       .from(garAthleteRatings)
       .where(eq(garAthleteRatings.userId, userId))
-      .orderBy(desc(garAthleteRatings.updatedAt));
+      .orderBy(desc(garAthleteRatings.scoreDate));
   }
 
   async getGarAthleteRatingsByCategory(userId: number, categoryId: number): Promise<GarAthleteRating[]> {
@@ -650,7 +650,7 @@ export class DatabaseStorage implements IStorage {
           eq(garAthleteRatings.categoryId, categoryId)
         )
       )
-      .orderBy(desc(garAthleteRatings.updatedAt));
+      .orderBy(desc(garAthleteRatings.scoreDate));
   }
 
   async getLatestGarAthleteRating(userId: number, categoryId: number): Promise<GarAthleteRating | undefined> {
@@ -662,7 +662,7 @@ export class DatabaseStorage implements IStorage {
           eq(garAthleteRatings.categoryId, categoryId)
         )
       )
-      .orderBy(desc(garAthleteRatings.updatedAt))
+      .orderBy(desc(garAthleteRatings.scoreDate))
       .limit(1);
     return rating;
   }
@@ -672,7 +672,7 @@ export class DatabaseStorage implements IStorage {
     return await db.select()
       .from(garRatingHistory)
       .where(eq(garRatingHistory.userId, userId))
-      .orderBy(desc(garRatingHistory.timestamp))
+      .orderBy(desc(garRatingHistory.calculatedDate))
       .limit(limit);
   }
 
@@ -680,7 +680,7 @@ export class DatabaseStorage implements IStorage {
     const [history] = await db.select()
       .from(garRatingHistory)
       .where(eq(garRatingHistory.userId, userId))
-      .orderBy(desc(garRatingHistory.timestamp))
+      .orderBy(desc(garRatingHistory.calculatedDate))
       .limit(1);
     return history;
   }
@@ -979,7 +979,7 @@ export class DatabaseStorage implements IStorage {
     const [updatedSchool] = await db.update(ncaaSchools)
       .set({
         ...data,
-        lastUpdated: new Date()
+        last_updated: new Date()
       })
       .where(eq(ncaaSchools.id, id))
       .returning();
@@ -1004,7 +1004,7 @@ export class DatabaseStorage implements IStorage {
     const [createdDepartment] = await db.insert(athleticDepartments)
       .values({
         ...department,
-        lastUpdated: new Date()
+        last_updated: new Date()
       })
       .returning();
     return createdDepartment;
@@ -1014,7 +1014,7 @@ export class DatabaseStorage implements IStorage {
     const [updatedDepartment] = await db.update(athleticDepartments)
       .set({
         ...data,
-        lastUpdated: new Date()
+        last_updated: new Date()
       })
       .where(eq(athleticDepartments.id, id))
       .returning();
@@ -1051,7 +1051,7 @@ export class DatabaseStorage implements IStorage {
     const [createdProgram] = await db.insert(sportPrograms)
       .values({
         ...program,
-        lastUpdated: new Date()
+        last_updated: new Date()
       })
       .returning();
     return createdProgram;
@@ -1061,7 +1061,7 @@ export class DatabaseStorage implements IStorage {
     const [updatedProgram] = await db.update(sportPrograms)
       .set({
         ...data,
-        lastUpdated: new Date()
+        last_updated: new Date()
       })
       .where(eq(sportPrograms.id, id))
       .returning();
@@ -1086,7 +1086,7 @@ export class DatabaseStorage implements IStorage {
     const [createdStaff] = await db.insert(coachingStaff)
       .values({
         ...staff,
-        lastUpdated: new Date()
+        last_updated: new Date()
       })
       .returning();
     return createdStaff;
@@ -1096,7 +1096,7 @@ export class DatabaseStorage implements IStorage {
     const [updatedStaff] = await db.update(coachingStaff)
       .set({
         ...data,
-        lastUpdated: new Date()
+        last_updated: new Date()
       })
       .where(eq(coachingStaff.id, id))
       .returning();
@@ -1127,7 +1127,7 @@ export class DatabaseStorage implements IStorage {
     const [createdContact] = await db.insert(recruitingContacts)
       .values({
         ...contact,
-        lastUpdated: new Date()
+        last_updated: new Date()
       })
       .returning();
     return createdContact;
@@ -1137,7 +1137,7 @@ export class DatabaseStorage implements IStorage {
     const [updatedContact] = await db.update(recruitingContacts)
       .set({
         ...data,
-        lastUpdated: new Date()
+        last_updated: new Date()
       })
       .where(eq(recruitingContacts.id, id))
       .returning();
