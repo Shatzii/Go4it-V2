@@ -11,8 +11,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const FeaturedCombines: React.FC = () => {
   const { data: events = [], isLoading, error } = useQuery<CombineTourEvent[]>({
-    queryKey: ['/api/combine-tour/events/status/upcoming'],
+    queryKey: ['/api/combine-tour/events'],
     retry: 1,
+  });
+
+  const upcomingEvents = events.filter(event => {
+    const eventDate = new Date(event.startDate);
+    const currentDate = new Date();
+    return eventDate > currentDate;
   });
 
   if (isLoading) {
@@ -36,7 +42,7 @@ const FeaturedCombines: React.FC = () => {
     );
   }
 
-  if (error || !events || events.length === 0) {
+  if (error || !upcomingEvents || upcomingEvents.length === 0) {
     return (
       <div className="w-full py-6">
         <h2 className="text-2xl font-bold mb-4">Upcoming Combine Events</h2>
@@ -48,7 +54,7 @@ const FeaturedCombines: React.FC = () => {
   }
 
   // Only show the 3 most recent events on the home page
-  const featuredEvents = events.slice(0, 3);
+  const featuredEvents = upcomingEvents.slice(0, 3);
 
   return (
     <div className="w-full py-6">
