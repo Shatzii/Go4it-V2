@@ -1,69 +1,81 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { LucideIcon } from "lucide-react";
 
 type ProgressCardProps = {
   title: string;
   value: number;
-  maxValue?: number;
-  icon?: LucideIcon;
-  color?: string;
+  icon: React.ElementType;
+  color: string;
   description?: string;
-  compact?: boolean;
-  showPercentage?: boolean;
+  previousValue?: number;
+  showDifference?: boolean;
 };
 
 export function ProgressCard({
   title,
   value,
-  maxValue = 100,
   icon: Icon,
-  color = "#3b82f6",
+  color,
   description,
-  compact = false,
-  showPercentage = true,
+  previousValue,
+  showDifference = true
 }: ProgressCardProps) {
-  const percentage = Math.round((value / maxValue) * 100);
+  // Calculate difference if previous value exists
+  const difference = previousValue !== undefined ? value - previousValue : null;
+  
+  // Convert hex color to rgba for background
+  const hexToRgba = (hex: string, alpha: number = 0.1) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? 
+      `rgba(${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}, ${alpha})` : 
+      `rgba(59, 130, 246, ${alpha})`;
+  };
   
   return (
-    <Card className={`bg-gradient-to-br from-gray-900 to-gray-800 border-gray-700 ${compact ? 'p-3' : 'p-4'}`}>
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex flex-col">
-          <h3 className={`${compact ? 'text-sm' : 'text-base'} font-medium text-white`}>{title}</h3>
-          {description && (
-            <p className="text-xs text-gray-400">{description}</p>
-          )}
+    <Card className="p-4 bg-gray-800 border border-gray-700">
+      <div className="flex items-start gap-4">
+        <div 
+          className="p-3 rounded-lg flex items-center justify-center"
+          style={{ backgroundColor: hexToRgba(color, 0.15) }}
+        >
+          <Icon className="h-6 w-6" style={{ color }} />
         </div>
-        {Icon && (
-          <div 
-            className={`${compact ? 'w-6 h-6' : 'w-8 h-8'} rounded-md flex items-center justify-center`}
-            style={{ backgroundColor: `${color}25` }} // 25% opacity
-          >
-            <Icon className={`${compact ? 'w-4 h-4' : 'w-5 h-5'}`} style={{ color }} />
-          </div>
-        )}
-      </div>
-      
-      <div className="space-y-2">
-        <Progress 
-          value={percentage}
-          className="h-2 bg-gray-700"
-          indicatorClassName="transition-all duration-500"
-          style={{ backgroundColor: color }}
-        />
         
-        <div className="flex justify-between items-center">
-          <p className={`${compact ? 'text-lg' : 'text-xl'} font-bold`} style={{ color }}>
-            {value}
-            <span className="text-sm text-gray-400 ml-1">/ {maxValue}</span>
-          </p>
+        <div className="flex-1">
+          <div className="flex justify-between items-center">
+            <h3 className="font-medium text-white">{title}</h3>
+            <div className="text-2xl font-bold" style={{ color }}>{value}</div>
+          </div>
           
-          {showPercentage && (
-            <span className="text-xs text-gray-400">
-              {percentage}%
-            </span>
+          {description && (
+            <p className="mt-1 text-xs text-gray-400">{description}</p>
           )}
+          
+          <div className="mt-3 space-y-2">
+            <Progress 
+              value={value} 
+              className="h-1.5"
+              style={{
+                ['--progress-background' as any]: hexToRgba(color, 0.2),
+                ['--progress-foreground' as any]: color
+              }}
+            />
+            
+            {showDifference && difference !== null && (
+              <div className="flex justify-end text-xs">
+                <span 
+                  className={
+                    difference > 0 ? 'text-green-400' : 
+                    difference < 0 ? 'text-red-400' : 
+                    'text-gray-400'
+                  }
+                >
+                  {difference > 0 ? '+' : ''}{difference} from previous
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </Card>

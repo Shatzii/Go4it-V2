@@ -31,7 +31,8 @@ import {
   RefreshCw,
   UserCircle2,
   ShieldCheck,
-  Star
+  Star,
+  BarChart2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -243,6 +244,13 @@ export default function Layout({ children }: LayoutProps) {
                   <Link href="/video-analysis" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/video-analysis" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
                     <FileVideo className="h-5 w-5 mr-3" />
                     Video Analysis
+                  </Link>
+                </motion.li>
+
+                <motion.li variants={menuItemVariants}>
+                  <Link href="/enhanced-gar" className={`flex items-center p-2 rounded-lg sidebar-link ${location.startsWith("/enhanced-gar") ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <BarChart2 className="h-5 w-5 mr-3" />
+                    GAR Analytics
                   </Link>
                 </motion.li>
 
