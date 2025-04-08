@@ -22,29 +22,47 @@ export function GlobalAgreementModal() {
   const { user } = useAuth();
 
   useEffect(() => {
-    // Check if user is logged in and show NDA agreement
-    if (user) {
-      // Force the NDA to show for every user session by checking session storage
-      // instead of localStorage (which persists longer)
-      const hasAgreedThisSession = sessionStorage.getItem('nda_agreed_session') === 'true';
+    try {
+      // Wrap in try-catch to prevent any storage errors from causing white screen
       
-      // Still respect the permanent agreement in localStorage for non-logged in users
-      const hasAgreedPermanently = localStorage.getItem('nda_agreed') === 'true';
-      
-      // For logged in users, we require per-session agreement
-      // For non-logged in users, we only need one-time agreement
-      const shouldShowAgreement = !hasAgreedThisSession && (user ? true : !hasAgreedPermanently);
-      
-      setHasAgreed(!shouldShowAgreement);
-      setOpen(shouldShowAgreement);
-    } else {
-      // For non-logged in users, check if they've ever agreed
-      const hasAgreedToNDA = localStorage.getItem('nda_agreed') === 'true';
-      setHasAgreed(hasAgreedToNDA);
-      
-      if (!hasAgreedToNDA) {
-        setOpen(true);
+      // Safety guard for issue where NDA was causing white screen
+      // If user has already clicked "I Agree" on a previous session, accept
+      // Don't require NDA if user already agreed in a previous session
+      if (localStorage.getItem('nda_agreed') === 'true') {
+        // Ensure session storage is also marked as agreed
+        sessionStorage.setItem('nda_agreed_session', 'true');
+        setHasAgreed(true);
+        setOpen(false);
+        return;
       }
+
+      // Only after checking the override above, handle regular cases
+      if (user) {
+        // Force the NDA to show for every user session by checking session storage
+        // instead of localStorage (which persists longer)
+        const hasAgreedThisSession = sessionStorage.getItem('nda_agreed_session') === 'true';
+        
+        // For logged in users, we require per-session agreement unless overridden above
+        const shouldShowAgreement = !hasAgreedThisSession;
+        
+        setHasAgreed(!shouldShowAgreement);
+        setOpen(shouldShowAgreement);
+      } else {
+        // For non-logged in users, check if they've ever agreed
+        const hasAgreedToNDA = localStorage.getItem('nda_agreed') === 'true';
+        setHasAgreed(hasAgreedToNDA);
+        
+        if (!hasAgreedToNDA) {
+          setOpen(true);
+        }
+      }
+    } catch (error) {
+      // If anything goes wrong with storage, don't block the app
+      console.error('Error in NDA agreement modal:', error);
+      
+      // Default to allowing access without showing the modal
+      setHasAgreed(true);
+      setOpen(false);
     }
   }, [user]);
 

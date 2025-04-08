@@ -327,8 +327,27 @@ function Router() {
 }
 
 function AppContent() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [location, setLocation] = useLocation();
+
+  // Safety check for unexpected or empty routes
+  if (!location || location === '' || location === undefined) {
+    console.log('Empty route detected, redirecting to auth page');
+    // Force redirect to auth on next tick
+    setTimeout(() => {
+      setLocation("/auth");
+    }, 10);
+    
+    // Show loader while redirecting
+    return (
+      <div className="flex items-center justify-center h-screen w-screen bg-black">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-white text-lg">Loading Go4It Sports...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Don't render the layout for the auth page, test-auth, or home page
   if (location === "/auth") {
@@ -353,8 +372,11 @@ function AppContent() {
     
     // Return a loading indicator while redirecting to prevent flashing
     return (
-      <div className="flex items-center justify-center h-full">
-        <Loader2 className="h-8 w-8 animate-spin text-border" />
+      <div className="flex items-center justify-center h-screen w-screen bg-black">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-white text-lg">Redirecting...</p>
+        </div>
       </div>
     );
   }
