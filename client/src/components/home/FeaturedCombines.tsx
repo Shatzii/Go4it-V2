@@ -15,11 +15,18 @@ const FeaturedCombines: React.FC = () => {
     retry: 1,
   });
 
+  // Add console.log for debugging
+  console.log("All combine events:", events);
+  
   const upcomingEvents = events.filter(event => {
+    // Parse the date properly
     const eventDate = new Date(event.startDate);
     const currentDate = new Date();
+    console.log(`Event: ${event.name}, Date: ${eventDate}, Is Future: ${eventDate > currentDate}`);
     return eventDate > currentDate;
   });
+  
+  console.log("Filtered upcoming events:", upcomingEvents);
 
   if (isLoading) {
     return (
