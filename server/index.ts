@@ -11,6 +11,7 @@ import { initializeBlogGeneration } from './blog-generator';
 import { openAIService } from './services/openai-service';
 import { transferPortalService } from './services/transfer-portal-service';
 import { athleteScoutService } from './services/athlete-scout-service';
+import { authSentinel } from './middleware/auth-sentinel';
 import net from 'net';
 
 const app = express();
@@ -24,6 +25,10 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Apply CyberShield Security Sentinel Middleware
+// This intercepts all requests to check for valid authentication tokens
+app.use(authSentinel);
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(process.cwd(), "uploads");
