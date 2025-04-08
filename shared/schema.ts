@@ -1,6 +1,7 @@
 import { pgTable, text, serial, integer, boolean, timestamp, json, real, date, jsonb, uuid, numeric } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { relations } from "drizzle-orm";
 
 // Type for measurement system preference
 export type MeasurementSystem = 'metric' | 'imperial';
@@ -42,6 +43,20 @@ export const users = pgTable("users", {
   phoneNumber: text("phone_number"),
   createdAt: timestamp("created_at").defaultNow(),
   measurementSystem: text("measurement_system").default("metric"), // 'metric' or 'imperial'
+});
+
+// CyberShield security - User tokens for JWT auth
+export const userTokens = pgTable("user_tokens", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  token: text("token").notNull(), // JWT refresh token
+  sessionId: text("session_id").notNull(), // Unique ID for the login session
+  createdAt: timestamp("created_at").defaultNow(),
+  expiresAt: timestamp("expires_at").notNull(), // When the token expires
+  lastUsed: timestamp("last_used"), // Last time this token was used
+  isRevoked: boolean("is_revoked").default(false), // Flag for manually revoked tokens
+  userAgent: text("user_agent"), // Browser/device info
+  ipAddress: text("ip_address"), // IP address when token was created
 });
 
 // Specific athlete profile information
@@ -1870,3 +1885,11 @@ export type InsertPodcastCollaborationRequest = z.infer<typeof insertPodcastColl
 
 export type UserAgreement = typeof userAgreements.$inferSelect;
 export type InsertUserAgreement = z.infer<typeof insertUserAgreementSchema>;
+
+// CyberShield security - User tokens schema and types
+export const insertUserTokenSchema = createInsertSchema(userTokens).omit({
+  id: true, createdAt: true, isRevoked: true,
+});
+
+export type UserToken = typeof userTokens.$inferSelect;
+export type InsertUserToken = z.infer<typeof insertUserTokenSchema>;

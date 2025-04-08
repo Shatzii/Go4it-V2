@@ -292,9 +292,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Now set up authentication AFTER public routes
   setupAuth(app);
   
-  // Add enhanced login route for better debugging
+  // CyberShield enhanced login route with token support
   app.post("/api/auth/login", (req, res, next) => {
-    passport.authenticate("local", (err, user, info) => {
+    passport.authenticate("local", async (err, user, info) => {
       if (err) {
         console.error("Login error:", err);
         return next(err);
@@ -308,18 +308,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Log successful authentication
       console.log(`User authenticated: ${user.username}, ID: ${user.id}`);
       
-      req.login(user, (loginErr) => {
-        if (loginErr) {
-          console.error("Session login error:", loginErr);
-          return next(loginErr);
-        }
+      try {
+        // Generate JWT tokens for the user
+        const { generateTokens } = require('./services/auth-token-service');
+        const tokens = await generateTokens(user.id, user.role);
         
-        // Log session details
-        console.log("Session created:", req.sessionID);
-        console.log("Session data:", req.session);
-        
-        return res.status(200).json({ user });
-      });
+        // Also create session for backward compatibility
+        req.login(user, (loginErr) => {
+          if (loginErr) {
+            console.error("Session login error:", loginErr);
+            // Continue anyway - we have JWT tokens
+          } else {
+            // Log session details (still using session as fallback)
+            console.log("Session created:", req.sessionID);
+          }
+          
+          // Return both the user object and the tokens
+          return res.status(200).json({ 
+            user,
+            ...tokens  // Include accessToken, refreshToken, expiresAt
+          });
+        });
+      } catch (tokenError) {
+        console.error("Token generation error:", tokenError);
+        // Fall back to session-only auth if token generation fails
+        req.login(user, (loginErr) => {
+          if (loginErr) {
+            console.error("Session login error:", loginErr);
+            return next(loginErr);
+          }
+          return res.status(200).json({ user });
+        });
+      }
     })(req, res, next);
   });
   
@@ -335,40 +355,174 @@ export async function registerRoutes(app: Express): Promise<Server> {
         password: await authHashPassword(req.body.password),
       });
 
-      req.login(user, (err) => {
-        if (err) return next(err);
-        res.status(201).json({ user });
-      });
+      try {
+        // Generate JWT tokens for the user
+        const { generateTokens } = require('./services/auth-token-service');
+        const tokens = await generateTokens(user.id, user.role);
+        
+        // Also create session for backward compatibility
+        req.login(user, (loginErr) => {
+          if (loginErr) {
+            console.error("Session login error:", loginErr);
+            // Continue anyway - we have JWT tokens
+          }
+          
+          // Return both the user object and the tokens
+          return res.status(201).json({ 
+            user,
+            ...tokens  // Include accessToken, refreshToken, expiresAt
+          });
+        });
+      } catch (tokenError) {
+        console.error("Token generation error:", tokenError);
+        // Fall back to session-only auth if token generation fails
+        req.login(user, (err) => {
+          if (err) return next(err);
+          res.status(201).json({ user });
+        });
+      }
     } catch (error) {
       next(error);
     }
   });
   
-  app.post("/api/auth/logout", (req, res, next) => {
-    req.logout((err) => {
-      if (err) return next(err);
-      res.sendStatus(200);
-    });
+  // CyberShield token refresh endpoint
+  app.post("/api/auth/refresh", async (req, res) => {
+    const { refreshToken } = req.body;
+    
+    if (!refreshToken) {
+      return res.status(400).json({ message: "Refresh token is required" });
+    }
+    
+    try {
+      const { refreshAccessToken } = require('./services/auth-token-service');
+      const tokenResult = await refreshAccessToken(refreshToken);
+      
+      if (!tokenResult) {
+        return res.status(401).json({ message: "Invalid or expired refresh token" });
+      }
+      
+      return res.json(tokenResult);
+    } catch (error) {
+      console.error("Token refresh error:", error);
+      return res.status(500).json({ message: "Failed to refresh token" });
+    }
+  });
+
+  // Enhanced logout with token invalidation
+  app.post("/api/auth/logout", async (req, res, next) => {
+    try {
+      // Get user info from session and/or token
+      const user = req.user;
+      const sessionId = req.body.sessionId;
+      
+      // Invalidate tokens if we have user info
+      if (user && user.id) {
+        const { invalidateUserTokens, invalidateSession } = require('./services/auth-token-service');
+        
+        // If a specific session ID is provided, only invalidate that session
+        if (sessionId) {
+          await invalidateSession(sessionId);
+        } else {
+          // Otherwise invalidate all tokens for this user
+          await invalidateUserTokens(user.id);
+        }
+      }
+      
+      // Also logout of session for backward compatibility
+      req.logout((err) => {
+        if (err) {
+          console.error("Session logout error:", err);
+          // Continue anyway since we've already invalidated tokens
+        }
+        
+        res.status(200).json({ message: "Logged out successfully" });
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+      next(error);
+    }
   });
   
-  app.get("/api/auth/me", (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).json({ message: "Not authenticated" });
-    res.json({ user: req.user });
+  // Enhanced /me endpoint to support both token and session auth
+  app.get("/api/auth/me", async (req, res) => {
+    try {
+      // First check for token-based authentication
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+        const { verifyAccessToken } = require('./services/auth-token-service');
+        const payload = verifyAccessToken(token);
+        
+        if (payload) {
+          // Token is valid, get user info
+          const user = await storage.getUser(payload.userId);
+          if (user) {
+            return res.json({ user });
+          }
+        }
+      }
+      
+      // Fall back to session-based authentication
+      if (req.isAuthenticated()) {
+        return res.json({ user: req.user });
+      }
+      
+      // Neither token nor session authentication succeeded
+      return res.status(401).json({ message: "Not authenticated" });
+    } catch (error) {
+      console.error("Error in /me endpoint:", error);
+      return res.status(500).json({ message: "Error fetching user data" });
+    }
   });
   
-  // Middleware to check if user is authenticated
+  // Enhanced middleware to check if user is authenticated via token or session
   const isAuthenticated = (req: Request, res: Response, next: Function) => {
+    // First check for token-based authentication
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+      try {
+        const { verifyAccessToken } = require('./services/auth-token-service');
+        const payload = verifyAccessToken(token);
+        
+        if (payload) {
+          // Add user ID and role to request
+          req.token = {
+            userId: payload.userId,
+            role: payload.role,
+            sessionId: payload.sessionId
+          };
+          return next();
+        }
+      } catch (error) {
+        console.error("Token verification error:", error);
+        // Continue to try session auth
+      }
+    }
+    
+    // Fall back to session-based authentication
     if (req.isAuthenticated()) {
       return next();
     }
+    
+    // Neither token nor session authentication succeeded
     return res.status(401).json({ message: "Not authenticated" });
   };
 
-  // Middleware to check if user is an admin
+  // Enhanced middleware to check if user is an admin via token or session
   const isAdmin = (req: Request, res: Response, next: Function) => {
+    // First check for token-based authentication
+    if (req.token && req.token.role === "admin") {
+      return next();
+    }
+    
+    // Fall back to session-based authentication
     if (req.isAuthenticated() && (req.user as any).role === "admin") {
       return next();
     }
+    
+    // Neither token nor session shows admin privileges
     return res.status(403).json({ message: "Not authorized" });
   };
 
