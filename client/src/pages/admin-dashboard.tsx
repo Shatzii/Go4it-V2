@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import HighlightConfigManager from "@/components/admin/highlight-config-manager";
 import ProfileImageUpdater from "@/components/admin/ProfileImageUpdater";
+import CombineEventManager from "@/components/admin/CombineEventManager";
 import { 
   ChartBarStacked, 
   ChartBar, 
@@ -29,7 +30,8 @@ import {
   Sparkles,
   Trash2,
   RefreshCw,
-  Clock
+  Clock,
+  MapPin as MapPinIcon
 } from "lucide-react";
 import {
   Table,
@@ -185,13 +187,15 @@ export default function AdminDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-6 mb-6">
+        <TabsList className="grid grid-cols-8 mb-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="athletes">Athletes</TabsTrigger>
           <TabsTrigger value="coaches">Coaches</TabsTrigger>
           <TabsTrigger value="videos">Videos</TabsTrigger>
+          <TabsTrigger value="combines">Combines</TabsTrigger>
           <TabsTrigger value="content">Content</TabsTrigger>
+          <TabsTrigger value="system">System</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
@@ -784,6 +788,24 @@ export default function AdminDashboard() {
                   <p className="text-gray-600">No videos match your search criteria.</p>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Combines Tab */}
+        <TabsContent value="combines">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <MapPinIcon className="h-5 w-5 mr-2" />
+                Combine Tour Management
+              </CardTitle>
+              <CardDescription>
+                Manage all combine tour events, dates, and locations
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <CombineEventManager />
             </CardContent>
           </Card>
         </TabsContent>
