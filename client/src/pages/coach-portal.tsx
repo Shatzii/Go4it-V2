@@ -58,14 +58,14 @@ import {
   MapPin,
   ArrowUpRight,
   Plus,
+  BookOpen,
+  Trophy,
   Video,
   FileText,
-  BookOpen,
   Award,
   Bell,
   Briefcase,
   School,
-  Trophy,
   Lightbulb,
   Bookmark,
   User
@@ -2133,9 +2133,9 @@ export default function CoachPortal() {
                       <polygon 
                         points={`
                           50,${60 - (selectedAthlete.starRating * 10)} 
-                          ${60 + (selectedAthlete.keyStats[0] ? parseInt(selectedAthlete.keyStats[0].value) / 5 : 0)},50 
-                          50,${60 + (selectedAthlete.keyStats[1] ? parseInt(selectedAthlete.keyStats[1].value) / 5 : 0)} 
-                          ${40 - (selectedAthlete.keyStats[2] ? parseInt(selectedAthlete.keyStats[2].value) / 5 : 0)},50
+                          ${60 + (selectedAthlete.keyStats[0] ? parseFloat(selectedAthlete.keyStats[0].value.replace(/[^\d.-]/g, '')) / 5 : 0)},50 
+                          50,${60 + (selectedAthlete.keyStats[1] ? parseFloat(selectedAthlete.keyStats[1].value.replace(/[^\d.-]/g, '')) / 5 : 0)} 
+                          ${40 - (selectedAthlete.keyStats[2] ? parseFloat(selectedAthlete.keyStats[2].value.replace(/[^\d.-]/g, '')) / 5 : 0)},50
                         `}
                         fill="rgba(245, 158, 11, 0.3)"
                         stroke="#F59E0B"
@@ -2154,9 +2154,9 @@ export default function CoachPortal() {
                       
                       {/* Data points */}
                       <circle cx="50" cy={60 - (selectedAthlete.starRating * 10)} r="2" fill="#F59E0B" />
-                      <circle cx={60 + (selectedAthlete.keyStats[0] ? parseInt(selectedAthlete.keyStats[0].value) / 5 : 0)} cy="50" r="2" fill="#F59E0B" />
-                      <circle cx="50" cy={60 + (selectedAthlete.keyStats[1] ? parseInt(selectedAthlete.keyStats[1].value) / 5 : 0)} r="2" fill="#F59E0B" />
-                      <circle cx={40 - (selectedAthlete.keyStats[2] ? parseInt(selectedAthlete.keyStats[2].value) / 5 : 0)} cy="50" r="2" fill="#F59E0B" />
+                      <circle cx={60 + (selectedAthlete.keyStats[0] ? parseFloat(selectedAthlete.keyStats[0].value.replace(/[^\d.-]/g, '')) / 5 : 0)} cy="50" r="2" fill="#F59E0B" />
+                      <circle cx="50" cy={60 + (selectedAthlete.keyStats[1] ? parseFloat(selectedAthlete.keyStats[1].value.replace(/[^\d.-]/g, '')) / 5 : 0)} r="2" fill="#F59E0B" />
+                      <circle cx={40 - (selectedAthlete.keyStats[2] ? parseFloat(selectedAthlete.keyStats[2].value.replace(/[^\d.-]/g, '')) / 5 : 0)} cy="50" r="2" fill="#F59E0B" />
                     </svg>
                   </div>
                 </div>
@@ -2216,7 +2216,7 @@ export default function CoachPortal() {
                       key={idx} 
                       className="aspect-video bg-muted rounded-md flex items-center justify-center cursor-pointer hover:bg-muted/80 transition-colors"
                     >
-                      <Play className="h-8 w-8 text-muted-foreground" />
+                      <FileVideo className="h-8 w-8 text-muted-foreground" />
                     </div>
                   ))}
                 </div>
