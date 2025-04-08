@@ -339,9 +339,20 @@ function AppContent() {
     return <TestAuth />;
   }
   
-  // Handle both root and /app routes for the homepage
-  if ((location === "/" || location === "/app") && !user) {
+  // Handle root route for homepage
+  if (location === "/" && !user) {
     return <HomePage />;
+  }
+  
+  // Explicitly handle /app route by redirecting to root for better navigation
+  if (location === "/app") {
+    navigate("/");
+    // Return a loading indicator while redirecting to prevent flashing
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="h-8 w-8 animate-spin text-border" />
+      </div>
+    );
   }
 
   return (

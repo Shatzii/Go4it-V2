@@ -74,6 +74,10 @@ export default function AuthPage() {
       // Disable form while submitting to prevent double clicks
       loginForm.reset(data);
       
+      // Add a small delay before login to ensure UI is ready
+      // This can help prevent the flash of error state
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       // Attempt to login with credentials
       await login(data.username, data.password);
       

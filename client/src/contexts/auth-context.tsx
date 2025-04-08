@@ -166,10 +166,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }, 15000); // 15 second timeout
       
       try {
-        // Clear any existing user data before sending the request
-        setUser(null);
+        // IMPORTANT: Don't clear user state before attempting login
+        // This prevents the "red flash" of logged-out state during login
         
-        // Perform login request without trying to logout first
+        // Perform login request
         const loginResponse = await apiRequest("/api/auth/login", { 
           method: "POST", 
           data: { username, password } 
