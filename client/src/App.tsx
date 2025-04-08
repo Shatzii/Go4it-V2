@@ -56,6 +56,7 @@ import BlogPost from "@/pages/blog-post";
 import BlogList from "@/pages/blog-list";
 import GarScorePage from "@/pages/gar-score";
 import AthleteStarProfilesPage from "@/pages/athlete-star-profiles";
+import EnhancedGarVisualizationPage from "@/pages/enhanced-gar-visualization";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -321,6 +322,19 @@ function Router() {
       <Route path="/gar-score">
         {({ params }) => (
           <ProtectedRoute component={GarScorePage} />
+        )}
+      </Route>
+      
+      {/* Enhanced GAR Visualization Route */}
+      <Route path="/enhanced-gar">
+        {({ params }) => (
+          <ProtectedRoute component={EnhancedGarVisualizationPage} />
+        )}
+      </Route>
+
+      <Route path="/enhanced-gar/:id">
+        {({ params }) => (
+          <ProtectedRoute component={EnhancedGarVisualizationPage} />
         )}
       </Route>
       

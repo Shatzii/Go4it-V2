@@ -4,20 +4,20 @@ import {
   RadarChart,
   PolarGrid,
   PolarAngleAxis,
+  PolarRadiusAxis,
   Radar,
   Tooltip,
   Legend,
 } from 'recharts';
 import { Card } from "@/components/ui/card";
 
-type RadarChartProps = {
+type GarRadarChartProps = {
   data: {
     name: string;
     value: number;
-    fullMark: number;
+    fullMark?: number;
   }[];
   height?: number;
-  colors?: string[];
   title?: string;
   subtitle?: string;
 };
@@ -25,10 +25,9 @@ type RadarChartProps = {
 export function GarRadarChart({
   data,
   height = 300,
-  colors = ['#3b82f6', '#8b5cf6', '#10b981'],
   title,
   subtitle
-}: RadarChartProps) {
+}: GarRadarChartProps) {
   return (
     <Card className="p-4 w-full bg-gradient-to-br from-gray-900 to-gray-800 border-gray-700">
       {title && (
@@ -45,12 +44,18 @@ export function GarRadarChart({
               dataKey="name"
               tick={{ fill: '#e5e7eb', fontSize: 12 }}
             />
+            <PolarRadiusAxis 
+              angle={90} 
+              domain={[0, 100]} 
+              tick={{ fill: '#e5e7eb', fontSize: 10 }}
+            />
             <Radar
-              name="Current"
+              name="GAR Score"
               dataKey="value"
-              stroke={colors[0]}
-              fill={colors[0]}
+              stroke="#3b82f6"
+              fill="#3b82f6"
               fillOpacity={0.6}
+              dot={{ stroke: '#3b82f6', strokeWidth: 2, fill: '#3b82f6', r: 4 }}
             />
             <Tooltip 
               contentStyle={{ 
@@ -61,6 +66,7 @@ export function GarRadarChart({
               }}
               itemStyle={{ color: '#f9fafb' }}
               formatter={(value) => [`${value}`, 'Score']}
+              labelFormatter={(label) => `${label}`}
             />
             <Legend wrapperStyle={{ color: '#f9fafb' }} />
           </RadarChart>
