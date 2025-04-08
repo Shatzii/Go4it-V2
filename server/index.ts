@@ -39,14 +39,10 @@ if (!fs.existsSync(uploadsDir)) {
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
-// Serve the NDA page as the first screen
+// REMOVED NDA: No longer showing NDA page on first load
+// Instead, pass through to let the client-side routing handle the home page
 app.get('/', (req, res, next) => {
-  const ndaPath = path.join(process.cwd(), 'nda.html');
-  if (fs.existsSync(ndaPath)) {
-    res.sendFile(ndaPath);
-  } else {
-    next(); // Proceed to the next middleware/route handler
-  }
+  next(); // Always proceed to the next middleware/route handler
 });
 
 // Route for the main application after NDA acceptance
