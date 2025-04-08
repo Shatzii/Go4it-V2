@@ -55,6 +55,7 @@ import Settings from "@/pages/settings";
 import BlogPost from "@/pages/blog-post";
 import BlogList from "@/pages/blog-list";
 import GarScorePage from "@/pages/gar-score";
+import AthleteStarProfilesPage from "@/pages/athlete-star-profiles";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -327,6 +328,13 @@ function Router() {
       <Route path="/profile/:id">
         {({ params }) => (
           <AthleteProfile />
+        )}
+      </Route>
+      
+      {/* Athlete Star Profiles Route */}
+      <Route path="/athlete-star-profiles">
+        {({ params }) => (
+          <ProtectedRoute component={AthleteStarProfilesPage} />
         )}
       </Route>
       

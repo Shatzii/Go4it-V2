@@ -30,7 +30,8 @@ import {
   Bot,
   RefreshCw,
   UserCircle2,
-  ShieldCheck
+  ShieldCheck,
+  Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -270,6 +271,13 @@ export default function Layout({ children }: LayoutProps) {
                   <Link href="/ncaa-clearinghouse" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/ncaa-clearinghouse" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
                     <BookOpen className="h-5 w-5 mr-3" />
                     NCAA Clearinghouse
+                  </Link>
+                </motion.li>
+                
+                <motion.li variants={menuItemVariants}>
+                  <Link href="/athlete-star-profiles" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/athlete-star-profiles" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <Star className="h-5 w-5 mr-3" />
+                    Star Profiles
                   </Link>
                 </motion.li>
 

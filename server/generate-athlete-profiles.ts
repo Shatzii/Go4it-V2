@@ -18,13 +18,17 @@ export async function generateProfiles() {
     
     // Check if athlete profiles already exist
     const existingProfiles = await db.select().from(athleteStarProfiles);
+    console.log(`Found ${existingProfiles.length} existing athlete profiles, but generating new ones anyway.`);
+    // Delete existing profiles to regenerate them
     if (existingProfiles.length > 0) {
-      console.log(`Found ${existingProfiles.length} existing athlete profiles. Skipping generation.`);
-      return existingProfiles;
+      console.log('Deleting existing athlete profiles...');
+      await db.delete(athleteStarProfiles);
     }
     
     // Get all JSON files in the temp_extract directory
-    const extractDir = path.join(process.cwd(), 'temp_extract');
+    // The path needs to be relative to the current directory
+    const extractDir = path.join(process.cwd(), '..', 'temp_extract');
+    console.log(`Looking for extract directory at: ${extractDir}`);
     if (!fs.existsSync(extractDir)) {
       console.error('Extract directory not found. Please unzip the athlete profiles first.');
       return [];
@@ -70,10 +74,15 @@ export async function generateProfiles() {
         
         console.log(`Created user account for ${profileData.name}`);
         
-        // Use a default avatar path instead of generating with OpenAI
-        const avatarPath = `/uploads/default_avatar_${Math.floor(Math.random() * 5) + 1}.png`;
+        // Use one of our actual athlete headshots
+        const headshots = [
+          '/uploads/default_avatars/IMG_1606.jpeg',
+          '/uploads/default_avatars/IMG_3113.jpeg',
+          '/uploads/default_avatars/IMG_6486.jpeg'
+        ];
+        const avatarPath = headshots[Math.floor(Math.random() * headshots.length)];
         
-        console.log(`Using default avatar for ${profileData.name}`);
+        console.log(`Using avatar ${avatarPath} for ${profileData.name}`);
         
         // Update the user with the default avatar
         await db

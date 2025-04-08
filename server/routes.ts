@@ -4896,7 +4896,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Athlete Star Profiles routes
-  app.get("/api/athlete-profiles/stars", isAuthenticated, async (req: Request, res: Response) => {
+  app.get("/api/athlete-profiles/stars", async (req: Request, res: Response) => {
     try {
       const { sport, position, starLevel } = req.query;
       
@@ -4928,7 +4928,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.get("/api/athlete-profiles/stars/:id", isAuthenticated, async (req: Request, res: Response) => {
+  app.get("/api/athlete-profiles/stars/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
       
