@@ -969,7 +969,7 @@ export class DatabaseStorage implements IStorage {
     const [createdSchool] = await db.insert(ncaaSchools)
       .values({
         ...school,
-        lastUpdated: new Date()
+        last_updated: new Date()
       })
       .returning();
     return createdSchool;
@@ -990,7 +990,7 @@ export class DatabaseStorage implements IStorage {
   async getAthleticDepartmentsBySchool(schoolId: number): Promise<AthleticDepartment[]> {
     return await db.select()
       .from(athleticDepartments)
-      .where(eq(athleticDepartments.schoolId, schoolId));
+      .where(eq(athleticDepartments.school_id, schoolId));
   }
   
   async getAthleticDepartmentById(id: number): Promise<AthleticDepartment | undefined> {
@@ -1025,7 +1025,7 @@ export class DatabaseStorage implements IStorage {
   async getSportProgramsBySchool(schoolId: number): Promise<SportProgram[]> {
     return await db.select()
       .from(sportPrograms)
-      .where(eq(sportPrograms.schoolId, schoolId));
+      .where(eq(sportPrograms.school_id, schoolId));
   }
   
   async getSportProgramById(id: number): Promise<SportProgram | undefined> {
@@ -1072,7 +1072,7 @@ export class DatabaseStorage implements IStorage {
   async getCoachingStaffByProgram(programId: number): Promise<CoachingStaff[]> {
     return await db.select()
       .from(coachingStaff)
-      .where(eq(coachingStaff.sportProgramId, programId));
+      .where(eq(coachingStaff.sport_program_id, programId));
   }
   
   async getCoachingStaffById(id: number): Promise<CoachingStaff | undefined> {
@@ -1107,7 +1107,7 @@ export class DatabaseStorage implements IStorage {
   async getRecruitingContactsByProgram(programId: number): Promise<RecruitingContact[]> {
     return await db.select()
       .from(recruitingContacts)
-      .where(eq(recruitingContacts.sportProgramId, programId));
+      .where(eq(recruitingContacts.sport_program_id, programId));
   }
   
   async getRecruitingContactById(id: number): Promise<RecruitingContact | undefined> {

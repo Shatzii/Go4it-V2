@@ -306,97 +306,107 @@ export const ncaaSchools = pgTable("ncaa_schools", {
   city: text("city").notNull(),
   state: text("state").notNull(),
   website: text("website"),
-  logoUrl: text("logo_url"),
-  primaryColor: text("primary_color"),
-  secondaryColor: text("secondary_color"),
-  athleticDepartmentUrl: text("athletic_department_url"),
-  recruitingUrl: text("recruiting_url"),
-  enrollmentCount: integer("enrollment_count"),
-  isPrivate: boolean("is_private"),
+  logo_url: text("logo_url"),
+  primary_color: text("primary_color"),
+  secondary_color: text("secondary_color"),
+  athletic_department_url: text("athletic_department_url"),
+  recruiting_url: text("recruiting_url"),
+  enrollment_count: integer("enrollment_count"),
+  is_private: boolean("is_private"),
   founded: integer("founded"),
-  lastUpdated: timestamp("last_updated").defaultNow(),
-  updatedBy: integer("updated_by").references(() => users.id),
+  last_updated: timestamp("last_updated").defaultNow(),
+  updated_by: integer("updated_by").references(() => users.id),
 });
+
+export const ncaaSchoolsRelations = relations(ncaaSchools, ({ many }) => ({
+  athleticDepartments: many(athleticDepartments),
+  sportPrograms: many(sportPrograms),
+}));
 
 // NCAA School Athletic Departments
 export const athleticDepartments = pgTable("athletic_departments", {
   id: serial("id").primaryKey(),
-  schoolId: integer("school_id").notNull().references(() => ncaaSchools.id),
+  school_id: integer("school_id").notNull().references(() => ncaaSchools.id),
   name: text("name").notNull(),
   address: text("address"),
   phone: text("phone"),
   email: text("email"),
-  mainContactName: text("main_contact_name"),
-  mainContactTitle: text("main_contact_title"),
-  mainContactPhone: text("main_contact_phone"),
-  mainContactEmail: text("main_contact_email"),
-  athleticDirectorName: text("athletic_director_name"),
-  athleticDirectorEmail: text("athletic_director_email"),
-  athleticDirectorPhone: text("athletic_director_phone"),
-  department: text("department"), // For schools with multiple athletic departments
-  lastUpdated: timestamp("last_updated").defaultNow(),
-  updatedBy: integer("updated_by").references(() => users.id),
+  main_contact_name: text("main_contact_name"),
+  website: text("website"),
+  social_media: jsonb("social_media"),
+  budget: numeric("budget", { precision: 15, scale: 2 }),
+  staff_count: integer("staff_count"),
+  facilities_info: text("facilities_info"),
+  last_updated: timestamp("last_updated").defaultNow(),
+  updated_by: integer("updated_by").references(() => users.id),
 });
+
+export const athleticDepartmentsRelations = relations(athleticDepartments, ({ one }) => ({
+  school: one(ncaaSchools, {
+    fields: [athleticDepartments.school_id],
+    references: [ncaaSchools.id],
+  }),
+}));
 
 // NCAA School Sports Programs
 export const sportPrograms = pgTable("sport_programs", {
   id: serial("id").primaryKey(),
-  schoolId: integer("school_id").notNull().references(() => ncaaSchools.id),
+  school_id: integer("school_id").notNull().references(() => ncaaSchools.id),
   sport: text("sport").notNull(), // e.g., "Football", "Basketball", "Soccer", etc.
   gender: text("gender").notNull(), // "Men", "Women", "Coed"
   division: text("division"), // In case a specific sport is in a different division than the school
   conference: text("conference"), // In case a specific sport is in a different conference
-  isActive: boolean("is_active").default(true),
-  stadiumName: text("stadium_name"),
-  stadiumCapacity: integer("stadium_capacity"),
-  championshipYears: text("championship_years").array(),
-  teamWebsite: text("team_website"),
-  teamSocialMedia: jsonb("team_social_media"), // JSON with social media links
-  rosterSize: integer("roster_size"),
-  scholarshipCount: integer("scholarship_count"),
-  lastUpdated: timestamp("last_updated").defaultNow(),
-  updatedBy: integer("updated_by").references(() => users.id),
+  is_active: boolean("is_active").default(true),
+  stadium_name: text("stadium_name"),
+  stadium_capacity: integer("stadium_capacity"),
+  championship_years: text("championship_years").array(),
+  team_website: text("team_website"),
+  team_social_media: jsonb("team_social_media"), // JSON with social media links
+  roster_size: integer("roster_size"),
+  scholarship_count: integer("scholarship_count"),
+  last_updated: timestamp("last_updated").defaultNow(),
+  updated_by: integer("updated_by").references(() => users.id),
 });
 
 // NCAA Coaching Staff
 export const coachingStaff = pgTable("coaching_staff", {
   id: serial("id").primaryKey(),
-  sportProgramId: integer("sport_program_id").notNull().references(() => sportPrograms.id),
+  sport_program_id: integer("sport_program_id").notNull().references(() => sportPrograms.id),
   name: text("name").notNull(),
   title: text("title").notNull(), // Head Coach, Assistant Coach, etc.
   email: text("email"),
   phone: text("phone"),
   bio: text("bio"),
-  photoUrl: text("photo_url"),
-  yearsInPosition: integer("years_in_position"),
-  careerRecord: text("career_record"),
+  photo_url: text("photo_url"),
+  years_in_position: integer("years_in_position"),
+  career_record: text("career_record"),
   specialization: text("specialization"), // e.g., Offensive Coordinator, Defensive Coach, etc.
-  previousSchools: text("previous_schools").array(),
-  playingExperience: text("playing_experience"),
+  previous_schools: text("previous_schools").array(),
+  playing_experience: text("playing_experience"),
   education: text("education"),
-  isRecruiter: boolean("is_recruiter").default(false),
-  recruitingRegions: text("recruiting_regions").array(),
-  socialMediaLinks: jsonb("social_media_links"),
-  lastUpdated: timestamp("last_updated").defaultNow(),
-  updatedBy: integer("updated_by").references(() => users.id),
+  is_recruiter: boolean("is_recruiter").default(false),
+  recruiting_regions: text("recruiting_regions").array(),
+  social_media_links: jsonb("social_media_links"),
+  last_updated: timestamp("last_updated").defaultNow(),
+  updated_by: integer("updated_by").references(() => users.id),
 });
 
 // NCAA Recruiting Contacts (for detailed recruiting staff)
 export const recruitingContacts = pgTable("recruiting_contacts", {
   id: serial("id").primaryKey(),
-  sportProgramId: integer("sport_program_id").notNull().references(() => sportPrograms.id),
+  sport_program_id: integer("sport_program_id").notNull().references(() => sportPrograms.id),
   name: text("name").notNull(),
   title: text("title").notNull(),
   email: text("email"),
   phone: text("phone"),
-  preferredContactMethod: text("preferred_contact_method"),
+  preferred_contact_method: text("preferred_contact_method"),
   regions: text("regions").array(), // Recruiting regions
   positions: text("positions").array(), // Positions they recruit for
   notes: text("notes"),
-  bestTimeToContact: text("best_time_to_contact"),
-  isActive: boolean("is_active").default(true),
-  lastUpdated: timestamp("last_updated").defaultNow(),
-  updatedBy: integer("updated_by").references(() => users.id),
+  best_time_to_contact: text("best_time_to_contact"),
+  is_active: boolean("is_active").default(true),
+  last_updated: timestamp("last_updated").defaultNow(),
+  updated_by: integer("updated_by").references(() => users.id),
 });
 
 // Site images for logos, banners, backgrounds, etc.
@@ -2035,22 +2045,11 @@ export const userTokensRelations = relations(userTokens, ({ one }) => ({
   }),
 }));
 
-// NCAA Schools database relations
-export const ncaaSchoolsRelations = relations(ncaaSchools, ({ many }) => ({
-  athleticDepartments: many(athleticDepartments),
-  sportPrograms: many(sportPrograms),
-}));
-
-export const athleticDepartmentsRelations = relations(athleticDepartments, ({ one }) => ({
-  school: one(ncaaSchools, {
-    fields: [athleticDepartments.schoolId],
-    references: [ncaaSchools.id],
-  }),
-}));
+// NCAA Schools database relations - defined above
 
 export const sportProgramsRelations = relations(sportPrograms, ({ one, many }) => ({
   school: one(ncaaSchools, {
-    fields: [sportPrograms.schoolId],
+    fields: [sportPrograms.school_id],
     references: [ncaaSchools.id],
   }),
   coachingStaff: many(coachingStaff),
@@ -2059,14 +2058,14 @@ export const sportProgramsRelations = relations(sportPrograms, ({ one, many }) =
 
 export const coachingStaffRelations = relations(coachingStaff, ({ one }) => ({
   sportProgram: one(sportPrograms, {
-    fields: [coachingStaff.sportProgramId],
+    fields: [coachingStaff.sport_program_id],
     references: [sportPrograms.id],
   }),
 }));
 
 export const recruitingContactsRelations = relations(recruitingContacts, ({ one }) => ({
   sportProgram: one(sportPrograms, {
-    fields: [recruitingContacts.sportProgramId],
+    fields: [recruitingContacts.sport_program_id],
     references: [sportPrograms.id],
   }),
 }));
