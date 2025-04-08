@@ -10,6 +10,7 @@ import { useAuth } from "../contexts/auth-context";
 import { motion } from "framer-motion";
 import { WhatMakesUsDifferent } from "@/components/what-makes-us-different";
 import FeaturedCombines from "@/components/home/FeaturedCombines";
+import FeaturedBlogPosts from "@/components/home/FeaturedBlogPosts";
 
 interface BlogPost {
   id: number;
@@ -241,24 +242,27 @@ export default function HomePage() {
       <FeaturedCombines />
 
       {/* Blog Posts Section */}
+      <FeaturedBlogPosts />
+
+      {/* Community Section */}
       <section className="mb-16">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold text-white">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
-              Blog
-            </span> & News
+              Community
+            </span> Forum
           </h2>
-          <Button variant="ghost" className="flex items-center gap-1 text-blue-400 hover:text-blue-300">
-            View All <ChevronRight className="h-4 w-4" />
+          <Button asChild variant="ghost" className="flex items-center gap-1 text-blue-400 hover:text-blue-300">
+            <Link href="/community">View Community <ChevronRight className="h-4 w-4" /></Link>
           </Button>
         </div>
 
         <Tabs defaultValue="featured" className="w-full" onValueChange={setActiveTab}>
           <TabsList className="mb-6 bg-gray-900 border border-gray-800">
-            <TabsTrigger value="featured" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-500 data-[state=active]:text-white">Featured</TabsTrigger>
-            <TabsTrigger value="training" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-500 data-[state=active]:text-white">Training</TabsTrigger>
-            <TabsTrigger value="nutrition" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-500 data-[state=active]:text-white">Nutrition</TabsTrigger>
-            <TabsTrigger value="recruiting" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-500 data-[state=active]:text-white">Recruiting</TabsTrigger>
+            <TabsTrigger value="featured" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-500 data-[state=active]:text-white">Popular</TabsTrigger>
+            <TabsTrigger value="training" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-500 data-[state=active]:text-white">Athletes</TabsTrigger>
+            <TabsTrigger value="nutrition" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-500 data-[state=active]:text-white">Coaches</TabsTrigger>
+            <TabsTrigger value="recruiting" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-500 data-[state=active]:text-white">Parents</TabsTrigger>
           </TabsList>
 
           <TabsContent value="featured" className="mt-0">
