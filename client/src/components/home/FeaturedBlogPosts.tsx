@@ -24,36 +24,64 @@ interface BlogPost {
 export default function FeaturedBlogPosts() {
   const [activeTab, setActiveTab] = useState("featured");
 
-  const { data: blogPosts = [], isLoading: isLoadingAll } = useQuery<BlogPost[]>({
+  const { data: blogPosts = [], isLoading: isLoadingAll, error: allError } = useQuery<BlogPost[]>({
     queryKey: ["/api/blog-posts"],
     queryFn: async () => {
-      // Use a proxy URL that will be forwarded through the Express server
-      const response = await fetch('/api/blog-posts', {
-        headers: {
-          'X-Base-URL': 'http://localhost:5000'
+      try {
+        console.log("Fetching all blog posts...");
+        // Use a proxy URL that will be forwarded through the Express server
+        const response = await fetch('/api/blog-posts', {
+          headers: {
+            'X-Base-URL': 'http://localhost:5000'
+          }
+        });
+        
+        console.log("Blog posts response status:", response.status);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch blog posts: ${response.status}`);
         }
-      });
-      if (!response.ok) {
-        throw new Error('Failed to fetch blog posts');
+        
+        const data = await response.json();
+        console.log("Received blog posts:", data.length);
+        return data;
+      } catch (err) {
+        console.error("Error fetching blog posts:", err);
+        throw err;
       }
-      return response.json();
-    }
+    },
+    retry: 2,
+    retryDelay: 1000
   });
 
-  const { data: featuredBlogPosts = [], isLoading: isLoadingFeatured } = useQuery<BlogPost[]>({
+  const { data: featuredBlogPosts = [], isLoading: isLoadingFeatured, error: featuredError } = useQuery<BlogPost[]>({
     queryKey: ["/api/blog-posts/featured"],
     queryFn: async () => {
-      // Use a proxy URL that will be forwarded through the Express server
-      const response = await fetch('/api/blog-posts/featured', {
-        headers: {
-          'X-Base-URL': 'http://localhost:5000'
+      try {
+        console.log("Fetching featured blog posts...");
+        // Use a proxy URL that will be forwarded through the Express server
+        const response = await fetch('/api/blog-posts/featured', {
+          headers: {
+            'X-Base-URL': 'http://localhost:5000'
+          }
+        });
+        
+        console.log("Featured blog posts response status:", response.status);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch featured blog posts: ${response.status}`);
         }
-      });
-      if (!response.ok) {
-        throw new Error('Failed to fetch featured blog posts');
+        
+        const data = await response.json();
+        console.log("Received featured blog posts:", data.length);
+        return data;
+      } catch (err) {
+        console.error("Error fetching featured blog posts:", err);
+        throw err;
       }
-      return response.json();
-    }
+    },
+    retry: 2,
+    retryDelay: 1000
   });
 
   const formatDate = (dateString: string) => {
