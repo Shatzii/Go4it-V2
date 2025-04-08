@@ -13,7 +13,7 @@ const REFRESH_TOKEN_EXPIRY = '7d';  // 7 days
 /**
  * Generate both access and refresh tokens for a user
  */
-export async function generateTokens(userId: number, role: string) {
+export async function generateTokens(userId: number, role: string, deviceFingerprint?: string) {
   try {
     // Create a unique session ID for this login session
     const sessionId = uuidv4();
@@ -36,14 +36,16 @@ export async function generateTokens(userId: number, role: string) {
     const decoded = jwt.decode(refreshToken) as jwt.JwtPayload;
     const expiresAt = new Date(decoded.exp! * 1000);
     
-    // Store hashed refresh token in database
+    // Store refresh token in database
+    // Note: We're storing the token directly in the tokenHash field
+    // This matches the current database structure
     await db.insert(userTokens).values({
       userId,
-      tokenHash: refreshToken, // In a real production system, we would hash this token
+      tokenHash: refreshToken, // For production, consider hashing this token instead
       sessionId,
       expiresAt,
       lastUsed: new Date(),
-      deviceFingerprint: 'web-app' // Default device identifier
+      deviceFingerprint: deviceFingerprint || 'web-app' // Use provided fingerprint or default
     });
     
     return {

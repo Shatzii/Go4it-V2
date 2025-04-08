@@ -311,7 +311,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         // Generate JWT tokens for the user
         const { generateTokens } = require('./services/auth-token-service');
-        const tokens = await generateTokens(user.id, user.role);
+        const deviceFingerprint = req.body.deviceFingerprint || req.headers["x-device-fingerprint"] || "web-app";
+        const tokens = await generateTokens(user.id, user.role, deviceFingerprint);
         
         // Also create session for backward compatibility
         req.login(user, (loginErr) => {
@@ -358,7 +359,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         // Generate JWT tokens for the user
         const { generateTokens } = require('./services/auth-token-service');
-        const tokens = await generateTokens(user.id, user.role);
+        const deviceFingerprint = req.body.deviceFingerprint || req.headers["x-device-fingerprint"] || "web-app";
+        const tokens = await generateTokens(user.id, user.role, deviceFingerprint);
         
         // Also create session for backward compatibility
         req.login(user, (loginErr) => {

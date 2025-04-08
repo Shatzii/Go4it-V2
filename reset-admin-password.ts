@@ -12,7 +12,7 @@ async function resetAdminPassword() {
   if (adminUser.length === 0) {
     console.log('Admin user not found. Creating admin user...');
     
-    const hashedPassword = await hashPassword('adminpass123');
+    const hashedPassword = await hashPassword('admin123');
     
     await db.insert(users).values({
       username: 'admin',
@@ -27,7 +27,7 @@ async function resetAdminPassword() {
   } else {
     console.log('Admin user found. Updating password...');
     
-    const hashedPassword = await hashPassword('adminpass123');
+    const hashedPassword = await hashPassword('admin123');
     
     await db.update(users)
       .set({ password: hashedPassword })
