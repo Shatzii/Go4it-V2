@@ -1962,57 +1962,222 @@ export default function CoachPortal() {
               <Separator />
               
               <div>
-                <h3 className="font-semibold mb-2">Academics</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <div className="text-sm text-muted-foreground">GPA</div>
-                    <div className="font-medium">{selectedAthlete.gpa}</div>
+                <h3 className="font-semibold mb-2 flex items-center">
+                  <BookOpen className="h-4 w-4 mr-2 text-blue-500" />
+                  Academics
+                </h3>
+                
+                {/* Academic visualization */}
+                <div className="bg-gradient-to-br from-blue-900/20 to-blue-800/10 rounded-lg p-4 border border-blue-900/40 mb-4">
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="flex flex-col items-center">
+                      <div className="relative w-16 h-16 flex items-center justify-center">
+                        <svg className="w-full h-full" viewBox="0 0 36 36">
+                          <path
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                            fill="none"
+                            stroke="#2563EB"
+                            strokeWidth="1"
+                            strokeDasharray="100, 100"
+                            className="opacity-25"
+                          />
+                          <path
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                            fill="none"
+                            stroke="#2563EB"
+                            strokeWidth="2"
+                            strokeDasharray={`${selectedAthlete.gpa * 25}, 100`}
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center flex-col">
+                          <span className="text-lg font-bold">{selectedAthlete.gpa}</span>
+                          <span className="text-xs text-blue-400">GPA</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {selectedAthlete.testScores.sat && (
+                      <div className="flex flex-col items-center">
+                        <div className="relative w-16 h-16 flex items-center justify-center">
+                          <svg className="w-full h-full" viewBox="0 0 36 36">
+                            <path
+                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                              fill="none"
+                              stroke="#8B5CF6"
+                              strokeWidth="1"
+                              strokeDasharray="100, 100"
+                              className="opacity-25"
+                            />
+                            <path
+                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                              fill="none"
+                              stroke="#8B5CF6"
+                              strokeWidth="2"
+                              strokeDasharray={`${(selectedAthlete.testScores.sat / 1600) * 100}, 100`}
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                          <div className="absolute inset-0 flex items-center justify-center flex-col">
+                            <span className="text-sm font-bold">{selectedAthlete.testScores.sat}</span>
+                            <span className="text-xs text-purple-400">SAT</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {selectedAthlete.testScores.act && (
+                      <div className="flex flex-col items-center">
+                        <div className="relative w-16 h-16 flex items-center justify-center">
+                          <svg className="w-full h-full" viewBox="0 0 36 36">
+                            <path
+                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                              fill="none"
+                              stroke="#10B981"
+                              strokeWidth="1"
+                              strokeDasharray="100, 100"
+                              className="opacity-25"
+                            />
+                            <path
+                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                              fill="none"
+                              stroke="#10B981"
+                              strokeWidth="2"
+                              strokeDasharray={`${(selectedAthlete.testScores.act / 36) * 100}, 100`}
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                          <div className="absolute inset-0 flex items-center justify-center flex-col">
+                            <span className="text-lg font-bold">{selectedAthlete.testScores.act}</span>
+                            <span className="text-xs text-green-400">ACT</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  {selectedAthlete.testScores.sat && (
-                    <div className="space-y-1">
-                      <div className="text-sm text-muted-foreground">SAT</div>
-                      <div className="font-medium">{selectedAthlete.testScores.sat}</div>
-                    </div>
-                  )}
-                  {selectedAthlete.testScores.act && (
-                    <div className="space-y-1">
-                      <div className="text-sm text-muted-foreground">ACT</div>
-                      <div className="font-medium">{selectedAthlete.testScores.act}</div>
-                    </div>
-                  )}
+                  
+                  <div className="text-xs text-gray-400 mt-2 text-center">
+                    {selectedAthlete.gpa >= 3.5 ? 
+                      "Strong academic profile, qualifies for most scholarship opportunities" : 
+                      selectedAthlete.gpa >= 3.0 ? 
+                        "Solid academic standing, meets minimum requirements" : 
+                        "Academic support resources recommended"}
+                  </div>
                 </div>
               </div>
               
               <Separator />
               
               <div>
-                <h3 className="font-semibold mb-2">Athletics</h3>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                  <div className="space-y-1">
+                <h3 className="font-semibold mb-2 flex items-center">
+                  <Trophy className="h-4 w-4 mr-2 text-amber-500" />
+                  Athletics
+                </h3>
+                
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-4">
+                  <div className="bg-gray-800/50 p-2 rounded-md">
                     <div className="text-sm text-muted-foreground">Sport</div>
                     <div className="font-medium">{selectedAthlete.sport}</div>
                   </div>
-                  <div className="space-y-1">
+                  <div className="bg-gray-800/50 p-2 rounded-md">
                     <div className="text-sm text-muted-foreground">Position</div>
                     <div className="font-medium">{selectedAthlete.position}</div>
                   </div>
-                  <div className="space-y-1">
+                  <div className="bg-gray-800/50 p-2 rounded-md">
                     <div className="text-sm text-muted-foreground">Height</div>
                     <div className="font-medium">{selectedAthlete.height}</div>
                   </div>
-                  <div className="space-y-1">
+                  <div className="bg-gray-800/50 p-2 rounded-md">
                     <div className="text-sm text-muted-foreground">Weight</div>
                     <div className="font-medium">{selectedAthlete.weight}</div>
                   </div>
                 </div>
                 
-                <div className="mt-4">
+                {/* Athletic Performance Radar Chart */}
+                <div className="bg-gradient-to-br from-amber-900/20 to-amber-800/10 rounded-lg p-4 border border-amber-900/40 mb-4">
+                  <h4 className="text-sm font-medium mb-2 text-center">Performance Metrics</h4>
+                  <div className="h-[150px] relative">
+                    {/* We're creating a simplified radar chart with svg for performance metrics */}
+                    <svg viewBox="0 0 100 100" className="w-full h-full">
+                      {/* Background grid */}
+                      <polygon 
+                        points="50,10 90,50 50,90 10,50" 
+                        fill="none" 
+                        stroke="#4B5563" 
+                        strokeWidth="0.5"
+                        opacity="0.3"
+                      />
+                      <polygon 
+                        points="50,20 80,50 50,80 20,50" 
+                        fill="none" 
+                        stroke="#4B5563" 
+                        strokeWidth="0.5"
+                        opacity="0.3"
+                      />
+                      <polygon 
+                        points="50,30 70,50 50,70 30,50" 
+                        fill="none" 
+                        stroke="#4B5563" 
+                        strokeWidth="0.5"
+                        opacity="0.3"
+                      />
+                      <polygon 
+                        points="50,40 60,50 50,60 40,50" 
+                        fill="none" 
+                        stroke="#4B5563" 
+                        strokeWidth="0.5"
+                        opacity="0.3"
+                      />
+                      
+                      {/* Athlete performance metrics */}
+                      <polygon 
+                        points={`
+                          50,${60 - (selectedAthlete.starRating * 10)} 
+                          ${60 + (selectedAthlete.keyStats[0] ? parseInt(selectedAthlete.keyStats[0].value) / 5 : 0)},50 
+                          50,${60 + (selectedAthlete.keyStats[1] ? parseInt(selectedAthlete.keyStats[1].value) / 5 : 0)} 
+                          ${40 - (selectedAthlete.keyStats[2] ? parseInt(selectedAthlete.keyStats[2].value) / 5 : 0)},50
+                        `}
+                        fill="rgba(245, 158, 11, 0.3)"
+                        stroke="#F59E0B"
+                        strokeWidth="1.5"
+                      />
+                      
+                      {/* Axis lines */}
+                      <line x1="50" y1="10" x2="50" y2="90" stroke="#4B5563" strokeWidth="0.5" opacity="0.5" />
+                      <line x1="10" y1="50" x2="90" y2="50" stroke="#4B5563" strokeWidth="0.5" opacity="0.5" />
+                      
+                      {/* Metrics labels */}
+                      <text x="50" y="5" textAnchor="middle" fontSize="8" fill="#E5E7EB">Rating</text>
+                      <text x="95" y="50" textAnchor="middle" fontSize="8" fill="#E5E7EB">{selectedAthlete.keyStats[0]?.name || "Stat 1"}</text>
+                      <text x="50" y="95" textAnchor="middle" fontSize="8" fill="#E5E7EB">{selectedAthlete.keyStats[1]?.name || "Stat 2"}</text>
+                      <text x="5" y="50" textAnchor="middle" fontSize="8" fill="#E5E7EB">{selectedAthlete.keyStats[2]?.name || "Stat 3"}</text>
+                      
+                      {/* Data points */}
+                      <circle cx="50" cy={60 - (selectedAthlete.starRating * 10)} r="2" fill="#F59E0B" />
+                      <circle cx={60 + (selectedAthlete.keyStats[0] ? parseInt(selectedAthlete.keyStats[0].value) / 5 : 0)} cy="50" r="2" fill="#F59E0B" />
+                      <circle cx="50" cy={60 + (selectedAthlete.keyStats[1] ? parseInt(selectedAthlete.keyStats[1].value) / 5 : 0)} r="2" fill="#F59E0B" />
+                      <circle cx={40 - (selectedAthlete.keyStats[2] ? parseInt(selectedAthlete.keyStats[2].value) / 5 : 0)} cy="50" r="2" fill="#F59E0B" />
+                    </svg>
+                  </div>
+                </div>
+                
+                <div>
                   <h4 className="text-sm font-medium mb-2">Key Stats</h4>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="grid grid-cols-2 gap-2">
                     {selectedAthlete.keyStats.map((stat, idx) => (
-                      <Badge key={idx} variant="outline" className="font-mono">
-                        {stat.name}: {stat.value}
-                      </Badge>
+                      <div 
+                        key={idx} 
+                        className="flex flex-col bg-gray-800/50 p-2 rounded-md"
+                      >
+                        <span className="text-xs text-muted-foreground">{stat.name}</span>
+                        <span className="text-lg font-semibold">{stat.value}</span>
+                        <div className="w-full h-1 bg-gray-700 rounded-full mt-1 overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full"
+                            style={{ width: `${idx * 25 + 25}%` }} // Just for visualization - in real app would be based on percentile data
+                          ></div>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>
