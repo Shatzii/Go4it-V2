@@ -24,7 +24,7 @@ export async function generateProfiles() {
     }
     
     // Get all JSON files in the temp_extract directory
-    const extractDir = path.join(process.cwd(), '..', 'temp_extract');
+    const extractDir = path.join(process.cwd(), 'temp_extract');
     if (!fs.existsSync(extractDir)) {
       console.error('Extract directory not found. Please unzip the athlete profiles first.');
       return [];
