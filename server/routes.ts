@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { fileUpload, imageUpload, videoUpload, getUploadedImages, deleteImage } from "./file-upload";
+import { fileUpload, imageUpload, videoUpload, getUploadedImages, deleteImage, moveUploadedFile } from "./file-upload";
 import fs from "fs";
 import { analyzeVideo, generateSportRecommendations, analyzePlayStrategy } from "./openai";
 import activeNetworkService from "./active-network";
@@ -1797,6 +1797,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching videos:", error);
       return res.status(500).json({ message: "Error fetching videos" });
+    }
+  });
+  
+  // Upload profile image for a user (admin only)
+  app.post("/api/admin/users/profile-image", isAdmin, imageUpload.single('profileImage'), async (req: Request, res: Response) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+      
+      const userId = parseInt(req.body.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+      
+      // Check if user exists
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Process the uploaded file
+      const uploadedFile = req.file;
+      
+      // Define permanent location in profile-images directory
+      const profileImagesDir = path.join(process.cwd(), 'uploads', 'profile-images');
+      
+      // Ensure the directory exists
+      if (!fs.existsSync(profileImagesDir)) {
+        fs.mkdirSync(profileImagesDir, { recursive: true });
+      }
+      
+      // Generate a unique filename
+      const fileExtension = path.extname(uploadedFile.originalname);
+      const newFilename = `user_${userId}_${Date.now()}${fileExtension}`;
+      const destinationPath = path.join(profileImagesDir, newFilename);
+      
+      // Move the file from temp location to permanent location
+      await moveUploadedFile(uploadedFile.path, destinationPath);
+      
+      // Generate URL path for the image
+      const profileImagePath = `/uploads/profile-images/${newFilename}`;
+      
+      // Update user profile with new image URL
+      const updatedUser = await storage.updateUser(userId, {
+        profileImage: profileImagePath
+      });
+      
+      if (!updatedUser) {
+        return res.status(500).json({ message: "Failed to update user profile" });
+      }
+      
+      return res.status(200).json({
+        message: "Profile image updated successfully",
+        user: updatedUser
+      });
+    } catch (error) {
+      console.error("Error updating profile image:", error);
+      return res.status(500).json({ message: "Error updating profile image: " + error.message });
     }
   });
 
