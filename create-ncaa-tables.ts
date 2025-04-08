@@ -154,13 +154,13 @@ async function insertSampleData() {
     city: "Tuscaloosa",
     state: "AL",
     website: "https://www.ua.edu",
-    logoUrl: "https://example.com/alabama_logo.png",
-    primaryColor: "#9E1B32",
-    secondaryColor: "#FFFFFF",
-    athleticDepartmentUrl: "https://rolltide.com",
-    recruitingUrl: "https://rolltide.com/recruiting",
-    enrollmentCount: 38100,
-    isPrivate: false,
+    logo_url: "https://example.com/alabama_logo.png",
+    primary_color: "#9E1B32",
+    secondary_color: "#FFFFFF",
+    athletic_department_url: "https://rolltide.com",
+    recruiting_url: "https://rolltide.com/recruiting",
+    enrollment_count: 38100,
+    is_private: false,
     founded: 1831
   }).returning();
   
@@ -173,13 +173,13 @@ async function insertSampleData() {
     city: "Columbus",
     state: "OH",
     website: "https://www.osu.edu",
-    logoUrl: "https://example.com/osu_logo.png",
-    primaryColor: "#BB0000",
-    secondaryColor: "#666666",
-    athleticDepartmentUrl: "https://ohiostatebuckeyes.com",
-    recruitingUrl: "https://ohiostatebuckeyes.com/recruiting",
-    enrollmentCount: 61170,
-    isPrivate: false,
+    logo_url: "https://example.com/osu_logo.png",
+    primary_color: "#BB0000",
+    secondary_color: "#666666",
+    athletic_department_url: "https://ohiostatebuckeyes.com",
+    recruiting_url: "https://ohiostatebuckeyes.com/recruiting",
+    enrollment_count: 61170,
+    is_private: false,
     founded: 1870
   }).returning();
   
@@ -192,13 +192,13 @@ async function insertSampleData() {
     city: "Durham",
     state: "NC",
     website: "https://www.duke.edu",
-    logoUrl: "https://example.com/duke_logo.png",
-    primaryColor: "#012169",
-    secondaryColor: "#FFFFFF",
-    athleticDepartmentUrl: "https://goduke.com",
-    recruitingUrl: "https://goduke.com/recruiting",
-    enrollmentCount: 16172,
-    isPrivate: true,
+    logo_url: "https://example.com/duke_logo.png",
+    primary_color: "#012169",
+    secondary_color: "#FFFFFF",
+    athletic_department_url: "https://goduke.com",
+    recruiting_url: "https://goduke.com/recruiting",
+    enrollment_count: 16172,
+    is_private: true,
     founded: 1838
   }).returning();
   
@@ -215,7 +215,10 @@ async function insertSampleData() {
       twitter: "@AlabamaAthletics",
       instagram: "@alabamaathletics",
       facebook: "AlabamaAthletics"
-    })
+    }),
+    budget: 200000000,
+    staff_count: 250,
+    facilities_info: "Multiple state-of-the-art facilities including Bryant-Denny Stadium"
   }).returning();
   
   const [ohioAD] = await db.insert(athleticDepartments).values({
@@ -230,158 +233,161 @@ async function insertSampleData() {
       twitter: "@OhioStAthetics",
       instagram: "@ohiostateathletics",
       facebook: "OhioStateAthletics"
-    })
+    }),
+    budget: 220000000,
+    staff_count: 280,
+    facilities_info: "Multiple top-tier facilities including Ohio Stadium and the Woody Hayes Athletic Center"
   }).returning();
   
   // Insert sport programs
   const [alabamaFootball] = await db.insert(sportPrograms).values({
-    schoolId: alabama.id,
+    school_id: alabama.id,
     sport: "Football",
     gender: "Men",
     division: "D1-FBS",
     conference: "SEC",
-    isActive: true,
-    stadiumName: "Bryant-Denny Stadium",
-    stadiumCapacity: 101821,
-    championshipYears: ["2020", "2017", "2015", "2012", "2011", "2009"],
-    teamWebsite: "https://rolltide.com/sports/football",
-    teamSocialMedia: JSON.stringify({
+    is_active: true,
+    stadium_name: "Bryant-Denny Stadium",
+    stadium_capacity: 101821,
+    championship_years: ["2020", "2017", "2015", "2012", "2011", "2009"],
+    team_website: "https://rolltide.com/sports/football",
+    team_social_media: JSON.stringify({
       twitter: "@AlabamaFTBL",
       instagram: "@alabamafbl"
     }),
-    rosterSize: 120,
-    scholarshipCount: 85
+    roster_size: 120,
+    scholarship_count: 85
   }).returning();
   
   const [ohioFootball] = await db.insert(sportPrograms).values({
-    schoolId: ohio.id,
+    school_id: ohio.id,
     sport: "Football",
     gender: "Men",
     division: "D1-FBS",
     conference: "Big Ten",
-    isActive: true,
-    stadiumName: "Ohio Stadium",
-    stadiumCapacity: 102780,
-    championshipYears: ["2014", "2002", "1968", "1961", "1957", "1954"],
-    teamWebsite: "https://ohiostatebuckeyes.com/sports/football",
-    teamSocialMedia: JSON.stringify({
+    is_active: true,
+    stadium_name: "Ohio Stadium",
+    stadium_capacity: 102780,
+    championship_years: ["2014", "2002", "1968", "1961", "1957", "1954"],
+    team_website: "https://ohiostatebuckeyes.com/sports/football",
+    team_social_media: JSON.stringify({
       twitter: "@OhioStateFB",
       instagram: "@ohiostatefb"
     }),
-    rosterSize: 125,
-    scholarshipCount: 85
+    roster_size: 125,
+    scholarship_count: 85
   }).returning();
   
   const [dukeBasketball] = await db.insert(sportPrograms).values({
-    schoolId: duke.id,
+    school_id: duke.id,
     sport: "Basketball",
     gender: "Men",
     division: "D1",
     conference: "ACC",
-    isActive: true,
-    stadiumName: "Cameron Indoor Stadium",
-    stadiumCapacity: 9314,
-    championshipYears: ["2015", "2010", "2001", "1992", "1991"],
-    teamWebsite: "https://goduke.com/sports/mens-basketball",
-    teamSocialMedia: JSON.stringify({
+    is_active: true,
+    stadium_name: "Cameron Indoor Stadium",
+    stadium_capacity: 9314,
+    championship_years: ["2015", "2010", "2001", "1992", "1991"],
+    team_website: "https://goduke.com/sports/mens-basketball",
+    team_social_media: JSON.stringify({
       twitter: "@DukeMBB",
       instagram: "@dukembb"
     }),
-    rosterSize: 15,
-    scholarshipCount: 13
+    roster_size: 15,
+    scholarship_count: 13
   }).returning();
   
   // Insert coaching staff
   await db.insert(coachingStaff).values({
-    sportProgramId: alabamaFootball.id,
+    sport_program_id: alabamaFootball.id,
     name: "Kalen DeBoer",
     title: "Head Coach",
     email: "kdeboer@ua.edu",
     phone: "(205) 348-3600",
     bio: "Kalen DeBoer became the head coach of Alabama football in 2024, replacing the legendary Nick Saban.",
-    photoUrl: "https://example.com/deboer.jpg",
-    yearsInPosition: 1,
-    careerRecord: "34-9 (overall)",
+    photo_url: "https://example.com/deboer.jpg",
+    years_in_position: 1,
+    career_record: "34-9 (overall)",
     specialization: "Offense",
-    previousSchools: ["Washington", "Fresno State", "Indiana"],
-    playingExperience: "University of Sioux Falls",
+    previous_schools: ["Washington", "Fresno State", "Indiana"],
+    playing_experience: "University of Sioux Falls",
     education: "University of Sioux Falls",
-    isRecruiter: true,
-    recruitingRegions: ["Southeast", "West Coast", "Midwest"],
-    socialMediaLinks: JSON.stringify({
+    is_recruiter: true,
+    recruiting_regions: ["Southeast", "West Coast", "Midwest"],
+    social_media_links: JSON.stringify({
       twitter: "@KalenDeBoer"
     })
   });
   
   await db.insert(coachingStaff).values({
-    sportProgramId: ohioFootball.id,
+    sport_program_id: ohioFootball.id,
     name: "Ryan Day",
     title: "Head Coach",
     email: "day.417@osu.edu",
     phone: "(614) 292-2531",
     bio: "Ryan Day has been the head coach at Ohio State since 2019, continuing the program's tradition of excellence.",
-    photoUrl: "https://example.com/day.jpg",
-    yearsInPosition: 5,
-    careerRecord: "56-8 (at Ohio State)",
+    photo_url: "https://example.com/day.jpg",
+    years_in_position: 5,
+    career_record: "56-8 (at Ohio State)",
     specialization: "Offense",
-    previousSchools: ["Philadelphia Eagles", "San Francisco 49ers", "Boston College"],
-    playingExperience: "New Hampshire",
+    previous_schools: ["Philadelphia Eagles", "San Francisco 49ers", "Boston College"],
+    playing_experience: "New Hampshire",
     education: "University of New Hampshire",
-    isRecruiter: true,
-    recruitingRegions: ["Midwest", "Northeast", "Florida"],
-    socialMediaLinks: JSON.stringify({
+    is_recruiter: true,
+    recruiting_regions: ["Midwest", "Northeast", "Florida"],
+    social_media_links: JSON.stringify({
       twitter: "@ryandaytime"
     })
   });
   
   await db.insert(coachingStaff).values({
-    sportProgramId: dukeBasketball.id,
+    sport_program_id: dukeBasketball.id,
     name: "Jon Scheyer",
     title: "Head Coach",
     email: "jscheyer@duke.edu",
     phone: "(919) 613-7500",
     bio: "Jon Scheyer took over for the legendary Coach K as Duke's head basketball coach in 2022.",
-    photoUrl: "https://example.com/scheyer.jpg",
-    yearsInPosition: 2,
-    careerRecord: "45-17 (at Duke)",
+    photo_url: "https://example.com/scheyer.jpg",
+    years_in_position: 2,
+    career_record: "45-17 (at Duke)",
     specialization: "Player Development",
-    previousSchools: ["Duke (assistant)"],
-    playingExperience: "Duke (2006-2010)",
+    previous_schools: ["Duke (assistant)"],
+    playing_experience: "Duke (2006-2010)",
     education: "Duke University",
-    isRecruiter: true,
-    recruitingRegions: ["National", "Chicago", "East Coast"],
-    socialMediaLinks: JSON.stringify({
+    is_recruiter: true,
+    recruiting_regions: ["National", "Chicago", "East Coast"],
+    social_media_links: JSON.stringify({
       twitter: "@JonScheyer"
     })
   });
   
   // Insert recruiting contacts
   await db.insert(recruitingContacts).values({
-    sportProgramId: alabamaFootball.id,
+    sport_program_id: alabamaFootball.id,
     name: "Robert Gillespie",
     title: "Running Backs Coach / Recruiting Coordinator",
     email: "rgillespie@ua.edu",
     phone: "(205) 348-3600",
-    preferredContactMethod: "Email",
+    preferred_contact_method: "Email",
     regions: ["Florida", "Georgia", "Alabama"],
     positions: ["RB", "ATH"],
     notes: "Focuses on elite running backs and all-purpose athletes.",
-    bestTimeToContact: "Weekday afternoons",
-    isActive: true
+    best_time_to_contact: "Weekday afternoons",
+    is_active: true
   });
   
   await db.insert(recruitingContacts).values({
-    sportProgramId: ohioFootball.id,
+    sport_program_id: ohioFootball.id,
     name: "Mark Pantoni",
     title: "Assistant AD for Player Personnel",
     email: "pantoni.1@osu.edu",
     phone: "(614) 292-2531",
-    preferredContactMethod: "Phone",
+    preferred_contact_method: "Phone",
     regions: ["Ohio", "Pennsylvania", "Michigan"],
     positions: ["QB", "WR", "DB"],
     notes: "Main recruiting contact for Ohio State football.",
-    bestTimeToContact: "Monday-Thursday mornings",
-    isActive: true
+    best_time_to_contact: "Monday-Thursday mornings",
+    is_active: true
   });
   
   console.log("Sample NCAA data inserted successfully");
