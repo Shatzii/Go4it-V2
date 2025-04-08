@@ -63,7 +63,7 @@ export default function SimpleLogin() {
               <Input
                 id="username"
                 type="text"
-                placeholder="admin@go4it.com"
+                placeholder="admin"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
@@ -103,7 +103,7 @@ export default function SimpleLogin() {
             
             <div className="text-center mt-4">
               <p className="text-xs text-gray-400">
-                Use <span className="font-bold">admin@go4it.com</span> and <span className="font-bold">admin123</span> for admin access
+                Use <span className="font-bold">admin</span> and <span className="font-bold">admin123</span> for admin access
               </p>
             </div>
           </form>
