@@ -22,13 +22,31 @@ export function GlobalAgreementModal() {
   const { user } = useAuth();
 
   useEffect(() => {
-    const hasAgreedToNDA = localStorage.getItem('nda_agreed') === 'true';
-    setHasAgreed(hasAgreedToNDA);
-
-    if (!hasAgreedToNDA) {
-      setOpen(true);
+    // Check if user is logged in and show NDA agreement
+    if (user) {
+      // Force the NDA to show for every user session by checking session storage
+      // instead of localStorage (which persists longer)
+      const hasAgreedThisSession = sessionStorage.getItem('nda_agreed_session') === 'true';
+      
+      // Still respect the permanent agreement in localStorage for non-logged in users
+      const hasAgreedPermanently = localStorage.getItem('nda_agreed') === 'true';
+      
+      // For logged in users, we require per-session agreement
+      // For non-logged in users, we only need one-time agreement
+      const shouldShowAgreement = !hasAgreedThisSession && (user ? true : !hasAgreedPermanently);
+      
+      setHasAgreed(!shouldShowAgreement);
+      setOpen(shouldShowAgreement);
+    } else {
+      // For non-logged in users, check if they've ever agreed
+      const hasAgreedToNDA = localStorage.getItem('nda_agreed') === 'true';
+      setHasAgreed(hasAgreedToNDA);
+      
+      if (!hasAgreedToNDA) {
+        setOpen(true);
+      }
     }
-  }, []);
+  }, [user]);
 
   const handleAgree = async () => {
     if (!agreed) return;
@@ -52,21 +70,49 @@ export function GlobalAgreementModal() {
         });
       }
 
+      // Save to localStorage for permanent record
       localStorage.setItem('nda_agreed', 'true');
+      
+      // Also save to sessionStorage to track this session
+      sessionStorage.setItem('nda_agreed_session', 'true');
+      
       setHasAgreed(true);
       setOpen(false);
       
-      // Direct users to the home page after accepting the NDA
-      // This allows them to browse content without needing to sign up immediately
-      window.location.href = '/';
+      // Check the current URL to determine where to redirect the user
+      // If already on the auth page, no need to navigate away
+      const currentPath = window.location.pathname;
+      
+      // If we're on the auth page, don't redirect, just close the modal
+      if (currentPath === '/auth') {
+        // Just stay on the auth page - don't redirect
+        console.log('On auth page - keeping user here after NDA acceptance');
+      } else {
+        // For any other page, direct users to the auth page to encourage login
+        window.location.href = '/auth';
+      }
     } catch (error) {
       console.error('Failed to save agreement:', error);
+      
+      // Save to both storages even in case of API error
       localStorage.setItem('nda_agreed', 'true');
+      sessionStorage.setItem('nda_agreed_session', 'true');
+      
       setHasAgreed(true);
       setOpen(false);
       
-      // Even if there's an error saving to the API, still direct users to home page
-      window.location.href = '/';
+      // Check the current URL to determine where to redirect the user
+      // If already on the auth page, no need to navigate away
+      const currentPath = window.location.pathname;
+      
+      // If we're on the auth page, don't redirect, just close the modal
+      if (currentPath === '/auth') {
+        // Just stay on the auth page - don't redirect
+        console.log('On auth page - keeping user here after NDA acceptance (error case)');
+      } else {
+        // For any other page, direct users to the auth page to encourage login
+        window.location.href = '/auth';
+      }
     } finally {
       setLoading(false);
     }
