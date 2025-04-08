@@ -12,7 +12,8 @@ import {
   garAthleteRatings, type GarAthleteRating, type InsertGarAthleteRating,
   garRatingHistory, type GarRatingHistory, type InsertGarRatingHistory,
   videoAnalyses, type VideoAnalysis,
-  combineTourEvents, type CombineTourEvent, type InsertCombineTourEvent
+  combineTourEvents, type CombineTourEvent, type InsertCombineTourEvent,
+  userTokens, type UserToken, type InsertUserToken
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, sql, like, inArray } from "drizzle-orm";
@@ -128,6 +129,15 @@ export interface IStorage {
   getWeightRoomEquipmentById(equipmentId: number): Promise<any | undefined>;
   addXpToPlayer(userId: number, amount: number, source: string, reason: string, metadata?: any): Promise<boolean>;
   getSportRecommendations(userId: number): Promise<any[]>;
+  
+  // CyberShield Security - User token operations
+  getUserTokenByToken(token: string): Promise<UserToken | undefined>;
+  getUserTokens(userId: number): Promise<UserToken[]>;
+  getUserActiveTokens(userId: number): Promise<UserToken[]>;
+  createUserToken(token: InsertUserToken): Promise<UserToken>;
+  revokeUserToken(id: number): Promise<UserToken | undefined>;
+  revokeAllUserTokens(userId: number): Promise<boolean>;
+  updateUserTokenLastUsed(id: number): Promise<UserToken | undefined>;
 }
 
 // Direct database implementation
@@ -787,6 +797,61 @@ export class DatabaseStorage implements IStorage {
       { sport: "Soccer", confidence: 0.75, reasons: ["Good endurance", "Leg strength"] },
       { sport: "Track & Field", confidence: 0.70, reasons: ["Speed", "Jumping ability"] }
     ];
+  }
+  
+  // CyberShield Security - User token operations
+  async getUserTokenByToken(token: string): Promise<UserToken | undefined> {
+    const [userToken] = await db.select()
+      .from(userTokens)
+      .where(eq(userTokens.tokenHash, token));
+    return userToken;
+  }
+
+  async getUserTokens(userId: number): Promise<UserToken[]> {
+    return await db.select()
+      .from(userTokens)
+      .where(eq(userTokens.userId, userId));
+  }
+
+  async getUserActiveTokens(userId: number): Promise<UserToken[]> {
+    return await db.select()
+      .from(userTokens)
+      .where(
+        and(
+          eq(userTokens.userId, userId),
+          eq(userTokens.isRevoked, false)
+        )
+      );
+  }
+
+  async createUserToken(token: InsertUserToken): Promise<UserToken> {
+    const [createdToken] = await db.insert(userTokens)
+      .values(token)
+      .returning();
+    return createdToken;
+  }
+
+  async revokeUserToken(id: number): Promise<UserToken | undefined> {
+    const [updatedToken] = await db.update(userTokens)
+      .set({ isRevoked: true })
+      .where(eq(userTokens.id, id))
+      .returning();
+    return updatedToken;
+  }
+
+  async revokeAllUserTokens(userId: number): Promise<boolean> {
+    await db.update(userTokens)
+      .set({ isRevoked: true })
+      .where(eq(userTokens.userId, userId));
+    return true;
+  }
+
+  async updateUserTokenLastUsed(id: number): Promise<UserToken | undefined> {
+    const [updatedToken] = await db.update(userTokens)
+      .set({ lastUsed: new Date() })
+      .where(eq(userTokens.id, id))
+      .returning();
+    return updatedToken;
   }
 }
 

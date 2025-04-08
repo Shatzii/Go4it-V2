@@ -49,7 +49,7 @@ export const users = pgTable("users", {
 export const userTokens = pgTable("user_tokens", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
-  token: text("token").notNull(), // JWT refresh token
+  tokenHash: text("token_hash").notNull(), // Hashed JWT refresh token for security
   sessionId: text("session_id").notNull(), // Unique ID for the login session
   createdAt: timestamp("created_at").defaultNow(),
   expiresAt: timestamp("expires_at").notNull(), // When the token expires
@@ -57,6 +57,7 @@ export const userTokens = pgTable("user_tokens", {
   isRevoked: boolean("is_revoked").default(false), // Flag for manually revoked tokens
   userAgent: text("user_agent"), // Browser/device info
   ipAddress: text("ip_address"), // IP address when token was created
+  deviceFingerprint: text("device_fingerprint"), // Unique identifier for the device
 });
 
 // Specific athlete profile information
@@ -1893,3 +1894,15 @@ export const insertUserTokenSchema = createInsertSchema(userTokens).omit({
 
 export type UserToken = typeof userTokens.$inferSelect;
 export type InsertUserToken = z.infer<typeof insertUserTokenSchema>;
+
+// Define relations between tables
+export const usersRelations = relations(users, ({ many }) => ({
+  tokens: many(userTokens),
+}));
+
+export const userTokensRelations = relations(userTokens, ({ one }) => ({
+  user: one(users, {
+    fields: [userTokens.userId],
+    references: [users.id],
+  }),
+}));
