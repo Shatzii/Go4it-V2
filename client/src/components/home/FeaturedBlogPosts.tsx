@@ -27,7 +27,12 @@ export default function FeaturedBlogPosts() {
   const { data: blogPosts = [], isLoading: isLoadingAll } = useQuery<BlogPost[]>({
     queryKey: ["/api/blog-posts"],
     queryFn: async () => {
-      const response = await fetch('http://localhost:5000/api/blog-posts');
+      // Use a proxy URL that will be forwarded through the Express server
+      const response = await fetch('/api/blog-posts', {
+        headers: {
+          'X-Base-URL': 'http://localhost:5000'
+        }
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch blog posts');
       }
@@ -38,7 +43,12 @@ export default function FeaturedBlogPosts() {
   const { data: featuredBlogPosts = [], isLoading: isLoadingFeatured } = useQuery<BlogPost[]>({
     queryKey: ["/api/blog-posts/featured"],
     queryFn: async () => {
-      const response = await fetch('http://localhost:5000/api/blog-posts/featured');
+      // Use a proxy URL that will be forwarded through the Express server
+      const response = await fetch('/api/blog-posts/featured', {
+        headers: {
+          'X-Base-URL': 'http://localhost:5000'
+        }
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch featured blog posts');
       }

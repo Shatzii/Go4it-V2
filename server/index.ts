@@ -23,8 +23,55 @@ app.use(cors({
   origin: true, // Allow all origins
   credentials: true, // Allow cookies to be sent
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Base-URL']
 }));
+
+// Add a proxy middleware for requests with X-Base-URL header
+app.use((req, res, next) => {
+  const baseUrl = req.headers['x-base-url'];
+  if (baseUrl && typeof baseUrl === 'string' && baseUrl.startsWith('http')) {
+    // Replace the base URL for this request
+    const originalUrl = req.url;
+    const proxyUrl = `${baseUrl}${originalUrl}`;
+    
+    import('node-fetch').then(({ default: fetch }) => {
+      // Forward the request to the target server
+      fetch(proxyUrl, {
+        method: req.method,
+        headers: {
+          ...req.headers as any,
+          'X-Forwarded-For': req.ip,
+          'Host': new URL(baseUrl).host,
+        },
+        body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
+      })
+      .then(response => {
+        // Set status code
+        res.status(response.status);
+        
+        // Set headers
+        for (const [key, value] of response.headers.entries()) {
+          res.setHeader(key, value);
+        }
+        
+        // Return the response body
+        return response.text();
+      })
+      .then(body => {
+        res.send(body);
+      })
+      .catch(error => {
+        console.error('Proxy error:', error);
+        res.status(500).json({ error: 'Proxy request failed' });
+      });
+    }).catch(err => {
+      console.error('Failed to load fetch:', err);
+      next();
+    });
+  } else {
+    next();
+  }
+});
 
 // Apply CyberShield Security Sentinel Middleware
 // This intercepts all requests to check for valid authentication tokens

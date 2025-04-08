@@ -34,7 +34,12 @@ export default function BlogPostPage() {
   const { data: post, isLoading, error } = useQuery<BlogPost>({
     queryKey: ['/api/blog-posts', slug],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:5000/api/blog-posts/${slug}`);
+      // Use a proxy URL that will be forwarded through the Express server
+      const response = await fetch(`/api/blog-posts/${slug}`, {
+        headers: {
+          'X-Base-URL': 'http://localhost:5000'
+        }
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch blog post');
       }
