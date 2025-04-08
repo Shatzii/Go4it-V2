@@ -34,6 +34,8 @@ app.use((req, res, next) => {
     const originalUrl = req.url;
     const proxyUrl = `${baseUrl}${originalUrl}`;
     
+    console.log(`Proxying request: ${req.method} ${originalUrl} to ${proxyUrl}`);
+    
     import('node-fetch').then(({ default: fetch }) => {
       // Forward the request to the target server
       fetch(proxyUrl, {
@@ -46,23 +48,38 @@ app.use((req, res, next) => {
         body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
       })
       .then(response => {
+        console.log(`Proxy response received: ${response.status} from ${proxyUrl}`);
+        
         // Set status code
         res.status(response.status);
         
-        // Set headers
-        for (const [key, value] of response.headers.entries()) {
-          res.setHeader(key, value);
+        // Set headers - convert entries to array first to avoid TypeScript iterator issues
+        const headerEntries = Array.from(response.headers.entries());
+        for (const [key, value] of headerEntries) {
+          // Skip setting these headers as they might cause issues
+          if (!['content-length', 'transfer-encoding'].includes(key.toLowerCase())) {
+            res.setHeader(key, value);
+          }
         }
         
         // Return the response body
         return response.text();
       })
       .then(body => {
-        res.send(body);
+        try {
+          // Try to parse as JSON to see if it's valid
+          const jsonBody = JSON.parse(body);
+          console.log(`Proxy response body is valid JSON with ${Array.isArray(jsonBody) ? jsonBody.length + ' items' : 'an object'}`);
+          res.json(jsonBody);
+        } catch (e) {
+          // If not valid JSON, just send as text
+          console.log(`Proxy response body is not valid JSON, sending as text`);
+          res.send(body);
+        }
       })
       .catch(error => {
         console.error('Proxy error:', error);
-        res.status(500).json({ error: 'Proxy request failed' });
+        res.status(500).json({ error: 'Proxy request failed', message: error.message });
       });
     }).catch(err => {
       console.error('Failed to load fetch:', err);
