@@ -58,20 +58,14 @@ interface FeaturedAthlete {
 
 export default function HomePage() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState("featured");
+  // We don't need activeTab state anymore since the Community section has been simplified
+  // and blogPosts are being handled in FeaturedBlogPosts component
 
   const { data: contentBlocks = [] } = useQuery<ContentBlock[]>({
     queryKey: ["/api/content-blocks/section/what-makes-us-different"],
   });
 
-  const { data: blogPosts = [] } = useQuery<BlogPost[]>({
-    queryKey: ["/api/blog-posts"],
-  });
-
-  const { data: featuredBlogPosts = [] } = useQuery<BlogPost[]>({
-    queryKey: ["/api/blog-posts/featured"],
-    enabled: activeTab === "featured",
-  });
+  // Blog posts are now being fetched from FeaturedBlogPosts component
 
   const { data: featuredAthletes = [] } = useQuery<FeaturedAthlete[]>({
     queryKey: ["/api/featured-athletes"],
@@ -257,134 +251,55 @@ export default function HomePage() {
           </Button>
         </div>
 
-        <Tabs defaultValue="featured" className="w-full" onValueChange={setActiveTab}>
-          <TabsList className="mb-6 bg-gray-900 border border-gray-800">
-            <TabsTrigger value="featured" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-500 data-[state=active]:text-white">Popular</TabsTrigger>
-            <TabsTrigger value="training" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-500 data-[state=active]:text-white">Athletes</TabsTrigger>
-            <TabsTrigger value="nutrition" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-500 data-[state=active]:text-white">Coaches</TabsTrigger>
-            <TabsTrigger value="recruiting" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-cyan-500 data-[state=active]:text-white">Parents</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="featured" className="mt-0">
-            <div className="relative">
-              {/* Left Shadow Overlay */}
-              <div className="absolute left-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-r from-gray-950 to-transparent pointer-events-none"></div>
-              
-              {/* Right Shadow Overlay */}
-              <div className="absolute right-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-gray-950 to-transparent pointer-events-none"></div>
-              
-              {/* Carousel - Mobile Friendly */}
-              <div className="overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4">
-                <div className="flex gap-4 min-w-max">
-                  {(activeTab === "featured" ? featuredBlogPosts : blogPosts)
-                    .filter(post => post.featured)
-                    .map((post) => (
-                      <Card key={post.id} className="flex-shrink-0 w-[280px] sm:w-[320px] overflow-hidden border border-gray-800 bg-black shadow-lg transform transition-all duration-300 hover:shadow-[0_0_10px_rgba(34,211,238,0.2)]">
-                        {post.coverImage && (
-                          <div className="h-40 overflow-hidden">
-                            <img
-                              src={post.coverImage}
-                              alt={post.title}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        )}
-                        <CardHeader className="pb-2">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Badge variant="secondary" className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">{post.category}</Badge>
-                            <div className="flex items-center text-sm text-gray-400">
-                              <Clock className="mr-1 h-3 w-3" />
-                              {formatDate(post.publishDate)}
-                            </div>
-                          </div>
-                          <CardTitle className="text-lg text-white line-clamp-1">{post.title}</CardTitle>
-                          <CardDescription className="line-clamp-2 text-gray-400 text-sm">
-                            {post.summary}
-                          </CardDescription>
-                        </CardHeader>
-                        <CardFooter className="pt-0">
-                          <Button asChild variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
-                            <Link href={`/blog/${post.slug}`}>Read Article</Link>
-                          </Button>
-                        </CardFooter>
-                      </Card>
-                    ))}
-                </div>
+        <Card className="w-full border border-gray-800 bg-black shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-white">Join the Conversation</CardTitle>
+            <CardDescription>
+              Connect with athletes, coaches, and parents in our community forum. 
+              Share experiences, get advice, and build your network.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1 border border-gray-800 rounded-lg p-4 hover:border-blue-500 transition-colors">
+              <div className="flex items-center gap-2 mb-2">
+                <Badge variant="secondary" className="bg-blue-500/20 text-blue-400">Athletes</Badge>
               </div>
-              
-              {/* Navigation Dots */}
-              <div className="flex justify-center mt-4 space-x-2">
-                {Array.from({ length: Math.min(Math.ceil((activeTab === "featured" ? featuredBlogPosts : blogPosts).filter(post => post.featured).length / 4), 3) }).map((_, i) => (
-                  <div 
-                    key={i} 
-                    className={`h-2 w-2 rounded-full ${i === 0 ? 'bg-blue-400' : 'bg-gray-700'} transition-all duration-300`}
-                  ></div>
-                ))}
-              </div>
+              <h3 className="text-lg text-white mb-2">Training & Development</h3>
+              <p className="text-gray-400 text-sm mb-4">
+                Share your training routines, progress, and goals with other athletes.
+              </p>
+              <Button asChild variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
+                <Link href="/community/athletes">Join Discussion</Link>
+              </Button>
             </div>
-          </TabsContent>
-
-          {["training", "nutrition", "recruiting"].map((category) => (
-            <TabsContent key={category} value={category} className="mt-0">
-              <div className="relative">
-                {/* Left Shadow Overlay */}
-                <div className="absolute left-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-r from-gray-950 to-transparent pointer-events-none"></div>
-                
-                {/* Right Shadow Overlay */}
-                <div className="absolute right-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-gray-950 to-transparent pointer-events-none"></div>
-                
-                {/* Carousel - Mobile Friendly */}
-                <div className="overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4">
-                  <div className="flex gap-4 min-w-max">
-                    {blogPosts
-                      .filter((post) => post.category.toLowerCase() === category.toLowerCase())
-                      .map((post) => (
-                        <Card key={post.id} className="flex-shrink-0 w-[280px] sm:w-[320px] overflow-hidden border border-gray-800 bg-black shadow-lg transform transition-all duration-300 hover:shadow-[0_0_10px_rgba(34,211,238,0.2)]">
-                          {post.coverImage && (
-                            <div className="h-40 overflow-hidden">
-                              <img
-                                src={post.coverImage}
-                                alt={post.title}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          )}
-                          <CardHeader className="pb-2">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Badge variant="secondary" className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">{post.category}</Badge>
-                              <div className="flex items-center text-sm text-gray-400">
-                                <Clock className="mr-1 h-3 w-3" />
-                                {formatDate(post.publishDate)}
-                              </div>
-                            </div>
-                            <CardTitle className="text-lg text-white line-clamp-1">{post.title}</CardTitle>
-                            <CardDescription className="line-clamp-2 text-gray-400 text-sm">
-                              {post.summary}
-                            </CardDescription>
-                          </CardHeader>
-                          <CardFooter className="pt-0">
-                            <Button asChild variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
-                              <Link href={`/blog/${post.slug}`}>Read Article</Link>
-                            </Button>
-                          </CardFooter>
-                        </Card>
-                      ))}
-                  </div>
-                </div>
-                
-                {/* Navigation Dots */}
-                <div className="flex justify-center mt-4 space-x-2">
-                  {Array.from({ length: Math.min(Math.ceil(blogPosts.filter((post) => post.category.toLowerCase() === category.toLowerCase()).length / 4), 3) }).map((_, i) => (
-                    <div 
-                      key={i} 
-                      className={`h-2 w-2 rounded-full ${i === 0 ? 'bg-blue-400' : 'bg-gray-700'} transition-all duration-300`}
-                    ></div>
-                  ))}
-                </div>
+            
+            <div className="flex-1 border border-gray-800 rounded-lg p-4 hover:border-blue-500 transition-colors">
+              <div className="flex items-center gap-2 mb-2">
+                <Badge variant="secondary" className="bg-blue-500/20 text-blue-400">Coaches</Badge>
               </div>
-            </TabsContent>
-          ))}
-        </Tabs>
+              <h3 className="text-lg text-white mb-2">Coaching Strategies</h3>
+              <p className="text-gray-400 text-sm mb-4">
+                Exchange coaching tips, drills, and management strategies.
+              </p>
+              <Button asChild variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
+                <Link href="/community/coaches">Join Discussion</Link>
+              </Button>
+            </div>
+            
+            <div className="flex-1 border border-gray-800 rounded-lg p-4 hover:border-blue-500 transition-colors">
+              <div className="flex items-center gap-2 mb-2">
+                <Badge variant="secondary" className="bg-blue-500/20 text-blue-400">Parents</Badge>
+              </div>
+              <h3 className="text-lg text-white mb-2">Parent Support Network</h3>
+              <p className="text-gray-400 text-sm mb-4">
+                Connect with other parents about supporting your young athletes.
+              </p>
+              <Button asChild variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
+                <Link href="/community/parents">Join Discussion</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </section>
 
       {/* CTA Section */}
