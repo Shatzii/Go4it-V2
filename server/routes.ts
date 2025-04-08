@@ -5005,6 +5005,183 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(500).json({ message: "Error fetching video analysis" });
     }
   });
+  
+  // NCAA Schools Database API Routes
+  
+  // Get all NCAA schools (paginated)
+  app.get("/api/ncaa/schools", async (req: Request, res: Response) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 100;
+      const schools = await storage.getNcaaSchools(limit);
+      return res.json(schools);
+    } catch (error) {
+      console.error("Error fetching NCAA schools:", error);
+      return res.status(500).json({ message: "Error fetching NCAA schools" });
+    }
+  });
+  
+  // Get a single NCAA school by ID
+  app.get("/api/ncaa/schools/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const school = await storage.getNcaaSchoolById(id);
+      
+      if (!school) {
+        return res.status(404).json({ message: "NCAA school not found" });
+      }
+      
+      return res.json(school);
+    } catch (error) {
+      console.error("Error fetching NCAA school:", error);
+      return res.status(500).json({ message: "Error fetching NCAA school" });
+    }
+  });
+  
+  // Get NCAA schools by division
+  app.get("/api/ncaa/schools/division/:division", async (req: Request, res: Response) => {
+    try {
+      const division = req.params.division;
+      const schools = await storage.getNcaaSchoolsByDivision(division);
+      return res.json(schools);
+    } catch (error) {
+      console.error("Error fetching NCAA schools by division:", error);
+      return res.status(500).json({ message: "Error fetching NCAA schools by division" });
+    }
+  });
+  
+  // Get NCAA schools by state
+  app.get("/api/ncaa/schools/state/:state", async (req: Request, res: Response) => {
+    try {
+      const state = req.params.state;
+      const schools = await storage.getNcaaSchoolsByState(state);
+      return res.json(schools);
+    } catch (error) {
+      console.error("Error fetching NCAA schools by state:", error);
+      return res.status(500).json({ message: "Error fetching NCAA schools by state" });
+    }
+  });
+  
+  // Get NCAA schools by conference
+  app.get("/api/ncaa/schools/conference/:conference", async (req: Request, res: Response) => {
+    try {
+      const conference = req.params.conference;
+      const schools = await storage.getNcaaSchoolsByConference(conference);
+      return res.json(schools);
+    } catch (error) {
+      console.error("Error fetching NCAA schools by conference:", error);
+      return res.status(500).json({ message: "Error fetching NCAA schools by conference" });
+    }
+  });
+  
+  // Create a new NCAA school (admin only)
+  app.post("/api/ncaa/schools", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      if (user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to create NCAA schools" });
+      }
+      
+      const school = await storage.createNcaaSchool(req.body);
+      return res.status(201).json(school);
+    } catch (error) {
+      console.error("Error creating NCAA school:", error);
+      return res.status(500).json({ message: "Error creating NCAA school" });
+    }
+  });
+  
+  // Update an NCAA school (admin only)
+  app.put("/api/ncaa/schools/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      if (user.role !== "admin") {
+        return res.status(403).json({ message: "Not authorized to update NCAA schools" });
+      }
+      
+      const id = parseInt(req.params.id);
+      const school = await storage.updateNcaaSchool(id, req.body);
+      
+      if (!school) {
+        return res.status(404).json({ message: "NCAA school not found" });
+      }
+      
+      return res.json(school);
+    } catch (error) {
+      console.error("Error updating NCAA school:", error);
+      return res.status(500).json({ message: "Error updating NCAA school" });
+    }
+  });
+  
+  // Get athletic departments for a school
+  app.get("/api/ncaa/schools/:schoolId/departments", async (req: Request, res: Response) => {
+    try {
+      const schoolId = parseInt(req.params.schoolId);
+      const departments = await storage.getAthleticDepartmentsBySchool(schoolId);
+      return res.json(departments);
+    } catch (error) {
+      console.error("Error fetching athletic departments:", error);
+      return res.status(500).json({ message: "Error fetching athletic departments" });
+    }
+  });
+  
+  // Get sport programs for a school
+  app.get("/api/ncaa/schools/:schoolId/programs", async (req: Request, res: Response) => {
+    try {
+      const schoolId = parseInt(req.params.schoolId);
+      const programs = await storage.getSportProgramsBySchool(schoolId);
+      return res.json(programs);
+    } catch (error) {
+      console.error("Error fetching sport programs:", error);
+      return res.status(500).json({ message: "Error fetching sport programs" });
+    }
+  });
+  
+  // Get coaching staff for a sport program
+  app.get("/api/ncaa/programs/:programId/coaches", async (req: Request, res: Response) => {
+    try {
+      const programId = parseInt(req.params.programId);
+      const coaches = await storage.getCoachingStaffByProgram(programId);
+      return res.json(coaches);
+    } catch (error) {
+      console.error("Error fetching coaching staff:", error);
+      return res.status(500).json({ message: "Error fetching coaching staff" });
+    }
+  });
+  
+  // Get recruiting contacts for a sport program
+  app.get("/api/ncaa/programs/:programId/contacts", async (req: Request, res: Response) => {
+    try {
+      const programId = parseInt(req.params.programId);
+      const contacts = await storage.getRecruitingContactsByProgram(programId);
+      return res.json(contacts);
+    } catch (error) {
+      console.error("Error fetching recruiting contacts:", error);
+      return res.status(500).json({ message: "Error fetching recruiting contacts" });
+    }
+  });
+  
+  // Get programs by sport
+  app.get("/api/ncaa/sports/:sport/programs", async (req: Request, res: Response) => {
+    try {
+      const sport = req.params.sport;
+      const programs = await storage.getSportProgramsBySport(sport);
+      return res.json(programs);
+    } catch (error) {
+      console.error("Error fetching programs by sport:", error);
+      return res.status(500).json({ message: "Error fetching programs by sport" });
+    }
+  });
+  
+  // Get recruiting contacts by region
+  app.get("/api/ncaa/contacts/region/:region", async (req: Request, res: Response) => {
+    try {
+      const region = req.params.region;
+      const contacts = await storage.getRecruitingContactsByRegion(region);
+      return res.json(contacts);
+    } catch (error) {
+      console.error("Error fetching recruiting contacts by region:", error);
+      return res.status(500).json({ message: "Error fetching recruiting contacts by region" });
+    }
+  });
 
   return server;
 }
