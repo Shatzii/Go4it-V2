@@ -37,11 +37,12 @@ app.use((req, res, next) => {
     console.log(`Proxying request: ${req.method} ${originalUrl} to ${proxyUrl}`);
     
     import('node-fetch').then(({ default: fetch }) => {
-      // Forward the request to the target server
+      // Forward the request to the target server with minimal headers to avoid 431 errors
       fetch(proxyUrl, {
         method: req.method,
         headers: {
-          ...req.headers as any,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'X-Forwarded-For': req.ip,
           'Host': new URL(baseUrl).host,
         },
