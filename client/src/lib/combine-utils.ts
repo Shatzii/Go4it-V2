@@ -141,3 +141,15 @@ export function getStatusClass(status: EventStatus): string {
       return 'bg-gray-400 text-white';
   }
 }
+
+/**
+ * Format a date string for display
+ */
+export function formatDateTime(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}

@@ -9,6 +9,7 @@ import { Star, ChevronRight, Clock, Trophy, Calendar, Video, Award, CheckCircle,
 import { useAuth } from "../contexts/auth-context";
 import { motion } from "framer-motion";
 import { WhatMakesUsDifferent } from "@/components/what-makes-us-different";
+import FeaturedCombines from "@/components/home/FeaturedCombines";
 
 interface BlogPost {
   id: number;
@@ -235,6 +236,9 @@ export default function HomePage() {
           </div>
         )}
       </section>
+
+      {/* Upcoming Combines Section */}
+      <FeaturedCombines />
 
       {/* Blog Posts Section */}
       <section className="mb-16">
