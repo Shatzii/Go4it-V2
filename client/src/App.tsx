@@ -44,6 +44,7 @@ import SubmitVerification from "@/pages/submit-verification";
 import WeightRoom from "@/pages/weight-room";
 import CombineTour from "@/pages/combine-tour";
 import HighlightGenerator from "@/pages/highlight-generator";
+import SimpleLogin from "@/pages/simple-login";
 
 // New feature page imports - Phase 2
 import MyPlayerStarPath from "@/pages/myplayer-star-path";
@@ -89,6 +90,8 @@ function Router() {
   return (
     <Switch>
       <Route path="/auth" component={AuthPage} />
+      
+      <Route path="/simple-login" component={SimpleLogin} />
       
       <Route path="/test-auth" component={TestAuth} />
       
@@ -349,9 +352,13 @@ function AppContent() {
     );
   }
 
-  // Don't render the layout for the auth page, test-auth, or home page
+  // Don't render the layout for the auth page, simple-login, test-auth, or home page
   if (location === "/auth") {
     return <AuthPage />;
+  }
+  
+  if (location === "/simple-login") {
+    return <SimpleLogin />;
   }
   
   if (location === "/test-auth") {
