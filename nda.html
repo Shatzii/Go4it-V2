@@ -235,8 +235,8 @@
           // Store acceptance in localStorage
           localStorage.setItem('ndaAccepted', 'true');
           localStorage.setItem('ndaAcceptedDate', new Date().toISOString());
-          // Redirect to main platform
-          window.location.href = '/app';
+          // Redirect to home page directly, not to /app which causes white screen
+          window.location.href = '/';
         } else {
           e.preventDefault();
           alert('You must agree to the NDA before continuing.');
