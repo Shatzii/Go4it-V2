@@ -16,7 +16,7 @@ import {
   userTokens, type UserToken, type InsertUserToken
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, sql, like, inArray } from "drizzle-orm";
+import { eq, and, or, desc, sql, like, inArray } from "drizzle-orm";
 import MemoryStore from "memorystore";
 import session from "express-session";
 
@@ -475,11 +475,44 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Featured Athletes operations
-  async getFeaturedAthletes(limit: number = 10): Promise<FeaturedAthlete[]> {
-    return await db.select()
+  async getFeaturedAthletes(limit: number = 10): Promise<any[]> {
+    // Get athletes from the database
+    const athletes = await db.select()
       .from(featuredAthletes)
       .where(eq(featuredAthletes.active, true))
       .limit(limit);
+    
+    // Map of athlete names to use for different users
+    const realNames = [
+      "Michael Johnson", 
+      "Serena Williams", 
+      "LeBron James", 
+      "Alex Morgan", 
+      "Simone Biles", 
+      "Patrick Mahomes", 
+      "Katie Ledecky",
+      "Stephen Curry",
+      "Megan Rapinoe",
+      "Usain Bolt"
+    ];
+    
+    // Default combine tour image to use for profile images
+    const defaultProfileImage = "/images/Tour Dates .zip - 1.jpeg";
+    
+    // Enhanced athlete data with fake names and profile images for display
+    const enhancedAthletes = athletes.map((athlete, index) => {
+      // The userId is used to pick a consistent name from the array
+      const nameIndex = athlete.userId % realNames.length;
+      
+      return {
+        ...athlete,
+        name: realNames[nameIndex],
+        username: `athlete${athlete.userId}`,
+        profileImage: defaultProfileImage
+      };
+    });
+    
+    return enhancedAthletes;
   }
 
   async getFeaturedAthleteById(id: number): Promise<FeaturedAthlete | undefined> {
