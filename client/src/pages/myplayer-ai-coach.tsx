@@ -35,12 +35,14 @@ import {
   XCircle,
   Clock,
   LayoutGrid,
-  BookOpen
+  BookOpen,
+  GitBranch
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
 import { useMeasurement } from "@/contexts/measurement-context";
 import { convertWeight, convertHeight } from "@/lib/unit-conversion";
+import InteractiveSkillTree from "@/components/skill-tree/interactive-skill-tree";
 
 // Types
 interface CoachMessage {
@@ -527,6 +529,10 @@ export default function MyPlayerAICoach() {
               <TabsTrigger value="training" className="flex items-center">
                 <Dumbbell className="h-4 w-4 mr-2" />
                 Training Plans
+              </TabsTrigger>
+              <TabsTrigger value="skill-tree" className="flex items-center">
+                <GitBranch className="h-4 w-4 mr-2" />
+                Skill Tree
               </TabsTrigger>
               <TabsTrigger value="assessments" className="flex items-center">
                 <BarChart3 className="h-4 w-4 mr-2" />
