@@ -122,8 +122,14 @@ export interface IStorage {
   // Combine Tour Events operations
   getCombineTourEvents(): Promise<CombineTourEvent[]>;
   getCombineTourEvent(id: number): Promise<CombineTourEvent | undefined>;
+  getCombineTourEventBySlug(slug: string): Promise<CombineTourEvent | undefined>;
+  getUpcomingCombineTourEvents(limit?: number): Promise<CombineTourEvent[]>;
+  getPastCombineTourEvents(limit?: number): Promise<CombineTourEvent[]>;
+  getFeaturedCombineTourEvents(limit?: number): Promise<CombineTourEvent[]>;
+  getCombineTourEventsByStatus(status: string, limit?: number): Promise<CombineTourEvent[]>;
   createCombineTourEvent(event: InsertCombineTourEvent): Promise<CombineTourEvent>;
   updateCombineTourEvent(id: number, data: Partial<CombineTourEvent>): Promise<CombineTourEvent | undefined>;
+  deleteCombineTourEvent(id: number): Promise<boolean>;
   
   // AI Coach and Player features - stubs for future implementation
   getAthleteProfile(userId: number): Promise<any | undefined>;
@@ -739,6 +745,97 @@ export class DatabaseStorage implements IStorage {
       .where(eq(combineTourEvents.id, id));
     return event;
   }
+  
+  async getCombineTourEventBySlug(slug: string): Promise<CombineTourEvent | undefined> {
+    const [event] = await db.select()
+      .from(combineTourEvents)
+      .where(eq(combineTourEvents.slug, slug));
+    return event;
+  }
+  
+  async getUpcomingCombineTourEvents(limit: number = 10): Promise<CombineTourEvent[]> {
+    const currentDate = new Date();
+    return await db.select()
+      .from(combineTourEvents)
+      .where(
+        and(
+          sql`${combineTourEvents.startDate} > ${currentDate}`,
+          eq(combineTourEvents.status, "published")
+        )
+      )
+      .orderBy(combineTourEvents.startDate)
+      .limit(limit);
+  }
+  
+  async getPastCombineTourEvents(limit: number = 10): Promise<CombineTourEvent[]> {
+    const currentDate = new Date();
+    return await db.select()
+      .from(combineTourEvents)
+      .where(
+        and(
+          sql`${combineTourEvents.endDate} < ${currentDate}`,
+          eq(combineTourEvents.status, "published")
+        )
+      )
+      .orderBy(desc(combineTourEvents.endDate))
+      .limit(limit);
+  }
+  
+  async getFeaturedCombineTourEvents(limit: number = 5): Promise<CombineTourEvent[]> {
+    return await db.select()
+      .from(combineTourEvents)
+      .where(eq(combineTourEvents.status, "published"))
+      .orderBy(combineTourEvents.startDate)
+      .limit(limit);
+  }
+  
+  async getCombineTourEventsByStatus(status: string, limit: number = 10): Promise<CombineTourEvent[]> {
+    const currentDate = new Date();
+    let query = db.select().from(combineTourEvents);
+    
+    switch (status) {
+      case 'upcoming':
+        query = query.where(
+          and(
+            sql`${combineTourEvents.startDate} > ${currentDate}`,
+            eq(combineTourEvents.status, "published")
+          )
+        );
+        break;
+      case 'past':
+        query = query.where(
+          and(
+            sql`${combineTourEvents.endDate} < ${currentDate}`,
+            eq(combineTourEvents.status, "published")
+          )
+        );
+        break;
+      case 'filling_fast':
+        query = query.where(
+          and(
+            sql`${combineTourEvents.startDate} > ${currentDate}`,
+            eq(combineTourEvents.status, "published"),
+            sql`${combineTourEvents.currentAttendees} / ${combineTourEvents.maximumAttendees} >= 0.75`,
+            sql`${combineTourEvents.currentAttendees} < ${combineTourEvents.maximumAttendees}`
+          )
+        );
+        break;
+      case 'sold_out':
+        query = query.where(
+          and(
+            sql`${combineTourEvents.startDate} > ${currentDate}`,
+            eq(combineTourEvents.status, "published"),
+            sql`${combineTourEvents.currentAttendees} >= ${combineTourEvents.maximumAttendees}`
+          )
+        );
+        break;
+      default:
+        // Return all events if status is not recognized
+        break;
+    }
+    
+    return await query.orderBy(combineTourEvents.startDate).limit(limit);
+  }
 
   async createCombineTourEvent(event: InsertCombineTourEvent): Promise<CombineTourEvent> {
     const [createdEvent] = await db.insert(combineTourEvents)
@@ -753,6 +850,12 @@ export class DatabaseStorage implements IStorage {
       .where(eq(combineTourEvents.id, id))
       .returning();
     return updatedEvent;
+  }
+  
+  async deleteCombineTourEvent(id: number): Promise<boolean> {
+    await db.delete(combineTourEvents)
+      .where(eq(combineTourEvents.id, id));
+    return true; // If no error was thrown, we consider it successful
   }
   
   // AI Coach and Player features - stub implementations
@@ -967,20 +1070,14 @@ export class DatabaseStorage implements IStorage {
   
   async createNcaaSchool(school: InsertNcaaSchool): Promise<NcaaSchool> {
     const [createdSchool] = await db.insert(ncaaSchools)
-      .values({
-        ...school,
-        last_updated: new Date()
-      })
+      .values(school)
       .returning();
     return createdSchool;
   }
   
   async updateNcaaSchool(id: number, data: Partial<NcaaSchool>): Promise<NcaaSchool | undefined> {
     const [updatedSchool] = await db.update(ncaaSchools)
-      .set({
-        ...data,
-        last_updated: new Date()
-      })
+      .set(data)
       .where(eq(ncaaSchools.id, id))
       .returning();
     return updatedSchool;
@@ -1002,20 +1099,14 @@ export class DatabaseStorage implements IStorage {
   
   async createAthleticDepartment(department: InsertAthleticDepartment): Promise<AthleticDepartment> {
     const [createdDepartment] = await db.insert(athleticDepartments)
-      .values({
-        ...department,
-        last_updated: new Date()
-      })
+      .values(department)
       .returning();
     return createdDepartment;
   }
   
   async updateAthleticDepartment(id: number, data: Partial<AthleticDepartment>): Promise<AthleticDepartment | undefined> {
     const [updatedDepartment] = await db.update(athleticDepartments)
-      .set({
-        ...data,
-        last_updated: new Date()
-      })
+      .set(data)
       .where(eq(athleticDepartments.id, id))
       .returning();
     return updatedDepartment;
@@ -1049,20 +1140,14 @@ export class DatabaseStorage implements IStorage {
   
   async createSportProgram(program: InsertSportProgram): Promise<SportProgram> {
     const [createdProgram] = await db.insert(sportPrograms)
-      .values({
-        ...program,
-        last_updated: new Date()
-      })
+      .values(program)
       .returning();
     return createdProgram;
   }
   
   async updateSportProgram(id: number, data: Partial<SportProgram>): Promise<SportProgram | undefined> {
     const [updatedProgram] = await db.update(sportPrograms)
-      .set({
-        ...data,
-        last_updated: new Date()
-      })
+      .set(data)
       .where(eq(sportPrograms.id, id))
       .returning();
     return updatedProgram;
@@ -1084,20 +1169,14 @@ export class DatabaseStorage implements IStorage {
   
   async createCoachingStaff(staff: InsertCoachingStaff): Promise<CoachingStaff> {
     const [createdStaff] = await db.insert(coachingStaff)
-      .values({
-        ...staff,
-        last_updated: new Date()
-      })
+      .values(staff)
       .returning();
     return createdStaff;
   }
   
   async updateCoachingStaff(id: number, data: Partial<CoachingStaff>): Promise<CoachingStaff | undefined> {
     const [updatedStaff] = await db.update(coachingStaff)
-      .set({
-        ...data,
-        last_updated: new Date()
-      })
+      .set(data)
       .where(eq(coachingStaff.id, id))
       .returning();
     return updatedStaff;
@@ -1125,20 +1204,14 @@ export class DatabaseStorage implements IStorage {
   
   async createRecruitingContact(contact: InsertRecruitingContact): Promise<RecruitingContact> {
     const [createdContact] = await db.insert(recruitingContacts)
-      .values({
-        ...contact,
-        last_updated: new Date()
-      })
+      .values(contact)
       .returning();
     return createdContact;
   }
   
   async updateRecruitingContact(id: number, data: Partial<RecruitingContact>): Promise<RecruitingContact | undefined> {
     const [updatedContact] = await db.update(recruitingContacts)
-      .set({
-        ...data,
-        last_updated: new Date()
-      })
+      .set(data)
       .where(eq(recruitingContacts.id, id))
       .returning();
     return updatedContact;

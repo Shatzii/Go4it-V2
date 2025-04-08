@@ -77,6 +77,7 @@ import {
   insertGarSubcategorySchema,
   insertGarAthleteRatingSchema,
   insertGarRatingHistorySchema,
+  insertCombineTourEventSchema,
   users,
   athleteStarProfiles,
   videos,
@@ -84,6 +85,7 @@ import {
   garSubcategories,
   garAthleteRatings,
   garRatingHistory,
+  combineTourEvents,
 } from "@shared/schema";
 
 // Create a file upload middleware
@@ -286,6 +288,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error processing guest agreement:", error);
       return res.status(400).json({ message: error.message });
+    }
+  });
+  
+  // Public endpoint for getting combine tour events
+  app.get("/api/combine-tour-events", async (req: Request, res: Response) => {
+    try {
+      const events = await storage.getCombineTourEvents();
+      
+      // Add status information to each event
+      const eventsWithStatus = events.map(event => {
+        const status = getEventStatus(event);
+        return {
+          ...event,
+          status
+        };
+      });
+      
+      return res.json(eventsWithStatus);
+    } catch (error) {
+      console.error("Error fetching combine tour events:", error);
+      return res.status(500).json({ message: "Error fetching combine tour events" });
+    }
+  });
+  
+  // Public endpoint for getting a specific combine tour event
+  app.get("/api/combine-tour-events/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid event ID" });
+      }
+      
+      const event = await storage.getCombineTourEvent(id);
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      // Add status information
+      const status = getEventStatus(event);
+      
+      return res.json({
+        ...event,
+        status
+      });
+    } catch (error) {
+      console.error("Error fetching combine tour event:", error);
+      return res.status(500).json({ message: "Error fetching combine tour event" });
     }
   });
   
@@ -5180,6 +5229,185 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching recruiting contacts by region:", error);
       return res.status(500).json({ message: "Error fetching recruiting contacts by region" });
+    }
+  });
+
+  // === Combine Tour Events API Routes ===
+  
+  // Get all combine tour events
+  app.get("/api/combine-tour/events", async (req: Request, res: Response) => {
+    try {
+      const events = await storage.getCombineTourEvents();
+      return res.json(events);
+    } catch (error) {
+      console.error("Error fetching combine tour events:", error);
+      return res.status(500).json({ message: "Error fetching combine tour events" });
+    }
+  });
+  
+  // Get combine tour event by ID
+  app.get("/api/combine-tour/events/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid event ID" });
+      }
+      
+      const event = await storage.getCombineTourEvent(id);
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      return res.json(event);
+    } catch (error) {
+      console.error("Error fetching combine tour event:", error);
+      return res.status(500).json({ message: "Error fetching combine tour event" });
+    }
+  });
+  
+  // Get combine tour event by slug
+  app.get("/api/combine-tour/events/slug/:slug", async (req: Request, res: Response) => {
+    try {
+      const slug = req.params.slug;
+      const event = await storage.getCombineTourEventBySlug(slug);
+      
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      return res.json(event);
+    } catch (error) {
+      console.error("Error fetching combine tour event by slug:", error);
+      return res.status(500).json({ message: "Error fetching combine tour event" });
+    }
+  });
+  
+  // Get upcoming combine tour events
+  app.get("/api/combine-tour/events/status/upcoming", async (req: Request, res: Response) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+      const events = await storage.getUpcomingCombineTourEvents(limit);
+      return res.json(events);
+    } catch (error) {
+      console.error("Error fetching upcoming combine tour events:", error);
+      return res.status(500).json({ message: "Error fetching upcoming combine tour events" });
+    }
+  });
+  
+  // Get past combine tour events
+  app.get("/api/combine-tour/events/status/past", async (req: Request, res: Response) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+      const events = await storage.getPastCombineTourEvents(limit);
+      return res.json(events);
+    } catch (error) {
+      console.error("Error fetching past combine tour events:", error);
+      return res.status(500).json({ message: "Error fetching past combine tour events" });
+    }
+  });
+  
+  // Get featured combine tour events
+  app.get("/api/combine-tour/events/featured", async (req: Request, res: Response) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 5;
+      const events = await storage.getFeaturedCombineTourEvents(limit);
+      return res.json(events);
+    } catch (error) {
+      console.error("Error fetching featured combine tour events:", error);
+      return res.status(500).json({ message: "Error fetching featured combine tour events" });
+    }
+  });
+  
+  // Get combine tour events by status
+  app.get("/api/combine-tour/events/status/:status", async (req: Request, res: Response) => {
+    try {
+      const status = req.params.status;
+      const validStatuses = ['upcoming', 'past', 'filling_fast', 'sold_out'];
+      
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ 
+          message: "Invalid status. Must be one of: " + validStatuses.join(', ') 
+        });
+      }
+      
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+      const events = await storage.getCombineTourEventsByStatus(status, limit);
+      return res.json(events);
+    } catch (error) {
+      console.error("Error fetching combine tour events by status:", error);
+      return res.status(500).json({ message: "Error fetching combine tour events by status" });
+    }
+  });
+  
+  // Create a new combine tour event (Admin only)
+  app.post("/api/combine-tour/events", async (req: Request, res: Response) => {
+    try {
+      // Check if user is admin
+      const user = req.user as any;
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Unauthorized. Admin access required." });
+      }
+      
+      const event = req.body;
+      const createdEvent = await storage.createCombineTourEvent(event);
+      return res.status(201).json(createdEvent);
+    } catch (error) {
+      console.error("Error creating combine tour event:", error);
+      return res.status(500).json({ message: "Error creating combine tour event" });
+    }
+  });
+  
+  // Update a combine tour event (Admin only)
+  app.put("/api/combine-tour/events/:id", async (req: Request, res: Response) => {
+    try {
+      // Check if user is admin
+      const user = req.user as any;
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Unauthorized. Admin access required." });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid event ID" });
+      }
+      
+      const event = await storage.getCombineTourEvent(id);
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      const updatedEvent = await storage.updateCombineTourEvent(id, req.body);
+      return res.json(updatedEvent);
+    } catch (error) {
+      console.error("Error updating combine tour event:", error);
+      return res.status(500).json({ message: "Error updating combine tour event" });
+    }
+  });
+  
+  // Delete a combine tour event (Admin only)
+  app.delete("/api/combine-tour/events/:id", async (req: Request, res: Response) => {
+    try {
+      // Check if user is admin
+      const user = req.user as any;
+      if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Unauthorized. Admin access required." });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid event ID" });
+      }
+      
+      const event = await storage.getCombineTourEvent(id);
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      await storage.deleteCombineTourEvent(id);
+      return res.json({ message: "Event deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting combine tour event:", error);
+      return res.status(500).json({ message: "Error deleting combine tour event" });
     }
   });
 
