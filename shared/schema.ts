@@ -232,17 +232,14 @@ export const blogPosts = pgTable("blog_posts", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   slug: text("slug").unique().notNull(),
-  excerpt: text("excerpt"),
   content: text("content").notNull(),
+  summary: text("summary"),
   authorId: integer("author_id").references(() => users.id),
-  publishedAt: timestamp("published_at"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-  status: text("status").default("draft"), // draft, published, archived
-  featuredImage: text("featured_image"),
+  publishDate: timestamp("publish_date"),
   category: text("category"),
   tags: text("tags").array(),
-  aiGenerated: boolean("ai_generated").default(false),
+  featured: boolean("featured").default(false),
+  coverImage: text("cover_image"),
 });
 
 // Featured Athletes

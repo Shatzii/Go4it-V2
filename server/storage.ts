@@ -606,7 +606,6 @@ export class DatabaseStorage implements IStorage {
   async getBlogPosts(limit: number = 10): Promise<BlogPost[]> {
     return await db.select()
       .from(blogPosts)
-      .where(eq(blogPosts.published, true))
       .orderBy(desc(blogPosts.publishDate))
       .limit(limit);
   }
@@ -615,10 +614,7 @@ export class DatabaseStorage implements IStorage {
     return await db.select()
       .from(blogPosts)
       .where(
-        and(
-          eq(blogPosts.published, true),
-          eq(blogPosts.featured, true)
-        )
+        eq(blogPosts.featured, true)
       )
       .orderBy(desc(blogPosts.publishDate))
       .limit(limit);
@@ -642,10 +638,7 @@ export class DatabaseStorage implements IStorage {
     return await db.select()
       .from(blogPosts)
       .where(
-        and(
-          eq(blogPosts.published, true),
-          eq(blogPosts.category, category)
-        )
+        eq(blogPosts.category, category)
       )
       .orderBy(desc(blogPosts.publishDate))
       .limit(limit);
@@ -661,10 +654,7 @@ export class DatabaseStorage implements IStorage {
     return await db.select()
       .from(blogPosts)
       .where(
-        and(
-          eq(blogPosts.published, true),
-          sql`${blogPosts.tags} && ARRAY[${tags.join(',')}]::text[]`
-        )
+        sql`${blogPosts.tags} && ARRAY[${tags.join(',')}]::text[]`
       )
       .orderBy(desc(blogPosts.publishDate))
       .limit(limit);
