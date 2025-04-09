@@ -508,9 +508,37 @@ export const trainingDrills = pgTable("training_drills", {
   instructions: text("instructions").notNull(), // step-by-step instructions
   tips: text("tips").array(), // coaching tips
   variations: text("variations").array(), // variations of the drill
-  xpReward: integer("xp_reward").notNull().default(10), // XP earned for completing
+
+  // Required to track status in the skill tree visualization
+  xpReward: integer("xp_reward").default(25), // XP awarded for completing the drill
+  requiredRepetitions: integer("required_repetitions").default(1), // How many times to complete
+  timeRequirement: integer("time_requirement"), // Required time in seconds (for timed drills)
+  unlockRequirement: text("unlock_requirement"), // Textual description of unlock requirements
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Tracks user progress on specific drills
+export const userDrillProgress = pgTable("user_drill_progress", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  drillId: integer("drill_id").notNull().references(() => trainingDrills.id),
+  timesCompleted: integer("times_completed").default(0),
+  lastCompleted: timestamp("last_completed"),
+  bestTime: integer("best_time"), // Best time in seconds (for timed drills)
+  personalBest: integer("personal_best"), // Best performance metric (reps, weight, etc.)
+  favorite: boolean("favorite").default(false),
+  mastered: boolean("mastered").default(false),
+  notes: text("notes"),
+  progress: integer("progress").default(0), // 0-100% completion progress
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Additional fields for training drills
+export const trainingDrillsExtended = pgTable("training_drills_extended", {
+  id: serial("id").primaryKey(),
+  drillId: integer("drill_id").notNull().references(() => trainingDrills.id),
   isAiGenerated: boolean("is_ai_generated").default(false),
   aiPromptUsed: text("ai_prompt_used"), // Store the prompt used to generate this drill
   sourceId: text("source_id"), // ID of original source if imported
@@ -1303,6 +1331,8 @@ export const insertSkillTreeNodeSchema = createInsertSchema(skillTreeNodes).omit
 export const insertSkillTreeRelationshipSchema = createInsertSchema(skillTreeRelationships).omit({ id: true, createdAt: true });
 export const insertSkillSchema = createInsertSchema(skills).omit({ id: true, updatedAt: true, lastPracticed: true });
 export const insertTrainingDrillSchema = createInsertSchema(trainingDrills).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertTrainingDrillsExtendedSchema = createInsertSchema(trainingDrillsExtended).omit({ id: true });
+export const insertUserDrillProgressSchema = createInsertSchema(userDrillProgress).omit({ id: true, createdAt: true, updatedAt: true, lastCompleted: true });
 export const insertChallengeSchema = createInsertSchema(challenges).omit({ id: true, createdAt: true });
 export const insertAthleteChallengeSchema = createInsertSchema(athleteChallenges).omit({ id: true, startedAt: true, completedAt: true });
 export const insertRecoveryLogSchema = createInsertSchema(recoveryLogs).omit({ id: true, logDate: true });
@@ -1429,6 +1459,12 @@ export type InsertSkill = z.infer<typeof insertSkillSchema>;
 
 export type TrainingDrill = typeof trainingDrills.$inferSelect;
 export type InsertTrainingDrill = z.infer<typeof insertTrainingDrillSchema>;
+
+export type TrainingDrillsExtended = typeof trainingDrillsExtended.$inferSelect;
+export type InsertTrainingDrillsExtended = z.infer<typeof insertTrainingDrillsExtendedSchema>;
+
+export type UserDrillProgress = typeof userDrillProgress.$inferSelect;
+export type InsertUserDrillProgress = z.infer<typeof insertUserDrillProgressSchema>;
 
 export type Challenge = typeof challenges.$inferSelect;
 export type InsertChallenge = z.infer<typeof insertChallengeSchema>;

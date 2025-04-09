@@ -1156,61 +1156,17 @@ export class DatabaseStorage implements IStorage {
   // Skill Tree operations
   async getSkillTreeNodes(sportType?: string, position?: string): Promise<SkillTreeNode[]> {
     try {
-      // Check if skillTreeNodes exists
-      if (typeof skillTreeNodes === 'undefined' || !skillTreeNodes) {
-        console.warn('skillTreeNodes table not found');
-        return [];
+      let query = db.select().from(skillTreeNodes).where(eq(skillTreeNodes.isActive, true));
+      
+      if (sportType) {
+        query = query.where(eq(skillTreeNodes.sportType, sportType));
       }
-
-      // Construct the query in a try-catch to handle any database errors
-      try {
-        const query = db.select().from(skillTreeNodes);
-        
-        // Build a conditions array for the where clause
-        const conditions = [];
-        
-        // Try to add the isActive condition if the column exists
-        try {
-          conditions.push(eq(skillTreeNodes.isActive, true));
-        } catch (err) {
-          console.warn('isActive column not found on skillTreeNodes table');
-        }
-        
-        // Try to add the sportType condition if provided and column exists
-        if (sportType) {
-          try {
-            conditions.push(eq(skillTreeNodes.sportType, sportType));
-          } catch (err) {
-            console.warn('sportType column not found on skillTreeNodes table');
-          }
-        }
-        
-        // Try to add the position condition if provided and column exists
-        if (position) {
-          try {
-            conditions.push(eq(skillTreeNodes.position, position));
-          } catch (err) {
-            console.warn('position column not found on skillTreeNodes table');
-          }
-        }
-        
-        // Apply all conditions if any
-        let finalQuery = query;
-        if (conditions.length > 0) {
-          finalQuery = finalQuery.where(and(...conditions));
-        }
-        
-        // Try to order by level and sortOrder if they exist
-        try {
-          return await finalQuery.orderBy(skillTreeNodes.level, skillTreeNodes.sortOrder);
-        } catch (err) {
-          console.warn('Could not order by level and sortOrder, returning unordered results');
-          return await finalQuery;
-        }
-      } catch (queryError) {
-        console.error('Error constructing skill tree nodes query:', queryError);
-        return [];
+      
+      if (position) {
+        query = query.where(eq(skillTreeNodes.position, position));
       }
+      
+      return await query.orderBy(skillTreeNodes.level, skillTreeNodes.sortOrder);
     } catch (error) {
       console.error('Error fetching skill tree nodes:', error);
       return [];
@@ -1219,21 +1175,10 @@ export class DatabaseStorage implements IStorage {
 
   async getSkillTreeNode(id: number): Promise<SkillTreeNode | undefined> {
     try {
-      // Check if skillTreeNodes exists
-      if (typeof skillTreeNodes === 'undefined' || !skillTreeNodes) {
-        console.warn(`skillTreeNodes table not found when looking for node ID ${id}`);
-        return undefined;
-      }
-
-      try {
-        const [node] = await db.select()
-          .from(skillTreeNodes)
-          .where(eq(skillTreeNodes.id, id));
-        return node;
-      } catch (queryError) {
-        console.error(`Error querying skill tree node with ID ${id}:`, queryError);
-        return undefined;
-      }
+      const [node] = await db.select()
+        .from(skillTreeNodes)
+        .where(eq(skillTreeNodes.id, id));
+      return node;
     } catch (error) {
       console.error(`Error fetching skill tree node with ID ${id}:`, error);
       return undefined;
