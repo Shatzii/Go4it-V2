@@ -16,7 +16,6 @@ export const users = pgTable("users", {
   bio: text("bio"),
   measurementSystem: text("measurement_system"),
   phoneNumber: text("phone_number"),
-  active: boolean("active").default(true),
 });
 
 // Athlete Profiles
