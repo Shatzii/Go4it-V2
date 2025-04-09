@@ -1,4 +1,3 @@
-
 import { db } from "./db";
 import { 
   users, 
@@ -9,6 +8,7 @@ import fs from "fs";
 import path from "path";
 import { hashPassword } from "./auth";
 import { eq } from "drizzle-orm";
+import { storage } from './storage';
 
 // Ensure uploads directory exists
 const uploadDir = path.join(process.cwd(), "uploads");
@@ -123,7 +123,7 @@ export async function seedRealisticAthletes() {
       .from(users)
       .where(eq(users.username, "dwest_runner"))
       .then(rows => rows[0]);
-
+    
     // Create star athlete profiles
     const starAthletes = [
       {
@@ -206,3 +206,70 @@ export async function seedRealisticAthletes() {
     console.error("Error seeding realistic athletes:", error);
   }
 }
+
+
+import { storage } from './storage';
+import { db } from './db';
+import { users, athleteStarProfiles } from '@shared/schema';
+
+async function seedAthletes() {
+  // Create users first
+  const jamal = await storage.createUser({
+    username: 'jamal23',
+    email: 'jamal@example.com',
+    password: 'hashedpassword123',
+    name: 'Jamal Thompson',
+    role: 'athlete'
+  });
+
+  const taylor = await storage.createUser({
+    username: 'taylor_v',
+    email: 'taylor@example.com', 
+    password: 'hashedpassword123',
+    name: 'Taylor Vaughn',
+    role: 'athlete'
+  });
+
+  const darnell = await storage.createUser({
+    username: 'darnell44',
+    email: 'darnell@example.com',
+    password: 'hashedpassword123',
+    name: 'Darnell Jackson',
+    role: 'athlete'
+  });
+
+  // Create featured athletes
+  await storage.createFeaturedAthlete({
+    userId: jamal.id,
+    sportType: "Basketball",
+    highlight: "24.5 PPG, All-Region First Team",
+    quote: "Working to be the best version of myself every day",
+    achievements: "District MVP, 1000 Point Club",
+    active: true,
+    position: 1
+  });
+
+  await storage.createFeaturedAthlete({
+    userId: taylor.id,
+    sportType: "Volleyball",
+    highlight: "State Championship MVP",
+    quote: "Dream big, work hard",
+    achievements: "4.8 kills per set, All-State Team",
+    active: true,
+    position: 2
+  });
+
+  await storage.createFeaturedAthlete({
+    userId: darnell.id,
+    sportType: "Track",
+    highlight: "State Record Holder - Long Jump",
+    quote: "Every day is a chance to improve",
+    achievements: "3x State Champion",
+    active: true,
+    position: 3
+  });
+
+  console.log('Athletes seeded successfully');
+}
+
+seedAthletes().catch(console.error);
