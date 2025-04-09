@@ -12,8 +12,10 @@ export const users = pgTable("users", {
   name: text("name").notNull(),
   role: text("role").default("user"),
   createdAt: timestamp("created_at").defaultNow(),
-  profilePicture: text("profile_picture"),
-  lastLoginAt: timestamp("last_login_at"),
+  profileImage: text("profile_image"),
+  bio: text("bio"),
+  measurementSystem: text("measurement_system"),
+  phoneNumber: text("phone_number"),
   active: boolean("active").default(true),
 });
 
@@ -949,7 +951,6 @@ export const userDrillProgressRelations = relations(userDrillProgress, ({ one })
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
-  lastLoginAt: true,
 });
 
 export const insertVideoSchema = createInsertSchema(videos).omit({
