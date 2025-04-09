@@ -1,8 +1,9 @@
+
 import { db } from "./db";
 import { 
   users, 
   featuredAthletes,
-  blogPosts
+  athleteStarProfiles
 } from "@shared/schema";
 import fs from "fs";
 import path from "path";
@@ -17,18 +18,16 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
 if (!fs.existsSync(athleteImagesDir)) {
-  fs.mkdirSync(athleteImagesDir);
+  fs.mkdirSync(athleteImagesDir, { recursive: true });
 }
 
-// Copy images from attached_assets to uploads/athletes
 function copyImagesFromAssets() {
-  const assetsDir = path.join(process.cwd(), "attached_assets");
+  const assetsDir = path.join(process.cwd(), "attached_assets", "headshots");
   
   try {
-    // Ensure attached_assets directory exists
-    if (!fs.existsSync(assetsDir)) {
-      console.log("attached_assets directory not found, skipping image copying");
-      return;
+    // Ensure athlete images directory exists
+    if (!fs.existsSync(athleteImagesDir)) {
+      fs.mkdirSync(athleteImagesDir, { recursive: true });
     }
     
     // Copy specific image files
@@ -44,7 +43,7 @@ function copyImagesFromAssets() {
       
       if (fs.existsSync(sourcePath)) {
         fs.copyFileSync(sourcePath, destPath);
-        console.log(`Copied ${image.source} to ${destPath}`);
+        console.log(`Copied ${image.source} to ${image.dest}`);
       } else {
         console.log(`Source image ${sourcePath} not found, skipping`);
       }
@@ -54,23 +53,12 @@ function copyImagesFromAssets() {
   }
 }
 
-// Function to update or create realistic athlete profiles
 export async function seedRealisticAthletes() {
   try {
     // Copy athlete images from assets
     copyImagesFromAssets();
     
-    // Check if we already have updated athlete profiles
-    const existingAthletes = await db.select().from(featuredAthletes);
-    if (existingAthletes.length >= 3) {
-      console.log("Realistic athletes already seeded, skipping...");
-      return;
-    }
-    
-    // First, delete any existing featured athletes
-    await db.delete(featuredAthletes);
-    
-    // Create new athlete users if they don't exist
+    // Create new athlete users
     const athleteUsers = [
       {
         username: "jmarcus23",
@@ -100,7 +88,7 @@ export async function seedRealisticAthletes() {
         role: "athlete",
         profileImage: "/uploads/athletes/athlete3.jpeg",
         bio: "Track and field specialist focusing on 400m and long jump. Looking to earn a scholarship at a D1 program.",
-        createdAt: new Date() 
+        createdAt: new Date()
       }
     ];
     
@@ -135,70 +123,82 @@ export async function seedRealisticAthletes() {
       .from(users)
       .where(eq(users.username, "dwest_runner"))
       .then(rows => rows[0]);
-    
-    // Create featured athletes
-    const featuredAthleteData = [
+
+    // Create star athlete profiles
+    const starAthletes = [
       {
         userId: jamal.id,
-        highlightText: "Jamal Marcus is establishing himself as an elite college prospect with his combination of size, scoring ability, and academic excellence. His basketball IQ and work ethic have caught the attention of several D1 programs.",
-        sportPosition: "Basketball Shooting Guard",
-        starRating: 88,
-        featuredStats: {
-          points: 22.5,
-          assists: 4.2,
-          rebounds: 6.8,
-          fieldGoalPct: 49,
-          threePointPct: 38,
-          achievements: ["First Team All-State", "District MVP", "3.8 GPA"]
-        },
-        featuredDate: new Date(),
-        featuredVideo: "5",
-        coverImage: "/uploads/athletes/athlete1.jpeg",
-        order: 1,
+        sport: "Basketball",
+        position: "Shooting Guard",
+        starLevel: 4,
+        name: jamal.name,
+        age: 18,
+        heightInches: 76,
+        weightLbs: 185,
+        city: "Memphis",
+        state: "TN",
+        highlights: "All-Region First Team, 24.5 PPG, 5.2 APG",
+        strengthAreas: ["3-point shooting", "Ball handling", "Court vision"],
+        weaknessAreas: ["Defensive footwork", "Left hand finishing"],
+        recruitingStatus: "Active",
+        schoolInterests: ["Memphis", "Tennessee", "Kentucky"],
+        gpaScore: 3.8,
+        videoUrls: [],
         active: true
       },
       {
         userId: taylor.id,
-        highlightText: "Taylor Swift has demonstrated exceptional volleyball skills as an outside hitter, combining powerful attacks with precise ball placement. Her vertical leap and timing on blocks make her a formidable defensive player as well.",
-        sportPosition: "Volleyball Outside Hitter",
-        starRating: 91,
-        featuredStats: {
-          kills: 312,
-          blocks: 87,
-          aces: 45,
-          digs: 220,
-          hittingPct: 0.328,
-          achievements: ["Tournament MVP", "All-Conference", "4.0 GPA"]
-        },
-        featuredDate: new Date(),
-        featuredVideo: "4",
-        coverImage: "/uploads/athletes/athlete2.jpeg",
-        order: 2,
+        sport: "Volleyball",
+        position: "Outside Hitter",
+        starLevel: 5,
+        name: taylor.name,
+        age: 17,
+        heightInches: 71,
+        weightLbs: 145,
+        city: "Dallas",
+        state: "TX",
+        highlights: "State Championship MVP, 4.8 kills per set",
+        strengthAreas: ["Vertical leap", "Hitting power", "Court awareness"],
+        weaknessAreas: ["Back row defense"],
+        recruitingStatus: "Committed",
+        schoolInterests: ["Stanford", "Texas", "USC"],
+        gpaScore: 4.0,
+        videoUrls: [],
         active: true
       },
       {
         userId: darnell.id,
-        highlightText: "Darnell West has shown tremendous progress in both 400m sprint and long jump events. His combination of speed and explosive power gives him versatility across multiple track and field disciplines.",
-        sportPosition: "Track Sprinter/Jumper",
-        starRating: 84,
-        featuredStats: {
-          longJump: "6.8m",
-          sprint400m: "49.2s",
-          sprint200m: "21.8s",
-          verticalLeap: "36 inches",
-          achievements: ["Regional Champion 400m", "State Qualifier Long Jump", "Academic Honor Roll"]
-        },
-        featuredDate: new Date(),
-        featuredVideo: "3",
-        coverImage: "/uploads/athletes/athlete3.jpeg",
-        order: 3,
+        sport: "Track",
+        position: "Sprinter/Jumper",
+        starLevel: 4,
+        name: darnell.name,
+        age: 17,
+        heightInches: 73,
+        weightLbs: 165,
+        city: "Atlanta",
+        state: "GA",
+        highlights: "Regional Champion 400m, State Qualifier Long Jump",
+        strengthAreas: ["400m sprint", "Long jump", "Explosiveness"],
+        weaknessAreas: ["Block starts", "Race strategy"],
+        recruitingStatus: "Active",
+        schoolInterests: ["Georgia", "Florida", "LSU"],
+        gpaScore: 3.5,
+        videoUrls: [],
         active: true
       }
     ];
-    
-    for (const athleteData of featuredAthleteData) {
-      await db.insert(featuredAthletes).values(athleteData);
-      console.log(`Created featured athlete profile for: ${athleteData.sportPosition}`);
+
+    // Insert star athlete profiles
+    for (const athlete of starAthletes) {
+      const existing = await db
+        .select()
+        .from(athleteStarProfiles)
+        .where(eq(athleteStarProfiles.userId, athlete.userId));
+
+      if (existing.length === 0) {
+        await db.insert(athleteStarProfiles).values(athlete);
+        console.log(`Created star athlete profile for: ${athlete.name}`);
+      }
     }
     
     console.log("Successfully seeded realistic athlete profiles");
