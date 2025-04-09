@@ -1870,6 +1870,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // CyberShield Security API Endpoints
+  app.get("/api/admin/security/user-tokens", isAdmin, async (req: Request, res: Response) => {
+    try {
+      // Get all user tokens with user information
+      const allUsers = await storage.getAllUsers();
+      const userTokenPromises = allUsers.map(async user => {
+        const tokens = await storage.getUserTokens(user.id);
+        return tokens.map(token => ({
+          ...token,
+          username: user.username,
+          userEmail: user.email,
+          userName: user.name
+        }));
+      });
+      
+      const userTokens = await Promise.all(userTokenPromises);
+      const flattenedTokens = userTokens.flat();
+      
+      res.json(flattenedTokens);
+    } catch (error) {
+      console.error("Error fetching user tokens:", error);
+      res.status(500).json({ message: "Error fetching security data" });
+    }
+  });
+  
+  app.post("/api/admin/security/revoke-token", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const { tokenId } = req.body;
+      
+      if (!tokenId) {
+        return res.status(400).json({ message: "Token ID is required" });
+      }
+      
+      const revokedToken = await storage.revokeUserToken(tokenId);
+      
+      if (!revokedToken) {
+        return res.status(404).json({ message: "Token not found or already revoked" });
+      }
+      
+      res.json({ message: "Token revoked successfully", token: revokedToken });
+    } catch (error) {
+      console.error("Error revoking token:", error);
+      res.status(500).json({ message: "Error revoking token" });
+    }
+  });
+  
+  app.post("/api/admin/security/revoke-all-user-tokens", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+      
+      const success = await storage.revokeAllUserTokens(userId);
+      
+      if (!success) {
+        return res.status(500).json({ message: "Failed to revoke all user tokens" });
+      }
+      
+      res.json({ message: "All tokens for the user revoked successfully" });
+    } catch (error) {
+      console.error("Error revoking all user tokens:", error);
+      res.status(500).json({ message: "Error revoking all user tokens" });
+    }
+  });
+  
+  app.post("/api/admin/security/cleanup-expired-tokens", isAdmin, async (req: Request, res: Response) => {
+    try {
+      const { cleanupExpiredTokens } = require('./services/auth-token-service');
+      const success = await cleanupExpiredTokens();
+      
+      if (!success) {
+        return res.status(500).json({ message: "Failed to clean up expired tokens" });
+      }
+      
+      res.json({ message: "Expired tokens cleaned up successfully" });
+    } catch (error) {
+      console.error("Error cleaning up expired tokens:", error);
+      res.status(500).json({ message: "Error cleaning up expired tokens" });
+    }
+  });
+
   // Player Story Mode - Skills API Routes
   app.get("/api/player/skills", isAuthenticated, async (req: Request, res: Response) => {
     try {
