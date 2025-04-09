@@ -700,8 +700,10 @@ export class DatabaseStorage implements IStorage {
   async getFeaturedAthletes(limit: number = 6): Promise<FeaturedAthlete[]> {
     return await db.select()
       .from(featuredAthletes)
-      .where(eq(featuredAthletes.active, true))
-      .orderBy(desc(featuredAthletes.featuredDate))
+      .where(
+        eq(featuredAthletes.active, true)
+      )
+      .orderBy(featuredAthletes.featuredDate)
       .limit(limit);
   }
 
