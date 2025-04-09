@@ -1837,6 +1837,70 @@ export type InsertMusicUserPreference = z.infer<typeof insertMusicUserPreference
 export type ArtistNilDeal = typeof artistNilDeals.$inferSelect;
 export type InsertArtistNilDeal = z.infer<typeof insertArtistNilDealSchema>;
 
+// AI Coach/Avatar feature
+export const aiCoaches = pgTable("ai_coaches", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  sport: text("sport").notNull(),
+  specialty: text("specialty"), // e.g., "technique", "strategy", "conditioning"
+  personality: text("personality").default("supportive"), // e.g., "supportive", "demanding", "analytical" 
+  avatarImage: text("avatar_image"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  active: boolean("active").default(true),
+  systemPrompt: text("system_prompt").notNull(),
+  knowledgeBase: text("knowledge_base").notNull(), // References knowledge in specialized areas
+});
+
+export const aiCoachSessions = pgTable("ai_coach_sessions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  coachId: integer("coach_id").notNull().references(() => aiCoaches.id),
+  startedAt: timestamp("started_at").defaultNow(),
+  lastMessageAt: timestamp("last_message_at").defaultNow(),
+  active: boolean("active").default(true),
+  topic: text("topic"), // The main focus of this coaching session
+  userGoals: text("user_goals"), // What the user wants to accomplish
+  sessionContext: jsonb("session_context"), // Relevant context like recent performance data
+});
+
+export const aiCoachMessages = pgTable("ai_coach_messages", {
+  id: serial("id").primaryKey(),
+  sessionId: integer("session_id").notNull().references(() => aiCoachSessions.id),
+  senderId: integer("sender_id").references(() => users.id), // Null if from coach
+  coachId: integer("coach_id").references(() => aiCoaches.id), // Null if from user
+  content: text("content").notNull(),
+  sentAt: timestamp("sent_at").defaultNow(),
+  messageType: text("message_type").default("text"), // text, image, video, drill, etc.
+  attachmentUrl: text("attachment_url"), // For images, videos, etc.
+  metadata: jsonb("metadata"), // For storing things like drill details, etc.
+});
+
+export const sportKnowledgeBases = pgTable("sport_knowledge_bases", {
+  id: serial("id").primaryKey(),
+  sport: text("sport").notNull(),
+  category: text("category").notNull(), // technique, rules, strategy, conditioning, etc.
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  sourceUrl: text("source_url"),
+  mediaUrls: text("media_urls").array(),
+  keywords: text("keywords").array(),
+  difficulty: text("difficulty").default("intermediate"), // beginner, intermediate, advanced
+});
+
+export const userCoachInteractions = pgTable("user_coach_interactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  coachId: integer("coach_id").notNull().references(() => aiCoaches.id),
+  interactionType: text("interaction_type").notNull(), // session, drill, feedback, question
+  timestamp: timestamp("timestamp").defaultNow(),
+  feedback: integer("feedback").default(0), // User rating 1-5
+  feedbackText: text("feedback_text"),
+  insightGenerated: boolean("insight_generated").default(false),
+  insight: text("insight"), // Insight generated from this interaction
+});
+
 // Go4It Podcast feature
 export const podcastShows = pgTable("podcast_shows", {
   id: serial("id").primaryKey(),
@@ -2057,6 +2121,43 @@ export type InsertPodcastEpisodeTopic = z.infer<typeof insertPodcastEpisodeTopic
 export type PodcastCollaborationRequest = typeof podcastCollaborationRequests.$inferSelect;
 export type InsertPodcastCollaborationRequest = z.infer<typeof insertPodcastCollaborationRequestSchema>;
 
+// Create insert schemas for AI Coach tables
+export const insertAiCoachSchema = createInsertSchema(aiCoaches).omit({
+  id: true, createdAt: true, updatedAt: true,
+});
+
+export const insertAiCoachSessionSchema = createInsertSchema(aiCoachSessions).omit({
+  id: true, startedAt: true, lastMessageAt: true,
+});
+
+export const insertAiCoachMessageSchema = createInsertSchema(aiCoachMessages).omit({
+  id: true, sentAt: true,
+});
+
+export const insertSportKnowledgeBaseSchema = createInsertSchema(sportKnowledgeBases).omit({
+  id: true, lastUpdated: true,
+});
+
+export const insertUserCoachInteractionSchema = createInsertSchema(userCoachInteractions).omit({
+  id: true, timestamp: true, insightGenerated: true,
+});
+
+// AI Coach types
+export type AiCoach = typeof aiCoaches.$inferSelect;
+export type InsertAiCoach = z.infer<typeof insertAiCoachSchema>;
+
+export type AiCoachSession = typeof aiCoachSessions.$inferSelect;
+export type InsertAiCoachSession = z.infer<typeof insertAiCoachSessionSchema>;
+
+export type AiCoachMessage = typeof aiCoachMessages.$inferSelect;
+export type InsertAiCoachMessage = z.infer<typeof insertAiCoachMessageSchema>;
+
+export type SportKnowledgeBase = typeof sportKnowledgeBases.$inferSelect;
+export type InsertSportKnowledgeBase = z.infer<typeof insertSportKnowledgeBaseSchema>;
+
+export type UserCoachInteraction = typeof userCoachInteractions.$inferSelect;
+export type InsertUserCoachInteraction = z.infer<typeof insertUserCoachInteractionSchema>;
+
 export type UserAgreement = typeof userAgreements.$inferSelect;
 export type InsertUserAgreement = z.infer<typeof insertUserAgreementSchema>;
 
@@ -2072,12 +2173,59 @@ export type InsertUserToken = z.infer<typeof insertUserTokenSchema>;
 
 export const usersRelations = relations(users, ({ many }) => ({
   tokens: many(userTokens),
+  aiCoachSessions: many(aiCoachSessions),
+  coachInteractions: many(userCoachInteractions),
 }));
 
 export const userTokensRelations = relations(userTokens, ({ one }) => ({
   user: one(users, {
     fields: [userTokens.userId],
     references: [users.id],
+  }),
+}));
+
+// AI Coach relations
+export const aiCoachesRelations = relations(aiCoaches, ({ many }) => ({
+  sessions: many(aiCoachSessions),
+  messages: many(aiCoachMessages),
+  interactions: many(userCoachInteractions),
+}));
+
+export const aiCoachSessionsRelations = relations(aiCoachSessions, ({ one, many }) => ({
+  user: one(users, {
+    fields: [aiCoachSessions.userId],
+    references: [users.id],
+  }),
+  coach: one(aiCoaches, {
+    fields: [aiCoachSessions.coachId],
+    references: [aiCoaches.id],
+  }),
+  messages: many(aiCoachMessages),
+}));
+
+export const aiCoachMessagesRelations = relations(aiCoachMessages, ({ one }) => ({
+  session: one(aiCoachSessions, {
+    fields: [aiCoachMessages.sessionId],
+    references: [aiCoachSessions.id],
+  }),
+  user: one(users, {
+    fields: [aiCoachMessages.senderId],
+    references: [users.id],
+  }),
+  coach: one(aiCoaches, {
+    fields: [aiCoachMessages.coachId],
+    references: [aiCoaches.id],
+  }),
+}));
+
+export const userCoachInteractionsRelations = relations(userCoachInteractions, ({ one }) => ({
+  user: one(users, {
+    fields: [userCoachInteractions.userId],
+    references: [users.id],
+  }),
+  coach: one(aiCoaches, {
+    fields: [userCoachInteractions.coachId],
+    references: [aiCoaches.id],
   }),
 }));
 
@@ -2105,3 +2253,182 @@ export const recruitingContactsRelations = relations(recruitingContacts, ({ one 
     references: [sportPrograms.id],
   }),
 }));
+
+// AI Coach System
+
+// AI Coach profiles table
+export const aiCoaches = pgTable("ai_coaches", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  sport: text("sport").notNull(),
+  specialty: text("specialty").notNull(),
+  personality: text("personality").notNull(),
+  avatarImage: text("avatar_image"),
+  systemPrompt: text("system_prompt").notNull(),
+  knowledgeBase: text("knowledge_base").notNull(),
+  active: boolean("active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// AI Coach sessions table
+export const aiCoachSessions = pgTable("ai_coach_sessions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  coachId: integer("coach_id").notNull().references(() => aiCoaches.id),
+  topic: text("topic"),
+  userGoals: text("user_goals"),
+  startedAt: timestamp("started_at").defaultNow(),
+  lastMessageAt: timestamp("last_message_at").defaultNow(),
+  active: boolean("active").default(true),
+  sessionContext: json("session_context").$type<Record<string, any>>().default({}),
+});
+
+// AI Coach messages table
+export const aiCoachMessages = pgTable("ai_coach_messages", {
+  id: serial("id").primaryKey(),
+  sessionId: integer("session_id").notNull().references(() => aiCoachSessions.id),
+  senderId: integer("sender_id").references(() => users.id),
+  coachId: integer("coach_id").references(() => aiCoaches.id),
+  content: text("content").notNull(),
+  messageType: text("message_type").default("text"),
+  attachmentUrl: text("attachment_url"),
+  sentAt: timestamp("sent_at").defaultNow(),
+});
+
+// Sport knowledge bases for AI coaches
+export const sportKnowledgeBases = pgTable("sport_knowledge_bases", {
+  id: serial("id").primaryKey(),
+  sport: text("sport").notNull().unique(),
+  content: text("content").notNull(),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  version: text("version").default("1.0"),
+});
+
+// User-Coach interactions for analytics
+export const userCoachInteractions = pgTable("user_coach_interactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  coachId: integer("coach_id").notNull().references(() => aiCoaches.id),
+  interactionType: text("interaction_type").notNull(), // session_start, message, assessment, recommendation, etc.
+  timestamp: timestamp("timestamp").defaultNow(),
+  metadata: json("metadata").$type<Record<string, any>>().default({}),
+});
+
+// Coach feedback from users
+export const coachFeedback = pgTable("coach_feedback", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  coachId: integer("coach_id").notNull().references(() => aiCoaches.id),
+  sessionId: integer("session_id").references(() => aiCoachSessions.id),
+  rating: integer("rating"), // 1-5 star rating
+  feedback: text("feedback"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Coach recommendations for users
+export const coachRecommendations = pgTable("coach_recommendations", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  coachId: integer("coach_id").notNull().references(() => aiCoaches.id),
+  recommendationType: text("recommendation_type").notNull(), // drill, workout, nutrition, etc.
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  content: json("content").$type<Record<string, any>>().notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  expiresAt: timestamp("expires_at"),
+  completed: boolean("completed").default(false),
+  completedAt: timestamp("completed_at"),
+  feedback: text("feedback"),
+});
+
+// Define relations
+export const aiCoachRelations = relations(aiCoaches, ({ many }) => ({
+  sessions: many(aiCoachSessions),
+  messages: many(aiCoachMessages),
+  interactions: many(userCoachInteractions),
+  feedback: many(coachFeedback),
+  recommendations: many(coachRecommendations),
+}));
+
+export const aiCoachSessionRelations = relations(aiCoachSessions, ({ one, many }) => ({
+  user: one(users, {
+    fields: [aiCoachSessions.userId],
+    references: [users.id],
+  }),
+  coach: one(aiCoaches, {
+    fields: [aiCoachSessions.coachId],
+    references: [aiCoaches.id],
+  }),
+  messages: many(aiCoachMessages),
+}));
+
+export const aiCoachMessageRelations = relations(aiCoachMessages, ({ one }) => ({
+  session: one(aiCoachSessions, {
+    fields: [aiCoachMessages.sessionId],
+    references: [aiCoachSessions.id],
+  }),
+  sender: one(users, {
+    fields: [aiCoachMessages.senderId],
+    references: [users.id],
+  }),
+  coach: one(aiCoaches, {
+    fields: [aiCoachMessages.coachId],
+    references: [aiCoaches.id],
+  }),
+}));
+
+export const userCoachInteractionRelations = relations(userCoachInteractions, ({ one }) => ({
+  user: one(users, {
+    fields: [userCoachInteractions.userId],
+    references: [users.id],
+  }),
+  coach: one(aiCoaches, {
+    fields: [userCoachInteractions.coachId],
+    references: [aiCoaches.id],
+  }),
+}));
+
+export const coachFeedbackRelations = relations(coachFeedback, ({ one }) => ({
+  user: one(users, {
+    fields: [coachFeedback.userId],
+    references: [users.id],
+  }),
+  coach: one(aiCoaches, {
+    fields: [coachFeedback.coachId],
+    references: [aiCoaches.id],
+  }),
+  session: one(aiCoachSessions, {
+    fields: [coachFeedback.sessionId],
+    references: [aiCoachSessions.id],
+  }),
+}));
+
+export const coachRecommendationsRelations = relations(coachRecommendations, ({ one }) => ({
+  user: one(users, {
+    fields: [coachRecommendations.userId],
+    references: [users.id],
+  }),
+  coach: one(aiCoaches, {
+    fields: [coachRecommendations.coachId],
+    references: [aiCoaches.id],
+  }),
+}));
+
+// Create insert schemas
+export const insertAiCoachSchema = createInsertSchema(aiCoaches);
+export const insertAiCoachSessionSchema = createInsertSchema(aiCoachSessions);
+export const insertAiCoachMessageSchema = createInsertSchema(aiCoachMessages);
+export const insertSportKnowledgeBaseSchema = createInsertSchema(sportKnowledgeBases);
+export const insertUserCoachInteractionSchema = createInsertSchema(userCoachInteractions);
+export const insertCoachFeedbackSchema = createInsertSchema(coachFeedback);
+export const insertCoachRecommendationSchema = createInsertSchema(coachRecommendations);
+
+// Create insert types
+export type InsertAiCoach = z.infer<typeof insertAiCoachSchema>;
+export type InsertAiCoachSession = z.infer<typeof insertAiCoachSessionSchema>;
+export type InsertAiCoachMessage = z.infer<typeof insertAiCoachMessageSchema>;
+export type InsertSportKnowledgeBase = z.infer<typeof insertSportKnowledgeBaseSchema>;
+export type InsertUserCoachInteraction = z.infer<typeof insertUserCoachInteractionSchema>;
+export type InsertCoachFeedback = z.infer<typeof insertCoachFeedbackSchema>;
+export type InsertCoachRecommendation = z.infer<typeof insertCoachRecommendationSchema>;

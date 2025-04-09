@@ -1,637 +1,845 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { db } from '../db';
-import { insertTrainingDrillSchema } from '@shared/schema';
-import { trainingDrills, skillTreeNodes, skillTreeRelationships } from '@shared/schema';
-import { eq, and, isNull, inArray } from 'drizzle-orm';
-import type { TrainingDrill, InsertTrainingDrill, SkillTreeNode } from '@shared/schema';
-import { z } from 'zod';
+import {
+  aiCoaches,
+  aiCoachSessions,
+  aiCoachMessages,
+  sportKnowledgeBases,
+  userCoachInteractions,
+  users,
+  athleteProfiles,
+  videos,
+  videoAnalyses,
+  trainingDrills,
+  InsertAiCoachMessage,
+} from '@shared/schema';
+import { eq, and, desc, gt, sql } from 'drizzle-orm';
 
-// Sport types supported by the platform
-const supportedSports = [
-  'basketball',
-  'football',
-  'soccer',
-  'baseball',
-  'volleyball',
-  'track',
-  'swimming',
-  'tennis',
-  'golf',
-  'wrestling'
-] as const;
+// Helper type for tracking message roles in Claude conversations
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
 
-// Skill categories
-const skillCategories = [
-  'speed',
-  'strength',
-  'agility',
-  'technique',
-  'endurance',
-  'flexibility',
-  'coordination',
-  'balance',
-  'power',
-  'mental'
-] as const;
+export class AiCoachService {
+  private anthropic: Anthropic;
+  private model = 'claude-3-opus-20240229'; // Using the latest Claude model
 
-// Define the difficulty levels
-const difficultyLevels = ['beginner', 'intermediate', 'advanced'] as const;
+  constructor() {
+    // Create Anthropic client with API key
+    this.anthropic = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY,
+    });
 
-// Initialize Anthropic client
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || '',
-});
+    console.log('AI Coach Service initialized with Claude');
+  }
 
-// The newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const CLAUDE_MODEL = 'claude-3-opus-20240229';
-
-/**
- * AI Coach Service - manages the generation and retrieval of skill tree content
- * and training drills using Anthropic's Claude API
- */
-export class AICoachService {
   /**
-   * Generates a new training drill for a specific skill using Anthropic
-   * @param skillNodeId ID of the skill node to generate a drill for
-   * @param difficulty Difficulty level of the drill
-   * @returns Generated training drill
+   * Create a new AI coach in the database
    */
-  async generateDrill(
-    skillNodeId: number, 
-    difficulty: typeof difficultyLevels[number] = 'intermediate'
-  ): Promise<TrainingDrill | null> {
+  async createCoach({
+    name,
+    sport,
+    specialty,
+    personality,
+    avatarImage,
+    systemPrompt,
+    knowledgeBase,
+  }: {
+    name: string;
+    sport: string;
+    specialty: string;
+    personality: string;
+    avatarImage?: string;
+    systemPrompt: string;
+    knowledgeBase: string;
+  }) {
     try {
-      // Get the skill node to generate a drill for
-      const [skillNode] = await db
-        .select()
-        .from(skillTreeNodes)
-        .where(eq(skillTreeNodes.id, skillNodeId));
-
-      if (!skillNode) {
-        throw new Error(`Skill node with ID ${skillNodeId} not found`);
-      }
-
-      // Generate prompt for Claude
-      const prompt = this.createDrillGenerationPrompt(skillNode, difficulty);
-
-      // Call Claude API
-      const response = await anthropic.messages.create({
-        model: CLAUDE_MODEL,
-        max_tokens: 1500,
-        temperature: 0.7,
-        system: "You are an expert sports training coach with deep knowledge about all aspects of athletic development and sports-specific skills. You create effective drills that are appropriate for the given age group (12-18), skill level, and sport. Your drills are detailed, precise, and well-structured. You include practical tips, variations, and progression paths. Focus on drills that can be done in a typical school gym, field, or home setting with minimal equipment. Your response should ALWAYS be structured as valid JSON.",
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ]
-        // response_format removed as it's not supported in the current version of the @anthropic-ai/sdk
-      });
-
-      if (!response.content || response.content.length === 0) {
-        throw new Error('No content received from Anthropic API');
-      }
-
-      // Parse the response - handle different content formats
-      const content = typeof response.content[0] === 'string' 
-        ? response.content[0] 
-        : ('text' in response.content[0] 
-          ? (response.content[0] as any).text 
-          : JSON.stringify(response.content[0]));
-      const drillData = JSON.parse(content);
-
-      // Validate the response data
-      const validatedData = this.validateDrillData(drillData, skillNode);
-
-      // Insert the drill into the database
-      const [newDrill] = await db
-        .insert(trainingDrills)
+      const [newCoach] = await db
+        .insert(aiCoaches)
         .values({
-          ...validatedData,
-          skillNodeId,
-          isAiGenerated: true,
-          aiPromptUsed: prompt
+          name,
+          sport,
+          specialty,
+          personality,
+          avatarImage,
+          systemPrompt,
+          knowledgeBase,
         })
         .returning();
 
-      return newDrill || null;
+      return newCoach;
     } catch (error) {
-      console.error('Error generating drill:', error);
-      return null;
+      console.error('Error creating AI coach:', error);
+      throw error;
     }
   }
 
   /**
-   * Gets a set of training drills for a specific sport and position
-   * @param sport Sport type to get drills for
-   * @param position Optional position within the sport
-   * @param category Optional skill category
-   * @param difficulty Optional difficulty level
-   * @param limit Maximum number of drills to return
-   * @returns List of training drills
+   * Get a list of all active AI coaches
    */
-  async getDrillsForSport(
-    sport: typeof supportedSports[number],
-    position?: string,
-    category?: typeof skillCategories[number],
-    difficulty?: typeof difficultyLevels[number],
-    limit: number = 10
-  ): Promise<TrainingDrill[]> {
+  async getCoaches() {
     try {
-      // Define filter conditions
-      let conditions = [eq(trainingDrills.sportType, sport)];
-      
-      // Add optional filters
-      if (position) {
-        conditions.push(eq(trainingDrills.position, position));
-      }
+      return await db.select().from(aiCoaches).where(eq(aiCoaches.active, true));
+    } catch (error) {
+      console.error('Error getting AI coaches:', error);
+      throw error;
+    }
+  }
 
-      if (category) {
-        conditions.push(eq(trainingDrills.category, category));
-      }
-
-      if (difficulty) {
-        conditions.push(eq(trainingDrills.difficulty, difficulty));
-      }
-      
-      // Use all conditions in a single where clause with and()
-      const query = db
+  /**
+   * Get coaches for a specific sport
+   */
+  async getCoachesBySport(sport: string) {
+    try {
+      return await db
         .select()
-        .from(trainingDrills)
-        .where(and(...conditions));
-
-      const drills = await query.limit(limit);
-
-      // If not enough drills found, generate new ones if needed
-      if (drills.length < limit) {
-        // Find skill nodes for this sport and possibly position
-        const sportSkillNodes = await db
-          .select()
-          .from(skillTreeNodes)
-          .where(
-            and(
-              eq(skillTreeNodes.sportType, sport),
-              position ? eq(skillTreeNodes.position, position) : undefined,
-              category ? eq(skillTreeNodes.category, category) : undefined
-            )
-          )
-          .limit(3); // Limit to 3 skill nodes to generate from
-
-        // Generate missing drills if we have skill nodes to work with
-        if (sportSkillNodes.length > 0) {
-          for (let i = 0; i < Math.min(limit - drills.length, sportSkillNodes.length); i++) {
-            const skillNode = sportSkillNodes[i];
-            const newDrill = await this.generateDrill(
-              skillNode.id,
-              difficulty || 'intermediate'
-            );
-            if (newDrill) {
-              drills.push(newDrill);
-            }
-          }
-        }
-      }
-
-      return drills;
+        .from(aiCoaches)
+        .where(and(eq(aiCoaches.active, true), eq(aiCoaches.sport, sport)));
     } catch (error) {
-      console.error('Error getting drills for sport:', error);
-      return [];
+      console.error(`Error getting AI coaches for sport ${sport}:`, error);
+      throw error;
     }
   }
 
   /**
-   * Generates a set of general athletic development drills not specific to any sport
-   * @param category Skill category to focus on (speed, strength, etc.)
-   * @param difficulty Difficulty level
-   * @param limit Maximum number of drills to return
-   * @returns List of training drills
+   * Create a new coaching session
    */
-  async getAthleticDevelopmentDrills(
-    category: typeof skillCategories[number],
-    difficulty: typeof difficultyLevels[number] = 'intermediate',
-    limit: number = 5
-  ): Promise<TrainingDrill[]> {
+  async createSession({
+    userId,
+    coachId,
+    topic,
+    userGoals,
+    sessionContext,
+  }: {
+    userId: number;
+    coachId: number;
+    topic?: string;
+    userGoals?: string;
+    sessionContext?: Record<string, any>;
+  }) {
     try {
-      // First try to find existing drills
-      const existingDrills = await db
-        .select()
-        .from(trainingDrills)
-        .where(
-          and(
-            isNull(trainingDrills.sportType),
-            eq(trainingDrills.category, category),
-            eq(trainingDrills.difficulty, difficulty)
-          )
-        )
-        .limit(limit);
+      const [newSession] = await db
+        .insert(aiCoachSessions)
+        .values({
+          userId,
+          coachId,
+          topic,
+          userGoals,
+          sessionContext: sessionContext ? sessionContext : {},
+        })
+        .returning();
 
-      // If we have enough drills, return them
-      if (existingDrills.length >= limit) {
-        return existingDrills;
-      }
-
-      // Find general athletic skill nodes
-      const [generalSkillNode] = await db
-        .select()
-        .from(skillTreeNodes)
-        .where(
-          and(
-            isNull(skillTreeNodes.sportType),
-            eq(skillTreeNodes.category, category)
-          )
-        )
-        .limit(1);
-
-      // If no general skill node exists, create one
-      let skillNodeId: number;
-      if (!generalSkillNode) {
-        const [newNode] = await db
-          .insert(skillTreeNodes)
-          .values({
-            name: `General ${category} development`,
-            description: `Fundamental ${category} development for all athletes`,
-            category,
-            level: 1
-          })
-          .returning();
-        
-        if (!newNode) {
-          throw new Error(`Failed to create general skill node for ${category}`);
-        }
-        
-        skillNodeId = newNode.id;
-      } else {
-        skillNodeId = generalSkillNode.id;
-      }
-
-      // Generate additional drills
-      const generatedDrills: TrainingDrill[] = [];
-      for (let i = 0; i < limit - existingDrills.length; i++) {
-        const newDrill = await this.generateDrill(skillNodeId, difficulty);
-        if (newDrill) {
-          generatedDrills.push(newDrill);
-        }
-      }
-
-      return [...existingDrills, ...generatedDrills];
-    } catch (error) {
-      console.error('Error getting athletic development drills:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Creates a daily workout plan combining drills from different categories
-   * @param userId User ID to create workout for
-   * @param sport Primary sport focus
-   * @param focus Specific area to focus on
-   * @returns List of training drills in a structured workout plan
-   */
-  async createWorkoutPlan(
-    userId: number,
-    sport?: typeof supportedSports[number],
-    focus?: typeof skillCategories[number]
-  ): Promise<{ warmup: TrainingDrill[], main: TrainingDrill[], cooldown: TrainingDrill[] }> {
-    try {
-      const workout = {
-        warmup: [] as TrainingDrill[],
-        main: [] as TrainingDrill[],
-        cooldown: [] as TrainingDrill[]
-      };
-
-      // Get 2 warmup drills (flexibility, coordination)
-      workout.warmup = await this.getAthleticDevelopmentDrills('flexibility', 'beginner', 2);
+      // Get the coach to send an initial message
+      const coach = await db.select().from(aiCoaches).where(eq(aiCoaches.id, coachId)).limit(1);
       
-      // Get main workout - either sport-specific or general
-      if (sport) {
-        // Get 3-4 sport-specific drills
-        workout.main = await this.getDrillsForSport(
-          sport,
-          undefined,
-          focus || undefined,
-          'intermediate',
-          4
-        );
-      } else if (focus) {
-        // Get general athletic development drills for the focus area
-        workout.main = await this.getAthleticDevelopmentDrills(focus, 'intermediate', 4);
-      } else {
-        // Default to strength and agility
-        const strengthDrills = await this.getAthleticDevelopmentDrills('strength', 'intermediate', 2);
-        const agilityDrills = await this.getAthleticDevelopmentDrills('agility', 'intermediate', 2);
-        workout.main = [...strengthDrills, ...agilityDrills];
+      if (coach.length === 0) {
+        throw new Error('Coach not found');
+      }
+      
+      // Get user data for personalization
+      const user = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      const athleteProfile = await db.select().from(athleteProfiles).where(eq(athleteProfiles.userId, userId)).limit(1);
+      
+      // Create context from user data
+      let userContext = "";
+      if (user.length > 0) {
+        userContext += `User name: ${user[0].name}\n`;
+        if (athleteProfile.length > 0) {
+          const profile = athleteProfile[0];
+          userContext += `Age: ${profile.age || 'Unknown'}\n`;
+          userContext += `Sports interest: ${profile.sportsInterest?.join(', ') || 'Unknown'}\n`;
+          userContext += `School: ${profile.school || 'Unknown'}\n`;
+          userContext += `Graduation year: ${profile.graduationYear || 'Unknown'}\n`;
+        }
       }
 
-      // Get 1-2 cooldown drills
-      workout.cooldown = await this.getAthleticDevelopmentDrills('flexibility', 'beginner', 2);
+      // Create initial welcome message from coach
+      const initialMessage = await this.generateWelcomeMessage(
+        coach[0],
+        userContext,
+        topic,
+        userGoals
+      );
 
-      return workout;
-    } catch (error) {
-      console.error('Error creating workout plan:', error);
-      return { warmup: [], main: [], cooldown: [] };
-    }
-  }
-
-  /**
-   * Creates a comprehensive training program for an athlete
-   * @param userId User ID to create program for
-   * @param sport Primary sport focus
-   * @param goals Training goals
-   * @param durationWeeks Duration of the program in weeks
-   * @returns Training program description and structure
-   */
-  async createTrainingProgram(
-    userId: number,
-    sport: typeof supportedSports[number],
-    goals: string[],
-    durationWeeks: number = 4
-  ): Promise<any> {
-    try {
-      // This would use Claude to generate a comprehensive training program
-      // For now, we'll return a simple placeholder
-      return {
-        userId,
-        sport,
-        goals,
-        durationWeeks,
-        program: {
-          overview: "4-week progressive training program",
-          weeklySchedule: [
-            { day: "Monday", focus: "Strength & Speed" },
-            { day: "Tuesday", focus: "Sport-specific skills" },
-            { day: "Wednesday", focus: "Recovery & Flexibility" },
-            { day: "Thursday", focus: "Agility & Coordination" },
-            { day: "Friday", focus: "Sport-specific skills" },
-            { day: "Saturday", focus: "Game simulation" },
-            { day: "Sunday", focus: "Rest" }
-          ],
-          weeks: [
-            { weekNumber: 1, theme: "Foundation", intensity: "Moderate" },
-            { weekNumber: 2, theme: "Development", intensity: "Moderate-High" },
-            { weekNumber: 3, theme: "Progression", intensity: "High" },
-            { weekNumber: 4, theme: "Peak Performance", intensity: "Variable" }
-          ]
-        }
-      };
-    } catch (error) {
-      console.error('Error creating training program:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Creates a prompt for drill generation based on a skill node
-   * @param skillNode Skill node to generate drill for
-   * @param difficulty Difficulty level of the drill
-   * @returns Generated prompt
-   */
-  private createDrillGenerationPrompt(
-    skillNode: SkillTreeNode,
-    difficulty: typeof difficultyLevels[number]
-  ): string {
-    return `Generate a detailed training drill for student athletes (ages 12-18) focused on developing ${skillNode.name}.
-    
-Sport: ${skillNode.sportType || 'General athletic development'}
-Position: ${skillNode.position || 'All positions'}
-Skill Category: ${skillNode.category}
-Difficulty Level: ${difficulty}
-
-The drill should include:
-1. A clear name
-2. A concise but detailed description
-3. Step-by-step instructions
-4. Required equipment (minimal is preferred)
-5. Target muscles/athletic qualities developed
-6. Duration (in minutes)
-7. 3-5 coaching tips for proper execution
-8. 2-3 variations of increasing difficulty
-9. XP reward value (between 10-25 based on difficulty and effort required)
-
-Format your response as JSON with these fields:
-{
-  "name": "Drill name",
-  "description": "Detailed description",
-  "instructions": "Step-by-step instructions",
-  "equipment": ["item1", "item2"],
-  "targetMuscles": ["muscle1", "muscle2"],
-  "duration": 15,
-  "tips": ["tip1", "tip2", "tip3"],
-  "variations": ["variation1", "variation2"],
-  "xpReward": 15
-}`;
-  }
-
-  /**
-   * Validates and sanitizes drill data returned from AI
-   * @param data Raw data from AI response
-   * @param skillNode Associated skill node
-   * @returns Validated drill data
-   */
-  private validateDrillData(data: any, skillNode: SkillTreeNode): InsertTrainingDrill {
-    try {
-      // Define the validation schema based on our requirements
-      const drillDataSchema = z.object({
-        name: z.string().min(3).max(100),
-        description: z.string().min(10),
-        instructions: z.string().min(10),
-        equipment: z.array(z.string()).optional().default([]),
-        targetMuscles: z.array(z.string()).optional().default([]),
-        duration: z.number().int().min(1).max(120),
-        tips: z.array(z.string()).optional().default([]),
-        variations: z.array(z.string()).optional().default([]),
-        xpReward: z.number().int().min(5).max(50)
+      // Save the initial coach message
+      await db.insert(aiCoachMessages).values({
+        sessionId: newSession.id,
+        coachId: coachId,
+        content: initialMessage,
+        messageType: 'text',
       });
 
-      // Validate the data
-      const validatedData = drillDataSchema.parse(data);
-
-      // Create the insert data
-      const insertData: InsertTrainingDrill = {
-        name: validatedData.name,
-        description: validatedData.description,
-        skillNodeId: skillNode.id,
-        difficulty: z.enum(difficultyLevels).parse(skillNode.level <= 2 ? 'beginner' : skillNode.level <= 4 ? 'intermediate' : 'advanced'),
-        sportType: skillNode.sportType || null,
-        position: skillNode.position || null,
-        category: skillNode.category,
-        duration: validatedData.duration,
-        equipment: validatedData.equipment,
-        targetMuscles: validatedData.targetMuscles,
-        instructions: validatedData.instructions,
-        tips: validatedData.tips,
-        variations: validatedData.variations,
-        xpReward: validatedData.xpReward,
-        imageUrl: null,
-        videoUrl: null
-      };
-
-      return insertData;
-    } catch (error) {
-      console.error('Error validating drill data:', error);
-      
-      // Return a safe default if validation fails
       return {
-        name: `${skillNode.name} Development Drill`,
-        description: `A drill designed to improve ${skillNode.name} skills`,
-        skillNodeId: skillNode.id,
-        difficulty: 'intermediate',
-        sportType: skillNode.sportType || null,
-        position: skillNode.position || null,
-        category: skillNode.category,
-        duration: 15,
-        equipment: [],
-        targetMuscles: [],
-        instructions: 'Please see coach for detailed instructions.',
-        tips: ['Focus on proper form', 'Start slowly and gradually increase intensity'],
-        variations: ['Basic version', 'Advanced version'],
-        xpReward: 10,
-        imageUrl: null,
-        videoUrl: null
+        ...newSession,
+        initialMessage,
       };
+    } catch (error) {
+      console.error('Error creating coaching session:', error);
+      throw error;
     }
   }
 
   /**
-   * Generates and initializes the default skill tree structure for a given sport
-   * @param sport Sport to generate skill tree for
-   * @returns Success indicator
+   * Get all messages for a session
    */
-  async initializeSkillTreeForSport(sport: typeof supportedSports[number]): Promise<boolean> {
+  async getSessionMessages(sessionId: number) {
     try {
-      // Check if we already have skill tree nodes for this sport
-      const existingNodes = await db
+      // Verify session exists and is active
+      const session = await db
         .select()
-        .from(skillTreeNodes)
-        .where(eq(skillTreeNodes.sportType, sport))
+        .from(aiCoachSessions)
+        .where(eq(aiCoachSessions.id, sessionId))
         .limit(1);
-
-      if (existingNodes.length > 0) {
-        console.log(`Skill tree for ${sport} already exists`);
-        return true;
-      }
-
-      // Generate skill tree structure based on the sport
-      const prompt = `Create a comprehensive skill tree structure for ${sport} for student athletes (ages 12-18).
       
-The skill tree should include:
-1. Fundamental athletic skills (speed, strength, agility, etc.)
-2. Sport-specific technical skills
-3. Position-specific skills (if applicable)
-4. Mental and tactical development skills
+      if (session.length === 0) {
+        throw new Error('Session not found');
+      }
+      
+      if (!session[0].active) {
+        throw new Error('Session is no longer active');
+      }
+      
+      // Get messages in chronological order
+      return await db
+        .select()
+        .from(aiCoachMessages)
+        .where(eq(aiCoachMessages.sessionId, sessionId))
+        .orderBy(aiCoachMessages.sentAt);
+    } catch (error) {
+      console.error(`Error getting messages for session ${sessionId}:`, error);
+      throw error;
+    }
+  }
 
-For each skill node, provide:
-- Name
-- Brief description
-- Category (speed, strength, agility, technique, etc.)
-- Level in the skill tree (1 being the most fundamental)
-- Sort order (for ordering skills within the same level)
-- XP needed to unlock (0 for level 1 skills)
+  /**
+   * Get active sessions for a user
+   */
+  async getUserSessions(userId: number) {
+    try {
+      return await db
+        .select({
+          id: aiCoachSessions.id,
+          coachId: aiCoachSessions.coachId,
+          coachName: aiCoaches.name,
+          startedAt: aiCoachSessions.startedAt,
+          lastMessageAt: aiCoachSessions.lastMessageAt,
+          topic: aiCoachSessions.topic,
+        })
+        .from(aiCoachSessions)
+        .innerJoin(aiCoaches, eq(aiCoachSessions.coachId, aiCoaches.id))
+        .where(
+          and(
+            eq(aiCoachSessions.userId, userId),
+            eq(aiCoachSessions.active, true)
+          )
+        )
+        .orderBy(desc(aiCoachSessions.lastMessageAt));
+    } catch (error) {
+      console.error(`Error getting sessions for user ${userId}:`, error);
+      throw error;
+    }
+  }
 
-Format your response as a JSON array of skill nodes with these fields:
-[
-  {
-    "name": "Skill name",
-    "description": "Description of the skill",
-    "category": "Category",
-    "level": 1,
-    "sortOrder": 1,
-    "xpToUnlock": 0,
-    "position": "Position name or null if not position-specific"
-  },
-  ...
-]
+  /**
+   * Send a message in a coaching session and get a response
+   */
+  async sendMessage({
+    sessionId,
+    userId,
+    content,
+    messageType = 'text',
+    attachmentUrl,
+  }: {
+    sessionId: number;
+    userId: number;
+    content: string;
+    messageType?: string;
+    attachmentUrl?: string;
+  }) {
+    try {
+      // Verify session exists and is active
+      const session = await db
+        .select()
+        .from(aiCoachSessions)
+        .where(eq(aiCoachSessions.id, sessionId))
+        .limit(1);
+      
+      if (session.length === 0) {
+        throw new Error('Session not found');
+      }
+      
+      if (!session[0].active) {
+        throw new Error('Session is no longer active');
+      }
+      
+      // Verify this user owns the session
+      if (session[0].userId !== userId) {
+        throw new Error('User does not have access to this session');
+      }
+      
+      // Get the coach
+      const coach = await db
+        .select()
+        .from(aiCoaches)
+        .where(eq(aiCoaches.id, session[0].coachId))
+        .limit(1);
+      
+      if (coach.length === 0) {
+        throw new Error('Coach not found');
+      }
+      
+      // Save the user message
+      const [userMessage] = await db
+        .insert(aiCoachMessages)
+        .values({
+          sessionId,
+          senderId: userId,
+          content,
+          messageType,
+          attachmentUrl,
+        })
+        .returning();
+      
+      // Update the session lastMessageAt timestamp
+      await db
+        .update(aiCoachSessions)
+        .set({ lastMessageAt: new Date() })
+        .where(eq(aiCoachSessions.id, sessionId));
+      
+      // Get conversation history
+      const messages = await this.getSessionMessages(sessionId);
+      
+      // Format messages for Claude
+      const messageHistory: Message[] = messages.map((msg) => ({
+        role: msg.senderId ? 'user' : 'assistant',
+        content: msg.content,
+      }));
+      
+      // Generate a response with Claude
+      const coachResponse = await this.generateCoachResponse(
+        coach[0],
+        messageHistory,
+        session[0]
+      );
+      
+      // Save the coach's response
+      const [responseMessage] = await db
+        .insert(aiCoachMessages)
+        .values({
+          sessionId,
+          coachId: coach[0].id,
+          content: coachResponse,
+          messageType: 'text',
+        })
+        .returning();
+      
+      // Update session lastMessageAt timestamp again
+      await db
+        .update(aiCoachSessions)
+        .set({ lastMessageAt: new Date() })
+        .where(eq(aiCoachSessions.id, sessionId));
+      
+      // Record the interaction for analytics
+      await db.insert(userCoachInteractions).values({
+        userId,
+        coachId: coach[0].id,
+        interactionType: 'message',
+      });
+      
+      return {
+        userMessage,
+        coachResponse: responseMessage,
+      };
+    } catch (error) {
+      console.error('Error sending message:', error);
+      throw error;
+    }
+  }
 
-Limit your response to 15-20 key skills that form a well-structured progression path.`;
+  /**
+   * End a coaching session
+   */
+  async endSession(sessionId: number, userId: number) {
+    try {
+      // Verify session exists and belongs to user
+      const session = await db
+        .select()
+        .from(aiCoachSessions)
+        .where(
+          and(
+            eq(aiCoachSessions.id, sessionId),
+            eq(aiCoachSessions.userId, userId)
+          )
+        )
+        .limit(1);
+      
+      if (session.length === 0) {
+        throw new Error('Session not found or user does not have access');
+      }
+      
+      // Mark the session as inactive
+      await db
+        .update(aiCoachSessions)
+        .set({ active: false })
+        .where(eq(aiCoachSessions.id, sessionId));
+      
+      return true;
+    } catch (error) {
+      console.error(`Error ending session ${sessionId}:`, error);
+      throw error;
+    }
+  }
 
-      const response = await anthropic.messages.create({
-        model: CLAUDE_MODEL,
-        max_tokens: 2000,
+  /**
+   * Get recommendations for training drills based on user profile and videos
+   */
+  async getPersonalizedDrillRecommendations(userId: number) {
+    try {
+      // Get user data and related information
+      const user = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      
+      if (user.length === 0) {
+        throw new Error('User not found');
+      }
+      
+      const athleteProfile = await db
+        .select()
+        .from(athleteProfiles)
+        .where(eq(athleteProfiles.userId, userId))
+        .limit(1);
+      
+      // Get recent video analyses
+      const recentVideos = await db
+        .select({
+          id: videos.id,
+          title: videos.title,
+          sportType: videos.sportType,
+          analysisId: videoAnalyses.id,
+          overallScore: videoAnalyses.overallScore,
+          feedback: videoAnalyses.feedback,
+          improvementTips: videoAnalyses.improvementTips,
+        })
+        .from(videos)
+        .leftJoin(videoAnalyses, eq(videos.id, videoAnalyses.videoId))
+        .where(
+          and(
+            eq(videos.userId, userId),
+            eq(videos.analyzed, true)
+          )
+        )
+        .orderBy(desc(videos.uploadDate))
+        .limit(3);
+      
+      // Get sports of interest
+      const sportsInterest = athleteProfile.length > 0 
+        ? athleteProfile[0].sportsInterest || [] 
+        : [];
+      
+      // If no sports interest, use sport types from videos
+      const sports = sportsInterest.length > 0 
+        ? sportsInterest 
+        : [...new Set(recentVideos.map(v => v.sportType).filter(Boolean))];
+      
+      if (sports.length === 0) {
+        throw new Error('No sports information available for user');
+      }
+      
+      // Collect improvement areas from video analyses
+      const improvementAreas = recentVideos
+        .flatMap(v => v.improvementTips || [])
+        .filter(Boolean);
+      
+      // Find relevant drills based on sports and improvement areas
+      let drillQuery = db
+        .select()
+        .from(trainingDrills)
+        .where(sql`${trainingDrills.sport} = ANY(${sports})`);
+      
+      // If we have specific improvement areas, prioritize drills that match
+      if (improvementAreas.length > 0) {
+        drillQuery = drillQuery.orderBy(desc(sql`
+          (
+            SELECT COUNT(*) 
+            FROM unnest(${trainingDrills.tags}) tag 
+            WHERE EXISTS (
+              SELECT 1 
+              FROM unnest(${improvementAreas}::text[]) area 
+              WHERE tag ILIKE '%' || area || '%'
+            )
+          )
+        `));
+      }
+      
+      const drills = await drillQuery.limit(5);
+      
+      // Return recommendations
+      return {
+        sports,
+        improvementAreas,
+        recommendedDrills: drills,
+      };
+    } catch (error) {
+      console.error(`Error getting drill recommendations for user ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate welcome message using Claude
+   */
+  private async generateWelcomeMessage(
+    coach: any,
+    userContext: string,
+    topic?: string,
+    userGoals?: string
+  ): Promise<string> {
+    try {
+      const systemPrompt = `${coach.systemPrompt}
+You are ${coach.name}, a specialized ${coach.sport} coach with expertise in ${coach.specialty}.
+Your personality is ${coach.personality}.
+You're having your first conversation with a student athlete.
+
+${userContext}
+
+Keep your response conversational, supportive and focused on the topic of ${topic || coach.sport}.
+${userGoals ? `The athlete's goals are: ${userGoals}` : ''}
+Ask focused questions to understand their skill level and what they want to improve.
+Keep your first message warm, brief (under 150 words), and encouraging.`;
+
+      const response = await this.anthropic.messages.create({
+        model: this.model,
+        max_tokens: 300,
         temperature: 0.7,
-        system: "You are an expert sports coach with deep knowledge of skill development progressions for student athletes. You design comprehensive skill trees that show clear progression paths from fundamental to advanced skills. Your responses are always formatted as valid JSON arrays.",
+        system: systemPrompt,
         messages: [
           {
             role: 'user',
-            content: prompt
-          }
-        ]
-        // response_format removed as it's not supported in the current version of the @anthropic-ai/sdk
+            content: "Hi! I'd like to start training with you as my coach.",
+          },
+        ],
       });
 
-      if (!response.content || response.content.length === 0) {
-        throw new Error('No content received from Anthropic API');
-      }
+      return response.content[0].text;
+    } catch (error) {
+      console.error('Error generating welcome message:', error);
+      return `Hi there! I'm ${coach.name}, your ${coach.sport} coach. Let's work together to improve your skills. What would you like to focus on today?`;
+    }
+  }
 
-      // Parse the response - handle different content formats
-      const content = typeof response.content[0] === 'string' 
-        ? response.content[0] 
-        : ('text' in response.content[0] 
-          ? (response.content[0] as any).text 
-          : JSON.stringify(response.content[0]));
-      const skillNodesData = JSON.parse(content);
+  /**
+   * Generate coach response using Claude
+   */
+  private async generateCoachResponse(
+    coach: any,
+    messageHistory: Message[],
+    session: any
+  ): Promise<string> {
+    try {
+      // Create system prompt enriched with coach personality and expertise
+      const systemPrompt = `${coach.systemPrompt}
+You are ${coach.name}, a specialized ${coach.sport} coach with expertise in ${coach.specialty}.
+Your personality is ${coach.personality}.
+${session.topic ? `The current topic is: ${session.topic}` : ''}
+${session.userGoals ? `The athlete's goals are: ${session.userGoals}` : ''}
 
-      if (!Array.isArray(skillNodesData)) {
-        throw new Error('Expected an array of skill nodes');
-      }
+Guidelines:
+- Keep responses conversational, supportive and focused on helping the athlete improve.
+- Use specific examples and actionable advice whenever possible.
+- When discussing drills or techniques, be precise and detailed.
+- Adjust your advice to the athlete's apparent skill level.
+- Keep most responses under 200 words unless detailed technique explanation is required.
+- Focus on positive reinforcement but provide honest constructive feedback.
+- Ask focused questions to better understand their situation when needed.
+- Your advice should be accurate and based on current sports science.`;
 
-      // Insert the skill nodes
-      const insertPromises = skillNodesData.map(async (nodeData: any) => {
-        try {
-          await db.insert(skillTreeNodes).values({
-            name: nodeData.name,
-            description: nodeData.description || `Develop your ${nodeData.name} skills`,
-            sportType: sport,
-            position: nodeData.position || null,
-            category: nodeData.category,
-            level: nodeData.level || 1,
-            xpToUnlock: nodeData.xpToUnlock || 0,
-            sortOrder: nodeData.sortOrder || 0,
-            isActive: true
-          });
-        } catch (error) {
-          console.error(`Error inserting skill node ${nodeData.name}:`, error);
-        }
+      // Build message history for context
+      const messages = messageHistory.map((msg) => ({
+        role: msg.role,
+        content: msg.content,
+      }));
+
+      // Limit to last 10 messages to stay within context window
+      const recentMessages = messages.slice(-10);
+
+      // Add Claude system prompt
+      const response = await this.anthropic.messages.create({
+        model: this.model,
+        max_tokens: 1000,
+        temperature: 0.7,
+        system: systemPrompt,
+        messages: recentMessages,
       });
 
-      await Promise.all(insertPromises);
+      return response.content[0].text;
+    } catch (error) {
+      console.error('Error generating coach response:', error);
+      return "I'm having trouble connecting right now. Could you please repeat your question, or we can try again in a moment?";
+    }
+  }
 
-      // Now create the relationships between nodes
-      const insertedNodes = await db
+  /**
+   * Generate athletic assessment based on user profile and video analyses
+   */
+  async generateAthleticAssessment(userId: number): Promise<string> {
+    try {
+      // Get user data
+      const user = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      
+      if (user.length === 0) {
+        throw new Error('User not found');
+      }
+      
+      const athleteProfile = await db
         .select()
-        .from(skillTreeNodes)
-        .where(eq(skillTreeNodes.sportType, sport));
+        .from(athleteProfiles)
+        .where(eq(athleteProfiles.userId, userId))
+        .limit(1);
+      
+      // Get recent video analyses
+      const videoAnalysesData = await db
+        .select({
+          id: videoAnalyses.id,
+          videoId: videoAnalyses.videoId,
+          title: videos.title,
+          sportType: videos.sportType,
+          analysisDate: videoAnalyses.analysisDate,
+          overallScore: videoAnalyses.overallScore,
+          garScores: videoAnalyses.garScores,
+          feedback: videoAnalyses.feedback,
+          improvementTips: videoAnalyses.improvementTips,
+        })
+        .from(videoAnalyses)
+        .innerJoin(videos, eq(videoAnalyses.videoId, videos.id))
+        .where(eq(videos.userId, userId))
+        .orderBy(desc(videoAnalyses.analysisDate))
+        .limit(5);
+      
+      // If no video analyses, we can't generate an assessment
+      if (videoAnalysesData.length === 0) {
+        return "We don't have enough performance data to create an assessment yet. Upload videos for analysis to get a comprehensive athletic assessment.";
+      }
+      
+      // Create user profile context
+      let userContext = `Athlete name: ${user[0].name}\n`;
+      
+      if (athleteProfile.length > 0) {
+        const profile = athleteProfile[0];
+        userContext += `Age: ${profile.age || 'Unknown'}\n`;
+        userContext += `Height: ${profile.height ? `${profile.height} cm` : 'Unknown'}\n`;
+        userContext += `Weight: ${profile.weight ? `${profile.weight} kg` : 'Unknown'}\n`;
+        userContext += `Sports interest: ${profile.sportsInterest?.join(', ') || 'Unknown'}\n`;
+        userContext += `School: ${profile.school || 'Unknown'}\n`;
+        userContext += `Graduation year: ${profile.graduationYear || 'Unknown'}\n`;
+        userContext += `Motion score: ${profile.motionScore || 'Not assessed'}/100\n`;
+      }
+      
+      // Create analyses context
+      let analysesContext = "Recent performance analyses:\n\n";
+      
+      videoAnalysesData.forEach((analysis, index) => {
+        analysesContext += `Analysis ${index + 1} (${analysis.sportType || 'Unknown sport'}):\n`;
+        analysesContext += `Title: ${analysis.title}\n`;
+        analysesContext += `Date: ${analysis.analysisDate?.toISOString().split('T')[0] || 'Unknown'}\n`;
+        analysesContext += `Overall score: ${analysis.overallScore}/100\n`;
+        
+        if (analysis.garScores) {
+          analysesContext += "GAR scores:\n";
+          for (const [category, score] of Object.entries(analysis.garScores as any)) {
+            analysesContext += `- ${category}: ${score}/100\n`;
+          }
+        }
+        
+        analysesContext += `Feedback: ${analysis.feedback}\n`;
+        
+        if (analysis.improvementTips && analysis.improvementTips.length > 0) {
+          analysesContext += "Improvement tips:\n";
+          analysis.improvementTips.forEach((tip: string) => {
+            analysesContext += `- ${tip}\n`;
+          });
+        }
+        
+        analysesContext += "\n";
+      });
+      
+      // Generate assessment with Claude
+      const systemPrompt = `You are an expert sports performance analyst and coach. 
+You need to create a comprehensive athletic assessment for a student athlete based on their profile and video analyses.
+Focus on identifying patterns across multiple performances, highlighting strengths, weaknesses, and specific areas for improvement.
+Provide a holistic view of the athlete's abilities, along with actionable recommendations for development.
+The assessment should be structured, objective, and focused on helping the athlete improve.
 
-      // Connect nodes based on their levels (level 1 nodes are parents of level 2 nodes in the same category, etc.)
-      for (let level = 2; level <= Math.max(...insertedNodes.map(n => n.level)); level++) {
-        const childNodes = insertedNodes.filter(n => n.level === level);
-        const parentNodes = insertedNodes.filter(n => n.level === level - 1);
+Structure your assessment as follows:
+1. Overall athletic profile (2-3 sentences about the athlete)
+2. Performance strengths (3-5 bullet points)
+3. Areas for improvement (3-5 bullet points)
+4. Development recommendations (3-5 actionable items)
+5. Next steps for continued improvement (1-2 paragraphs)
 
-        for (const childNode of childNodes) {
-          // Find parent nodes in the same category
-          const compatibleParents = parentNodes.filter(
-            p => p.category === childNode.category || 
-                (p.position === childNode.position && p.position !== null)
-          );
+Keep your assessment encouraging but honest, focusing on constructive feedback.
+Base your assessment solely on the data provided - don't invent additional details.`;
 
-          if (compatibleParents.length > 0) {
-            // Connect to the most relevant parent
-            const parent = compatibleParents[0];
-            await db.insert(skillTreeRelationships).values({
-              parentId: parent.id,
-              childId: childNode.id,
-              requirement: `${parent.name} must be at least level 2`
+      const response = await this.anthropic.messages.create({
+        model: this.model,
+        max_tokens: 1000,
+        temperature: 0.7,
+        system: systemPrompt,
+        messages: [
+          {
+            role: 'user',
+            content: `Please create an athletic assessment based on the following data:\n\n${userContext}\n\n${analysesContext}`,
+          },
+        ],
+      });
+
+      return response.content[0].text;
+    } catch (error) {
+      console.error(`Error generating athletic assessment for user ${userId}:`, error);
+      return "We're unable to generate your athletic assessment at this time. Please try again later.";
+    }
+  }
+
+  /**
+   * Generate a training plan based on user profile, goals, and analyses
+   */
+  async generateTrainingPlan(
+    userId: number,
+    goals: string,
+    timeframe: string,
+    focusAreas: string[]
+  ): Promise<string> {
+    try {
+      // Get user data
+      const user = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      
+      if (user.length === 0) {
+        throw new Error('User not found');
+      }
+      
+      const athleteProfile = await db
+        .select()
+        .from(athleteProfiles)
+        .where(eq(athleteProfiles.userId, userId))
+        .limit(1);
+      
+      // Get sports of interest
+      const sportsInterest = athleteProfile.length > 0 
+        ? athleteProfile[0].sportsInterest || [] 
+        : [];
+      
+      // Get recent video analyses
+      const recentAnalyses = await db
+        .select({
+          sportType: videos.sportType,
+          overallScore: videoAnalyses.overallScore,
+          improvementTips: videoAnalyses.improvementTips,
+        })
+        .from(videos)
+        .leftJoin(videoAnalyses, eq(videos.id, videoAnalyses.videoId))
+        .where(
+          and(
+            eq(videos.userId, userId),
+            eq(videos.analyzed, true)
+          )
+        )
+        .orderBy(desc(videos.uploadDate))
+        .limit(3);
+      
+      // Find relevant drills based on focus areas
+      const relevantDrills = await db
+        .select()
+        .from(trainingDrills)
+        .where(sql`
+          ${trainingDrills.sport} = ANY(${sportsInterest}) AND
+          EXISTS (
+            SELECT 1 
+            FROM unnest(${trainingDrills.tags}) tag 
+            WHERE EXISTS (
+              SELECT 1 
+              FROM unnest(${focusAreas}::text[]) area 
+              WHERE tag ILIKE '%' || area || '%'
+            )
+          )
+        `)
+        .limit(10);
+      
+      // Create context for prompt
+      let userContext = `Athlete name: ${user[0].name}\n`;
+      
+      if (athleteProfile.length > 0) {
+        const profile = athleteProfile[0];
+        userContext += `Age: ${profile.age || 'Unknown'}\n`;
+        userContext += `Height: ${profile.height ? `${profile.height} cm` : 'Unknown'}\n`;
+        userContext += `Weight: ${profile.weight ? `${profile.weight} kg` : 'Unknown'}\n`;
+        userContext += `Sports interest: ${sportsInterest.join(', ') || 'Unknown'}\n`;
+      }
+      
+      let analysesContext = "";
+      if (recentAnalyses.length > 0) {
+        analysesContext = "Recent performance insights:\n";
+        recentAnalyses.forEach((analysis, index) => {
+          analysesContext += `Analysis ${index + 1} (${analysis.sportType || 'Unknown sport'}):\n`;
+          analysesContext += `Overall score: ${analysis.overallScore}/100\n`;
+          
+          if (analysis.improvementTips && analysis.improvementTips.length > 0) {
+            analysesContext += "Improvement areas:\n";
+            analysis.improvementTips.forEach((tip: string) => {
+              analysesContext += `- ${tip}\n`;
             });
           }
-        }
+          
+          analysesContext += "\n";
+        });
       }
+      
+      let drillsContext = "";
+      if (relevantDrills.length > 0) {
+        drillsContext = "Available training drills:\n";
+        relevantDrills.forEach((drill, index) => {
+          drillsContext += `Drill ${index + 1}: ${drill.name}\n`;
+          drillsContext += `Description: ${drill.description}\n`;
+          drillsContext += `Difficulty: ${drill.difficulty}/5\n`;
+          drillsContext += `Focus: ${drill.tags?.join(', ') || 'General'}\n\n`;
+        });
+      }
+      
+      // Generate training plan with Claude
+      const systemPrompt = `You are an expert sports coach and training specialist. 
+You need to create a comprehensive training plan for a student athlete based on their profile, goals, and performance history.
+The plan should be realistic, progressive, and tailored to the athlete's specific needs and focus areas.
+Include specific drills from the list provided when relevant.
 
-      return true;
+Structure your training plan as follows:
+1. Overview (brief summary of the plan's focus and goals)
+2. Weekly schedule (breakdown of training activities by day)
+3. Key exercises and drills (with specific focus areas and progression)
+4. Recovery and nutrition recommendations
+5. Progress tracking metrics
+
+Your plan should span the requested timeframe, be age-appropriate, and consider any limitations or specific improvement areas noted.
+Keep the plan challenging but achievable, focusing on progressive development.
+Base your plan solely on the data provided - don't invent additional details.`;
+
+      const response = await this.anthropic.messages.create({
+        model: this.model,
+        max_tokens: 1500,
+        temperature: 0.7,
+        system: systemPrompt,
+        messages: [
+          {
+            role: 'user',
+            content: `Please create a training plan based on the following:\n\n${userContext}\n\nGoals: ${goals}\nTimeframe: ${timeframe}\nFocus areas: ${focusAreas.join(', ')}\n\n${analysesContext}\n\n${drillsContext}`,
+          },
+        ],
+      });
+
+      return response.content[0].text;
     } catch (error) {
-      console.error(`Error initializing skill tree for ${sport}:`, error);
-      return false;
+      console.error(`Error generating training plan for user ${userId}:`, error);
+      return "We're unable to generate your training plan at this time. Please try again later.";
     }
   }
 }
 
-// Create singleton instance
-export const aiCoachService = new AICoachService();
+// Export singleton instance
+export const aiCoachService = new AiCoachService();
