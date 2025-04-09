@@ -246,15 +246,15 @@ export const blogPosts = pgTable("blog_posts", {
 export const featuredAthletes = pgTable("featured_athletes", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id).unique(),
-  sportType: text("sport_type").notNull(),
-  highlight: text("highlight"),
-  quote: text("quote"),
-  achievements: text("achievements"),
-  mediaUrl: text("media_url"),
-  startDate: timestamp("start_date").defaultNow(),
-  endDate: timestamp("end_date"),
+  featuredStats: text("featured_stats"),
+  featuredDate: timestamp("featured_date"),
+  order: integer("order").default(0),
   active: boolean("active").default(true),
-  position: integer("position").default(0),
+  starRating: integer("star_rating"),
+  coverImage: text("cover_image"),
+  featuredVideo: text("featured_video"),
+  highlightText: text("highlight_text"),
+  sportPosition: text("sport_position"),
 });
 
 // GAR Categories
@@ -309,15 +309,20 @@ export const athleteStarProfiles = pgTable("athlete_star_profiles", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id).unique(),
   starLevel: integer("star_level").default(1),
-  starPoints: integer("star_points").default(0),
-  tier: text("tier").default("bronze"), // bronze, silver, gold, platinum
-  unlocks: text("unlocks").array(),
-  reachedAt: timestamp("reached_at").defaultNow(),
-  lastUpdate: timestamp("last_update").defaultNow(),
-  badges: jsonb("badges"),
-  achievements: jsonb("achievements"),
-  streakDays: integer("streak_days").default(0),
-  lastStreakUpdate: timestamp("last_streak_update"),
+  metrics: jsonb("metrics"),
+  traits: jsonb("traits"),
+  xpLevel: integer("xp_level").default(0),
+  active: boolean("active").default(true),
+  avatar: text("avatar"),
+  rank: text("rank"),
+  profileId: integer("profile_id"),
+  filmExpectations: text("film_expectations"),
+  name: text("name"),
+  trainingFocus: text("training_focus"),
+  sport: text("sport"),
+  position: text("position"),
+  ageGroup: text("age_group"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Combine Tour Events
