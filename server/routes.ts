@@ -13,6 +13,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 import { generateTokens } from './services/auth-token-service';
 import { registerAiCoachRoutes } from './routes/ai-coach-routes';
 import { aiCoachService } from './services/ai-coach-service';
+import { User, insertNcaaEligibilitySchema } from "@shared/schema";
 
 // Helper function to determine event status
 function getEventStatus(event: any): 'upcoming' | 'filling_fast' | 'sold_out' | 'past' {
@@ -1529,11 +1530,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Not authorized to update this eligibility" });
       }
       
+      // First get the existing eligibility to get its ID
+      const existingEligibility = await storage.getNcaaEligibility(userId);
+      
+      if (!existingEligibility) {
+        // If not found, create a new eligibility record
+        const newEligibilityData = {
+          ...insertNcaaEligibilitySchema.parse(req.body),
+          userId: userId
+        };
+        const newEligibility = await storage.createNcaaEligibility(newEligibilityData);
+        return res.status(201).json(newEligibility);
+      }
+      
+      // Update existing eligibility record
       const eligibilityData = insertNcaaEligibilitySchema.parse(req.body);
-      const updatedEligibility = await storage.updateNcaaEligibility(userId, eligibilityData);
+      const updatedEligibility = await storage.updateNcaaEligibility(existingEligibility.id, eligibilityData);
       
       if (!updatedEligibility) {
-        return res.status(404).json({ message: "NCAA eligibility not found" });
+        return res.status(500).json({ message: "Failed to update NCAA eligibility" });
       }
       
       return res.json(updatedEligibility);
@@ -4962,14 +4977,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/sms/notification", isAuthenticated, sendNotification);
   
   // AI Coach Routes
-  app.use("/api/ai-coach", isAuthenticated, aiCoachRoutes);
+  // Using registerAiCoachRoutes function instead of aiCoachRoutes 
+  registerAiCoachRoutes(app);
 
   // Content Blocks API Routes
   app.get("/api/content-blocks", async (req: Request, res: Response) => {
     try {
       const section = req.query.section as string;
-      const contentBlocks = await storage.getContentBlocks(section);
-      res.json(contentBlocks);
+      const contentBlocks = await storage.getContentBlocks();
+      const filteredBlocks = section ? contentBlocks.filter(block => block.section === section) : contentBlocks;
+      res.json(filteredBlocks);
     } catch (error) {
       console.error("Error fetching content blocks:", error);
       res.status(500).json({ message: "Error fetching content blocks" });
@@ -4979,8 +4996,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/content-blocks/section/:section", async (req: Request, res: Response) => {
     try {
       const section = req.params.section;
-      const contentBlocks = await storage.getContentBlocks(section);
-      res.json(contentBlocks);
+      const contentBlocks = await storage.getContentBlocks();
+      const filteredBlocks = contentBlocks.filter(block => block.section === section);
+      res.json(filteredBlocks);
     } catch (error) {
       console.error("Error fetching content blocks by section:", error);
       res.status(500).json({ message: "Error fetching content blocks by section" });
@@ -4990,7 +5008,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/content-blocks/identifier/:identifier", async (req: Request, res: Response) => {
     try {
       const identifier = req.params.identifier;
-      const contentBlock = await storage.getContentBlocksByIdentifier(identifier);
+      const contentBlocks = await storage.getContentBlocks();
+      const contentBlock = contentBlocks.find(block => block.identifier === identifier);
       
       if (!contentBlock) {
         return res.status(404).json({ message: "Content block not found" });
@@ -5006,7 +5025,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/content-blocks/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
-      const contentBlock = await storage.getContentBlock(id);
+      const contentBlocks = await storage.getContentBlocks();
+      const contentBlock = contentBlocks.find(block => block.id === id);
       
       if (!contentBlock) {
         return res.status(404).json({ message: "Content block not found" });

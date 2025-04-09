@@ -228,7 +228,7 @@ export function registerAiCoachRoutes(app: express.Express) {
         .returning();
 
       // Generate welcome message
-      const welcomeMessage = await aiCoachService.generateWelcomeMessage(coach, userGoals || null);
+      const welcomeMessage = await aiCoachService.generateWelcomeMessage(coach, '', null, userGoals || null);
 
       // Save the AI coach message
       const [message] = await db
@@ -355,7 +355,7 @@ export function registerAiCoachRoutes(app: express.Express) {
       }));
 
       // Generate AI coach response
-      const aiResponse = await aiCoachService.generateResponse(
+      const aiResponse = await aiCoachService.generateCoachResponse(
         session.aiCoaches,
         formattedMessages,
         session.aiCoachSessions
