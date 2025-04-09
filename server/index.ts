@@ -12,6 +12,7 @@ import { openAIService } from './services/openai-service';
 import { transferPortalService } from './services/transfer-portal-service';
 import { athleteScoutService } from './services/athlete-scout-service';
 import { authSentinel } from './middleware/auth-sentinel';
+import { registerSkillTreeApi } from './skill-tree-api';
 import net from 'net';
 
 const app = express();
@@ -161,6 +162,10 @@ app.use((req, res, next) => {
     // Create database schema if needed
     await createSchema();
     log("Database schema created successfully", "db");
+    
+    // Register skill tree API endpoints directly before other API routes
+    registerSkillTreeApi(app);
+    log("Registered Skill Tree API endpoints");
     
     // Load API keys from database
     try {
