@@ -21,6 +21,7 @@ import {
   athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile,
   // NCAA Schools database tables
   ncaaSchools, type NcaaSchool, type InsertNcaaSchool,
+  ncaaEligibility, type NcaaEligibility, type InsertNcaaEligibility,
   athleticDepartments, type AthleticDepartment, type InsertAthleticDepartment,
   sportPrograms, type SportProgram, type InsertSportProgram,
   coachingStaff, type CoachingStaff, type InsertCoachingStaff,
@@ -230,6 +231,11 @@ export interface IStorage {
   createNcaaSchool(school: InsertNcaaSchool): Promise<NcaaSchool>;
   updateNcaaSchool(id: number, data: Partial<NcaaSchool>): Promise<NcaaSchool | undefined>;
   
+  // NCAA Eligibility operations
+  getNcaaEligibility(userId: number): Promise<NcaaEligibility | undefined>;
+  createNcaaEligibility(eligibility: InsertNcaaEligibility): Promise<NcaaEligibility>;
+  updateNcaaEligibility(id: number, data: Partial<NcaaEligibility>): Promise<NcaaEligibility | undefined>;
+  
   // Athletic Department operations
   getAthleticDepartmentsBySchool(schoolId: number): Promise<AthleticDepartment[]>;
   getAthleticDepartmentById(id: number): Promise<AthleticDepartment | undefined>;
@@ -256,6 +262,22 @@ export interface IStorage {
   getRecruitingContactsByRegion(region: string): Promise<RecruitingContact[]>;
   createRecruitingContact(contact: InsertRecruitingContact): Promise<RecruitingContact>;
   updateRecruitingContact(id: number, data: Partial<RecruitingContact>): Promise<RecruitingContact | undefined>;
+
+  // Registration operations
+  getRegistrations(): Promise<Registration[]>;
+  getRegistrationsByEvent(eventId: number): Promise<Registration[]>;
+  getRegistrationsByUser(userId: number): Promise<Registration[]>;
+  getRegistration(id: number): Promise<Registration | undefined>;
+  createRegistration(registration: InsertRegistration): Promise<Registration>;
+  updateRegistration(id: number, data: Partial<Registration>): Promise<Registration | undefined>;
+  deleteRegistration(id: number): Promise<boolean>;
+
+  // Payment operations
+  getPayments(): Promise<Payment[]>;
+  getPaymentsByRegistration(registrationId: number): Promise<Payment[]>;
+  getPayment(id: number): Promise<Payment | undefined>;
+  createPayment(payment: InsertPayment): Promise<Payment>;
+  updatePayment(id: number, data: Partial<Payment>): Promise<Payment | undefined>;
 }
 
 // Direct database implementation
@@ -515,7 +537,7 @@ export class DatabaseStorage implements IStorage {
     try {
       return await db.select()
         .from(apiKeys)
-        .where(eq(apiKeys.isActive, true));
+        .where(eq(apiKeys.active, true));
     } catch (error) {
       console.error('Database error in getAllActiveApiKeys:', error);
       return [];
@@ -688,7 +710,7 @@ export class DatabaseStorage implements IStorage {
   async getFeaturedAthletes(limit: number = 6): Promise<FeaturedAthlete[]> {
     return await db.select()
       .from(featuredAthletes)
-      .where(eq(featuredAthletes.isActive, true))
+      .where(eq(featuredAthletes.active, true))
       .orderBy(desc(featuredAthletes.featuredDate))
       .limit(limit);
   }
@@ -1844,6 +1866,50 @@ export class DatabaseStorage implements IStorage {
       return updatedSchool;
     } catch (error) {
       console.error(`Database error in updateNcaaSchool(${id}):`, error);
+      return undefined;
+    }
+  }
+  
+  // NCAA Eligibility operations
+  async getNcaaEligibility(userId: number): Promise<NcaaEligibility | undefined> {
+    try {
+      const [eligibility] = await db.select()
+        .from(ncaaEligibility)
+        .where(eq(ncaaEligibility.userId, userId));
+      return eligibility;
+    } catch (error) {
+      console.error(`Database error in getNcaaEligibility(${userId}):`, error);
+      return undefined;
+    }
+  }
+  
+  async createNcaaEligibility(eligibility: InsertNcaaEligibility): Promise<NcaaEligibility> {
+    try {
+      const [createdEligibility] = await db.insert(ncaaEligibility)
+        .values({
+          ...eligibility,
+          lastUpdated: new Date()
+        })
+        .returning();
+      return createdEligibility;
+    } catch (error) {
+      console.error('Database error in createNcaaEligibility:', error);
+      throw error;
+    }
+  }
+  
+  async updateNcaaEligibility(id: number, data: Partial<NcaaEligibility>): Promise<NcaaEligibility | undefined> {
+    try {
+      const [updatedEligibility] = await db.update(ncaaEligibility)
+        .set({
+          ...data,
+          lastUpdated: new Date()
+        })
+        .where(eq(ncaaEligibility.id, id))
+        .returning();
+      return updatedEligibility;
+    } catch (error) {
+      console.error(`Database error in updateNcaaEligibility(${id}):`, error);
       return undefined;
     }
   }

@@ -401,6 +401,25 @@ export const ncaaSchools = pgTable("ncaa_schools", {
   lastUpdated: timestamp("last_updated").defaultNow(),
 });
 
+// NCAA Eligibility
+export const ncaaEligibility = pgTable("ncaa_eligibility", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  coreCoursesCompleted: integer("core_courses_completed").default(0),
+  coreCoursesRequired: integer("core_courses_required").default(16),
+  gpa: real("gpa"),
+  gpaMeetsRequirement: boolean("gpa_meets_requirement").default(false),
+  testScores: text("test_scores"),
+  testScoresMeetRequirement: boolean("test_scores_meet_requirement").default(false),
+  hasTranslatedDocuments: boolean("has_translated_documents").default(false),
+  amateurismStatus: text("amateurism_status").default("incomplete"),
+  ncaaDivision: text("ncaa_division").default("division_i"),
+  overallEligibilityStatus: text("overall_eligibility_status").default("incomplete"),
+  academicRedshirt: boolean("academic_redshirt").default(false),
+  qualificationPercentage: integer("qualification_percentage").default(0),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+});
+
 export const athleticDepartments = pgTable("athletic_departments", {
   id: serial("id").primaryKey(),
   school_id: integer("school_id").notNull().references(() => ncaaSchools.id),
@@ -1002,6 +1021,11 @@ export const insertNcaaSchoolSchema = createInsertSchema(ncaaSchools).omit({
   lastUpdated: true,
 });
 
+export const insertNcaaEligibilitySchema = createInsertSchema(ncaaEligibility).omit({
+  id: true,
+  lastUpdated: true,
+});
+
 export const insertAthleticDepartmentSchema = createInsertSchema(athleticDepartments).omit({
   id: true,
   lastUpdated: true,
@@ -1184,6 +1208,9 @@ export type InsertCoachingStaff = z.infer<typeof insertCoachingStaffSchema>;
 
 export type RecruitingContact = typeof recruitingContacts.$inferSelect;
 export type InsertRecruitingContact = z.infer<typeof insertRecruitingContactSchema>;
+
+export type NcaaEligibility = typeof ncaaEligibility.$inferSelect;
+export type InsertNcaaEligibility = z.infer<typeof insertNcaaEligibilitySchema>;
 
 // Skill Tree types
 export type SkillTreeNode = typeof skillTreeNodes.$inferSelect;
