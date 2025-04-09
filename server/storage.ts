@@ -1,45 +1,9 @@
-import {
+import * as schema from "@shared/schema";
+import { 
   users, type User, type InsertUser,
-  videoHighlights, type VideoHighlight, type InsertVideoHighlight,
-  highlightGeneratorConfigs, type HighlightGeneratorConfig, type InsertHighlightGeneratorConfig,
-  videos, type Video, type InsertVideo,
-  apiKeys, type ApiKey,
-  contentBlocks, type ContentBlock, type InsertContentBlock,
-  blogPosts, type BlogPost, type InsertBlogPost,
-  featuredAthletes, type FeaturedAthlete, type InsertFeaturedAthlete,
-  garCategories, type GarCategory, type InsertGarCategory,
-  garSubcategories, type GarSubcategory, type InsertGarSubcategory,
-  garAthleteRatings, type GarAthleteRating, type InsertGarAthleteRating,
-  garRatingHistory, type GarRatingHistory, type InsertGarRatingHistory,
-  videoAnalyses, type VideoAnalysis,
-  combineTourEvents, type CombineTourEvent, type InsertCombineTourEvent,
-  userTokens, type UserToken, type InsertUserToken,
-  // Event Registration and Payments
-  registrations, type Registration, type InsertRegistration,
-  payments, type Payment, type InsertPayment,
-  // Athlete Star Profiles
-  athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile,
-  // NCAA Schools database tables
-  ncaaSchools, type NcaaSchool, type InsertNcaaSchool,
-  ncaaEligibility, type NcaaEligibility, type InsertNcaaEligibility,
-  athleticDepartments, type AthleticDepartment, type InsertAthleticDepartment,
-  sportPrograms, type SportProgram, type InsertSportProgram,
-  coachingStaff, type CoachingStaff, type InsertCoachingStaff,
-  recruitingContacts, type RecruitingContact, type InsertRecruitingContact,
-  // Skill Tree and Training Drills
-  skillTreeNodes, type SkillTreeNode, type InsertSkillTreeNode,
-  skillTreeRelationships, type SkillTreeRelationship, type InsertSkillTreeRelationship,
-  skills, type Skill, type InsertSkill,
-  trainingDrills, type TrainingDrill, type InsertTrainingDrill,
-  trainingDrillsExtended, type TrainingDrillsExtended, type InsertTrainingDrillsExtended,
-  userDrillProgress, type UserDrillProgress, type InsertUserDrillProgress
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, or, desc, sql, like, inArray } from "drizzle-orm";
-import MemoryStore from "memorystore";
-import session from "express-session";
-import pg from 'pg';
-import connectPgSimple from 'connect-pg-simple';
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   // Session store
@@ -854,7 +818,7 @@ export class DatabaseStorage implements IStorage {
     return await db.select()
       .from(garAthleteRatings)
       .where(eq(garAthleteRatings.userId, userId))
-      .orderBy(desc(garAthleteRatings.ratingDate));
+      .orderBy(desc(garAthleteRatings.createdAt));
   }
 
   async getGarAthleteRatingsByCategory(userId: number, categoryId: number): Promise<GarAthleteRating[]> {
@@ -866,7 +830,7 @@ export class DatabaseStorage implements IStorage {
           eq(garAthleteRatings.categoryId, categoryId)
         )
       )
-      .orderBy(desc(garAthleteRatings.ratingDate));
+      .orderBy(desc(garAthleteRatings.createdAt));
   }
 
   async getLatestGarAthleteRating(userId: number, categoryId: number): Promise<GarAthleteRating | undefined> {
@@ -878,7 +842,7 @@ export class DatabaseStorage implements IStorage {
           eq(garAthleteRatings.categoryId, categoryId)
         )
       )
-      .orderBy(desc(garAthleteRatings.ratingDate))
+      .orderBy(desc(garAthleteRatings.createdAt))
       .limit(1);
     return rating;
   }
@@ -888,7 +852,7 @@ export class DatabaseStorage implements IStorage {
     return await db.select()
       .from(garRatingHistory)
       .where(eq(garRatingHistory.userId, userId))
-      .orderBy(desc(garRatingHistory.ratingDate))
+      .orderBy(desc(garRatingHistory.recordedAt))
       .limit(limit);
   }
 
@@ -896,7 +860,7 @@ export class DatabaseStorage implements IStorage {
     const [rating] = await db.select()
       .from(garRatingHistory)
       .where(eq(garRatingHistory.userId, userId))
-      .orderBy(desc(garRatingHistory.ratingDate))
+      .orderBy(desc(garRatingHistory.recordedAt))
       .limit(1);
     return rating;
   }
@@ -2259,7 +2223,7 @@ export class DatabaseStorage implements IStorage {
         .where(
           and(
             eq(userTokens.userId, userId),
-            eq(userTokens.revoked, false),
+            eq(userTokens.isRevoked, false),
             sql`${userTokens.expiresAt} > NOW()`
           )
         )
@@ -2276,7 +2240,7 @@ export class DatabaseStorage implements IStorage {
         .values({
           ...token,
           createdAt: new Date(),
-          revoked: false
+          isRevoked: false
         })
         .returning();
       return createdToken;
@@ -2290,8 +2254,8 @@ export class DatabaseStorage implements IStorage {
     try {
       const [revokedToken] = await db.update(userTokens)
         .set({
-          revoked: true,
-          revokedAt: new Date()
+          isRevoked: true,
+          lastUsedAt: new Date() // Using lastUsedAt instead of revokedAt which doesn't exist
         })
         .where(eq(userTokens.id, id))
         .returning();
@@ -2306,13 +2270,13 @@ export class DatabaseStorage implements IStorage {
     try {
       await db.update(userTokens)
         .set({
-          revoked: true,
-          revokedAt: new Date()
+          isRevoked: true,
+          lastUsedAt: new Date() // Using lastUsedAt instead of revokedAt which doesn't exist
         })
         .where(
           and(
             eq(userTokens.userId, userId),
-            eq(userTokens.revoked, false)
+            eq(userTokens.isRevoked, false)
           )
         );
       return true;
