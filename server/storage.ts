@@ -49,6 +49,12 @@ export interface IStorage {
   createVideo(video: InsertVideo): Promise<Video>;
   updateVideo(id: number, data: Partial<Video>): Promise<Video | undefined>;
   
+  // Video Analysis operations
+  getVideoAnalysis(id: number): Promise<VideoAnalysis | undefined>;
+  getVideoAnalysisByVideoId(videoId: number): Promise<VideoAnalysis | undefined>;
+  saveVideoAnalysis(videoId: number, analysisData: any): Promise<VideoAnalysis>;
+  createVideoAnalysis(analysisData: any): Promise<VideoAnalysis>;
+  
   // Video Highlight operations
   getVideoHighlightsByVideoId(videoId: number): Promise<VideoHighlight[]>;
   createVideoHighlight(highlight: InsertVideoHighlight): Promise<VideoHighlight>;
@@ -790,6 +796,43 @@ export class DatabaseStorage implements IStorage {
           ...analysisData
         })
         .returning();
+      return newAnalysis;
+    }
+  }
+  
+  // Create a new video analysis
+  async createVideoAnalysis(analysisData: any): Promise<VideoAnalysis> {
+    const { videoId } = analysisData;
+    
+    // Check if analysis already exists
+    const existingAnalysis = await this.getVideoAnalysisByVideoId(videoId);
+    
+    if (existingAnalysis) {
+      // Update existing analysis
+      const [updatedAnalysis] = await db.update(videoAnalyses)
+        .set({
+          ...analysisData,
+          updatedAt: new Date()
+        })
+        .where(eq(videoAnalyses.videoId, videoId))
+        .returning();
+      
+      // Update the video as analyzed
+      await this.updateVideo(videoId, { analyzed: true });
+      
+      return updatedAnalysis;
+    } else {
+      // Create new analysis
+      const [newAnalysis] = await db.insert(videoAnalyses)
+        .values({
+          ...analysisData,
+          analysisDate: new Date()
+        })
+        .returning();
+      
+      // Update the video as analyzed
+      await this.updateVideo(videoId, { analyzed: true });
+      
       return newAnalysis;
     }
   }
