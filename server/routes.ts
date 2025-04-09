@@ -10,6 +10,7 @@ import { eq } from "drizzle-orm";
 import multer from "multer";
 import path from "path";
 import { WebSocketServer, WebSocket } from 'ws';
+import { generateTokens } from './services/auth-token-service';
 
 // Helper function to determine event status
 function getEventStatus(event: any): 'upcoming' | 'filling_fast' | 'sold_out' | 'past' {
