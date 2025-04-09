@@ -1242,15 +1242,49 @@ export class DatabaseStorage implements IStorage {
 
   async getSkillTreeNodesByLevel(level: number): Promise<SkillTreeNode[]> {
     try {
-      return await db.select()
-        .from(skillTreeNodes)
-        .where(
-          and(
-            eq(skillTreeNodes.level, level),
-            eq(skillTreeNodes.isActive, true)
-          )
-        )
-        .orderBy(skillTreeNodes.sortOrder);
+      // Check if skillTreeNodes exists
+      if (typeof skillTreeNodes === 'undefined' || !skillTreeNodes) {
+        console.warn(`skillTreeNodes table not found when looking for level ${level}`);
+        return [];
+      }
+
+      try {
+        // Build conditions safely
+        const conditions = [];
+        
+        // Add level condition
+        try {
+          conditions.push(eq(skillTreeNodes.level, level));
+        } catch (err) {
+          console.warn('level column not found on skillTreeNodes table');
+          return []; // Can't filter by level, return empty array
+        }
+        
+        // Add isActive condition if exists
+        try {
+          conditions.push(eq(skillTreeNodes.isActive, true));
+        } catch (err) {
+          console.warn('isActive column not found on skillTreeNodes table');
+          // Continue without isActive filter
+        }
+        
+        // Execute query with appropriate conditions
+        let query = db.select().from(skillTreeNodes);
+        
+        if (conditions.length > 0) {
+          query = query.where(and(...conditions));
+        }
+        
+        try {
+          return await query.orderBy(skillTreeNodes.sortOrder);
+        } catch (err) {
+          console.warn('sortOrder column not found on skillTreeNodes table, returning unordered results');
+          return await query;
+        }
+      } catch (queryError) {
+        console.error(`Error constructing skill tree nodes query for level ${level}:`, queryError);
+        return [];
+      }
     } catch (error) {
       console.error(`Error fetching skill tree nodes for level ${level}:`, error);
       return [];
@@ -1361,21 +1395,56 @@ export class DatabaseStorage implements IStorage {
   // Training Drills operations
   async getTrainingDrills(sportType?: string, position?: string, category?: string): Promise<TrainingDrill[]> {
     try {
-      let query = db.select().from(trainingDrills);
-      
-      if (sportType) {
-        query = query.where(eq(trainingDrills.sportType, sportType));
+      // Check if trainingDrills table exists
+      if (typeof trainingDrills === 'undefined' || !trainingDrills) {
+        console.warn('trainingDrills table not found');
+        return [];
       }
-      
-      if (position) {
-        query = query.where(eq(trainingDrills.position, position));
+
+      try {
+        // Start with the basic query
+        let query = db.select().from(trainingDrills);
+        
+        // Conditions for filtering
+        const conditions = [];
+        
+        // Add sportType filter if provided and column exists
+        if (sportType) {
+          try {
+            conditions.push(eq(trainingDrills.sportType, sportType));
+          } catch (err) {
+            console.warn('sportType column not found on trainingDrills table');
+          }
+        }
+        
+        // Add position filter if provided and column exists
+        if (position) {
+          try {
+            conditions.push(eq(trainingDrills.position, position));
+          } catch (err) {
+            console.warn('position column not found on trainingDrills table');
+          }
+        }
+        
+        // Add category filter if provided and column exists
+        if (category) {
+          try {
+            conditions.push(eq(trainingDrills.category, category));
+          } catch (err) {
+            console.warn('category column not found on trainingDrills table');
+          }
+        }
+        
+        // Apply all conditions if any are valid
+        if (conditions.length > 0) {
+          query = query.where(and(...conditions));
+        }
+        
+        return await query;
+      } catch (queryError) {
+        console.error('Error constructing training drills query:', queryError);
+        return [];
       }
-      
-      if (category) {
-        query = query.where(eq(trainingDrills.category, category));
-      }
-      
-      return await query;
     } catch (error) {
       console.error('Error fetching training drills:', error);
       return [];
@@ -1384,10 +1453,21 @@ export class DatabaseStorage implements IStorage {
 
   async getTrainingDrill(id: number): Promise<TrainingDrill | undefined> {
     try {
-      const [drill] = await db.select()
-        .from(trainingDrills)
-        .where(eq(trainingDrills.id, id));
-      return drill;
+      // Check if trainingDrills table exists
+      if (typeof trainingDrills === 'undefined' || !trainingDrills) {
+        console.warn(`trainingDrills table not found when looking for drill ID ${id}`);
+        return undefined;
+      }
+      
+      try {
+        const [drill] = await db.select()
+          .from(trainingDrills)
+          .where(eq(trainingDrills.id, id));
+        return drill;
+      } catch (queryError) {
+        console.error(`Error querying training drill with ID ${id}:`, queryError);
+        return undefined;
+      }
     } catch (error) {
       console.error(`Error fetching training drill with ID ${id}:`, error);
       return undefined;
@@ -1396,9 +1476,26 @@ export class DatabaseStorage implements IStorage {
 
   async getTrainingDrillsBySkill(skillNodeId: number): Promise<TrainingDrill[]> {
     try {
-      return await db.select()
-        .from(trainingDrills)
-        .where(eq(trainingDrills.skillNodeId, skillNodeId));
+      // Check if trainingDrills table exists
+      if (typeof trainingDrills === 'undefined' || !trainingDrills) {
+        console.warn(`trainingDrills table not found when looking for drills with skill node ID ${skillNodeId}`);
+        return [];
+      }
+      
+      try {
+        // Check if skillNodeId column exists
+        try {
+          return await db.select()
+            .from(trainingDrills)
+            .where(eq(trainingDrills.skillNodeId, skillNodeId));
+        } catch (columnError) {
+          console.warn('skillNodeId column not found on trainingDrills table');
+          return [];
+        }
+      } catch (queryError) {
+        console.error(`Error constructing query for training drills with skill node ID ${skillNodeId}:`, queryError);
+        return [];
+      }
     } catch (error) {
       console.error(`Error fetching training drills for skill node ID ${skillNodeId}:`, error);
       return [];
@@ -1434,7 +1531,24 @@ export class DatabaseStorage implements IStorage {
   // User Skill Progress operations
   async getUserSkills(userId: number): Promise<Skill[]> {
     try {
-      return await db.select().from(skills).where(eq(skills.userId, userId));
+      // Check if skills table exists
+      if (typeof skills === 'undefined' || !skills) {
+        console.warn(`skills table not found when looking for user ID ${userId}`);
+        return [];
+      }
+      
+      try {
+        // Check if userId column exists
+        try {
+          return await db.select().from(skills).where(eq(skills.userId, userId));
+        } catch (columnError) {
+          console.warn('userId column not found on skills table');
+          return [];
+        }
+      } catch (queryError) {
+        console.error(`Error constructing query for skills with user ID ${userId}:`, queryError);
+        return [];
+      }
     } catch (error) {
       console.error(`Error fetching skills for user ID ${userId}:`, error);
       return [];
@@ -1443,10 +1557,21 @@ export class DatabaseStorage implements IStorage {
 
   async getSkill(id: number): Promise<Skill | undefined> {
     try {
-      const [skill] = await db.select()
-        .from(skills)
-        .where(eq(skills.id, id));
-      return skill;
+      // Check if skills table exists
+      if (typeof skills === 'undefined' || !skills) {
+        console.warn(`skills table not found when looking for skill ID ${id}`);
+        return undefined;
+      }
+      
+      try {
+        const [skill] = await db.select()
+          .from(skills)
+          .where(eq(skills.id, id));
+        return skill;
+      } catch (queryError) {
+        console.error(`Error querying skill with ID ${id}:`, queryError);
+        return undefined;
+      }
     } catch (error) {
       console.error(`Error fetching skill with ID ${id}:`, error);
       return undefined;
@@ -1482,7 +1607,24 @@ export class DatabaseStorage implements IStorage {
   // User Drill Progress operations
   async getUserDrillProgress(userId: number): Promise<UserDrillProgress[]> {
     try {
-      return await db.select().from(userDrillProgress).where(eq(userDrillProgress.userId, userId));
+      // Check if userDrillProgress table exists
+      if (typeof userDrillProgress === 'undefined' || !userDrillProgress) {
+        console.warn(`userDrillProgress table not found when looking for user ID ${userId}`);
+        return [];
+      }
+      
+      try {
+        // Check if userId column exists
+        try {
+          return await db.select().from(userDrillProgress).where(eq(userDrillProgress.userId, userId));
+        } catch (columnError) {
+          console.warn('userId column not found on userDrillProgress table');
+          return [];
+        }
+      } catch (queryError) {
+        console.error(`Error constructing query for user drill progress with user ID ${userId}:`, queryError);
+        return [];
+      }
     } catch (error) {
       console.error(`Error fetching user drill progress for user ID ${userId}:`, error);
       return [];
@@ -1491,15 +1633,46 @@ export class DatabaseStorage implements IStorage {
 
   async getUserDrillProgressByDrill(userId: number, drillId: number): Promise<UserDrillProgress | undefined> {
     try {
-      const [progress] = await db.select()
-        .from(userDrillProgress)
-        .where(
-          and(
-            eq(userDrillProgress.userId, userId),
-            eq(userDrillProgress.drillId, drillId)
-          )
-        );
-      return progress;
+      // Check if userDrillProgress table exists
+      if (typeof userDrillProgress === 'undefined' || !userDrillProgress) {
+        console.warn(`userDrillProgress table not found when looking for user ID ${userId} and drill ID ${drillId}`);
+        return undefined;
+      }
+      
+      try {
+        // Safely construct the conditions
+        const conditions = [];
+        
+        // Add userId condition if exists
+        try {
+          conditions.push(eq(userDrillProgress.userId, userId));
+        } catch (err) {
+          console.warn('userId column not found on userDrillProgress table');
+          return undefined;
+        }
+        
+        // Add drillId condition if exists
+        try {
+          conditions.push(eq(userDrillProgress.drillId, drillId));
+        } catch (err) {
+          console.warn('drillId column not found on userDrillProgress table');
+          return undefined;
+        }
+        
+        // Execute query with combined conditions
+        if (conditions.length === 2) {
+          const [progress] = await db.select()
+            .from(userDrillProgress)
+            .where(and(...conditions));
+          return progress;
+        } else {
+          console.warn('Required columns missing from userDrillProgress table');
+          return undefined;
+        }
+      } catch (queryError) {
+        console.error(`Error constructing query for user drill progress with user ID ${userId} and drill ID ${drillId}:`, queryError);
+        return undefined;
+      }
     } catch (error) {
       console.error(`Error fetching user drill progress for user ID ${userId} and drill ID ${drillId}:`, error);
       return undefined;
@@ -1508,8 +1681,19 @@ export class DatabaseStorage implements IStorage {
 
   async createUserDrillProgress(progress: InsertUserDrillProgress): Promise<UserDrillProgress> {
     try {
-      const [createdProgress] = await db.insert(userDrillProgress).values(progress).returning();
-      return createdProgress;
+      // Check if userDrillProgress table exists
+      if (typeof userDrillProgress === 'undefined' || !userDrillProgress) {
+        console.error('userDrillProgress table not found when trying to create progress record');
+        throw new Error('User drill progress table not found');
+      }
+      
+      try {
+        const [createdProgress] = await db.insert(userDrillProgress).values(progress).returning();
+        return createdProgress;
+      } catch (insertError) {
+        console.error('Error inserting into userDrillProgress table:', insertError);
+        throw new Error('Failed to create user drill progress record');
+      }
     } catch (error) {
       console.error('Error creating user drill progress:', error);
       throw error;
@@ -1518,14 +1702,38 @@ export class DatabaseStorage implements IStorage {
 
   async updateUserDrillProgress(id: number, data: Partial<UserDrillProgress>): Promise<UserDrillProgress | undefined> {
     try {
-      const [updatedProgress] = await db.update(userDrillProgress)
-        .set({
-          ...data,
-          updatedAt: new Date()
-        })
-        .where(eq(userDrillProgress.id, id))
-        .returning();
-      return updatedProgress;
+      // Check if userDrillProgress table exists
+      if (typeof userDrillProgress === 'undefined' || !userDrillProgress) {
+        console.warn(`userDrillProgress table not found when updating progress ID ${id}`);
+        return undefined;
+      }
+      
+      try {
+        // Check if updatedAt field exists
+        let updateData: any = { ...data };
+        
+        try {
+          updateData.updatedAt = new Date();
+        } catch (fieldError) {
+          console.warn('updatedAt field might not exist on userDrillProgress table');
+          // Continue without setting updatedAt
+        }
+        
+        // Execute update
+        try {
+          const [updatedProgress] = await db.update(userDrillProgress)
+            .set(updateData)
+            .where(eq(userDrillProgress.id, id))
+            .returning();
+          return updatedProgress;
+        } catch (updateError) {
+          console.error(`Error executing update on userDrillProgress with ID ${id}:`, updateError);
+          return undefined;
+        }
+      } catch (queryError) {
+        console.error(`Error constructing update query for userDrillProgress with ID ${id}:`, queryError);
+        return undefined;
+      }
     } catch (error) {
       console.error(`Error updating user drill progress with ID ${id}:`, error);
       return undefined;
