@@ -1,139 +1,125 @@
-import React from 'react';
-import {
-  ResponsiveContainer,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  Radar,
-  Tooltip,
-  Legend,
-  LabelList,
-} from 'recharts';
-import { Card } from "@/components/ui/card";
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend } from 'recharts';
+import { SpeechButton } from '@/components/ui/speech-button';
 
-type ComparisonRadarChartProps = {
-  currentData: {
-    name: string;
-    value: number;
-  }[];
-  previousData: {
-    name: string;
-    value: number;
-  }[];
-  height?: number;
-  colors?: [string, string]; // [current, previous]
-  title?: string;
-  subtitle?: string;
-};
+interface ComparisonRadarChartProps {
+  currentData: Array<{
+    subject: string;
+    A: number;
+    fullMark: number;
+  }>;
+  comparisonData: Array<{
+    subject: string;
+    A: number;
+    fullMark: number;
+  }>;
+  currentDate: string;
+  comparisonDate: string;
+}
 
 export function ComparisonRadarChart({
   currentData,
-  previousData,
-  height = 300,
-  colors = ['#3b82f6', '#f59e0b'], // Blue for current, amber for previous
-  title,
-  subtitle
+  comparisonData,
+  currentDate,
+  comparisonDate
 }: ComparisonRadarChartProps) {
-  // Ensure we have the same categories for both datasets
-  const combinedData = currentData.map(current => {
-    const previous = previousData.find(prev => prev.name === current.name);
-    return {
-      name: current.name,
-      current: current.value,
-      previous: previous?.value || 0,
-      fullMark: 100
-    };
-  });
+  // Format data for comparison radar chart
+  const formattedData = currentData.map((item, index) => ({
+    subject: item.subject,
+    Current: item.A,
+    Comparison: comparisonData[index].A,
+    fullMark: item.fullMark
+  }));
   
-  // Calculate differences for labeling
-  const getDifference = (current: number, previous: number) => {
-    const diff = current - previous;
-    return diff > 0 ? `+${diff}` : diff;
+  // Calculate improvements for speech
+  const calculateImprovements = () => {
+    const improvements = formattedData.map(item => {
+      const improvement = item.Current - item.Comparison;
+      return {
+        skill: item.subject,
+        improvement,
+        percent: ((improvement / item.Comparison) * 100).toFixed(1)
+      };
+    });
+    
+    // Find the biggest improvement
+    const biggestImprovement = improvements.reduce((prev, current) => 
+      (current.improvement > prev.improvement) ? current : prev
+    );
+    
+    // Calculate average improvement
+    const avgImprovement = improvements.reduce((sum, item) => sum + item.improvement, 0) / improvements.length;
+    
+    return {
+      biggest: biggestImprovement,
+      average: avgImprovement.toFixed(1),
+      details: improvements
+    };
   };
   
+  const improvements = calculateImprovements();
+  
+  // Generate speech text
+  const speechText = `Comparing GAR scores between ${comparisonDate} and ${currentDate}. 
+    Your biggest improvement was in ${improvements.biggest.skill} with an increase of ${improvements.biggest.improvement.toFixed(1)} points or ${improvements.biggest.percent}%. 
+    Your average improvement across all skills is ${improvements.average} points. 
+    Current scores versus previous: ${improvements.details.map(d => 
+      `${d.skill}: ${d.improvement > 0 ? 'up' : 'down'} ${Math.abs(d.improvement).toFixed(1)} to ${formattedData.find(i => i.subject === d.skill)?.Current.toFixed(1)}`
+    ).join(', ')}.`;
+  
   return (
-    <Card className="p-4 w-full bg-gradient-to-br from-gray-900 to-gray-800 border-gray-700">
-      {title && (
-        <div className="mb-4">
-          <h3 className="text-xl font-bold text-white">{title}</h3>
-          {subtitle && <p className="text-gray-400 text-sm">{subtitle}</p>}
+    <div className="w-full">
+      <div className="flex items-start justify-between mb-2">
+        <div>
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+            <span className="text-sm">{currentDate} (Current)</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+            <span className="text-sm">{comparisonDate} (Comparison)</span>
+          </div>
         </div>
-      )}
-      <div className="w-full" style={{ height: `${height}px` }}>
+        <SpeechButton
+          text={speechText}
+          tooltip="Listen to comparison details"
+        />
+      </div>
+      
+      <div className="h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
-          <RadarChart cx="50%" cy="50%" outerRadius="80%" data={combinedData}>
-            <PolarGrid stroke="#4b5563" />
-            <PolarAngleAxis 
-              dataKey="name"
-              tick={{ fill: '#e5e7eb', fontSize: 12 }}
-            />
-            
-            {/* Previous data radar */}
-            <Radar
-              name="Previous"
-              dataKey="previous"
-              stroke={colors[1]}
-              fill={colors[1]}
-              fillOpacity={0.3}
-              dot={{ stroke: colors[1], strokeWidth: 2, fill: colors[1], r: 3 }}
-            />
-            
-            {/* Current data radar */}
+          <RadarChart cx="50%" cy="50%" outerRadius="80%" data={formattedData}>
+            <PolarGrid />
+            <PolarAngleAxis dataKey="subject" />
+            <PolarRadiusAxis angle={30} domain={[0, 5]} />
             <Radar
               name="Current"
-              dataKey="current"
-              stroke={colors[0]}
-              fill={colors[0]}
+              dataKey="Current"
+              stroke="#3b82f6"
+              fill="#3b82f6"
               fillOpacity={0.6}
-              dot={{ stroke: colors[0], strokeWidth: 2, fill: colors[0], r: 3 }}
-            >
-              <LabelList 
-                dataKey={(entry: any) => getDifference(entry.current, entry.previous)} 
-                position="top"
-                style={{ fontSize: '10px', fill: '#fff', fontWeight: 'bold' }}
-              />
-            </Radar>
-            
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: '#1f2937', 
-                borderColor: '#374151',
-                color: '#f9fafb',
-                borderRadius: '0.375rem'
-              }}
-              itemStyle={{ color: '#f9fafb' }}
-              formatter={(value) => [`${value}`, '']}
-              labelFormatter={(label) => `${label}`}
             />
-            <Legend 
-              wrapperStyle={{ color: '#f9fafb' }} 
-              iconType="circle"
-              align="center"
+            <Radar
+              name="Comparison"
+              dataKey="Comparison"
+              stroke="#22c55e"
+              fill="#22c55e"
+              fillOpacity={0.4}
             />
           </RadarChart>
         </ResponsiveContainer>
       </div>
       
-      {/* Improvement summary */}
-      <div className="mt-3 p-3 bg-blue-900/20 border border-blue-800/30 rounded-md">
-        <h4 className="text-sm font-semibold mb-1">Performance Summary</h4>
-        <div className="flex justify-between text-xs">
-          <div>
-            <span className="text-gray-400">Improved areas: </span>
-            <span className="text-blue-400 font-medium">
-              {combinedData.filter(d => d.current > d.previous).length}/{combinedData.length}
-            </span>
-          </div>
-          <div>
-            <span className="text-gray-400">Biggest gain: </span>
-            <span className="text-green-400 font-medium">
-              {Math.max(...combinedData.map(d => d.current - d.previous)) > 0 
-                ? `+${Math.max(...combinedData.map(d => d.current - d.previous))} pts` 
-                : "None"}
-            </span>
-          </div>
-        </div>
+      <div className="p-3 bg-background/60 rounded-md mt-4">
+        <h4 className="text-sm font-medium mb-1">Improvement Analysis</h4>
+        <p className="text-sm">
+          The biggest improvement is in <span className="font-semibold">{improvements.biggest.skill}</span> with a 
+          <span className="text-emerald-500 font-semibold"> {improvements.biggest.improvement > 0 ? '+' : ''}{improvements.biggest.improvement.toFixed(1)}</span> change 
+          ({improvements.biggest.improvement > 0 ? '+' : ''}{improvements.biggest.percent}%).
+        </p>
+        <p className="text-sm mt-1">
+          Average improvement across all skills: <span className="font-semibold">{improvements.average} points</span>
+        </p>
       </div>
-    </Card>
+    </div>
   );
 }
