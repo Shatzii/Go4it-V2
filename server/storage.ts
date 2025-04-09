@@ -278,6 +278,13 @@ export interface IStorage {
   getPayment(id: number): Promise<Payment | undefined>;
   createPayment(payment: InsertPayment): Promise<Payment>;
   updatePayment(id: number, data: Partial<Payment>): Promise<Payment | undefined>;
+  
+  // Athlete Star Profile operations
+  getAthleteStarProfile(userId: number): Promise<AthleteStarProfile | undefined>;
+  getAllAthleteStarProfiles(): Promise<AthleteStarProfile[]>;
+  getActiveAthleteStarProfiles(): Promise<AthleteStarProfile[]>;
+  createAthleteStarProfile(profile: InsertAthleteStarProfile): Promise<AthleteStarProfile>;
+  updateAthleteStarProfile(userId: number, data: Partial<AthleteStarProfile>): Promise<AthleteStarProfile | undefined>;
 }
 
 // Direct database implementation
@@ -532,6 +539,67 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.role, role));
   }
   
+  // Athlete Star Profile operations
+  async getAthleteStarProfile(userId: number): Promise<AthleteStarProfile | undefined> {
+    try {
+      const [profile] = await db.select()
+        .from(athleteStarProfiles)
+        .where(eq(athleteStarProfiles.userId, userId));
+      return profile;
+    } catch (error) {
+      console.error(`Error fetching athlete star profile for user ${userId}:`, error);
+      return undefined;
+    }
+  }
+  
+  async getAllAthleteStarProfiles(): Promise<AthleteStarProfile[]> {
+    try {
+      return await db.select()
+        .from(athleteStarProfiles)
+        .orderBy(athleteStarProfiles.createdAt);
+    } catch (error) {
+      console.error('Error fetching all athlete star profiles:', error);
+      return [];
+    }
+  }
+  
+  async getActiveAthleteStarProfiles(): Promise<AthleteStarProfile[]> {
+    try {
+      return await db.select()
+        .from(athleteStarProfiles)
+        .where(eq(athleteStarProfiles.active, true))
+        .orderBy(athleteStarProfiles.createdAt);
+    } catch (error) {
+      console.error('Error fetching active athlete star profiles:', error);
+      return [];
+    }
+  }
+  
+  async createAthleteStarProfile(profile: InsertAthleteStarProfile): Promise<AthleteStarProfile> {
+    try {
+      const [createdProfile] = await db.insert(athleteStarProfiles)
+        .values(profile)
+        .returning();
+      return createdProfile;
+    } catch (error) {
+      console.error('Error creating athlete star profile:', error);
+      throw error;
+    }
+  }
+  
+  async updateAthleteStarProfile(userId: number, data: Partial<AthleteStarProfile>): Promise<AthleteStarProfile | undefined> {
+    try {
+      const [updatedProfile] = await db.update(athleteStarProfiles)
+        .set(data)
+        .where(eq(athleteStarProfiles.userId, userId))
+        .returning();
+      return updatedProfile;
+    } catch (error) {
+      console.error(`Error updating athlete star profile for user ${userId}:`, error);
+      return undefined;
+    }
+  }
+  
   // API Key operations
   async getAllActiveApiKeys(): Promise<ApiKey[]> {
     try {
@@ -702,7 +770,7 @@ export class DatabaseStorage implements IStorage {
       return await db.select()
         .from(featuredAthletes)
         .where(eq(featuredAthletes.active, true))
-        .orderBy(desc(featuredAthletes.startDate))
+        .orderBy(featuredAthletes.order)
         .limit(limit);
     } catch (error) {
       console.error('Error fetching featured athletes:', error);
@@ -726,10 +794,7 @@ export class DatabaseStorage implements IStorage {
 
   async createFeaturedAthlete(featuredAthlete: InsertFeaturedAthlete): Promise<FeaturedAthlete> {
     const [createdAthlete] = await db.insert(featuredAthletes)
-      .values({
-        ...featuredAthlete,
-        featuredDate: featuredAthlete.featuredDate || new Date()
-      })
+      .values(featuredAthlete)
       .returning();
     return createdAthlete;
   }
