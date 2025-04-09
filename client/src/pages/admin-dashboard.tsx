@@ -13,6 +13,7 @@ import { apiRequest } from "@/lib/queryClient";
 import HighlightConfigManager from "@/components/admin/highlight-config-manager";
 import ProfileImageUpdater from "@/components/admin/ProfileImageUpdater";
 import CombineEventManager from "@/components/admin/CombineEventManager";
+import CyberShieldSecurityManager from "@/components/admin/CyberShieldSecurityManager";
 import { 
   ChartBarStacked, 
   ChartBar, 
@@ -972,6 +973,14 @@ export default function AdminDashboard() {
                 )}
               </CardContent>
             </Card>
+          </div>
+        </TabsContent>
+
+        {/* System Tab */}
+        <TabsContent value="system">
+          <div className="grid gap-6">
+            {/* CyberShield Security Manager */}
+            <CyberShieldSecurityManager />
           </div>
         </TabsContent>
       </Tabs>
