@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import accessibility styles */
+@import './components/accessibility/accessibility-styles.css';
+
 @layer base {
   * {
     @apply border-border;
@@ -10,6 +13,7 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
     background-color: #000814;
+    transition: background-color 0.3s ease, color 0.3s ease, letter-spacing 0.3s ease, word-spacing 0.3s ease;
   }
 }
 

@@ -11,14 +11,20 @@ import {
   BarChart3, 
   MessageSquare,
   Search,
-  Dumbbell
+  Dumbbell,
+  Settings,
+  Eye,
+  EyeOff
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
+import { useLayout } from "@/contexts/layout-context";
+import { AccessibilityControls } from "@/components/accessibility/accessibility-controls";
 
 export default function MobileNav() {
   const [location] = useLocation();
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const { user } = useAuth();
+  const { isFocusMode } = useLayout();
 
   const toggleMoreMenu = () => {
     setShowMoreMenu(prev => !prev);
@@ -74,6 +80,9 @@ export default function MobileNav() {
       {/* Expanded More Menu */}
       {showMoreMenu && (
         <div className="md:hidden fixed bottom-16 inset-x-0 bg-gray-900 border-t border-gray-800 p-4 z-10 animate-in slide-in-from-bottom duration-200">
+          <div className="flex justify-end mb-2 px-2">
+            <AccessibilityControls />
+          </div>
           <div className="grid grid-cols-4 gap-6">
             <Link href="/profile">
               <a className="flex flex-col items-center" onClick={() => setShowMoreMenu(false)}>
