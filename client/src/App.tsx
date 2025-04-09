@@ -347,6 +347,13 @@ function Router() {
         )}
       </Route>
       
+      {/* Enhanced GAR Score Route */}
+      <Route path="/gar-score-enhanced">
+        {({ params }) => (
+          <ProtectedRoute component={() => import('./pages/gar-score-enhanced').then(module => module.default)} />
+        )}
+      </Route>
+      
       {/* Athlete Profile Page Route */}
       <Route path="/profile/:id">
         {({ params }) => (
