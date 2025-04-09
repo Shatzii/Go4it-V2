@@ -1,0 +1,90 @@
+/* Focus Mode Styles */
+body.focus-mode .focus-hide {
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+body.focus-mode .focus-hide:hover,
+body.focus-mode .focus-hide:focus-within {
+  opacity: 1;
+}
+
+body.focus-mode .focus-emphasize {
+  position: relative;
+  z-index: 10;
+}
+
+body.focus-mode .focus-current {
+  position: relative;
+  z-index: 20;
+  box-shadow: 0 0 0 2px hsl(var(--primary));
+  transition: box-shadow 0.3s ease;
+}
+
+/* High Contrast Mode */
+body.high-contrast {
+  --background: 0 0% 0%;
+  --foreground: 0 0% 98%;
+  --card: 0 0% 5%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 5%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 252 100% 75%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 0 0% 15%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 85%;
+  --accent: 252 100% 25%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 30%;
+  --input: 0 0% 20%;
+  --ring: 252 100% 75%;
+}
+
+body.high-contrast .sidebar-link:not(.active) {
+  color: hsl(0, 0%, 90%) !important;
+}
+
+/* ADHD-Friendly Mode */
+body.adhd-friendly {
+  --primary: 190 100% 50%;
+  --ring: 190 100% 50%;
+  line-height: 1.6;
+}
+
+body.adhd-friendly p {
+  max-width: 70ch;
+  margin-bottom: 1rem;
+}
+
+body.adhd-friendly .adhd-focus {
+  background-color: rgba(0, 183, 255, 0.05);
+  border-left: 4px solid hsl(var(--primary));
+  padding-left: 1rem;
+}
+
+/* Dyslexia-Friendly Mode */
+body.dyslexia-friendly {
+  font-family: 'Open Sans', 'Arial', sans-serif;
+  font-size: 105%;
+  letter-spacing: 0.05em;
+  word-spacing: 0.1em;
+  line-height: 1.7;
+  --background: 40 30% 98%;
+  --foreground: 40 10% 15%;
+  --card: 40 20% 96%;
+  --card-foreground: 40 10% 15%;
+}
+
+body.dyslexia-friendly p,
+body.dyslexia-friendly h1,
+body.dyslexia-friendly h2,
+body.dyslexia-friendly h3,
+body.dyslexia-friendly h4,
+body.dyslexia-friendly h5,
+body.dyslexia-friendly h6 {
+  color: hsl(40 10% 15%);
+}

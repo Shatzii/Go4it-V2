@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "@/contexts/auth-context";
 import { useMessaging } from "@/contexts/messaging-context";
 import { useLayout } from "@/contexts/layout-context";
+import { AccessibilityControls } from "@/components/accessibility/accessibility-controls";
 import MobileNav from "./mobile-nav";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -32,7 +33,9 @@ import {
   UserCircle2,
   ShieldCheck,
   Star,
-  BarChart2
+  BarChart2,
+  Eye,
+  EyeOff
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -192,7 +195,10 @@ export default function Layout({ children }: LayoutProps) {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.3, duration: 0.2 }}
+                className="flex items-center gap-2"
               >
+                <AccessibilityControls />
+                
                 <Button 
                   variant="ghost" 
                   size="icon"
