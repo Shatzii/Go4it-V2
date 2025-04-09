@@ -1,9 +1,40 @@
 import * as schema from "@shared/schema";
 import { 
   users, type User, type InsertUser,
+  videos, type Video, type InsertVideo,
+  videoAnalyses, type VideoAnalysis,
+  videoHighlights, type VideoHighlight, type InsertVideoHighlight,
+  highlightGeneratorConfigs, type HighlightGeneratorConfig, type InsertHighlightGeneratorConfig,
+  apiKeys, type ApiKey,
+  contentBlocks, type ContentBlock, type InsertContentBlock,
+  blogPosts, type BlogPost, type InsertBlogPost,
+  featuredAthletes, type FeaturedAthlete, type InsertFeaturedAthlete,
+  garCategories, type GarCategory,
+  garSubcategories, type GarSubcategory,
+  garAthleteRatings, type GarAthleteRating,
+  garRatingHistory, type GarRatingHistory,
+  combineTourEvents, type CombineTourEvent, type InsertCombineTourEvent,
+  registrations, type Registration, type InsertRegistration,
+  payments, type Payment, type InsertPayment,
+  skillTreeNodes, type SkillTreeNode, type InsertSkillTreeNode,
+  skillTreeRelationships, type SkillTreeRelationship, type InsertSkillTreeRelationship,
+  trainingDrills, type TrainingDrill, type InsertTrainingDrill,
+  skills, type Skill, type InsertSkill,
+  userDrillProgress, type UserDrillProgress, type InsertUserDrillProgress,
+  userTokens, type UserToken, type InsertUserToken,
+  ncaaSchools, type NcaaSchool, type InsertNcaaSchool,
+  ncaaEligibility, type NcaaEligibility, type InsertNcaaEligibility,
+  athleticDepartments, type AthleticDepartment, type InsertAthleticDepartment,
+  sportPrograms, type SportProgram, type InsertSportProgram,
+  coachingStaff, type CoachingStaff, type InsertCoachingStaff,
+  recruitingContacts, type RecruitingContact, type InsertRecruitingContact,
+  athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile
 } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, desc, and, sql, inArray } from "drizzle-orm";
+import session from "express-session";
+import MemoryStore from "memorystore";
+import connectPgSimple from "connect-pg-simple";
 
 export interface IStorage {
   // Session store
@@ -312,9 +343,10 @@ export class DatabaseStorage implements IStorage {
   
   async getAllUsers(): Promise<User[]> {
     try {
-      return await db.select()
-        .from(users)
-        .orderBy(desc(users.createdAt));
+      // This query retrieves all users in the system for admin access
+      const userList = await db.select().from(users).orderBy(desc(users.createdAt));
+      console.log(`Retrieved ${userList.length} users for admin dashboard`);
+      return userList;
     } catch (error) {
       console.error('Database error in getAllUsers:', error);
       return [];
