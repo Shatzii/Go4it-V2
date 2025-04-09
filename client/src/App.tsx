@@ -7,6 +7,7 @@ import { MessagingProvider } from "./contexts/messaging-context";
 import { LayoutProvider } from "./contexts/layout-context";
 import { MeasurementProvider } from "./contexts/measurement-context";
 import { Loader2 } from "lucide-react";
+import { AccessibilityControls } from "@/components/accessibility/accessibility-controls";
 // REMOVED: import { GlobalAgreementModal } from "@/components/global-agreement-modal";
 
 import Layout from "@/components/layout/sidebar";
@@ -57,6 +58,7 @@ import BlogList from "@/pages/blog-list";
 import GarScorePage from "@/pages/gar-score";
 import AthleteStarProfilesPage from "@/pages/athlete-star-profiles";
 import EnhancedGarVisualizationPage from "@/pages/enhanced-gar-visualization";
+import EnhancedGARPage from "@/pages/enhanced-gar";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -328,11 +330,18 @@ function Router() {
       {/* Enhanced GAR Visualization Route */}
       <Route path="/enhanced-gar">
         {({ params }) => (
-          <ProtectedRoute component={EnhancedGarVisualizationPage} />
+          <ProtectedRoute component={EnhancedGARPage} />
         )}
       </Route>
 
       <Route path="/enhanced-gar/:id">
+        {({ params }) => (
+          <ProtectedRoute component={EnhancedGARPage} />
+        )}
+      </Route>
+      
+      {/* Legacy Enhanced GAR Visualization Route */}
+      <Route path="/enhanced-gar-visualization">
         {({ params }) => (
           <ProtectedRoute component={EnhancedGarVisualizationPage} />
         )}
@@ -421,6 +430,7 @@ function App() {
             <MeasurementProvider>
               {/* REMOVED: <GlobalAgreementModal /> */}
               <AppContent />
+              <AccessibilityControls />
               <Toaster />
             </MeasurementProvider>
           </LayoutProvider>
