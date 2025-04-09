@@ -1,345 +1,741 @@
-import { pgTable, text, serial, integer, boolean, timestamp, json, real, date, jsonb, uuid, numeric } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod";
-import { relations } from "drizzle-orm";
+import { pgTable, serial, text, integer, boolean, timestamp, date, real, index, uuid, unique, json, jsonb } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
+import { createInsertSchema } from 'drizzle-zod';
+import { z } from 'zod';
 
-// Type for measurement system preference
-export type MeasurementSystem = 'metric' | 'imperial';
-
-// Zod validation for MeasurementSystem
-export const measurementSystemSchema = z.enum(['metric', 'imperial']);
-
-// Play analysis result interface
-export interface PlayAnalysisResult {
-  playType: string;
-  formation: string;
-  keyMovements: string[];
-  strengths: string[];
-  weaknesses: string[];
-  recommendedCounters: string[];
-  tacticalInsights: string;
-  coachingPoints: string[];
-  diagrams?: {
-    description: string;
-    positions: {
-      player: string;
-      x: number;
-      y: number;
-      role: string;
-    }[];
-  }[];
-}
-
-// User table (for both athletes and coaches)
+// User model
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
+  username: text("username").unique().notNull(),
+  email: text("email").unique().notNull(),
   password: text("password").notNull(),
-  email: text("email").notNull(),
   name: text("name").notNull(),
-  role: text("role").notNull().default("athlete"), // athlete, coach, admin
-  profileImage: text("profile_image"),
-  bio: text("bio"),
-  phoneNumber: text("phone_number"),
+  role: text("role").default("user"),
   createdAt: timestamp("created_at").defaultNow(),
-  measurementSystem: text("measurement_system").default("metric"), // 'metric' or 'imperial'
+  profilePicture: text("profile_picture"),
+  lastLoginAt: timestamp("last_login_at"),
+  active: boolean("active").default(true),
 });
 
-// CyberShield security - User tokens for JWT auth
-export const userTokens = pgTable("user_tokens", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  tokenHash: text("token_hash").notNull(), // Hashed JWT refresh token for security
-  sessionId: text("session_id").notNull(), // Unique ID for the login session
-  createdAt: timestamp("created_at").defaultNow(),
-  expiresAt: timestamp("expires_at").notNull(), // When the token expires
-  lastUsed: timestamp("last_used"), // Last time this token was used
-  isRevoked: boolean("is_revoked").default(false), // Flag for manually revoked tokens
-  userAgent: text("user_agent"), // Browser/device info
-  ipAddress: text("ip_address"), // IP address when token was created
-  deviceFingerprint: text("device_fingerprint"), // Unique identifier for the device
-});
-
-// Specific athlete profile information
+// Athlete Profiles
 export const athleteProfiles = pgTable("athlete_profiles", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
-  height: integer("height"), // in cm
-  weight: integer("weight"), // in kg
   age: integer("age"),
+  height: text("height"),
+  weight: text("weight"),
   school: text("school"),
   graduationYear: integer("graduation_year"),
   sportsInterest: text("sports_interest").array(),
-  motionScore: integer("motion_score").default(0), // 0-100
-  profileCompletionPercentage: integer("profile_completion_percentage").default(0), // 0-100
+  position: text("position"),
+  bio: text("bio"),
+  achievements: text("achievements").array(),
+  stats: jsonb("stats"),
+  socialMedia: jsonb("social_media"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  parentEmail: text("parent_email"),
+  verifiedStatus: boolean("verified_status").default(false),
 });
 
-// Coach profile specific information
-export const coachProfiles = pgTable("coach_profiles", {
+// AI Coach/Avatar feature
+export const aiCoaches = pgTable("ai_coaches", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  sport: text("sport").notNull(),
+  specialty: text("specialty").notNull(),
+  personality: text("personality").notNull(),
+  avatarImage: text("avatar_image"),
+  systemPrompt: text("system_prompt").notNull(),
+  knowledgeBase: text("knowledge_base").notNull(),
+  active: boolean("active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const aiCoachSessions = pgTable("ai_coach_sessions", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
-  institution: text("institution"),
-  sports: text("sports").array(),
-  level: text("level"), // college, high school, club
-  experience: integer("experience"), // years
-  achievements: text("achievements"),
+  coachId: integer("coach_id").notNull().references(() => aiCoaches.id),
+  topic: text("topic"),
+  userGoals: text("user_goals"),
+  startedAt: timestamp("started_at").defaultNow(),
+  lastMessageAt: timestamp("last_message_at").defaultNow(),
+  active: boolean("active").default(true),
+  sessionContext: json("session_context").$type<Record<string, any>>().default({}),
 });
 
-// Videos uploaded by athletes
+export const aiCoachMessages = pgTable("ai_coach_messages", {
+  id: serial("id").primaryKey(),
+  sessionId: integer("session_id").notNull().references(() => aiCoachSessions.id),
+  senderId: integer("sender_id").references(() => users.id),
+  coachId: integer("coach_id").references(() => aiCoaches.id),
+  content: text("content").notNull(),
+  messageType: text("message_type").default("text"),
+  attachmentUrl: text("attachment_url"),
+  sentAt: timestamp("sent_at").defaultNow(),
+});
+
+export const sportKnowledgeBases = pgTable("sport_knowledge_bases", {
+  id: serial("id").primaryKey(),
+  sport: text("sport").notNull().unique(),
+  content: text("content").notNull(),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  version: text("version").default("1.0"),
+});
+
+export const userCoachInteractions = pgTable("user_coach_interactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  coachId: integer("coach_id").notNull().references(() => aiCoaches.id),
+  interactionType: text("interaction_type").notNull(),
+  timestamp: timestamp("timestamp").defaultNow(),
+  metadata: json("metadata").$type<Record<string, any>>().default({}),
+});
+
+export const coachFeedback = pgTable("coach_feedback", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  coachId: integer("coach_id").notNull().references(() => aiCoaches.id),
+  sessionId: integer("session_id").references(() => aiCoachSessions.id),
+  rating: integer("rating"),
+  feedback: text("feedback"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const coachRecommendations = pgTable("coach_recommendations", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  coachId: integer("coach_id").notNull().references(() => aiCoaches.id),
+  recommendationType: text("recommendation_type").notNull(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  content: json("content").$type<Record<string, any>>().notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  expiresAt: timestamp("expires_at"),
+  completed: boolean("completed").default(false),
+  completedAt: timestamp("completed_at"),
+  feedback: text("feedback"),
+});
+
+// Video model
 export const videos = pgTable("videos", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
   title: text("title").notNull(),
   description: text("description"),
+  sportType: text("sport_type").notNull(),
+  duration: integer("duration"), // in seconds
   filePath: text("file_path").notNull(),
-  uploadDate: timestamp("upload_date").defaultNow(),
-  analyzed: boolean("analyzed").default(false),
-  sportType: text("sport_type"),
   thumbnailPath: text("thumbnail_path"),
+  uploadDate: timestamp("upload_date").defaultNow(),
+  views: integer("views").default(0),
+  likes: integer("likes").default(0),
+  processed: boolean("processed").default(false),
+  analyzed: boolean("analyzed").default(false),
+  status: text("status").default("pending"), // pending, processing, ready, error
+  public: boolean("public").default(false),
 });
 
-// Analysis results from AI for videos
+// Video Analysis
 export const videoAnalyses = pgTable("video_analyses", {
   id: serial("id").primaryKey(),
   videoId: integer("video_id").notNull().references(() => videos.id),
-  analysisDate: timestamp("analysis_date").defaultNow(),
-  motionData: json("motion_data").notNull(), // Stores motion analysis data points
-  overallScore: integer("overall_score").notNull(), // 0-100
-  feedback: text("feedback").notNull(),
+  analysisData: jsonb("analysis_data").notNull(),
+  detectedObjects: text("detected_objects").array(),
+  motionData: jsonb("motion_data"),
+  overallScore: real("overall_score"),
+  feedback: text("feedback").array(),
   improvementTips: text("improvement_tips").array(),
-  keyFrameTimestamps: real("key_frame_timestamps").array(), // timestamps of key moments in the video
-  garScores: json("gar_scores"), // Detailed GAR scoring breakdown by category
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// User agreements table to track acceptance of terms
-export const userAgreements = pgTable("user_agreements", {
+// Video Highlights
+export const videoHighlights = pgTable("video_highlights", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  agreementType: text("agreement_type").notNull(), // nda, terms, privacy, etc.
-  version: text("version").notNull(), // Version of the agreement
-  acceptedAt: timestamp("accepted_at").defaultNow(),
-  ipAddress: text("ip_address"), // IP address of the user when accepted
-  userAgent: text("user_agent"), // Browser/device info
-});
-
-// Sport recommendations for athletes
-export const sportRecommendations = pgTable("sport_recommendations", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  sport: text("sport").notNull(),
-  matchPercentage: integer("match_percentage").notNull(), // 0-100
-  positionRecommendation: text("position_recommendation"),
-  potentialLevel: text("potential_level"), // e.g., NCAA Div I, Club, etc.
-  reasonForMatch: text("reason_for_match"),
-  recommendationDate: timestamp("recommendation_date").defaultNow(),
-});
-
-// API Keys for external services
-export const apiKeys = pgTable("api_keys", {
-  id: serial("id").primaryKey(),
-  keyType: text("key_type").notNull().unique(), // openai, stripe, sendgrid, twilio, twitter, reddit_client_id, reddit_client_secret, etc.
-  keyValue: text("key_value").notNull(),
-  addedAt: timestamp("added_at").defaultNow(),
-  lastUsed: timestamp("last_used"),
-  isActive: boolean("is_active").default(true),
-});
-
-// NCAA Clearinghouse eligibility tracking
-export const ncaaEligibility = pgTable("ncaa_eligibility", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  coreCoursesCompleted: integer("core_courses_completed").default(0),
-  coreCoursesRequired: integer("core_courses_required").default(16),
-  gpa: real("gpa"),
-  gpaMeetsRequirement: boolean("gpa_meets_requirement").default(false),
-  satScore: integer("sat_score"),
-  actScore: integer("act_score"),
-  testScoresMeetRequirement: boolean("test_scores_meet_requirement").default(false),
-  minimumRequiredTestScore: integer("minimum_required_test_score"),
-  isInternationalStudent: boolean("is_international_student").default(false),
-  countryOfEducation: text("country_of_education"),
-  diplomaType: text("diploma_type"),
-  internationalGradeScale: text("international_grade_scale"), // A-F, 1-10, 1-20, etc.
-  hasTranslatedDocuments: boolean("has_translated_documents").default(false),
-  amateurismStatus: text("amateurism_status").default("incomplete"), // incomplete, pending, verified
-  ncaaDivision: text("ncaa_division").default("division_i"), // division_i, division_ii
-  overallEligibilityStatus: text("overall_eligibility_status").default("incomplete"), // incomplete, partial, complete
-  academicRedshirt: boolean("academic_redshirt").default(false),
-  qualificationPercentage: integer("qualification_percentage").default(0), // 0-100
-  lastUpdated: timestamp("last_updated").defaultNow(),
-});
-
-// NCAA Core Course tracking
-export const ncaaCoreCourses = pgTable("ncaa_core_courses", {
-  id: serial("id").primaryKey(),
-  eligibilityId: integer("eligibility_id").notNull().references(() => ncaaEligibility.id),
-  courseName: text("course_name").notNull(),
-  courseType: text("course_type").notNull(), // english, math, science, social_science, additional
-  gradeEarned: text("grade_earned"),
-  originalGrade: text("original_grade"), // For international students, original grade before translation
-  translatedGrade: text("translated_grade"), // For international students, translated to US scale
-  gradePoints: real("grade_points"), // Calculated grade points for GPA
-  creditHours: real("credit_hours").notNull(),
-  qualityPoints: real("quality_points"), // creditHours * gradePoints
-  completed: boolean("completed").default(false),
-  inProgress: boolean("in_progress").default(false),
-  ncaaApproved: boolean("ncaa_approved").default(false),
-  verificationStatus: text("verification_status").default("pending"), // pending, verified, rejected
-  completionDate: date("completion_date"),
-  yearTaken: integer("year_taken"),
-  semesterTaken: text("semester_taken"), // fall, spring, summer
-  school: text("school"),
-  country: text("country"),
-  isInternationalCourse: boolean("is_international_course").default(false),
-  translationMethod: text("translation_method"), // How the grade was translated
-  notes: text("notes"),
-});
-
-// International grade scale reference
-export const gradeScales = pgTable("grade_scales", {
-  id: serial("id").primaryKey(),
-  country: text("country").notNull(),
-  educationSystem: text("education_system").notNull(), // e.g., A-levels, IB, French Baccalaureate
-  originalScale: json("original_scale").notNull(), // JSON with original grading scale
-  usEquivalentScale: json("us_equivalent_scale").notNull(), // JSON with US equivalent
-  conversionFormula: text("conversion_formula"), // Formula to convert grades if applicable
-  notes: text("notes"),
-  lastUpdated: timestamp("last_updated").defaultNow(),
-});
-
-// NCAA sliding scale reference data
-export const ncaaSlidingScales = pgTable("ncaa_sliding_scales", {
-  id: serial("id").primaryKey(),
-  effectiveDate: date("effective_date").notNull(),
-  division: text("division").notNull(), // division_i, division_ii
-  coreGpa: real("core_gpa").notNull(),
-  minSatScore: integer("min_sat_score"), // Minimum SAT score for this GPA level
-  minActScore: integer("min_act_score"), // Minimum ACT score for this GPA level
-  fullQualifierStatus: boolean("full_qualifier_status").default(true), // Whether this combination qualifies for full eligibility
-  academicRedshirtStatus: boolean("academic_redshirt_status").default(false), // Whether this combination qualifies for academic redshirt
-  notes: text("notes"),
-  isCurrentScale: boolean("is_current_scale").default(true),
-});
-
-// NCAA Document Management
-export const ncaaDocuments = pgTable("ncaa_documents", {
-  id: serial("id").primaryKey(),
-  eligibilityId: integer("eligibility_id").notNull().references(() => ncaaEligibility.id),
-  documentType: text("document_type").notNull(), // transcript, test_score, amateurism, medical, waiver
-  filePath: text("file_path").notNull(),
-  fileName: text("file_name").notNull(),
-  uploadDate: timestamp("upload_date").defaultNow(),
-  verificationStatus: text("verification_status").default("pending"), // pending, verified, rejected
-  verificationNotes: text("verification_notes"),
-  verifiedBy: integer("verified_by").references(() => users.id),
-  verificationDate: timestamp("verification_date"),
-});
-
-// NCAA Eligibility Center Registration
-export const ncaaRegistration = pgTable("ncaa_registration", {
-  id: serial("id").primaryKey(),
-  eligibilityId: integer("eligibility_id").notNull().references(() => ncaaEligibility.id),
-  ncaaId: text("ncaa_id"),
-  registrationDate: timestamp("registration_date"),
-  registrationStatus: text("registration_status").default("not_started"), // not_started, in_progress, completed
-  academicStatus: text("academic_status"), // qualifier, partial_qualifier, non_qualifier, pending
-  amateurismCertified: boolean("amateurism_certified").default(false),
-  divisionLevel: text("division_level"), // division_i, division_ii
-  finalCertificationDate: timestamp("final_certification_date"),
-});
-
-// Coach-athlete connections
-export const coachConnections = pgTable("coach_connections", {
-  id: serial("id").primaryKey(),
-  coachId: integer("coach_id").notNull().references(() => users.id),
-  athleteId: integer("athlete_id").notNull().references(() => users.id),
-  connectionStatus: text("connection_status").notNull().default("pending"), // pending, accepted, rejected
-  connectionDate: timestamp("connection_date").defaultNow(),
-  notes: text("notes"),
-  lastContact: timestamp("last_contact"),
-});
-
-// Achievements for gamification
-export const achievements = pgTable("achievements", {
-  id: serial("id").primaryKey(),
+  videoId: integer("video_id").notNull().references(() => videos.id),
   userId: integer("user_id").notNull().references(() => users.id),
   title: text("title").notNull(),
-  description: text("description").notNull(),
-  achievementType: text("achievement_type").notNull(), // video, profile, ncaa, connection
-  earnedDate: timestamp("earned_date").defaultNow(),
-  iconType: text("icon_type"), // For storing icon identifier
+  description: text("description"),
+  startTime: real("start_time").notNull(), // in seconds
+  endTime: real("end_time").notNull(), // in seconds
+  thumbnailPath: text("thumbnail_path"),
+  highlightPath: text("highlight_path"),
+  tags: text("tags").array(),
+  createdAt: timestamp("created_at").defaultNow(),
+  featured: boolean("featured").default(false),
+  views: integer("views").default(0),
+  likes: integer("likes").default(0),
+  status: text("status").default("processing"), // processing, ready, error
+  aiGenerated: boolean("ai_generated").default(false),
+  aiPrompt: text("ai_prompt"),
+  sportType: text("sport_type"),
+  garScore: real("gar_score"),
+  scoreBreakdown: jsonb("score_breakdown"),
+  includeOnHomePage: boolean("include_on_home_page").default(false),
 });
 
-// Messages between coaches and athletes
-export const messages = pgTable("messages", {
+// Highlight Generator Configuration
+export const highlightGeneratorConfigs = pgTable("highlight_generator_configs", {
   id: serial("id").primaryKey(),
-  senderId: integer("sender_id").notNull().references(() => users.id),
-  recipientId: integer("recipient_id").notNull().references(() => users.id),
-  content: text("content").notNull(),
-  createdAt: timestamp("sent_at").defaultNow(),
-  isRead: boolean("read").default(false),
+  sportType: text("sport_type").notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  promptTemplate: text("prompt_template").notNull(),
+  systemPrompt: text("system_prompt").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  active: boolean("active").default(true),
+  minConfidence: real("min_confidence").default(0.7),
+  modelParams: jsonb("model_params"),
+  aiProvider: text("ai_provider").default("anthropic"),
+  maxResponseTokens: integer("max_response_tokens").default(2000),
+  temperature: real("temperature").default(0.7),
+  detectionClasses: text("detection_classes").array(),
+  highlightMinDuration: real("highlight_min_duration").default(3),
+  highlightMaxDuration: real("highlight_max_duration").default(15),
+  autoPublish: boolean("auto_publish").default(false),
+  criteria: jsonb("criteria"),
 });
 
-// Blogs and articles
+// API Keys
+export const apiKeys = pgTable("api_keys", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  keyName: text("key_name").notNull(),
+  keyHash: text("key_hash").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  expiresAt: timestamp("expires_at"),
+  lastUsedAt: timestamp("last_used_at"),
+  active: boolean("active").default(true),
+  scopes: text("scopes").array(),
+});
+
+// Content Blocks
+export const contentBlocks = pgTable("content_blocks", {
+  id: serial("id").primaryKey(),
+  identifier: text("identifier").unique().notNull(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  section: text("section").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  active: boolean("active").default(true),
+  position: integer("position").default(0),
+  cssClass: text("css_class"),
+  mediaUrl: text("media_url"),
+});
+
+// Blog Posts
 export const blogPosts = pgTable("blog_posts", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
+  slug: text("slug").unique().notNull(),
+  excerpt: text("excerpt"),
   content: text("content").notNull(),
-  summary: text("summary").notNull(),
-  coverImage: text("cover_image"),
   authorId: integer("author_id").references(() => users.id),
-  category: text("category").notNull(), // nextup, analysis, combine, tips
-  publishDate: timestamp("publish_date").defaultNow(),
-  featured: boolean("featured").default(false),
-  slug: text("slug").notNull().unique(),
+  publishedAt: timestamp("published_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  status: text("status").default("draft"), // draft, published, archived
+  featuredImage: text("featured_image"),
+  category: text("category"),
   tags: text("tags").array(),
+  aiGenerated: boolean("ai_generated").default(false),
 });
 
-// NCAA Schools database
-export const ncaaSchools = pgTable("ncaa_schools", {
+// Featured Athletes
+export const featuredAthletes = pgTable("featured_athletes", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id).unique(),
+  sportType: text("sport_type").notNull(),
+  highlight: text("highlight"),
+  quote: text("quote"),
+  achievements: text("achievements"),
+  mediaUrl: text("media_url"),
+  startDate: timestamp("start_date").defaultNow(),
+  endDate: timestamp("end_date"),
+  active: boolean("active").default(true),
+  position: integer("position").default(0),
+});
+
+// GAR Categories
+export const garCategories = pgTable("gar_categories", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  abbreviation: text("abbreviation"),
-  nickname: text("nickname"),
-  division: text("division").notNull(), // Division I, II, III
-  conference: text("conference"),
-  city: text("city").notNull(),
-  state: text("state").notNull(),
-  website: text("website"),
-  logo_url: text("logo_url"),
-  primary_color: text("primary_color"),
-  secondary_color: text("secondary_color"),
-  athletic_department_url: text("athletic_department_url"),
-  recruiting_url: text("recruiting_url"),
-  enrollment_count: integer("enrollment_count"),
-  is_private: boolean("is_private"),
-  founded: integer("founded"),
-  last_updated: timestamp("last_updated").defaultNow(),
-  updated_by: integer("updated_by").references(() => users.id),
+  sportType: text("sport_type"),
+  description: text("description"),
+  weight: real("weight").default(1.0),
+  iconName: text("icon_name"),
+  color: text("color"),
+  active: boolean("active").default(true),
 });
 
-export const ncaaSchoolsRelations = relations(ncaaSchools, ({ many }) => ({
-  athleticDepartments: many(athleticDepartments),
-  sportPrograms: many(sportPrograms),
-}));
+// GAR Subcategories
+export const garSubcategories = pgTable("gar_subcategories", {
+  id: serial("id").primaryKey(),
+  categoryId: integer("category_id").notNull().references(() => garCategories.id),
+  name: text("name").notNull(),
+  description: text("description"),
+  weight: real("weight").default(1.0),
+  iconName: text("icon_name"),
+  active: boolean("active").default(true),
+});
 
-// NCAA School Athletic Departments
+// GAR Athlete Ratings
+export const garAthleteRatings = pgTable("gar_athlete_ratings", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  categoryId: integer("category_id").notNull().references(() => garCategories.id),
+  subcategoryId: integer("subcategory_id").references(() => garSubcategories.id),
+  rating: real("rating").notNull(),
+  videoId: integer("video_id").references(() => videos.id),
+  source: text("source").default("manual"), // manual, ai, coach
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// GAR Rating History
+export const garRatingHistory = pgTable("gar_rating_history", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  ratings: jsonb("ratings").notNull(), // Stored as { categoryId: rating }
+  totalScore: real("total_score"),
+  recordedAt: timestamp("recorded_at").defaultNow(),
+  source: text("source").default("analysis"), // analysis, manual, coach
+  notes: text("notes"),
+});
+
+// Athlete Star Profiles
+export const athleteStarProfiles = pgTable("athlete_star_profiles", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id).unique(),
+  starLevel: integer("star_level").default(1),
+  starPoints: integer("star_points").default(0),
+  tier: text("tier").default("bronze"), // bronze, silver, gold, platinum
+  unlocks: text("unlocks").array(),
+  reachedAt: timestamp("reached_at").defaultNow(),
+  lastUpdate: timestamp("last_update").defaultNow(),
+  badges: jsonb("badges"),
+  achievements: jsonb("achievements"),
+  streakDays: integer("streak_days").default(0),
+  lastStreakUpdate: timestamp("last_streak_update"),
+});
+
+// Combine Tour Events
+export const combineTourEvents = pgTable("combine_tour_events", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  location: text("location").notNull(),
+  city: text("city").notNull(),
+  state: text("state"),
+  country: text("country").default("USA"),
+  venueDetails: text("venue_details"),
+  startDate: date("start_date").notNull(),
+  endDate: date("end_date").notNull(),
+  registrationUrl: text("registration_url"),
+  description: text("description"),
+  sportTypes: text("sport_types").array(),
+  ageGroups: text("age_groups").array(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  status: text("status").default("upcoming"), // upcoming, ongoing, completed, cancelled
+  featured: boolean("featured").default(false),
+  capacity: integer("capacity"),
+  registeredCount: integer("registered_count").default(0),
+  price: real("price"),
+  discountCode: text("discount_code"),
+  bannerImage: text("banner_image"),
+  contactEmail: text("contact_email"),
+  contactPhone: text("contact_phone"),
+  slug: text("slug").unique(),
+  latitude: real("latitude"),
+  longitude: real("longitude"),
+  activeNetworkId: text("active_network_id"),
+});
+
+// Event Registrations
+export const registrations = pgTable("registrations", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  eventId: integer("event_id").notNull().references(() => combineTourEvents.id),
+  status: text("status").notNull().default("registered"), // registered, confirmed, cancelled, waitlisted
+  externalId: text("external_id"), // ID in the external registration system
+  registeredAt: timestamp("registered_at").defaultNow(),
+  paymentStatus: text("payment_status").default("pending"), // pending, paid, refunded, failed
+  paymentAmount: real("payment_amount"),
+  notes: text("notes"),
+  checkedIn: boolean("checked_in").default(false),
+  checkedInAt: timestamp("checked_in_at"),
+});
+
+// Payments
+export const payments = pgTable("payments", {
+  id: serial("id").primaryKey(),
+  registrationId: integer("registration_id").notNull().references(() => registrations.id),
+  amount: real("amount").notNull(),
+  currency: text("currency").default("USD"),
+  status: text("status").notNull(), // success, pending, failed, refunded
+  externalId: text("external_id"), // ID in the payment processor's system
+  processedAt: timestamp("processed_at").defaultNow(),
+  paymentMethod: text("payment_method"), // credit_card, paypal, etc.
+  transactionData: jsonb("transaction_data"),
+});
+
+// NCAA Schools Database
+export const ncaaSchools = pgTable("ncaa_schools", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().unique(),
+  nickname: text("nickname"),
+  abbreviation: text("abbreviation"),
+  location: text("location").notNull(),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  division: text("division").notNull(), // NCAA Division I, II, III
+  conference: text("conference"),
+  website: text("website"),
+  logoUrl: text("logo_url"),
+  primaryColor: text("primary_color"),
+  secondaryColor: text("secondary_color"),
+  notes: text("notes"),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+});
+
 export const athleticDepartments = pgTable("athletic_departments", {
   id: serial("id").primaryKey(),
   school_id: integer("school_id").notNull().references(() => ncaaSchools.id),
-  name: text("name").notNull(),
-  address: text("address"),
+  director_name: text("director_name"),
   phone: text("phone"),
   email: text("email"),
-  main_contact_name: text("main_contact_name"),
+  address: text("address"),
   website: text("website"),
   social_media: jsonb("social_media"),
-  budget: numeric("budget", { precision: 15, scale: 2 }),
-  staff_count: integer("staff_count"),
-  facilities_info: text("facilities_info"),
-  last_updated: timestamp("last_updated").defaultNow(),
-  updated_by: integer("updated_by").references(() => users.id),
+  lastUpdated: timestamp("last_updated").defaultNow(),
 });
+
+export const sportPrograms = pgTable("sport_programs", {
+  id: serial("id").primaryKey(),
+  school_id: integer("school_id").notNull().references(() => ncaaSchools.id),
+  sport: text("sport").notNull(),
+  division: text("division"),
+  gender: text("gender").notNull(), // Men, Women, Coed
+  website: text("website"),
+  twitter: text("twitter"),
+  instagram: text("instagram"),
+  facilities: text("facilities"),
+  achievements: text("achievements"),
+  roster_size: integer("roster_size"),
+  scholarship_info: text("scholarship_info"),
+  last_updated: timestamp("last_updated").defaultNow(),
+}, (table) => {
+  return {
+    sportProgramUnique: unique().on(table.school_id, table.sport, table.gender),
+  };
+});
+
+export const coachingStaff = pgTable("coaching_staff", {
+  id: serial("id").primaryKey(),
+  sport_program_id: integer("sport_program_id").notNull().references(() => sportPrograms.id),
+  name: text("name").notNull(),
+  position: text("position").notNull(), // Head Coach, Assistant Coach, etc.
+  bio: text("bio"),
+  email: text("email"),
+  phone: text("phone"),
+  alma_mater: text("alma_mater"),
+  years_at_school: integer("years_at_school"),
+  previous_schools: text("previous_schools").array(),
+  photo_url: text("photo_url"),
+  twitter: text("twitter"),
+  last_updated: timestamp("last_updated").defaultNow(),
+  linkedin: text("linkedin"),
+});
+
+export const recruitingContacts = pgTable("recruiting_contacts", {
+  id: serial("id").primaryKey(),
+  sport_program_id: integer("sport_program_id").notNull().references(() => sportPrograms.id),
+  name: text("name").notNull(),
+  position: text("position").notNull(),
+  email: text("email"),
+  phone: text("phone"),
+  regions: text("regions").array(), // Geographic regions this contact handles
+  recruiting_class_years: text("recruiting_class_years").array(), // Which graduation years they're recruiting
+  notes: text("notes"),
+  preferred_contact_method: text("preferred_contact_method"),
+  last_updated: timestamp("last_updated").defaultNow(),
+});
+
+// Skill Tree and Training System
+export const skillTreeNodes = pgTable("skill_tree_nodes", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  sportType: text("sport_type").notNull(),
+  position: text("position"),
+  level: integer("level").notNull().default(1),
+  xpToUnlock: integer("xp_to_unlock").default(0),
+  iconUrl: text("icon_url"),
+  unlockCriteria: jsonb("unlock_criteria"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  active: boolean("active").default(true),
+  prerequisiteSkills: text("prerequisite_skills").array(),
+  skillCategory: text("skill_category").notNull(), // e.g., "Offensive", "Defensive", "Physical"
+  difficulty: text("difficulty").default("intermediate"), // beginner, intermediate, advanced, elite
+});
+
+export const skillTreeRelationships = pgTable("skill_tree_relationships", {
+  id: serial("id").primaryKey(),
+  parentNodeId: integer("parent_node_id").notNull().references(() => skillTreeNodes.id),
+  childNodeId: integer("child_node_id").notNull().references(() => skillTreeNodes.id),
+  relationshipType: text("relationship_type").default("requires"), // requires, enhances, unlocks
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => {
+  return {
+    relationshipUnique: unique().on(table.parentNodeId, table.childNodeId),
+  };
+});
+
+export const skills = pgTable("skills", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  skillNodeId: integer("skill_node_id").notNull().references(() => skillTreeNodes.id),
+  level: integer("level").default(1),
+  xp: integer("xp").default(0),
+  unlocked: boolean("unlocked").default(false),
+  unlockedAt: timestamp("unlocked_at"),
+  lastTrainedAt: timestamp("last_trained_at"),
+  notes: text("notes"),
+}, (table) => {
+  return {
+    userSkillUnique: unique().on(table.userId, table.skillNodeId),
+  };
+});
+
+export const trainingDrills = pgTable("training_drills", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  sport: text("sport").notNull(),
+  position: text("position"),
+  difficulty: text("difficulty").default("intermediate"), // beginner, intermediate, advanced, elite
+  estimatedDuration: integer("estimated_duration"), // in minutes
+  equipmentNeeded: text("equipment_needed").array(),
+  videoUrl: text("video_url"),
+  instructions: text("instructions").array(),
+  tips: text("tips").array(),
+  skillNodeId: integer("skill_node_id").references(() => skillTreeNodes.id),
+  xpReward: integer("xp_reward").default(10),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  active: boolean("active").default(true),
+  tags: text("tags").array(),
+  category: text("category"),
+  thumbnailUrl: text("thumbnail_url"),
+});
+
+export const trainingDrillsExtended = pgTable("training_drills_extended", {
+  id: serial("id").primaryKey(),
+  drillId: integer("drill_id").notNull().references(() => trainingDrills.id),
+  fieldSetup: text("field_setup"),
+  coachTips: text("coach_tips"),
+  variations: jsonb("variations"),
+  progressions: jsonb("progressions"),
+  metrics: text("metrics").array(), // What to measure for this drill
+  idealOutcomes: text("ideal_outcomes"),
+  commonErrors: text("common_errors").array(),
+  videoAnnotations: jsonb("video_annotations"),
+  recommendedFrequency: text("recommended_frequency"),
+  warmupRequired: boolean("warmup_required").default(true),
+  relatedDrillIds: integer("related_drill_ids").array(),
+});
+
+export const userDrillProgress = pgTable("user_drill_progress", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  drillId: integer("drill_id").notNull().references(() => trainingDrills.id),
+  completionCount: integer("completion_count").default(0),
+  lastCompletedAt: timestamp("last_completed_at"),
+  favorite: boolean("favorite").default(false),
+  notes: text("notes"),
+  personalBests: jsonb("personal_bests"),
+  trend: text("trend"), // improving, steady, declining
+  feedback: text("feedback"),
+  rating: integer("rating"), // User rating 1-5
+  totalTimeSpent: integer("total_time_spent"), // in minutes
+}, (table) => {
+  return {
+    userDrillUnique: unique().on(table.userId, table.drillId),
+  };
+});
+
+// CyberShield Security - User tokens
+export const userTokens = pgTable("user_tokens", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  token: text("token").unique().notNull(),
+  tokenType: text("token_type").default("access"), // access, refresh, remember, reset
+  description: text("description"),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  lastUsedAt: timestamp("last_used_at"),
+  userAgent: text("user_agent"),
+  ipAddress: text("ip_address"),
+  isRevoked: boolean("is_revoked").default(false),
+});
+
+// User Agreements
+export const userAgreements = pgTable("user_agreements", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  agreementType: text("agreement_type").notNull(), // tos, privacy_policy, parental_consent
+  version: text("version").notNull(),
+  acceptedAt: timestamp("accepted_at").defaultNow(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+});
+
+// Relations
+export const usersRelations = relations(users, ({ many, one }) => ({
+  videos: many(videos),
+  athleteProfile: one(athleteProfiles, {
+    fields: [users.id],
+    references: [athleteProfiles.userId],
+  }),
+  starProfile: one(athleteStarProfiles, {
+    fields: [users.id],
+    references: [athleteStarProfiles.userId],
+  }),
+  featuredAthlete: one(featuredAthletes, {
+    fields: [users.id],
+    references: [featuredAthletes.userId],
+  }),
+  tokens: many(userTokens),
+  garRatings: many(garAthleteRatings),
+  garHistory: many(garRatingHistory),
+  aiCoachSessions: many(aiCoachSessions),
+  skills: many(skills),
+  drillProgress: many(userDrillProgress),
+}));
+
+export const videoRelations = relations(videos, ({ one, many }) => ({
+  user: one(users, {
+    fields: [videos.userId],
+    references: [users.id],
+  }),
+  analysis: one(videoAnalyses, {
+    fields: [videos.id],
+    references: [videoAnalyses.videoId],
+  }),
+  highlights: many(videoHighlights),
+}));
+
+export const videoAnalysisRelations = relations(videoAnalyses, ({ one }) => ({
+  video: one(videos, {
+    fields: [videoAnalyses.videoId],
+    references: [videos.id],
+  }),
+}));
+
+export const videoHighlightRelations = relations(videoHighlights, ({ one }) => ({
+  video: one(videos, {
+    fields: [videoHighlights.videoId],
+    references: [videos.id],
+  }),
+  user: one(users, {
+    fields: [videoHighlights.userId],
+    references: [users.id],
+  }),
+}));
+
+export const athleteProfileRelations = relations(athleteProfiles, ({ one }) => ({
+  user: one(users, {
+    fields: [athleteProfiles.userId],
+    references: [users.id],
+  }),
+}));
+
+export const blogPostRelations = relations(blogPosts, ({ one }) => ({
+  author: one(users, {
+    fields: [blogPosts.authorId],
+    references: [users.id],
+  }),
+}));
+
+export const featuredAthleteRelations = relations(featuredAthletes, ({ one }) => ({
+  user: one(users, {
+    fields: [featuredAthletes.userId],
+    references: [users.id],
+  }),
+}));
+
+export const garCategoryRelations = relations(garCategories, ({ many }) => ({
+  subcategories: many(garSubcategories),
+  ratings: many(garAthleteRatings),
+}));
+
+export const garSubcategoryRelations = relations(garSubcategories, ({ one, many }) => ({
+  category: one(garCategories, {
+    fields: [garSubcategories.categoryId],
+    references: [garCategories.id],
+  }),
+  ratings: many(garAthleteRatings),
+}));
+
+export const garAthleteRatingRelations = relations(garAthleteRatings, ({ one }) => ({
+  user: one(users, {
+    fields: [garAthleteRatings.userId],
+    references: [users.id],
+  }),
+  category: one(garCategories, {
+    fields: [garAthleteRatings.categoryId],
+    references: [garCategories.id],
+  }),
+  subcategory: one(garSubcategories, {
+    fields: [garAthleteRatings.subcategoryId],
+    references: [garSubcategories.id],
+  }),
+  video: one(videos, {
+    fields: [garAthleteRatings.videoId],
+    references: [videos.id],
+  }),
+}));
+
+export const garRatingHistoryRelations = relations(garRatingHistory, ({ one }) => ({
+  user: one(users, {
+    fields: [garRatingHistory.userId],
+    references: [users.id],
+  }),
+}));
+
+export const athleteStarProfileRelations = relations(athleteStarProfiles, ({ one }) => ({
+  user: one(users, {
+    fields: [athleteStarProfiles.userId],
+    references: [users.id],
+  }),
+}));
+
+export const userTokenRelations = relations(userTokens, ({ one }) => ({
+  user: one(users, {
+    fields: [userTokens.userId],
+    references: [users.id],
+  }),
+}));
+
+export const userAgreementRelations = relations(userAgreements, ({ one }) => ({
+  user: one(users, {
+    fields: [userAgreements.userId],
+    references: [users.id],
+  }),
+}));
+
+// NCAA Schools database relations
+export const ncaaSchoolsRelations = relations(ncaaSchools, ({ one, many }) => ({
+  athleticDepartment: one(athleticDepartments, {
+    fields: [ncaaSchools.id],
+    references: [athleticDepartments.school_id],
+  }),
+  sportPrograms: many(sportPrograms),
+}));
 
 export const athleticDepartmentsRelations = relations(athleticDepartments, ({ one }) => ({
   school: one(ncaaSchools, {
@@ -347,1889 +743,6 @@ export const athleticDepartmentsRelations = relations(athleticDepartments, ({ on
     references: [ncaaSchools.id],
   }),
 }));
-
-// NCAA School Sports Programs
-export const sportPrograms = pgTable("sport_programs", {
-  id: serial("id").primaryKey(),
-  school_id: integer("school_id").notNull().references(() => ncaaSchools.id),
-  sport: text("sport").notNull(), // e.g., "Football", "Basketball", "Soccer", etc.
-  gender: text("gender").notNull(), // "Men", "Women", "Coed"
-  division: text("division"), // In case a specific sport is in a different division than the school
-  conference: text("conference"), // In case a specific sport is in a different conference
-  is_active: boolean("is_active").default(true),
-  stadium_name: text("stadium_name"),
-  stadium_capacity: integer("stadium_capacity"),
-  championship_years: text("championship_years").array(),
-  team_website: text("team_website"),
-  team_social_media: jsonb("team_social_media"), // JSON with social media links
-  roster_size: integer("roster_size"),
-  scholarship_count: integer("scholarship_count"),
-  last_updated: timestamp("last_updated").defaultNow(),
-  updated_by: integer("updated_by").references(() => users.id),
-});
-
-// NCAA Coaching Staff
-export const coachingStaff = pgTable("coaching_staff", {
-  id: serial("id").primaryKey(),
-  sport_program_id: integer("sport_program_id").notNull().references(() => sportPrograms.id),
-  name: text("name").notNull(),
-  title: text("title").notNull(), // Head Coach, Assistant Coach, etc.
-  email: text("email"),
-  phone: text("phone"),
-  bio: text("bio"),
-  photo_url: text("photo_url"),
-  years_in_position: integer("years_in_position"),
-  career_record: text("career_record"),
-  specialization: text("specialization"), // e.g., Offensive Coordinator, Defensive Coach, etc.
-  previous_schools: text("previous_schools").array(),
-  playing_experience: text("playing_experience"),
-  education: text("education"),
-  is_recruiter: boolean("is_recruiter").default(false),
-  recruiting_regions: text("recruiting_regions").array(),
-  social_media_links: jsonb("social_media_links"),
-  last_updated: timestamp("last_updated").defaultNow(),
-  updated_by: integer("updated_by").references(() => users.id),
-});
-
-// NCAA Recruiting Contacts (for detailed recruiting staff)
-export const recruitingContacts = pgTable("recruiting_contacts", {
-  id: serial("id").primaryKey(),
-  sport_program_id: integer("sport_program_id").notNull().references(() => sportPrograms.id),
-  name: text("name").notNull(),
-  title: text("title").notNull(),
-  email: text("email"),
-  phone: text("phone"),
-  preferred_contact_method: text("preferred_contact_method"),
-  regions: text("regions").array(), // Recruiting regions
-  positions: text("positions").array(), // Positions they recruit for
-  notes: text("notes"),
-  best_time_to_contact: text("best_time_to_contact"),
-  is_active: boolean("is_active").default(true),
-  last_updated: timestamp("last_updated").defaultNow(),
-  updated_by: integer("updated_by").references(() => users.id),
-});
-
-// Site images for logos, banners, backgrounds, etc.
-export const siteImages = pgTable("site_images", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  path: text("path").notNull(),
-  alt: text("alt").notNull(),
-  location: text("location").notNull(), // "logo", "header", "background", "footer-logo", "banner", "icon"
-  active: boolean("active").default(true),
-  uploadDate: timestamp("upload_date").defaultNow(),
-});
-
-// Content blocks for editable site content like "What Makes Us Different" section
-export const contentBlocks = pgTable("content_blocks", {
-  id: serial("id").primaryKey(),
-  identifier: text("identifier").notNull().unique(), // unique key to identify this content block
-  title: text("title").notNull(),
-  content: text("content").notNull(),
-  section: text("section").notNull(), // e.g., "home", "about", "services"
-  order: integer("order").default(0),
-  active: boolean("active").default(true),
-  lastUpdated: timestamp("last_updated").defaultNow(),
-  lastUpdatedBy: integer("last_updated_by").references(() => users.id),
-  metadata: jsonb("metadata"), // for storing additional structured data
-});
-
-// Featured athletes 
-export const featuredAthletes = pgTable("featured_athletes", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  coverImage: text("cover_image"),
-  featuredVideo: text("featured_video").references(() => videos.id),
-  highlightText: text("highlight_text").notNull(),
-  sportPosition: text("sport_position"),
-  starRating: integer("star_rating").notNull(),
-  featuredStats: json("featured_stats"),
-  featuredDate: timestamp("featured_date").defaultNow(),
-  order: integer("order").default(0),
-  active: boolean("active").default(true),
-});
-
-// Skill tree nodes definition (parent skills)
-export const skillTreeNodes = pgTable("skill_tree_nodes", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  sportType: text("sport_type"), // null for general athletic skills
-  position: text("position"), // null for skills not specific to a position
-  category: text("category").notNull(), // speed, strength, agility, technique, sport-specific, etc.
-  level: integer("level").notNull().default(1), // Skill tree level (top level = 1)
-  xpToUnlock: integer("xp_to_unlock").default(0), // XP needed to unlock this skill
-  iconPath: text("icon_path"), // Visual representation for the skill tree
-  unlockRequirement: text("unlock_requirement"), // Description of requirements to unlock
-  sortOrder: integer("sort_order").default(0), // Order within the same level
-  createdAt: timestamp("created_at").defaultNow(),
-  isActive: boolean("is_active").default(true),
-});
-
-// Skill tree relationships (connects parent skills to child skills)
-export const skillTreeRelationships = pgTable("skill_tree_relationships", {
-  id: serial("id").primaryKey(),
-  parentId: integer("parent_id").references(() => skillTreeNodes.id),
-  childId: integer("child_id").notNull().references(() => skillTreeNodes.id),
-  requirement: text("requirement"), // e.g., "parent must be level 3"
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-// Player-specific skill progress (athlete's actual skills)
-export const skills = pgTable("skills", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  skillNodeId: integer("skill_node_id").notNull().references(() => skillTreeNodes.id),
-  skillName: text("skill_name").notNull(),
-  skillCategory: text("skill_category").notNull(), // speed, strength, agility, technique, etc
-  skillLevel: integer("skill_level").notNull().default(0), // 0-5 rating
-  isUnlocked: boolean("is_unlocked").default(false),
-  xpPoints: integer("xp_points").notNull().default(0),
-  nextLevelXp: integer("next_level_xp").notNull().default(100),
-  updatedAt: timestamp("updated_at").defaultNow(),
-  lastPracticed: timestamp("last_practiced"),
-});
-
-// Training drills for skills
-export const trainingDrills = pgTable("training_drills", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  skillNodeId: integer("skill_node_id").references(() => skillTreeNodes.id),
-  difficulty: text("difficulty").notNull(), // beginner, intermediate, advanced
-  sportType: text("sport_type"), // null for general athletic drills
-  position: text("position"), // null for drills not specific to a position
-  category: text("category").notNull(), // speed, strength, agility, etc.
-  duration: integer("duration").notNull(), // in minutes
-  equipment: text("equipment").array(), // required equipment
-  targetMuscles: text("target_muscles").array(), // muscles targeted
-  videoUrl: text("video_url"), // demonstration video
-  imageUrl: text("image_url"), // illustration image
-  instructions: text("instructions").notNull(), // step-by-step instructions
-  tips: text("tips").array(), // coaching tips
-  variations: text("variations").array(), // variations of the drill
-
-  // Required to track status in the skill tree visualization
-  xpReward: integer("xp_reward").default(25), // XP awarded for completing the drill
-  requiredRepetitions: integer("required_repetitions").default(1), // How many times to complete
-  timeRequirement: integer("time_requirement"), // Required time in seconds (for timed drills)
-  unlockRequirement: text("unlock_requirement"), // Textual description of unlock requirements
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Tracks user progress on specific drills
-export const userDrillProgress = pgTable("user_drill_progress", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  drillId: integer("drill_id").notNull().references(() => trainingDrills.id),
-  timesCompleted: integer("times_completed").default(0),
-  lastCompleted: timestamp("last_completed"),
-  bestTime: integer("best_time"), // Best time in seconds (for timed drills)
-  personalBest: integer("personal_best"), // Best performance metric (reps, weight, etc.)
-  favorite: boolean("favorite").default(false),
-  mastered: boolean("mastered").default(false),
-  notes: text("notes"),
-  progress: integer("progress").default(0), // 0-100% completion progress
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Additional fields for training drills
-export const trainingDrillsExtended = pgTable("training_drills_extended", {
-  id: serial("id").primaryKey(),
-  drillId: integer("drill_id").notNull().references(() => trainingDrills.id),
-  isAiGenerated: boolean("is_ai_generated").default(false),
-  aiPromptUsed: text("ai_prompt_used"), // Store the prompt used to generate this drill
-  sourceId: text("source_id"), // ID of original source if imported
-});
-
-// Challenges for workout and training gamification
-export const challenges = pgTable("challenges", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  difficulty: text("difficulty").notNull(), // easy, medium, hard
-  xpReward: integer("xp_reward").notNull(),
-  category: text("category").notNull(), // speed, strength, agility, etc
-  createdAt: timestamp("created_at").defaultNow(),
-  expiresAt: timestamp("expires_at"),
-  creatorId: integer("creator_id").references(() => users.id), // null for system challenges
-});
-
-// Athlete challenge participation 
-export const athleteChallenges = pgTable("athlete_challenges", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  challengeId: integer("challenge_id").notNull().references(() => challenges.id),
-  status: text("status").notNull().default("accepted"), // accepted, completed, failed
-  startedAt: timestamp("started_at").defaultNow(),
-  completedAt: timestamp("completed_at"),
-  proofUrl: text("proof_url"), // video or photo proof of completion
-});
-
-// Recovery tracking for athletes
-export const recoveryLogs = pgTable("recovery_logs", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  logDate: date("log_date").notNull().defaultNow(),
-  sleepHours: real("sleep_hours"),
-  sorenessLevel: integer("soreness_level"), // 1-10
-  energyLevel: integer("energy_level"), // 1-10
-  hydrationLevel: integer("hydration_level"), // 1-10
-  notes: text("notes"),
-  overallRecoveryScore: integer("overall_recovery_score"), // 0-100
-});
-
-// Social Media Scouting & Recruitment Tools
-export const socialMediaScouts = pgTable("social_media_scouts", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  active: boolean("active").default(true),
-  lastRunAt: timestamp("last_run_at"),
-  sportFocus: text("sport_focus").array(), // basketball, football, soccer, etc.
-  ageRangeMin: integer("age_range_min").default(12),
-  ageRangeMax: integer("age_range_max").default(18),
-  locationFocus: text("location_focus").array(), // States or regions to search
-  keywordsToTrack: text("keywords_to_track").array(),
-  platformsToSearch: text("platforms_to_search").array(), // instagram, twitter, tiktok, etc.
-  createdAt: timestamp("created_at").defaultNow(),
-  createdBy: integer("created_by").references(() => users.id),
-  discoveryCount: integer("discovery_count").default(0), // How many athletes discovered
-});
-
-// Media Partnership Scouts - finds media outlets, podcasts, Instagram pages for cross-branding
-export const mediaPartnershipScouts = pgTable("media_partnership_scouts", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  active: boolean("active").default(true),
-  lastRunAt: timestamp("last_run_at"),
-  sportFocus: text("sport_focus").array(), // Which sports to focus on
-  mediaTypes: text("media_types").array(), // podcast, instagram, youtube, tiktok, newsletter, blog, etc.
-  followerThreshold: integer("follower_threshold").default(10000), // Minimum followers/subscribers
-  locationFocus: text("location_focus").array(), // Geographic focus
-  keywordsToTrack: text("keywords_to_track").array(), // Relevant keywords
-  exclusionTerms: text("exclusion_terms").array(), // Terms to avoid
-  createdAt: timestamp("created_at").defaultNow(),
-  createdBy: integer("created_by").references(() => users.id),
-  discoveryCount: integer("discovery_count").default(0),
-});
-
-// Media Partnership Discoveries
-export const mediaPartnerDiscoveries = pgTable("media_partner_discoveries", {
-  id: serial("id").primaryKey(),
-  scoutId: integer("scout_id").references(() => mediaPartnershipScouts.id),
-  name: text("name").notNull(), // Name of the media outlet/podcast/page
-  platform: text("platform").notNull(), // instagram, podcast, youtube, etc.
-  url: text("url").notNull(), // Profile/channel URL
-  contactName: text("contact_name"), // Name of primary contact
-  contactEmail: text("contact_email"),
-  contactPhone: text("contact_phone"),
-  followerCount: integer("follower_count"),
-  audienceType: text("audience_type"), // athletes, coaches, parents, fans, etc.
-  averageEngagement: real("average_engagement"), // Percentage of followers who engage
-  sports: text("sports").array(), // Sports they cover
-  location: text("location"), // Geographic base
-  recentTopics: text("recent_topics").array(), // Recent trending topics
-  contentQuality: integer("content_quality").default(0), // AI-rated quality score (0-100)
-  relevanceScore: integer("relevance_score").default(0), // AI-rated relevance to platform (0-100)
-  partnershipPotential: integer("partnership_potential").default(0), // AI-rated potential (0-100)
-  discoveredAt: timestamp("discovered_at").defaultNow(),
-  lastCheckedAt: timestamp("last_checked_at").defaultNow(),
-  status: text("status").default("new"), // new, contacted, negotiating, partnered, rejected
-  assignedTo: integer("assigned_to").references(() => users.id),
-  notes: text("notes"),
-  partnershipTerms: text("partnership_terms"), // Details of any established partnership
-  partnershipStartDate: timestamp("partnership_start_date"),
-  partnershipEndDate: timestamp("partnership_end_date"),
-  partnershipResults: json("partnership_results") // Metrics from the partnership
-});
-
-// City Influencer Scouts - finds top sports influencers in each city for Get Verified Combine events
-export const cityInfluencerScouts = pgTable("city_influencer_scouts", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  active: boolean("active").default(true),
-  lastRunAt: timestamp("last_run_at"),
-  city: text("city").notNull(), // Target city
-  state: text("state").notNull(), // State/province
-  sportFocus: text("sport_focus").array(), // basketball, football, soccer, etc.
-  platforms: text("platforms").array(), // instagram, tiktok, youtube, etc.
-  minFollowers: integer("min_followers").default(5000),
-  maxInfluencers: integer("max_influencers").default(10), // Number of top influencers to identify
-  createdAt: timestamp("created_at").defaultNow(),
-  createdBy: integer("created_by").references(() => users.id),
-  discoveryCount: integer("discovery_count").default(0),
-  lastUpdated: timestamp("last_updated").defaultNow(),
-  combineEventId: integer("combine_event_id"), // Link to combine event if applicable
-});
-
-// City Influencer Discoveries
-export const cityInfluencerDiscoveries = pgTable("city_influencer_discoveries", {
-  id: serial("id").primaryKey(),
-  scoutId: integer("scout_id").references(() => cityInfluencerScouts.id),
-  name: text("name").notNull(),
-  username: text("username").notNull(),
-  platform: text("platform").notNull(),
-  url: text("url").notNull(),
-  bio: text("bio"),
-  followerCount: integer("follower_count"),
-  engagementRate: real("engagement_rate"), // Average engagement percentage
-  audienceDemo: json("audience_demo"), // Demographics of audience
-  sports: text("sports").array(),
-  localityScore: integer("locality_score").default(0), // How connected to the local area (0-100)
-  influenceRank: integer("influence_rank"), // Rank within the city (1-10)
-  contactEmail: text("contact_email"),
-  contactPhone: text("contact_phone"),
-  discoveredAt: timestamp("discovered_at").defaultNow(),
-  lastCheckedAt: timestamp("last_checked_at").defaultNow(),
-  status: text("status").default("new"), // new, contacted, confirmed, declined
-  assignedTo: integer("assigned_to").references(() => users.id),
-  notes: text("notes"),
-  combineRole: text("combine_role"), // Role at the Get Verified Combine
-  compensation: json("compensation"), // Compensation details
-  mediaDeliverables: text("media_deliverables").array(), // Content they'll create
-  contractStatus: text("contract_status").default("none"), // none, pending, signed
-  pastPerformance: json("past_performance"), // Metrics from past partnerships
-});
-
-// Transfer Portal Monitoring System
-export const transferPortalMonitors = pgTable("transfer_portal_monitors", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  active: boolean("active").default(true),
-  sportType: text("sport_type").notNull(), // basketball, football, soccer, etc.
-  divisions: text("divisions").array(), // NCAA D1, D2, D3, NAIA, JUCO, etc.
-  conferences: text("conferences").array(), // SEC, Big Ten, ACC, etc.
-  monitorType: text("monitor_type").notNull(), // roster-changes, player-portal-entries, commitment-flips
-  updateFrequency: integer("update_frequency").default(360), // seconds between updates (default: 6 minutes)
-  lastRunAt: timestamp("last_run_at"),
-  alertThreshold: integer("alert_threshold").default(3), // Number of changes to trigger alert
-  notifyCoaches: boolean("notify_coaches").default(true),
-  positionGroups: text("position_groups").array(), // QB, RB, WR, etc. for football
-  createdAt: timestamp("created_at").defaultNow(),
-  createdBy: integer("created_by").references(() => users.id),
-  transferCount: integer("transfer_count").default(0), // Number of transfers detected
-});
-
-// NCAA Team Rosters
-export const ncaaTeamRosters = pgTable("ncaa_team_rosters", {
-  id: serial("id").primaryKey(),
-  school: text("school").notNull(),
-  mascot: text("mascot"),
-  conference: text("conference").notNull(),
-  division: text("division").notNull(), // D1, D2, D3
-  sport: text("sport").notNull(),
-  season: text("season").notNull(), // 2024-2025
-  rosterCount: integer("roster_count"), // Current player count
-  scholarshipCount: integer("scholarship_count"), // Current scholarship count
-  scholarshipLimit: integer("scholarship_limit"), // Max allowed scholarships
-  rosterPositionCounts: json("roster_position_counts"), // Count by position
-  rosterStatus: text("roster_status"), // normal, low, overstocked
-  lastUpdated: timestamp("last_updated").defaultNow(),
-  logoUrl: text("logo_url"),
-  teamUrl: text("team_url"),
-  coachingStaff: json("coaching_staff"),
-  positionNeeds: json("position_needs"), // Current recruiting needs by position
-  transfersIn: integer("transfers_in").default(0), // Count of incoming transfers
-  transfersOut: integer("transfers_out").default(0), // Count of outgoing transfers
-  recentRosterChanges: json("recent_roster_changes"),
-  academicRequirements: json("academic_requirements"), // Min GPA, test scores, etc.
-  priorityRecruitingAreas: text("priority_recruiting_areas").array(), // States/regions
-});
-
-// NCAA Transfer Portal Entries
-export const transferPortalEntries = pgTable("transfer_portal_entries", {
-  id: serial("id").primaryKey(),
-  playerName: text("player_name").notNull(),
-  previousSchool: text("previous_school").notNull(),
-  sport: text("sport").notNull(),
-  position: text("position").notNull(),
-  eligibilityRemaining: text("eligibility_remaining"), // "1 year", "2 years", etc.
-  height: text("height"),
-  weight: text("weight"),
-  hometown: text("hometown"),
-  highSchool: text("high_school"),
-  starRating: integer("star_rating"), // Original recruiting stars (1-5)
-  portalEntryDate: timestamp("portal_entry_date").notNull(),
-  lastSeasonStats: json("last_season_stats"),
-  careerStats: json("career_stats"),
-  academicInfo: json("academic_info"), // GPA, major, graduation status
-  injuryHistory: json("injury_history"),
-  videoHighlights: text("video_highlights").array(),
-  portalStatus: text("portal_status").default("active"), // active, committed, withdrawn
-  committedTo: text("committed_to"),
-  commitDate: timestamp("commit_date"),
-  bestFitSchools: text("best_fit_schools").array(), // AI-generated recommendations
-  fitReasons: json("fit_reasons"), // Reasons for recommended schools
-  transferRating: integer("transfer_rating"), // AI-calculated impact rating (1-100)
-  notes: text("notes"),
-  socialMediaHandles: json("social_media_handles"),
-  contactInfo: json("contact_info"),
-  agentName: text("agent_name"),
-  portalDeadline: timestamp("portal_deadline"),
-  niLDeals: json("nil_deals"), // Previous NIL arrangements
-  lastUpdated: timestamp("last_updated").defaultNow(),
-});
-
-// Coach Recruiting Boards - Tracks coach interest in transfer portal players
-export const coachRecruitingBoards = pgTable("coach_recruiting_boards", {
-  id: serial("id").primaryKey(),
-  coachId: integer("coach_id").notNull().references(() => users.id),
-  transferId: integer("transfer_id").notNull().references(() => transferPortalEntries.id),
-  interestLevel: integer("interest_level").notNull().default(0), // 0-100
-  notes: text("notes"),
-  status: text("status").notNull().default("tracking"), // tracking, contacted, visiting, offered, committed
-  priority: text("priority").default("medium"), // low, medium, high, top
-  needsFit: integer("needs_fit").default(0), // 0-100 how well player fits team needs
-  academicFit: integer("academic_fit").default(0), // 0-100 academic fit
-  cultureFit: integer("culture_fit").default(0), // 0-100 culture fit
-  talentFit: integer("talent_fit").default(0), // 0-100 talent evaluation
-  overallFit: integer("overall_fit").default(0), // 0-100 combined fit score
-  lastContactDate: timestamp("last_contact_date"),
-  nextContactDate: timestamp("next_contact_date"),
-  visitScheduled: timestamp("visit_scheduled"),
-  offerDetails: json("offer_details"),
-  competingSchools: text("competing_schools").array(),
-  commitmentChance: integer("commitment_chance").default(0), // 0-100 AI prediction
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export const athleteDiscoveries = pgTable("athlete_discoveries", {
-  id: serial("id").primaryKey(),
-  scoutId: integer("scout_id").references(() => socialMediaScouts.id),
-  fullName: text("full_name").notNull(),
-  username: text("username").notNull(),
-  platform: text("platform").notNull(), // instagram, twitter, tiktok, etc.
-  profileUrl: text("profile_url").notNull(),
-  email: text("email"),
-  phone: text("phone"),
-  estimatedAge: integer("estimated_age"),
-  location: text("location"),
-  schoolName: text("school_name"),
-  graduationYear: integer("graduation_year"),
-  sports: text("sports").array(),
-  positions: text("positions").array(),
-  bio: text("bio"),
-  followerCount: integer("follower_count"),
-  postCount: integer("post_count"),
-  highlights: text("highlights").array(), // Key accomplishments mentioned
-  discoveredAt: timestamp("discovered_at").defaultNow(),
-  lastCheckedAt: timestamp("last_checked_at").defaultNow(),
-  status: text("status").default("new"), // new, contacted, responded, converted, rejected
-  assignedTo: integer("assigned_to").references(() => users.id),
-  notes: text("notes"),
-  potentialRating: integer("potential_rating"), // 1-5 initial assessment
-  confidence: integer("confidence").default(70), // How confident is the AI in this match (0-100)
-  mediaUrls: text("media_urls").array(), // URLs to key media found
-  contactAttempts: integer("contact_attempts").default(0),
-  convertedToUserId: integer("converted_to_user_id").references(() => users.id),
-});
-
-export const socialMediaAudits = pgTable("social_media_audits", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id),
-  auditDate: timestamp("audit_date").defaultNow(),
-  overallScore: integer("overall_score").notNull(), // 0-100
-  platformsAnalyzed: text("platforms_analyzed").array(),
-  contentAnalysis: json("content_analysis"), // Analysis of posts, comments, etc.
-  redFlagCount: integer("red_flag_count").default(0),
-  redFlagItems: json("red_flag_items"),
-  improvementSuggestions: text("improvement_suggestions").array(),
-  positiveHighlights: json("positive_highlights"),
-  recruitmentImpactScore: integer("recruitment_impact_score"), // How this affects recruiting (0-100)
-  reportGeneratedBy: integer("report_generated_by").references(() => users.id),
-  sharedWithUser: boolean("shared_with_user").default(false),
-  userAcknowledged: boolean("user_acknowledged").default(false),
-});
-
-// GAR Rating System tables
-export const garCategories = pgTable("gar_categories", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  sportType: text("sport_type").notNull(), // basketball, football, soccer, etc.
-  positionType: text("position_type"), // specific position (quarterback, center, etc.)
-  displayOrder: integer("display_order").default(0),
-  icon: text("icon"), // Icon identifier
-  color: text("color"), // Hex color for visualization
-  createdAt: timestamp("created_at").defaultNow(),
-  active: boolean("active").default(true),
-});
-
-// GAR sub-categories for more detailed breakdowns
-export const garSubcategories = pgTable("gar_subcategories", {
-  id: serial("id").primaryKey(),
-  categoryId: integer("category_id").notNull().references(() => garCategories.id),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  displayOrder: integer("display_order").default(0),
-  icon: text("icon"),
-  color: text("color"),
-  maxScore: integer("max_score").default(100), // Maximum possible score
-  createdAt: timestamp("created_at").defaultNow(),
-  active: boolean("active").default(true),
-});
-
-// GAR Athlete Ratings - stores the individual ratings for an athlete
-export const garAthleteRatings = pgTable("gar_athlete_ratings", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  videoAnalysisId: integer("video_analysis_id").notNull().references(() => videoAnalyses.id),
-  categoryId: integer("category_id").notNull().references(() => garCategories.id),
-  subcategoryId: integer("subcategory_id").references(() => garSubcategories.id),
-  score: integer("score").notNull(), // 0-100
-  percentileRank: integer("percentile_rank"), // Athlete's percentile compared to peers
-  previousScore: integer("previous_score"), // For tracking improvement
-  scoreDate: timestamp("score_date").defaultNow(),
-  notes: text("notes"),
-  confidence: integer("confidence").default(90), // AI confidence in the score (0-100)
-});
-
-// GAR Rating History - tracks athlete progress over time
-export const garRatingHistory = pgTable("gar_rating_history", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  videoAnalysisId: integer("video_analysis_id").references(() => videoAnalyses.id),
-  totalGarScore: integer("total_gar_score").notNull(), // Overall score
-  categoryScores: json("category_scores").notNull(), // JSON with scores by category
-  calculatedDate: timestamp("calculated_date").defaultNow(),
-  starRating: integer("star_rating").notNull().default(0), // 1-5 star rating derived from GAR score
-});
-
-// Create insert schemas for GAR-related tables
-export const insertGarCategorySchema = createInsertSchema(garCategories).omit({ id: true, createdAt: true });
-export const insertGarSubcategorySchema = createInsertSchema(garSubcategories).omit({ id: true, createdAt: true });
-export const insertGarAthleteRatingSchema = createInsertSchema(garAthleteRatings).omit({ id: true, scoreDate: true });
-export const insertGarRatingHistorySchema = createInsertSchema(garRatingHistory).omit({ id: true, calculatedDate: true });
-
-// Define types for insert operations
-export type GarCategory = typeof garCategories.$inferSelect;
-export type InsertGarCategory = z.infer<typeof insertGarCategorySchema>;
-
-export type GarSubcategory = typeof garSubcategories.$inferSelect;
-export type InsertGarSubcategory = z.infer<typeof insertGarSubcategorySchema>;
-
-export type GarAthleteRating = typeof garAthleteRatings.$inferSelect;
-export type InsertGarAthleteRating = z.infer<typeof insertGarAthleteRatingSchema>;
-
-export type GarRatingHistory = typeof garRatingHistory.$inferSelect;
-export type InsertGarRatingHistory = z.infer<typeof insertGarRatingHistorySchema>;
-
-// Star rating athlete profiles for benchmarking standard levels
-export const athleteStarProfiles = pgTable("athlete_star_profiles", {
-  id: serial("id").primaryKey(),
-  profileId: text("profile_id").notNull().unique(), // The original ID from the JSON file (e.g., foo_qua_5star_1)
-  userId: integer("user_id").references(() => users.id), // If connected to a user account
-  name: text("name").notNull(),
-  starLevel: integer("star_level").notNull(), // 1-5 stars
-  sport: text("sport").notNull(),
-  position: text("position").notNull(),
-  ageGroup: text("age_group"),
-  metrics: jsonb("metrics").notNull(), // Height, weight, forty, vertical, GPA, etc.
-  traits: jsonb("traits").notNull(), // Movement, mental, resilience traits
-  filmExpectations: text("film_expectations").array(),
-  trainingFocus: text("training_focus").array(),
-  avatar: text("avatar").notNull(), // Path to headshot image
-  rank: text("rank"),
-  xpLevel: integer("xp_level").default(0),
-  active: boolean("active").default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-// Fan club followers
-export const fanClubFollowers = pgTable("fan_club_followers", {
-  id: serial("id").primaryKey(),
-  athleteId: integer("athlete_id").notNull().references(() => users.id),
-  followerName: text("follower_name").notNull(),
-  followerEmail: text("follower_email"),
-  followerType: text("follower_type").notNull(), // fan, recruiter, friend, family
-  followDate: timestamp("follow_date").defaultNow(),
-  notes: text("notes"),
-});
-
-// Next up leaderboard entries
-export const leaderboardEntries = pgTable("leaderboard_entries", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  category: text("category").notNull(), // by sport or skill
-  rankPosition: integer("rank_position").notNull(),
-  score: integer("score").notNull(),
-  city: text("city"),
-  state: text("state"),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Workout playlists
-export const workoutPlaylists = pgTable("workout_playlists", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  title: text("title").notNull(),
-  description: text("description"),
-  workoutType: text("workout_type").notNull(), // strength, cardio, flexibility, sport-specific, recovery
-  intensityLevel: text("intensity_level").notNull(), // low, medium, high
-  duration: integer("duration").notNull(), // in minutes
-  targets: text("targets").array(), // body parts or skills targeted
-  createdAt: timestamp("created_at").defaultNow(),
-  lastUsed: timestamp("last_used"),
-  timesUsed: integer("times_used").default(0),
-  isCustom: boolean("is_custom").default(true),
-  isPublic: boolean("is_public").default(false),
-});
-
-// Workout exercises in playlists
-export const workoutExercises = pgTable("workout_exercises", {
-  id: serial("id").primaryKey(),
-  playlistId: integer("playlist_id").notNull().references(() => workoutPlaylists.id),
-  name: text("name").notNull(),
-  description: text("description"),
-  sets: integer("sets"),
-  reps: integer("reps"),
-  duration: integer("duration"), // in seconds, for timed exercises
-  restPeriod: integer("rest_period"), // in seconds
-  order: integer("order").notNull(),
-  videoUrl: text("video_url"),
-  imageUrl: text("image_url"),
-  notes: text("notes"),
-  equipmentNeeded: text("equipment_needed").array(),
-});
-
-// Film Comparison feature
-export const filmComparisons = pgTable("film_comparisons", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  title: text("title").notNull(),
-  description: text("description"),
-  createdAt: timestamp("created_at").defaultNow(),
-  isPublic: boolean("is_public").default(false),
-  comparisonType: text("comparison_type").notNull(), // self, pro, teammate
-  status: text("status").notNull().default("draft"), // draft, completed, shared
-  tags: text("tags").array(),
-});
-
-export const comparisonVideos = pgTable("comparison_videos", {
-  id: serial("id").primaryKey(),
-  comparisonId: integer("comparison_id").notNull().references(() => filmComparisons.id),
-  videoId: integer("video_id").references(() => videos.id),
-  externalVideoUrl: text("external_video_url"),
-  athleteName: text("athlete_name"),
-  videoType: text("video_type").notNull(), // base, comparison
-  order: integer("order").default(0),
-  notes: text("notes"),
-  keyPoints: text("key_points").array(),
-  markups: json("markups"), // Stores drawing data for the video
-});
-
-export const comparisonAnalyses = pgTable("comparison_analyses", {
-  id: serial("id").primaryKey(),
-  comparisonId: integer("comparison_id").notNull().references(() => filmComparisons.id),
-  analysisDate: timestamp("analysis_date").defaultNow(),
-  similarityScore: integer("similarity_score"), // 0-100
-  differences: json("differences"), // Key differences in technique
-  recommendations: text("recommendations").array(),
-  aiGeneratedNotes: text("ai_generated_notes"),
-  techniqueBreakdown: json("technique_breakdown"),
-  // Football coach specific analyses
-  playAssignments: json("play_assignments"), // Expected assignments for each player
-  assignmentGrades: json("assignment_grades"), // How well each player executed their assignment (0-100)
-  bustedCoverage: boolean("busted_coverage").default(false),
-  bustedCoverageDetails: json("busted_coverage_details"), // Details about coverage breakdowns
-  playerComparisons: json("player_comparisons"), // Size, speed, competition level comparisons
-  performanceRating: json("performance_rating"), // True rating based on performance metrics
-  recommendedExamples: json("recommended_examples"), // URLs to recommended technique examples
-  defenseAnalysis: json("defense_analysis"), // Analysis of defensive scheme and execution
-});
-
-// NextUp Spotlight feature
-export const spotlightProfiles = pgTable("spotlight_profiles", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  title: text("title").notNull(),
-  summary: text("summary").notNull(),
-  story: text("story").notNull(),
-  coverImage: text("cover_image").notNull(),
-  mediaGallery: text("media_gallery").array(),
-  spotlightDate: timestamp("spotlight_date").defaultNow(),
-  featured: boolean("featured").default(false),
-  status: text("status").notNull().default("pending"), // pending, approved, archived
-  approvedBy: integer("approved_by").references(() => users.id),
-  views: integer("views").default(0),
-  likes: integer("likes").default(0),
-  isTrending: boolean("is_trending").default(false),
-  category: text("category").notNull(), // Rising Star, Comeback Story, etc.
-});
-
-// MyPlayer XP System
-export const playerProgress = pgTable("player_progress", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  currentLevel: integer("current_level").notNull().default(1),
-  totalXp: integer("total_xp").notNull().default(0),
-  levelXp: integer("level_xp").notNull().default(0),
-  xpToNextLevel: integer("xp_to_next_level").notNull().default(100),
-  rank: text("rank").notNull().default("Rookie"),
-  lifetimeAchievements: integer("lifetime_achievements").default(0),
-  streakDays: integer("streak_days").default(0),
-  lastActive: timestamp("last_active").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export const xpTransactions = pgTable("xp_transactions", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  amount: integer("amount").notNull(),
-  transactionType: text("transaction_type").notNull(), // workout, challenge, video, analysis, etc.
-  sourceId: text("source_id"), // ID of the source that generated XP
-  description: text("description").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  multiplier: real("multiplier").default(1.0),
-});
-
-export const playerBadges = pgTable("player_badges", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  badgeId: text("badge_id").notNull(),
-  badgeName: text("badge_name").notNull(),
-  description: text("description").notNull(),
-  category: text("category").notNull(), // athletic, academic, leadership, etc.
-  tier: text("tier").notNull().default("bronze"), // bronze, silver, gold, platinum
-  isActive: boolean("is_active").default(true),
-  iconPath: text("icon_path").notNull(),
-  earnedAt: timestamp("earned_at").defaultNow(),
-  progress: integer("progress").default(100), // Percentage of completion
-});
-
-// MyPlayer Workout Verification
-export const workoutVerifications = pgTable("workout_verifications", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  workoutId: integer("workout_id").references(() => workoutPlaylists.id),
-  title: text("title").notNull(),
-  submissionDate: timestamp("submission_date").defaultNow(),
-  verificationStatus: text("verification_status").notNull().default("pending"), // pending, approved, rejected
-  verifiedBy: integer("verified_by").references(() => users.id),
-  verificationDate: timestamp("verification_date"),
-  verificationMethod: text("verification_method"), // coach, AI, photo, video
-  proofType: text("proof_type"), // photo, video, coach-verified, location
-  proofData: text("proof_data"), // URL or data for verification
-  notes: text("notes"),
-  xpEarned: integer("xp_earned").default(0),
-  duration: integer("duration"), // in minutes
-  recoveryImpact: integer("recovery_impact"), // 1-10
-});
-
-// Video highlights table for storing short clips generated from original videos
-export const videoHighlights = pgTable("video_highlights", {
-  id: serial("id").primaryKey(),
-  videoId: integer("video_id").notNull().references(() => videos.id),
-  title: text("title").notNull(),
-  description: text("description"),
-  startTime: real("start_time").notNull(), // Start timestamp in seconds
-  endTime: real("end_time").notNull(), // End timestamp in seconds
-  highlightPath: text("highlight_path").notNull(), // Path to the generated highlight clip
-  thumbnailPath: text("thumbnail_path"), // Path to the thumbnail image
-  createdAt: timestamp("created_at").defaultNow(),
-  createdBy: integer("created_by").notNull().references(() => users.id),
-  aiGenerated: boolean("ai_generated").default(false), // Whether this was auto-generated by AI
-  featured: boolean("featured").default(false), // Whether this is a featured highlight
-  tags: text("tags").array(), // Tags for categorizing highlights
-  homePageEligible: boolean("home_page_eligible").default(false), // Can be featured on homepage
-  viewCount: integer("view_count").default(0), // Number of views
-  likesCount: integer("likes_count").default(0), // Number of likes
-  qualityScore: integer("quality_score").default(0), // AI-rated quality (0-100)
-  primarySkill: text("primary_skill"), // Main skill showcased (dunking, passing, etc.)
-  skillLevel: integer("skill_level").default(0), // 1-100 rating of skill shown
-  gameContext: text("game_context"), // Context of the play (game-winning, etc.)
-  aiAnalysisNotes: text("ai_analysis_notes"), // AI notes about the highlight
-});
-
-// AI Highlight Generator Configurations
-export const highlightGeneratorConfigs = pgTable("highlight_generator_configs", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description"),
-  active: boolean("active").default(true),
-  sportType: text("sport_type").notNull(), // basketball, football, etc.
-  highlightTypes: text("highlight_types").array(), // dunks, 3-pointers, tackles, goals, etc.
-  minDuration: integer("min_duration").default(8), // In seconds
-  maxDuration: integer("max_duration").default(30), // In seconds
-  maxHighlightsPerVideo: integer("max_highlights_per_video").default(3),
-  qualityThreshold: integer("quality_threshold").default(70), // 0-100 minimum quality to feature
-  detectableEvents: json("detectable_events"), // JSON with events to detect by sport
-  createdBy: integer("created_by").references(() => users.id),
-  createdAt: timestamp("created_at").defaultNow(),
-  lastRun: timestamp("last_run"),
-  useThumbnailFrame: text("use_thumbnail_frame").default("best"), // "start", "middle", "best"
-  addTextOverlay: boolean("add_text_overlay").default(true),
-  addMusicTrack: boolean("add_music_track").default(false),
-  musicCategory: text("music_category").default("highEnergy"), // Options for music style
-});
-
-export const workoutVerificationCheckpoints = pgTable("workout_verification_checkpoints", {
-  id: serial("id").primaryKey(),
-  verificationId: integer("verification_id").notNull().references(() => workoutVerifications.id),
-  exerciseName: text("exercise_name").notNull(),
-  isCompleted: boolean("is_completed").default(false),
-  completedAmount: integer("completed_amount"), // reps or time
-  targetAmount: integer("target_amount"), // target reps or time
-  feedback: text("feedback"),
-  mediaProof: text("media_proof"), // URL to proof media
-  checkpointOrder: integer("checkpoint_order").notNull(),
-});
-
-// MyPlayer UI Weight Room
-export const weightRoomEquipment = pgTable("weight_room_equipment", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description"),
-  equipmentType: text("equipment_type").notNull(), // strength, cardio, agility, plyometric, functional
-  difficultyLevel: text("difficulty_level").notNull(), // beginner, intermediate, advanced
-  targetMuscles: text("target_muscles").array(),
-  baseXp: integer("base_xp").notNull(),
-  iconPath: text("icon_path").notNull(),
-  modelPath: text("model_path"),
-  price: integer("price").notNull().default(0),
-  unlockLevel: integer("unlock_level").notNull().default(1),
-  isPremium: boolean("is_premium").default(false),
-});
-
-export const playerEquipment = pgTable("player_equipment", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  equipmentId: integer("equipment_id").notNull().references(() => weightRoomEquipment.id),
-  acquiredDate: timestamp("acquired_date").defaultNow(),
-  level: integer("level").notNull().default(1),
-  timesUsed: integer("times_used").default(0),
-  lastUsed: timestamp("last_used"),
-  isFavorite: boolean("is_favorite").default(false),
-  customName: text("custom_name"),
-  usageStreak: integer("usage_streak").default(0),
-});
-
-/* Combine Tour Events Table */
-export const combineTourEvents = pgTable(
-  "combine_tour_events",
-  {
-    id: serial("id").primaryKey(),
-    name: text("name").notNull(),
-    description: text("description"),
-    location: text("location").notNull(),
-    address: text("address").notNull(),
-    city: text("city").notNull(),
-    state: text("state").notNull(),
-    zipCode: text("zip_code").notNull(),
-    startDate: timestamp("start_date").notNull(),
-    endDate: timestamp("end_date").notNull(),
-    registrationDeadline: timestamp("registration_deadline"),
-    maximumAttendees: integer("maximum_attendees"),
-    currentAttendees: integer("current_attendees").default(0),
-    price: numeric("price").notNull(),
-    slug: text("slug").notNull().unique(),
-    status: text("status").default("draft"), // draft, published, cancelled, completed
-    featuredImage: text("featured_image"),
-    activeNetworkId: text("active_network_id"),
-    registrationUrl: text("registration_url"),
-    createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at").defaultNow()
-  }
-);
-
-/* Registrations Table */
-export const registrations = pgTable(
-  "registrations",
-  {
-    id: serial("id").primaryKey(),
-    userId: integer("user_id").references(() => users.id),
-    eventId: integer("event_id").references(() => combineTourEvents.id),
-    status: text("status").default("pending"), // pending, confirmed, cancelled, waitlisted
-    externalId: text("external_id"), // ID in Active Network
-    registeredAt: timestamp("registered_at").defaultNow(),
-    paymentStatus: text("payment_status").default("unpaid"), // unpaid, processing, paid, refunded
-    notes: text("notes"),
-    checkInTime: timestamp("check_in_time"),
-    completedAt: timestamp("completed_at")
-  }
-);
-
-/* Payments Table */
-export const payments = pgTable(
-  "payments",
-  {
-    id: serial("id").primaryKey(),
-    registrationId: integer("registration_id").references(() => registrations.id),
-    amount: numeric("amount").notNull(),
-    externalId: text("external_id"), // ID from Active Network
-    status: text("status").notNull(), // pending, completed, failed, refunded
-    processedAt: timestamp("processed_at").defaultNow(),
-    refundedAt: timestamp("refunded_at")
-  }
-);
-
-// Create insert schemas for all tables
-export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
-export const insertUserAgreementSchema = createInsertSchema(userAgreements).omit({ id: true, acceptedAt: true });
-
-// Extend the insertUserSchema with validation for measurementSystem
-export const insertUserWithMeasurementSchema = insertUserSchema.extend({
-  measurementSystem: measurementSystemSchema.optional().default('metric'),
-});
-export const insertAthleteProfileSchema = createInsertSchema(athleteProfiles).omit({ id: true });
-export const insertCoachProfileSchema = createInsertSchema(coachProfiles).omit({ id: true });
-export const insertVideoSchema = createInsertSchema(videos).omit({ id: true, uploadDate: true, analyzed: true });
-
-// Adding a more flexible filePath validation with any pattern acceptance
-export const insertVideoWithFileSchema = insertVideoSchema.extend({
-  filePath: z.string().min(1), // Accept any non-empty string
-  sportType: z.string().optional().nullable(),
-  thumbnailPath: z.string().optional().nullable(),
-  description: z.string().optional().nullable()
-});
-export const insertVideoAnalysisSchema = createInsertSchema(videoAnalyses).omit({ id: true, analysisDate: true });
-export const insertSportRecommendationSchema = createInsertSchema(sportRecommendations).omit({ id: true, recommendationDate: true });
-export const insertNcaaEligibilitySchema = createInsertSchema(ncaaEligibility).omit({ 
-  id: true, 
-  lastUpdated: true,
-  qualificationPercentage: true // Calculated value, not user input
-});
-
-export const insertNcaaCoreCourseSchema = createInsertSchema(ncaaCoreCourses).omit({ 
-  id: true, 
-  qualityPoints: true, // Calculated value
-  gradePoints: true // Calculated value
-});
-
-export const insertGradeScaleSchema = createInsertSchema(gradeScales).omit({ 
-  id: true, 
-  lastUpdated: true 
-});
-
-export const insertNcaaSlidingScaleSchema = createInsertSchema(ncaaSlidingScales).omit({ 
-  id: true 
-});
-
-export const insertNcaaDocumentSchema = createInsertSchema(ncaaDocuments).omit({ 
-  id: true, 
-  uploadDate: true,
-  verificationDate: true 
-});
-
-export const insertNcaaRegistrationSchema = createInsertSchema(ncaaRegistration).omit({ 
-  id: true,
-  finalCertificationDate: true
-});
-export const insertCoachConnectionSchema = createInsertSchema(coachConnections).omit({ id: true, connectionDate: true, lastContact: true });
-export const insertAchievementSchema = createInsertSchema(achievements).omit({ id: true, earnedDate: true });
-export const insertMessageSchema = createInsertSchema(messages).omit({ id: true, createdAt: true, isRead: true });
-
-// New schema for story mode components
-export const insertSkillTreeNodeSchema = createInsertSchema(skillTreeNodes).omit({ id: true, createdAt: true });
-export const insertSkillTreeRelationshipSchema = createInsertSchema(skillTreeRelationships).omit({ id: true, createdAt: true });
-export const insertSkillSchema = createInsertSchema(skills).omit({ id: true, updatedAt: true, lastPracticed: true });
-export const insertTrainingDrillSchema = createInsertSchema(trainingDrills).omit({ id: true, createdAt: true, updatedAt: true });
-export const insertTrainingDrillsExtendedSchema = createInsertSchema(trainingDrillsExtended).omit({ id: true });
-export const insertUserDrillProgressSchema = createInsertSchema(userDrillProgress).omit({ id: true, createdAt: true, updatedAt: true, lastCompleted: true });
-export const insertChallengeSchema = createInsertSchema(challenges).omit({ id: true, createdAt: true });
-export const insertAthleteChallengeSchema = createInsertSchema(athleteChallenges).omit({ id: true, startedAt: true, completedAt: true });
-export const insertRecoveryLogSchema = createInsertSchema(recoveryLogs).omit({ id: true, logDate: true });
-export const insertFanClubFollowerSchema = createInsertSchema(fanClubFollowers).omit({ id: true, followDate: true });
-export const insertLeaderboardEntrySchema = createInsertSchema(leaderboardEntries).omit({ id: true, updatedAt: true });
-export const insertWorkoutPlaylistSchema = createInsertSchema(workoutPlaylists).omit({ id: true, createdAt: true, lastUsed: true, timesUsed: true });
-export const insertWorkoutExerciseSchema = createInsertSchema(workoutExercises).omit({ id: true });
-export const insertBlogPostSchema = createInsertSchema(blogPosts, {
-  publishDate: z.date().optional(),
-}).omit({ id: true });
-
-export const insertFeaturedAthleteSchema = createInsertSchema(featuredAthletes, {
-  featuredDate: z.date().optional(),
-}).omit({ id: true });
-
-// Site Images insert schema
-export const insertSiteImageSchema = createInsertSchema(siteImages).omit({ id: true, uploadDate: true });
-
-// Content Blocks insert schema
-export const insertContentBlockSchema = createInsertSchema(contentBlocks).omit({ id: true, lastUpdated: true, lastUpdatedBy: true });
-
-// NCAA Schools database insert schemas
-export const insertNcaaSchoolSchema = createInsertSchema(ncaaSchools).omit({ id: true, lastUpdated: true });
-export const insertAthleticDepartmentSchema = createInsertSchema(athleticDepartments).omit({ id: true, lastUpdated: true });
-export const insertSportProgramSchema = createInsertSchema(sportPrograms).omit({ id: true, lastUpdated: true });
-export const insertCoachingStaffSchema = createInsertSchema(coachingStaff).omit({ id: true, lastUpdated: true });
-export const insertRecruitingContactSchema = createInsertSchema(recruitingContacts).omit({ id: true, lastUpdated: true });
-
-// Film Comparison feature insert schemas
-export const insertFilmComparisonSchema = createInsertSchema(filmComparisons).omit({ id: true, createdAt: true });
-export const insertComparisonVideoSchema = createInsertSchema(comparisonVideos).omit({ id: true });
-export const insertComparisonAnalysisSchema = createInsertSchema(comparisonAnalyses).omit({ id: true, analysisDate: true });
-
-// NextUp Spotlight feature insert schema
-export const insertSpotlightProfileSchema = createInsertSchema(spotlightProfiles, {
-  spotlightDate: z.date().optional(),
-}).omit({ id: true, views: true, likes: true });
-
-// MyPlayer XP System insert schemas
-export const insertPlayerProgressSchema = createInsertSchema(playerProgress).omit({ 
-  id: true, lastActive: true, updatedAt: true 
-});
-export const insertXpTransactionSchema = createInsertSchema(xpTransactions).omit({ id: true, createdAt: true });
-export const insertPlayerBadgeSchema = createInsertSchema(playerBadges).omit({ id: true, earnedAt: true });
-
-// MyPlayer Workout Verification insert schemas
-export const insertWorkoutVerificationSchema = createInsertSchema(workoutVerifications).omit({ 
-  id: true, submissionDate: true, verificationDate: true 
-});
-export const insertWorkoutVerificationCheckpointSchema = createInsertSchema(workoutVerificationCheckpoints).omit({ id: true });
-
-// MyPlayer UI Weight Room insert schemas
-export const insertWeightRoomEquipmentSchema = createInsertSchema(weightRoomEquipment).omit({ id: true });
-export const insertPlayerEquipmentSchema = createInsertSchema(playerEquipment).omit({ 
-  id: true, acquiredDate: true, lastUsed: true,
-});
-
-// Video Highlights insert schema
-export const insertVideoHighlightSchema = createInsertSchema(videoHighlights).omit({
-  id: true, createdAt: true
-});
-
-// Highlight Generator Config insert schema
-export const insertHighlightGeneratorConfigSchema = createInsertSchema(highlightGeneratorConfigs).omit({
-  id: true, createdAt: true, lastRun: true
-});
-
-// Export types for insert and select operations
-export type User = typeof users.$inferSelect;
-export type InsertUser = z.infer<typeof insertUserSchema>;
-export type InsertUserWithMeasurement = z.infer<typeof insertUserWithMeasurementSchema>;
-
-export type AthleteProfile = typeof athleteProfiles.$inferSelect;
-export type InsertAthleteProfile = z.infer<typeof insertAthleteProfileSchema>;
-
-export type CoachProfile = typeof coachProfiles.$inferSelect;
-export type InsertCoachProfile = z.infer<typeof insertCoachProfileSchema>;
-
-export type Video = typeof videos.$inferSelect;
-export type InsertVideo = z.infer<typeof insertVideoSchema>;
-
-export type VideoAnalysis = typeof videoAnalyses.$inferSelect;
-export type InsertVideoAnalysis = z.infer<typeof insertVideoAnalysisSchema>;
-
-export type SportRecommendation = typeof sportRecommendations.$inferSelect;
-export type InsertSportRecommendation = z.infer<typeof insertSportRecommendationSchema>;
-
-export type NcaaEligibility = typeof ncaaEligibility.$inferSelect;
-export type InsertNcaaEligibility = z.infer<typeof insertNcaaEligibilitySchema>;
-
-export type NcaaCoreCourse = typeof ncaaCoreCourses.$inferSelect;
-export type InsertNcaaCoreCourse = z.infer<typeof insertNcaaCoreCourseSchema>;
-
-export type GradeScale = typeof gradeScales.$inferSelect;
-export type InsertGradeScale = z.infer<typeof insertGradeScaleSchema>;
-
-export type NcaaSlidingScale = typeof ncaaSlidingScales.$inferSelect;
-export type InsertNcaaSlidingScale = z.infer<typeof insertNcaaSlidingScaleSchema>;
-
-export type NcaaDocument = typeof ncaaDocuments.$inferSelect;
-export type InsertNcaaDocument = z.infer<typeof insertNcaaDocumentSchema>;
-
-export type NcaaRegistration = typeof ncaaRegistration.$inferSelect;
-export type InsertNcaaRegistration = z.infer<typeof insertNcaaRegistrationSchema>;
-
-export type CoachConnection = typeof coachConnections.$inferSelect;
-export type InsertCoachConnection = z.infer<typeof insertCoachConnectionSchema>;
-
-export type Achievement = typeof achievements.$inferSelect;
-export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
-
-export type Message = typeof messages.$inferSelect;
-export type InsertMessage = z.infer<typeof insertMessageSchema>;
-
-// Story mode component types
-export type SkillTreeNode = typeof skillTreeNodes.$inferSelect;
-export type InsertSkillTreeNode = z.infer<typeof insertSkillTreeNodeSchema>;
-
-export type SkillTreeRelationship = typeof skillTreeRelationships.$inferSelect;
-export type InsertSkillTreeRelationship = z.infer<typeof insertSkillTreeRelationshipSchema>;
-
-export type Skill = typeof skills.$inferSelect;
-export type InsertSkill = z.infer<typeof insertSkillSchema>;
-
-export type TrainingDrill = typeof trainingDrills.$inferSelect;
-export type InsertTrainingDrill = z.infer<typeof insertTrainingDrillSchema>;
-
-export type TrainingDrillsExtended = typeof trainingDrillsExtended.$inferSelect;
-export type InsertTrainingDrillsExtended = z.infer<typeof insertTrainingDrillsExtendedSchema>;
-
-export type UserDrillProgress = typeof userDrillProgress.$inferSelect;
-export type InsertUserDrillProgress = z.infer<typeof insertUserDrillProgressSchema>;
-
-export type Challenge = typeof challenges.$inferSelect;
-export type InsertChallenge = z.infer<typeof insertChallengeSchema>;
-
-export type AthleteChallenge = typeof athleteChallenges.$inferSelect;
-export type InsertAthleteChallenge = z.infer<typeof insertAthleteChallengeSchema>;
-
-export type RecoveryLog = typeof recoveryLogs.$inferSelect;
-export type InsertRecoveryLog = z.infer<typeof insertRecoveryLogSchema>;
-
-export type FanClubFollower = typeof fanClubFollowers.$inferSelect;
-export type InsertFanClubFollower = z.infer<typeof insertFanClubFollowerSchema>;
-
-export type LeaderboardEntry = typeof leaderboardEntries.$inferSelect;
-export type InsertLeaderboardEntry = z.infer<typeof insertLeaderboardEntrySchema>;
-
-export type BlogPost = typeof blogPosts.$inferSelect;
-export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
-
-// NCAA Schools database types
-export type NcaaSchool = typeof ncaaSchools.$inferSelect;
-export type InsertNcaaSchool = z.infer<typeof insertNcaaSchoolSchema>;
-
-export type AthleticDepartment = typeof athleticDepartments.$inferSelect;
-export type InsertAthleticDepartment = z.infer<typeof insertAthleticDepartmentSchema>;
-
-export type SportProgram = typeof sportPrograms.$inferSelect;
-export type InsertSportProgram = z.infer<typeof insertSportProgramSchema>;
-
-export type CoachingStaff = typeof coachingStaff.$inferSelect;
-export type InsertCoachingStaff = z.infer<typeof insertCoachingStaffSchema>;
-
-export type RecruitingContact = typeof recruitingContacts.$inferSelect;
-export type InsertRecruitingContact = z.infer<typeof insertRecruitingContactSchema>;
-
-export type SiteImage = typeof siteImages.$inferSelect;
-export type InsertSiteImage = z.infer<typeof insertSiteImageSchema>;
-
-export type ContentBlock = typeof contentBlocks.$inferSelect;
-export type InsertContentBlock = z.infer<typeof insertContentBlockSchema>;
-
-export type FeaturedAthlete = typeof featuredAthletes.$inferSelect;
-export type InsertFeaturedAthlete = z.infer<typeof insertFeaturedAthleteSchema>;
-
-// Workout playlist types
-export type WorkoutPlaylist = typeof workoutPlaylists.$inferSelect;
-export type InsertWorkoutPlaylist = z.infer<typeof insertWorkoutPlaylistSchema>;
-
-export type WorkoutExercise = typeof workoutExercises.$inferSelect;
-export type InsertWorkoutExercise = z.infer<typeof insertWorkoutExerciseSchema>;
-
-// Film Comparison feature types
-export type FilmComparison = typeof filmComparisons.$inferSelect;
-export type InsertFilmComparison = z.infer<typeof insertFilmComparisonSchema>;
-
-export type ComparisonVideo = typeof comparisonVideos.$inferSelect;
-export type InsertComparisonVideo = z.infer<typeof insertComparisonVideoSchema>;
-
-export type ComparisonAnalysis = typeof comparisonAnalyses.$inferSelect;
-export type InsertComparisonAnalysis = z.infer<typeof insertComparisonAnalysisSchema>;
-
-// NextUp Spotlight feature types
-export type SpotlightProfile = typeof spotlightProfiles.$inferSelect;
-export type InsertSpotlightProfile = z.infer<typeof insertSpotlightProfileSchema>;
-
-// MyPlayer XP System types
-export type PlayerProgress = typeof playerProgress.$inferSelect;
-export type InsertPlayerProgress = z.infer<typeof insertPlayerProgressSchema>;
-
-export type XpTransaction = typeof xpTransactions.$inferSelect;
-export type InsertXpTransaction = z.infer<typeof insertXpTransactionSchema>;
-
-export type PlayerBadge = typeof playerBadges.$inferSelect;
-export type InsertPlayerBadge = z.infer<typeof insertPlayerBadgeSchema>;
-
-// MyPlayer Workout Verification types
-export type WorkoutVerification = typeof workoutVerifications.$inferSelect;
-export type InsertWorkoutVerification = z.infer<typeof insertWorkoutVerificationSchema>;
-
-export type WorkoutVerificationCheckpoint = typeof workoutVerificationCheckpoints.$inferSelect;
-export type InsertWorkoutVerificationCheckpoint = z.infer<typeof insertWorkoutVerificationCheckpointSchema>;
-
-// MyPlayer UI Weight Room types
-export type WeightRoomEquipment = typeof weightRoomEquipment.$inferSelect;
-export type InsertWeightRoomEquipment = z.infer<typeof insertWeightRoomEquipmentSchema>;
-
-export type PlayerEquipment = typeof playerEquipment.$inferSelect;
-export type InsertPlayerEquipment = z.infer<typeof insertPlayerEquipmentSchema>;
-
-// Active Network payment integration types
-export const insertCombineTourEventSchema = createInsertSchema(combineTourEvents).omit({ 
-  id: true, 
-  createdAt: true, 
-  updatedAt: true, 
-  currentAttendees: true 
-});
-export const insertRegistrationSchema = createInsertSchema(registrations).omit({ 
-  id: true, 
-  registeredAt: true,
-  checkInTime: true,
-  completedAt: true
-});
-export const insertPaymentSchema = createInsertSchema(payments).omit({ 
-  id: true, 
-  processedAt: true,
-  refundedAt: true
-});
-
-export type CombineTourEvent = typeof combineTourEvents.$inferSelect;
-export type InsertCombineTourEvent = z.infer<typeof insertCombineTourEventSchema>;
-
-export type Registration = typeof registrations.$inferSelect;
-export type InsertRegistration = z.infer<typeof insertRegistrationSchema>;
-
-export type Payment = typeof payments.$inferSelect;
-export type InsertPayment = z.infer<typeof insertPaymentSchema>;
-
-// Video Highlight types
-export type VideoHighlight = typeof videoHighlights.$inferSelect;
-export type InsertVideoHighlight = z.infer<typeof insertVideoHighlightSchema>;
-
-// Highlight Generator types
-export type HighlightGeneratorConfig = typeof highlightGeneratorConfigs.$inferSelect;
-export type InsertHighlightGeneratorConfig = z.infer<typeof insertHighlightGeneratorConfigSchema>;
-
-// API Key schema and types
-export const insertApiKeySchema = createInsertSchema(apiKeys, {
-  keyType: z.enum(['openai', 'stripe', 'sendgrid', 'twilio', 'google', 'aws', 'active', 'twitter', 'reddit_client_id', 'reddit_client_secret']),
-}).omit({ id: true, addedAt: true, lastUsed: true });
-
-export type ApiKey = typeof apiKeys.$inferSelect;
-export type InsertApiKey = z.infer<typeof insertApiKeySchema>;
-
-export const insertAthleteStarProfileSchema = createInsertSchema(athleteStarProfiles).omit({ 
-  id: true, 
-  createdAt: true 
-});
-export type AthleteStarProfile = typeof athleteStarProfiles.$inferSelect;
-export type InsertAthleteStarProfile = z.infer<typeof insertAthleteStarProfileSchema>;
-
-// Onboarding Tutorial Progress
-export const onboardingProgress = pgTable("onboarding_progress", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id).unique(),
-  isCompleted: boolean("is_completed").notNull().default(false),
-  currentStep: integer("current_step").notNull().default(1),
-  totalSteps: integer("total_steps").notNull().default(5),
-  lastUpdated: timestamp("last_updated").notNull().defaultNow(),
-  completedSections: text("completed_sections").array(),
-  skippedSections: text("skipped_sections").array(),
-});
-
-// Athlete Journey Map
-export const athleteJourneyMap = pgTable("athlete_journey_map", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id).unique(),
-  currentPhase: text("current_phase").notNull(),
-  startedAt: timestamp("started_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-  timeline: jsonb("timeline").notNull(),
-  goals: jsonb("goals").notNull(),
-  milestones: jsonb("milestones").notNull(),
-});
-
-// Journey Milestones
-export const journeyMilestones = pgTable("journey_milestones", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  journeyMapId: integer("journey_map_id").notNull().references(() => athleteJourneyMap.id),
-  title: text("title").notNull(),
-  description: text("description"),
-  targetDate: timestamp("target_date"),
-  isCompleted: boolean("is_completed").notNull().default(false),
-  completedAt: timestamp("completed_at"),
-  type: text("type").notNull(), // athletic, academic, personal
-  priority: integer("priority").notNull().default(1),
-});
-
-// Insert schemas for the new tables
-export const insertOnboardingProgressSchema = createInsertSchema(onboardingProgress).omit({
-  id: true,
-  lastUpdated: true
-});
-
-export const insertAthleteJourneyMapSchema = createInsertSchema(athleteJourneyMap).omit({
-  id: true,
-  startedAt: true,
-  updatedAt: true
-});
-
-export const insertJourneyMilestoneSchema = createInsertSchema(journeyMilestones).omit({
-  id: true,
-  completedAt: true
-});
-
-// Types for the new tables
-export type OnboardingProgress = typeof onboardingProgress.$inferSelect;
-export type InsertOnboardingProgress = z.infer<typeof insertOnboardingProgressSchema>;
-
-export type AthleteJourneyMap = typeof athleteJourneyMap.$inferSelect;
-export type InsertAthleteJourneyMap = z.infer<typeof insertAthleteJourneyMapSchema>;
-
-export type JourneyMilestone = typeof journeyMilestones.$inferSelect;
-export type InsertJourneyMilestone = z.infer<typeof insertJourneyMilestoneSchema>;
-
-// Go4It Radio - Music streaming feature
-export const musicArtists = pgTable("music_artists", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  artistUsername: text("artist_username").notNull().unique(),
-  email: text("email").notNull(),
-  bio: text("bio"),
-  profileImage: text("profile_image"),
-  coverImage: text("cover_image"),
-  socialLinks: jsonb("social_links"),
-  genres: text("genres").array(),
-  verifiedArtist: boolean("verified_artist").default(false),
-  userId: integer("user_id").references(() => users.id), // Optional link to Go4It user account
-  createdAt: timestamp("created_at").defaultNow(),
-  active: boolean("active").default(true),
-});
-
-export const musicTracks = pgTable("music_tracks", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  artistId: integer("artist_id").notNull().references(() => musicArtists.id),
-  filePath: text("file_path").notNull(),
-  coverArt: text("cover_art"),
-  duration: integer("duration").notNull(), // Duration in seconds
-  uploadDate: timestamp("upload_date").defaultNow(),
-  releaseDate: date("release_date"),
-  genres: text("genres").array(),
-  tags: text("tags").array(),
-  isExplicit: boolean("is_explicit").default(false),
-  isApproved: boolean("is_approved").default(false),
-  featuredArtists: text("featured_artists").array(),
-  description: text("description"),
-  lyrics: text("lyrics"),
-  plays: integer("plays").default(0),
-  likes: integer("likes").default(0),
-  bpm: integer("bpm"), // Beats per minute
-  mood: text("mood").array(), // energetic, calm, etc.
-  sportMatchCategories: text("sport_match_categories").array(), // e.g., "workout", "pregame", "cooldown", "focus"
-  active: boolean("active").default(true),
-});
-
-export const musicPlaylists = pgTable("music_playlists", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description"),
-  creatorId: integer("creator_id").notNull().references(() => users.id),
-  coverImage: text("cover_image"),
-  isPublic: boolean("is_public").default(true),
-  categories: text("categories").array(), // workout, pregame, etc.
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-  likes: integer("likes").default(0),
-  followers: integer("followers").default(0),
-  sportAssociation: text("sport_association").array(), // basketball, football, etc.
-  trainingPhase: text("training_phase").array(), // warmup, high-intensity, recovery, etc.
-  active: boolean("active").default(true),
-});
-
-export const playlistTracks = pgTable("playlist_tracks", {
-  id: serial("id").primaryKey(),
-  playlistId: integer("playlist_id").notNull().references(() => musicPlaylists.id),
-  trackId: integer("track_id").notNull().references(() => musicTracks.id),
-  addedAt: timestamp("added_at").defaultNow(),
-  position: integer("position").notNull(),
-});
-
-export const musicListeningHistory = pgTable("music_listening_history", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  trackId: integer("track_id").notNull().references(() => musicTracks.id),
-  playedAt: timestamp("played_at").defaultNow(),
-  playDuration: integer("play_duration"), // How long user listened in seconds
-  completedPlay: boolean("completed_play").default(false),
-  contextType: text("context_type"), // e.g., "playlist", "radio", "profile", "workout"
-  contextId: integer("context_id"), // ID of the context (playlist ID, workout ID)
-});
-
-export const musicUserPreferences = pgTable("music_user_preferences", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id).unique(),
-  favoriteGenres: text("favorite_genres").array(),
-  favoriteMoods: text("favorite_moods").array(),
-  favoriteArtists: integer("favorite_artists").array(), // Array of artist IDs
-  favoriteTracks: integer("favorite_tracks").array(), // Array of track IDs
-  dislikedTracks: integer("disliked_tracks").array(), // Array of track IDs
-  explicitContentAllowed: boolean("explicit_content_allowed").default(false),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export const artistNilDeals = pgTable("artist_nil_deals", {
-  id: serial("id").primaryKey(),
-  artistId: integer("artist_id").notNull().references(() => musicArtists.id),
-  athleteId: integer("athlete_id").notNull().references(() => users.id),
-  dealType: text("deal_type").notNull(), // promotion, exclusive, feature, etc.
-  startDate: date("start_date").notNull(),
-  endDate: date("end_date"),
-  dealTerms: jsonb("deal_terms"),
-  dealStatus: text("deal_status").notNull().default("pending"), // pending, active, completed, cancelled
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-  active: boolean("active").default(true),
-});
-
-// Create insert schemas for music tables
-export const insertMusicArtistSchema = createInsertSchema(musicArtists).omit({
-  id: true,
-  createdAt: true,
-});
-
-export const insertMusicTrackSchema = createInsertSchema(musicTracks).omit({
-  id: true,
-  uploadDate: true,
-  plays: true,
-  likes: true,
-});
-
-export const insertMusicPlaylistSchema = createInsertSchema(musicPlaylists).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  likes: true,
-  followers: true,
-});
-
-export const insertPlaylistTrackSchema = createInsertSchema(playlistTracks).omit({
-  id: true,
-  addedAt: true,
-});
-
-export const insertMusicListeningHistorySchema = createInsertSchema(musicListeningHistory).omit({
-  id: true,
-  playedAt: true,
-});
-
-export const insertMusicUserPreferencesSchema = createInsertSchema(musicUserPreferences).omit({
-  id: true,
-  updatedAt: true,
-});
-
-export const insertArtistNilDealSchema = createInsertSchema(artistNilDeals).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-// Music feature types
-export type MusicArtist = typeof musicArtists.$inferSelect;
-export type InsertMusicArtist = z.infer<typeof insertMusicArtistSchema>;
-
-export type MusicTrack = typeof musicTracks.$inferSelect;
-export type InsertMusicTrack = z.infer<typeof insertMusicTrackSchema>;
-
-export type MusicPlaylist = typeof musicPlaylists.$inferSelect;
-export type InsertMusicPlaylist = z.infer<typeof insertMusicPlaylistSchema>;
-
-export type PlaylistTrack = typeof playlistTracks.$inferSelect;
-export type InsertPlaylistTrack = z.infer<typeof insertPlaylistTrackSchema>;
-
-export type MusicListeningHistory = typeof musicListeningHistory.$inferSelect;
-export type InsertMusicListeningHistory = z.infer<typeof insertMusicListeningHistorySchema>;
-
-export type MusicUserPreference = typeof musicUserPreferences.$inferSelect;
-export type InsertMusicUserPreference = z.infer<typeof insertMusicUserPreferencesSchema>;
-
-export type ArtistNilDeal = typeof artistNilDeals.$inferSelect;
-export type InsertArtistNilDeal = z.infer<typeof insertArtistNilDealSchema>;
-
-// AI Coach/Avatar feature
-export const aiCoaches = pgTable("ai_coaches", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  sport: text("sport").notNull(),
-  specialty: text("specialty"), // e.g., "technique", "strategy", "conditioning"
-  personality: text("personality").default("supportive"), // e.g., "supportive", "demanding", "analytical" 
-  avatarImage: text("avatar_image"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-  active: boolean("active").default(true),
-  systemPrompt: text("system_prompt").notNull(),
-  knowledgeBase: text("knowledge_base").notNull(), // References knowledge in specialized areas
-});
-
-export const aiCoachSessions = pgTable("ai_coach_sessions", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  coachId: integer("coach_id").notNull().references(() => aiCoaches.id),
-  startedAt: timestamp("started_at").defaultNow(),
-  lastMessageAt: timestamp("last_message_at").defaultNow(),
-  active: boolean("active").default(true),
-  topic: text("topic"), // The main focus of this coaching session
-  userGoals: text("user_goals"), // What the user wants to accomplish
-  sessionContext: jsonb("session_context"), // Relevant context like recent performance data
-});
-
-export const aiCoachMessages = pgTable("ai_coach_messages", {
-  id: serial("id").primaryKey(),
-  sessionId: integer("session_id").notNull().references(() => aiCoachSessions.id),
-  senderId: integer("sender_id").references(() => users.id), // Null if from coach
-  coachId: integer("coach_id").references(() => aiCoaches.id), // Null if from user
-  content: text("content").notNull(),
-  sentAt: timestamp("sent_at").defaultNow(),
-  messageType: text("message_type").default("text"), // text, image, video, drill, etc.
-  attachmentUrl: text("attachment_url"), // For images, videos, etc.
-  metadata: jsonb("metadata"), // For storing things like drill details, etc.
-});
-
-export const sportKnowledgeBases = pgTable("sport_knowledge_bases", {
-  id: serial("id").primaryKey(),
-  sport: text("sport").notNull(),
-  category: text("category").notNull(), // technique, rules, strategy, conditioning, etc.
-  title: text("title").notNull(),
-  content: text("content").notNull(),
-  lastUpdated: timestamp("last_updated").defaultNow(),
-  sourceUrl: text("source_url"),
-  mediaUrls: text("media_urls").array(),
-  keywords: text("keywords").array(),
-  difficulty: text("difficulty").default("intermediate"), // beginner, intermediate, advanced
-});
-
-export const userCoachInteractions = pgTable("user_coach_interactions", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  coachId: integer("coach_id").notNull().references(() => aiCoaches.id),
-  interactionType: text("interaction_type").notNull(), // session, drill, feedback, question
-  timestamp: timestamp("timestamp").defaultNow(),
-  feedback: integer("feedback").default(0), // User rating 1-5
-  feedbackText: text("feedback_text"),
-  insightGenerated: boolean("insight_generated").default(false),
-  insight: text("insight"), // Insight generated from this interaction
-});
-
-// Go4It Podcast feature
-export const podcastShows = pgTable("podcast_shows", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  coverImage: text("cover_image"),
-  creatorId: integer("creator_id").notNull().references(() => users.id),
-  isGroupShow: boolean("is_group_show").default(false),
-  categories: text("categories").array(),
-  tags: text("tags").array(),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-  isActive: boolean("is_active").default(true),
-  isExplicit: boolean("is_explicit").default(false),
-  rssFeedUrl: text("rss_feed_url"),
-  websiteUrl: text("website_url"),
-  sportCategories: text("sport_categories").array(),
-  showFormat: text("show_format"), // interview, solo, panel, etc.
-  episodeFrequency: text("episode_frequency"), // weekly, biweekly, monthly
-  subscriberCount: integer("subscriber_count").default(0),
-  totalListens: integer("total_listens").default(0),
-  featuredPosition: integer("featured_position"), // For editorial featuring on homepage
-});
-
-export const podcastHosts = pgTable("podcast_hosts", {
-  id: serial("id").primaryKey(),
-  showId: integer("show_id").notNull().references(() => podcastShows.id),
-  userId: integer("user_id").notNull().references(() => users.id),
-  role: text("role").default("host"), // host, co-host, guest host, producer
-  bio: text("bio"),
-  joinedAt: timestamp("joined_at").defaultNow(),
-  leftAt: timestamp("left_at"), // If the host leaves the show
-  isActive: boolean("is_active").default(true),
-});
-
-export const podcastEpisodes = pgTable("podcast_episodes", {
-  id: serial("id").primaryKey(),
-  showId: integer("show_id").notNull().references(() => podcastShows.id),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  audioFilePath: text("audio_file_path").notNull(),
-  duration: integer("duration").notNull(), // Duration in seconds
-  publishDate: timestamp("publish_date").defaultNow(),
-  episodeNumber: integer("episode_number"),
-  seasonNumber: integer("season_number").default(1),
-  coverImage: text("cover_image"),
-  isExplicit: boolean("is_explicit").default(false),
-  listenCount: integer("listen_count").default(0),
-  isPublished: boolean("is_published").default(true),
-  showNotes: text("show_notes"),
-  highlights: jsonb("highlights"), // Timestamps with descriptions for key moments
-  transcriptPath: text("transcript_path"),
-  isHighlightEpisode: boolean("is_highlight_episode").default(false),
-});
-
-export const podcastGuests = pgTable("podcast_guests", {
-  id: serial("id").primaryKey(),
-  episodeId: integer("episode_id").notNull().references(() => podcastEpisodes.id),
-  guestName: text("guest_name").notNull(),
-  userId: integer("user_id").references(() => users.id), // Optional - if guest is a Go4It user
-  bio: text("bio"),
-  title: text("title"), // e.g., "Head Coach", "NFL Analyst", "College Recruit"
-  instagramHandle: text("instagram_handle"),
-  twitterHandle: text("twitter_handle"),
-  websiteUrl: text("website_url"),
-  imageUrl: text("image_url"),
-  topicDiscussed: text("topic_discussed"),
-  appearanceStartTime: integer("appearance_start_time"), // Timestamp in seconds when guest first speaks
-});
-
-export const podcastComments = pgTable("podcast_comments", {
-  id: serial("id").primaryKey(),
-  episodeId: integer("episode_id").notNull().references(() => podcastEpisodes.id),
-  userId: integer("user_id").notNull().references(() => users.id),
-  content: text("content").notNull(),
-  timestamp: integer("timestamp"), // Timestamp in the episode this comment refers to
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-  parentCommentId: integer("parent_comment_id").references(() => podcastComments.id), // For replies
-  likes: integer("likes").default(0),
-  isEdited: boolean("is_edited").default(false),
-  isRemoved: boolean("is_removed").default(false),
-});
-
-export const podcastSubscriptions = pgTable("podcast_subscriptions", {
-  id: serial("id").primaryKey(),
-  showId: integer("show_id").notNull().references(() => podcastShows.id),
-  userId: integer("user_id").notNull().references(() => users.id),
-  subscribedAt: timestamp("subscribed_at").defaultNow(),
-  notificationsEnabled: boolean("notifications_enabled").default(true),
-});
-
-export const podcastListeningHistory = pgTable("podcast_listening_history", {
-  id: serial("id").primaryKey(),
-  episodeId: integer("episode_id").notNull().references(() => podcastEpisodes.id),
-  userId: integer("user_id").notNull().references(() => users.id),
-  lastPosition: integer("last_position").default(0), // Last playback position in seconds
-  completed: boolean("completed").default(false), // If user finished the episode
-  listenDate: timestamp("listen_date").defaultNow(),
-  device: text("device"), // Device used for listening
-  listenDuration: integer("listen_duration"), // How long they listened in seconds
-});
-
-export const podcastTopics = pgTable("podcast_topics", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull().unique(),
-  description: text("description"),
-  iconName: text("icon_name"), // For UI display
-  category: text("category"), // Broader category this topic falls under
-  popular: boolean("popular").default(false), // For trending topics
-});
-
-export const podcastEpisodeTopics = pgTable("podcast_episode_topics", {
-  id: serial("id").primaryKey(),
-  episodeId: integer("episode_id").notNull().references(() => podcastEpisodes.id),
-  topicId: integer("topic_id").notNull().references(() => podcastTopics.id),
-});
-
-export const podcastCollaborationRequests = pgTable("podcast_collaboration_requests", {
-  id: serial("id").primaryKey(),
-  showId: integer("show_id").notNull().references(() => podcastShows.id),
-  senderId: integer("sender_id").notNull().references(() => users.id),
-  recipientId: integer("recipient_id").notNull().references(() => users.id),
-  status: text("status").notNull().default("pending"), // pending, accepted, declined
-  requestNote: text("request_note"),
-  responseNote: text("response_note"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-  proposedDate: timestamp("proposed_date"),
-  proposedTopic: text("proposed_topic"),
-});
-
-// Create insert schemas for podcast tables
-export const insertPodcastShowSchema = createInsertSchema(podcastShows).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  subscriberCount: true,
-  totalListens: true,
-});
-
-export const insertPodcastHostSchema = createInsertSchema(podcastHosts).omit({
-  id: true,
-  joinedAt: true,
-});
-
-export const insertPodcastEpisodeSchema = createInsertSchema(podcastEpisodes).omit({
-  id: true,
-  publishDate: true,
-  listenCount: true,
-});
-
-export const insertPodcastGuestSchema = createInsertSchema(podcastGuests).omit({
-  id: true,
-});
-
-export const insertPodcastCommentSchema = createInsertSchema(podcastComments).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  likes: true,
-  isEdited: true,
-  isRemoved: true,
-});
-
-export const insertPodcastSubscriptionSchema = createInsertSchema(podcastSubscriptions).omit({
-  id: true,
-  subscribedAt: true,
-});
-
-export const insertPodcastListeningHistorySchema = createInsertSchema(podcastListeningHistory).omit({
-  id: true,
-  listenDate: true,
-});
-
-export const insertPodcastTopicSchema = createInsertSchema(podcastTopics).omit({
-  id: true,
-});
-
-export const insertPodcastEpisodeTopicSchema = createInsertSchema(podcastEpisodeTopics).omit({
-  id: true,
-});
-
-export const insertPodcastCollaborationRequestSchema = createInsertSchema(podcastCollaborationRequests).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-// Podcast feature types
-export type PodcastShow = typeof podcastShows.$inferSelect;
-export type InsertPodcastShow = z.infer<typeof insertPodcastShowSchema>;
-
-export type PodcastHost = typeof podcastHosts.$inferSelect;
-export type InsertPodcastHost = z.infer<typeof insertPodcastHostSchema>;
-
-export type PodcastEpisode = typeof podcastEpisodes.$inferSelect;
-export type InsertPodcastEpisode = z.infer<typeof insertPodcastEpisodeSchema>;
-
-export type PodcastGuest = typeof podcastGuests.$inferSelect;
-export type InsertPodcastGuest = z.infer<typeof insertPodcastGuestSchema>;
-
-export type PodcastComment = typeof podcastComments.$inferSelect;
-export type InsertPodcastComment = z.infer<typeof insertPodcastCommentSchema>;
-
-export type PodcastSubscription = typeof podcastSubscriptions.$inferSelect;
-export type InsertPodcastSubscription = z.infer<typeof insertPodcastSubscriptionSchema>;
-
-export type PodcastListeningHistory = typeof podcastListeningHistory.$inferSelect;
-export type InsertPodcastListeningHistory = z.infer<typeof insertPodcastListeningHistorySchema>;
-
-export type PodcastTopic = typeof podcastTopics.$inferSelect;
-export type InsertPodcastTopic = z.infer<typeof insertPodcastTopicSchema>;
-
-export type PodcastEpisodeTopic = typeof podcastEpisodeTopics.$inferSelect;
-export type InsertPodcastEpisodeTopic = z.infer<typeof insertPodcastEpisodeTopicSchema>;
-
-export type PodcastCollaborationRequest = typeof podcastCollaborationRequests.$inferSelect;
-export type InsertPodcastCollaborationRequest = z.infer<typeof insertPodcastCollaborationRequestSchema>;
-
-// Create insert schemas for AI Coach tables
-export const insertAiCoachSchema = createInsertSchema(aiCoaches).omit({
-  id: true, createdAt: true, updatedAt: true,
-});
-
-export const insertAiCoachSessionSchema = createInsertSchema(aiCoachSessions).omit({
-  id: true, startedAt: true, lastMessageAt: true,
-});
-
-export const insertAiCoachMessageSchema = createInsertSchema(aiCoachMessages).omit({
-  id: true, sentAt: true,
-});
-
-export const insertSportKnowledgeBaseSchema = createInsertSchema(sportKnowledgeBases).omit({
-  id: true, lastUpdated: true,
-});
-
-export const insertUserCoachInteractionSchema = createInsertSchema(userCoachInteractions).omit({
-  id: true, timestamp: true, insightGenerated: true,
-});
-
-// AI Coach types
-export type AiCoach = typeof aiCoaches.$inferSelect;
-export type InsertAiCoach = z.infer<typeof insertAiCoachSchema>;
-
-export type AiCoachSession = typeof aiCoachSessions.$inferSelect;
-export type InsertAiCoachSession = z.infer<typeof insertAiCoachSessionSchema>;
-
-export type AiCoachMessage = typeof aiCoachMessages.$inferSelect;
-export type InsertAiCoachMessage = z.infer<typeof insertAiCoachMessageSchema>;
-
-export type SportKnowledgeBase = typeof sportKnowledgeBases.$inferSelect;
-export type InsertSportKnowledgeBase = z.infer<typeof insertSportKnowledgeBaseSchema>;
-
-export type UserCoachInteraction = typeof userCoachInteractions.$inferSelect;
-export type InsertUserCoachInteraction = z.infer<typeof insertUserCoachInteractionSchema>;
-
-export type UserAgreement = typeof userAgreements.$inferSelect;
-export type InsertUserAgreement = z.infer<typeof insertUserAgreementSchema>;
-
-// CyberShield security - User tokens schema and types
-export const insertUserTokenSchema = createInsertSchema(userTokens).omit({
-  id: true, createdAt: true, isRevoked: true,
-});
-
-export type UserToken = typeof userTokens.$inferSelect;
-export type InsertUserToken = z.infer<typeof insertUserTokenSchema>;
-
-// Define relations between tables
-
-export const usersRelations = relations(users, ({ many }) => ({
-  tokens: many(userTokens),
-  aiCoachSessions: many(aiCoachSessions),
-  coachInteractions: many(userCoachInteractions),
-}));
-
-export const userTokensRelations = relations(userTokens, ({ one }) => ({
-  user: one(users, {
-    fields: [userTokens.userId],
-    references: [users.id],
-  }),
-}));
-
-// AI Coach relations
-export const aiCoachesRelations = relations(aiCoaches, ({ many }) => ({
-  sessions: many(aiCoachSessions),
-  messages: many(aiCoachMessages),
-  interactions: many(userCoachInteractions),
-}));
-
-export const aiCoachSessionsRelations = relations(aiCoachSessions, ({ one, many }) => ({
-  user: one(users, {
-    fields: [aiCoachSessions.userId],
-    references: [users.id],
-  }),
-  coach: one(aiCoaches, {
-    fields: [aiCoachSessions.coachId],
-    references: [aiCoaches.id],
-  }),
-  messages: many(aiCoachMessages),
-}));
-
-export const aiCoachMessagesRelations = relations(aiCoachMessages, ({ one }) => ({
-  session: one(aiCoachSessions, {
-    fields: [aiCoachMessages.sessionId],
-    references: [aiCoachSessions.id],
-  }),
-  user: one(users, {
-    fields: [aiCoachMessages.senderId],
-    references: [users.id],
-  }),
-  coach: one(aiCoaches, {
-    fields: [aiCoachMessages.coachId],
-    references: [aiCoaches.id],
-  }),
-}));
-
-export const userCoachInteractionsRelations = relations(userCoachInteractions, ({ one }) => ({
-  user: one(users, {
-    fields: [userCoachInteractions.userId],
-    references: [users.id],
-  }),
-  coach: one(aiCoaches, {
-    fields: [userCoachInteractions.coachId],
-    references: [aiCoaches.id],
-  }),
-}));
-
-// NCAA Schools database relations - defined above
 
 export const sportProgramsRelations = relations(sportPrograms, ({ one, many }) => ({
   school: one(ncaaSchools, {
@@ -2254,96 +767,32 @@ export const recruitingContactsRelations = relations(recruitingContacts, ({ one 
   }),
 }));
 
-// AI Coach System
+// Event registration and payment relations
+export const combineTourEventRelations = relations(combineTourEvents, ({ many }) => ({
+  registrations: many(registrations),
+}));
 
-// AI Coach profiles table
-export const aiCoaches = pgTable("ai_coaches", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  sport: text("sport").notNull(),
-  specialty: text("specialty").notNull(),
-  personality: text("personality").notNull(),
-  avatarImage: text("avatar_image"),
-  systemPrompt: text("system_prompt").notNull(),
-  knowledgeBase: text("knowledge_base").notNull(),
-  active: boolean("active").default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
+export const registrationsRelations = relations(registrations, ({ one, many }) => ({
+  user: one(users, {
+    fields: [registrations.userId],
+    references: [users.id],
+  }),
+  event: one(combineTourEvents, {
+    fields: [registrations.eventId],
+    references: [combineTourEvents.id],
+  }),
+  payments: many(payments),
+}));
 
-// AI Coach sessions table
-export const aiCoachSessions = pgTable("ai_coach_sessions", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  coachId: integer("coach_id").notNull().references(() => aiCoaches.id),
-  topic: text("topic"),
-  userGoals: text("user_goals"),
-  startedAt: timestamp("started_at").defaultNow(),
-  lastMessageAt: timestamp("last_message_at").defaultNow(),
-  active: boolean("active").default(true),
-  sessionContext: json("session_context").$type<Record<string, any>>().default({}),
-});
+export const paymentsRelations = relations(payments, ({ one }) => ({
+  registration: one(registrations, {
+    fields: [payments.registrationId],
+    references: [registrations.id],
+  }),
+}));
 
-// AI Coach messages table
-export const aiCoachMessages = pgTable("ai_coach_messages", {
-  id: serial("id").primaryKey(),
-  sessionId: integer("session_id").notNull().references(() => aiCoachSessions.id),
-  senderId: integer("sender_id").references(() => users.id),
-  coachId: integer("coach_id").references(() => aiCoaches.id),
-  content: text("content").notNull(),
-  messageType: text("message_type").default("text"),
-  attachmentUrl: text("attachment_url"),
-  sentAt: timestamp("sent_at").defaultNow(),
-});
-
-// Sport knowledge bases for AI coaches
-export const sportKnowledgeBases = pgTable("sport_knowledge_bases", {
-  id: serial("id").primaryKey(),
-  sport: text("sport").notNull().unique(),
-  content: text("content").notNull(),
-  lastUpdated: timestamp("last_updated").defaultNow(),
-  version: text("version").default("1.0"),
-});
-
-// User-Coach interactions for analytics
-export const userCoachInteractions = pgTable("user_coach_interactions", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  coachId: integer("coach_id").notNull().references(() => aiCoaches.id),
-  interactionType: text("interaction_type").notNull(), // session_start, message, assessment, recommendation, etc.
-  timestamp: timestamp("timestamp").defaultNow(),
-  metadata: json("metadata").$type<Record<string, any>>().default({}),
-});
-
-// Coach feedback from users
-export const coachFeedback = pgTable("coach_feedback", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  coachId: integer("coach_id").notNull().references(() => aiCoaches.id),
-  sessionId: integer("session_id").references(() => aiCoachSessions.id),
-  rating: integer("rating"), // 1-5 star rating
-  feedback: text("feedback"),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-// Coach recommendations for users
-export const coachRecommendations = pgTable("coach_recommendations", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  coachId: integer("coach_id").notNull().references(() => aiCoaches.id),
-  recommendationType: text("recommendation_type").notNull(), // drill, workout, nutrition, etc.
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  content: json("content").$type<Record<string, any>>().notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  expiresAt: timestamp("expires_at"),
-  completed: boolean("completed").default(false),
-  completedAt: timestamp("completed_at"),
-  feedback: text("feedback"),
-});
-
-// Define relations
-export const aiCoachRelations = relations(aiCoaches, ({ many }) => ({
+// AI Coach relations
+export const aiCoachesRelations = relations(aiCoaches, ({ many }) => ({
   sessions: many(aiCoachSessions),
   messages: many(aiCoachMessages),
   interactions: many(userCoachInteractions),
@@ -2351,7 +800,7 @@ export const aiCoachRelations = relations(aiCoaches, ({ many }) => ({
   recommendations: many(coachRecommendations),
 }));
 
-export const aiCoachSessionRelations = relations(aiCoachSessions, ({ one, many }) => ({
+export const aiCoachSessionsRelations = relations(aiCoachSessions, ({ one, many }) => ({
   user: one(users, {
     fields: [aiCoachSessions.userId],
     references: [users.id],
@@ -2363,7 +812,7 @@ export const aiCoachSessionRelations = relations(aiCoachSessions, ({ one, many }
   messages: many(aiCoachMessages),
 }));
 
-export const aiCoachMessageRelations = relations(aiCoachMessages, ({ one }) => ({
+export const aiCoachMessagesRelations = relations(aiCoachMessages, ({ one }) => ({
   session: one(aiCoachSessions, {
     fields: [aiCoachMessages.sessionId],
     references: [aiCoachSessions.id],
@@ -2378,7 +827,7 @@ export const aiCoachMessageRelations = relations(aiCoachMessages, ({ one }) => (
   }),
 }));
 
-export const userCoachInteractionRelations = relations(userCoachInteractions, ({ one }) => ({
+export const userCoachInteractionsRelations = relations(userCoachInteractions, ({ one }) => ({
   user: one(users, {
     fields: [userCoachInteractions.userId],
     references: [users.id],
@@ -2415,20 +864,377 @@ export const coachRecommendationsRelations = relations(coachRecommendations, ({ 
   }),
 }));
 
-// Create insert schemas
-export const insertAiCoachSchema = createInsertSchema(aiCoaches);
-export const insertAiCoachSessionSchema = createInsertSchema(aiCoachSessions);
-export const insertAiCoachMessageSchema = createInsertSchema(aiCoachMessages);
-export const insertSportKnowledgeBaseSchema = createInsertSchema(sportKnowledgeBases);
-export const insertUserCoachInteractionSchema = createInsertSchema(userCoachInteractions);
-export const insertCoachFeedbackSchema = createInsertSchema(coachFeedback);
-export const insertCoachRecommendationSchema = createInsertSchema(coachRecommendations);
+// Skill Tree relations
+export const skillTreeNodesRelations = relations(skillTreeNodes, ({ many }) => ({
+  parentRelationships: many(skillTreeRelationships, { relationName: "parent" }),
+  childRelationships: many(skillTreeRelationships, { relationName: "child" }),
+  drills: many(trainingDrills),
+  userSkills: many(skills),
+}));
 
-// Create insert types
+export const skillTreeRelationshipsRelations = relations(skillTreeRelationships, ({ one }) => ({
+  parent: one(skillTreeNodes, {
+    fields: [skillTreeRelationships.parentNodeId],
+    references: [skillTreeNodes.id],
+    relationName: "parent",
+  }),
+  child: one(skillTreeNodes, {
+    fields: [skillTreeRelationships.childNodeId],
+    references: [skillTreeNodes.id],
+    relationName: "child",
+  }),
+}));
+
+export const skillsRelations = relations(skills, ({ one }) => ({
+  user: one(users, {
+    fields: [skills.userId],
+    references: [users.id],
+  }),
+  skillNode: one(skillTreeNodes, {
+    fields: [skills.skillNodeId],
+    references: [skillTreeNodes.id],
+  }),
+}));
+
+export const trainingDrillsRelations = relations(trainingDrills, ({ one, many }) => ({
+  skillNode: one(skillTreeNodes, {
+    fields: [trainingDrills.skillNodeId],
+    references: [skillTreeNodes.id],
+  }),
+  extended: one(trainingDrillsExtended, {
+    fields: [trainingDrills.id],
+    references: [trainingDrillsExtended.drillId],
+  }),
+  userProgress: many(userDrillProgress),
+}));
+
+export const trainingDrillsExtendedRelations = relations(trainingDrillsExtended, ({ one }) => ({
+  drill: one(trainingDrills, {
+    fields: [trainingDrillsExtended.drillId],
+    references: [trainingDrills.id],
+  }),
+}));
+
+export const userDrillProgressRelations = relations(userDrillProgress, ({ one }) => ({
+  user: one(users, {
+    fields: [userDrillProgress.userId],
+    references: [users.id],
+  }),
+  drill: one(trainingDrills, {
+    fields: [userDrillProgress.drillId],
+    references: [trainingDrills.id],
+  }),
+}));
+
+// Create insert schemas
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+  lastLoginAt: true,
+});
+
+export const insertVideoSchema = createInsertSchema(videos).omit({
+  id: true,
+  uploadDate: true,
+  views: true,
+  likes: true,
+  processed: true,
+  analyzed: true,
+  status: true,
+});
+
+export const insertVideoHighlightSchema = createInsertSchema(videoHighlights).omit({
+  id: true,
+  createdAt: true,
+  views: true,
+  likes: true,
+  status: true,
+});
+
+export const insertHighlightGeneratorConfigSchema = createInsertSchema(highlightGeneratorConfigs).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertContentBlockSchema = createInsertSchema(contentBlocks).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertBlogPostSchema = createInsertSchema(blogPosts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertFeaturedAthleteSchema = createInsertSchema(featuredAthletes).omit({
+  id: true,
+  startDate: true,
+});
+
+export const insertAthleteProfileSchema = createInsertSchema(athleteProfiles).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export const insertCombineTourEventSchema = createInsertSchema(combineTourEvents).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  registeredCount: true,
+});
+
+export const insertRegistrationSchema = createInsertSchema(registrations).omit({
+  id: true,
+  registeredAt: true,
+  checkedInAt: true,
+});
+
+export const insertPaymentSchema = createInsertSchema(payments).omit({
+  id: true,
+  processedAt: true,
+});
+
+export const insertNcaaSchoolSchema = createInsertSchema(ncaaSchools).omit({
+  id: true,
+  lastUpdated: true,
+});
+
+export const insertAthleticDepartmentSchema = createInsertSchema(athleticDepartments).omit({
+  id: true,
+  lastUpdated: true,
+});
+
+export const insertSportProgramSchema = createInsertSchema(sportPrograms).omit({
+  id: true,
+  last_updated: true,
+});
+
+export const insertCoachingStaffSchema = createInsertSchema(coachingStaff).omit({
+  id: true,
+  last_updated: true,
+});
+
+export const insertRecruitingContactSchema = createInsertSchema(recruitingContacts).omit({
+  id: true,
+  last_updated: true,
+});
+
+export const insertSkillTreeNodeSchema = createInsertSchema(skillTreeNodes).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertSkillTreeRelationshipSchema = createInsertSchema(skillTreeRelationships).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertSkillSchema = createInsertSchema(skills).omit({
+  id: true,
+  unlockedAt: true,
+  lastTrainedAt: true,
+});
+
+export const insertTrainingDrillSchema = createInsertSchema(trainingDrills).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertUserDrillProgressSchema = createInsertSchema(userDrillProgress).omit({
+  id: true,
+  lastCompletedAt: true,
+});
+
+export const insertUserTokenSchema = createInsertSchema(userTokens).omit({
+  id: true,
+  createdAt: true,
+  lastUsedAt: true,
+  isRevoked: true,
+});
+
+export const insertUserAgreementSchema = createInsertSchema(userAgreements).omit({
+  id: true,
+  acceptedAt: true,
+});
+
+// AI Coach Schemas
+export const insertAiCoachSchema = createInsertSchema(aiCoaches).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertAiCoachSessionSchema = createInsertSchema(aiCoachSessions).omit({
+  id: true,
+  startedAt: true,
+  lastMessageAt: true,
+});
+
+export const insertAiCoachMessageSchema = createInsertSchema(aiCoachMessages).omit({
+  id: true,
+  sentAt: true,
+});
+
+export const insertSportKnowledgeBaseSchema = createInsertSchema(sportKnowledgeBases).omit({
+  id: true,
+  lastUpdated: true,
+});
+
+export const insertUserCoachInteractionSchema = createInsertSchema(userCoachInteractions).omit({
+  id: true,
+  timestamp: true,
+});
+
+export const insertCoachFeedbackSchema = createInsertSchema(coachFeedback).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertCoachRecommendationSchema = createInsertSchema(coachRecommendations).omit({
+  id: true,
+  createdAt: true,
+  completedAt: true,
+});
+
+// Define types
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
+
+export type Video = typeof videos.$inferSelect;
+export type InsertVideo = z.infer<typeof insertVideoSchema>;
+
+export type VideoHighlight = typeof videoHighlights.$inferSelect;
+export type InsertVideoHighlight = z.infer<typeof insertVideoHighlightSchema>;
+
+export type HighlightGeneratorConfig = typeof highlightGeneratorConfigs.$inferSelect;
+export type InsertHighlightGeneratorConfig = z.infer<typeof insertHighlightGeneratorConfigSchema>;
+
+export type VideoAnalysis = typeof videoAnalyses.$inferSelect;
+
+export type ContentBlock = typeof contentBlocks.$inferSelect;
+export type InsertContentBlock = z.infer<typeof insertContentBlockSchema>;
+
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
+
+export type FeaturedAthlete = typeof featuredAthletes.$inferSelect;
+export type InsertFeaturedAthlete = z.infer<typeof insertFeaturedAthleteSchema>;
+
+export type AthleteProfile = typeof athleteProfiles.$inferSelect;
+export type InsertAthleteProfile = z.infer<typeof insertAthleteProfileSchema>;
+
+// Create insert schemas for these tables
+export const insertGarCategorySchema = createInsertSchema(garCategories).omit({ id: true });
+export const insertGarSubcategorySchema = createInsertSchema(garSubcategories).omit({ id: true });
+export const insertGarAthleteRatingSchema = createInsertSchema(garAthleteRatings).omit({ id: true, createdAt: true });
+export const insertGarRatingHistorySchema = createInsertSchema(garRatingHistory).omit({ id: true, recordedAt: true });
+export const insertAthleteStarProfileSchema = createInsertSchema(athleteStarProfiles).omit({ id: true, reachedAt: true, lastUpdate: true });
+export const insertApiKeySchema = createInsertSchema(apiKeys).omit({ id: true, createdAt: true, lastUsedAt: true });
+
+export type GarCategory = typeof garCategories.$inferSelect;
+export type InsertGarCategory = z.infer<typeof insertGarCategorySchema>;
+
+export type GarSubcategory = typeof garSubcategories.$inferSelect;
+export type InsertGarSubcategory = z.infer<typeof insertGarSubcategorySchema>;
+
+export type GarAthleteRating = typeof garAthleteRatings.$inferSelect;
+export type InsertGarAthleteRating = z.infer<typeof insertGarAthleteRatingSchema>;
+
+export type GarRatingHistory = typeof garRatingHistory.$inferSelect;
+export type InsertGarRatingHistory = z.infer<typeof insertGarRatingHistorySchema>;
+
+export type AthleteStarProfile = typeof athleteStarProfiles.$inferSelect;
+export type InsertAthleteStarProfile = z.infer<typeof insertAthleteStarProfileSchema>;
+
+export type ApiKey = typeof apiKeys.$inferSelect;
+export type InsertApiKey = z.infer<typeof insertApiKeySchema>;
+
+export type CombineTourEvent = typeof combineTourEvents.$inferSelect;
+export type InsertCombineTourEvent = z.infer<typeof insertCombineTourEventSchema>;
+
+export type Registration = typeof registrations.$inferSelect;
+export type InsertRegistration = z.infer<typeof insertRegistrationSchema>;
+
+export type Payment = typeof payments.$inferSelect;
+export type InsertPayment = z.infer<typeof insertPaymentSchema>;
+
+export type UserToken = typeof userTokens.$inferSelect;
+export type InsertUserToken = z.infer<typeof insertUserTokenSchema>;
+
+export type UserAgreement = typeof userAgreements.$inferSelect;
+export type InsertUserAgreement = z.infer<typeof insertUserAgreementSchema>;
+
+// NCAA Schools Database types
+export type NcaaSchool = typeof ncaaSchools.$inferSelect;
+export type InsertNcaaSchool = z.infer<typeof insertNcaaSchoolSchema>;
+
+export type AthleticDepartment = typeof athleticDepartments.$inferSelect;
+export type InsertAthleticDepartment = z.infer<typeof insertAthleticDepartmentSchema>;
+
+export type SportProgram = typeof sportPrograms.$inferSelect;
+export type InsertSportProgram = z.infer<typeof insertSportProgramSchema>;
+
+export type CoachingStaff = typeof coachingStaff.$inferSelect;
+export type InsertCoachingStaff = z.infer<typeof insertCoachingStaffSchema>;
+
+export type RecruitingContact = typeof recruitingContacts.$inferSelect;
+export type InsertRecruitingContact = z.infer<typeof insertRecruitingContactSchema>;
+
+// Skill Tree types
+export type SkillTreeNode = typeof skillTreeNodes.$inferSelect;
+export type InsertSkillTreeNode = z.infer<typeof insertSkillTreeNodeSchema>;
+
+export type SkillTreeRelationship = typeof skillTreeRelationships.$inferSelect;
+export type InsertSkillTreeRelationship = z.infer<typeof insertSkillTreeRelationshipSchema>;
+
+export type Skill = typeof skills.$inferSelect;
+export type InsertSkill = z.infer<typeof insertSkillSchema>;
+
+export type TrainingDrill = typeof trainingDrills.$inferSelect;
+export type InsertTrainingDrill = z.infer<typeof insertTrainingDrillSchema>;
+
+export type TrainingDrillsExtended = typeof trainingDrillsExtended.$inferSelect;
+export type InsertTrainingDrillsExtended = {
+  drillId: number;
+  fieldSetup?: string;
+  coachTips?: string;
+  variations?: Record<string, any>;
+  progressions?: Record<string, any>;
+  metrics?: string[];
+  idealOutcomes?: string;
+  commonErrors?: string[];
+  videoAnnotations?: Record<string, any>;
+  recommendedFrequency?: string;
+  warmupRequired?: boolean;
+  relatedDrillIds?: number[];
+};
+
+export type UserDrillProgress = typeof userDrillProgress.$inferSelect;
+export type InsertUserDrillProgress = z.infer<typeof insertUserDrillProgressSchema>;
+
+// AI Coach types
+export type AiCoach = typeof aiCoaches.$inferSelect;
 export type InsertAiCoach = z.infer<typeof insertAiCoachSchema>;
+
+export type AiCoachSession = typeof aiCoachSessions.$inferSelect;
 export type InsertAiCoachSession = z.infer<typeof insertAiCoachSessionSchema>;
+
+export type AiCoachMessage = typeof aiCoachMessages.$inferSelect;
 export type InsertAiCoachMessage = z.infer<typeof insertAiCoachMessageSchema>;
+
+export type SportKnowledgeBase = typeof sportKnowledgeBases.$inferSelect;
 export type InsertSportKnowledgeBase = z.infer<typeof insertSportKnowledgeBaseSchema>;
+
+export type UserCoachInteraction = typeof userCoachInteractions.$inferSelect;
 export type InsertUserCoachInteraction = z.infer<typeof insertUserCoachInteractionSchema>;
+
+export type CoachFeedback = typeof coachFeedback.$inferSelect;
 export type InsertCoachFeedback = z.infer<typeof insertCoachFeedbackSchema>;
+
+export type CoachRecommendation = typeof coachRecommendations.$inferSelect;
 export type InsertCoachRecommendation = z.infer<typeof insertCoachRecommendationSchema>;

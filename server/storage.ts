@@ -14,6 +14,9 @@ import {
   videoAnalyses, type VideoAnalysis,
   combineTourEvents, type CombineTourEvent, type InsertCombineTourEvent,
   userTokens, type UserToken, type InsertUserToken,
+  // Event Registration and Payments
+  registrations, type Registration, type InsertRegistration,
+  payments, type Payment, type InsertPayment,
   // Athlete Star Profiles
   athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile,
   // NCAA Schools database tables
@@ -149,6 +152,22 @@ export interface IStorage {
   createCombineTourEvent(event: InsertCombineTourEvent): Promise<CombineTourEvent>;
   updateCombineTourEvent(id: number, data: Partial<CombineTourEvent>): Promise<CombineTourEvent | undefined>;
   deleteCombineTourEvent(id: number): Promise<boolean>;
+  
+  // Registration operations
+  getRegistrations(): Promise<Registration[]>;
+  getRegistrationsByEvent(eventId: number): Promise<Registration[]>;
+  getRegistrationsByUser(userId: number): Promise<Registration[]>;
+  getRegistration(id: number): Promise<Registration | undefined>;
+  createRegistration(registration: InsertRegistration): Promise<Registration>;
+  updateRegistration(id: number, data: Partial<Registration>): Promise<Registration | undefined>;
+  deleteRegistration(id: number): Promise<boolean>;
+  
+  // Payment operations
+  getPayments(): Promise<Payment[]>;
+  getPaymentsByRegistration(registrationId: number): Promise<Payment[]>;
+  getPayment(id: number): Promise<Payment | undefined>;
+  createPayment(payment: InsertPayment): Promise<Payment>;
+  updatePayment(id: number, data: Partial<Payment>): Promise<Payment | undefined>;
   
   // AI Coach and Player features - stubs for future implementation
   getAthleteProfile(userId: number): Promise<any | undefined>;
@@ -2203,6 +2222,144 @@ export class DatabaseStorage implements IStorage {
       return post;
     } catch (error) {
       console.error('Error fetching latest blog post:', error);
+      return undefined;
+    }
+  }
+
+  // Registration operations
+  async getRegistrations(): Promise<Registration[]> {
+    try {
+      return await db.select().from(registrations);
+    } catch (error) {
+      console.error('Database error in getRegistrations:', error);
+      return [];
+    }
+  }
+
+  async getRegistrationsByEvent(eventId: number): Promise<Registration[]> {
+    try {
+      return await db.select()
+        .from(registrations)
+        .where(eq(registrations.eventId, eventId));
+    } catch (error) {
+      console.error('Database error in getRegistrationsByEvent:', error);
+      return [];
+    }
+  }
+
+  async getRegistrationsByUser(userId: number): Promise<Registration[]> {
+    try {
+      return await db.select()
+        .from(registrations)
+        .where(eq(registrations.userId, userId));
+    } catch (error) {
+      console.error('Database error in getRegistrationsByUser:', error);
+      return [];
+    }
+  }
+
+  async getRegistration(id: number): Promise<Registration | undefined> {
+    try {
+      const [registration] = await db.select()
+        .from(registrations)
+        .where(eq(registrations.id, id));
+      return registration;
+    } catch (error) {
+      console.error('Database error in getRegistration:', error);
+      return undefined;
+    }
+  }
+
+  async createRegistration(registration: InsertRegistration): Promise<Registration> {
+    try {
+      const [createdRegistration] = await db.insert(registrations)
+        .values(registration)
+        .returning();
+      return createdRegistration;
+    } catch (error) {
+      console.error('Database error in createRegistration:', error);
+      throw error;
+    }
+  }
+
+  async updateRegistration(id: number, data: Partial<Registration>): Promise<Registration | undefined> {
+    try {
+      const [updatedRegistration] = await db.update(registrations)
+        .set(data)
+        .where(eq(registrations.id, id))
+        .returning();
+      return updatedRegistration;
+    } catch (error) {
+      console.error('Database error in updateRegistration:', error);
+      return undefined;
+    }
+  }
+
+  async deleteRegistration(id: number): Promise<boolean> {
+    try {
+      await db.delete(registrations)
+        .where(eq(registrations.id, id));
+      return true;
+    } catch (error) {
+      console.error('Database error in deleteRegistration:', error);
+      return false;
+    }
+  }
+
+  // Payment operations
+  async getPayments(): Promise<Payment[]> {
+    try {
+      return await db.select().from(payments);
+    } catch (error) {
+      console.error('Database error in getPayments:', error);
+      return [];
+    }
+  }
+
+  async getPaymentsByRegistration(registrationId: number): Promise<Payment[]> {
+    try {
+      return await db.select()
+        .from(payments)
+        .where(eq(payments.registrationId, registrationId));
+    } catch (error) {
+      console.error('Database error in getPaymentsByRegistration:', error);
+      return [];
+    }
+  }
+
+  async getPayment(id: number): Promise<Payment | undefined> {
+    try {
+      const [payment] = await db.select()
+        .from(payments)
+        .where(eq(payments.id, id));
+      return payment;
+    } catch (error) {
+      console.error('Database error in getPayment:', error);
+      return undefined;
+    }
+  }
+
+  async createPayment(payment: InsertPayment): Promise<Payment> {
+    try {
+      const [createdPayment] = await db.insert(payments)
+        .values(payment)
+        .returning();
+      return createdPayment;
+    } catch (error) {
+      console.error('Database error in createPayment:', error);
+      throw error;
+    }
+  }
+
+  async updatePayment(id: number, data: Partial<Payment>): Promise<Payment | undefined> {
+    try {
+      const [updatedPayment] = await db.update(payments)
+        .set(data)
+        .where(eq(payments.id, id))
+        .returning();
+      return updatedPayment;
+    } catch (error) {
+      console.error('Database error in updatePayment:', error);
       return undefined;
     }
   }
