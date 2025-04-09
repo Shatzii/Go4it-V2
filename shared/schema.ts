@@ -219,12 +219,11 @@ export const contentBlocks = pgTable("content_blocks", {
   title: text("title").notNull(),
   content: text("content").notNull(),
   section: text("section").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  order: integer("order").default(0),
   active: boolean("active").default(true),
-  position: integer("position").default(0),
-  cssClass: text("css_class"),
-  mediaUrl: text("media_url"),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  lastUpdatedBy: integer("last_updated_by").references(() => users.id),
+  metadata: jsonb("metadata"),
 });
 
 // Blog Posts
