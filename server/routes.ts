@@ -11,6 +11,8 @@ import multer from "multer";
 import path from "path";
 import { WebSocketServer, WebSocket } from 'ws';
 import { generateTokens } from './services/auth-token-service';
+import { registerAiCoachRoutes } from './routes/ai-coach-routes';
+import { aiCoachService } from './services/ai-coach-service';
 
 // Helper function to determine event status
 function getEventStatus(event: any): 'upcoming' | 'filling_fast' | 'sold_out' | 'past' {
@@ -94,7 +96,6 @@ import passport from "passport";
 import { saveApiKey, getApiKeyStatus } from "./api-keys";
 import { footballCoachService } from "./services/football-coach-service";
 import { sendSms, checkSmsStatus, sendVerificationCode, verifyCode, sendNotification } from './services/sms-routes';
-import aiCoachRoutes from './routes/ai-coach-routes';
 import { 
   insertUserSchema,
   insertAthleteProfileSchema,
@@ -5988,6 +5989,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Failed to update drill progress' });
     }
   });
+
+  // Register AI Coach routes
+  registerAiCoachRoutes(app);
 
   return server;
 }
