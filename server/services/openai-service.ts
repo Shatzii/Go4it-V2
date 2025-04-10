@@ -1,7 +1,7 @@
 import { OpenAI } from 'openai';
 import { db } from '../db';
 import { apiKeys } from '@shared/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 
 /**
  * Service to manage OpenAI API interactions
@@ -54,8 +54,8 @@ class OpenAIService {
       // Verify the key works with a simple models list request
       await this.client.models.list();
       
-      // Update last used timestamp
-      this.updateApiKeyLastUsed('openai').catch(err => {
+      // Update last used timestamp for OpenAI keys
+      this.updateApiKeyLastUsed('openai-api-key').catch(err => {
         console.error('Error updating API key last used timestamp:', err);
       });
       
@@ -76,14 +76,30 @@ class OpenAIService {
    */
   private async getApiKeyFromDatabase(): Promise<string | null> {
     try {
+      // Look for an OpenAI API key by name
       const result = await db
         .select()
         .from(apiKeys)
-        .where(eq(apiKeys.keyType, 'openai'))
+        .where(and(
+          eq(apiKeys.active, true),
+          eq(apiKeys.keyName, 'openai')
+        ))
         .limit(1);
       
       if (result && result.length > 0) {
-        return result[0].keyValue;
+        // The key is stored in keyHash field
+        return result[0].keyHash;
+      }
+      
+      // If we didn't find a specific OpenAI key, fallback to any active key
+      const fallbackResult = await db
+        .select()
+        .from(apiKeys)
+        .where(eq(apiKeys.active, true))
+        .limit(1);
+        
+      if (fallbackResult && fallbackResult.length > 0) {
+        return fallbackResult[0].keyHash;
       }
       
       // Fallback to environment variable
@@ -103,8 +119,8 @@ class OpenAIService {
     try {
       await db
         .update(apiKeys)
-        .set({ lastUsed: new Date() })
-        .where(eq(apiKeys.keyType, keyType));
+        .set({ lastUsedAt: new Date() })
+        .where(eq(apiKeys.keyName, keyType));
     } catch (error) {
       console.error('Error updating API key last used timestamp:', error);
     }

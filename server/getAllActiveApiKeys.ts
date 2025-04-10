@@ -9,7 +9,7 @@ export async function getAllActiveApiKeys() {
   try {
     const activeKeys = await db.select()
       .from(apiKeys)
-      .where(eq(apiKeys.isActive, true));
+      .where(eq(apiKeys.active, true));
     
     return activeKeys;
   } catch (error) {

@@ -35,6 +35,7 @@ import { eq, desc, and, sql, inArray } from "drizzle-orm";
 import session from "express-session";
 import MemoryStore from "memorystore";
 import connectPgSimple from "connect-pg-simple";
+import { pool } from "./db";
 
 export interface IStorage {
   // Session store
@@ -292,7 +293,7 @@ export class DatabaseStorage implements IStorage {
       const PgStore = connectPgSimple(session);
       
       this.sessionStore = new PgStore({
-        conString: process.env.DATABASE_URL,
+        pool: pool, // Use the pool from db.ts
         tableName: 'session', // Use the session table
         createTableIfMissing: true,
         // Added options for better reliability
