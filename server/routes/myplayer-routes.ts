@@ -460,10 +460,9 @@ router.post('/complete-challenge/:activeId', async (req, res) => {
       await db.insert(xpTransactions).values({
         userId: activeChallenge.userId,
         amount: activeChallenge.challenge.xpReward,
-        type: 'challenge',
-        description: `Completed challenge: ${activeChallenge.challenge.name}`,
-        source: 'challenge',
-        sourceId: activeChallenge.challengeId
+        transaction_type: 'challenge',
+        description: `Completed challenge: ${activeChallenge.challenge.title}`,
+        source_id: String(activeChallenge.challengeId)
       });
       
       // Update player progress
