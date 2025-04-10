@@ -247,7 +247,7 @@ export default function HomePage() {
       {/* Blog Posts Section */}
       <FeaturedBlogPosts />
 
-      {/* Community Section */}
+      {/* Community Section - Horizontal Carousel */}
       <section className="mb-16">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold text-white">
@@ -260,55 +260,92 @@ export default function HomePage() {
           </Button>
         </div>
 
-        <Card className="w-full border border-gray-800 bg-black shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-white">Join the Conversation</CardTitle>
-            <CardDescription>
-              Connect with athletes, coaches, and parents in our community forum. 
-              Share experiences, get advice, and build your network.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1 border border-gray-800 rounded-lg p-4 hover:border-blue-500 transition-colors">
-              <div className="flex items-center gap-2 mb-2">
-                <Badge variant="secondary" className="bg-blue-500/20 text-blue-400">Athletes</Badge>
+        <div className="relative">
+          {/* Left Shadow Overlay */}
+          <div className="absolute left-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-r from-gray-950 to-transparent pointer-events-none"></div>
+          
+          {/* Right Shadow Overlay */}
+          <div className="absolute right-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-gray-950 to-transparent pointer-events-none"></div>
+          
+          {/* Introduction Card */}
+          <div className="overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4">
+            <div className="flex gap-4 min-w-max">
+              {/* Introduction Card - Fixed at the beginning */}
+              <Card className="flex-shrink-0 w-[280px] md:w-[300px] border border-gray-800 bg-black shadow-lg">
+                <CardHeader>
+                  <CardTitle className="text-white">Join the Conversation</CardTitle>
+                  <CardDescription>
+                    Connect with athletes, coaches, and parents in our community forum.
+                    Share experiences and build your network.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              {/* Forum Cards - Scrollable */}
+              <div className="flex-shrink-0 w-[280px] md:w-[300px] border border-gray-800 rounded-lg p-4 hover:border-blue-500 hover:shadow-[0_0_15px_rgba(34,211,238,0.3)] transition-all duration-300 bg-black">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge variant="secondary" className="bg-blue-500/20 text-blue-400">Athletes</Badge>
+                </div>
+                <h3 className="text-lg text-white mb-2">Training & Development</h3>
+                <p className="text-gray-400 text-sm mb-4">
+                  Share your training routines, progress, and goals with other athletes.
+                </p>
+                <Button asChild variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
+                  <Link href="/community/athletes">Join Discussion</Link>
+                </Button>
               </div>
-              <h3 className="text-lg text-white mb-2">Training & Development</h3>
-              <p className="text-gray-400 text-sm mb-4">
-                Share your training routines, progress, and goals with other athletes.
-              </p>
-              <Button asChild variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
-                <Link href="/community/athletes">Join Discussion</Link>
-              </Button>
-            </div>
-            
-            <div className="flex-1 border border-gray-800 rounded-lg p-4 hover:border-blue-500 transition-colors">
-              <div className="flex items-center gap-2 mb-2">
-                <Badge variant="secondary" className="bg-blue-500/20 text-blue-400">Coaches</Badge>
+              
+              <div className="flex-shrink-0 w-[280px] md:w-[300px] border border-gray-800 rounded-lg p-4 hover:border-blue-500 hover:shadow-[0_0_15px_rgba(34,211,238,0.3)] transition-all duration-300 bg-black">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge variant="secondary" className="bg-blue-500/20 text-blue-400">Coaches</Badge>
+                </div>
+                <h3 className="text-lg text-white mb-2">Coaching Strategies</h3>
+                <p className="text-gray-400 text-sm mb-4">
+                  Exchange coaching tips, drills, and management strategies.
+                </p>
+                <Button asChild variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
+                  <Link href="/community/coaches">Join Discussion</Link>
+                </Button>
               </div>
-              <h3 className="text-lg text-white mb-2">Coaching Strategies</h3>
-              <p className="text-gray-400 text-sm mb-4">
-                Exchange coaching tips, drills, and management strategies.
-              </p>
-              <Button asChild variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
-                <Link href="/community/coaches">Join Discussion</Link>
-              </Button>
-            </div>
-            
-            <div className="flex-1 border border-gray-800 rounded-lg p-4 hover:border-blue-500 transition-colors">
-              <div className="flex items-center gap-2 mb-2">
-                <Badge variant="secondary" className="bg-blue-500/20 text-blue-400">Parents</Badge>
+              
+              <div className="flex-shrink-0 w-[280px] md:w-[300px] border border-gray-800 rounded-lg p-4 hover:border-blue-500 hover:shadow-[0_0_15px_rgba(34,211,238,0.3)] transition-all duration-300 bg-black">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge variant="secondary" className="bg-blue-500/20 text-blue-400">Parents</Badge>
+                </div>
+                <h3 className="text-lg text-white mb-2">Parent Support Network</h3>
+                <p className="text-gray-400 text-sm mb-4">
+                  Connect with other parents about supporting your young athletes.
+                </p>
+                <Button asChild variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
+                  <Link href="/community/parents">Join Discussion</Link>
+                </Button>
               </div>
-              <h3 className="text-lg text-white mb-2">Parent Support Network</h3>
-              <p className="text-gray-400 text-sm mb-4">
-                Connect with other parents about supporting your young athletes.
-              </p>
-              <Button asChild variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
-                <Link href="/community/parents">Join Discussion</Link>
-              </Button>
+
+              <div className="flex-shrink-0 w-[280px] md:w-[300px] border border-gray-800 rounded-lg p-4 hover:border-blue-500 hover:shadow-[0_0_15px_rgba(34,211,238,0.3)] transition-all duration-300 bg-black">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge variant="secondary" className="bg-blue-500/20 text-blue-400">Events</Badge>
+                </div>
+                <h3 className="text-lg text-white mb-2">Local Sports Events</h3>
+                <p className="text-gray-400 text-sm mb-4">
+                  Find and discuss local games, tournaments, and community sports events.
+                </p>
+                <Button asChild variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
+                  <Link href="/community/events">Join Discussion</Link>
+                </Button>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+          
+          {/* Navigation Dots */}
+          <div className="flex justify-center mt-4 space-x-2">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div 
+                key={i} 
+                className={`h-2 w-2 rounded-full ${i === 0 ? 'bg-blue-400' : 'bg-gray-700'} transition-all duration-300`}
+              ></div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* CTA Section */}
