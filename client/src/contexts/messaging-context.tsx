@@ -36,20 +36,19 @@ export const MessagingProvider: React.FC<{ children: ReactNode }> = ({ children 
   useEffect(() => {
     if (!user) return;
 
-    // Try a more reliable way to connect to WebSocket
     // Use a standard HTTP/HTTPS connection first and avoid WebSocket for now
-    console.log('Initializing messaging without WebSocket temporarily');
+    // to ensure compatibility with production deployment
     
     // Create a dummy socket object that simulates the WebSocket interface
     // but doesn't actually connect, to avoid connection errors
     const newSocket = {
       readyState: 0,
       send: (message: string) => {
-        console.log('Message queued (WebSocket disabled):', message);
+        // Message queued but WebSocket disabled
         return true;
       },
       close: () => {
-        console.log('WebSocket simulation closed');
+        // WebSocket simulation closed
       },
       onopen: () => {},
       onclose: () => {},
@@ -59,11 +58,10 @@ export const MessagingProvider: React.FC<{ children: ReactNode }> = ({ children 
 
     // Socket event handlers
     newSocket.onopen = () => {
-      console.log('WebSocket connection established');
+      // WebSocket connection would be established here
       // Authenticate with the WebSocket server
       setTimeout(() => {
         try {
-          console.log('Sending auth message with userId:', user.id);
           newSocket.send(JSON.stringify({
             type: 'auth',
             userId: user.id
@@ -75,7 +73,6 @@ export const MessagingProvider: React.FC<{ children: ReactNode }> = ({ children 
     };
 
     newSocket.onclose = () => {
-      console.log('WebSocket connection closed');
       setConnected(false);
     };
 
@@ -150,13 +147,13 @@ export const MessagingProvider: React.FC<{ children: ReactNode }> = ({ children 
         // Handle sent message confirmation
         if (data.type === 'message_sent') {
           // We could update UI to show the message was delivered
-          console.log('Message sent successfully', data.messageId);
+          // Message sent successfully
         }
         
         // Handle read receipts
         if (data.type === 'message_read_receipt') {
           // Update message read status
-          console.log('Message read by recipient', data.messageId);
+          // Message read by recipient
         }
         
         // Handle errors
