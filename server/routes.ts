@@ -1277,6 +1277,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(500).json({ message: "Error fetching featured highlights" });
     }
   });
+  
+  // Get all highlights
+  app.get("/api/highlights/all", async (req: Request, res: Response) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
+      const sportType = req.query.sportType as string | undefined;
+      const highlights = await storage.getAllVideoHighlights(limit, sportType);
+      return res.json(highlights);
+    } catch (error) {
+      console.error("Error fetching all highlights:", error);
+      return res.status(500).json({ message: "Error fetching all highlights" });
+    }
+  });
 
   // Generate video highlight with AI
   app.post("/api/videos/:id/generate-highlight", isAuthenticated, async (req: Request, res: Response) => {

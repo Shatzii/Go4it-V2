@@ -63,6 +63,7 @@ import AthleteStarProfilesPage from "@/pages/athlete-star-profiles";
 import EnhancedGarVisualizationPage from "@/pages/enhanced-gar-visualization";
 import EnhancedGARPage from "@/pages/enhanced-gar";
 import AcademicProgress from "@/pages/academic-progress";
+import VideoHighlightsPage from "@/pages/video-highlights-page";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -320,6 +321,11 @@ function Router() {
         {/* Skill Tree Route */}
         <Route path="/skill-tree">
           {() => <ProtectedRoute component={SkillTreePage} />}
+        </Route>
+        
+        {/* Video Highlights Route */}
+        <Route path="/video-highlights">
+          {() => <ProtectedRoute component={VideoHighlightsPage} />}
         </Route>
 
         {/* Fallback to 404 */}
