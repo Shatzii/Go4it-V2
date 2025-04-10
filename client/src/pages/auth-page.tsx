@@ -41,8 +41,11 @@ export default function AuthPage() {
   const [pendingRegistration, setPendingRegistration] = useState<RegisterFormValues | null>(null);
   const { toast } = useToast();
 
-  // Redirect if already logged in
+  // Redirect if already logged in and scroll to top on mount
   useEffect(() => {
+    // Scroll to top of page when component mounts
+    window.scrollTo(0, 0);
+    
     if (user && !loading) {
       navigate("/");
     }

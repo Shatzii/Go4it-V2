@@ -91,19 +91,32 @@ function ProtectedRoute({ component: Component, adminOnly = false }: ProtectedRo
   return <Component />;
 }
 
+// Simple scroll-to-top component that runs on route changes
+function ScrollToTop() {
+  const [location] = useLocation();
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+  
+  return null;
+}
+
 function Router() {
   return (
-    <Switch>
-      <Route path="/auth" component={AuthPage} />
-      
-      <Route path="/simple-login" component={SimpleLogin} />
-      
-      <Route path="/test-auth" component={TestAuth} />
-      
-      <Route path="/" component={HomePage} />
-      
-      {/* Add /app route to handle NDA redirection */}
-      <Route path="/app" component={HomePage} />
+    <>
+      <ScrollToTop />
+      <Switch>
+        <Route path="/auth" component={AuthPage} />
+        
+        <Route path="/simple-login" component={SimpleLogin} />
+        
+        <Route path="/test-auth" component={TestAuth} />
+        
+        <Route path="/" component={HomePage} />
+        
+        {/* Add /app route to handle NDA redirection */}
+        <Route path="/app" component={HomePage} />
       
       <Route path="/dashboard">
         {({ params }) => (
