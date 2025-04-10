@@ -6272,6 +6272,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Academic Progress API Routes
+  // Get academic progress data for current user or specific student
+  app.get('/api/academics/:studentId?', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      let studentId: number;
+      
+      // If studentId is provided in params, use it, otherwise use the current user's ID
+      if (req.params.studentId && req.params.studentId !== 'current') {
+        studentId = parseInt(req.params.studentId);
+      } else {
+        const user = req.user as any;
+        studentId = user.id;
+      }
+      
+      // Check permissions - only allow admin, coach, or own data access
+      if (req.params.studentId && req.params.studentId !== 'current' && req.params.studentId !== studentId.toString()) {
+        const user = req.user as any;
+        if (user.role !== 'admin' && user.role !== 'coach') {
+          return res.status(403).json({ message: "Not authorized to view this student's academic data" });
+        }
+      }
+      
+      // Import the academic service
+      const { getAcademicProgress } = await import('./services/academic-service');
+      
+      // Get academic progress data
+      const academicData = await getAcademicProgress(studentId);
+      
+      if (!academicData) {
+        return res.status(404).json({ message: "Academic data not found" });
+      }
+      
+      return res.json(academicData);
+    } catch (error) {
+      console.error("Error fetching academic progress data:", error);
+      return res.status(500).json({ message: "Error fetching academic progress data" });
+    }
+  });
+  
+  // Generate academic report for current user or specific student
+  app.post('/api/academics/generate-report', isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      let studentId: number;
+      
+      // If studentId is provided in body, use it, otherwise use the current user's ID
+      if (req.body.studentId && req.body.studentId !== 'current') {
+        studentId = parseInt(req.body.studentId);
+      } else {
+        const user = req.user as any;
+        studentId = user.id;
+      }
+      
+      // Check permissions - only allow admin, coach, or own data access
+      if (req.body.studentId && req.body.studentId !== 'current' && req.body.studentId !== studentId.toString()) {
+        const user = req.user as any;
+        if (user.role !== 'admin' && user.role !== 'coach') {
+          return res.status(403).json({ message: "Not authorized to generate reports for this student" });
+        }
+      }
+      
+      // Import the academic service
+      const { generateAcademicReport } = await import('./services/academic-service');
+      
+      // Generate academic report
+      const academicData = await generateAcademicReport(studentId);
+      
+      if (!academicData) {
+        return res.status(500).json({ message: "Failed to generate academic report" });
+      }
+      
+      return res.json(academicData);
+    } catch (error) {
+      console.error("Error generating academic report:", error);
+      return res.status(500).json({ message: "Error generating academic report" });
+    }
+  });
+
   // Register AI Coach routes
   registerAiCoachRoutes(app);
 

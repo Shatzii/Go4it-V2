@@ -61,6 +61,7 @@ import GarScorePage from "@/pages/gar-score";
 import AthleteStarProfilesPage from "@/pages/athlete-star-profiles";
 import EnhancedGarVisualizationPage from "@/pages/enhanced-gar-visualization";
 import EnhancedGARPage from "@/pages/enhanced-gar";
+import AcademicProgress from "@/pages/academic-progress";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -306,6 +307,15 @@ function Router() {
           {() => <ProtectedRoute component={AthleteStarProfilesPage} />}
         </Route>
         
+        {/* Academic Progress Route */}
+        <Route path="/academic-progress">
+          {() => <ProtectedRoute component={AcademicProgress} />}
+        </Route>
+        
+        <Route path="/academic-progress/:studentId">
+          {() => <ProtectedRoute component={AcademicProgress} />}
+        </Route>
+
         {/* Fallback to 404 */}
         <Route component={NotFound} />
       </Switch>
