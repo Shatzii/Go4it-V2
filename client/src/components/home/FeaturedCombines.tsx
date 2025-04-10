@@ -53,18 +53,13 @@ const FeaturedCombines: React.FC = () => {
     );
   };
   
-  // Add console.log for debugging
-  console.log("All combine events:", events);
-  
+  // Filter to only upcoming events
   const upcomingEvents = events.filter(event => {
     // Parse the date properly
     const eventDate = new Date(event.startDate);
     const currentDate = new Date();
-    console.log(`Event: ${event.name}, Date: ${eventDate}, Is Future: ${eventDate > currentDate}`);
     return eventDate > currentDate;
   });
-  
-  console.log("Filtered upcoming events:", upcomingEvents);
 
   if (isLoading) {
     return (
