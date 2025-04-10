@@ -127,6 +127,67 @@ export default function MyPlayerStarPath() {
     enabled: !!user,
   });
   
+  // Level up mutation
+  const levelUpMutation = useMutation({
+    mutationFn: () => {
+      if (!user) throw new Error('User not authenticated');
+      return apiRequest(`/api/player/star-path/${user.id}/level-up`, {
+        method: 'POST'
+      });
+    },
+    onSuccess: (data) => {
+      // Show success message
+      toast({
+        title: "Level Up!",
+        description: data.message || `You've reached ${data.newLevel} stars!`,
+        variant: "default",
+      });
+      
+      // Animate the star
+      setAnimateStar(true);
+      setTimeout(() => setAnimateStar(false), 1500);
+      
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({queryKey: ['/api/player/star-path', user?.id]});
+      queryClient.invalidateQueries({queryKey: ['/api/player/progress']});
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to level up. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+  
+  // Update attributes mutation
+  const updateAttributesMutation = useMutation({
+    mutationFn: (attributeData: any) => {
+      if (!user) throw new Error('User not authenticated');
+      return apiRequest(`/api/player/star-path/${user.id}/attributes`, {
+        method: 'POST',
+        data: attributeData
+      });
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Attributes Updated",
+        description: "Your player attributes have been updated successfully",
+        variant: "default",
+      });
+      
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({queryKey: ['/api/player/star-path', user?.id]});
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update attributes. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+  
   // If any data is loading, show skeleton UI
   const isLoading = isProgressLoading || isStarPathLoading || isBadgesLoading || isTransactionsLoading;
   
