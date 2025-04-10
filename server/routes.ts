@@ -17,6 +17,8 @@ import { User, insertNcaaEligibilitySchema } from "@shared/schema";
 import { isAdminMiddleware } from './middleware/auth-middleware';
 import scoutRoutes from './routes/scout-routes';
 import myplayerRoutes from './routes/myplayer-routes';
+import videoRoutes from './routes/video-routes';
+import playerRoutes from './routes/player-routes';
 
 // Helper function to determine event status
 function getEventStatus(event: any): 'upcoming' | 'filling_fast' | 'sold_out' | 'past' {
@@ -5193,6 +5195,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register MyPlayer routes
   app.use('/api/myplayer', myplayerRoutes);
+  
+  // Register Video routes
+  app.use('/api/videos', videoRoutes);
+  
+  // Register Player routes
+  app.use('/api/player', playerRoutes);
 
   // Content Blocks API Routes
   app.get("/api/content-blocks", async (req: Request, res: Response) => {

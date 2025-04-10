@@ -18,6 +18,7 @@ import {
   Star,
   Trophy,
   ChevronRight,
+  Camera,
   ChevronLeft,
   ArrowRight,
   CheckCircle2,

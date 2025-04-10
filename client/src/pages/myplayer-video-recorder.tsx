@@ -95,13 +95,9 @@ export default function MyPlayerVideoRecorder() {
   // Handle video submission
   const videoUploadMutation = useMutation({
     mutationFn: async (formData: FormData) => {
-      return apiRequest('/api/videos/upload', {
-        method: 'POST',
-        data: formData,
-        isFormData: true,
-      });
+      return apiRequest("POST", '/api/videos/upload', formData);
     },
-    onSuccess: (data) => {
+    onSuccess: (response) => {
       setVideoUploaded(true);
       toast({
         title: 'Video Uploaded',
@@ -111,7 +107,7 @@ export default function MyPlayerVideoRecorder() {
       
       // Start the verification process
       verifyWorkoutMutation.mutate({
-        videoId: data.videoId,
+        videoId: response.data.id, // Use the correct data structure
         drillType: selectedDrill,
         sportType: selectedSport,
       });
@@ -129,10 +125,7 @@ export default function MyPlayerVideoRecorder() {
   const verifyWorkoutMutation = useMutation({
     mutationFn: (data: { videoId: number, drillType: string, sportType: string }) => {
       setLoadingVerification(true);
-      return apiRequest('/api/player/verify-workout', {
-        method: 'POST',
-        data,
-      });
+      return apiRequest("POST", '/api/player/verify-workout', data);
     },
     onSuccess: () => {
       setIsVerified(true);

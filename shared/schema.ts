@@ -1611,6 +1611,29 @@ export type InsertTrainingDrillsExtended = {
 export type UserDrillProgress = typeof userDrillProgress.$inferSelect;
 
 // MyPlayer XP System Tables
+// Player XP Transactions - Track XP earned by players
+export const playerXpTransactions = pgTable("player_xp_transactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  amount: integer("amount").notNull(),
+  source: text("source").notNull(), // e.g., "workout", "streak", "challenge"
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Star Paths - Player development pathways
+export const starPaths = pgTable("star_paths", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id).unique(),
+  sportType: text("sport_type").notNull(),
+  position: text("position"),
+  currentStarLevel: integer("current_star_level").default(1),
+  starXp: integer("star_xp").default(0),
+  attributes: json("attributes").$type<Record<string, Record<string, number>>>().default({}),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const playerProgress = pgTable("player_progress", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
@@ -1762,6 +1785,14 @@ export const trainingPlanActivities = pgTable("training_plan_activities", {
 });
 
 // Types for MyPlayer tables
+export type PlayerXpTransaction = typeof playerXpTransactions.$inferSelect;
+export const insertPlayerXpTransactionSchema = createInsertSchema(playerXpTransactions).omit({ id: true });
+export type InsertPlayerXpTransaction = z.infer<typeof insertPlayerXpTransactionSchema>;
+
+export type StarPath = typeof starPaths.$inferSelect;
+export const insertStarPathSchema = createInsertSchema(starPaths).omit({ id: true });
+export type InsertStarPath = z.infer<typeof insertStarPathSchema>;
+
 export type PlayerProgress = typeof playerProgress.$inferSelect;
 export const insertPlayerProgressSchema = createInsertSchema(playerProgress).omit({ id: true });
 export type InsertPlayerProgress = z.infer<typeof insertPlayerProgressSchema>;
