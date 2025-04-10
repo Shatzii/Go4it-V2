@@ -577,6 +577,139 @@ router.post('/update-streak/:userId', async (req, res) => {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
     
+    // Get player progress
+    const progress = await db.query.playerProgress.findFirst({
+      where: eq(playerProgress.userId, userId)
+    });
+    
+    if (!progress) {
+      return res.status(404).json({ error: 'Player progress not found' });
+    }
+    
+    // Calculate if streak should be updated
+    const lastActive = progress.lastActive ? new Date(progress.lastActive) : null;
+    const now = new Date();
+    let shouldUpdateStreak = false;
+    let shouldAwardXp = false;
+    
+    if (!lastActive) {
+      // First login ever - start streak
+      shouldUpdateStreak = true;
+    } else {
+      // Check if last active was yesterday (consider it a streak if 18-36 hours ago)
+      const hoursSinceLastActive = (now.getTime() - lastActive.getTime()) / (1000 * 60 * 60);
+      
+      if (hoursSinceLastActive >= 18 && hoursSinceLastActive <= 36) {
+        // This is a consecutive day login
+        shouldUpdateStreak = true;
+        shouldAwardXp = true;
+      } else if (hoursSinceLastActive > 36) {
+        // Streak broken - reset to 1
+        shouldUpdateStreak = true;
+        // Still award XP for logging in today
+        shouldAwardXp = true;
+      } else {
+        // Already logged in today, no streak update
+        return res.json({ 
+          success: true, 
+          message: 'Already logged in today',
+          streakDays: progress.streakDays,
+          xpAwarded: false
+        });
+      }
+    }
+    
+    if (shouldUpdateStreak) {
+      // Update streak
+      const newStreakDays = hoursSinceLastActive > 36 ? 1 : progress.streakDays + 1;
+      
+      await db.update(playerProgress)
+        .set({ 
+          streakDays: newStreakDays,
+          lastActive: now
+        })
+        .where(eq(playerProgress.userId, userId));
+      
+      // Check if we should award XP
+      if (shouldAwardXp) {
+        // Award bonus XP for streaks on milestone days
+        const isStreakMilestone = 
+          newStreakDays === 3 || 
+          newStreakDays === 7 || 
+          newStreakDays === 14 || 
+          newStreakDays === 30 || 
+          newStreakDays === 60 || 
+          newStreakDays === 90 || 
+          newStreakDays === 180 || 
+          newStreakDays === 365;
+        
+        // Base login XP
+        const baseXp = 25;
+        
+        // Award extra XP for milestones
+        const streakBonus = isStreakMilestone ? (newStreakDays >= 30 ? 100 : 50) : 0;
+        const totalXp = baseXp + streakBonus;
+        
+        // Add XP for daily login
+        const xpResult = await addXpToPlayer(
+          userId,
+          totalXp,
+          XP_SOURCES.LOGIN,
+          isStreakMilestone 
+            ? `Daily login + ${newStreakDays} day streak bonus!` 
+            : 'Daily login streak',
+          `streak-${newStreakDays}`
+        );
+        
+        return res.json({
+          success: true,
+          message: isStreakMilestone 
+            ? `${newStreakDays} day streak achieved! Bonus XP awarded.` 
+            : 'Streak updated and XP awarded',
+          streakDays: newStreakDays,
+          xpAwarded: true,
+          xp: {
+            earned: xpResult.newXp,
+            leveledUp: xpResult.leveledUp,
+            levelsGained: xpResult.levelsGained,
+            prevLevel: xpResult.prevLevel,
+            newLevel: xpResult.newLevel,
+            prevRank: xpResult.prevRank,
+            newRank: xpResult.newRank
+          },
+          levelUps: xpResult.levelUps
+        });
+      } else {
+        return res.json({
+          success: true,
+          message: 'Streak updated',
+          streakDays: newStreakDays,
+          xpAwarded: false
+        });
+      }
+    }
+    
+    return res.json({
+      success: true,
+      message: 'No streak update needed',
+      streakDays: progress.streakDays,
+      xpAwarded: false
+    });
+  } catch (error) {
+    console.error('Error updating player streak:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Update player streak
+router.post('/update-streak/:userId', async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+    
     // Get current player progress
     const progress = await db.query.playerProgress.findFirst({
       where: eq(playerProgress.userId, userId)
