@@ -95,7 +95,17 @@ export default function MyPlayerVideoRecorder() {
   // Handle video submission
   const videoUploadMutation = useMutation({
     mutationFn: async (formData: FormData) => {
-      return apiRequest("POST", '/api/videos/upload', formData);
+      // Get the authentication token from localStorage if it exists
+      const accessToken = localStorage.getItem('accessToken');
+      const options: any = {};
+      
+      if (accessToken) {
+        options.headers = {
+          Authorization: `Bearer ${accessToken}`
+        };
+      }
+      
+      return apiRequest("POST", '/api/videos/upload', formData, options);
     },
     onSuccess: (response) => {
       setVideoUploaded(true);
@@ -113,6 +123,7 @@ export default function MyPlayerVideoRecorder() {
       });
     },
     onError: (error) => {
+      console.error('Video upload error:', error);
       toast({
         title: 'Upload Failed',
         description: error.message || 'There was an error uploading your video',
@@ -125,7 +136,17 @@ export default function MyPlayerVideoRecorder() {
   const verifyWorkoutMutation = useMutation({
     mutationFn: (data: { videoId: number, drillType: string, sportType: string }) => {
       setLoadingVerification(true);
-      return apiRequest("POST", '/api/player/verify-workout', data);
+      // Get the authentication token from localStorage if it exists
+      const accessToken = localStorage.getItem('accessToken');
+      const options: any = {};
+      
+      if (accessToken) {
+        options.headers = {
+          Authorization: `Bearer ${accessToken}`
+        };
+      }
+      
+      return apiRequest("POST", '/api/player/verify-workout', data, options);
     },
     onSuccess: () => {
       setIsVerified(true);
@@ -142,6 +163,7 @@ export default function MyPlayerVideoRecorder() {
       });
     },
     onError: (error) => {
+      console.error('Workout verification error:', error);
       setLoadingVerification(false);
       toast({
         title: 'Verification Failed',
