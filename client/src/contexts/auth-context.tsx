@@ -94,7 +94,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if ((username === "alexjohnson" && password === "password123") ||
           (username === "coachwilliams" && password === "coachpass123") ||
           (username === "coachmartinez" && password === "coachpass456") ||
-          (username === "admin" && password === "adminpass123")) {
+          (username === "admin" && password === "MyTime$$")) {
         
         console.log("Attempting to register test account:", username);
         
