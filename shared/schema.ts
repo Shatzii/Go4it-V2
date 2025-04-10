@@ -1,4 +1,5 @@
 import { pgTable, serial, text, integer, boolean, timestamp, date, real, index, uuid, unique, json, jsonb, numeric } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 import { relations } from 'drizzle-orm';
 import { createInsertSchema } from 'drizzle-zod';
 import { z } from 'zod';
@@ -1618,11 +1619,11 @@ export const playerProgress = pgTable("player_progress", {
   xpToNextLevel: integer("xp_to_next_level").notNull().default(100),
   totalXp: integer("total_xp").notNull().default(0),
   streakDays: integer("streak_days").notNull().default(0),
-  lastLoginDate: timestamp("last_login_date", { withTimezone: true }),
-  starLevel: integer("star_level").notNull().default(1),
+  lastActive: timestamp("last_active").default(sql`now()`),
   completedChallenges: integer("completed_challenges").default(0),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+  lifetimeAchievements: integer("lifetime_achievements").default(0),
+  rank: text("rank"),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
 });
 
 export const playerSkills = pgTable("player_skills", {

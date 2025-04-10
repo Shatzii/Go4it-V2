@@ -480,6 +480,17 @@ router.post('/complete-challenge/:activeId', async (req, res) => {
             updatedAt: new Date()
           })
           .where(eq(playerProgress.userId, activeChallenge.userId));
+      } else {
+        // Create progress entry if it doesn't exist
+        await db.insert(playerProgress).values({
+          userId: activeChallenge.userId,
+          currentLevel: 1,
+          totalXp: activeChallenge.challenge.xpReward,
+          levelXp: 0,
+          xpToNextLevel: 100,
+          streakDays: 0,
+          completedChallenges: 1
+        });
       }
     }
     
