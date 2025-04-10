@@ -321,6 +321,107 @@ export const athleteStarProfiles = pgTable("athlete_star_profiles", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Road to 5 Star Storyline
+export const athleteStarPath = pgTable("athlete_star_path", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id).unique(),
+  currentStarLevel: integer("current_star_level").default(1),
+  targetStarLevel: integer("target_star_level").default(2),
+  storylinePhase: text("storyline_phase").notNull().default("beginning"),
+  progress: integer("progress").default(0), // Progress percentage to next star level
+  sportType: text("sport_type"),
+  position: text("position"),
+  milestones: jsonb("milestones").$type<Record<string, any>>().default({}),
+  achievements: jsonb("achievements").$type<Record<string, any>>().default({}),
+  completedDrills: integer("completed_drills").default(0),
+  verifiedWorkouts: integer("verified_workouts").default(0),
+  skillTreeProgress: integer("skill_tree_progress").default(0),
+  physicalAttributes: jsonb("physical_attributes").$type<Record<string, number>>().default({}),
+  technicalAttributes: jsonb("technical_attributes").$type<Record<string, number>>().default({}),
+  mentalAttributes: jsonb("mental_attributes").$type<Record<string, number>>().default({}),
+  storylineStarted: timestamp("storyline_started").defaultNow(),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  storylineActive: boolean("storyline_active").default(true),
+  nextMilestone: text("next_milestone"),
+  xpTotal: integer("xp_total").default(0),
+  levelThresholds: jsonb("level_thresholds").$type<number[]>().default([]),
+});
+
+// Workout Verification System - for real-world workout verification
+export const workoutVerifications = pgTable("workout_verifications", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  exerciseType: text("exercise_type").notNull(), // e.g., "push_ups", "running", "shooting_drills"
+  targetAmount: integer("target_amount").notNull(), // Number of reps or minutes
+  completedAmount: integer("completed_amount").default(0),
+  status: text("status").default("pending").notNull(), // pending, completed, verified, rejected
+  startedAt: timestamp("started_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+  verifiedAt: timestamp("verified_at"),
+  verificationMethod: text("verification_method").notNull(), // video, sensor, coach, ai
+  feedback: text("feedback"),
+  motionAnalysis: jsonb("motion_analysis"), // AI analysis data
+  videoUrl: text("video_url"), // Recording of the workout
+  thumbnailUrl: text("thumbnail_url"),
+  xpEarned: integer("xp_earned").default(0),
+  attributeGains: jsonb("attribute_gains").$type<Record<string, number>>().default({}),
+  isAiVerified: boolean("is_ai_verified").default(false),
+  aiConfidenceScore: real("ai_confidence_score"),
+  formQuality: integer("form_quality"), // 1-100 score on form quality
+  repAccuracy: real("rep_accuracy").default(0), // 0.0-1.0 score on accuracy
+  starPathId: integer("star_path_id").references(() => athleteStarPath.id),
+  skillNodeId: integer("skill_node_id").references(() => skillTreeNodes.id),
+});
+
+// Workout Verification Checkpoints - tracking progress during workout
+export const workoutVerificationCheckpoints = pgTable("workout_verification_checkpoints", {
+  id: serial("id").primaryKey(),
+  workoutVerificationId: integer("workout_verification_id").notNull().references(() => workoutVerifications.id),
+  timestamp: timestamp("timestamp").defaultNow(),
+  checkpointType: text("checkpoint_type").notNull(), // start, progress, complete
+  completedAmount: integer("completed_amount").default(0),
+  notes: text("notes"),
+  imageUrl: text("image_url"), // Screenshot or sensor data
+  motionData: jsonb("motion_data"), // Motion tracking data
+  confidence: real("confidence"), // AI confidence score 0.0-1.0
+  feedback: text("feedback"), // AI feedback on form
+});
+
+// Relations for workout verification and star path
+export const athleteStarPathRelations = relations(athleteStarPath, ({ one, many }) => ({
+  user: one(users, {
+    fields: [athleteStarPath.userId],
+    references: [users.id],
+  }),
+  workoutVerifications: many(workoutVerifications, {
+    relationName: "starPathWorkouts",
+  }),
+}));
+
+export const workoutVerificationsRelations = relations(workoutVerifications, ({ one, many }) => ({
+  user: one(users, {
+    fields: [workoutVerifications.userId],
+    references: [users.id],
+  }),
+  starPath: one(athleteStarPath, {
+    fields: [workoutVerifications.starPathId],
+    references: [athleteStarPath.id],
+    relationName: "starPathWorkouts",
+  }),
+  skillNode: one(skillTreeNodes, {
+    fields: [workoutVerifications.skillNodeId],
+    references: [skillTreeNodes.id],
+  }),
+  checkpoints: many(workoutVerificationCheckpoints),
+}));
+
+export const workoutVerificationCheckpointsRelations = relations(workoutVerificationCheckpoints, ({ one }) => ({
+  workoutVerification: one(workoutVerifications, {
+    fields: [workoutVerificationCheckpoints.workoutVerificationId],
+    references: [workoutVerifications.id],
+  }),
+}));
+
 // Combine Tour Events
 export const combineTourEvents = pgTable("combine_tour_events", {
   id: serial("id").primaryKey(),
@@ -622,6 +723,10 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   starProfile: one(athleteStarProfiles, {
     fields: [users.id],
     references: [athleteStarProfiles.userId],
+  }),
+  starPath: one(athleteStarPath, {
+    fields: [users.id],
+    references: [athleteStarPath.userId],
   }),
   featuredAthlete: one(featuredAthletes, {
     fields: [users.id],
@@ -1084,6 +1189,29 @@ export const insertUserAgreementSchema = createInsertSchema(userAgreements).omit
   acceptedAt: true,
 });
 
+// Star Path and Workout Verification Schemas
+export const insertAthleteStarPathSchema = createInsertSchema(athleteStarPath).omit({
+  id: true,
+  storylineStarted: true,
+  lastUpdated: true,
+});
+
+export const insertWorkoutVerificationSchema = createInsertSchema(workoutVerifications).omit({
+  id: true,
+  startedAt: true,
+  completedAt: true,
+  verifiedAt: true,
+  aiConfidenceScore: true,
+  formQuality: true,
+  repAccuracy: true,
+  xpEarned: true,
+});
+
+export const insertWorkoutVerificationCheckpointSchema = createInsertSchema(workoutVerificationCheckpoints).omit({
+  id: true,
+  timestamp: true,
+});
+
 // AI Coach Schemas
 export const insertAiCoachSchema = createInsertSchema(aiCoaches).omit({
   id: true,
@@ -1412,6 +1540,16 @@ export type InsertUserToken = z.infer<typeof insertUserTokenSchema>;
 
 export type UserAgreement = typeof userAgreements.$inferSelect;
 export type InsertUserAgreement = z.infer<typeof insertUserAgreementSchema>;
+
+// Star Path and Workout Verification Types
+export type AthleteStarPath = typeof athleteStarPath.$inferSelect;
+export type InsertAthleteStarPath = z.infer<typeof insertAthleteStarPathSchema>;
+
+export type WorkoutVerification = typeof workoutVerifications.$inferSelect;
+export type InsertWorkoutVerification = z.infer<typeof insertWorkoutVerificationSchema>;
+
+export type WorkoutVerificationCheckpoint = typeof workoutVerificationCheckpoints.$inferSelect;
+export type InsertWorkoutVerificationCheckpoint = z.infer<typeof insertWorkoutVerificationCheckpointSchema>;
 
 // NCAA Schools Database types
 export type NcaaSchool = typeof ncaaSchools.$inferSelect;
