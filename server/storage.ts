@@ -1538,24 +1538,175 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getPlayerEquipment(userId: number): Promise<any[]> {
-    console.log(`[STUB] Getting player equipment for user ID: ${userId}`);
-    // Return a default equipment array until we implement the actual tables
-    return [
-      {
-        id: 1,
-        type: "shoes",
-        name: "Basic Training Shoes",
-        stats: { speed: 5, agility: 5 },
-        equipped: true
-      },
-      {
-        id: 2,
-        type: "shirt",
-        name: "Training Jersey",
-        stats: { endurance: 5 },
-        equipped: true
+    console.log(`Getting player equipment for user ID: ${userId}`);
+    
+    try {
+      // Try to get the star path for the user to determine appropriate equipment
+      const starPath = await this.getAthleteStarPath(userId);
+      
+      // Base equipment list that everyone has
+      const baseEquipment = [
+        {
+          id: 1,
+          type: "shoes",
+          name: "Basic Training Shoes",
+          stats: { speed: 5, agility: 5 },
+          equipped: true,
+          level: 1,
+          description: "Standard training shoes with basic performance",
+          durability: 100,
+          image: "/assets/equipment/basic_shoes.png"
+        },
+        {
+          id: 2,
+          type: "shirt",
+          name: "Training Jersey",
+          stats: { endurance: 5 },
+          equipped: true,
+          level: 1,
+          description: "Simple jersey for everyday practice",
+          durability: 100,
+          image: "/assets/equipment/training_jersey.png"
+        },
+        {
+          id: 3,
+          type: "armband",
+          name: "Focus Band",
+          stats: { focus: 3 },
+          equipped: false,
+          level: 1,
+          description: "Basic armband that helps improve focus during training",
+          durability: 100,
+          image: "/assets/equipment/focus_band.png"
+        }
+      ];
+      
+      // If no star path exists, just return the base equipment
+      if (!starPath) {
+        return baseEquipment;
       }
-    ];
+      
+      // If star path exists, add equipment based on star level and sport type
+      const additionalEquipment = [];
+      const currentLevel = starPath.currentStarLevel || 1;
+      const sportType = starPath.sportType || "basketball";
+      
+      // Add equipment based on player level
+      if (currentLevel >= 2) {
+        additionalEquipment.push({
+          id: 4,
+          type: "shoes",
+          name: "Advanced Training Shoes",
+          stats: { speed: 8, agility: 8, strength: 2 },
+          equipped: false,
+          level: 2,
+          description: "Higher performance shoes with improved traction",
+          durability: 100,
+          image: "/assets/equipment/advanced_shoes.png"
+        });
+      }
+      
+      if (currentLevel >= 3) {
+        additionalEquipment.push({
+          id: 5,
+          type: "smartwatch",
+          name: "Performance Tracker Watch",
+          stats: { focus: 5, gameIQ: 3, technique: 2 },
+          equipped: false,
+          level: 3,
+          description: "Digital watch that tracks performance metrics during workouts",
+          durability: 100,
+          image: "/assets/equipment/smartwatch.png"
+        });
+      }
+      
+      if (currentLevel >= 4) {
+        additionalEquipment.push({
+          id: 6,
+          type: "gear",
+          name: "Pro Recovery Kit",
+          stats: { endurance: 10, recovery: 15 },
+          equipped: false,
+          level: 4,
+          description: "Professional recovery equipment for faster muscle repair",
+          durability: 100,
+          image: "/assets/equipment/recovery_kit.png"
+        });
+      }
+      
+      // Add sport-specific equipment
+      if (sportType === "basketball") {
+        additionalEquipment.push({
+          id: 100,
+          type: "ball",
+          name: "Precision Basketball",
+          stats: { ballControl: 7, technique: 5 },
+          equipped: false,
+          level: Math.min(currentLevel, 3),
+          description: "High-quality basketball with optimal grip",
+          durability: 95,
+          sportType: "basketball",
+          image: "/assets/equipment/basketball_premium.png"
+        });
+      } else if (sportType === "football") {
+        additionalEquipment.push({
+          id: 101,
+          type: "helmet",
+          name: "Impact Protection Helmet",
+          stats: { safety: 10, confidence: 5 },
+          equipped: false,
+          level: Math.min(currentLevel, 3),
+          description: "Advanced helmet with superior impact protection",
+          durability: 100,
+          sportType: "football",
+          image: "/assets/equipment/football_helmet.png"
+        });
+      } else if (sportType === "soccer") {
+        additionalEquipment.push({
+          id: 102,
+          type: "cleats",
+          name: "Precision Cleats",
+          stats: { speed: 8, ballControl: 6 },
+          equipped: false,
+          level: Math.min(currentLevel, 3),
+          description: "Premium cleats designed for ball control and speed",
+          durability: 95,
+          sportType: "soccer",
+          image: "/assets/equipment/soccer_cleats.png"
+        });
+      }
+      
+      // Combine base and additional equipment
+      return [...baseEquipment, ...additionalEquipment];
+      
+    } catch (error) {
+      console.error(`Error getting player equipment for user ${userId}:`, error);
+      // Fall back to base equipment in case of error
+      return [
+        {
+          id: 1,
+          type: "shoes",
+          name: "Basic Training Shoes",
+          stats: { speed: 5, agility: 5 },
+          equipped: true,
+          level: 1,
+          description: "Standard training shoes with basic performance",
+          durability: 100,
+          image: "/assets/equipment/basic_shoes.png"
+        },
+        {
+          id: 2,
+          type: "shirt",
+          name: "Training Jersey",
+          stats: { endurance: 5 },
+          equipped: true,
+          level: 1,
+          description: "Simple jersey for everyday practice",
+          durability: 100,
+          image: "/assets/equipment/training_jersey.png"
+        }
+      ];
+    }
   }
 
   // ----------------
