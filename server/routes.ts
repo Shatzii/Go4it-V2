@@ -6067,6 +6067,126 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // NextUp Spotlight Profile Routes
+  app.get('/api/spotlight-profiles', async (req, res) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+      const profiles = await storage.getSpotlightProfiles(limit);
+      res.json(profiles);
+    } catch (error) {
+      console.error('Error fetching spotlight profiles:', error);
+      res.status(500).json({ error: 'Failed to fetch spotlight profiles' });
+    }
+  });
+
+  app.get('/api/spotlight-profiles/featured', async (req, res) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 6;
+      const profiles = await storage.getFeaturedSpotlightProfiles(limit);
+      res.json(profiles);
+    } catch (error) {
+      console.error('Error fetching featured spotlight profiles:', error);
+      res.status(500).json({ error: 'Failed to fetch featured spotlight profiles' });
+    }
+  });
+
+  app.get('/api/spotlight-profiles/trending', async (req, res) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 6;
+      const profiles = await storage.getTrendingSpotlightProfiles(limit);
+      res.json(profiles);
+    } catch (error) {
+      console.error('Error fetching trending spotlight profiles:', error);
+      res.status(500).json({ error: 'Failed to fetch trending spotlight profiles' });
+    }
+  });
+
+  app.get('/api/spotlight-profiles/recommended/:userId', async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 6;
+      const profiles = await storage.getRecommendedSpotlightProfiles(parseInt(userId, 10), limit);
+      res.json(profiles);
+    } catch (error) {
+      console.error(`Error fetching recommended spotlight profiles for user ${req.params.userId}:`, error);
+      res.status(500).json({ error: 'Failed to fetch recommended spotlight profiles' });
+    }
+  });
+
+  app.get('/api/spotlight-profiles/user/:userId', async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const profiles = await storage.getSpotlightProfilesByUser(parseInt(userId, 10));
+      res.json(profiles);
+    } catch (error) {
+      console.error(`Error fetching spotlight profiles for user ${req.params.userId}:`, error);
+      res.status(500).json({ error: 'Failed to fetch user spotlight profiles' });
+    }
+  });
+
+  app.get('/api/spotlight-profiles/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const profile = await storage.getSpotlightProfile(parseInt(id, 10));
+      
+      if (!profile) {
+        return res.status(404).json({ error: 'Spotlight profile not found' });
+      }
+      
+      // Update view count
+      await storage.updateSpotlightProfile(parseInt(id, 10), {
+        views: profile.views + 1
+      });
+      
+      res.json(profile);
+    } catch (error) {
+      console.error(`Error fetching spotlight profile with ID ${req.params.id}:`, error);
+      res.status(500).json({ error: 'Failed to fetch spotlight profile' });
+    }
+  });
+
+  app.post('/api/spotlight-profiles', async (req, res) => {
+    try {
+      const profile = await storage.createSpotlightProfile(req.body);
+      res.status(201).json(profile);
+    } catch (error) {
+      console.error('Error creating spotlight profile:', error);
+      res.status(500).json({ error: 'Failed to create spotlight profile' });
+    }
+  });
+
+  app.put('/api/spotlight-profiles/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updatedProfile = await storage.updateSpotlightProfile(parseInt(id, 10), req.body);
+      
+      if (!updatedProfile) {
+        return res.status(404).json({ error: 'Spotlight profile not found' });
+      }
+      
+      res.json(updatedProfile);
+    } catch (error) {
+      console.error(`Error updating spotlight profile with ID ${req.params.id}:`, error);
+      res.status(500).json({ error: 'Failed to update spotlight profile' });
+    }
+  });
+
+  app.delete('/api/spotlight-profiles/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const success = await storage.deleteSpotlightProfile(parseInt(id, 10));
+      
+      if (!success) {
+        return res.status(404).json({ error: 'Spotlight profile not found' });
+      }
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error(`Error deleting spotlight profile with ID ${req.params.id}:`, error);
+      res.status(500).json({ error: 'Failed to delete spotlight profile' });
+    }
+  });
+
   // Register AI Coach routes
   registerAiCoachRoutes(app);
 
