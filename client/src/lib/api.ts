@@ -17,10 +17,15 @@ export async function apiRequest<T = any>(
 ): Promise<T> {
   const { method = "GET", headers = {}, data } = options;
   
+  // Add JWT token to headers if available
+  const accessToken = localStorage.getItem('accessToken');
+  const authHeaders = accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {};
+  
   const fetchOptions: RequestInit = {
     method,
     headers: {
       "Content-Type": "application/json",
+      ...authHeaders,
       ...headers,
     },
     credentials: "include",

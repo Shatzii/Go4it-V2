@@ -186,6 +186,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
           // Mark login as successful to prevent error toasts
           loginSuccess = true;
           
+          // Store access token in localStorage if it exists
+          if (loginResponse?.data?.accessToken) {
+            localStorage.setItem('accessToken', loginResponse.data.accessToken);
+            console.log('Access token saved to localStorage');
+          }
+          
           // Set user data in state - this will update UI immediately
           setUser(userResponse.user);
           setActualRole(userResponse.user.role);
@@ -250,18 +256,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
         data: userData
       });
       
-      if (!response || !response.user) {
+      if (!response || !response.data?.user) {
         throw new Error("Registration failed. No user data received.");
       }
       
+      // Store access token in localStorage if it exists
+      if (response.data?.accessToken) {
+        localStorage.setItem('accessToken', response.data.accessToken);
+        console.log('Access token saved to localStorage during registration');
+      }
+      
       // Set user data before trying to initialize WebSocket to avoid race conditions
-      setUser(response.user);
-      setActualRole(response.user.role); // Store the actual role
+      setUser(response.data.user);
+      setActualRole(response.data.user.role); // Store the actual role
       
       // Connect to WebSocket after registration - use try/catch to prevent WebSocket issues from breaking registration
-      if (response.user && response.user.id) {
+      if (response.data.user && response.data.user.id) {
         try {
-          websocketService.connect(response.user.id);
+          websocketService.connect(response.data.user.id);
         } catch (wsError) {
           console.error("WebSocket connection error during registration:", wsError);
           // Don't block registration process if websocket fails
@@ -271,7 +283,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Show success toast immediately
       toast({
         title: "Registration successful",
-        description: `Welcome, ${response.user.name}!`,
+        description: `Welcome, ${response.data.user.name}!`,
       });
       
       // Navigate after state has been updated
@@ -305,6 +317,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       logoutCompleted = true;
       clearTimeout(logoutTimeout);
+      
+      // Clear authentication token from localStorage
+      localStorage.removeItem('accessToken');
       
       // Always clear user state
       setUser(null);
