@@ -1671,3 +1671,37 @@ export const insertSpotlightProfileSchema = createInsertSchema(spotlightProfiles
 
 export type SpotlightProfile = typeof spotlightProfiles.$inferSelect;
 export type InsertSpotlightProfile = z.infer<typeof insertSpotlightProfileSchema>;
+
+// Onboarding Progress
+export const onboardingProgress = pgTable("onboarding_progress", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().unique().references(() => users.id),
+  isCompleted: boolean("is_completed").notNull().default(false),
+  currentStep: integer("current_step").notNull().default(1),
+  totalSteps: integer("total_steps").notNull().default(5),
+  lastUpdated: timestamp("last_updated").defaultNow().notNull(),
+  completedSections: text("completed_sections").array(),
+  skippedSections: text("skipped_sections").array(),
+  preferences: jsonb("preferences"),
+  // Neurodivergent-specific preferences
+  adhd: boolean("adhd").default(false),
+  focusMode: boolean("focus_mode").default(false),
+  uiAnimationLevel: text("ui_animation_level").default("medium"), // low, medium, high
+  colorSchemePreference: text("color_scheme_preference").default("standard"), // standard, high-contrast, muted
+  textSizePreference: text("text_size_preference").default("medium"), // small, medium, large
+});
+
+export const onboardingProgressRelations = relations(onboardingProgress, ({ one }) => ({
+  user: one(users, {
+    fields: [onboardingProgress.userId],
+    references: [users.id],
+  }),
+}));
+
+export const insertOnboardingProgressSchema = createInsertSchema(onboardingProgress).omit({
+  id: true,
+  lastUpdated: true,
+});
+
+export type OnboardingProgress = typeof onboardingProgress.$inferSelect;
+export type InsertOnboardingProgress = z.infer<typeof insertOnboardingProgressSchema>;
