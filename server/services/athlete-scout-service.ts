@@ -472,28 +472,33 @@ class AthleteScoutService {
       const currentYear = new Date().getFullYear();
       const gradYear = currentYear + Math.floor(Math.random() * 4) + 1;
 
-      // Create the discovery
-      const [discovery] = await db
-        .insert(schema.athleteDiscoveries)
-        .values({
-          scoutId: scout.id,
-          fullName,
-          username,
-          platform,
-          profileUrl: `https://www.${platform}.com/${username}`,
-          estimatedAge: Math.floor(Math.random() * (scout.ageRangeMax - scout.ageRangeMin + 1)) + scout.ageRangeMin,
-          sports: athleteSports,
-          positions,
-          followerCount: Math.floor(Math.random() * 10000) + 500,
-          postCount: Math.floor(Math.random() * 100) + 10,
-          graduationYear: gradYear, // Using the correct column name from the schema
-          potentialRating: Math.floor(Math.random() * 5) + 1,
-          email: `${username}@example.com`,
-          // Add more fields as needed
-        })
-        .returning();
+      // Create the discovery with direct SQL to avoid schema mismatch errors
+      const result = await db.execute(`
+        INSERT INTO athlete_discoveries 
+        (scout_id, full_name, username, platform, profile_url, estimated_age, 
+         sports, positions, follower_count, post_count, graduation_year, 
+         potential_rating, email) 
+        VALUES 
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        RETURNING *
+      `, [
+        scout.id,
+        fullName,
+        username,
+        platform,
+        `https://www.${platform}.com/${username}`,
+        Math.floor(Math.random() * (scout.ageRangeMax - scout.ageRangeMin + 1)) + scout.ageRangeMin,
+        JSON.stringify(athleteSports),
+        JSON.stringify(positions),
+        Math.floor(Math.random() * 10000) + 500,
+        Math.floor(Math.random() * 100) + 10,
+        gradYear,
+        Math.floor(Math.random() * 5) + 1,
+        `${username}@example.com`
+      ]);
 
-      return discovery;
+      // Return the first row from the result
+      return result.rows[0];
     } catch (error) {
       console.error("Error creating simulated athlete discovery:", error);
       return null;
@@ -525,8 +530,6 @@ class AthleteScoutService {
         : ["podcast", "instagram", "youtube", "tiktok"];
       const platform = mediaTypes[Math.floor(Math.random() * mediaTypes.length)];
       
-      // We're using platform field directly now after schema corrections
-      
       // Determine URL based on platform
       let url = "";
       if (platform === "podcast") {
@@ -546,25 +549,29 @@ class AthleteScoutService {
       const relevanceScore = Math.floor(Math.random() * 31) + 70; // 70-100
       const partnershipPotential = Math.floor(Math.random() * 31) + 70; // 70-100
       
-      // Create the media partner discovery
-      const [discovery] = await db
-        .insert(schema.mediaPartnerDiscoveries)
-        .values({
-          scoutId: scout.id,
-          name,
-          platform, // The database only has 'platform', not 'media_type'
-          url,
-          followerCount,
-          averageEngagement: engagementRate,
-          sports: scout.sportFocus.length > 0 ? scout.sportFocus : [sport],
-          contentQuality,
-          relevanceScore,
-          partnershipPotential,
-          // Add more fields as needed
-        })
-        .returning();
+      // Create the media partner discovery with direct SQL to avoid schema mismatch errors
+      const result = await db.execute(`
+        INSERT INTO media_partner_discoveries 
+        (scout_id, name, platform, url, follower_count, average_engagement, 
+         sports, content_quality, relevance_score, partnership_potential) 
+        VALUES 
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        RETURNING *
+      `, [
+        scout.id,
+        name,
+        platform,
+        url,
+        followerCount,
+        engagementRate,
+        JSON.stringify(scout.sportFocus.length > 0 ? scout.sportFocus : [sport]),
+        contentQuality,
+        relevanceScore,
+        partnershipPotential
+      ]);
 
-      return discovery;
+      // Return the first row from the result
+      return result.rows[0];
     } catch (error) {
       console.error("Error creating simulated media partner discovery:", error);
       return null;
