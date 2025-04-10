@@ -1,4 +1,4 @@
-import { pgTable, serial, text, integer, boolean, timestamp, date, real, index, uuid, unique, json, jsonb } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, integer, boolean, timestamp, date, real, index, uuid, unique, json, jsonb, numeric } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { createInsertSchema } from 'drizzle-zod';
 import { z } from 'zod';
@@ -1228,6 +1228,84 @@ export const cityInfluencerScouts = pgTable("city_influencer_scouts", {
   configuration: jsonb("configuration"),
 });
 
+// Tables for storing discoveries from scout services
+export const athleteDiscoveries = pgTable("athlete_discoveries", {
+  id: serial("id").primaryKey(),
+  scoutId: integer("scout_id").notNull().references(() => socialMediaScouts.id),
+  fullName: text("full_name").notNull(),
+  username: text("username").notNull(),
+  platform: text("platform").notNull(),
+  profileUrl: text("profile_url").notNull(),
+  estimatedAge: integer("estimated_age"),
+  sports: text("sports").array(),
+  positions: text("positions").array(),
+  followerCount: integer("follower_count"),
+  engagementRate: numeric("engagement_rate", { precision: 5, scale: 2 }),
+  gradYear: integer("grad_year"),
+  location: text("location"),
+  highSchool: text("high_school"),
+  discoveredAt: timestamp("discovered_at").defaultNow(),
+  reviewStatus: text("review_status").default("pending"),
+  reviewedBy: integer("reviewed_by"),
+  reviewedAt: timestamp("reviewed_at"),
+  contactAttempted: boolean("contact_attempted").default(false),
+  contactedBy: integer("contacted_by"),
+  contactedAt: timestamp("contacted_at"),
+  notes: text("notes"),
+  highlights: jsonb("highlights"),
+  profileImage: text("profile_image"),
+});
+
+export const mediaPartnerDiscoveries = pgTable("media_partner_discoveries", {
+  id: serial("id").primaryKey(),
+  scoutId: integer("scout_id").notNull().references(() => mediaPartnershipScouts.id),
+  name: text("name").notNull(),
+  mediaType: text("media_type").notNull(),
+  websiteUrl: text("website_url"),
+  contactEmail: text("contact_email"),
+  contactPhone: text("contact_phone"),
+  followerCount: integer("follower_count"),
+  sportsFocus: text("sports_focus").array(),
+  locationCoverage: text("location_coverage").array(),
+  reachMetrics: jsonb("reach_metrics"),
+  potentialValue: text("potential_value"),
+  discoveredAt: timestamp("discovered_at").defaultNow(),
+  reviewStatus: text("review_status").default("pending"),
+  reviewedBy: integer("reviewed_by"),
+  reviewedAt: timestamp("reviewed_at"),
+  contactAttempted: boolean("contact_attempted").default(false),
+  contactedBy: integer("contacted_by"),
+  contactedAt: timestamp("contacted_at"),
+  notes: text("notes"),
+  logoUrl: text("logo_url"),
+});
+
+export const cityInfluencerDiscoveries = pgTable("city_influencer_discoveries", {
+  id: serial("id").primaryKey(),
+  scoutId: integer("scout_id").notNull().references(() => cityInfluencerScouts.id),
+  fullName: text("full_name").notNull(),
+  platform: text("platform").notNull(),
+  username: text("username").notNull(),
+  profileUrl: text("profile_url").notNull(),
+  followerCount: integer("follower_count"),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  sportsFocus: text("sports_focus").array(),
+  influenceRank: integer("influence_rank"),
+  contactEmail: text("contact_email"),
+  contactPhone: text("contact_phone"),
+  discoveredAt: timestamp("discovered_at").defaultNow(),
+  reviewStatus: text("review_status").default("pending"),
+  reviewedBy: integer("reviewed_by"),
+  reviewedAt: timestamp("reviewed_at"),
+  contactAttempted: boolean("contact_attempted").default(false),
+  contactedBy: integer("contacted_by"),
+  contactedAt: timestamp("contacted_at"),
+  notes: text("notes"),
+  profileImage: text("profile_image"),
+  combineEventId: integer("combine_event_id").references(() => combineTourEvents.id),
+});
+
 // Insert schemas for scouts
 export const insertSocialMediaScoutSchema = createInsertSchema(socialMediaScouts).omit({ 
   id: true, 
@@ -1258,6 +1336,28 @@ export const insertCityInfluencerScoutSchema = createInsertSchema(cityInfluencer
   configuration: true
 });
 
+// Insert schemas for discoveries
+export const insertAthleteDiscoverySchema = createInsertSchema(athleteDiscoveries).omit({
+  id: true,
+  discoveredAt: true,
+  reviewedAt: true,
+  contactedAt: true
+});
+
+export const insertMediaPartnerDiscoverySchema = createInsertSchema(mediaPartnerDiscoveries).omit({
+  id: true,
+  discoveredAt: true,
+  reviewedAt: true,
+  contactedAt: true
+});
+
+export const insertCityInfluencerDiscoverySchema = createInsertSchema(cityInfluencerDiscoveries).omit({
+  id: true,
+  discoveredAt: true,
+  reviewedAt: true,
+  contactedAt: true
+});
+
 // Scout types
 export type SocialMediaScout = typeof socialMediaScouts.$inferSelect;
 export type InsertSocialMediaScout = z.infer<typeof insertSocialMediaScoutSchema>;
@@ -1267,6 +1367,16 @@ export type InsertMediaPartnershipScout = z.infer<typeof insertMediaPartnershipS
 
 export type CityInfluencerScout = typeof cityInfluencerScouts.$inferSelect;
 export type InsertCityInfluencerScout = z.infer<typeof insertCityInfluencerScoutSchema>;
+
+// Discovery types
+export type AthleteDiscovery = typeof athleteDiscoveries.$inferSelect;
+export type InsertAthleteDiscovery = z.infer<typeof insertAthleteDiscoverySchema>;
+
+export type MediaPartnerDiscovery = typeof mediaPartnerDiscoveries.$inferSelect;
+export type InsertMediaPartnerDiscovery = z.infer<typeof insertMediaPartnerDiscoverySchema>;
+
+export type CityInfluencerDiscovery = typeof cityInfluencerDiscoveries.$inferSelect;
+export type InsertCityInfluencerDiscovery = z.infer<typeof insertCityInfluencerDiscoverySchema>;
 
 export type GarCategory = typeof garCategories.$inferSelect;
 export type InsertGarCategory = z.infer<typeof insertGarCategorySchema>;
