@@ -570,6 +570,8 @@ router.get('/xp-levels', async (req, res) => {
   }
 });
 
+
+
 // Update player streak
 router.post('/update-streak/:userId', async (req, res) => {
   try {
@@ -622,7 +624,8 @@ router.post('/update-streak/:userId', async (req, res) => {
     }
     
     if (shouldUpdateStreak) {
-      // Update streak
+      // Update streak - get hoursSinceLastActive from the current context
+      const hoursSinceLastActive = lastActive ? (now.getTime() - lastActive.getTime()) / (1000 * 60 * 60) : 0;
       const newStreakDays = hoursSinceLastActive > 36 ? 1 : progress.streakDays + 1;
       
       await db.update(playerProgress)
