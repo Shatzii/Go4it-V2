@@ -10,6 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Spinner } from '@/components/ui/spinner';
 import { Check, ChevronRight, Lock, Sparkles, Star, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import SkillRankingVisualizer from './SkillRankingVisualizer';
 
 // Types for skill tree data
 type SkillNode = {
@@ -398,11 +399,12 @@ const InteractiveSkillTree: React.FC<InteractiveSkillTreeProps> = ({ sportType, 
                       <CardFooter className="pt-0">
                         {isUnlocked && (
                           <div className="w-full">
-                            <div className="flex justify-between text-xs mb-1">
-                              <span>Level {getSkillLevel(node.id)}</span>
-                              <span>{getSkillXp(node.id)} XP</span>
-                            </div>
-                            <Progress value={Math.min(getSkillXp(node.id) / ((getSkillLevel(node.id) + 1) * 100) * 100, 100)} className="h-1" />
+                            <SkillRankingVisualizer 
+                              level={getSkillLevel(node.id)}
+                              xp={getSkillXp(node.id)}
+                              showStars={false}
+                              size="sm"
+                            />
                           </div>
                         )}
                       </CardFooter>
@@ -530,22 +532,16 @@ const InteractiveSkillTree: React.FC<InteractiveSkillTreeProps> = ({ sportType, 
                 <CardContent>
                   {selectedSkill && isSkillUnlocked(selectedSkill.id) ? (
                     <div className="space-y-4">
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Level {getSkillLevel(selectedSkill.id)}</span>
-                          <span>{getSkillXp(selectedSkill.id)} XP</span>
-                        </div>
-                        <Progress 
-                          value={Math.min(getSkillXp(selectedSkill.id) / ((getSkillLevel(selectedSkill.id) + 1) * 100) * 100, 100)} 
-                          className="h-2" 
-                        />
-                      </div>
+                      <SkillRankingVisualizer 
+                        level={getSkillLevel(selectedSkill.id)}
+                        xp={getSkillXp(selectedSkill.id)}
+                        showStars={true}
+                        showGradient={true}
+                        showPercentage={true}
+                        size="lg"
+                      />
                       
-                      <div className="flex justify-center">
-                        {renderSkillLevel(selectedSkill.id)}
-                      </div>
-                      
-                      <div className="text-center text-sm text-gray-400">
+                      <div className="text-center text-sm text-gray-400 mt-2">
                         {getSkillLevel(selectedSkill.id) >= 5 ? (
                           <div className="flex items-center justify-center text-yellow-500">
                             <Check className="w-4 h-4 mr-1" /> 
