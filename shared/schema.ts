@@ -1690,6 +1690,23 @@ export const playerActiveChallenges = pgTable("player_active_challenges", {
   isCompleted: boolean("is_completed").notNull().default(false),
 });
 
+// Add relations for playerChallenges
+export const playerChallengesRelations = relations(playerChallenges, ({ many }) => ({
+  activeChallenges: many(playerActiveChallenges),
+}));
+
+// Add relations for playerActiveChallenges
+export const playerActiveChallengesRelations = relations(playerActiveChallenges, ({ one }) => ({
+  user: one(users, {
+    fields: [playerActiveChallenges.userId],
+    references: [users.id],
+  }),
+  challenge: one(playerChallenges, {
+    fields: [playerActiveChallenges.challengeId],
+    references: [playerChallenges.id],
+  }),
+}));
+
 export const coachMessages = pgTable("coach_messages", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
