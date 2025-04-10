@@ -103,7 +103,7 @@ export default function SimpleLogin() {
             
             <div className="text-center mt-4">
               <p className="text-xs text-gray-400">
-                Use <span className="font-bold">admin</span> and <span className="font-bold">admin123</span> for admin access
+                Use <span className="font-bold">admin</span> and <span className="font-bold">MyTime$$</span> for admin access
               </p>
             </div>
           </form>
