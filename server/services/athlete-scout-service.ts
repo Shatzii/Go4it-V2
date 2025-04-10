@@ -486,7 +486,7 @@ class AthleteScoutService {
           positions,
           followerCount: Math.floor(Math.random() * 10000) + 500,
           postCount: Math.floor(Math.random() * 100) + 10,
-          graduation_year: gradYear, // Using the correct column name from the database
+          graduationYear: gradYear, // Using the correct column name from the schema
           potentialRating: Math.floor(Math.random() * 5) + 1,
           email: `${username}@example.com`,
           // Add more fields as needed
@@ -525,8 +525,7 @@ class AthleteScoutService {
         : ["podcast", "instagram", "youtube", "tiktok"];
       const platform = mediaTypes[Math.floor(Math.random() * mediaTypes.length)];
       
-      // Store the media type in the mediaType field to match schema
-      const mediaType = platform;
+      // We're using platform field directly now after schema corrections
       
       // Determine URL based on platform
       let url = "";
