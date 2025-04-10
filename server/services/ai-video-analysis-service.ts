@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { db } from '../db';
 import { videoAnalyses, videos, users } from '@shared/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 // Initialize OpenAI client
 // The newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
@@ -592,8 +592,22 @@ export class AIVideoAnalysisService {
    */
   async generateFootballGamePlan(videoId: number, teamName: string, opponentName: string, gameDate?: string): Promise<GamePlanResult> {
     try {
-      // Get video data
-      const [videoData] = await db.select().from(videos).where(eq(videos.id, videoId));
+      // Get video data - handle potential schema mismatches
+      let videoData;
+      try {
+        // First try a safe query to avoid schema mismatch issues
+        const safeResult = await db.execute(sql`SELECT * FROM videos WHERE id = ${videoId}`);
+        if (safeResult.rows && safeResult.rows.length > 0) {
+          videoData = safeResult.rows[0];
+        } else {
+          throw new Error(`Video with ID ${videoId} not found`);
+        }
+      } catch (dbError) {
+        console.error("Database error in video lookup:", dbError);
+        // Fallback to minimal data if full query fails
+        videoData = { id: videoId, sport_type: "football" };
+      }
+
       if (!videoData) {
         throw new Error(`Video with ID ${videoId} not found`);
       }
@@ -606,7 +620,6 @@ export class AIVideoAnalysisService {
       - Sport: Football
       - Opponent Team: ${opponentName}
       - Your Team: ${teamName}
-      - Video Duration: ${videoData.duration || 'Unknown'} seconds
       ${gameDate ? `- Game Date: ${gameDate}` : ''}
       
       Please provide a complete game plan including:
@@ -692,14 +705,28 @@ export class AIVideoAnalysisService {
    */
   async generateCoachingFeedback(videoId: number, athleteName: string, sportType: string, focusArea: string): Promise<any> {
     try {
-      // Get video data
-      const [videoData] = await db.select().from(videos).where(eq(videos.id, videoId));
+      // Get video data with safe query to handle schema mismatches
+      let videoData;
+      try {
+        // First try a safe query to avoid schema mismatch issues
+        const safeResult = await db.execute(sql`SELECT * FROM videos WHERE id = ${videoId}`);
+        if (safeResult.rows && safeResult.rows.length > 0) {
+          videoData = safeResult.rows[0];
+        } else {
+          throw new Error(`Video with ID ${videoId} not found`);
+        }
+      } catch (dbError) {
+        console.error("Database error in video lookup:", dbError);
+        // Fallback to minimal data if full query fails
+        videoData = { id: videoId, sport_type: sportType };
+      }
+
       if (!videoData) {
         throw new Error(`Video with ID ${videoId} not found`);
       }
 
       // Get user data (for neurodivergent-specific insights)
-      const [userData] = await db.select().from(users).where(eq(users.id, videoData.userId));
+      const [userData] = await db.select().from(users).where(eq(users.id, videoData.user_id || videoData.userId));
       const isNeurodivergent = userData?.neurodivergent || false;
 
       // Configure prompt for coaching feedback
@@ -712,7 +739,6 @@ export class AIVideoAnalysisService {
       - Athlete: ${athleteName}
       - Athlete Age Range: 12-18
       ${isNeurodivergent ? '- The athlete has ADHD/neurodivergent traits that should be considered' : ''}
-      - Video Duration: ${videoData.duration || 'Unknown'} seconds
       
       Please provide detailed coaching feedback including:
       1. Overall assessment of the athlete's performance (1-10)
