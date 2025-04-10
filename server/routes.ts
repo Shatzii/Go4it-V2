@@ -15,6 +15,7 @@ import { registerAiCoachRoutes } from './routes/ai-coach-routes';
 import { aiCoachService } from './services/ai-coach-service';
 import { User, insertNcaaEligibilitySchema } from "@shared/schema";
 import { isAdminMiddleware } from './middleware/auth-middleware';
+import scoutRoutes from './routes/scout-routes';
 
 // Helper function to determine event status
 function getEventStatus(event: any): 'upcoming' | 'filling_fast' | 'sold_out' | 'past' {
@@ -5052,6 +5053,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI Coach Routes
   // Using registerAiCoachRoutes function instead of aiCoachRoutes 
   registerAiCoachRoutes(app);
+
+  // Register Scout Vision routes
+  app.use('/api', scoutRoutes);
 
   // Content Blocks API Routes
   app.get("/api/content-blocks", async (req: Request, res: Response) => {

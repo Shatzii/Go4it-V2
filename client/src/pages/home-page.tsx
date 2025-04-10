@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import { WhatMakesUsDifferent } from "@/components/what-makes-us-different";
 import FeaturedCombines from "@/components/home/FeaturedCombines";
 import FeaturedBlogPosts from "@/components/home/FeaturedBlogPosts";
+import ScoutVisionCarousel from "@/components/home/ScoutVisionCarousel";
 
 interface BlogPost {
   id: number;
@@ -236,6 +237,9 @@ export default function HomePage() {
           </div>
         )}
       </section>
+
+      {/* Scout Vision Section */}
+      <ScoutVisionCarousel />
 
       {/* Upcoming Combines Section */}
       <FeaturedCombines />
