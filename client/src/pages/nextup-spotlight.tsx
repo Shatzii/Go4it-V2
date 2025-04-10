@@ -171,10 +171,10 @@ export default function NextUpSpotlight() {
                         </CardDescription>
                       </div>
                       <div className="flex items-center">
-                        <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                        <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                        <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                        <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                        <Star className="h-4 w-4 text-blue-500 fill-blue-500" />
+                        <Star className="h-4 w-4 text-blue-500 fill-blue-500" />
+                        <Star className="h-4 w-4 text-blue-500 fill-blue-500" />
+                        <Star className="h-4 w-4 text-blue-500 fill-blue-500" />
                         <Star className="h-4 w-4 text-muted-foreground" />
                       </div>
                     </div>
