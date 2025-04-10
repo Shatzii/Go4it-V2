@@ -525,6 +525,9 @@ class AthleteScoutService {
         : ["podcast", "instagram", "youtube", "tiktok"];
       const platform = mediaTypes[Math.floor(Math.random() * mediaTypes.length)];
       
+      // Store the media type in the mediaType field to match schema
+      const mediaType = platform;
+      
       // Determine URL based on platform
       let url = "";
       if (platform === "podcast") {
@@ -550,7 +553,9 @@ class AthleteScoutService {
         .values({
           scoutId: scout.id,
           name,
-          platform,
+          platform, // This is actually stored as 'platform' in the database, not 'media_type'
+          // Adding mediaType for the database schema
+          mediaType: mediaType,
           url,
           followerCount,
           averageEngagement: engagementRate,
