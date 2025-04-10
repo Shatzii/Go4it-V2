@@ -31,7 +31,9 @@ import {
   spotlightProfiles, type SpotlightProfile, type InsertSpotlightProfile,
   athleteStarPath, type AthleteStarPath, type InsertAthleteStarPath,
   workoutVerifications, type WorkoutVerification, type InsertWorkoutVerification,
-  workoutVerificationCheckpoints, type WorkoutVerificationCheckpoint, type InsertWorkoutVerificationCheckpoint
+  workoutVerificationCheckpoints, type WorkoutVerificationCheckpoint, type InsertWorkoutVerificationCheckpoint,
+  onboardingProgress, type OnboardingProgress, type InsertOnboardingProgress,
+  athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql, inArray } from "drizzle-orm";
@@ -619,6 +621,119 @@ export class DatabaseStorage implements IStorage {
     return await db.select()
       .from(users)
       .where(eq(users.role, role));
+  }
+  
+  // Onboarding Progress operations
+  async getOnboardingProgress(userId: number): Promise<OnboardingProgress | undefined> {
+    try {
+      const [progress] = await db
+        .select()
+        .from(onboardingProgress)
+        .where(eq(onboardingProgress.userId, userId));
+      return progress;
+    } catch (error) {
+      console.error(`Error fetching onboarding progress for user ${userId}:`, error);
+      return undefined;
+    }
+  }
+
+  async createOnboardingProgress(data: InsertOnboardingProgress): Promise<OnboardingProgress> {
+    try {
+      const [progress] = await db
+        .insert(onboardingProgress)
+        .values(data)
+        .returning();
+      return progress;
+    } catch (error) {
+      console.error("Error creating onboarding progress:", error);
+      throw error;
+    }
+  }
+
+  async updateOnboardingProgress(userId: number, data: Partial<OnboardingProgress>): Promise<OnboardingProgress | undefined> {
+    try {
+      const [progress] = await db
+        .update(onboardingProgress)
+        .set({
+          ...data,
+          lastUpdated: new Date(),
+        })
+        .where(eq(onboardingProgress.userId, userId))
+        .returning();
+      return progress;
+    } catch (error) {
+      console.error(`Error updating onboarding progress for user ${userId}:`, error);
+      return undefined;
+    }
+  }
+
+  async completeOnboardingStep(userId: number, step: number, section?: string): Promise<OnboardingProgress | undefined> {
+    try {
+      const currentProgress = await this.getOnboardingProgress(userId);
+      
+      if (!currentProgress) {
+        return undefined;
+      }
+      
+      const update: Partial<OnboardingProgress> = {
+        currentStep: step + 1,
+        lastUpdated: new Date(),
+      };
+      
+      // Add to completed sections if provided
+      if (section) {
+        const completedSections = currentProgress.completedSections || [];
+        if (!completedSections.includes(section)) {
+          update.completedSections = [...completedSections, section];
+        }
+      }
+      
+      // Check if this was the last step
+      if (step + 1 > currentProgress.totalSteps) {
+        update.isCompleted = true;
+      }
+      
+      const [progress] = await db
+        .update(onboardingProgress)
+        .set(update)
+        .where(eq(onboardingProgress.userId, userId))
+        .returning();
+      
+      return progress;
+    } catch (error) {
+      console.error(`Error completing onboarding step for user ${userId}:`, error);
+      return undefined;
+    }
+  }
+
+  async skipOnboardingSection(userId: number, section: string): Promise<OnboardingProgress | undefined> {
+    try {
+      const currentProgress = await this.getOnboardingProgress(userId);
+      
+      if (!currentProgress) {
+        return undefined;
+      }
+      
+      const skippedSections = currentProgress.skippedSections || [];
+      
+      if (!skippedSections.includes(section)) {
+        const [progress] = await db
+          .update(onboardingProgress)
+          .set({
+            skippedSections: [...skippedSections, section],
+            lastUpdated: new Date(),
+          })
+          .where(eq(onboardingProgress.userId, userId))
+          .returning();
+        
+        return progress;
+      }
+      
+      return currentProgress;
+    } catch (error) {
+      console.error(`Error skipping onboarding section for user ${userId}:`, error);
+      return undefined;
+    }
   }
   
   // Athlete Star Profile operations
