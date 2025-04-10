@@ -183,12 +183,23 @@ export interface IStorage {
   getAthleteProfile(userId: number): Promise<any | undefined>;
   getPlayerProgress(userId: number): Promise<any | undefined>;
   getPlayerEquipment(userId: number): Promise<any[]>;
-  getWorkoutVerification(userId: number): Promise<any | undefined>;
-  getWorkoutVerificationCheckpoints(verificationId: number): Promise<any[]>;
-  updateWorkoutVerification(verificationId: number, data: any): Promise<any>;
   getWeightRoomEquipmentById(equipmentId: number): Promise<any | undefined>;
   addXpToPlayer(userId: number, amount: number, source: string, reason: string, metadata?: any): Promise<boolean>;
   getSportRecommendations(userId: number): Promise<any[]>;
+  
+  // Star Path and Workout Verification
+  getAthleteStarPath(userId: number): Promise<AthleteStarPath | undefined>;
+  createAthleteStarPath(data: InsertAthleteStarPath): Promise<AthleteStarPath>;
+  updateAthleteStarPath(userId: number, data: Partial<AthleteStarPath>): Promise<AthleteStarPath>;
+  getWorkoutVerification(id: number): Promise<WorkoutVerification | undefined>;
+  getWorkoutVerifications(userId: number, limit?: number): Promise<WorkoutVerification[]>;
+  getPendingWorkoutVerifications(userId: number): Promise<WorkoutVerification[]>;
+  createWorkoutVerification(data: InsertWorkoutVerification): Promise<WorkoutVerification>;
+  updateWorkoutVerification(id: number, data: Partial<WorkoutVerification>): Promise<WorkoutVerification>;
+  verifyWorkout(id: number, aiScore: number, formQuality: number, repAccuracy: number, xpEarned: number): Promise<WorkoutVerification>;
+  getWorkoutVerificationCheckpoints(workoutVerificationId: number): Promise<WorkoutVerificationCheckpoint[]>;
+  createWorkoutVerificationCheckpoint(data: InsertWorkoutVerificationCheckpoint): Promise<WorkoutVerificationCheckpoint>;
+  updateWorkoutVerificationCheckpoint(id: number, data: Partial<WorkoutVerificationCheckpoint>): Promise<WorkoutVerificationCheckpoint>;
   
   // Skill Tree operations
   getSkillTreeNodes(sportType?: string, position?: string): Promise<SkillTreeNode[]>;
