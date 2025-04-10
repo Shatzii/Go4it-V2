@@ -84,66 +84,99 @@ const FeaturedCombines: React.FC = () => {
 
   // If no events from API, create mock events
   if (error || !upcomingEvents || upcomingEvents.length === 0) {
-    // Create mock events with proper dates
+    // Create mock events with proper dates that match our schema
     const currentDate = new Date();
     const tomorrow = addDays(currentDate, 1);
     const inOneWeek = addDays(currentDate, 7);
     const inTwoWeeks = addDays(currentDate, 14);
     
-    const mockEvents: Partial<CombineTourEvent>[] = [
+    const mockEvents = [
       {
         id: 1,
         name: "Chicago Elite Combine",
         description: "Join us for a comprehensive evaluation featuring physical testing, skills assessment, and game play. College coaches will be in attendance to evaluate talent.",
         location: "United Center Training Facility",
-        address: "1901 W Madison St",
+        venueDetails: "1901 W Madison St, Chicago, IL 60612",
         city: "Chicago",
         state: "IL",
-        zipCode: "60612",
+        country: "USA",
         startDate: inOneWeek.toISOString(),
         endDate: addDays(inOneWeek, 2).toISOString(),
-        maximumAttendees: 100,
-        currentAttendees: 75,
-        price: "149.99",
+        capacity: 100,
+        registeredCount: 75,
+        price: 149.99,
         slug: "chicago-elite-combine-2025",
-        status: "published",
-        featuredImage: "https://images.unsplash.com/photo-1504450758481-7338eba7524a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800&q=80"
+        status: "upcoming",
+        featured: true,
+        bannerImage: "https://images.unsplash.com/photo-1504450758481-7338eba7524a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800&q=80",
+        sportTypes: ["Basketball", "Football"],
+        ageGroups: ["14-16", "16-18"],
+        registrationUrl: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        contactEmail: "info@go4it.com",
+        contactPhone: "123-456-7890",
+        latitude: 41.8807,
+        longitude: -87.6742,
+        activeNetworkId: null
       },
       {
         id: 2,
         name: "Los Angeles Skills Showcase",
         description: "An exclusive opportunity for top high school athletes to showcase their skills in front of college scouts and coaches.",
         location: "UCLA Athletics Complex",
-        address: "555 Westwood Plaza",
+        venueDetails: "555 Westwood Plaza, Los Angeles, CA 90095",
         city: "Los Angeles",
         state: "CA",
-        zipCode: "90095",
+        country: "USA",
         startDate: inTwoWeeks.toISOString(),
         endDate: addDays(inTwoWeeks, 1).toISOString(),
-        maximumAttendees: 80,
-        currentAttendees: 75,
-        price: "199.99",
+        capacity: 80,
+        registeredCount: 75,
+        price: 199.99,
         slug: "la-skills-showcase-2025",
-        status: "published",
-        featuredImage: "https://images.unsplash.com/photo-1577471488278-16eec37ffcc2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800&q=80"
+        status: "upcoming",
+        featured: true,
+        bannerImage: "https://images.unsplash.com/photo-1577471488278-16eec37ffcc2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800&q=80",
+        sportTypes: ["Basketball", "Volleyball"],
+        ageGroups: ["14-16", "16-18"],
+        registrationUrl: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        contactEmail: "info@go4it.com",
+        contactPhone: "123-456-7890",
+        latitude: 34.0689,
+        longitude: -118.4452,
+        activeNetworkId: null
       },
       {
         id: 3,
         name: "Dallas All-Stars Combine",
         description: "The premier combine event in Texas featuring comprehensive testing and evaluation for multiple sports.",
         location: "AT&T Stadium",
-        address: "1 AT&T Way",
+        venueDetails: "1 AT&T Way, Arlington, TX 76011",
         city: "Arlington",
         state: "TX",
-        zipCode: "76011",
+        country: "USA",
         startDate: tomorrow.toISOString(),
         endDate: addDays(tomorrow, 3).toISOString(),
-        maximumAttendees: 150,
-        currentAttendees: 145,
-        price: "159.99",
+        capacity: 150,
+        registeredCount: 145,
+        price: 159.99,
         slug: "dallas-all-stars-2025",
-        status: "published",
-        featuredImage: "https://images.unsplash.com/photo-1564246614931-1be8ad768e63?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800&q=80"
+        status: "upcoming",
+        featured: true,
+        bannerImage: "https://images.unsplash.com/photo-1564246614931-1be8ad768e63?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800&q=80",
+        sportTypes: ["Football", "Track"],
+        ageGroups: ["14-16", "16-18"],
+        registrationUrl: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        contactEmail: "info@go4it.com",
+        contactPhone: "123-456-7890",
+        latitude: 32.7473,
+        longitude: -97.0945,
+        activeNetworkId: null
       }
     ] as CombineTourEvent[];
     
@@ -195,8 +228,8 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const [isSoldOut, setIsSoldOut] = useState(false);
 
   useEffect(() => {
-    if (event.maximumAttendees && event.currentAttendees) {
-      const fillRatio = event.currentAttendees / event.maximumAttendees;
+    if (event.capacity && event.registeredCount) {
+      const fillRatio = event.registeredCount / event.capacity;
       setIsFilling(fillRatio >= 0.75 && fillRatio < 1);
       setIsSoldOut(fillRatio >= 1);
     }
@@ -206,7 +239,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
     <Card className="overflow-hidden h-full flex flex-col">
       <div 
         className="h-48 bg-cover bg-center" 
-        style={{ backgroundImage: `url(${event.featuredImage || 'https://images.unsplash.com/photo-1546519638-68e109acd27d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&h=800&q=80'})` }}
+        style={{ backgroundImage: `url(${event.bannerImage || 'https://images.unsplash.com/photo-1546519638-68e109acd27d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&h=800&q=80'})` }}
       >
         <div className="p-3 flex justify-end">
           {isSoldOut ? (
