@@ -8,7 +8,7 @@ import cors from "cors";
 import { storage } from './storage';
 import { getAllActiveApiKeys } from './getAllActiveApiKeys';
 import { initializeBlogGeneration } from './blog-generator';
-import { openAIService } from './services/openai-service';
+import { openAIService } from './openai-service.fixed';
 import { transferPortalService } from './services/transfer-portal-service';
 import { athleteScoutService } from './services/athlete-scout-service';
 import { authSentinel } from './middleware/auth-sentinel';
@@ -175,21 +175,21 @@ app.use((req, res, next) => {
         
         // Set environment variables from stored API keys
         apiKeys.forEach((key: any) => {
-          const keyName = key.keyType.toUpperCase() + '_API_KEY';
-          if (key.keyType === 'openai') {
-            process.env.OPENAI_API_KEY = key.keyValue;
+          const keyName = key.key_type.toUpperCase() + '_API_KEY';
+          if (key.key_type === 'openai') {
+            process.env.OPENAI_API_KEY = key.key_value;
             log('Set OPENAI_API_KEY from database');
-          } else if (key.keyType === 'stripe') {
-            process.env.STRIPE_SECRET_KEY = key.keyValue;
+          } else if (key.key_type === 'stripe') {
+            process.env.STRIPE_SECRET_KEY = key.key_value;
             log('Set STRIPE_SECRET_KEY from database');
-          } else if (key.keyType === 'sendgrid') {
-            process.env.SENDGRID_API_KEY = key.keyValue;
+          } else if (key.key_type === 'sendgrid') {
+            process.env.SENDGRID_API_KEY = key.key_value;
             log('Set SENDGRID_API_KEY from database');
-          } else if (key.keyType === 'twilio') {
-            process.env.TWILIO_AUTH_TOKEN = key.keyValue;
+          } else if (key.key_type === 'twilio') {
+            process.env.TWILIO_AUTH_TOKEN = key.key_value;
             log('Set TWILIO_AUTH_TOKEN from database');
           } else {
-            process.env[keyName] = key.keyValue;
+            process.env[keyName] = key.key_value;
             log(`Set ${keyName} from database`);
           }
         });
