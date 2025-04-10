@@ -1158,6 +1158,91 @@ export const insertGarRatingHistorySchema = createInsertSchema(garRatingHistory)
 export const insertAthleteStarProfileSchema = createInsertSchema(athleteStarProfiles).omit({ id: true, reachedAt: true, lastUpdate: true });
 export const insertApiKeySchema = createInsertSchema(apiKeys).omit({ id: true, createdAt: true, lastUsedAt: true });
 
+// Scout-related tables
+export const socialMediaScouts = pgTable("social_media_scouts", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  active: boolean("active").default(true),
+  createdBy: integer("created_by").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  lastRun: timestamp("last_run"),
+  sportFocus: text("sport_focus").array(),
+  locationFocus: text("location_focus").array(),
+  keywordsToTrack: text("keywords_to_track").array(),
+  platformsToSearch: text("platforms_to_search").array(),
+  ageRangeMin: integer("age_range_min").default(12),
+  ageRangeMax: integer("age_range_max").default(18),
+  discoveryCount: integer("discovery_count").default(0),
+  lastRunStats: jsonb("last_run_stats"),
+});
+
+export const mediaPartnershipScouts = pgTable("media_partnership_scouts", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  active: boolean("active").default(true),
+  createdBy: integer("created_by").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  lastRun: timestamp("last_run"),
+  mediaTypes: text("media_types").array(),
+  locationFocus: text("location_focus").array(),
+  keywordsToTrack: text("keywords_to_track").array(),
+  discoveryCount: integer("discovery_count").default(0),
+  lastRunStats: jsonb("last_run_stats"),
+});
+
+export const cityInfluencerScouts = pgTable("city_influencer_scouts", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  active: boolean("active").default(true),
+  createdBy: integer("created_by").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  lastRun: timestamp("last_run"),
+  cities: text("cities").array(),
+  sportsToTrack: text("sports_to_track").array(),
+  keywordsToTrack: text("keywords_to_track").array(),
+  platformsToSearch: text("platforms_to_search").array(),
+  discoveryCount: integer("discovery_count").default(0),
+  lastRunStats: jsonb("last_run_stats"),
+});
+
+// Insert schemas for scouts
+export const insertSocialMediaScoutSchema = createInsertSchema(socialMediaScouts).omit({ 
+  id: true, 
+  createdAt: true,
+  lastRun: true,
+  discoveryCount: true,
+  lastRunStats: true
+});
+
+export const insertMediaPartnershipScoutSchema = createInsertSchema(mediaPartnershipScouts).omit({ 
+  id: true, 
+  createdAt: true,
+  lastRun: true,
+  discoveryCount: true,
+  lastRunStats: true
+});
+
+export const insertCityInfluencerScoutSchema = createInsertSchema(cityInfluencerScouts).omit({ 
+  id: true, 
+  createdAt: true,
+  lastRun: true,
+  discoveryCount: true,
+  lastRunStats: true
+});
+
+// Scout types
+export type SocialMediaScout = typeof socialMediaScouts.$inferSelect;
+export type InsertSocialMediaScout = z.infer<typeof insertSocialMediaScoutSchema>;
+
+export type MediaPartnershipScout = typeof mediaPartnershipScouts.$inferSelect;
+export type InsertMediaPartnershipScout = z.infer<typeof insertMediaPartnershipScoutSchema>;
+
+export type CityInfluencerScout = typeof cityInfluencerScouts.$inferSelect;
+export type InsertCityInfluencerScout = z.infer<typeof insertCityInfluencerScoutSchema>;
+
 export type GarCategory = typeof garCategories.$inferSelect;
 export type InsertGarCategory = z.infer<typeof insertGarCategorySchema>;
 
