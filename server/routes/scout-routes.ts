@@ -2,7 +2,6 @@ import { Router, Request, Response } from "express";
 import { db } from "../db";
 import * as schema from "@shared/schema";
 import { eq } from "drizzle-orm";
-import { isAuthenticated } from "../middleware/auth-middleware";
 
 const router = Router();
 
