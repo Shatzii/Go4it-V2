@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronRight, Clock } from "lucide-react";
+import { ChevronRight, Clock, ChevronLeft } from "lucide-react";
 
 interface BlogPost {
   id: number;
@@ -93,6 +93,61 @@ export default function FeaturedBlogPosts() {
     });
   };
 
+  // Function to render blog post card
+  const renderBlogCard = (post: BlogPost) => (
+    <Card key={post.id} className="flex-shrink-0 w-[250px] sm:w-[280px] md:w-[300px] overflow-hidden border border-gray-800 bg-black shadow-lg transform transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_10px_rgba(34,211,238,0.3)]">
+      {post.coverImage && (
+        <div className="relative h-40 overflow-hidden">
+          <img
+            src={post.coverImage}
+            alt={post.title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-2">
+          </div>
+        </div>
+      )}
+      <CardHeader className="pb-2 pt-3">
+        <div className="flex items-center gap-2 mb-2">
+          <Badge variant="secondary" className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">{post.category}</Badge>
+          <div className="flex items-center text-sm text-gray-400">
+            <Clock className="mr-1 h-3 w-3" />
+            {formatDate(post.publishDate)}
+          </div>
+        </div>
+        <CardTitle className="text-lg text-white line-clamp-1">{post.title}</CardTitle>
+        <CardDescription className="line-clamp-2 text-gray-400 text-sm">
+          {post.summary}
+        </CardDescription>
+      </CardHeader>
+      <CardFooter className="pt-0 pb-3">
+        <Button asChild variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
+          <Link href={`/blog/${post.slug}`}>Read Article</Link>
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+
+  // Function to render loading skeleton
+  const renderSkeletons = (count = 3) => (
+    Array(count).fill(0).map((_, i) => (
+      <Card key={i} className="flex-shrink-0 w-[250px] sm:w-[280px] md:w-[300px] overflow-hidden border border-gray-800 bg-black shadow-lg animate-pulse">
+        <div className="h-40 bg-gray-800"></div>
+        <CardHeader className="pb-2 pt-3">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-16 h-5 bg-gray-800 rounded"></div>
+            <div className="w-24 h-4 bg-gray-800 rounded"></div>
+          </div>
+          <div className="w-full h-6 bg-gray-800 rounded mb-2"></div>
+          <div className="w-full h-12 bg-gray-800 rounded"></div>
+        </CardHeader>
+        <CardFooter className="pt-0 pb-3">
+          <div className="w-full h-8 bg-gray-800 rounded"></div>
+        </CardFooter>
+      </Card>
+    ))
+  );
+
   return (
     <section className="mb-16">
       <div className="flex justify-between items-center mb-6">
@@ -135,63 +190,17 @@ export default function FeaturedBlogPosts() {
               
               {/* Carousel - Mobile Friendly */}
               <div className="overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4">
-                <div className="flex gap-4 min-w-max">
-                  {isLoadingFeatured ? (
-                    // Loading skeleton
-                    Array(3).fill(0).map((_, i) => (
-                      <Card key={i} className="flex-shrink-0 w-[280px] sm:w-[320px] overflow-hidden border border-gray-800 bg-black shadow-lg animate-pulse">
-                        <div className="h-40 bg-gray-800"></div>
-                        <CardHeader className="pb-2">
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-16 h-5 bg-gray-800 rounded"></div>
-                            <div className="w-24 h-4 bg-gray-800 rounded"></div>
-                          </div>
-                          <div className="w-full h-6 bg-gray-800 rounded mb-2"></div>
-                          <div className="w-full h-12 bg-gray-800 rounded"></div>
-                        </CardHeader>
-                        <CardFooter className="pt-0">
-                          <div className="w-full h-8 bg-gray-800 rounded"></div>
-                        </CardFooter>
-                      </Card>
-                    ))
-                  ) : featuredBlogPosts.length > 0 ? (
-                    featuredBlogPosts
-                      .map((post) => (
-                        <Card key={post.id} className="flex-shrink-0 w-[280px] sm:w-[320px] overflow-hidden border border-gray-800 bg-black shadow-lg transform transition-all duration-300 hover:shadow-[0_0_10px_rgba(34,211,238,0.2)]">
-                          {post.coverImage && (
-                            <div className="h-40 overflow-hidden">
-                              <img
-                                src={post.coverImage}
-                                alt={post.title}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          )}
-                          <CardHeader className="pb-2">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Badge variant="secondary" className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">{post.category}</Badge>
-                              <div className="flex items-center text-sm text-gray-400">
-                                <Clock className="mr-1 h-3 w-3" />
-                                {formatDate(post.publishDate)}
-                              </div>
-                            </div>
-                            <CardTitle className="text-lg text-white line-clamp-1">{post.title}</CardTitle>
-                            <CardDescription className="line-clamp-2 text-gray-400 text-sm">
-                              {post.summary}
-                            </CardDescription>
-                          </CardHeader>
-                          <CardFooter className="pt-0">
-                            <Button asChild variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
-                              <Link href={`/blog/${post.slug}`}>Read Article</Link>
-                            </Button>
-                          </CardFooter>
-                        </Card>
-                      ))
-                  ) : (
-                    <div className="flex justify-center items-center w-full p-12">
-                      <p className="text-gray-400">No featured blog posts available</p>
-                    </div>
-                  )}
+                <div className="flex gap-3 md:gap-6 min-w-max">
+                  {isLoadingFeatured 
+                    ? renderSkeletons(4)
+                    : featuredBlogPosts.length > 0 
+                      ? featuredBlogPosts.map(post => renderBlogCard(post))
+                      : (
+                        <div className="flex justify-center items-center w-full p-12">
+                          <p className="text-gray-400">No featured blog posts available</p>
+                        </div>
+                      )
+                  }
                 </div>
               </div>
               
@@ -220,64 +229,19 @@ export default function FeaturedBlogPosts() {
                 
                 {/* Carousel - Mobile Friendly */}
                 <div className="overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4">
-                  <div className="flex gap-4 min-w-max">
-                    {isLoadingAll ? (
-                      // Loading skeleton
-                      Array(3).fill(0).map((_, i) => (
-                        <Card key={i} className="flex-shrink-0 w-[280px] sm:w-[320px] overflow-hidden border border-gray-800 bg-black shadow-lg animate-pulse">
-                          <div className="h-40 bg-gray-800"></div>
-                          <CardHeader className="pb-2">
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className="w-16 h-5 bg-gray-800 rounded"></div>
-                              <div className="w-24 h-4 bg-gray-800 rounded"></div>
-                            </div>
-                            <div className="w-full h-6 bg-gray-800 rounded mb-2"></div>
-                            <div className="w-full h-12 bg-gray-800 rounded"></div>
-                          </CardHeader>
-                          <CardFooter className="pt-0">
-                            <div className="w-full h-8 bg-gray-800 rounded"></div>
-                          </CardFooter>
-                        </Card>
-                      ))
-                    ) : blogPosts.filter(post => post.category.toLowerCase() === category.toLowerCase()).length > 0 ? (
-                      blogPosts
-                        .filter(post => post.category.toLowerCase() === category.toLowerCase())
-                        .map((post) => (
-                          <Card key={post.id} className="flex-shrink-0 w-[280px] sm:w-[320px] overflow-hidden border border-gray-800 bg-black shadow-lg transform transition-all duration-300 hover:shadow-[0_0_10px_rgba(34,211,238,0.2)]">
-                            {post.coverImage && (
-                              <div className="h-40 overflow-hidden">
-                                <img
-                                  src={post.coverImage}
-                                  alt={post.title}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            )}
-                            <CardHeader className="pb-2">
-                              <div className="flex items-center gap-2 mb-2">
-                                <Badge variant="secondary" className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">{post.category}</Badge>
-                                <div className="flex items-center text-sm text-gray-400">
-                                  <Clock className="mr-1 h-3 w-3" />
-                                  {formatDate(post.publishDate)}
-                                </div>
-                              </div>
-                              <CardTitle className="text-lg text-white line-clamp-1">{post.title}</CardTitle>
-                              <CardDescription className="line-clamp-2 text-gray-400 text-sm">
-                                {post.summary}
-                              </CardDescription>
-                            </CardHeader>
-                            <CardFooter className="pt-0">
-                              <Button asChild variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-900/20">
-                                <Link href={`/blog/${post.slug}`}>Read Article</Link>
-                              </Button>
-                            </CardFooter>
-                          </Card>
-                        ))
-                    ) : (
-                      <div className="flex justify-center items-center w-full p-12">
-                        <p className="text-gray-400">No {category} blog posts available</p>
-                      </div>
-                    )}
+                  <div className="flex gap-3 md:gap-6 min-w-max">
+                    {isLoadingAll 
+                      ? renderSkeletons(4)
+                      : blogPosts.filter(post => post.category.toLowerCase() === category.toLowerCase()).length > 0 
+                        ? blogPosts
+                            .filter(post => post.category.toLowerCase() === category.toLowerCase())
+                            .map(post => renderBlogCard(post))
+                        : (
+                          <div className="flex justify-center items-center w-full p-12">
+                            <p className="text-gray-400">No {category} blog posts available</p>
+                          </div>
+                        )
+                    }
                   </div>
                 </div>
                 
