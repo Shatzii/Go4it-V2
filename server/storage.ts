@@ -1428,43 +1428,144 @@ export class DatabaseStorage implements IStorage {
     ];
   }
 
-  async getWorkoutVerification(userId: number): Promise<any | undefined> {
-    console.log(`[STUB] Getting workout verification for user ID: ${userId}`);
-    // Return a default verification object until we implement the actual tables
-    return {
-      id: 1,
-      userId,
-      workoutType: "cardio",
-      startTime: new Date(Date.now() - 3600000), // 1 hour ago
-      endTime: new Date(),
-      status: "completed",
-      calories: 350,
-      steps: 7500,
-      distance: 5.2,
-      verified: true
-    };
+  // ----------------
+  // Star Path Methods
+  // ----------------
+  
+  async getAthleteStarPath(userId: number): Promise<AthleteStarPath | undefined> {
+    const [starPath] = await db.select()
+      .from(athleteStarPath)
+      .where(eq(athleteStarPath.userId, userId));
+    return starPath;
   }
-
-  async getWorkoutVerificationCheckpoints(verificationId: number): Promise<any[]> {
-    console.log(`[STUB] Getting workout verification checkpoints for verification ID: ${verificationId}`);
-    // Return default checkpoint data until we implement the actual tables
-    return [
-      { id: 1, verificationId, timestamp: new Date(Date.now() - 3600000 + 900000), data: { distance: 1.3, heartRate: 120 } },
-      { id: 2, verificationId, timestamp: new Date(Date.now() - 3600000 + 1800000), data: { distance: 2.6, heartRate: 145 } },
-      { id: 3, verificationId, timestamp: new Date(Date.now() - 3600000 + 2700000), data: { distance: 3.9, heartRate: 155 } },
-      { id: 4, verificationId, timestamp: new Date(Date.now() - 3600000 + 3600000), data: { distance: 5.2, heartRate: 130 } }
-    ];
+  
+  async createAthleteStarPath(data: InsertAthleteStarPath): Promise<AthleteStarPath> {
+    const [createdStarPath] = await db.insert(athleteStarPath)
+      .values(data)
+      .returning();
+    return createdStarPath;
   }
-
-  async updateWorkoutVerification(verificationId: number, data: any): Promise<any> {
-    console.log(`[STUB] Updating workout verification ID: ${verificationId} with data:`, data);
-    // In a real implementation, we would update the workout_verifications table
-    // For now, just return the updated data
-    return {
-      id: verificationId,
-      ...data,
-      updatedAt: new Date()
-    };
+  
+  async updateAthleteStarPath(userId: number, data: Partial<AthleteStarPath>): Promise<AthleteStarPath> {
+    const [updatedStarPath] = await db.update(athleteStarPath)
+      .set(data)
+      .where(eq(athleteStarPath.userId, userId))
+      .returning();
+    return updatedStarPath;
+  }
+  
+  // -------------------------
+  // Workout Verification Methods
+  // -------------------------
+  
+  async getWorkoutVerification(id: number): Promise<WorkoutVerification | undefined> {
+    const [verification] = await db.select()
+      .from(workoutVerifications)
+      .where(eq(workoutVerifications.id, id));
+    return verification;
+  }
+  
+  async getWorkoutVerifications(userId: number, limit: number = 10): Promise<WorkoutVerification[]> {
+    return await db.select()
+      .from(workoutVerifications)
+      .where(eq(workoutVerifications.userId, userId))
+      .orderBy(desc(workoutVerifications.createdAt))
+      .limit(limit);
+  }
+  
+  async getPendingWorkoutVerifications(userId: number): Promise<WorkoutVerification[]> {
+    return await db.select()
+      .from(workoutVerifications)
+      .where(
+        and(
+          eq(workoutVerifications.userId, userId),
+          eq(workoutVerifications.status, "pending")
+        )
+      )
+      .orderBy(desc(workoutVerifications.createdAt));
+  }
+  
+  async createWorkoutVerification(data: InsertWorkoutVerification): Promise<WorkoutVerification> {
+    const [createdVerification] = await db.insert(workoutVerifications)
+      .values(data)
+      .returning();
+    return createdVerification;
+  }
+  
+  async updateWorkoutVerification(id: number, data: Partial<WorkoutVerification>): Promise<WorkoutVerification> {
+    const [updatedVerification] = await db.update(workoutVerifications)
+      .set(data)
+      .where(eq(workoutVerifications.id, id))
+      .returning();
+    return updatedVerification;
+  }
+  
+  async verifyWorkout(id: number, aiScore: number, formQuality: number, repAccuracy: number, xpEarned: number): Promise<WorkoutVerification> {
+    const [verifiedWorkout] = await db.update(workoutVerifications)
+      .set({
+        status: "completed",
+        aiScore,
+        formQuality,
+        repAccuracy,
+        completedAt: new Date(),
+        xpEarned
+      })
+      .where(eq(workoutVerifications.id, id))
+      .returning();
+      
+    // If there's a star path associated with this workout, update the XP
+    if (verifiedWorkout.starPathId) {
+      // Get the star path
+      const [starPath] = await db.select()
+        .from(athleteStarPath)
+        .where(eq(athleteStarPath.id, verifiedWorkout.starPathId));
+        
+      if (starPath) {
+        // Update the star path with the earned XP
+        await db.update(athleteStarPath)
+          .set({ 
+            currentXp: starPath.currentXp + xpEarned,
+            workoutsCompleted: starPath.workoutsCompleted + 1,
+            lastWorkoutAt: new Date()
+          })
+          .where(eq(athleteStarPath.id, starPath.id));
+      }
+    }
+    
+    // Call the method to add XP to player's overall account
+    if (xpEarned > 0) {
+      await this.addXpToPlayer(
+        verifiedWorkout.userId, 
+        xpEarned, 
+        "workout_verification", 
+        `Completed ${verifiedWorkout.workoutType} workout with ${repAccuracy.toFixed(1)}% accuracy`,
+        { workoutVerificationId: id }
+      );
+    }
+    
+    return verifiedWorkout;
+  }
+  
+  async getWorkoutVerificationCheckpoints(workoutVerificationId: number): Promise<WorkoutVerificationCheckpoint[]> {
+    return await db.select()
+      .from(workoutVerificationCheckpoints)
+      .where(eq(workoutVerificationCheckpoints.workoutVerificationId, workoutVerificationId))
+      .orderBy(workoutVerificationCheckpoints.timestamp);
+  }
+  
+  async createWorkoutVerificationCheckpoint(data: InsertWorkoutVerificationCheckpoint): Promise<WorkoutVerificationCheckpoint> {
+    const [createdCheckpoint] = await db.insert(workoutVerificationCheckpoints)
+      .values(data)
+      .returning();
+    return createdCheckpoint;
+  }
+  
+  async updateWorkoutVerificationCheckpoint(id: number, data: Partial<WorkoutVerificationCheckpoint>): Promise<WorkoutVerificationCheckpoint> {
+    const [updatedCheckpoint] = await db.update(workoutVerificationCheckpoints)
+      .set(data)
+      .where(eq(workoutVerificationCheckpoints.id, id))
+      .returning();
+    return updatedCheckpoint;
   }
 
   async getWeightRoomEquipmentById(equipmentId: number): Promise<any | undefined> {
