@@ -1241,8 +1241,8 @@ export const athleteDiscoveries = pgTable("athlete_discoveries", {
   positions: text("positions").array(),
   followerCount: integer("follower_count"),
   engagementRate: numeric("engagement_rate", { precision: 5, scale: 2 }),
-  graduationYear: integer("grad_year"), // Changed to match the field name used in service
-  gradYear: integer("grad_year"),
+  // Using graduation_year instead of grad_year as that's what exists in the database
+  graduationYear: integer("graduation_year"),
   location: text("location"),
   highSchool: text("high_school"),
   discoveredAt: timestamp("discovered_at").defaultNow(),
