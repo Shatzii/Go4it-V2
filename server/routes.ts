@@ -14,6 +14,7 @@ import { generateTokens } from './services/auth-token-service';
 import { registerAiCoachRoutes } from './routes/ai-coach-routes';
 import { aiCoachService } from './services/ai-coach-service';
 import { User, insertNcaaEligibilitySchema } from "@shared/schema";
+import { isAdminMiddleware } from './middleware/auth-middleware';
 
 // Helper function to determine event status
 function getEventStatus(event: any): 'upcoming' | 'filling_fast' | 'sold_out' | 'past' {
@@ -597,21 +598,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     return res.status(401).json({ message: "Not authenticated" });
   };
 
-  // Enhanced middleware to check if user is an admin via token or session
-  const isAdmin = (req: Request, res: Response, next: Function) => {
-    // First check for token-based authentication
-    if (req.token && req.token.role === "admin") {
-      return next();
-    }
-    
-    // Fall back to session-based authentication
-    if (req.isAuthenticated() && (req.user as any).role === "admin") {
-      return next();
-    }
-    
-    // Neither token nor session shows admin privileges
-    return res.status(403).json({ message: "Not authorized" });
-  };
+  // Use admin middleware as aliased
+  const isAdmin = isAdminMiddleware;
 
   // User agreement routes
   app.get("/api/user-agreements/:userId", isAuthenticated, async (req: Request, res: Response) => {
@@ -1763,7 +1751,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin routes
   app.get("/api/admin/users", isAdmin, async (req: Request, res: Response) => {
     try {
+      console.log("Admin dashboard requesting all users");
       const users = await storage.getAllUsers();
+      console.log(`Successfully retrieved ${users.length} users for admin dashboard`);
       return res.json(users);
     } catch (error) {
       console.error("Error fetching users:", error);
