@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -15,43 +15,9 @@ interface SkillRankingVisualizerProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-// CSS animation keyframes - add these to your global CSS or define here
-const shineKeyframes = `
-@keyframes shine {
-  0% {
-    left: -100%;
-  }
-  50%, 100% {
-    left: 100%;
-  }
-}
+// We removed animation keyframes from here as they are now in the global CSS (index.css)
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-
-@keyframes sparkle {
-  0% {
-    transform: scale(1);
-    opacity: 0.8;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0.8;
-  }
-}
-`;
-
-const SkillRankingVisualizer: React.FC<SkillRankingVisualizerProps> = ({
+const SkillRankingVisualizer: React.FC<SkillRankingVisualizerProps> = memo(({
   level,
   xp,
   maxLevel = 5,
@@ -64,21 +30,6 @@ const SkillRankingVisualizer: React.FC<SkillRankingVisualizerProps> = ({
 }) => {
   // State for animation
   const [animate, setAnimate] = useState(false);
-  
-  // Add keyframes to document once
-  useEffect(() => {
-    if (!document.getElementById('skill-ranking-keyframes')) {
-      const styleElement = document.createElement('style');
-      styleElement.id = 'skill-ranking-keyframes';
-      styleElement.innerHTML = shineKeyframes;
-      document.head.appendChild(styleElement);
-      
-      return () => {
-        const element = document.getElementById('skill-ranking-keyframes');
-        if (element) element.remove();
-      };
-    }
-  }, []);
   
   // Trigger animation when props change
   useEffect(() => {
@@ -95,29 +46,30 @@ const SkillRankingVisualizer: React.FC<SkillRankingVisualizerProps> = ({
   // Calculate the overall mastery percentage (across all levels)
   const totalMasteryPercent = Math.min((level / maxLevel) * 100 + (percentComplete / maxLevel), 100);
 
-  // Define color stops for gradient based on level and progress
+  // Pre-calculated color maps for different levels to avoid recalculation
+  const levelColorMap = [
+    { start: '#1e40af', mid: '#3b82f6', end: '#60a5fa' }, // Level 0-1 (Blues)
+    { start: '#3b82f6', mid: '#10b981', end: '#34d399' }, // Level 2 (Blue to Green)
+    { start: '#10b981', mid: '#84cc16', end: '#facc15' }, // Level 3 (Green to Yellow)
+    { start: '#84cc16', mid: '#facc15', end: '#f97316' }, // Level 4 (Yellow to Orange)
+    { start: '#facc15', mid: '#f97316', end: '#ef4444' }  // Level 5+ (Yellow to Orange to Red)
+  ];
+
+  // Mastered gradient (pre-defined for performance)
+  const masteredGradient = `linear-gradient(to right, 
+    #fde047, 
+    #fbbf24, 
+    #f97316, 
+    #ef4444
+  )`;
+
+  // Get color gradient efficiently
   const getColorGradient = () => {
-    const levelBasedColor = (l: number) => {
-      if (l <= 1) return { start: '#1e40af', mid: '#3b82f6', end: '#60a5fa' }; // Blues
-      if (l === 2) return { start: '#3b82f6', mid: '#10b981', end: '#34d399' }; // Blue to Green
-      if (l === 3) return { start: '#10b981', mid: '#84cc16', end: '#facc15' }; // Green to Yellow
-      if (l === 4) return { start: '#84cc16', mid: '#facc15', end: '#f97316' }; // Yellow to Orange
-      return { start: '#facc15', mid: '#f97316', end: '#ef4444' }; // Yellow to Orange to Red
-    };
+    if (isMastered) return masteredGradient;
     
-    const colors = levelBasedColor(level);
+    const colorIndex = Math.min(Math.max(0, level), 4);
+    const colors = levelColorMap[colorIndex];
     
-    // For mastered skills, create a gold/orange/red flame-like gradient
-    if (isMastered) {
-      return `linear-gradient(to right, 
-        #fde047, 
-        #fbbf24, 
-        #f97316, 
-        #ef4444
-      )`;
-    }
-    
-    // For active skills, create a dynamic gradient based on level
     return `linear-gradient(to right, 
       ${colors.start}, 
       ${colors.mid}, 
@@ -125,28 +77,16 @@ const SkillRankingVisualizer: React.FC<SkillRankingVisualizerProps> = ({
     )`;
   };
 
-  // Define shine effect based on skill level
-  const getShineAnimation = () => {
-    if (level < 3) return 'none'; // No animation for low levels
-    
-    // Basic shine for mid levels
-    if (level === 3) return 'shine 2.5s infinite';
-    
-    // Quick shines for higher levels
-    if (level === 4) return 'shine 2s infinite';
-    
-    // Fast shine for mastered skills
-    return 'shine 1.5s infinite';
-  };
+  // Animation durations based on level (memoized values)
+  const shineAnimationDurations = ['none', 'none', 'none', 'shine 2.5s infinite', 'shine 2s infinite', 'shine 1.5s infinite'];
   
-  // Define size classes
+  // Size classes (static objects to prevent recreation)
   const sizeClasses = {
     sm: 'h-1',
     md: 'h-2',
     lg: 'h-3',
   };
   
-  // Star size based on component size
   const starSize = {
     sm: 'w-3 h-3',
     md: 'w-4 h-4',
@@ -198,7 +138,7 @@ const SkillRankingVisualizer: React.FC<SkillRankingVisualizerProps> = ({
           {isMastered && (
             <span className="text-yellow-500 font-semibold transition-all duration-300" 
               style={{ 
-                textShadow: isMastered ? '0 0 5px rgba(234, 179, 8, 0.5)' : 'none'
+                textShadow: '0 0 5px rgba(234, 179, 8, 0.5)'
               }}>
               MASTERED
             </span>
@@ -234,7 +174,7 @@ const SkillRankingVisualizer: React.FC<SkillRankingVisualizerProps> = ({
             style={{ 
               width: '50%',
               transform: 'skewX(-20deg)',
-              animation: getShineAnimation(),
+              animation: shineAnimationDurations[Math.min(level, 5)],
               left: '-100%'
             }}
           />
@@ -270,6 +210,8 @@ const SkillRankingVisualizer: React.FC<SkillRankingVisualizerProps> = ({
       </div>
     </div>
   );
-};
+});
+
+SkillRankingVisualizer.displayName = 'SkillRankingVisualizer';
 
 export default SkillRankingVisualizer;

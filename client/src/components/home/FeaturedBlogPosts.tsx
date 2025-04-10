@@ -28,7 +28,6 @@ export default function FeaturedBlogPosts() {
     queryKey: ["/api/blog-posts"],
     queryFn: async () => {
       try {
-        console.log("Fetching all blog posts...");
         // Use a proxy URL that will be forwarded through the Express server
         const response = await fetch('/api/blog-posts', {
           headers: {
@@ -36,14 +35,11 @@ export default function FeaturedBlogPosts() {
           }
         });
         
-        console.log("Blog posts response status:", response.status);
-        
         if (!response.ok) {
           throw new Error(`Failed to fetch blog posts: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log("Received blog posts:", data.length);
         return data;
       } catch (err) {
         console.error("Error fetching blog posts:", err);
@@ -58,7 +54,6 @@ export default function FeaturedBlogPosts() {
     queryKey: ["/api/blog-posts/featured"],
     queryFn: async () => {
       try {
-        console.log("Fetching featured blog posts...");
         // Use a proxy URL that will be forwarded through the Express server
         const response = await fetch('/api/blog-posts/featured', {
           headers: {
@@ -66,14 +61,11 @@ export default function FeaturedBlogPosts() {
           }
         });
         
-        console.log("Featured blog posts response status:", response.status);
-        
         if (!response.ok) {
           throw new Error(`Failed to fetch featured blog posts: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log("Received featured blog posts:", data.length);
         return data;
       } catch (err) {
         console.error("Error fetching featured blog posts:", err);
