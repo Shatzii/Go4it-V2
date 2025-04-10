@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -15,6 +15,42 @@ interface SkillRankingVisualizerProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
+// CSS animation keyframes - add these to your global CSS or define here
+const shineKeyframes = `
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  50%, 100% {
+    left: 100%;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes sparkle {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+}
+`;
+
 const SkillRankingVisualizer: React.FC<SkillRankingVisualizerProps> = ({
   level,
   xp,
@@ -26,6 +62,31 @@ const SkillRankingVisualizer: React.FC<SkillRankingVisualizerProps> = ({
   showXpValues = true,
   size = 'md',
 }) => {
+  // State for animation
+  const [animate, setAnimate] = useState(false);
+  
+  // Add keyframes to document once
+  useEffect(() => {
+    if (!document.getElementById('skill-ranking-keyframes')) {
+      const styleElement = document.createElement('style');
+      styleElement.id = 'skill-ranking-keyframes';
+      styleElement.innerHTML = shineKeyframes;
+      document.head.appendChild(styleElement);
+      
+      return () => {
+        const element = document.getElementById('skill-ranking-keyframes');
+        if (element) element.remove();
+      };
+    }
+  }, []);
+  
+  // Trigger animation when props change
+  useEffect(() => {
+    setAnimate(true);
+    const timer = setTimeout(() => setAnimate(false), 1000);
+    return () => clearTimeout(timer);
+  }, [level, xp]);
+
   // Calculate the percentage for the current level progress
   const xpForNextLevel = (level + 1) * 100;
   const percentComplete = Math.min((xp / xpForNextLevel) * 100, 100);
@@ -34,27 +95,48 @@ const SkillRankingVisualizer: React.FC<SkillRankingVisualizerProps> = ({
   // Calculate the overall mastery percentage (across all levels)
   const totalMasteryPercent = Math.min((level / maxLevel) * 100 + (percentComplete / maxLevel), 100);
 
-  // Define gradient colors based on skill level and progress
+  // Define color stops for gradient based on level and progress
   const getColorGradient = () => {
-    // Base gradient for low level skills (cool blue to teal)
-    if (level < 2) {
-      return 'from-blue-600 via-blue-500 to-teal-400';
+    const levelBasedColor = (l: number) => {
+      if (l <= 1) return { start: '#1e40af', mid: '#3b82f6', end: '#60a5fa' }; // Blues
+      if (l === 2) return { start: '#3b82f6', mid: '#10b981', end: '#34d399' }; // Blue to Green
+      if (l === 3) return { start: '#10b981', mid: '#84cc16', end: '#facc15' }; // Green to Yellow
+      if (l === 4) return { start: '#84cc16', mid: '#facc15', end: '#f97316' }; // Yellow to Orange
+      return { start: '#facc15', mid: '#f97316', end: '#ef4444' }; // Yellow to Orange to Red
+    };
+    
+    const colors = levelBasedColor(level);
+    
+    // For mastered skills, create a gold/orange/red flame-like gradient
+    if (isMastered) {
+      return `linear-gradient(to right, 
+        #fde047, 
+        #fbbf24, 
+        #f97316, 
+        #ef4444
+      )`;
     }
-    // Mid-level skills (teal to green to yellow)
-    else if (level < 4) {
-      return 'from-teal-500 via-green-400 to-yellow-400';
-    }
-    // High-level skills (yellow to orange to red)
-    else {
-      return 'from-yellow-400 via-orange-500 to-red-500';
-    }
+    
+    // For active skills, create a dynamic gradient based on level
+    return `linear-gradient(to right, 
+      ${colors.start}, 
+      ${colors.mid}, 
+      ${colors.end}
+    )`;
   };
 
   // Define shine effect based on skill level
-  const getShineEffect = () => {
-    if (level < 2) return '';
-    if (level < 4) return 'animate-pulse';
-    return 'animate-pulse';
+  const getShineAnimation = () => {
+    if (level < 3) return 'none'; // No animation for low levels
+    
+    // Basic shine for mid levels
+    if (level === 3) return 'shine 2.5s infinite';
+    
+    // Quick shines for higher levels
+    if (level === 4) return 'shine 2s infinite';
+    
+    // Fast shine for mastered skills
+    return 'shine 1.5s infinite';
   };
   
   // Define size classes
@@ -82,11 +164,16 @@ const SkillRankingVisualizer: React.FC<SkillRankingVisualizerProps> = ({
               className={cn(
                 starSize[size],
                 i < level 
-                  ? 'text-yellow-500 fill-yellow-500'
+                  ? 'text-yellow-500 fill-yellow-500 transition-all duration-300'
                   : i === level && percentComplete > 75
-                  ? 'text-yellow-400 fill-yellow-400/50'
-                  : 'text-gray-500'
+                  ? 'text-yellow-400 fill-yellow-400/50 transition-all duration-300'
+                  : 'text-gray-500 transition-all duration-300',
+                i < level && level >= 4 && 'animate-pulse',
+                i === level - 1 && animate && 'animate-ping'
               )}
+              style={{
+                animationDuration: i < level && level >= 4 ? `${2 - (i * 0.2)}s` : undefined
+              }}
             />
           ))}
         </div>
@@ -95,40 +182,71 @@ const SkillRankingVisualizer: React.FC<SkillRankingVisualizerProps> = ({
       {/* XP values and level */}
       {showXpValues && (
         <div className="flex justify-between text-xs">
-          <span className="font-medium">Level {level}</span>
-          {!isMastered && <span>{xp} / {xpForNextLevel} XP</span>}
-          {isMastered && <span className="text-yellow-500 font-semibold">MASTERED</span>}
+          <span className={cn(
+            "font-medium",
+            animate && "text-primary transition-colors duration-500"
+          )}>
+            Level {level}
+          </span>
+          {!isMastered && (
+            <span className={cn(
+              animate && "text-primary transition-colors duration-500"
+            )}>
+              {xp} / {xpForNextLevel} XP
+            </span>
+          )}
+          {isMastered && (
+            <span className="text-yellow-500 font-semibold transition-all duration-300" 
+              style={{ 
+                textShadow: isMastered ? '0 0 5px rgba(234, 179, 8, 0.5)' : 'none'
+              }}>
+              MASTERED
+            </span>
+          )}
         </div>
       )}
 
       {/* Progress bar with gradient */}
-      <div className="relative w-full">
+      <div className="relative w-full overflow-hidden">
         <Progress 
           value={percentComplete} 
           className={cn(
             sizeClasses[size],
-            showGradient ? 'bg-gray-800/50' : ''
+            showGradient ? 'bg-gray-800/50' : '',
+            'transition-all duration-300'
           )}
           // Apply gradient styles directly to the progress bar
           style={
             showGradient 
               ? {
-                  backgroundImage: isMastered 
-                    ? 'linear-gradient(to right, #eab308, #f97316, #ef4444)' 
-                    : `linear-gradient(to right, ${level > 0 ? '#3b82f6' : '#1e3a8a'}, ${level > 2 ? '#10b981' : '#60a5fa'}, ${level > 4 ? '#f97316' : '#34d399'})`,
+                  backgroundImage: getColorGradient(),
+                  boxShadow: level > 3 ? `0 0 10px ${isMastered ? 'rgba(234, 179, 8, 0.5)' : 'rgba(14, 165, 233, 0.5)'}` : 'none',
+                  transition: 'all 0.3s ease',
                 }
               : {}
           }
         />
         
-        {/* Shine effect for high level skills */}
-        {level > 3 && showGradient && (
+        {/* Shine effect for higher level skills */}
+        {level > 2 && showGradient && (
           <div 
-            className={`absolute top-0 left-0 h-full bg-white/20 ${getShineEffect()}`} 
+            className="absolute top-0 h-full bg-white/25"
+            style={{ 
+              width: '50%',
+              transform: 'skewX(-20deg)',
+              animation: getShineAnimation(),
+              left: '-100%'
+            }}
+          />
+        )}
+        
+        {/* Pulsing glow effect for mastered skills */}
+        {isMastered && showGradient && (
+          <div 
+            className="absolute inset-0 bg-yellow-500/20 rounded-full animate-pulse"
             style={{ 
               width: `${percentComplete}%`,
-              clipPath: 'polygon(0 0, 10% 0, 30% 100%, 0% 100%)',
-              animation: 'shine 2s infinite'
+              animationDuration: '1.5s'
             }}
           />
         )}
@@ -136,7 +254,15 @@ const SkillRankingVisualizer: React.FC<SkillRankingVisualizerProps> = ({
         {/* Show percentage text if enabled */}
         {showPercentage && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-xs font-semibold text-white drop-shadow-md">
+            <span 
+              className={cn(
+                "text-xs font-semibold text-white drop-shadow-md",
+                isMastered && "text-yellow-300"
+              )}
+              style={{
+                textShadow: '0 0 2px rgba(0, 0, 0, 0.7)'
+              }}
+            >
               {Math.round(totalMasteryPercent)}%
             </span>
           </div>
