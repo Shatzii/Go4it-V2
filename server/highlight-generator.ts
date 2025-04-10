@@ -16,6 +16,7 @@ import {
   Video 
 } from "@shared/schema";
 import { openAIService } from './services/openai-service';
+import { generateGARScores } from './services/gar-scoring-service';
 import { spawn } from 'child_process';
 import { promisify } from 'util';
 import cron from 'node-cron';
@@ -233,6 +234,7 @@ export async function generateHighlightsForVideo(
   highlightCount: number;
   message: string;
   highlightIds: number[];
+  garScores?: any;
 }> {
   try {
     console.log(`Generating highlights for video ${videoId} using config ${configId}`);
@@ -312,11 +314,33 @@ export async function generateHighlightsForVideo(
       lastRun: new Date()
     });
     
+    // Generate GAR scores for the video if it has a sport type
+    let garScores = null;
+    if (video.sportType) {
+      try {
+        console.log(`Generating GAR scores for video ${videoId} (${video.sportType})`);
+        garScores = await generateGARScores(videoId, video.sportType);
+        
+        // Update the first highlight with GAR scores
+        if (highlightIds.length > 0 && garScores) {
+          const firstHighlightId = highlightIds[0];
+          await storage.updateVideoHighlight(firstHighlightId, {
+            garScore: garScores.overall_gar_score,
+            scoreBreakdown: garScores
+          });
+        }
+      } catch (garError) {
+        console.error("Error generating GAR scores:", garError);
+        // Continue even if GAR score generation fails
+      }
+    }
+    
     return {
       success: true,
       highlightCount: highlightIds.length,
-      message: `Successfully generated ${highlightIds.length} highlights`,
-      highlightIds
+      message: `Successfully generated ${highlightIds.length} highlights${garScores ? ' with GAR score analysis' : ''}`,
+      highlightIds,
+      garScores
     };
   } catch (error: any) {
     console.error("Error generating highlights:", error);
