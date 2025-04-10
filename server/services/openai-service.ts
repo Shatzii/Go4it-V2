@@ -76,26 +76,26 @@ class OpenAIService {
    */
   private async getApiKeyFromDatabase(): Promise<string | null> {
     try {
-      // Look for an OpenAI API key by name
+      // Look for an OpenAI API key by type
       const result = await db
         .select()
         .from(apiKeys)
         .where(and(
-          eq(apiKeys.active, true),
-          eq(apiKeys.keyName, 'openai')
+          eq(apiKeys.is_active, true),
+          eq(apiKeys.key_type, 'openai')
         ))
         .limit(1);
       
       if (result && result.length > 0) {
-        // The key is stored in keyHash field
-        return result[0].keyHash;
+        // The key is stored in key_value field
+        return result[0].key_value;
       }
       
       // If we didn't find a specific OpenAI key, fallback to any active key
       const fallbackResult = await db
         .select()
         .from(apiKeys)
-        .where(eq(apiKeys.active, true))
+        .where(eq(apiKeys.is_active, true))
         .limit(1);
         
       if (fallbackResult && fallbackResult.length > 0) {
@@ -119,8 +119,8 @@ class OpenAIService {
     try {
       await db
         .update(apiKeys)
-        .set({ lastUsedAt: new Date() })
-        .where(eq(apiKeys.keyName, keyType));
+        .set({ last_used: new Date() })
+        .where(eq(apiKeys.key_type, keyType));
     } catch (error) {
       console.error('Error updating API key last used timestamp:', error);
     }
