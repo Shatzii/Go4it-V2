@@ -64,6 +64,7 @@ import EnhancedGarVisualizationPage from "@/pages/enhanced-gar-visualization";
 import EnhancedGARPage from "@/pages/enhanced-gar";
 import AcademicProgress from "@/pages/academic-progress";
 import VideoHighlightsPage from "@/pages/video-highlights-page";
+import AIVideoPlayerDemo from "@/pages/ai-video-player-demo";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -326,6 +327,11 @@ function Router() {
         {/* Video Highlights Route */}
         <Route path="/video-highlights">
           {() => <ProtectedRoute component={VideoHighlightsPage} />}
+        </Route>
+        
+        {/* AI Video Player Demo Route */}
+        <Route path="/ai-video-player">
+          {() => <ProtectedRoute component={AIVideoPlayerDemo} />}
         </Route>
 
         {/* Fallback to 404 */}
