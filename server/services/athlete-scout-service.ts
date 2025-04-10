@@ -542,23 +542,30 @@ class AthleteScoutService {
       const relevanceScore = Math.floor(Math.random() * 31) + 70; // 70-100
       const partnershipPotential = Math.floor(Math.random() * 31) + 70; // 70-100
       
-      // Use Drizzle ORM to avoid parameter binding issues
-      const [result] = await db.insert(schema.mediaPartnerDiscoveries).values({
-        scoutId: scout.id,
-        name: name,
-        platform: platform,
-        url: url,
-        followerCount: followerCount,
-        averageEngagement: engagementRate,
-        sports: scout.sportFocus?.length > 0 ? scout.sportFocus : [sport],
-        contentQuality: contentQuality,
-        relevanceScore: relevanceScore,
-        partnershipPotential: partnershipPotential,
-        discoveredAt: new Date()
-      }).returning();
+      // Use SQL directly to avoid schema mismatch issues
+      const result = await db.execute(`
+        INSERT INTO media_partner_discoveries 
+        (scout_id, name, platform, url, follower_count, average_engagement, 
+         sports, content_quality, relevance_score, partnership_potential, discovered_at) 
+        VALUES 
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        RETURNING *
+      `, [
+        scout.id,
+        name,
+        platform,
+        url,
+        followerCount,
+        engagementRate,
+        scout.sportFocus?.length > 0 ? scout.sportFocus : [sport],
+        contentQuality,
+        relevanceScore,
+        partnershipPotential,
+        new Date()
+      ]);
 
-      // Return the result directly
-      return result;
+      // Return the first row from the result
+      return result.rows[0];
     } catch (error) {
       console.error("Error creating simulated media partner discovery:", error);
       return null;
