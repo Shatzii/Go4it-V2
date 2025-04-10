@@ -99,8 +99,64 @@ export default function AuthPage() {
       // Show the NDA agreement dialog
       setPendingRegistration(data);
       setShowAgreement(true);
+      
+      // Clear any previous form errors
+      registerForm.clearErrors();
+      
+      // Log registration attempt
+      console.log("Attempting registration with data:", data);
+      
     } catch (error) {
       console.error("Registration error:", error);
+      toast({
+        title: "Registration Error",
+        description: "There was a problem with registration. Please try again.",
+        variant: "destructive"
+      });
+      setIsSubmitting(false);
+    }
+  };
+  
+  const handleAgreementAccepted = async () => {
+    try {
+      if (pendingRegistration) {
+        console.log("Processing registration after agreement acceptance");
+        
+        // Update the registration data with agreement acceptance
+        const registrationData = {
+          ...pendingRegistration,
+          agreedToTerms: true
+        };
+        
+        // Complete the registration process
+        const result = await register(registrationData);
+        
+        if (!result) {
+          throw new Error("Registration failed");
+        }
+        
+        // Reset state and forms
+        setPendingRegistration(null);
+        setShowAgreement(false);
+        registerForm.reset();
+        
+        toast({
+          title: "Registration Successful",
+          description: "Welcome to Get Verified! You can now log in.",
+          variant: "default"
+        });
+        
+        // Switch to login tab
+        setActiveTab("login");
+      }
+    } catch (error) {
+      console.error("Registration error after agreement:", error);
+      toast({
+        title: "Registration Failed",
+        description: "There was a problem completing your registration. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
       setIsSubmitting(false);
     }
   };
