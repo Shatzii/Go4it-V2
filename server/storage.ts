@@ -330,8 +330,11 @@ export interface IStorage {
 // Direct database implementation
 export class DatabaseStorage implements IStorage {
   sessionStore: any;
+  _xpTransactions: Record<number, any[]>;
 
   constructor() {
+    // Initialize the XP transactions in-memory storage
+    this._xpTransactions = {};
     try {
       // Use PostgreSQL for session storage instead of memory store
       const PgStore = connectPgSimple(session);
@@ -1560,26 +1563,255 @@ export class DatabaseStorage implements IStorage {
   // ----------------
   
   async getAthleteStarPath(userId: number): Promise<AthleteStarPath | undefined> {
-    const [starPath] = await db.select()
-      .from(athleteStarPath)
-      .where(eq(athleteStarPath.userId, userId));
-    return starPath;
+    try {
+      const [starPath] = await db.select()
+        .from(athleteStarPath)
+        .where(eq(athleteStarPath.userId, userId));
+      return starPath;
+    } catch (error) {
+      console.error(`Error getting athlete star path for user ${userId}:`, error);
+      return undefined;
+    }
   }
   
+  async getPlayerProgress(userId: number): Promise<any | undefined> {
+    console.log(`Getting player progress for user ID: ${userId}`);
+    
+    try {
+      // First, try to get the star path data for the user
+      const starPath = await this.getAthleteStarPath(userId);
+      
+      if (starPath) {
+        // Calculate next level threshold based on current level
+        const currentLevel = starPath.currentStarLevel || 1;
+        const nextLevelThreshold = starPath.levelThresholds ? 
+          starPath.levelThresholds[currentLevel] || 1000 : 1000;
+        const prevLevelThreshold = currentLevel > 1 && starPath.levelThresholds ? 
+          starPath.levelThresholds[currentLevel - 1] || 0 : 0;
+          
+        // Calculate XP in current level
+        const totalXp = starPath.xpTotal || 0;
+        const levelXp = totalXp - prevLevelThreshold;
+        const xpToNextLevel = nextLevelThreshold - prevLevelThreshold;
+        
+        // Get latest workout data if any
+        const workouts = await this.getWorkoutVerifications(userId, 5);
+        const latestWorkout = workouts && workouts.length > 0 ? workouts[0] : null;
+        
+        // Return formatted progress object based on star path data
+        return {
+          userId,
+          currentLevel: currentLevel,
+          totalXp: totalXp,
+          levelXp: levelXp,
+          xpToNextLevel: xpToNextLevel,
+          streakDays: starPath.streakDays || 0,
+          lastWorkout: latestWorkout ? {
+            date: latestWorkout.completedAt,
+            type: latestWorkout.exerciseType,
+            xpEarned: latestWorkout.xpEarned
+          } : null,
+          physicalAttributes: starPath.physicalAttributes,
+          technicalAttributes: starPath.technicalAttributes,
+          mentalAttributes: starPath.mentalAttributes,
+          sportType: starPath.sportType,
+          position: starPath.position,
+          storylinePhase: starPath.storylinePhase,
+          completedDrills: starPath.completedDrills || 0,
+          verifiedWorkouts: starPath.verifiedWorkouts || 0,
+          skillTreeProgress: starPath.skillTreeProgress || 0,
+          progress: starPath.progress || 0,
+          nextMilestone: starPath.nextMilestone
+        };
+      }
+      
+      // If no star path exists, return undefined
+      return undefined;
+    } catch (error) {
+      console.error(`Error getting player progress for user ${userId}:`, error);
+      return undefined;
+    }
+  }
+  
+  async createPlayerProgress(data: any): Promise<any> {
+    console.log(`Creating player progress for user ID: ${data.userId}`);
+    
+    try {
+      // Check if a star path already exists for this user
+      const existingStarPath = await this.getAthleteStarPath(data.userId);
+      
+      if (existingStarPath) {
+        // If star path already exists, just return the player progress
+        return this.getPlayerProgress(data.userId);
+      }
+      
+      // If no star path exists, create one
+      const starPath = await this.createAthleteStarPath({
+        userId: data.userId,
+        currentStarLevel: 1,
+        targetStarLevel: 2,
+        storylinePhase: "beginning",
+        progress: 0,
+        sportType: data.sportType || "basketball", // Default sport
+        position: data.position || null,
+        xpTotal: data.totalXp || 0,
+        storylineActive: true,
+        streakDays: 0,
+        completedDrills: 0,
+        verifiedWorkouts: 0,
+        skillTreeProgress: 0,
+        physicalAttributes: {
+          speed: 50,
+          strength: 50,
+          agility: 50,
+          endurance: 50,
+          verticalJump: 50
+        },
+        technicalAttributes: {
+          technique: 50,
+          ballControl: 50,
+          accuracy: 50,
+          gameIQ: 50
+        },
+        mentalAttributes: {
+          focus: 50,
+          confidence: 50,
+          determination: 50,
+          teamwork: 50
+        },
+        levelThresholds: [0, 1000, 3000, 6000, 10000, 15000],
+        lastUpdated: new Date()
+      });
+      
+      // Return the newly created progress data
+      return this.getPlayerProgress(data.userId);
+    } catch (error) {
+      console.error("Error creating player progress:", error);
+      return null;
+    }
+  }
+  
+  async updatePlayerProgress(userId: number, data: any): Promise<any> {
+    console.log(`Updating player progress for user ID: ${userId}`);
+    
+    try {
+      // Check if star path exists
+      const starPath = await this.getAthleteStarPath(userId);
+      
+      if (!starPath) {
+        // If star path doesn't exist, create player progress first
+        return this.createPlayerProgress({
+          userId,
+          sportType: data.sportType,
+          position: data.position,
+          totalXp: data.totalXp
+        });
+      }
+      
+      // Prepare update data
+      const updateData: Partial<AthleteStarPath> = {
+        lastUpdated: new Date()
+      };
+      
+      // Update various attributes if provided
+      if (data.sportType) updateData.sportType = data.sportType;
+      if (data.position) updateData.position = data.position;
+      if (data.currentStarLevel) updateData.currentStarLevel = data.currentStarLevel;
+      if (data.targetStarLevel) updateData.targetStarLevel = data.targetStarLevel;
+      if (data.storylinePhase) updateData.storylinePhase = data.storylinePhase;
+      if (data.progress !== undefined) updateData.progress = data.progress;
+      if (data.totalXp) updateData.xpTotal = data.totalXp;
+      if (data.streakDays !== undefined) updateData.streakDays = data.streakDays;
+      if (data.completedDrills) updateData.completedDrills = data.completedDrills;
+      if (data.verifiedWorkouts) updateData.verifiedWorkouts = data.verifiedWorkouts;
+      if (data.skillTreeProgress) updateData.skillTreeProgress = data.skillTreeProgress;
+      if (data.physicalAttributes) updateData.physicalAttributes = {
+        ...starPath.physicalAttributes,
+        ...data.physicalAttributes
+      };
+      if (data.technicalAttributes) updateData.technicalAttributes = {
+        ...starPath.technicalAttributes,
+        ...data.technicalAttributes
+      };
+      if (data.mentalAttributes) updateData.mentalAttributes = {
+        ...starPath.mentalAttributes,
+        ...data.mentalAttributes
+      };
+      if (data.nextMilestone) updateData.nextMilestone = data.nextMilestone;
+      
+      // Update the star path
+      await this.updateAthleteStarPath(userId, updateData);
+      
+      // Return the updated player progress
+      return await this.getPlayerProgress(userId);
+    } catch (error) {
+      console.error("Error updating player progress:", error);
+      return null;
+    }
+  }
+
   async createAthleteStarPath(data: InsertAthleteStarPath): Promise<AthleteStarPath> {
-    const [createdStarPath] = await db.insert(athleteStarPath)
-      .values(data)
-      .returning();
-    return createdStarPath;
+    try {
+      // Set default values if not provided
+      const pathData = {
+        ...data,
+        currentStarLevel: data.currentStarLevel || 1,
+        targetStarLevel: data.targetStarLevel || 2,
+        storylinePhase: data.storylinePhase || "beginning",
+        progress: data.progress || 0,
+        xpTotal: data.xpTotal || 0,
+        completedDrills: data.completedDrills || 0,
+        verifiedWorkouts: data.verifiedWorkouts || 0,
+        skillTreeProgress: data.skillTreeProgress || 0,
+        physicalAttributes: data.physicalAttributes || {
+          speed: 50,
+          strength: 50,
+          agility: 50,
+          endurance: 50,
+          verticalJump: 50
+        },
+        technicalAttributes: data.technicalAttributes || {
+          technique: 50,
+          ballControl: 50,
+          accuracy: 50,
+          gameIQ: 50
+        },
+        mentalAttributes: data.mentalAttributes || {
+          focus: 50,
+          confidence: 50,
+          determination: 50,
+          teamwork: 50
+        },
+        levelThresholds: data.levelThresholds || [0, 1000, 3000, 6000, 10000, 15000]
+      };
+
+      const [createdPath] = await db.insert(athleteStarPath).values(pathData).returning();
+      return createdPath;
+    } catch (error) {
+      console.error("Error creating athlete star path:", error);
+      throw error;
+    }
+  }
+
+  async updateAthleteStarPath(userId: number, data: Partial<AthleteStarPath>): Promise<AthleteStarPath> {
+    try {
+      const [updatedPath] = await db.update(athleteStarPath)
+        .set(data)
+        .where(eq(athleteStarPath.userId, userId))
+        .returning();
+      
+      if (!updatedPath) {
+        throw new Error(`No star path found for user ID ${userId}`);
+      }
+      
+      return updatedPath;
+    } catch (error) {
+      console.error(`Error updating athlete star path for user ${userId}:`, error);
+      throw error;
+    }
   }
   
-  async updateAthleteStarPath(userId: number, data: Partial<AthleteStarPath>): Promise<AthleteStarPath> {
-    const [updatedStarPath] = await db.update(athleteStarPath)
-      .set(data)
-      .where(eq(athleteStarPath.userId, userId))
-      .returning();
-    return updatedStarPath;
-  }
+
   
   // -------------------------
   // Workout Verification Methods
