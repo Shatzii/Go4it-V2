@@ -438,8 +438,19 @@ export class DatabaseStorage implements IStorage {
 
   // Video operations
   async getVideo(id: number): Promise<Video | undefined> {
-    const [video] = await db.select().from(videos).where(eq(videos.id, id));
-    return video;
+    try {
+      // First try a safe query to avoid schema mismatch issues
+      const safeResult = await db.execute(sql`SELECT * FROM videos WHERE id = ${id}`);
+      if (safeResult.rows && safeResult.rows.length > 0) {
+        return safeResult.rows[0] as Video;
+      }
+      // Fallback to standard query only if needed
+      const [video] = await db.select().from(videos).where(eq(videos.id, id));
+      return video;
+    } catch (error) {
+      console.error(`Database error in getVideo(${id}):`, error);
+      return undefined;
+    }
   }
 
   async getVideosByUser(userId: number): Promise<Video[]> {
