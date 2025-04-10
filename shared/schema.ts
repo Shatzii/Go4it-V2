@@ -199,17 +199,14 @@ export const highlightGeneratorConfigs = pgTable("highlight_generator_configs", 
   criteria: jsonb("criteria"),
 });
 
-// API Keys
+// API Keys - updated to match actual database structure
 export const apiKeys = pgTable("api_keys", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id),
-  keyName: text("key_name").notNull(),
-  keyHash: text("key_hash").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  expiresAt: timestamp("expires_at"),
-  lastUsedAt: timestamp("last_used_at"),
-  active: boolean("active").default(true),
-  scopes: text("scopes").array(),
+  key_type: text("key_type").notNull(),
+  key_value: text("key_value").notNull(),
+  added_at: timestamp("added_at").defaultNow(),
+  last_used: timestamp("last_used"),
+  is_active: boolean("is_active").default(true),
 });
 
 // Content Blocks
