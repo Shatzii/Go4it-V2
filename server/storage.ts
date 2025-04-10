@@ -207,6 +207,9 @@ export interface IStorage {
   getAthleteStarPath(userId: number): Promise<AthleteStarPath | undefined>;
   createAthleteStarPath(data: InsertAthleteStarPath): Promise<AthleteStarPath>;
   updateAthleteStarPath(userId: number, data: Partial<AthleteStarPath>): Promise<AthleteStarPath>;
+  getStarPathByUserId(userId: number): Promise<AthleteStarPath | undefined>;
+  createStarPath(data: any): Promise<AthleteStarPath>;
+  updateStarPath(id: number, data: any): Promise<AthleteStarPath>;
   getWorkoutVerification(id: number): Promise<WorkoutVerification | undefined>;
   getWorkoutVerifications(userId: number, limit?: number): Promise<WorkoutVerification[]>;
   getPendingWorkoutVerifications(userId: number): Promise<WorkoutVerification[]>;
@@ -216,6 +219,10 @@ export interface IStorage {
   getWorkoutVerificationCheckpoints(workoutVerificationId: number): Promise<WorkoutVerificationCheckpoint[]>;
   createWorkoutVerificationCheckpoint(data: InsertWorkoutVerificationCheckpoint): Promise<WorkoutVerificationCheckpoint>;
   updateWorkoutVerificationCheckpoint(id: number, data: Partial<WorkoutVerificationCheckpoint>): Promise<WorkoutVerificationCheckpoint>;
+  
+  // Player Progress and XP
+  createPlayerXpTransaction(data: any): Promise<any>;
+  getPlayerXpTransactions(userId: number): Promise<any[]>;
   
   // Skill Tree operations
   getSkillTreeNodes(sportType?: string, position?: string): Promise<SkillTreeNode[]>;
@@ -2198,6 +2205,131 @@ export class DatabaseStorage implements IStorage {
       .where(eq(workoutVerificationCheckpoints.id, id))
       .returning();
     return updatedCheckpoint;
+  }
+  
+  // Star Path operations
+  async getStarPathByUserId(userId: number): Promise<AthleteStarPath | undefined> {
+    try {
+      const [starPath] = await db.select()
+        .from(athleteStarPath)
+        .where(eq(athleteStarPath.userId, userId));
+      
+      return starPath;
+    } catch (error) {
+      console.error('Error fetching star path:', error);
+      return undefined;
+    }
+  }
+  
+  async createStarPath(data: any): Promise<AthleteStarPath> {
+    try {
+      // Check if star path already exists
+      const existingStarPath = await this.getStarPathByUserId(data.userId);
+      if (existingStarPath) {
+        return existingStarPath;
+      }
+      
+      // Create new star path
+      const [starPath] = await db.insert(athleteStarPath)
+        .values({
+          userId: data.userId,
+          sportType: data.sportType,
+          position: data.position || '',
+          currentStarLevel: data.currentStarLevel || 1,
+          starXp: data.starXp || 0,
+          attributes: data.attributes || {},
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        .returning();
+      
+      return starPath;
+    } catch (error) {
+      console.error('Error creating star path:', error);
+      throw error;
+    }
+  }
+  
+  async updateStarPath(id: number, data: any): Promise<AthleteStarPath> {
+    try {
+      // Update star path
+      const [updatedStarPath] = await db.update(athleteStarPath)
+        .set({
+          sportType: data.sportType !== undefined ? data.sportType : undefined,
+          position: data.position !== undefined ? data.position : undefined,
+          currentStarLevel: data.currentStarLevel !== undefined ? data.currentStarLevel : undefined,
+          starXp: data.starXp !== undefined ? data.starXp : undefined,
+          attributes: data.attributes !== undefined ? data.attributes : undefined,
+          updatedAt: new Date()
+        })
+        .where(eq(athleteStarPath.id, id))
+        .returning();
+      
+      return updatedStarPath;
+    } catch (error) {
+      console.error('Error updating star path:', error);
+      throw error;
+    }
+  }
+  
+  // Player XP Transaction operations
+  async createPlayerXpTransaction(data: any): Promise<any> {
+    try {
+      // For now, we'll store these in memory, but a real implementation would store in the database
+      const userId = data.userId;
+      
+      if (!this._xpTransactions[userId]) {
+        this._xpTransactions[userId] = [];
+      }
+      
+      const transaction = {
+        id: this._xpTransactions[userId].length + 1,
+        userId,
+        amount: data.amount,
+        source: data.source,
+        description: data.description,
+        timestamp: new Date()
+      };
+      
+      this._xpTransactions[userId].push(transaction);
+      
+      return transaction;
+    } catch (error) {
+      console.error('Error creating XP transaction:', error);
+      throw error;
+    }
+  }
+  
+  async getPlayerXpTransactions(userId: number): Promise<any[]> {
+    try {
+      return this._xpTransactions[userId] || [];
+    } catch (error) {
+      console.error('Error fetching XP transactions:', error);
+      return [];
+    }
+  }
+  
+  // Video operations by user ID
+  async getVideosByUserId(userId: number): Promise<Video[]> {
+    try {
+      return await this.getVideosByUser(userId);
+    } catch (error) {
+      console.error('Error fetching videos by user ID:', error);
+      return [];
+    }
+  }
+  
+  // Delete a video
+  async deleteVideo(id: number): Promise<boolean> {
+    try {
+      await db.delete(videos)
+        .where(eq(videos.id, id));
+      
+      return true;
+    } catch (error) {
+      console.error('Error deleting video:', error);
+      return false;
+    }
   }
 
   async getWeightRoomEquipmentById(equipmentId: number): Promise<any | undefined> {
