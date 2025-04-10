@@ -1261,8 +1261,8 @@ export const mediaPartnerDiscoveries = pgTable("media_partner_discoveries", {
   id: serial("id").primaryKey(),
   scoutId: integer("scout_id").notNull().references(() => mediaPartnershipScouts.id),
   name: text("name").notNull(),
-  mediaType: text("media_type").notNull(),
-  platform: text("platform"), // Added to match the field used in service
+  // mediaType field removed as it doesn't exist in the actual database
+  platform: text("platform").notNull(), // This is the column actually present in the database
   websiteUrl: text("website_url"),
   contactEmail: text("contact_email"),
   contactPhone: text("contact_phone"),

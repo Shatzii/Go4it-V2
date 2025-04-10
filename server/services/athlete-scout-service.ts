@@ -486,7 +486,7 @@ class AthleteScoutService {
           positions,
           followerCount: Math.floor(Math.random() * 10000) + 500,
           postCount: Math.floor(Math.random() * 100) + 10,
-          graduationYear: gradYear,
+          graduation_year: gradYear, // Using the correct column name from the database
           potentialRating: Math.floor(Math.random() * 5) + 1,
           email: `${username}@example.com`,
           // Add more fields as needed
@@ -553,9 +553,7 @@ class AthleteScoutService {
         .values({
           scoutId: scout.id,
           name,
-          platform, // This is actually stored as 'platform' in the database, not 'media_type'
-          // Adding mediaType for the database schema
-          mediaType: mediaType,
+          platform, // The database only has 'platform', not 'media_type'
           url,
           followerCount,
           averageEngagement: engagementRate,
