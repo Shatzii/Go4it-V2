@@ -12,6 +12,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useMemo } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
 import {
   Star,
   Trophy,
@@ -139,6 +141,14 @@ export default function MyPlayerStarPath() {
       setAttributeValues(data.attributes || {});
     }
   });
+  
+  // Reset editing state when attribute type changes
+  useEffect(() => {
+    setIsEditingAttributes(false);
+    if (attributeData?.attributes) {
+      setAttributeValues(attributeData.attributes);
+    }
+  }, [attributeType, attributeData]);
   
   // Level up mutation
   const levelUpMutation = useMutation({
@@ -856,8 +866,260 @@ export default function MyPlayerStarPath() {
               )}
             </CardContent>
           </Card>
+          
+          {/* Attribute Editor Card */}
+          <Card className="mt-6">
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle className="flex items-center">
+                    <BarChart3 className="mr-2 h-5 w-5" />
+                    Player Attributes
+                  </CardTitle>
+                  <CardDescription>
+                    View and edit your player's attributes
+                  </CardDescription>
+                </div>
+                {isEditingAttributes ? (
+                  <div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="mr-2"
+                      onClick={() => {
+                        setIsEditingAttributes(false);
+                        // Reset values to what's in attributeData
+                        if (attributeData?.attributes) {
+                          setAttributeValues(attributeData.attributes);
+                        }
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      size="sm"
+                      onClick={() => {
+                        updateAttributesMutation.mutate({
+                          type: attributeType,
+                          attributes: attributeValues
+                        });
+                        setIsEditingAttributes(false);
+                      }}
+                    >
+                      Save Changes
+                    </Button>
+                  </div>
+                ) : (
+                  <Button 
+                    size="sm"
+                    onClick={() => setIsEditingAttributes(true)}
+                  >
+                    Edit Attributes
+                  </Button>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="physical" onValueChange={(value) => setAttributeType(value as 'physical' | 'technical' | 'mental')}>
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="physical">Physical</TabsTrigger>
+                  <TabsTrigger value="technical">Technical</TabsTrigger>
+                  <TabsTrigger value="mental">Mental</TabsTrigger>
+                </TabsList>
+                
+                {/* Loading State */}
+                {isAttributesLoading && (
+                  <div className="mt-4 space-y-4">
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                  </div>
+                )}
+                
+                {!isAttributesLoading && (
+                  <>
+                    <TabsContent value="physical" className="space-y-6 pt-4">
+                      <div className="space-y-4">
+                        <AttributeSlider 
+                          name="Speed" 
+                          value={attributeValues.speed || 0}
+                          onChange={(value) => {
+                            if (isEditingAttributes) {
+                              setAttributeValues(prev => ({...prev, speed: value}));
+                            }
+                          }}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Strength" 
+                          value={attributeValues.strength || 0}
+                          onChange={(value) => {
+                            if (isEditingAttributes) {
+                              setAttributeValues(prev => ({...prev, strength: value}));
+                            }
+                          }}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Agility" 
+                          value={attributeValues.agility || 0}
+                          onChange={(value) => {
+                            if (isEditingAttributes) {
+                              setAttributeValues(prev => ({...prev, agility: value}));
+                            }
+                          }}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Endurance" 
+                          value={attributeValues.endurance || 0}
+                          onChange={(value) => {
+                            if (isEditingAttributes) {
+                              setAttributeValues(prev => ({...prev, endurance: value}));
+                            }
+                          }}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Vertical Jump" 
+                          value={attributeValues.verticalJump || 0}
+                          onChange={(value) => {
+                            if (isEditingAttributes) {
+                              setAttributeValues(prev => ({...prev, verticalJump: value}));
+                            }
+                          }}
+                          disabled={!isEditingAttributes}
+                        />
+                      </div>
+                    </TabsContent>
+                    
+                    <TabsContent value="technical" className="space-y-6 pt-4">
+                      <div className="space-y-4">
+                        <AttributeSlider 
+                          name="Technique" 
+                          value={attributeValues.technique || 0}
+                          onChange={(value) => {
+                            if (isEditingAttributes) {
+                              setAttributeValues(prev => ({...prev, technique: value}));
+                            }
+                          }}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Ball Control" 
+                          value={attributeValues.ballControl || 0}
+                          onChange={(value) => {
+                            if (isEditingAttributes) {
+                              setAttributeValues(prev => ({...prev, ballControl: value}));
+                            }
+                          }}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Accuracy" 
+                          value={attributeValues.accuracy || 0}
+                          onChange={(value) => {
+                            if (isEditingAttributes) {
+                              setAttributeValues(prev => ({...prev, accuracy: value}));
+                            }
+                          }}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Game IQ" 
+                          value={attributeValues.gameIQ || 0}
+                          onChange={(value) => {
+                            if (isEditingAttributes) {
+                              setAttributeValues(prev => ({...prev, gameIQ: value}));
+                            }
+                          }}
+                          disabled={!isEditingAttributes}
+                        />
+                      </div>
+                    </TabsContent>
+                    
+                    <TabsContent value="mental" className="space-y-6 pt-4">
+                      <div className="space-y-4">
+                        <AttributeSlider 
+                          name="Focus" 
+                          value={attributeValues.focus || 0}
+                          onChange={(value) => {
+                            if (isEditingAttributes) {
+                              setAttributeValues(prev => ({...prev, focus: value}));
+                            }
+                          }}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Confidence" 
+                          value={attributeValues.confidence || 0}
+                          onChange={(value) => {
+                            if (isEditingAttributes) {
+                              setAttributeValues(prev => ({...prev, confidence: value}));
+                            }
+                          }}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Determination" 
+                          value={attributeValues.determination || 0}
+                          onChange={(value) => {
+                            if (isEditingAttributes) {
+                              setAttributeValues(prev => ({...prev, determination: value}));
+                            }
+                          }}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Teamwork" 
+                          value={attributeValues.teamwork || 0}
+                          onChange={(value) => {
+                            if (isEditingAttributes) {
+                              setAttributeValues(prev => ({...prev, teamwork: value}));
+                            }
+                          }}
+                          disabled={!isEditingAttributes}
+                        />
+                      </div>
+                    </TabsContent>
+                  </>
+                )}
+              </Tabs>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
   );
+
+// Helper component for attribute sliders
+interface AttributeSliderProps {
+  name: string;
+  value: number;
+  onChange: (value: number) => void;
+  disabled?: boolean;
+}
+
+function AttributeSlider({ name, value, onChange, disabled = false }: AttributeSliderProps) {
+  return (
+    <div className="space-y-2">
+      <div className="flex justify-between">
+        <Label>{name}</Label>
+        <span className={`text-sm font-medium ${value >= 80 ? 'text-green-500' : value >= 60 ? 'text-amber-500' : 'text-muted-foreground'}`}>
+          {value}
+        </span>
+      </div>
+      <Slider 
+        value={[value]} 
+        min={0} 
+        max={100} 
+        step={1}
+        onValueChange={([newValue]) => onChange(newValue)}
+        disabled={disabled}
+        className={disabled ? 'opacity-70' : ''}
+      />
+    </div>
+  )
+}
 }
