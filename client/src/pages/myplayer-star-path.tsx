@@ -78,6 +78,43 @@ export default function MyPlayerStarPath() {
     enabled: !!user,
   });
   
+  // Fetch player star path
+  const { data: starPath, isLoading: isStarPathLoading } = useQuery({
+    queryKey: ['/api/player/star-path', user?.id],
+    enabled: !!user,
+    // If star path doesn't exist yet, create one
+    onError: async (error) => {
+      if (user && error.message.includes('not found')) {
+        // Create star path for this user
+        try {
+          const data = await apiRequest('/api/player/star-path', {
+            method: 'POST',
+            data: { 
+              userId: user.id,
+              sportType: user.primarySport || 'basketball',
+              position: user.position || null
+            }
+          });
+          
+          // Invalidate the star path query to trigger refetch
+          queryClient.invalidateQueries({queryKey: ['/api/player/star-path', user.id]});
+          
+          toast({
+            title: "Star Path Created",
+            description: "Your athletic Star Path has been created! Start your journey to becoming a five-star athlete.",
+          });
+        } catch (err) {
+          console.error('Failed to create star path:', err);
+          toast({
+            title: "Error",
+            description: "Failed to create your Star Path. Please try again.",
+            variant: "destructive",
+          });
+        }
+      }
+    }
+  });
+  
   // Fetch player badges
   const { data: badges, isLoading: isBadgesLoading } = useQuery({
     queryKey: ['/api/player/badges'],
@@ -91,7 +128,7 @@ export default function MyPlayerStarPath() {
   });
   
   // If any data is loading, show skeleton UI
-  const isLoading = isProgressLoading || isBadgesLoading || isTransactionsLoading;
+  const isLoading = isProgressLoading || isStarPathLoading || isBadgesLoading || isTransactionsLoading;
   
   // Create a complete player progress object that merges the fetched data
   const playerProgress = useMemo(() => {
