@@ -166,32 +166,7 @@ export default function AuthPage() {
     setIsSubmitting(false);
   };
   
-  const handleAgreementAccepted = async () => {
-    try {
-      if (pendingRegistration) {
-        // Update the registration data with agreement acceptance
-        const registrationData = {
-          ...pendingRegistration,
-          agreedToTerms: true
-        };
-        
-        // Complete the registration process
-        await register(registrationData);
-        
-        // Reset state
-        setPendingRegistration(null);
-        setShowAgreement(false);
-      }
-    } catch (error) {
-      console.error("Registration error after agreement:", error);
-      toast({
-        title: "Registration failed",
-        description: "There was a problem completing your registration. Please try again.",
-        variant: "destructive"
-      });
-      setIsSubmitting(false);
-    }
-  };
+  // Duplicate function removed
 
   if (loading) {
     return (
