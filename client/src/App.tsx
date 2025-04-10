@@ -41,6 +41,7 @@ import NextUpSpotlight from "@/pages/nextup-spotlight";
 import SpotlightProfile from "@/pages/spotlight-profile";
 import SpotlightCreate from "@/pages/spotlight-create";
 import MyPlayerXP from "@/pages/myplayer-xp";
+import MyPlayerXPEnhanced from "@/pages/myplayer-xp-enhanced";
 import WorkoutVerification from "@/pages/workout-verification";
 import VerificationDetail from "@/pages/verification-detail";
 import SubmitVerification from "@/pages/submit-verification";
@@ -210,6 +211,10 @@ function Router() {
         {/* MyPlayer Experience System Routes */}
         <Route path="/myplayer-xp">
           {() => <ProtectedRoute component={MyPlayerXP} />}
+        </Route>
+        
+        <Route path="/myplayer-xp-enhanced">
+          {() => <ProtectedRoute component={MyPlayerXPEnhanced} />}
         </Route>
         
         <Route path="/myplayer-star-path">
