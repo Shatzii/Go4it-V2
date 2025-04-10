@@ -1174,7 +1174,11 @@ export const socialMediaScouts = pgTable("social_media_scouts", {
   ageRangeMin: integer("age_range_min").default(12),
   ageRangeMax: integer("age_range_max").default(18),
   discoveryCount: integer("discovery_count").default(0),
-  lastRunStats: jsonb("last_run_stats"),
+  position: text("position"),
+  minHeight: integer("min_height"),
+  minWeight: integer("min_weight"),
+  lastRunAt: timestamp("last_run_at"),
+  customCriteria: jsonb("custom_criteria"),
 });
 
 export const mediaPartnershipScouts = pgTable("media_partnership_scouts", {
@@ -1185,11 +1189,17 @@ export const mediaPartnershipScouts = pgTable("media_partnership_scouts", {
   createdBy: integer("created_by").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   lastRun: timestamp("last_run"),
+  lastUpdated: timestamp("last_updated"),
+  lastRunAt: timestamp("last_run_at"),
   mediaTypes: text("media_types").array(),
   locationFocus: text("location_focus").array(),
+  sportFocus: text("sport_focus").array(),
+  regions: text("regions").array(),
   keywordsToTrack: text("keywords_to_track").array(),
+  exclusionTerms: text("exclusion_terms").array(),
+  followerThreshold: integer("follower_threshold"),
   discoveryCount: integer("discovery_count").default(0),
-  lastRunStats: jsonb("last_run_stats"),
+  configuration: jsonb("configuration"),
 });
 
 export const cityInfluencerScouts = pgTable("city_influencer_scouts", {
@@ -1200,12 +1210,22 @@ export const cityInfluencerScouts = pgTable("city_influencer_scouts", {
   createdBy: integer("created_by").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   lastRun: timestamp("last_run"),
+  lastUpdated: timestamp("last_updated"),
+  lastRunAt: timestamp("last_run_at"),
   cities: text("cities").array(),
-  sportsToTrack: text("sports_to_track").array(),
+  states: text("states").array(),
+  regions: text("regions").array(),
+  sportFocus: text("sport_focus").array(),
   keywordsToTrack: text("keywords_to_track").array(),
-  platformsToSearch: text("platforms_to_search").array(),
+  platforms: text("platforms").array(),
+  influencerType: text("influencer_type").array(),
+  locationFocus: text("location_focus").array(),
+  ageRangeMin: integer("age_range_min"),
+  ageRangeMax: integer("age_range_max"),
+  minFollowers: integer("min_followers"),
+  maxInfluencers: integer("max_influencers"),
   discoveryCount: integer("discovery_count").default(0),
-  lastRunStats: jsonb("last_run_stats"),
+  configuration: jsonb("configuration"),
 });
 
 // Insert schemas for scouts
@@ -1213,24 +1233,29 @@ export const insertSocialMediaScoutSchema = createInsertSchema(socialMediaScouts
   id: true, 
   createdAt: true,
   lastRun: true,
+  lastRunAt: true,
   discoveryCount: true,
-  lastRunStats: true
+  customCriteria: true
 });
 
 export const insertMediaPartnershipScoutSchema = createInsertSchema(mediaPartnershipScouts).omit({ 
   id: true, 
   createdAt: true,
   lastRun: true,
+  lastRunAt: true,
+  lastUpdated: true,
   discoveryCount: true,
-  lastRunStats: true
+  configuration: true
 });
 
 export const insertCityInfluencerScoutSchema = createInsertSchema(cityInfluencerScouts).omit({ 
   id: true, 
   createdAt: true,
   lastRun: true,
+  lastRunAt: true,
+  lastUpdated: true,
   discoveryCount: true,
-  lastRunStats: true
+  configuration: true
 });
 
 // Scout types
