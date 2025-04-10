@@ -1608,6 +1608,180 @@ export type InsertTrainingDrillsExtended = {
 };
 
 export type UserDrillProgress = typeof userDrillProgress.$inferSelect;
+
+// MyPlayer XP System Tables
+export const playerProgress = pgTable("player_progress", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  currentLevel: integer("current_level").notNull().default(1),
+  levelXp: integer("level_xp").notNull().default(0),
+  xpToNextLevel: integer("xp_to_next_level").notNull().default(100),
+  totalXp: integer("total_xp").notNull().default(0),
+  streakDays: integer("streak_days").notNull().default(0),
+  lastLoginDate: timestamp("last_login_date", { withTimezone: true }),
+  starLevel: integer("star_level").notNull().default(1),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+});
+
+export const playerSkills = pgTable("player_skills", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  name: text("name").notNull(),
+  level: integer("level").notNull().default(1),
+  progress: integer("progress").notNull().default(0),
+  category: text("category").notNull(), // physical, mental, technical
+  attribute: text("attribute").notNull(), // specific attribute like speed, strength, etc.
+  sport: text("sport"), // sport-specific or null for general
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+});
+
+export const playerBadges = pgTable("player_badges", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(),
+  tier: text("tier").notNull().default("None"), // None, Bronze, Silver, Gold
+  earned: boolean("earned").notNull().default(false),
+  progress: integer("progress").notNull().default(0),
+  imageUrl: text("image_url"),
+  earnedAt: timestamp("earned_at", { withTimezone: true }),
+  requirements: jsonb("requirements"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+});
+
+export const xpTransactions = pgTable("xp_transactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  amount: integer("amount").notNull(),
+  type: text("type").notNull(), // workout, login, challenge, film, game, assessment
+  description: text("description").notNull(),
+  date: timestamp("date", { withTimezone: true }).defaultNow(),
+  source: text("source"), // e.g. workout_id, challenge_id, etc.
+  sourceId: integer("source_id"),
+});
+
+export const playerChallenges = pgTable("player_challenges", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  xpReward: integer("xp_reward").notNull(),
+  badgeReward: text("badge_reward"),
+  requirementType: text("requirement_type").notNull(), // workout, skill, assessment
+  requirementCount: integer("requirement_count").notNull().default(1),
+  requirementDetails: jsonb("requirement_details"),
+  duration: integer("duration"), // in days or null for no time limit
+  difficulty: text("difficulty").notNull(), // easy, medium, hard
+  category: text("category").notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+});
+
+export const playerActiveChallenges = pgTable("player_active_challenges", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  challengeId: integer("challenge_id").notNull().references(() => playerChallenges.id),
+  progress: integer("progress").notNull().default(0),
+  startedAt: timestamp("started_at", { withTimezone: true }).defaultNow(),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
+  isCompleted: boolean("is_completed").notNull().default(false),
+});
+
+export const coachMessages = pgTable("coach_messages", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  content: text("content").notNull(),
+  isUserMessage: boolean("is_user_message").notNull(),
+  timestamp: timestamp("timestamp", { withTimezone: true }).defaultNow(),
+  isHelpful: boolean("is_helpful"),
+  context: jsonb("context"),
+  relatedTo: text("related_to"), // e.g. "workout", "assessment", etc.
+  relatedId: integer("related_id"),
+});
+
+export const playerAssessments = pgTable("player_assessments", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  title: text("title").notNull(),
+  type: text("type").notNull(), // physical, mental, technical
+  description: text("description").notNull(),
+  results: jsonb("results"),
+  date: timestamp("date", { withTimezone: true }).defaultNow(),
+  coachNotes: text("coach_notes"),
+  recommendedFocus: text("recommended_focus").array(),
+});
+
+export const trainingPlans = pgTable("training_plans", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  sport: text("sport").notNull(),
+  focusAreas: text("focus_areas").array(),
+  duration: integer("duration").notNull(), // in days
+  status: text("status").notNull().default("active"), // active, completed, archived
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+  startDate: timestamp("start_date", { withTimezone: true }),
+  endDate: timestamp("end_date", { withTimezone: true }),
+});
+
+export const trainingPlanActivities = pgTable("training_plan_activities", {
+  id: serial("id").primaryKey(),
+  planId: integer("plan_id").notNull().references(() => trainingPlans.id),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  type: text("type").notNull(), // workout, drill, rest, assessment
+  day: integer("day").notNull(), // day in plan (1-based)
+  xpReward: integer("xp_reward").notNull().default(0),
+  duration: integer("duration"), // in minutes
+  completed: boolean("completed").notNull().default(false),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
+  details: jsonb("details"), // specific details based on activity type
+});
+
+// Types for MyPlayer tables
+export type PlayerProgress = typeof playerProgress.$inferSelect;
+export const insertPlayerProgressSchema = createInsertSchema(playerProgress).omit({ id: true });
+export type InsertPlayerProgress = z.infer<typeof insertPlayerProgressSchema>;
+
+export type PlayerSkill = typeof playerSkills.$inferSelect;
+export const insertPlayerSkillSchema = createInsertSchema(playerSkills).omit({ id: true });
+export type InsertPlayerSkill = z.infer<typeof insertPlayerSkillSchema>;
+
+export type PlayerBadge = typeof playerBadges.$inferSelect;
+export const insertPlayerBadgeSchema = createInsertSchema(playerBadges).omit({ id: true });
+export type InsertPlayerBadge = z.infer<typeof insertPlayerBadgeSchema>;
+
+export type XpTransaction = typeof xpTransactions.$inferSelect;
+export const insertXpTransactionSchema = createInsertSchema(xpTransactions).omit({ id: true });
+export type InsertXpTransaction = z.infer<typeof insertXpTransactionSchema>;
+
+export type PlayerChallenge = typeof playerChallenges.$inferSelect;
+export const insertPlayerChallengeSchema = createInsertSchema(playerChallenges).omit({ id: true });
+export type InsertPlayerChallenge = z.infer<typeof insertPlayerChallengeSchema>;
+
+export type PlayerActiveChallenge = typeof playerActiveChallenges.$inferSelect;
+export const insertPlayerActiveChallengeSchema = createInsertSchema(playerActiveChallenges).omit({ id: true });
+export type InsertPlayerActiveChallenge = z.infer<typeof insertPlayerActiveChallengeSchema>;
+
+export type CoachMessage = typeof coachMessages.$inferSelect;
+export const insertCoachMessageSchema = createInsertSchema(coachMessages).omit({ id: true });
+export type InsertCoachMessage = z.infer<typeof insertCoachMessageSchema>;
+
+export type PlayerAssessment = typeof playerAssessments.$inferSelect;
+export const insertPlayerAssessmentSchema = createInsertSchema(playerAssessments).omit({ id: true });
+export type InsertPlayerAssessment = z.infer<typeof insertPlayerAssessmentSchema>;
+
+export type TrainingPlan = typeof trainingPlans.$inferSelect;
+export const insertTrainingPlanSchema = createInsertSchema(trainingPlans).omit({ id: true });
+export type InsertTrainingPlan = z.infer<typeof insertTrainingPlanSchema>;
+
+export type TrainingPlanActivity = typeof trainingPlanActivities.$inferSelect;
+export const insertTrainingPlanActivitySchema = createInsertSchema(trainingPlanActivities).omit({ id: true });
+export type InsertTrainingPlanActivity = z.infer<typeof insertTrainingPlanActivitySchema>;
 export type InsertUserDrillProgress = z.infer<typeof insertUserDrillProgressSchema>;
 
 // AI Coach types
