@@ -64,6 +64,13 @@ export interface IStorage {
   getAllUsers(): Promise<User[]>;
   getAllAthletes(): Promise<User[]>;
   
+  // Onboarding operations
+  getOnboardingProgress(userId: number): Promise<OnboardingProgress | undefined>;
+  createOnboardingProgress(data: InsertOnboardingProgress): Promise<OnboardingProgress>;
+  updateOnboardingProgress(userId: number, data: Partial<OnboardingProgress>): Promise<OnboardingProgress | undefined>;
+  completeOnboardingStep(userId: number, step: number, section?: string): Promise<OnboardingProgress | undefined>;
+  skipOnboardingSection(userId: number, section: string): Promise<OnboardingProgress | undefined>;
+  
   // Video operations
   getVideo(id: number): Promise<Video | undefined>;
   getVideosByUser(userId: number): Promise<Video[]>;
