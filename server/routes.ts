@@ -99,6 +99,7 @@ import passport from "passport";
 import { saveApiKey, getApiKeyStatus } from "./api-keys";
 import { footballCoachService } from "./services/football-coach-service";
 import { sendSms, checkSmsStatus, sendVerificationCode, verifyCode, sendNotification } from './services/sms-routes';
+import { aiVideoAnalysisService } from './services/ai-video-analysis-service';
 import { 
   insertUserSchema,
   insertAthleteProfileSchema,
@@ -1106,6 +1107,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error analyzing play strategy:", error);
       return res.status(500).json({ message: "Error analyzing play strategy" });
+    }
+  });
+
+  // Generate football game plan from opponent film
+  app.post("/api/videos/:id/game-plan", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const videoId = parseInt(req.params.id);
+      const video = await storage.getVideo(videoId);
+      
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow access for coaches and admins
+      if (user.role !== "admin" && user.role !== "coach") {
+        return res.status(403).json({ message: "Not authorized to generate game plans. Coach access required." });
+      }
+      
+      const { teamName, opponentName, gameDate } = req.body;
+      
+      if (!teamName || !opponentName) {
+        return res.status(400).json({ message: "Team name and opponent name are required" });
+      }
+      
+      // Call the AI video analysis service to generate the game plan
+      const result = await aiVideoAnalysisService.generateFootballGamePlan(
+        videoId, 
+        teamName, 
+        opponentName, 
+        gameDate
+      );
+      
+      return res.json(result);
+    } catch (error) {
+      console.error("Error generating football game plan:", error);
+      return res.status(500).json({ message: error.message || "Error generating football game plan" });
     }
   });
 

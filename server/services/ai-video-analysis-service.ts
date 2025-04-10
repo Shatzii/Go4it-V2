@@ -583,6 +583,106 @@ export class AIVideoAnalysisService {
   }
 
   /**
+   * Generates a comprehensive football game plan based on opponent film analysis
+   * @param videoId The ID of the opponent film to analyze
+   * @param teamName Your team's name
+   * @param opponentName Opponent team's name
+   * @param gameDate Optional date of the upcoming game
+   * @returns Complete game plan with offensive, defensive and special teams strategies
+   */
+  async generateFootballGamePlan(videoId: number, teamName: string, opponentName: string, gameDate?: string): Promise<GamePlanResult> {
+    try {
+      // Get video data
+      const [videoData] = await db.select().from(videos).where(eq(videos.id, videoId));
+      if (!videoData) {
+        throw new Error(`Video with ID ${videoId} not found`);
+      }
+
+      // Configure prompt for football game plan generation
+      const prompt = `
+      Please analyze this football game film of "${opponentName}" and create a comprehensive game plan for "${teamName}" to use against them${gameDate ? ` on ${gameDate}` : ''}.
+      
+      Video Details:
+      - Sport: Football
+      - Opponent Team: ${opponentName}
+      - Your Team: ${teamName}
+      - Video Duration: ${videoData.duration || 'Unknown'} seconds
+      ${gameDate ? `- Game Date: ${gameDate}` : ''}
+      
+      Please provide a complete game plan including:
+      
+      1. Summary:
+         - Overview of opponent's style and tendencies
+         - Overall strategic approach recommendation
+         - Key strengths to exploit
+         - Key weaknesses to address
+
+      2. Offensive Game Plan:
+         - Recommended formations and why they'll be effective
+         - Situational formations (e.g., 3rd and long, red zone)
+         - Recommended play types based on opponent's defensive tendencies
+         - Key matchups to exploit with specific strategies
+         - Red zone strategy
+         - 3rd down strategy
+      
+      3. Defensive Game Plan:
+         - Recommended defensive formations
+         - Situational defensive adjustments
+         - Coverage schemes to counter their passing game
+         - Blitz packages and when to use them
+         - Key matchups to address with specific containment strategies
+         - Red zone defensive strategy
+         - 3rd down defensive strategy
+      
+      4. Special Teams Considerations:
+         - Kickoff strategy
+         - Punt strategy
+         - Return strategy
+         - Field goal situations
+      
+      5. Key Plays from Film:
+         - Timestamp (in seconds)
+         - Description of what happens
+         - Classification (offensive/defensive/special teams)
+         - Significance to game planning
+         - Learning points for team preparation
+      
+      6. Practice Emphasis:
+         - List of specific areas to focus on in practice
+      
+      7. Situational Preparation:
+         - Specific scenarios to prepare for
+         - Recommended approach for each scenario
+      
+      Format your response as a JSON object with the complete game plan structure.
+      `;
+
+      // Call OpenAI API for football game plan generation
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert football coach with decades of experience analyzing game film and creating detailed game plans. You have won multiple championships and are known for your strategic brilliance in breaking down opponents and creating winning game plans."
+          },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        response_format: { type: "json_object" }
+      });
+
+      // Process and return the result
+      const result = JSON.parse(response.choices[0].message.content);
+      return result as GamePlanResult;
+    } catch (error) {
+      console.error('Error generating football game plan:', error);
+      throw new Error(`Failed to generate football game plan: ${error.message}`);
+    }
+  }
+
+  /**
    * Generate personalized coaching feedback for an athlete
    * @param videoId The ID of the video to analyze
    * @param athleteName The name of the athlete
