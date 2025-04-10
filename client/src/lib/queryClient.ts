@@ -24,6 +24,12 @@ export const apiRequest = async (
     // For FormData, make sure we don't set any Content-Type ourselves
     // The browser needs to set it with the correct multipart boundary
     
+    // Get the authentication token from localStorage if it exists
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      headers['Authorization'] = `Bearer ${accessToken}`;
+    }
+    
     const response = await axios({
       method,
       url: `${baseURL}${url}`,
