@@ -1658,11 +1658,11 @@ export const xpTransactions = pgTable("xp_transactions", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
   amount: integer("amount").notNull(),
-  type: text("type").notNull(), // workout, login, challenge, film, game, assessment
+  transaction_type: text("transaction_type").notNull(), // workout, login, challenge, film, game, assessment
   description: text("description").notNull(),
-  date: timestamp("date", { withTimezone: true }).defaultNow(),
-  source: text("source"), // e.g. workout_id, challenge_id, etc.
-  sourceId: integer("source_id"),
+  created_at: timestamp("created_at").defaultNow(),
+  multiplier: real("multiplier"),
+  source_id: text("source_id"),
 });
 
 export const playerChallenges = pgTable("player_challenges", {
