@@ -2843,6 +2843,154 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async getUserSkillsByNodeIds(userId: number, nodeIds: number[]): Promise<Skill[]> {
+    try {
+      // Check if skills table exists and has necessary columns
+      if (typeof skills === 'undefined' || !skills) {
+        console.warn(`skills table not found when looking for skills with node IDs for user ${userId}`);
+        return [];
+      }
+      
+      // Return skills that match both the user ID and any of the skill node IDs
+      return await db.select()
+        .from(skills)
+        .where(
+          and(
+            eq(skills.userId, userId),
+            inArray(skills.skillNodeId, nodeIds)
+          )
+        );
+    } catch (error) {
+      console.error(`Error fetching skills for user ID ${userId} with node IDs:`, error);
+      return [];
+    }
+  }
+
+  async getUserSkillByNodeId(userId: number, nodeId: number): Promise<Skill | undefined> {
+    try {
+      // Check if skills table exists
+      if (typeof skills === 'undefined' || !skills) {
+        console.warn(`skills table not found when looking for skill with node ID ${nodeId} for user ${userId}`);
+        return undefined;
+      }
+      
+      const [skill] = await db.select()
+        .from(skills)
+        .where(
+          and(
+            eq(skills.userId, userId),
+            eq(skills.skillNodeId, nodeId)
+          )
+        );
+      
+      return skill;
+    } catch (error) {
+      console.error(`Error fetching skill for user ID ${userId} with node ID ${nodeId}:`, error);
+      return undefined;
+    }
+  }
+
+  async updateUserSkill(userId: number, skillNodeId: number, data: Partial<Skill>): Promise<Skill> {
+    try {
+      // Check if skill exists first
+      let skill = await this.getUserSkillByNodeId(userId, skillNodeId);
+      
+      if (skill) {
+        // Update existing skill
+        const [updatedSkill] = await db.update(skills)
+          .set({
+            ...data,
+            lastUpdated: new Date()
+          })
+          .where(
+            and(
+              eq(skills.userId, userId),
+              eq(skills.skillNodeId, skillNodeId)
+            )
+          )
+          .returning();
+        
+        return updatedSkill;
+      } else {
+        // Create new skill if it doesn't exist
+        const [newSkill] = await db.insert(skills)
+          .values({
+            userId,
+            skillNodeId,
+            progress: 0,
+            level: 1,
+            xp: 0,
+            ...data,
+            createdAt: new Date(),
+            lastUpdated: new Date()
+          })
+          .returning();
+        
+        return newSkill;
+      }
+    } catch (error) {
+      console.error(`Error updating skill for user ID ${userId} with node ID ${skillNodeId}:`, error);
+      throw error;
+    }
+  }
+
+  async getTrainingDrillsBySkillNode(skillNodeId: number): Promise<TrainingDrill[]> {
+    try {
+      // Check if trainingDrills table exists
+      if (typeof trainingDrills === 'undefined' || !trainingDrills) {
+        console.warn(`trainingDrills table not found when looking for drills with skill node ID ${skillNodeId}`);
+        return [];
+      }
+      
+      return await db.select()
+        .from(trainingDrills)
+        .where(eq(trainingDrills.skillNodeId, skillNodeId))
+        .orderBy(trainingDrills.difficulty);
+    } catch (error) {
+      console.error(`Error fetching training drills for skill node ID ${skillNodeId}:`, error);
+      return [];
+    }
+  }
+
+  async createDrillCompletion(data: InsertUserDrillProgress): Promise<UserDrillProgress> {
+    try {
+      // Create new drill completion progress record
+      const [drillProgress] = await db.insert(userDrillProgress)
+        .values({
+          ...data,
+          completedAt: new Date(),
+          updatedAt: new Date()
+        })
+        .returning();
+      
+      // If the drill is linked to a skill node, update the user's skill progress
+      if (drillProgress.skillNodeId) {
+        try {
+          const skill = await this.getUserSkillByNodeId(drillProgress.userId, drillProgress.skillNodeId);
+          
+          if (skill) {
+            // Update the existing skill with some XP gain
+            const xpGain = drillProgress.score || 10; // Default 10 XP if no score is provided
+            
+            await this.updateUserSkill(drillProgress.userId, drillProgress.skillNodeId, {
+              xp: skill.xp + xpGain,
+              progress: Math.min(100, skill.progress + (drillProgress.progressPercentage || 5)), // Default 5% progress if not specified
+              completedDrills: (skill.completedDrills || 0) + 1,
+              lastUpdated: new Date()
+            });
+          }
+        } catch (skillError) {
+          console.warn(`Failed to update skill for drill completion, but drill progress was recorded:`, skillError);
+        }
+      }
+      
+      return drillProgress;
+    } catch (error) {
+      console.error(`Error creating drill completion progress:`, error);
+      throw error;
+    }
+  }
+
   async getSkill(id: number): Promise<Skill | undefined> {
     try {
       // Check if skills table exists
