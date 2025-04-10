@@ -28,7 +28,7 @@ import {
   sportPrograms, type SportProgram, type InsertSportProgram,
   coachingStaff, type CoachingStaff, type InsertCoachingStaff,
   recruitingContacts, type RecruitingContact, type InsertRecruitingContact,
-  athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile
+  spotlightProfiles, type SpotlightProfile, type InsertSpotlightProfile
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql, inArray } from "drizzle-orm";
@@ -40,6 +40,17 @@ import { pool } from "./db";
 export interface IStorage {
   // Session store
   sessionStore: any;
+  
+  // Spotlight Profile operations
+  getSpotlightProfiles(limit?: number): Promise<SpotlightProfile[]>;
+  getSpotlightProfilesByUser(userId: number): Promise<SpotlightProfile[]>;
+  getSpotlightProfile(id: number): Promise<SpotlightProfile | undefined>;
+  getFeaturedSpotlightProfiles(limit?: number): Promise<SpotlightProfile[]>;
+  getTrendingSpotlightProfiles(limit?: number): Promise<SpotlightProfile[]>;
+  getRecommendedSpotlightProfiles(userId: number, limit?: number): Promise<SpotlightProfile[]>;
+  createSpotlightProfile(profile: InsertSpotlightProfile): Promise<SpotlightProfile>;
+  updateSpotlightProfile(id: number, data: Partial<SpotlightProfile>): Promise<SpotlightProfile | undefined>;
+  deleteSpotlightProfile(id: number): Promise<boolean>;
 
   // User operations
   getUser(id: number): Promise<User | undefined>;
@@ -278,11 +289,11 @@ export interface IStorage {
   updatePayment(id: number, data: Partial<Payment>): Promise<Payment | undefined>;
   
   // Athlete Star Profile operations
-  getAthleteStarProfile(userId: number): Promise<AthleteStarProfile | undefined>;
-  getAllAthleteStarProfiles(): Promise<AthleteStarProfile[]>;
-  getActiveAthleteStarProfiles(): Promise<AthleteStarProfile[]>;
-  createAthleteStarProfile(profile: InsertAthleteStarProfile): Promise<AthleteStarProfile>;
-  updateAthleteStarProfile(userId: number, data: Partial<AthleteStarProfile>): Promise<AthleteStarProfile | undefined>;
+  getAthleteStarProfile(userId: number): Promise<any | undefined>;
+  getAllAthleteStarProfiles(): Promise<any[]>;
+  getActiveAthleteStarProfiles(): Promise<any[]>;
+  createAthleteStarProfile(profile: any): Promise<any>;
+  updateAthleteStarProfile(userId: number, data: any): Promise<any | undefined>;
 }
 
 // Direct database implementation
@@ -599,6 +610,151 @@ export class DatabaseStorage implements IStorage {
     }
   }
   
+  // Spotlight Profile operations
+  async getSpotlightProfiles(limit: number = 10): Promise<SpotlightProfile[]> {
+    try {
+      return await db.select()
+        .from(spotlightProfiles)
+        .orderBy(desc(spotlightProfiles.createdAt))
+        .limit(limit);
+    } catch (error) {
+      console.error('Error fetching spotlight profiles:', error);
+      return [];
+    }
+  }
+
+  async getSpotlightProfilesByUser(userId: number): Promise<SpotlightProfile[]> {
+    try {
+      return await db.select()
+        .from(spotlightProfiles)
+        .where(eq(spotlightProfiles.userId, userId))
+        .orderBy(desc(spotlightProfiles.createdAt));
+    } catch (error) {
+      console.error(`Error fetching spotlight profiles for user ${userId}:`, error);
+      return [];
+    }
+  }
+
+  async getSpotlightProfile(id: number): Promise<SpotlightProfile | undefined> {
+    try {
+      const [profile] = await db.select()
+        .from(spotlightProfiles)
+        .where(eq(spotlightProfiles.id, id));
+      return profile;
+    } catch (error) {
+      console.error(`Error fetching spotlight profile with ID ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async getFeaturedSpotlightProfiles(limit: number = 6): Promise<SpotlightProfile[]> {
+    try {
+      return await db.select()
+        .from(spotlightProfiles)
+        .where(eq(spotlightProfiles.featured, true))
+        .orderBy(desc(spotlightProfiles.createdAt))
+        .limit(limit);
+    } catch (error) {
+      console.error('Error fetching featured spotlight profiles:', error);
+      return [];
+    }
+  }
+
+  async getTrendingSpotlightProfiles(limit: number = 6): Promise<SpotlightProfile[]> {
+    try {
+      return await db.select()
+        .from(spotlightProfiles)
+        .where(eq(spotlightProfiles.active, true))
+        .orderBy(desc(spotlightProfiles.views))
+        .limit(limit);
+    } catch (error) {
+      console.error('Error fetching trending spotlight profiles:', error);
+      return [];
+    }
+  }
+
+  async getRecommendedSpotlightProfiles(userId: number, limit: number = 6): Promise<SpotlightProfile[]> {
+    try {
+      // Get user's profile to find similar athletes by sport or position
+      const [userProfile] = await db.select()
+        .from(spotlightProfiles)
+        .where(eq(spotlightProfiles.userId, userId));
+      
+      if (!userProfile) {
+        // If user doesn't have a profile, return trending profiles
+        return this.getTrendingSpotlightProfiles(limit);
+      }
+      
+      // Find profiles with similar sport or position
+      return await db.select()
+        .from(spotlightProfiles)
+        .where(
+          and(
+            eq(spotlightProfiles.active, true),
+            sql`${spotlightProfiles.userId} != ${userId}`, // Not the user's own profile
+            or(
+              eq(spotlightProfiles.sport, userProfile.sport),
+              eq(spotlightProfiles.position, userProfile.position)
+            )
+          )
+        )
+        .orderBy(desc(spotlightProfiles.createdAt))
+        .limit(limit);
+    } catch (error) {
+      console.error(`Error fetching recommended spotlight profiles for user ${userId}:`, error);
+      return [];
+    }
+  }
+
+  async createSpotlightProfile(profile: InsertSpotlightProfile): Promise<SpotlightProfile> {
+    try {
+      const [createdProfile] = await db.insert(spotlightProfiles)
+        .values({
+          ...profile,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          views: 0,
+          active: true,
+          featured: false
+        })
+        .returning();
+      
+      return createdProfile;
+    } catch (error) {
+      console.error('Error creating spotlight profile:', error);
+      throw error;
+    }
+  }
+
+  async updateSpotlightProfile(id: number, data: Partial<SpotlightProfile>): Promise<SpotlightProfile | undefined> {
+    try {
+      const [updatedProfile] = await db.update(spotlightProfiles)
+        .set({
+          ...data,
+          updatedAt: new Date()
+        })
+        .where(eq(spotlightProfiles.id, id))
+        .returning();
+      
+      return updatedProfile;
+    } catch (error) {
+      console.error(`Error updating spotlight profile with ID ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async deleteSpotlightProfile(id: number): Promise<boolean> {
+    try {
+      await db.delete(spotlightProfiles)
+        .where(eq(spotlightProfiles.id, id));
+      
+      return true;
+    } catch (error) {
+      console.error(`Error deleting spotlight profile with ID ${id}:`, error);
+      return false;
+    }
+  }
+
   // API Key operations
   async getAllActiveApiKeys(): Promise<ApiKey[]> {
     try {
