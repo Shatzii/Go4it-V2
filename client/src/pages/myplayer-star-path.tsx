@@ -675,9 +675,14 @@ export default function MyPlayerStarPath() {
               )}
             </CardContent>
             <CardFooter>
-              <Button className="w-full" variant="outline" onClick={() => navigate("/weight-room")}>
-                Train to Earn XP <Dumbbell className="ml-2 h-4 w-4" />
-              </Button>
+              <div className="flex gap-2">
+                <Button className="flex-1" variant="outline" onClick={() => navigate("/weight-room")}>
+                  Train to Earn XP <Dumbbell className="ml-2 h-4 w-4" />
+                </Button>
+                <Button className="flex-1" variant="default" onClick={() => navigate("/myplayer-video-recorder")}>
+                  Record Workout <Camera className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
             </CardFooter>
           </Card>
         </div>
