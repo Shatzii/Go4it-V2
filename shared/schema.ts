@@ -1485,3 +1485,51 @@ export type InsertCoachFeedback = z.infer<typeof insertCoachFeedbackSchema>;
 
 export type CoachRecommendation = typeof coachRecommendations.$inferSelect;
 export type InsertCoachRecommendation = z.infer<typeof insertCoachRecommendationSchema>;
+
+// Spotlight Profiles for NextUp feature
+export const spotlightProfiles = pgTable("spotlight_profiles", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  name: text("name").notNull(),
+  sport: text("sport").notNull(),
+  position: text("position").notNull(),
+  school: text("school").notNull(),
+  graduationYear: integer("graduation_year").notNull(),
+  location: text("location").notNull(),
+  height: text("height").notNull(),
+  weight: text("weight").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  bio: text("bio").notNull(),
+  highlights: text("highlights").notNull(),
+  academicGpa: text("academic_gpa"),
+  profileImage: text("profile_image"),
+  coverImage: text("cover_image"),
+  highlightVideo: text("highlight_video"),
+  views: integer("views").default(0),
+  likes: integer("likes").default(0),
+  featured: boolean("featured").default(false),
+  trending: boolean("trending").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const spotlightProfilesRelations = relations(spotlightProfiles, ({ one }) => ({
+  user: one(users, {
+    fields: [spotlightProfiles.userId],
+    references: [users.id],
+  }),
+}));
+
+export const insertSpotlightProfileSchema = createInsertSchema(spotlightProfiles).omit({
+  id: true,
+  views: true,
+  likes: true,
+  featured: true,
+  trending: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type SpotlightProfile = typeof spotlightProfiles.$inferSelect;
+export type InsertSpotlightProfile = z.infer<typeof insertSpotlightProfileSchema>;
