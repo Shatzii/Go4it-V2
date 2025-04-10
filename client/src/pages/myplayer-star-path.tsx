@@ -71,6 +71,9 @@ export default function MyPlayerStarPath() {
   const [, navigate] = useLocation();
   const [selectedNode, setSelectedNode] = useState<StarPathNode | null>(null);
   const [animateStar, setAnimateStar] = useState(false);
+  const [attributeType, setAttributeType] = useState<'physical' | 'technical' | 'mental'>('physical');
+  const [attributeValues, setAttributeValues] = useState<Record<string, number>>({});
+  const [isEditingAttributes, setIsEditingAttributes] = useState(false);
   
   // Fetch player progress data
   const { data: progress, isLoading: isProgressLoading } = useQuery({
@@ -125,6 +128,16 @@ export default function MyPlayerStarPath() {
   const { data: transactions, isLoading: isTransactionsLoading } = useQuery({
     queryKey: ['/api/player/xp/transactions'],
     enabled: !!user,
+  });
+  
+  // Fetch attribute data based on selected type
+  const { data: attributeData, isLoading: isAttributesLoading } = useQuery({
+    queryKey: ['/api/player/star-path', user?.id, 'attributes', attributeType],
+    queryFn: () => apiRequest(`/api/player/star-path/${user?.id}/attributes/${attributeType}`),
+    enabled: !!user,
+    onSuccess: (data) => {
+      setAttributeValues(data.attributes || {});
+    }
   });
   
   // Level up mutation
