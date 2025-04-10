@@ -474,20 +474,20 @@ class AthleteScoutService {
 
       // Create the discovery using Drizzle ORM, ensuring we use column names that exist in the DB
       const [result] = await db.insert(schema.athleteDiscoveries).values({
-        scout_id: scout.id,
-        full_name: fullName,
-        username: username,
-        platform: platform,
-        profile_url: `https://www.${platform}.com/${username}`,
-        estimated_age: Math.floor(Math.random() * (scout.ageRangeMax - scout.ageRangeMin + 1)) + scout.ageRangeMin,
+        scoutId: scout.id,
+        fullName,
+        username,
+        platform,
+        profileUrl: `https://www.${platform}.com/${username}`,
+        estimatedAge: Math.floor(Math.random() * (scout.ageRangeMax - scout.ageRangeMin + 1)) + scout.ageRangeMin,
         sports: athleteSports,
-        positions: positions,
-        follower_count: Math.floor(Math.random() * 10000) + 500,
-        engagement_rate: parseFloat((Math.random() * 5 + 1).toFixed(2)),
-        graduation_year: gradYear,
+        positions,
+        followerCount: Math.floor(Math.random() * 10000) + 500,
+        engagementRate: parseFloat((Math.random() * 5 + 1).toFixed(2)),
+        graduationYear: gradYear,
         location: "Random City, State",
-        school_name: `${platform.charAt(0).toUpperCase() + platform.slice(1)} High School`,
-        discovered_at: new Date(),
+        schoolName: `${platform.charAt(0).toUpperCase() + platform.slice(1)} High School`,
+        discoveryDate: new Date(),
         status: "pending"
       }).returning();
 
@@ -545,17 +545,17 @@ class AthleteScoutService {
       
       // Use Drizzle ORM with the correct column names from the database
       const [result] = await db.insert(schema.mediaPartnerDiscoveries).values({
-        scout_id: scout.id,
-        name: name,
-        platform: platform,
-        url: url,
-        follower_count: followerCount,
-        average_engagement: engagementRate,
+        scoutId: scout.id,
+        name,
+        platform,
+        url,
+        followerCount: followerCount,
+        averageEngagement: engagementRate,
         sports: scout.sportFocus?.length > 0 ? scout.sportFocus : [sport],
-        content_quality: contentQuality,
-        relevance_score: relevanceScore,
-        partnership_potential: partnershipPotential,
-        discovered_at: new Date()
+        contentQuality: contentQuality,
+        relevanceScore: relevanceScore,
+        partnershipPotential: partnershipPotential,
+        discoveredAt: new Date()
       }).returning();
 
       // Return the result
@@ -653,8 +653,8 @@ class AthleteScoutService {
     return db
       .select()
       .from(schema.athleteDiscoveries)
-      .where(eq(schema.athleteDiscoveries.scout_id, scoutId))
-      .orderBy(desc(schema.athleteDiscoveries.discovered_at));
+      .where(eq(schema.athleteDiscoveries.scoutId, scoutId))
+      .orderBy(desc(schema.athleteDiscoveries.discoveryDate));
   }
 
   /**
@@ -664,8 +664,8 @@ class AthleteScoutService {
     return db
       .select()
       .from(schema.mediaPartnerDiscoveries)
-      .where(eq(schema.mediaPartnerDiscoveries.scout_id, scoutId))
-      .orderBy(desc(schema.mediaPartnerDiscoveries.discovered_at));
+      .where(eq(schema.mediaPartnerDiscoveries.scoutId, scoutId))
+      .orderBy(desc(schema.mediaPartnerDiscoveries.discoveredAt));
   }
 
   /**
