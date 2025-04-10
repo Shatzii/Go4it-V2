@@ -472,22 +472,23 @@ class AthleteScoutService {
       const currentYear = new Date().getFullYear();
       const gradYear = currentYear + Math.floor(Math.random() * 4) + 1;
 
-      // Create the discovery using Drizzle ORM to avoid parameter binding issues
+      // Create the discovery using Drizzle ORM, ensuring we use column names that exist in the DB
       const [result] = await db.insert(schema.athleteDiscoveries).values({
-        scoutId: scout.id,
-        fullName: fullName,
+        scout_id: scout.id,
+        full_name: fullName,
         username: username,
         platform: platform,
-        profileUrl: `https://www.${platform}.com/${username}`,
-        estimatedAge: Math.floor(Math.random() * (scout.ageRangeMax - scout.ageRangeMin + 1)) + scout.ageRangeMin,
+        profile_url: `https://www.${platform}.com/${username}`,
+        estimated_age: Math.floor(Math.random() * (scout.ageRangeMax - scout.ageRangeMin + 1)) + scout.ageRangeMin,
         sports: athleteSports,
         positions: positions,
-        followerCount: Math.floor(Math.random() * 10000) + 500,
-        postCount: Math.floor(Math.random() * 100) + 10,
-        graduationYear: gradYear,
-        potentialRating: Math.floor(Math.random() * 5) + 1,
-        email: `${username}@example.com`,
-        discoveredAt: new Date()
+        follower_count: Math.floor(Math.random() * 10000) + 500,
+        engagement_rate: parseFloat((Math.random() * 5 + 1).toFixed(2)),
+        graduation_year: gradYear,
+        location: "Random City, State",
+        school_name: `${platform.charAt(0).toUpperCase() + platform.slice(1)} High School`,
+        discovered_at: new Date(),
+        status: "pending"
       }).returning();
 
       // Return the result directly
@@ -542,30 +543,23 @@ class AthleteScoutService {
       const relevanceScore = Math.floor(Math.random() * 31) + 70; // 70-100
       const partnershipPotential = Math.floor(Math.random() * 31) + 70; // 70-100
       
-      // Use SQL directly to avoid schema mismatch issues
-      const result = await db.execute(`
-        INSERT INTO media_partner_discoveries 
-        (scout_id, name, platform, url, follower_count, average_engagement, 
-         sports, content_quality, relevance_score, partnership_potential, discovered_at) 
-        VALUES 
-        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-        RETURNING *
-      `, [
-        scout.id,
-        name,
-        platform,
-        url,
-        followerCount,
-        engagementRate,
-        scout.sportFocus?.length > 0 ? scout.sportFocus : [sport],
-        contentQuality,
-        relevanceScore,
-        partnershipPotential,
-        new Date()
-      ]);
+      // Use Drizzle ORM with the correct column names from the database
+      const [result] = await db.insert(schema.mediaPartnerDiscoveries).values({
+        scout_id: scout.id,
+        name: name,
+        platform: platform,
+        url: url,
+        follower_count: followerCount,
+        average_engagement: engagementRate,
+        sports: scout.sportFocus?.length > 0 ? scout.sportFocus : [sport],
+        content_quality: contentQuality,
+        relevance_score: relevanceScore,
+        partnership_potential: partnershipPotential,
+        discovered_at: new Date()
+      }).returning();
 
-      // Return the first row from the result
-      return result.rows[0];
+      // Return the result
+      return result;
     } catch (error) {
       console.error("Error creating simulated media partner discovery:", error);
       return null;
@@ -620,21 +614,21 @@ class AthleteScoutService {
       // Local score - how connected they are to the area (70-100)
       const localityScore = Math.floor(Math.random() * 31) + 70;
       
-      // Create the city influencer discovery
+      // Create the city influencer discovery with the correct column names
       const [discovery] = await db
         .insert(schema.cityInfluencerDiscoveries)
         .values({
-          scoutId: scout.id,
+          scout_id: scout.id,
           name: fullName,
           username,
           platform,
           url: `https://www.${platform}.com/${username}`,
-          followerCount,
-          engagementRate,
+          follower_count: followerCount,
+          engagement_rate: engagementRate,
           sports,
-          localityScore,
-          influenceRank: rank, // Rank within the city's top influencers
-          bio: `${sports[0].charAt(0).toUpperCase() + sports[0].slice(1)} enthusiast and content creator from ${scout.city}, ${scout.state}. Bringing you the best local sports coverage!`,
+          locality_score: localityScore,
+          influence_rank: rank, // Rank within the city's top influencers
+          bio: `${sports[0].charAt(0).toUpperCase() + sports[0].slice(1)} enthusiast and content creator from ${scout.city || 'Local'}, ${scout.state || 'Area'}. Bringing you the best local sports coverage!`,
           // Add more fields as needed
         })
         .returning();
