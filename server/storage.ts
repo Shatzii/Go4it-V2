@@ -490,6 +490,26 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(videoHighlights.qualityScore))
       .limit(limit);
   }
+  
+  async getAllVideoHighlights(limit: number = 50, sportType?: string): Promise<VideoHighlight[]> {
+    let query = db.select().from(videoHighlights);
+    
+    // Add sport type filter if provided
+    if (sportType) {
+      query = query.where(eq(videoHighlights.sportType, sportType));
+    }
+    
+    // Get highlights with status "ready" if available
+    query = query.where(eq(videoHighlights.status, "ready"));
+    
+    // Order by newest first
+    query = query.orderBy(desc(videoHighlights.createdAt));
+    
+    // Limit results
+    query = query.limit(limit);
+    
+    return await query;
+  }
 
   async getHomePageEligibleHighlights(limit: number = 6): Promise<VideoHighlight[]> {
     return await db.select()
