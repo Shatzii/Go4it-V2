@@ -18,6 +18,7 @@ import Profile from "@/pages/profile";
 import AthleteProfile from "@/pages/athlete-profile";
 import VideoAnalysis from "@/pages/video-analysis";
 import VideoAnalysisDetail from "@/pages/video-analysis-detail";
+import VideoAnalysisGARPage from "@/pages/video-analysis-page";
 import SportRecommendations from "@/pages/sport-recommendations";
 import CoachConnection from "@/pages/coach-connection";
 import NcaaClearinghouse from "@/pages/ncaa-clearinghouse";
@@ -288,6 +289,11 @@ function Router() {
         {/* Enhanced GAR Score Route */}
         <Route path="/gar-score-enhanced">
           {() => <ProtectedRoute component={GarScorePage} />}
+        </Route>
+        
+        {/* Video Analysis GAR Score Dashboard Route */}
+        <Route path="/video-analysis-gar/:id">
+          {() => <ProtectedRoute component={VideoAnalysisGARPage} />}
         </Route>
         
         {/* Athlete Profile Page Route */}

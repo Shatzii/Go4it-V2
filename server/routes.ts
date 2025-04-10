@@ -995,6 +995,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Generate GAR scores for a video
+  app.post("/api/videos/:id/generate-gar", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const videoId = parseInt(req.params.id);
+      const video = await storage.getVideo(videoId);
+      
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow access to own videos or admin/coach access
+      if (video.userId !== user.id && user.role !== "admin" && user.role !== "coach") {
+        return res.status(403).json({ message: "Not authorized to analyze this video" });
+      }
+      
+      // Get sport type from video or request body
+      const sportType = req.body.sportType || video.sportType || "basketball";
+      
+      // Import the GAR scoring service
+      const { generateGARScores } = await import('./services/gar-scoring-service');
+      
+      // Generate GAR scores
+      const garScores = await generateGARScores(videoId, sportType);
+      
+      if (!garScores) {
+        return res.status(500).json({ message: "Failed to generate GAR scores" });
+      }
+      
+      return res.json(garScores);
+    } catch (error) {
+      console.error("Error generating GAR scores:", error);
+      return res.status(500).json({ message: "Error generating GAR scores" });
+    }
+  });
+
+  // Get GAR scores for a video
+  app.get("/api/videos/:id/gar", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const videoId = parseInt(req.params.id);
+      const video = await storage.getVideo(videoId);
+      
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+      
+      const user = req.user as any;
+      
+      // Only allow access to own videos or admin/coach access
+      if (video.userId !== user.id && user.role !== "admin" && user.role !== "coach") {
+        return res.status(403).json({ message: "Not authorized to view this analysis" });
+      }
+      
+      // Import the GAR scoring service
+      const { getGARScores, getGARCategoryDescriptions } = await import('./services/gar-scoring-service');
+      
+      // Get GAR scores and category descriptions
+      const garScores = await getGARScores(videoId);
+      
+      if (!garScores) {
+        return res.status(404).json({ message: "GAR scores not found for this video" });
+      }
+      
+      // Get the sport type from the video
+      const sportType = video.sportType || "basketball";
+      
+      // Get category descriptions
+      const categoryDescriptions = getGARCategoryDescriptions(sportType);
+      
+      return res.json({
+        garScores,
+        categoryDescriptions,
+        sportType
+      });
+    } catch (error) {
+      console.error("Error fetching GAR scores:", error);
+      return res.status(500).json({ message: "Error fetching GAR scores" });
+    }
+  });
+
   // Play strategy analysis endpoint
   app.post("/api/videos/:id/analyze-play", isAuthenticated, async (req: Request, res: Response) => {
     try {
