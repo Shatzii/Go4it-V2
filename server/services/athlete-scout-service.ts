@@ -618,18 +618,24 @@ class AthleteScoutService {
       const [discovery] = await db
         .insert(schema.cityInfluencerDiscoveries)
         .values({
-          scout_id: scout.id,
-          name: fullName,
+          scoutId: scout.id,
+          fullName,
           username,
           platform,
-          url: `https://www.${platform}.com/${username}`,
-          follower_count: followerCount,
-          engagement_rate: engagementRate,
-          sports,
-          locality_score: localityScore,
-          influence_rank: rank, // Rank within the city's top influencers
-          bio: `${sports[0].charAt(0).toUpperCase() + sports[0].slice(1)} enthusiast and content creator from ${scout.city || 'Local'}, ${scout.state || 'Area'}. Bringing you the best local sports coverage!`,
-          // Add more fields as needed
+          profileUrl: `https://www.${platform}.com/${username}`,
+          city: scout.city as string || "Unknown",
+          state: scout.state as string || "Unknown",
+          followerCount,
+          engagementRate,
+          contentFocus: sports ? sports : ["sports", "local"],
+          influenceScore: Math.round(followerCount * (engagementRate / 100)),
+          ranking: rank, // Rank within the city's top influencers
+          notes: `${sports ? sports[0].charAt(0).toUpperCase() + sports[0].slice(1) : 'Sports'} content creator with local influence.`,
+          contactInfo: {
+            email: `${username}@example.com`,
+            phone: null,
+            preferredContact: "email"
+          }
         })
         .returning();
 
@@ -669,8 +675,8 @@ class AthleteScoutService {
     return db
       .select()
       .from(schema.cityInfluencerDiscoveries)
-      .where(eq(schema.cityInfluencerDiscoveries.scout_id, scoutId))
-      .orderBy(schema.cityInfluencerDiscoveries.influence_rank);
+      .where(eq(schema.cityInfluencerDiscoveries.scoutId, scoutId))
+      .orderBy(desc(schema.cityInfluencerDiscoveries.influenceScore));
   }
 
   /**
