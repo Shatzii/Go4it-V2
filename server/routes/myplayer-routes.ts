@@ -22,7 +22,9 @@ import {
   XP_SOURCES, 
   getXpRequiredForLevel, 
   getRankForLevel,
-  getStreakMultiplier
+  getStreakMultiplier,
+  RANKS,
+  STREAK_MULTIPLIERS
 } from '../utils/xp-system';
 
 const router = express.Router();
@@ -701,124 +703,6 @@ router.post('/update-streak/:userId', async (req, res) => {
   }
 });
 
-// Update player streak
-router.post('/update-streak/:userId', async (req, res) => {
-  try {
-    const userId = parseInt(req.params.userId);
-    
-    if (isNaN(userId)) {
-      return res.status(400).json({ error: 'Invalid user ID' });
-    }
-    
-    // Get current player progress
-    const progress = await db.query.playerProgress.findFirst({
-      where: eq(playerProgress.userId, userId)
-    });
-    
-    if (!progress) {
-      return res.status(404).json({ error: 'Player progress not found' });
-    }
-    
-    // Check if last active was within the last 48 hours
-    const lastActive = progress.lastActive ? new Date(progress.lastActive) : null;
-    const now = new Date();
-    
-    // If streak is active (user has logged in within the past 48 hours), increment streak
-    if (lastActive && (now.getTime() - lastActive.getTime() < 48 * 60 * 60 * 1000)) {
-      const dayDiff = Math.floor((now.getTime() - lastActive.getTime()) / (24 * 60 * 60 * 1000));
-      
-      // Only increment streak if it's a new day
-      if (dayDiff >= 1) {
-        // Award streak XP if streak days hits a milestone
-        let streakXp = 0;
-        const newStreakDays = progress.streakDays + 1;
-        
-        if (newStreakDays === 3) streakXp = 50;
-        if (newStreakDays === 7) streakXp = 100;
-        if (newStreakDays === 14) streakXp = 200;
-        if (newStreakDays === 30) streakXp = 500;
-        if (newStreakDays > 30 && newStreakDays % 30 === 0) streakXp = 500;
-        
-        // Update streak count
-        await db.update(playerProgress)
-          .set({ 
-            streakDays: newStreakDays,
-            lastActive: now
-          })
-          .where(eq(playerProgress.userId, userId));
-        
-        // If streak hit a milestone, award XP
-        if (streakXp > 0) {
-          const xpResult = await addXpToPlayer(
-            userId,
-            streakXp,
-            XP_SOURCES.STREAK,
-            `${newStreakDays} day login streak achieved!`,
-            'streak_milestone'
-          );
-          
-          return res.json({
-            success: true,
-            message: `Streak increased to ${newStreakDays} days!`,
-            streakDays: newStreakDays,
-            xpAwarded: streakXp > 0,
-            xpAmount: streakXp,
-            xpResult
-          });
-        }
-        
-        return res.json({
-          success: true,
-          message: `Streak increased to ${newStreakDays} days!`,
-          streakDays: newStreakDays,
-          xpAwarded: false
-        });
-      }
-      
-      // Update lastActive but don't increment streak (same day login)
-      await db.update(playerProgress)
-        .set({ lastActive: now })
-        .where(eq(playerProgress.userId, userId));
-        
-      return res.json({
-        success: true,
-        message: 'Already logged in today, streak maintained',
-        streakDays: progress.streakDays,
-        xpAwarded: false
-      });
-    } else {
-      // Streak broken or first login, reset to 1
-      const wasReset = progress.streakDays > 0;
-      
-      await db.update(playerProgress)
-        .set({ 
-          streakDays: 1,
-          lastActive: now
-        })
-        .where(eq(playerProgress.userId, userId));
-      
-      // Award login XP
-      const xpResult = await addXpToPlayer(
-        userId,
-        10,
-        XP_SOURCES.LOGIN,
-        'Daily login',
-        'daily_login'
-      );
-      
-      return res.json({
-        success: true,
-        message: wasReset ? 'Streak reset to 1 day' : 'First day of streak!',
-        streakDays: 1,
-        xpAwarded: true,
-        xpAmount: 10,
-        xpResult
-      });
-    }
-  } catch (error) {
-    console.error('Error updating streak:', error);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-});
+
 
 export default router;
