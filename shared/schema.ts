@@ -1620,6 +1620,7 @@ export const playerProgress = pgTable("player_progress", {
   streakDays: integer("streak_days").notNull().default(0),
   lastLoginDate: timestamp("last_login_date", { withTimezone: true }),
   starLevel: integer("star_level").notNull().default(1),
+  completedChallenges: integer("completed_challenges").default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });

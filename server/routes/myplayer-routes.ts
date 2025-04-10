@@ -475,9 +475,9 @@ router.post('/complete-challenge/:activeId', async (req, res) => {
         await db
           .update(playerProgress)
           .set({ 
-            xpTotal: (progress.xpTotal || 0) + activeChallenge.challenge.xpReward,
+            totalXp: (progress.totalXp || 0) + activeChallenge.challenge.xpReward,
             completedChallenges: (progress.completedChallenges || 0) + 1,
-            lastUpdated: new Date()
+            updatedAt: new Date()
           })
           .where(eq(playerProgress.userId, activeChallenge.userId));
       }
