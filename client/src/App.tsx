@@ -9,6 +9,7 @@ import { MeasurementProvider } from "./contexts/measurement-context";
 import { Loader2 } from "lucide-react";
 import { AccessibilityControls } from "@/components/accessibility/accessibility-controls";
 // REMOVED: import { GlobalAgreementModal } from "@/components/global-agreement-modal";
+import { useEffect } from "react";
 
 import Layout from "@/components/layout/sidebar";
 import NotFound from "@/pages/not-found";
@@ -117,273 +118,192 @@ function Router() {
         
         {/* Add /app route to handle NDA redirection */}
         <Route path="/app" component={HomePage} />
-      
-      <Route path="/dashboard">
-        {({ params }) => (
-          <ProtectedRoute component={Dashboard} />
-        )}
-      </Route>
-      
-      <Route path="/profile">
-        {({ params }) => (
-          <ProtectedRoute component={Profile} />
-        )}
-      </Route>
-      
-      <Route path="/video-analysis">
-        {({ params }) => (
-          <ProtectedRoute component={VideoAnalysis} />
-        )}
-      </Route>
-      
-      <Route path="/video-analysis/:id">
-        {({ params }) => (
-          <ProtectedRoute component={AnalysisReport} />
-        )}
-      </Route>
-      
-      <Route path="/video-analysis-detail/:id">
-        {({ params }) => (
-          <ProtectedRoute component={VideoAnalysisDetail} />
-        )}
-      </Route>
-      
-      <Route path="/highlight-generator/:id">
-        {({ params }) => (
-          <ProtectedRoute component={HighlightGenerator} />
-        )}
-      </Route>
-      
-      <Route path="/sport-recommendations">
-        {({ params }) => (
-          <ProtectedRoute component={SportRecommendations} />
-        )}
-      </Route>
-      
-      <Route path="/coach-connection">
-        {({ params }) => (
-          <ProtectedRoute component={CoachConnection} />
-        )}
-      </Route>
-      
-      <Route path="/ncaa-clearinghouse">
-        {({ params }) => (
-          <ProtectedRoute component={NcaaClearinghouse} />
-        )}
-      </Route>
-      
-      <Route path="/messaging">
-        {({ params }) => (
-          <ProtectedRoute component={MessagingPage} />
-        )}
-      </Route>
-      
-      <Route path="/admin-dashboard">
-        {({ params }) => (
-          <ProtectedRoute component={AdminDashboard} adminOnly={true} />
-        )}
-      </Route>
-      
-      <Route path="/upload-video">
-        {({ params }) => (
-          <ProtectedRoute component={UploadVideo} />
-        )}
-      </Route>
-      
-      <Route path="/cms">
-        {({ params }) => (
-          <ProtectedRoute component={CMSPage} adminOnly={true} />
-        )}
-      </Route>
-      
-      {/* Film Comparison Feature Routes */}
-      <Route path="/film-comparison">
-        {({ params }) => (
-          <ProtectedRoute component={FilmComparison} />
-        )}
-      </Route>
-      
-      <Route path="/film-comparison-create">
-        {({ params }) => (
-          <ProtectedRoute component={FilmComparisonCreate} />
-        )}
-      </Route>
-      
-      <Route path="/film-comparison/:id">
-        {({ params }) => (
-          <ProtectedRoute component={FilmComparisonDetail} />
-        )}
-      </Route>
-      
-      <Route path="/film-comparison-edit/:id">
-        {({ params }) => (
-          <ProtectedRoute component={FilmComparisonEdit} />
-        )}
-      </Route>
-      
-      {/* NextUp Spotlight Feature Routes */}
-      <Route path="/nextup-spotlight">
-        {({ params }) => (
-          <ProtectedRoute component={NextUpSpotlight} />
-        )}
-      </Route>
-      
-      <Route path="/spotlight-profile/:id">
-        {({ params }) => (
-          <ProtectedRoute component={SpotlightProfile} />
-        )}
-      </Route>
-      
-      <Route path="/spotlight-create">
-        {({ params }) => (
-          <ProtectedRoute component={SpotlightCreate} />
-        )}
-      </Route>
-      
-      {/* MyPlayer Experience System Routes */}
-      <Route path="/myplayer-xp">
-        {({ params }) => (
-          <ProtectedRoute component={MyPlayerXP} />
-        )}
-      </Route>
-      
-      <Route path="/myplayer-star-path">
-        {({ params }) => (
-          <ProtectedRoute component={MyPlayerStarPath} />
-        )}
-      </Route>
-      
-      <Route path="/myplayer-ai-coach">
-        {({ params }) => (
-          <ProtectedRoute component={MyPlayerAICoach} />
-        )}
-      </Route>
-      
-      {/* MyPlayer Workout Verification Routes */}
-      <Route path="/workout-verification">
-        {({ params }) => (
-          <ProtectedRoute component={WorkoutVerification} />
-        )}
-      </Route>
-      
-      <Route path="/verification/:id">
-        {({ params }) => (
-          <ProtectedRoute component={VerificationDetail} />
-        )}
-      </Route>
-      
-      <Route path="/submit-verification">
-        {({ params }) => (
-          <ProtectedRoute component={SubmitVerification} />
-        )}
-      </Route>
-      
-      {/* MyPlayer UI Weight Room Route */}
-      <Route path="/weight-room">
-        {({ params }) => (
-          <ProtectedRoute component={WeightRoom} />
-        )}
-      </Route>
-      
-      {/* ScoutVision Feed Route */}
-      <Route path="/scoutvision-feed">
-        {({ params }) => (
-          <ProtectedRoute component={ScoutVisionFeed} />
-        )}
-      </Route>
-      
-      {/* Combine Tour Route */}
-      <Route path="/combine-tour">
-        {({ params }) => (
-          <ProtectedRoute component={CombineTour} />
-        )}
-      </Route>
-      
-      {/* Coach Portal Route */}
-      <Route path="/coach-portal">
-        {({ params }) => (
-          <ProtectedRoute component={CoachPortal} />
-        )}
-      </Route>
-      
-      {/* Settings Page Route */}
-      <Route path="/settings">
-        {({ params }) => (
-          <ProtectedRoute component={Settings} />
-        )}
-      </Route>
-      
-      {/* SMS Messaging Route */}
-      <Route path="/sms-messaging">
-        {({ params }) => (
-          <ProtectedRoute component={SmsMessagingPage} />
-        )}
-      </Route>
-      
-      {/* Blog Routes */}
-      <Route path="/blog">
-        {({ params }) => (
-          <BlogList />
-        )}
-      </Route>
-      
-      <Route path="/blog/:slug">
-        {({ params }) => (
-          <BlogPost />
-        )}
-      </Route>
-      
-      {/* GAR Score Page Route */}
-      <Route path="/gar-score">
-        {({ params }) => (
-          <ProtectedRoute component={GarScorePage} />
-        )}
-      </Route>
-      
-      {/* Enhanced GAR Visualization Route */}
-      <Route path="/enhanced-gar">
-        {({ params }) => (
-          <ProtectedRoute component={EnhancedGARPage} />
-        )}
-      </Route>
+        
+        <Route path="/dashboard">
+          {() => <ProtectedRoute component={Dashboard} />}
+        </Route>
+        
+        <Route path="/profile">
+          {() => <ProtectedRoute component={Profile} />}
+        </Route>
+        
+        <Route path="/video-analysis">
+          {() => <ProtectedRoute component={VideoAnalysis} />}
+        </Route>
+        
+        <Route path="/video-analysis/:id">
+          {() => <ProtectedRoute component={AnalysisReport} />}
+        </Route>
+        
+        <Route path="/video-analysis-detail/:id">
+          {() => <ProtectedRoute component={VideoAnalysisDetail} />}
+        </Route>
+        
+        <Route path="/highlight-generator/:id">
+          {() => <ProtectedRoute component={HighlightGenerator} />}
+        </Route>
+        
+        <Route path="/sport-recommendations">
+          {() => <ProtectedRoute component={SportRecommendations} />}
+        </Route>
+        
+        <Route path="/coach-connection">
+          {() => <ProtectedRoute component={CoachConnection} />}
+        </Route>
+        
+        <Route path="/ncaa-clearinghouse">
+          {() => <ProtectedRoute component={NcaaClearinghouse} />}
+        </Route>
+        
+        <Route path="/messaging">
+          {() => <ProtectedRoute component={MessagingPage} />}
+        </Route>
+        
+        <Route path="/admin-dashboard">
+          {() => <ProtectedRoute component={AdminDashboard} adminOnly={true} />}
+        </Route>
+        
+        <Route path="/upload-video">
+          {() => <ProtectedRoute component={UploadVideo} />}
+        </Route>
+        
+        <Route path="/cms">
+          {() => <ProtectedRoute component={CMSPage} adminOnly={true} />}
+        </Route>
+        
+        {/* Film Comparison Feature Routes */}
+        <Route path="/film-comparison">
+          {() => <ProtectedRoute component={FilmComparison} />}
+        </Route>
+        
+        <Route path="/film-comparison-create">
+          {() => <ProtectedRoute component={FilmComparisonCreate} />}
+        </Route>
+        
+        <Route path="/film-comparison/:id">
+          {() => <ProtectedRoute component={FilmComparisonDetail} />}
+        </Route>
+        
+        <Route path="/film-comparison-edit/:id">
+          {() => <ProtectedRoute component={FilmComparisonEdit} />}
+        </Route>
+        
+        {/* NextUp Spotlight Feature Routes */}
+        <Route path="/nextup-spotlight">
+          {() => <ProtectedRoute component={NextUpSpotlight} />}
+        </Route>
+        
+        <Route path="/spotlight-profile/:id">
+          {() => <ProtectedRoute component={SpotlightProfile} />}
+        </Route>
+        
+        <Route path="/spotlight-create">
+          {() => <ProtectedRoute component={SpotlightCreate} />}
+        </Route>
+        
+        {/* MyPlayer Experience System Routes */}
+        <Route path="/myplayer-xp">
+          {() => <ProtectedRoute component={MyPlayerXP} />}
+        </Route>
+        
+        <Route path="/myplayer-star-path">
+          {() => <ProtectedRoute component={MyPlayerStarPath} />}
+        </Route>
+        
+        <Route path="/myplayer-ai-coach">
+          {() => <ProtectedRoute component={MyPlayerAICoach} />}
+        </Route>
+        
+        {/* MyPlayer Workout Verification Routes */}
+        <Route path="/workout-verification">
+          {() => <ProtectedRoute component={WorkoutVerification} />}
+        </Route>
+        
+        <Route path="/verification/:id">
+          {() => <ProtectedRoute component={VerificationDetail} />}
+        </Route>
+        
+        <Route path="/submit-verification">
+          {() => <ProtectedRoute component={SubmitVerification} />}
+        </Route>
+        
+        {/* MyPlayer UI Weight Room Route */}
+        <Route path="/weight-room">
+          {() => <ProtectedRoute component={WeightRoom} />}
+        </Route>
+        
+        {/* ScoutVision Feed Route */}
+        <Route path="/scoutvision-feed">
+          {() => <ProtectedRoute component={ScoutVisionFeed} />}
+        </Route>
+        
+        {/* Combine Tour Route */}
+        <Route path="/combine-tour">
+          {() => <ProtectedRoute component={CombineTour} />}
+        </Route>
+        
+        {/* Coach Portal Route */}
+        <Route path="/coach-portal">
+          {() => <ProtectedRoute component={CoachPortal} />}
+        </Route>
+        
+        {/* Settings Page Route */}
+        <Route path="/settings">
+          {() => <ProtectedRoute component={Settings} />}
+        </Route>
+        
+        {/* SMS Messaging Route */}
+        <Route path="/sms-messaging">
+          {() => <ProtectedRoute component={SmsMessagingPage} />}
+        </Route>
+        
+        {/* Blog Routes */}
+        <Route path="/blog">
+          {() => <BlogList />}
+        </Route>
+        
+        <Route path="/blog/:slug">
+          {() => <BlogPost />}
+        </Route>
+        
+        {/* GAR Score Page Route */}
+        <Route path="/gar-score">
+          {() => <ProtectedRoute component={GarScorePage} />}
+        </Route>
+        
+        {/* Enhanced GAR Visualization Route */}
+        <Route path="/enhanced-gar">
+          {() => <ProtectedRoute component={EnhancedGARPage} />}
+        </Route>
 
-      <Route path="/enhanced-gar/:id">
-        {({ params }) => (
-          <ProtectedRoute component={EnhancedGARPage} />
-        )}
-      </Route>
-      
-      {/* Legacy Enhanced GAR Visualization Route */}
-      <Route path="/enhanced-gar-visualization">
-        {({ params }) => (
-          <ProtectedRoute component={EnhancedGarVisualizationPage} />
-        )}
-      </Route>
-      
-      {/* Enhanced GAR Score Route */}
-      <Route path="/gar-score-enhanced">
-        {({ params }) => (
-          <ProtectedRoute component={() => import('./pages/gar-score-enhanced').then(module => module.default)} />
-        )}
-      </Route>
-      
-      {/* Athlete Profile Page Route */}
-      <Route path="/profile/:id">
-        {({ params }) => (
-          <AthleteProfile />
-        )}
-      </Route>
-      
-      {/* Athlete Star Profiles Route */}
-      <Route path="/athlete-star-profiles">
-        {({ params }) => (
-          <ProtectedRoute component={AthleteStarProfilesPage} />
-        )}
-      </Route>
-      
-      {/* Fallback to 404 */}
-      <Route component={NotFound} />
-    </Switch>
+        <Route path="/enhanced-gar/:id">
+          {() => <ProtectedRoute component={EnhancedGARPage} />}
+        </Route>
+        
+        {/* Legacy Enhanced GAR Visualization Route */}
+        <Route path="/enhanced-gar-visualization">
+          {() => <ProtectedRoute component={EnhancedGarVisualizationPage} />}
+        </Route>
+        
+        {/* Enhanced GAR Score Route */}
+        <Route path="/gar-score-enhanced">
+          {() => <ProtectedRoute component={GarScorePage} />}
+        </Route>
+        
+        {/* Athlete Profile Page Route */}
+        <Route path="/profile/:id">
+          {() => <AthleteProfile />}
+        </Route>
+        
+        {/* Athlete Star Profiles Route */}
+        <Route path="/athlete-star-profiles">
+          {() => <ProtectedRoute component={AthleteStarProfilesPage} />}
+        </Route>
+        
+        {/* Fallback to 404 */}
+        <Route component={NotFound} />
+      </Switch>
+    </>
   );
 }
 
