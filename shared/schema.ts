@@ -1241,6 +1241,7 @@ export const athleteDiscoveries = pgTable("athlete_discoveries", {
   positions: text("positions").array(),
   followerCount: integer("follower_count"),
   engagementRate: numeric("engagement_rate", { precision: 5, scale: 2 }),
+  graduationYear: integer("grad_year"), // Changed to match the field name used in service
   gradYear: integer("grad_year"),
   location: text("location"),
   highSchool: text("high_school"),
@@ -1261,6 +1262,7 @@ export const mediaPartnerDiscoveries = pgTable("media_partner_discoveries", {
   scoutId: integer("scout_id").notNull().references(() => mediaPartnershipScouts.id),
   name: text("name").notNull(),
   mediaType: text("media_type").notNull(),
+  platform: text("platform"), // Added to match the field used in service
   websiteUrl: text("website_url"),
   contactEmail: text("contact_email"),
   contactPhone: text("contact_phone"),
