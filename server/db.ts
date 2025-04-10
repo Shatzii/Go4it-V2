@@ -6,18 +6,15 @@ import { log } from "./vite";
 
 neonConfig.webSocketConstructor = ws;
 
-// Connection string is automatically picked up from environment variables
-const DATABASE_URL = process.env.DATABASE_URL;
-
-if (!DATABASE_URL) {
+if (!process.env.DATABASE_URL) {
   log("DATABASE_URL is not defined", "db");
-  throw new Error("DATABASE_URL is not defined");
+  throw new Error("DATABASE_URL must be set. Did you forget to provision a database?");
 }
 
 // Connect to the database with Neon serverless driver
-log(`Connecting to database: ${DATABASE_URL}`, "db");
-export const pool = new Pool({ connectionString: DATABASE_URL });
-export const db = drizzle(pool, { schema });
+log(`Connecting to database: ${process.env.DATABASE_URL}`, "db");
+export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+export const db = drizzle({ client: pool, schema });
 
 // Setup graceful shutdown
 process.on("SIGINT", () => {
