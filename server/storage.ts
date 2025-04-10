@@ -86,6 +86,8 @@ export interface IStorage {
   
   // API Key operations
   getAllActiveApiKeys(): Promise<ApiKey[]>;
+  saveApiKey(apiKeyData: { keyType: string; keyValue: string; isActive: boolean }): Promise<ApiKey>;
+  getApiKeyStatus(): Promise<Record<string, boolean>>;
   
   // Content Blocks operations
   getContentBlocks(): Promise<ContentBlock[]>;
@@ -602,10 +604,70 @@ export class DatabaseStorage implements IStorage {
     try {
       return await db.select()
         .from(apiKeys)
-        .where(eq(apiKeys.active, true));
+        .where(eq(apiKeys.is_active, true));
     } catch (error) {
       console.error('Database error in getAllActiveApiKeys:', error);
       return [];
+    }
+  }
+  
+  // Save API key
+  async saveApiKey(apiKeyData: { keyType: string; keyValue: string; isActive: boolean }): Promise<ApiKey> {
+    try {
+      // Check if we already have a key of this type
+      const [existingKey] = await db.select()
+        .from(apiKeys)
+        .where(eq(apiKeys.key_type, apiKeyData.keyType))
+        .limit(1);
+      
+      if (existingKey) {
+        // Update the existing key
+        const [updatedKey] = await db.update(apiKeys)
+          .set({
+            key_value: apiKeyData.keyValue,
+            is_active: apiKeyData.isActive,
+            last_used: new Date()
+          })
+          .where(eq(apiKeys.id, existingKey.id))
+          .returning();
+        
+        return updatedKey;
+      }
+      
+      // Create a new key
+      const [newKey] = await db.insert(apiKeys)
+        .values({
+          key_type: apiKeyData.keyType,
+          key_value: apiKeyData.keyValue,
+          is_active: apiKeyData.isActive,
+          added_at: new Date()
+        })
+        .returning();
+      
+      return newKey;
+    } catch (error) {
+      console.error('Database error in saveApiKey:', error);
+      throw new Error('Failed to save API key');
+    }
+  }
+  
+  // Get API key status (just presence, not the actual keys)
+  async getApiKeyStatus(): Promise<Record<string, boolean>> {
+    try {
+      const keys = await db.select()
+        .from(apiKeys)
+        .where(eq(apiKeys.is_active, true));
+      
+      // Create a map of key type to boolean (true if exists)
+      const keyStatus: Record<string, boolean> = {};
+      keys.forEach(key => {
+        keyStatus[key.key_type] = true;
+      });
+      
+      return keyStatus;
+    } catch (error) {
+      console.error('Database error in getApiKeyStatus:', error);
+      return {};
     }
   }
 
