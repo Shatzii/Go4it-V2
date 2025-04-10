@@ -68,13 +68,16 @@ const InteractiveSkillTreeVisualization: React.FC<InteractiveSkillTreeVisualizat
   const { toast } = useToast();
 
   // Fetch skill tree data
-  const { data: skillTreeData, isLoading: isLoadingSkillTree } = useQuery({
+  const { data: skillTreeData, isLoading: isLoadingSkillTree } = useQuery<{
+    nodes: SkillNode[];
+    relationships: SkillRelationship[];
+  }>({
     queryKey: ['/api/ai-coach/skill-tree', sportType, position],
     enabled: !!sportType,
   });
 
   // Fetch user's skill progress
-  const { data: userSkills, isLoading: isLoadingSkills } = useQuery({
+  const { data: userSkills, isLoading: isLoadingSkills } = useQuery<UserSkill[]>({
     queryKey: ['/api/player/skill-progress', sportType],
     enabled: !!sportType,
   });
