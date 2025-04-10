@@ -14,7 +14,9 @@ import {
   Dumbbell,
   Settings,
   Eye,
-  EyeOff
+  EyeOff,
+  Users,
+  BookOpen
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { useLayout } from "@/contexts/layout-context";

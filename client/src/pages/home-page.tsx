@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -60,6 +60,11 @@ export default function HomePage() {
   const { user } = useAuth();
   // We don't need activeTab state anymore since the Community section has been simplified
   // and blogPosts are being handled in FeaturedBlogPosts component
+  
+  // Scroll to top when the component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const { data: contentBlocks = [] } = useQuery<ContentBlock[]>({
     queryKey: ["/api/content-blocks/section/what-makes-us-different"],
