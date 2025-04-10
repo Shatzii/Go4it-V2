@@ -14,7 +14,7 @@ import { generateTokens } from './services/auth-token-service';
 import { registerAiCoachRoutes } from './routes/ai-coach-routes';
 import { aiCoachService } from './services/ai-coach-service';
 import { User, insertNcaaEligibilitySchema } from "@shared/schema";
-import { isAdminMiddleware } from './middleware/auth-middleware';
+import { isAdminMiddleware, isAuthenticatedMiddleware } from './middleware/auth-middleware';
 import scoutRoutes from './routes/scout-routes';
 import myplayerRoutes from './routes/myplayer-routes';
 import videoRoutes from './routes/video-routes';
@@ -5194,13 +5194,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api', scoutRoutes);
 
   // Register MyPlayer routes
-  app.use('/api/myplayer', myplayerRoutes);
+  app.use('/api/myplayer', isAuthenticatedMiddleware, myplayerRoutes);
   
   // Register Video routes
-  app.use('/api/videos', videoRoutes);
+  app.use('/api/videos', isAuthenticatedMiddleware, videoRoutes);
   
   // Register Player routes
-  app.use('/api/player', playerRoutes);
+  app.use('/api/player', isAuthenticatedMiddleware, playerRoutes);
 
   // Content Blocks API Routes
   app.get("/api/content-blocks", async (req: Request, res: Response) => {
