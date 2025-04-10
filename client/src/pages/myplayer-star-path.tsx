@@ -143,8 +143,10 @@ export default function MyPlayerStarPath() {
       totalXp: progress.totalXp || 0,
       badges: badges || [],
       recentTransactions: transactions || [],
+      // Include star path data if available
+      starPath: starPath || null,
     };
-  }, [progress, badges, transactions, isLoading]);
+  }, [progress, badges, transactions, starPath, isLoading]);
 
   // Define star levels and their requirements
   const starLevels: StarLevel[] = [
@@ -204,6 +206,12 @@ export default function MyPlayerStarPath() {
   const getCurrentStarLevel = useMemo(() => {
     if (!playerProgress) return 1;
     
+    // If we have star path data, use that as the source of truth
+    if (playerProgress.starPath?.currentStarLevel) {
+      return playerProgress.starPath.currentStarLevel;
+    }
+    
+    // Fallback to calculating based on XP
     let currentLevel = 1;
     for (let i = starLevels.length - 1; i >= 0; i--) {
       if (playerProgress.totalXp >= starLevels[i].minXp) {
