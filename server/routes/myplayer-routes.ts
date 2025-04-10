@@ -9,6 +9,7 @@ import {
   xpTransactions, 
   playerChallenges, 
   playerActiveChallenges, 
+  athleteStarPath,
   insertPlayerProgressSchema,
   insertPlayerSkillSchema,
   insertPlayerBadgeSchema,
@@ -26,6 +27,41 @@ import {
   RANKS,
   STREAK_MULTIPLIERS
 } from '../utils/xp-system';
+
+// Star Path level definitions
+export const STAR_LEVELS = [
+  { level: 1, name: "Rising Prospect", minXp: 0, color: "text-blue-400", borderColor: "border-blue-400", shadowColor: "shadow-blue-200" },
+  { level: 2, name: "Emerging Talent", minXp: 5000, color: "text-sky-500", borderColor: "border-sky-500", shadowColor: "shadow-sky-300" },
+  { level: 3, name: "Standout Performer", minXp: 15000, color: "text-cyan-600", borderColor: "border-cyan-600", shadowColor: "shadow-cyan-400" },
+  { level: 4, name: "Elite Prospect", minXp: 30000, color: "text-teal-600", borderColor: "border-teal-600", shadowColor: "shadow-teal-400" },
+  { level: 5, name: "Five-Star Athlete", minXp: 50000, color: "text-emerald-600", borderColor: "border-emerald-600", shadowColor: "shadow-emerald-400" }
+];
+
+// Default attribute values for new star path
+const DEFAULT_PHYSICAL_ATTRIBUTES = {
+  speed: 50,
+  strength: 50,
+  agility: 50,
+  endurance: 50,
+  verticalJump: 50
+};
+
+const DEFAULT_TECHNICAL_ATTRIBUTES = {
+  technique: 50,
+  ballControl: 50,
+  accuracy: 50,
+  gameIQ: 50
+};
+
+const DEFAULT_MENTAL_ATTRIBUTES = {
+  focus: 50,
+  confidence: 50,
+  determination: 50,
+  teamwork: 50
+};
+
+// Star Path thresholds for levels 1-5
+const STAR_PATH_THRESHOLDS = [0, 5000, 15000, 30000, 50000, 75000];
 
 const router = express.Router();
 
@@ -706,6 +742,397 @@ router.post('/update-streak/:userId', async (req, res) => {
   }
 });
 
+// ----------------
+// Star Path Routes
+// ----------------
 
+// Get player's star path
+router.get('/star-path/:userId', async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+    
+    // Get the star path for this user
+    const starPath = await db.query.athleteStarPath.findFirst({
+      where: eq(athleteStarPath.userId, userId)
+    });
+    
+    if (!starPath) {
+      return res.status(404).json({ error: 'Star path not found for this user' });
+    }
+    
+    // Format the response with star level info
+    const currentStarLevel = starPath.currentStarLevel || 1;
+    const starLevelInfo = STAR_LEVELS.find(level => level.level === currentStarLevel) || STAR_LEVELS[0];
+    
+    // Get the next level info
+    const nextStarLevel = Math.min(currentStarLevel + 1, 5);
+    const nextLevelInfo = STAR_LEVELS.find(level => level.level === nextStarLevel);
+    
+    // Calculate XP progress
+    const totalXp = starPath.xpTotal || 0;
+    const currentLevelXp = STAR_LEVELS.find(level => level.level === currentStarLevel)?.minXp || 0;
+    const nextLevelXp = nextLevelInfo?.minXp || STAR_LEVELS[currentStarLevel]?.minXp || 5000;
+    const xpProgress = Math.min(100, Math.max(0, ((totalXp - currentLevelXp) / (nextLevelXp - currentLevelXp)) * 100));
+    
+    // Include star path along with computed information
+    return res.json({
+      ...starPath,
+      starLevelInfo,
+      nextLevelInfo,
+      xpNeeded: nextLevelXp - totalXp,
+      xpProgress: Math.round(xpProgress),
+      isMaxLevel: currentStarLevel >= 5
+    });
+    
+  } catch (error) {
+    console.error('Error fetching star path:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Create star path for a player
+router.post('/star-path', async (req, res) => {
+  try {
+    // Validate user ID
+    const { userId, sportType, position } = req.body;
+    
+    if (!userId || isNaN(userId)) {
+      return res.status(400).json({ error: 'Valid user ID is required' });
+    }
+    
+    // Check if star path already exists
+    const existingStarPath = await db.query.athleteStarPath.findFirst({
+      where: eq(athleteStarPath.userId, userId)
+    });
+    
+    if (existingStarPath) {
+      return res.status(400).json({ error: 'Star path already exists for this user' });
+    }
+    
+    // Create new star path with defaults
+    const [newStarPath] = await db.insert(athleteStarPath).values({
+      userId,
+      currentStarLevel: 1,
+      targetStarLevel: 2,
+      storylinePhase: "beginning",
+      progress: 0,
+      sportType: sportType || "basketball", // Default sport
+      position: position || null,
+      xpTotal: 0,
+      levelThresholds: STAR_PATH_THRESHOLDS,
+      storylineActive: true,
+      completedDrills: 0,
+      verifiedWorkouts: 0,
+      skillTreeProgress: 0,
+      physicalAttributes: DEFAULT_PHYSICAL_ATTRIBUTES,
+      technicalAttributes: DEFAULT_TECHNICAL_ATTRIBUTES,
+      mentalAttributes: DEFAULT_MENTAL_ATTRIBUTES,
+    }).returning();
+    
+    return res.status(201).json(newStarPath);
+  } catch (error) {
+    console.error('Error creating star path:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Update player's star path
+router.patch('/star-path/:userId', async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+    
+    // Get existing star path
+    const existingStarPath = await db.query.athleteStarPath.findFirst({
+      where: eq(athleteStarPath.userId, userId)
+    });
+    
+    if (!existingStarPath) {
+      return res.status(404).json({ error: 'Star path not found for this user' });
+    }
+    
+    // Validate update data (we'll allow partial updates)
+    // Update the path - only allow specific fields to be updated
+    const allowedFields = [
+      'currentStarLevel', 'targetStarLevel', 'storylinePhase', 
+      'progress', 'sportType', 'position', 'physicalAttributes',
+      'technicalAttributes', 'mentalAttributes', 'storylineActive',
+      'completedDrills', 'verifiedWorkouts', 'skillTreeProgress'
+    ];
+    
+    // Filter request body to only include allowed fields
+    const updateData = Object.keys(req.body)
+      .filter(key => allowedFields.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = req.body[key];
+        return obj;
+      }, {});
+    
+    // Add lastUpdated timestamp
+    updateData.lastUpdated = new Date();
+    
+    // Perform update
+    const [updatedStarPath] = await db
+      .update(athleteStarPath)
+      .set(updateData)
+      .where(eq(athleteStarPath.userId, userId))
+      .returning();
+    
+    return res.json(updatedStarPath);
+  } catch (error) {
+    console.error('Error updating star path:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Update star level for player (level up)
+router.post('/star-path/:userId/level-up', async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+    
+    // Get existing star path
+    const existingStarPath = await db.query.athleteStarPath.findFirst({
+      where: eq(athleteStarPath.userId, userId)
+    });
+    
+    if (!existingStarPath) {
+      return res.status(404).json({ error: 'Star path not found for this user' });
+    }
+    
+    // Check current level and if leveling up is possible
+    const currentLevel = existingStarPath.currentStarLevel || 1;
+    if (currentLevel >= 5) {
+      return res.status(400).json({ 
+        error: 'Already at maximum star level',
+        starPath: existingStarPath
+      });
+    }
+    
+    // Set the new level and update the target level
+    const newLevel = currentLevel + 1;
+    const targetLevel = Math.min(newLevel + 1, 5);
+    
+    // Update the star path
+    const [updatedStarPath] = await db
+      .update(athleteStarPath)
+      .set({
+        currentStarLevel: newLevel,
+        targetStarLevel: targetLevel,
+        storylinePhase: "advancing",
+        progress: 0,
+        lastUpdated: new Date()
+      })
+      .where(eq(athleteStarPath.userId, userId))
+      .returning();
+    
+    return res.json({
+      success: true,
+      message: `Congratulations! Leveled up to ${STAR_LEVELS[newLevel - 1].name}`,
+      previousLevel: currentLevel,
+      newLevel: newLevel,
+      starPath: updatedStarPath
+    });
+  } catch (error) {
+    console.error('Error updating star level:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Update attribute points (physical, technical, mental)
+router.post('/star-path/:userId/attributes', async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+    
+    // Get existing star path
+    const existingStarPath = await db.query.athleteStarPath.findFirst({
+      where: eq(athleteStarPath.userId, userId)
+    });
+    
+    if (!existingStarPath) {
+      return res.status(404).json({ error: 'Star path not found for this user' });
+    }
+    
+    // Get attribute updates from request
+    const { attributeType, attributeName, value } = req.body;
+    
+    if (!attributeType || !attributeName || value === undefined) {
+      return res.status(400).json({ 
+        error: 'Missing required fields: attributeType, attributeName, value' 
+      });
+    }
+    
+    if (!['physical', 'technical', 'mental'].includes(attributeType)) {
+      return res.status(400).json({ 
+        error: 'Invalid attributeType. Must be physical, technical, or mental'
+      });
+    }
+    
+    // Validate value (between 0 and 100)
+    const pointValue = parseInt(value);
+    if (isNaN(pointValue) || pointValue < 0 || pointValue > 100) {
+      return res.status(400).json({ 
+        error: 'Invalid value. Must be between 0 and 100'
+      });
+    }
+    
+    // Update the appropriate attribute
+    let attributeData = {};
+    if (attributeType === 'physical') {
+      attributeData = {
+        ...existingStarPath.physicalAttributes,
+        [attributeName]: pointValue
+      };
+      await db.update(athleteStarPath)
+        .set({ physicalAttributes: attributeData })
+        .where(eq(athleteStarPath.userId, userId));
+    } else if (attributeType === 'technical') {
+      attributeData = {
+        ...existingStarPath.technicalAttributes,
+        [attributeName]: pointValue
+      };
+      await db.update(athleteStarPath)
+        .set({ technicalAttributes: attributeData })
+        .where(eq(athleteStarPath.userId, userId));
+    } else if (attributeType === 'mental') {
+      attributeData = {
+        ...existingStarPath.mentalAttributes,
+        [attributeName]: pointValue
+      };
+      await db.update(athleteStarPath)
+        .set({ mentalAttributes: attributeData })
+        .where(eq(athleteStarPath.userId, userId));
+    }
+    
+    // Get the updated star path
+    const updatedStarPath = await db.query.athleteStarPath.findFirst({
+      where: eq(athleteStarPath.userId, userId)
+    });
+    
+    return res.json({
+      success: true,
+      attributeType,
+      attributeName,
+      value: pointValue,
+      starPath: updatedStarPath
+    });
+  } catch (error) {
+    console.error('Error updating attributes:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Increment progress on star path
+router.post('/star-path/:userId/progress', async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+    
+    // Get existing star path
+    const existingStarPath = await db.query.athleteStarPath.findFirst({
+      where: eq(athleteStarPath.userId, userId)
+    });
+    
+    if (!existingStarPath) {
+      return res.status(404).json({ error: 'Star path not found for this user' });
+    }
+    
+    // Get progress increment
+    const { progressIncrement = 5 } = req.body;
+    const increment = Math.max(1, Math.min(25, parseInt(progressIncrement)));
+    
+    // Calculate new progress value (cap at 100)
+    const currentProgress = existingStarPath.progress || 0;
+    const newProgress = Math.min(100, currentProgress + increment);
+    
+    // Update the progress
+    const [updatedStarPath] = await db
+      .update(athleteStarPath)
+      .set({
+        progress: newProgress,
+        lastUpdated: new Date()
+      })
+      .where(eq(athleteStarPath.userId, userId))
+      .returning();
+    
+    // Check if this completes the progress (100%)
+    const isComplete = newProgress >= 100;
+    
+    return res.json({
+      success: true,
+      previousProgress: currentProgress,
+      newProgress,
+      isComplete,
+      starPath: updatedStarPath
+    });
+  } catch (error) {
+    console.error('Error updating progress:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get specific attribute of a star path
+router.get('/star-path/:userId/attributes/:attributeType', async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const attributeType = req.params.attributeType;
+    
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+    
+    if (!['physical', 'technical', 'mental'].includes(attributeType)) {
+      return res.status(400).json({ 
+        error: 'Invalid attributeType. Must be physical, technical, or mental'
+      });
+    }
+    
+    // Get existing star path
+    const existingStarPath = await db.query.athleteStarPath.findFirst({
+      where: eq(athleteStarPath.userId, userId)
+    });
+    
+    if (!existingStarPath) {
+      return res.status(404).json({ error: 'Star path not found for this user' });
+    }
+    
+    // Return the requested attribute set
+    let attributes = {};
+    if (attributeType === 'physical') {
+      attributes = existingStarPath.physicalAttributes || DEFAULT_PHYSICAL_ATTRIBUTES;
+    } else if (attributeType === 'technical') {
+      attributes = existingStarPath.technicalAttributes || DEFAULT_TECHNICAL_ATTRIBUTES;
+    } else if (attributeType === 'mental') {
+      attributes = existingStarPath.mentalAttributes || DEFAULT_MENTAL_ATTRIBUTES;
+    }
+    
+    return res.json({
+      attributeType,
+      attributes,
+      userId
+    });
+    
+  } catch (error) {
+    console.error('Error fetching attributes:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 export default router;
