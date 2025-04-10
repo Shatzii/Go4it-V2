@@ -65,6 +65,7 @@ import EnhancedGARPage from "@/pages/enhanced-gar";
 import AcademicProgress from "@/pages/academic-progress";
 import VideoHighlightsPage from "@/pages/video-highlights-page";
 import AIVideoPlayerDemo from "@/pages/ai-video-player-demo";
+import EnhancedSkillTreePage from "@/pages/enhanced-skill-tree-page";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -319,9 +320,13 @@ function Router() {
           {() => <ProtectedRoute component={AcademicProgress} />}
         </Route>
         
-        {/* Skill Tree Route */}
+        {/* Skill Tree Routes */}
         <Route path="/skill-tree">
           {() => <ProtectedRoute component={SkillTreePage} />}
+        </Route>
+        
+        <Route path="/enhanced-skill-tree">
+          {() => <ProtectedRoute component={EnhancedSkillTreePage} />}
         </Route>
         
         {/* Video Highlights Route */}
