@@ -1,761 +1,688 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { Sparkles, Star, Lock, Trophy, ChevronRight, ChevronDown, Info, Play, Dumbbell } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
-import { apiRequest, queryClient } from '@/lib/queryClient';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { useAuth } from '@/contexts/auth-context';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Spinner } from '@/components/ui/spinner';
+import { Check, ChevronRight, Lock, Sparkles, Star, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-// Types based on the database schema
-interface SkillTreeNode {
+// Types for skill tree data
+type SkillNode = {
   id: number;
   name: string;
   description: string;
-  sportType: string | null;
-  position: string | null;
   category: string;
-  level: number;
+  sportType: string;
+  position?: string;
+  difficulty: string;
+  prerequisites: number[];
+  imageUrl?: string;
+  active: boolean;
   xpToUnlock: number;
-  iconPath: string | null;
-  unlockRequirement: string | null;
-  sortOrder: number;
-  createdAt: Date;
-  isActive: boolean;
-}
+};
 
-interface SkillTreeRelationship {
+type SkillRelationship = {
   id: number;
-  parentId: number;
-  childId: number;
-  requirement: string | null;
-  createdAt: Date;
-}
+  parentNodeId: number;
+  childNodeId: number;
+};
 
-interface SkillTreeData {
-  nodes: SkillTreeNode[];
-  relationships: SkillTreeRelationship[];
-}
+type UserSkill = {
+  id: number;
+  userId: number;
+  skillNodeId: number;
+  unlocked: boolean;
+  unlockedAt?: Date;
+  level?: number;
+  xp?: number;
+  lastTrainedAt?: Date;
+};
 
-interface TrainingDrill {
+type TrainingDrill = {
   id: number;
   name: string;
   description: string;
   skillNodeId: number;
   difficulty: string;
-  sportType: string | null;
-  position: string | null;
-  category: string;
   duration: number;
-  equipment: string[];
-  targetMuscles: string[];
-  videoUrl: string | null;
-  imageUrl: string | null;
   instructions: string;
   tips: string[];
-  variations: string[];
   xpReward: number;
-  createdAt: Date;
-  updatedAt: Date;
   isAiGenerated: boolean;
-  aiPromptUsed: string | null;
-  sourceId: string | null;
-}
-
-interface UserSkillProgress {
-  skillNodeId: number;
-  level: number;
-  xp: number;
-  unlocked: boolean;
-}
+};
 
 interface InteractiveSkillTreeProps {
   sportType: string;
   position?: string;
-  onSkillSelected?: (skill: SkillTreeNode) => void;
 }
 
-export default function InteractiveSkillTree({ 
-  sportType, 
-  position,
-  onSkillSelected
-}: InteractiveSkillTreeProps) {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const [selectedSkill, setSelectedSkill] = useState<SkillTreeNode | null>(null);
+const InteractiveSkillTree: React.FC<InteractiveSkillTreeProps> = ({ sportType, position }) => {
+  const [selectedSkill, setSelectedSkill] = useState<SkillNode | null>(null);
   const [selectedDrill, setSelectedDrill] = useState<TrainingDrill | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drillDrawerOpen, setDrillDrawerOpen] = useState(false);
-  const [skillProgress, setSkillProgress] = useState<Map<number, UserSkillProgress>>(new Map());
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [skillDialogOpen, setSkillDialogOpen] = useState(false);
+  const [drillDialogOpen, setDrillDialogOpen] = useState(false);
+  const [isGeneratingDrill, setIsGeneratingDrill] = useState(false);
   const svgRef = useRef<SVGSVGElement>(null);
-  
-  // Custom colors for different skill categories
-  const categoryColors: Record<string, string> = {
-    speed: '#3b82f6',      // blue
-    strength: '#f97316',   // orange
-    agility: '#84cc16',    // lime
-    technique: '#8b5cf6',  // violet
-    endurance: '#ec4899',  // pink
-    flexibility: '#14b8a6', // teal
-    coordination: '#f59e0b', // amber
-    balance: '#0ea5e9',    // sky
-    power: '#ef4444',      // red
-    mental: '#6366f1',     // indigo
-  };
-  
-  // Fetch skill tree data
-  const { data: skillTreeData, isLoading: isLoadingSkillTree } = useQuery<SkillTreeData>({
-    queryKey: ['/api/ai-coach/skill-tree', sportType],
-    enabled: !!user && !!sportType,
-  });
-  
-  // Fetch user's skill progress
-  const { data: userProgress, isLoading: isLoadingProgress } = useQuery<UserSkillProgress[]>({
-    queryKey: ['/api/player/skill-progress', sportType],
-    enabled: !!user && !!sportType,
-    // This is a fallback for development if the API endpoint isn't fully implemented yet
-    onError: () => {
-      console.warn('Skill progress endpoint not available, using mock data');
-      // Mock progress data based on skill tree nodes
-      if (skillTreeData?.nodes) {
-        const mockProgress: UserSkillProgress[] = skillTreeData.nodes.map(node => ({
-          skillNodeId: node.id,
-          level: node.level === 1 ? 1 : 0, // Only first level skills are unlocked
-          xp: node.level === 1 ? Math.floor(Math.random() * 30) : 0,
-          unlocked: node.level === 1 // Only first level skills are unlocked
-        }));
-        setSkillProgress(new Map(mockProgress.map(p => [p.skillNodeId, p])));
-      }
-    }
-  });
-  
-  // Fetch drills for the selected skill
-  const { data: drills, isLoading: isLoadingDrills } = useQuery<TrainingDrill[]>({
-    queryKey: ['/api/ai-coach/skill-drills', selectedSkill?.id],
-    enabled: !!selectedSkill?.id,
-  });
-  
-  // Generate a drill mutation
-  const generateDrillMutation = useMutation({
-    mutationFn: async (data: { skillNodeId: number, difficulty: string }) => {
-      return await apiRequest('POST', '/api/ai-coach/generate-drill', data);
-    },
-    onSuccess: () => {
-      toast({
-        title: "Drill generated!",
-        description: "A new training drill has been created for this skill.",
-      });
-      // Invalidate cache to refresh drills
-      queryClient.invalidateQueries({ queryKey: ['/api/ai-coach/skill-drills', selectedSkill?.id] });
-    },
-    onError: (error) => {
-      console.error('Error generating drill:', error);
-      toast({
-        title: "Drill generation failed",
-        description: "Could not generate a new drill at this time.",
-        variant: "destructive",
-      });
-    }
-  });
-  
-  // Complete a drill mutation
-  const completeDrillMutation = useMutation({
-    mutationFn: async (data: { drillId: number }) => {
-      return await apiRequest('POST', '/api/player/complete-drill', data);
-    },
-    onSuccess: (data) => {
-      toast({
-        title: "Drill completed!",
-        description: `You've earned ${data.xpEarned} XP!`,
-      });
-      // Invalidate cache to refresh skill progress
-      queryClient.invalidateQueries({ queryKey: ['/api/player/skill-progress', sportType] });
-      // Close the drill drawer
-      setDrillDrawerOpen(false);
-    },
-    onError: (error) => {
-      console.error('Error completing drill:', error);
-      toast({
-        title: "Couldn't record completion",
-        description: "There was an error recording your drill completion.",
-        variant: "destructive",
-      });
-    }
-  });
-  
-  // Update skillProgress state when userProgress data loads
-  useEffect(() => {
-    if (userProgress) {
-      setSkillProgress(new Map(userProgress.map(p => [p.skillNodeId, p])));
-    }
-  }, [userProgress]);
-  
-  // Set the first category as active when data loads
-  useEffect(() => {
-    if (skillTreeData?.nodes && skillTreeData.nodes.length > 0 && !activeCategory) {
-      const categories = [...new Set(skillTreeData.nodes.map(node => node.category))];
-      if (categories.length > 0) {
-        setActiveCategory(categories[0]);
-      }
-    }
-  }, [skillTreeData, activeCategory]);
+  const { toast } = useToast();
 
-  // Handle skill node click
-  const handleSkillClick = (skill: SkillTreeNode) => {
-    setSelectedSkill(skill);
-    setDrawerOpen(true);
-    if (onSkillSelected) {
-      onSkillSelected(skill);
+  // Fetch skill tree data
+  const { data: skillTreeData, isLoading: isLoadingSkillTree } = useQuery({
+    queryKey: ['/api/ai-coach/skill-tree', sportType, position],
+    enabled: !!sportType,
+  });
+
+  // Fetch user's skill progress
+  const { data: userSkills, isLoading: isLoadingSkills } = useQuery({
+    queryKey: ['/api/player/skill-progress', sportType],
+    enabled: !!sportType,
+  });
+
+  // Fetch drills for selected skill
+  const { data: drills, isLoading: isLoadingDrills } = useQuery({
+    queryKey: ['/api/ai-coach/skill-drills', selectedSkill?.id],
+    enabled: !!selectedSkill?.id && skillDialogOpen,
+  });
+
+  // Helper to check if a skill is unlocked
+  const isSkillUnlocked = (skillId: number): boolean => {
+    if (!userSkills) return false;
+    const skill = userSkills.find((s: UserSkill) => s.skillNodeId === skillId);
+    return !!skill && skill.unlocked;
+  };
+
+  // Helper to get skill level
+  const getSkillLevel = (skillId: number): number => {
+    if (!userSkills) return 0;
+    const skill = userSkills.find((s: UserSkill) => s.skillNodeId === skillId);
+    return skill?.level || 0;
+  };
+
+  // Helper to get skill XP
+  const getSkillXp = (skillId: number): number => {
+    if (!userSkills) return 0;
+    const skill = userSkills.find((s: UserSkill) => s.skillNodeId === skillId);
+    return skill?.xp || 0;
+  };
+
+  // Helper to check if a skill can be unlocked (all prerequisites are met)
+  const canUnlockSkill = (skill: SkillNode): boolean => {
+    if (!skillTreeData || !userSkills) return false;
+    
+    // If the skill is already unlocked, return false
+    if (isSkillUnlocked(skill.id)) return false;
+    
+    // Check if all prerequisites are unlocked
+    const prerequisites = skill.prerequisites || [];
+    if (prerequisites.length === 0) return true; // No prerequisites, can unlock
+    
+    return prerequisites.every(preqId => isSkillUnlocked(preqId));
+  };
+
+  // Generate connections between nodes
+  const generateConnections = () => {
+    if (!skillTreeData || !svgRef.current) return null;
+    
+    const { nodes, relationships } = skillTreeData;
+    const connections: JSX.Element[] = [];
+    
+    relationships.forEach((rel: SkillRelationship) => {
+      const parentNode = document.getElementById(`skill-${rel.parentNodeId}`);
+      const childNode = document.getElementById(`skill-${rel.childNodeId}`);
+      
+      if (parentNode && childNode) {
+        const parentRect = parentNode.getBoundingClientRect();
+        const childRect = childNode.getBoundingClientRect();
+        const svgRect = svgRef.current!.getBoundingClientRect();
+        
+        // Calculate position relative to SVG
+        const x1 = parentRect.left + parentRect.width / 2 - svgRect.left;
+        const y1 = parentRect.top + parentRect.height / 2 - svgRect.top;
+        const x2 = childRect.left + childRect.width / 2 - svgRect.left;
+        const y2 = childRect.top + childRect.height / 2 - svgRect.top;
+        
+        // Check if parent skill is unlocked
+        const parentUnlocked = isSkillUnlocked(rel.parentNodeId);
+        const childUnlocked = isSkillUnlocked(rel.childNodeId);
+        
+        connections.push(
+          <line
+            key={`connection-${rel.id}`}
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
+            stroke={parentUnlocked && childUnlocked ? '#3b82f6' : '#4b5563'}
+            strokeWidth={parentUnlocked && childUnlocked ? 3 : 2}
+            strokeDasharray={parentUnlocked && childUnlocked ? undefined : '5,5'}
+            strokeOpacity={parentUnlocked ? 1 : 0.5}
+          />
+        );
+      }
+    });
+    
+    return connections;
+  };
+
+  // Update connections when window resizes
+  useEffect(() => {
+    const handleResize = () => {
+      // Force redraw of connections
+      setConnections(generateConnections());
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [skillTreeData, userSkills]);
+
+  // Update connections when data changes
+  const [connections, setConnections] = useState<JSX.Element[] | null>(null);
+  useEffect(() => {
+    if (skillTreeData && userSkills) {
+      // Small delay to ensure nodes are rendered first
+      setTimeout(() => {
+        setConnections(generateConnections());
+      }, 100);
     }
+  }, [skillTreeData, userSkills]);
+
+  // Handle skill click
+  const handleSkillClick = (skill: SkillNode) => {
+    setSelectedSkill(skill);
+    setSkillDialogOpen(true);
   };
-  
-  // Handle drill selection
-  const handleDrillSelect = (drill: TrainingDrill) => {
+
+  // Handle drill click
+  const handleDrillClick = (drill: TrainingDrill) => {
     setSelectedDrill(drill);
-    setDrillDrawerOpen(true);
+    setDrillDialogOpen(true);
   };
-  
-  // Generate a new drill
-  const handleGenerateDrill = () => {
-    if (selectedSkill) {
-      generateDrillMutation.mutate({ 
-        skillNodeId: selectedSkill.id, 
-        difficulty: 'intermediate' 
+
+  // Handle completing a drill
+  const handleCompleteDrill = async () => {
+    if (!selectedDrill) return;
+    
+    try {
+      const response = await fetch('/api/player/complete-drill', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ drillId: selectedDrill.id }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to complete drill');
+      }
+      
+      const data = await response.json();
+      
+      toast({
+        title: "Drill Completed!",
+        description: `You earned ${data.xpEarned} XP for completing this drill.`,
+        variant: "success",
+      });
+      
+      // Close dialogs
+      setDrillDialogOpen(false);
+      setSkillDialogOpen(false);
+      
+      // Invalidate queries to refresh data
+      // (Note: We would use queryClient here in a real implementation)
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+      
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to complete the drill. Please try again.",
+        variant: "destructive",
       });
     }
   };
-  
-  // Mark a drill as completed
-  const handleCompleteDrill = () => {
-    if (selectedDrill) {
-      completeDrillMutation.mutate({ drillId: selectedDrill.id });
+
+  // Generate a new drill
+  const handleGenerateDrill = async () => {
+    if (!selectedSkill) return;
+    
+    setIsGeneratingDrill(true);
+    
+    try {
+      const response = await fetch('/api/ai-coach/generate-drill', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          skillNodeId: selectedSkill.id,
+          difficulty: 'intermediate',
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate drill');
+      }
+      
+      const newDrill = await response.json();
+      
+      toast({
+        title: "Drill Generated",
+        description: "A new custom drill has been created for you.",
+        variant: "success",
+      });
+      
+      // Update the drills list (would use queryClient in real implementation)
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+      
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate a new drill. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingDrill(false);
     }
   };
-  
-  // Function to filter nodes by category
-  const filterNodesByCategory = (nodes: SkillTreeNode[], category: string | null): SkillTreeNode[] => {
-    if (!category) return nodes;
-    return nodes.filter(node => node.category === category);
-  };
-  
-  // Get unique categories from nodes
-  const getCategories = (): string[] => {
-    if (!skillTreeData?.nodes) return [];
-    const categories = [...new Set(skillTreeData.nodes.map(node => node.category))];
-    return categories;
-  };
-  
-  // Check if a skill is unlocked
-  const isSkillUnlocked = (skillId: number): boolean => {
-    const progress = skillProgress.get(skillId);
-    if (!progress) return false;
-    return progress.unlocked;
-  };
-  
-  // Get a node's progress percentage
-  const getSkillProgress = (skillId: number): number => {
-    const progress = skillProgress.get(skillId);
-    if (!progress) return 0;
+
+  // Render skill difficulty badge
+  const renderDifficultyBadge = (difficulty: string) => {
+    const colorMap: Record<string, string> = {
+      beginner: 'bg-green-500/20 text-green-500 border-green-500/50',
+      intermediate: 'bg-yellow-500/20 text-yellow-500 border-yellow-500/50',
+      advanced: 'bg-orange-500/20 text-orange-500 border-orange-500/50',
+      expert: 'bg-red-500/20 text-red-500 border-red-500/50',
+    };
     
-    // If the skill is not unlocked yet, return 0
-    if (!progress.unlocked) return 0;
-    
-    // Calculate XP needed to level up (simplified formula)
-    const xpNeeded = progress.level * 50;
-    return Math.min(100, Math.floor((progress.xp / xpNeeded) * 100));
-  };
-  
-  // Get parent-child relationships
-  const getChildNodes = (parentId: number): SkillTreeNode[] => {
-    if (!skillTreeData?.relationships || !skillTreeData?.nodes) return [];
-    
-    const childIds = skillTreeData.relationships
-      .filter(rel => rel.parentId === parentId)
-      .map(rel => rel.childId);
-    
-    return skillTreeData.nodes.filter(node => childIds.includes(node.id));
-  };
-  
-  // Calculate node position based on its level and position within level
-  const calculateNodePosition = (node: SkillTreeNode, filteredNodes: SkillTreeNode[]) => {
-    const levelNodes = filteredNodes.filter(n => n.level === node.level);
-    const levelWidth = levelNodes.length * 150;
-    const nodeIndex = levelNodes.findIndex(n => n.id === node.id);
-    
-    // Calculate horizontal position (x)
-    const horizontalSpacing = Math.max(150, 800 / (levelNodes.length || 1));
-    const x = (nodeIndex * horizontalSpacing) + horizontalSpacing / 2;
-    
-    // Calculate vertical position (y)
-    const verticalSpacing = 180;
-    const y = (node.level - 1) * verticalSpacing + 100;
-    
-    return { x, y };
-  };
-  
-  // Render category selection tabs
-  const renderCategoryTabs = () => {
-    const categories = getCategories();
+    const color = colorMap[difficulty.toLowerCase()] || 'bg-blue-500/20 text-blue-500 border-blue-500/50';
     
     return (
-      <div className="flex overflow-x-auto pb-2 mb-4 gap-2">
-        {categories.map(category => (
-          <button
-            key={category}
-            className={`px-4 py-2 rounded-full whitespace-nowrap font-medium text-sm transition-all ${
-              activeCategory === category 
-                ? 'bg-primary text-white' 
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-            }`}
-            onClick={() => setActiveCategory(category)}
-          >
-            {category.charAt(0).toUpperCase() + category.slice(1)}
-          </button>
+      <Badge variant="outline" className={`${color} capitalize`}>
+        {difficulty}
+      </Badge>
+    );
+  };
+
+  // Render skill level stars
+  const renderSkillLevel = (skillId: number) => {
+    const level = getSkillLevel(skillId);
+    const stars = [];
+    
+    for (let i = 0; i < 5; i++) {
+      stars.push(
+        <Star
+          key={`star-${i}`}
+          className={`w-4 h-4 ${i < level ? 'text-yellow-500 fill-yellow-500' : 'text-gray-500'}`}
+        />
+      );
+    }
+    
+    return <div className="flex gap-1 mt-2">{stars}</div>;
+  };
+
+  // Render skill tree nodes
+  const renderSkillNodes = () => {
+    if (!skillTreeData || !userSkills) return null;
+    
+    const { nodes } = skillTreeData;
+    const categories = [...new Set(nodes.map((node: SkillNode) => node.category))];
+    
+    // Group nodes by category
+    const nodesByCategory: Record<string, SkillNode[]> = {};
+    categories.forEach(category => {
+      nodesByCategory[category] = nodes.filter((node: SkillNode) => node.category === category);
+    });
+    
+    return (
+      <>
+        {categories.map((category, categoryIndex) => (
+          <div key={`category-${categoryIndex}`} className="mb-8">
+            <h3 className="text-xl font-bold mb-4 text-primary">{category}</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {nodesByCategory[category].map((node: SkillNode) => {
+                const isUnlocked = isSkillUnlocked(node.id);
+                const canUnlock = canUnlockSkill(node);
+                
+                return (
+                  <div
+                    id={`skill-${node.id}`}
+                    key={`skill-${node.id}`}
+                    className={`relative cursor-pointer transition-all duration-200 `}
+                    onClick={() => handleSkillClick(node)}
+                  >
+                    <Card className={`
+                      border-2 transition-all duration-200
+                      ${isUnlocked ? 'bg-primary/10 border-primary/50' : canUnlock ? 'bg-secondary/20 border-secondary/50' : 'bg-gray-900/30 border-gray-700 opacity-80'}
+                    `}>
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-start">
+                          <CardTitle className="text-md flex items-center">
+                            {node.name}
+                          </CardTitle>
+                          {renderDifficultyBadge(node.difficulty)}
+                        </div>
+                        <CardDescription className="text-sm line-clamp-2">
+                          {node.description}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="pb-2">
+                        {isUnlocked ? (
+                          renderSkillLevel(node.id)
+                        ) : (
+                          <div className="flex items-center gap-2 text-sm text-gray-400">
+                            {canUnlock ? (
+                              <>
+                                <Badge variant="secondary" className="bg-secondary/30">
+                                  <Zap className="w-3 h-3 mr-1" />
+                                  Available to Unlock
+                                </Badge>
+                              </>
+                            ) : (
+                              <>
+                                <Lock className="w-3 h-3" />
+                                <span>Locked</span>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </CardContent>
+                      <CardFooter className="pt-0">
+                        {isUnlocked && (
+                          <div className="w-full">
+                            <div className="flex justify-between text-xs mb-1">
+                              <span>Level {getSkillLevel(node.id)}</span>
+                              <span>{getSkillXp(node.id)} XP</span>
+                            </div>
+                            <Progress value={Math.min(getSkillXp(node.id) / ((getSkillLevel(node.id) + 1) * 100) * 100, 100)} className="h-1" />
+                          </div>
+                        )}
+                      </CardFooter>
+                    </Card>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         ))}
+      </>
+    );
+  };
+
+  if (isLoadingSkillTree || isLoadingSkills) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96">
+        <Spinner size="lg" />
+        <p className="mt-4 text-gray-400">Loading skill tree...</p>
       </div>
     );
-  };
-  
-  // Draw connecting lines between parent and child nodes
-  const renderConnections = () => {
-    if (!skillTreeData?.relationships || !skillTreeData?.nodes) return null;
-    const filteredNodes = activeCategory 
-      ? filterNodesByCategory(skillTreeData.nodes, activeCategory) 
-      : skillTreeData.nodes;
-    
-    return (
-      <>
-        {skillTreeData.relationships.map(rel => {
-          const parent = filteredNodes.find(node => node.id === rel.parentId);
-          const child = filteredNodes.find(node => node.id === rel.childId);
+  }
+
+  return (
+    <div className="relative">
+      {/* SVG for connections between nodes */}
+      <svg
+        ref={svgRef}
+        className="absolute top-0 left-0 w-full h-full pointer-events-none z-0"
+        style={{ minHeight: '1000px' }}
+      >
+        {connections}
+      </svg>
+      
+      {/* Skill nodes */}
+      <div className="relative z-10 p-6">
+        {renderSkillNodes()}
+      </div>
+      
+      {/* Skill dialog */}
+      <Dialog open={skillDialogOpen} onOpenChange={setSkillDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex justify-between items-center">
+              <span>{selectedSkill?.name}</span>
+              {selectedSkill && renderDifficultyBadge(selectedSkill.difficulty)}
+            </DialogTitle>
+            <DialogDescription>
+              {selectedSkill?.description}
+            </DialogDescription>
+          </DialogHeader>
           
-          if (!parent || !child) return null;
-          
-          // Skip if either node is not in the active category
-          if (activeCategory && (parent.category !== activeCategory || child.category !== activeCategory)) {
-            return null;
-          }
-          
-          const parentPos = calculateNodePosition(parent, filteredNodes);
-          const childPos = calculateNodePosition(child, filteredNodes);
-          
-          // Only draw the connection if parent is unlocked
-          const parentUnlocked = isSkillUnlocked(parent.id);
-          
-          return (
-            <line
-              key={`connection-${rel.id}`}
-              x1={parentPos.x}
-              y1={parentPos.y + 40} // Adjust for node height
-              x2={childPos.x}
-              y2={childPos.y - 40} // Adjust for node height
-              stroke={parentUnlocked ? categoryColors[parent.category] || '#3b82f6' : '#1f2937'}
-              strokeWidth={parentUnlocked ? 3 : 2}
-              strokeDasharray={parentUnlocked ? undefined : "5,5"}
-              strokeOpacity={parentUnlocked ? 1 : 0.5}
-            />
-          );
-        })}
-      </>
-    );
-  };
-  
-  // Render all skill nodes
-  const renderNodes = () => {
-    if (!skillTreeData?.nodes) return null;
-    
-    const filteredNodes = activeCategory 
-      ? filterNodesByCategory(skillTreeData.nodes, activeCategory) 
-      : skillTreeData.nodes;
-    
-    return (
-      <>
-        {filteredNodes.map(node => {
-          const { x, y } = calculateNodePosition(node, filteredNodes);
-          const isUnlocked = isSkillUnlocked(node.id);
-          const progress = getSkillProgress(node.id);
-          const categoryColor = categoryColors[node.category] || '#3b82f6';
-          
-          return (
-            <g 
-              key={`node-${node.id}`} 
-              transform={`translate(${x - 60}, ${y - 40})`}
-              onClick={() => handleSkillClick(node)}
-              style={{ cursor: 'pointer' }}
-            >
-              {/* Background */}
-              <rect 
-                width="120" 
-                height="80" 
-                rx="8" 
-                fill={isUnlocked ? '#1e293b' : '#0f172a'} 
-                stroke={isUnlocked ? categoryColor : '#334155'} 
-                strokeWidth="2"
-              />
+          <div className="flex flex-col-reverse md:flex-row gap-4 flex-1 overflow-hidden">
+            <div className="flex-1 overflow-hidden">
+              <h3 className="text-lg font-semibold mb-2 flex items-center">
+                <Sparkles className="w-4 h-4 mr-2 text-yellow-500" />
+                Training Drills
+              </h3>
               
-              {/* Icon */}
-              <foreignObject x="10" y="10" width="24" height="24">
-                <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-800">
-                  {isUnlocked ? (
-                    <Star className="w-4 h-4" style={{ color: categoryColor }} />
-                  ) : (
-                    <Lock className="w-4 h-4 text-gray-500" />
-                  )}
+              {isLoadingDrills ? (
+                <div className="flex justify-center py-6">
+                  <Spinner size="md" />
                 </div>
-              </foreignObject>
-              
-              {/* Title */}
-              <foreignObject x="10" y="38" width="100" height="20">
-                <div className="text-xs font-medium text-gray-200 truncate">
-                  {node.name}
-                </div>
-              </foreignObject>
-              
-              {/* Progress bar */}
-              <foreignObject x="10" y="60" width="100" height="12">
-                <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full transition-all duration-500 ease-out"
-                    style={{
-                      width: `${progress}%`,
-                      backgroundColor: isUnlocked ? categoryColor : '#475569'
-                    }}
-                  ></div>
-                </div>
-              </foreignObject>
-            </g>
-          );
-        })}
-      </>
-    );
-  };
-  
-  // Render skill detail drawer
-  const renderSkillDrawer = () => {
-    if (!selectedSkill) return null;
-    
-    const isUnlocked = isSkillUnlocked(selectedSkill.id);
-    const progress = getSkillProgress(selectedSkill.id);
-    const categoryColor = categoryColors[selectedSkill.category] || '#3b82f6';
-    
-    return (
-      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <DrawerContent>
-          <DrawerHeader className="border-b border-gray-800">
-            <DrawerTitle className="text-xl flex items-center gap-2">
-              {isUnlocked ? (
-                <Sparkles className="h-5 w-5" style={{ color: categoryColor }} />
               ) : (
-                <Lock className="h-5 w-5 text-gray-400" />
-              )}
-              {selectedSkill.name}
-            </DrawerTitle>
-            <DrawerDescription className="text-gray-400">
-              {selectedSkill.category.charAt(0).toUpperCase() + selectedSkill.category.slice(1)} • 
-              Level {selectedSkill.level} • 
-              {isUnlocked ? `${progress}% Mastered` : 'Locked'}
-            </DrawerDescription>
-          </DrawerHeader>
-          
-          <div className="p-4">
-            {/* Progress bar */}
-            <div className="mb-6">
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-gray-400">Progress</span>
-                <span className="text-gray-300">{progress}%</span>
-              </div>
-              <Progress value={progress} className="h-2" />
-            </div>
-            
-            {/* Description */}
-            <div className="mb-6">
-              <h4 className="text-gray-300 font-medium mb-2">Description</h4>
-              <p className="text-gray-400 text-sm">{selectedSkill.description}</p>
-            </div>
-            
-            {/* Unlock requirements if locked */}
-            {!isUnlocked && selectedSkill.unlockRequirement && (
-              <div className="mb-6">
-                <h4 className="text-gray-300 font-medium mb-2">Requirements to Unlock</h4>
-                <div className="bg-gray-800 p-3 rounded-lg">
-                  <p className="text-gray-400 text-sm flex items-start gap-2">
-                    <Lock className="h-4 w-4 mt-0.5 flex-shrink-0 text-gray-500" />
-                    {selectedSkill.unlockRequirement}
-                  </p>
-                </div>
-              </div>
-            )}
-            
-            {/* Training drills section */}
-            {isUnlocked && (
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-gray-300 font-medium">Training Drills</h4>
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    onClick={handleGenerateDrill}
-                    disabled={generateDrillMutation.isPending}
-                  >
-                    {generateDrillMutation.isPending ? (
-                      <>Generating...</>
-                    ) : (
-                      <>Generate Drill</>
-                    )}
-                  </Button>
-                </div>
-                
-                {isLoadingDrills ? (
-                  <div className="text-center py-6">
-                    <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2"></div>
-                    <p className="text-gray-400 text-sm">Loading drills...</p>
-                  </div>
-                ) : drills && drills.length > 0 ? (
-                  <div className="space-y-3">
-                    {drills.map(drill => (
-                      <Card key={drill.id} className="bg-gray-800 border-gray-700 hover:bg-gray-750">
-                        <CardHeader className="p-3 pb-2">
-                          <CardTitle className="text-base flex items-center justify-between">
-                            <span>{drill.name}</span>
-                            <Badge variant="outline" className="ml-2 bg-blue-900/30">
-                              {drill.difficulty}
-                            </Badge>
-                          </CardTitle>
-                          <CardDescription className="line-clamp-2 text-xs">
-                            {drill.description}
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-3 pt-0">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-xs text-gray-400">
-                              <Dumbbell className="h-3 w-3" />
-                              <span>{drill.duration} min</span>
+                <ScrollArea className="h-[300px] pr-4">
+                  {drills && drills.length > 0 ? (
+                    <div className="space-y-3">
+                      {drills.map((drill: TrainingDrill) => (
+                        <Card key={drill.id} className="border-gray-700 bg-gray-900/50 hover:bg-gray-800/50 cursor-pointer transition-colors" onClick={() => handleDrillClick(drill)}>
+                          <CardHeader className="pb-2">
+                            <CardTitle className="text-sm flex justify-between">
+                              <span>{drill.name}</span>
+                              <Badge variant="secondary" className="font-normal bg-primary/20 text-primary border-primary/50">
+                                {drill.xpReward} XP
+                              </Badge>
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="pb-2 pt-0">
+                            <p className="text-xs text-gray-400">{drill.description}</p>
+                          </CardContent>
+                          <CardFooter className="pt-0 justify-between">
+                            <div className="flex items-center text-xs text-gray-400">
+                              <Clock className="w-3 h-3 mr-1" /> 
+                              {drill.duration} min
                             </div>
-                            <Button
-                              variant="ghost" 
-                              size="sm"
-                              className="text-xs text-blue-400 hover:text-blue-300 p-0 h-auto"
-                              onClick={() => handleDrillSelect(drill)}
-                            >
-                              View Details <ChevronRight className="ml-1 h-3 w-3" />
+                            <Button variant="ghost" size="sm" className="text-xs h-6 px-2">
+                              Train <ChevronRight className="w-3 h-3 ml-1" />
                             </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-6 bg-gray-800 rounded-lg">
-                    <p className="text-gray-400 text-sm mb-2">No drills available for this skill yet.</p>
-                    <Button 
-                      size="sm" 
-                      onClick={handleGenerateDrill}
-                      disabled={generateDrillMutation.isPending}
-                    >
-                      {generateDrillMutation.isPending ? (
-                        <>Generating...</>
-                      ) : (
-                        <>Generate Your First Drill</>
-                      )}
-                    </Button>
-                  </div>
-                )}
+                          </CardFooter>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center text-gray-400 py-6">
+                      <p>No drills available for this skill.</p>
+                      <p className="text-sm mt-2">Click the button below to generate a custom drill.</p>
+                    </div>
+                  )}
+                </ScrollArea>
+              )}
+              
+              <div className="mt-4">
+                <Button 
+                  onClick={handleGenerateDrill} 
+                  disabled={isGeneratingDrill}
+                  className="w-full"
+                >
+                  {isGeneratingDrill ? (
+                    <>
+                      <Spinner size="sm" className="mr-2" /> 
+                      Generating Custom Drill...
+                    </>
+                  ) : (
+                    <>Generate Custom Drill</>
+                  )}
+                </Button>
               </div>
-            )}
+            </div>
+            
+            <div className="md:w-1/3 space-y-4">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Skill Progress</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {selectedSkill && isSkillUnlocked(selectedSkill.id) ? (
+                    <div className="space-y-4">
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Level {getSkillLevel(selectedSkill.id)}</span>
+                          <span>{getSkillXp(selectedSkill.id)} XP</span>
+                        </div>
+                        <Progress 
+                          value={Math.min(getSkillXp(selectedSkill.id) / ((getSkillLevel(selectedSkill.id) + 1) * 100) * 100, 100)} 
+                          className="h-2" 
+                        />
+                      </div>
+                      
+                      <div className="flex justify-center">
+                        {renderSkillLevel(selectedSkill.id)}
+                      </div>
+                      
+                      <div className="text-center text-sm text-gray-400">
+                        {getSkillLevel(selectedSkill.id) >= 5 ? (
+                          <div className="flex items-center justify-center text-yellow-500">
+                            <Check className="w-4 h-4 mr-1" /> 
+                            Skill Mastered
+                          </div>
+                        ) : (
+                          <>
+                            <p>{((getSkillLevel(selectedSkill.id) + 1) * 100) - getSkillXp(selectedSkill.id)} XP until next level</p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-2">
+                      <Lock className="w-8 h-8 mx-auto mb-2 text-gray-500" />
+                      <p className="text-sm text-gray-400">This skill is locked</p>
+                      {selectedSkill && canUnlockSkill(selectedSkill) && (
+                        <Button 
+                          variant="secondary" 
+                          size="sm" 
+                          className="mt-3"
+                          onClick={handleCompleteDrill} // Simplified - normally we'd have an unlock API
+                        >
+                          Unlock This Skill
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Skill Details</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  <div>
+                    <span className="text-gray-400">Category:</span>
+                    <span className="ml-2">{selectedSkill?.category}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400">Sport:</span>
+                    <span className="ml-2">{selectedSkill?.sportType}</span>
+                  </div>
+                  {selectedSkill?.position && (
+                    <div>
+                      <span className="text-gray-400">Position:</span>
+                      <span className="ml-2">{selectedSkill.position}</span>
+                    </div>
+                  )}
+                  <div>
+                    <span className="text-gray-400">Difficulty:</span>
+                    <span className="ml-2 capitalize">{selectedSkill?.difficulty}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
           
-          <DrawerFooter className="border-t border-gray-800">
-            <DrawerClose asChild>
-              <Button variant="outline">Close</Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-    );
-  };
-  
-  // Render training drill detail drawer
-  const renderDrillDrawer = () => {
-    if (!selectedDrill) return null;
-    
-    return (
-      <Drawer open={drillDrawerOpen} onOpenChange={setDrillDrawerOpen}>
-        <DrawerContent>
-          <DrawerHeader className="border-b border-gray-800">
-            <div className="flex items-center justify-between">
-              <DrawerTitle>{selectedDrill.name}</DrawerTitle>
-              <Badge variant="outline" className="ml-2 bg-blue-900/30">
-                {selectedDrill.difficulty}
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setSkillDialogOpen(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Drill dialog */}
+      <Dialog open={drillDialogOpen} onOpenChange={setDrillDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex justify-between items-center">
+              <span>{selectedDrill?.name}</span>
+              <Badge variant="outline" className="font-normal bg-primary/20 text-primary border-primary/50">
+                {selectedDrill?.xpReward} XP
               </Badge>
-            </div>
-            <DrawerDescription>
-              {selectedDrill.category.charAt(0).toUpperCase() + selectedDrill.category.slice(1)} • 
-              {selectedDrill.duration} min • 
-              {selectedDrill.xpReward} XP
-            </DrawerDescription>
-          </DrawerHeader>
+            </DialogTitle>
+            <DialogDescription>
+              {selectedDrill?.description}
+            </DialogDescription>
+          </DialogHeader>
           
-          <div className="p-4 space-y-6">
-            {/* Description */}
+          <div className="space-y-4 my-4">
             <div>
-              <h4 className="text-gray-300 font-medium mb-2">Description</h4>
-              <p className="text-gray-400 text-sm">{selectedDrill.description}</p>
+              <h3 className="font-semibold mb-2">Instructions</h3>
+              <p className="text-sm text-gray-300">{selectedDrill?.instructions}</p>
             </div>
             
-            {/* Equipment needed */}
-            {selectedDrill.equipment && selectedDrill.equipment.length > 0 && (
+            {selectedDrill?.tips && selectedDrill.tips.length > 0 && (
               <div>
-                <h4 className="text-gray-300 font-medium mb-2">Equipment Needed</h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedDrill.equipment.map((item, i) => (
-                    <Badge key={i} variant="secondary" className="bg-gray-800">
-                      {item}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Instructions */}
-            <div>
-              <h4 className="text-gray-300 font-medium mb-2">Instructions</h4>
-              <div className="bg-gray-800 p-3 rounded-lg">
-                <p className="text-gray-300 text-sm whitespace-pre-line">{selectedDrill.instructions}</p>
-              </div>
-            </div>
-            
-            {/* Coaching tips */}
-            {selectedDrill.tips && selectedDrill.tips.length > 0 && (
-              <div>
-                <h4 className="text-gray-300 font-medium mb-2">Coaching Tips</h4>
-                <ul className="space-y-2">
-                  {selectedDrill.tips.map((tip, i) => (
-                    <li key={i} className="text-gray-400 text-sm flex items-start gap-2">
-                      <Info className="h-4 w-4 mt-0.5 flex-shrink-0 text-blue-500" />
-                      <span>{tip}</span>
-                    </li>
+                <h3 className="font-semibold mb-2">Tips</h3>
+                <ul className="list-disc pl-5 text-sm text-gray-300 space-y-1">
+                  {selectedDrill.tips.map((tip, index) => (
+                    <li key={index}>{tip}</li>
                   ))}
                 </ul>
               </div>
             )}
             
-            {/* Variations */}
-            {selectedDrill.variations && selectedDrill.variations.length > 0 && (
-              <div>
-                <h4 className="text-gray-300 font-medium mb-2">Variations</h4>
-                <div className="space-y-2">
-                  {selectedDrill.variations.map((variation, i) => (
-                    <div key={i} className="bg-gray-800 p-2 rounded text-sm text-gray-300">
-                      {variation}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Video if available */}
-            {selectedDrill.videoUrl && (
-              <div>
-                <h4 className="text-gray-300 font-medium mb-2">Demonstration</h4>
-                <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center">
-                  {/* This would be replaced with actual video player */}
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <Play className="h-4 w-4" />
-                    Watch Demo
-                  </Button>
-                </div>
-              </div>
-            )}
+            <div className="flex items-center text-sm text-gray-400">
+              <Clock className="w-4 h-4 mr-1" /> 
+              <span>Duration: {selectedDrill?.duration} minutes</span>
+            </div>
           </div>
           
-          <DrawerFooter className="border-t border-gray-800">
-            <Button onClick={handleCompleteDrill} disabled={completeDrillMutation.isPending}>
-              {completeDrillMutation.isPending ? 'Updating Progress...' : `Mark as Completed (Earn ${selectedDrill.xpReward} XP)`}
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setDrillDialogOpen(false)}>
+              Close
             </Button>
-            <DrawerClose asChild>
-              <Button variant="outline">Close</Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-    );
-  };
-  
-  if (isLoadingSkillTree) {
-    return (
-      <div className="flex flex-col items-center justify-center h-64">
-        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mb-4"></div>
-        <p className="text-gray-400">Loading skill tree...</p>
-      </div>
-    );
-  }
-  
-  if (!skillTreeData || skillTreeData.nodes.length === 0) {
-    return (
-      <div className="text-center py-12 bg-gray-800/50 rounded-xl">
-        <Trophy className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-        <h3 className="text-xl font-bold text-gray-300 mb-2">Skill Tree Not Available</h3>
-        <p className="text-gray-400 mb-6 max-w-md mx-auto">
-          We don't have a skill tree for {sportType} yet. Check back soon or try another sport.
-        </p>
-      </div>
-    );
-  }
-  
-  // Calculate SVG size based on the number of nodes
-  const maxLevel = Math.max(...skillTreeData.nodes.map(node => node.level));
-  const nodesPerLevel = Array.from({length: maxLevel}, (_, i) => {
-    return skillTreeData.nodes.filter(node => node.level === i + 1).length;
-  });
-  const maxNodesInAnyLevel = Math.max(...nodesPerLevel);
-  
-  const svgWidth = Math.max(800, maxNodesInAnyLevel * 150);
-  const svgHeight = maxLevel * 180 + 100;
-  
-  return (
-    <div className="flex flex-col w-full">
-      {/* Category selection */}
-      {renderCategoryTabs()}
-      
-      {/* Skill tree visualization */}
-      <div className="relative overflow-x-auto overflow-y-auto bg-gray-900/50 rounded-xl border border-gray-800 p-2">
-        <div className="min-w-[800px]">
-          <svg
-            ref={svgRef}
-            width={svgWidth}
-            height={svgHeight}
-            viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-            className="skill-tree-svg"
-          >
-            {/* Connecting lines between nodes */}
-            {renderConnections()}
-            
-            {/* Skill nodes */}
-            {renderNodes()}
-          </svg>
-        </div>
-      </div>
-      
-      {/* Skill detail drawer */}
-      {renderSkillDrawer()}
-      
-      {/* Drill detail drawer */}
-      {renderDrillDrawer()}
+            <Button onClick={handleCompleteDrill}>
+              Complete Drill
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
-}
+};
+
+// Clock component for duration
+const Clock: React.FC<{ className?: string }> = ({ className }) => {
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      fill="none" 
+      viewBox="0 0 24 24" 
+      strokeWidth={1.5} 
+      stroke="currentColor" 
+      className={className}
+    >
+      <path 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" 
+      />
+    </svg>
+  );
+};
+
+export default InteractiveSkillTree;

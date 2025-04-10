@@ -294,6 +294,19 @@ export interface IStorage {
   getActiveAthleteStarProfiles(): Promise<any[]>;
   createAthleteStarProfile(profile: any): Promise<any>;
   updateAthleteStarProfile(userId: number, data: any): Promise<any | undefined>;
+  
+  // Skill Tree operations
+  getSkillTreeNodes(sportType?: string, position?: string): Promise<SkillTreeNode[]>;
+  getSkillTreeNode(id: number): Promise<SkillTreeNode | undefined>;
+  getSkillTreeRelationships(): Promise<SkillTreeRelationship[]>;
+  getUserSkills(userId: number): Promise<Skill[]>;
+  getUserSkillsByNodeIds(userId: number, nodeIds: number[]): Promise<Skill[]>;
+  getUserSkillByNodeId(userId: number, nodeId: number): Promise<Skill | undefined>;
+  updateUserSkill(userId: number, skillNodeId: number, data: Partial<Skill>): Promise<Skill>;
+  getTrainingDrillsBySkillNode(skillNodeId: number): Promise<TrainingDrill[]>;
+  getTrainingDrill(id: number): Promise<TrainingDrill | undefined>;
+  createTrainingDrill(drill: Partial<InsertTrainingDrill>): Promise<TrainingDrill>;
+  createDrillCompletion(data: InsertUserDrillProgress): Promise<UserDrillProgress>;
 }
 
 // Direct database implementation
