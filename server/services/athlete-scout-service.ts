@@ -647,8 +647,8 @@ class AthleteScoutService {
     return db
       .select()
       .from(schema.athleteDiscoveries)
-      .where(eq(schema.athleteDiscoveries.scoutId, scoutId))
-      .orderBy(desc(schema.athleteDiscoveries.discoveredAt));
+      .where(eq(schema.athleteDiscoveries.scout_id, scoutId))
+      .orderBy(desc(schema.athleteDiscoveries.discovered_at));
   }
 
   /**
@@ -658,8 +658,8 @@ class AthleteScoutService {
     return db
       .select()
       .from(schema.mediaPartnerDiscoveries)
-      .where(eq(schema.mediaPartnerDiscoveries.scoutId, scoutId))
-      .orderBy(desc(schema.mediaPartnerDiscoveries.discoveredAt));
+      .where(eq(schema.mediaPartnerDiscoveries.scout_id, scoutId))
+      .orderBy(desc(schema.mediaPartnerDiscoveries.discovered_at));
   }
 
   /**
@@ -669,8 +669,8 @@ class AthleteScoutService {
     return db
       .select()
       .from(schema.cityInfluencerDiscoveries)
-      .where(eq(schema.cityInfluencerDiscoveries.scoutId, scoutId))
-      .orderBy(schema.cityInfluencerDiscoveries.influenceRank);
+      .where(eq(schema.cityInfluencerDiscoveries.scout_id, scoutId))
+      .orderBy(schema.cityInfluencerDiscoveries.influence_rank);
   }
 
   /**
