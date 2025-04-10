@@ -17,6 +17,13 @@ import {
   insertPlayerActiveChallengeSchema
 } from '@shared/schema';
 import { z } from 'zod';
+import { 
+  addXpToPlayer, 
+  XP_SOURCES, 
+  getXpRequiredForLevel, 
+  getRankForLevel,
+  getStreakMultiplier
+} from '../utils/xp-system';
 
 const router = express.Router();
 
@@ -445,6 +452,15 @@ router.post('/complete-challenge/:activeId', async (req, res) => {
       return res.status(404).json({ error: 'Active challenge not found' });
     }
     
+    // If challenge is already completed, return success with a note
+    if (activeChallenge.isCompleted) {
+      return res.json({ 
+        success: true, 
+        message: 'Challenge was already completed',
+        alreadyCompleted: true
+      });
+    }
+    
     // Update active challenge status
     await db
       .update(playerActiveChallenges)
@@ -457,15 +473,16 @@ router.post('/complete-challenge/:activeId', async (req, res) => {
     
     // Award XP for completion
     if (activeChallenge.challenge && activeChallenge.challenge.xpReward) {
-      await db.insert(xpTransactions).values({
-        userId: activeChallenge.userId,
-        amount: activeChallenge.challenge.xpReward,
-        transaction_type: 'challenge',
-        description: `Completed challenge: ${activeChallenge.challenge.title}`,
-        source_id: String(activeChallenge.challengeId)
-      });
+      // Add XP and handle leveling
+      const xpResult = await addXpToPlayer(
+        activeChallenge.userId,
+        activeChallenge.challenge.xpReward,
+        XP_SOURCES.CHALLENGE,
+        `Completed challenge: ${activeChallenge.challenge.title}`,
+        String(activeChallenge.challengeId)
+      );
       
-      // Update player progress
+      // Update completed challenges count
       const progress = await db.query.playerProgress.findFirst({
         where: eq(playerProgress.userId, activeChallenge.userId)
       });
@@ -474,28 +491,199 @@ router.post('/complete-challenge/:activeId', async (req, res) => {
         await db
           .update(playerProgress)
           .set({ 
-            totalXp: (progress.totalXp || 0) + activeChallenge.challenge.xpReward,
-            completedChallenges: (progress.completedChallenges || 0) + 1,
-            updatedAt: new Date()
+            completedChallenges: (progress.completedChallenges || 0) + 1
           })
           .where(eq(playerProgress.userId, activeChallenge.userId));
-      } else {
-        // Create progress entry if it doesn't exist
-        await db.insert(playerProgress).values({
-          userId: activeChallenge.userId,
-          currentLevel: 1,
-          totalXp: activeChallenge.challenge.xpReward,
-          levelXp: 0,
-          xpToNextLevel: 100,
-          streakDays: 0,
-          completedChallenges: 1
-        });
       }
+      
+      // Add XP result to response with detailed level up information
+      return res.json({ 
+        success: true, 
+        message: 'Challenge completed successfully',
+        challenge: {
+          id: activeChallenge.challengeId,
+          title: activeChallenge.challenge.title,
+          description: activeChallenge.challenge.description,
+          xpReward: activeChallenge.challenge.xpReward
+        },
+        xp: {
+          earned: xpResult.newXp,
+          leveledUp: xpResult.leveledUp,
+          levelsGained: xpResult.levelsGained,
+          prevLevel: xpResult.prevLevel,
+          newLevel: xpResult.newLevel,
+          prevRank: xpResult.prevRank,
+          newRank: xpResult.newRank
+        },
+        levelUps: xpResult.levelUps,
+        completedChallenges: progress ? (progress.completedChallenges || 0) + 1 : 1
+      });
     }
     
     return res.json({ success: true, message: 'Challenge completed successfully' });
   } catch (error) {
     console.error('Error completing challenge:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get XP level information
+router.get('/xp-levels', async (req, res) => {
+  try {
+    // Generate level information for levels 1-50
+    const levels = [];
+    
+    for (let level = 1; level <= 50; level++) {
+      const xpRequired = getXpRequiredForLevel(level);
+      const rank = getRankForLevel(level);
+      
+      levels.push({
+        level,
+        xpRequired,
+        rank,
+        // Include whether this level is a rank change
+        isRankUp: level === RANKS.ROOKIE.minLevel || 
+                  level === RANKS.PROSPECT.minLevel || 
+                  level === RANKS.RISING_STAR.minLevel || 
+                  level === RANKS.ALL_STAR.minLevel || 
+                  level === RANKS.MVP.minLevel || 
+                  level === RANKS.LEGEND.minLevel
+      });
+    }
+    
+    // Include streak information
+    const streakBonuses = Object.entries(STREAK_MULTIPLIERS).map(([days, multiplier]) => ({
+      days: parseInt(days),
+      multiplier
+    }));
+    
+    return res.json({
+      levels,
+      streakBonuses,
+      xpSources: Object.values(XP_SOURCES)
+    });
+  } catch (error) {
+    console.error('Error generating XP level information:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Update player streak
+router.post('/update-streak/:userId', async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+    
+    // Get current player progress
+    const progress = await db.query.playerProgress.findFirst({
+      where: eq(playerProgress.userId, userId)
+    });
+    
+    if (!progress) {
+      return res.status(404).json({ error: 'Player progress not found' });
+    }
+    
+    // Check if last active was within the last 48 hours
+    const lastActive = progress.lastActive ? new Date(progress.lastActive) : null;
+    const now = new Date();
+    
+    // If streak is active (user has logged in within the past 48 hours), increment streak
+    if (lastActive && (now.getTime() - lastActive.getTime() < 48 * 60 * 60 * 1000)) {
+      const dayDiff = Math.floor((now.getTime() - lastActive.getTime()) / (24 * 60 * 60 * 1000));
+      
+      // Only increment streak if it's a new day
+      if (dayDiff >= 1) {
+        // Award streak XP if streak days hits a milestone
+        let streakXp = 0;
+        const newStreakDays = progress.streakDays + 1;
+        
+        if (newStreakDays === 3) streakXp = 50;
+        if (newStreakDays === 7) streakXp = 100;
+        if (newStreakDays === 14) streakXp = 200;
+        if (newStreakDays === 30) streakXp = 500;
+        if (newStreakDays > 30 && newStreakDays % 30 === 0) streakXp = 500;
+        
+        // Update streak count
+        await db.update(playerProgress)
+          .set({ 
+            streakDays: newStreakDays,
+            lastActive: now
+          })
+          .where(eq(playerProgress.userId, userId));
+        
+        // If streak hit a milestone, award XP
+        if (streakXp > 0) {
+          const xpResult = await addXpToPlayer(
+            userId,
+            streakXp,
+            XP_SOURCES.STREAK,
+            `${newStreakDays} day login streak achieved!`,
+            'streak_milestone'
+          );
+          
+          return res.json({
+            success: true,
+            message: `Streak increased to ${newStreakDays} days!`,
+            streakDays: newStreakDays,
+            xpAwarded: streakXp > 0,
+            xpAmount: streakXp,
+            xpResult
+          });
+        }
+        
+        return res.json({
+          success: true,
+          message: `Streak increased to ${newStreakDays} days!`,
+          streakDays: newStreakDays,
+          xpAwarded: false
+        });
+      }
+      
+      // Update lastActive but don't increment streak (same day login)
+      await db.update(playerProgress)
+        .set({ lastActive: now })
+        .where(eq(playerProgress.userId, userId));
+        
+      return res.json({
+        success: true,
+        message: 'Already logged in today, streak maintained',
+        streakDays: progress.streakDays,
+        xpAwarded: false
+      });
+    } else {
+      // Streak broken or first login, reset to 1
+      const wasReset = progress.streakDays > 0;
+      
+      await db.update(playerProgress)
+        .set({ 
+          streakDays: 1,
+          lastActive: now
+        })
+        .where(eq(playerProgress.userId, userId));
+      
+      // Award login XP
+      const xpResult = await addXpToPlayer(
+        userId,
+        10,
+        XP_SOURCES.LOGIN,
+        'Daily login',
+        'daily_login'
+      );
+      
+      return res.json({
+        success: true,
+        message: wasReset ? 'Streak reset to 1 day' : 'First day of streak!',
+        streakDays: 1,
+        xpAwarded: true,
+        xpAmount: 10,
+        xpResult
+      });
+    }
+  } catch (error) {
+    console.error('Error updating streak:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
