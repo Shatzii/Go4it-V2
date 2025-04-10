@@ -6349,6 +6349,250 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Skill Tree API Endpoints - Start
+  
+  // Get all skill tree nodes with optional sport type and position filters
+  app.get("/api/ai-coach/skill-tree", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { sportType, position } = req.query;
+      
+      // Get nodes
+      const nodes = await storage.getSkillTreeNodes(
+        sportType as string | undefined,
+        position as string | undefined
+      );
+      
+      // Get relationships
+      const relationships = await storage.getSkillTreeRelationships();
+      
+      // Return as a unified skill tree data structure
+      return res.json({
+        nodes,
+        relationships
+      });
+    } catch (error) {
+      console.error("Error fetching skill tree:", error);
+      return res.status(500).json({ message: "Error fetching skill tree data" });
+    }
+  });
+  
+  // Get user's skill progress
+  app.get("/api/player/skill-progress/:sportType?", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = (req.user as any).id;
+      const sportType = req.params.sportType;
+      
+      let userSkills;
+      if (sportType) {
+        // Get skill nodes for this sport
+        const nodes = await storage.getSkillTreeNodes(sportType);
+        const nodeIds = nodes.map(node => node.id);
+        
+        // Get user progress for these specific nodes
+        if (nodeIds.length > 0) {
+          userSkills = await storage.getUserSkillsByNodeIds(userId, nodeIds);
+        } else {
+          userSkills = [];
+        }
+      } else {
+        // Get all user skills
+        userSkills = await storage.getUserSkills(userId);
+      }
+      
+      return res.json(userSkills);
+    } catch (error) {
+      console.error("Error fetching user skill progress:", error);
+      return res.status(500).json({ message: "Error fetching skill progress" });
+    }
+  });
+  
+  // Get drills for a skill
+  app.get("/api/ai-coach/skill-drills/:skillNodeId", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const skillNodeId = parseInt(req.params.skillNodeId);
+      const drills = await storage.getTrainingDrillsBySkillNode(skillNodeId);
+      
+      return res.json(drills);
+    } catch (error) {
+      console.error("Error fetching skill drills:", error);
+      return res.status(500).json({ message: "Error fetching training drills" });
+    }
+  });
+  
+  // Generate a new drill
+  app.post("/api/ai-coach/generate-drill", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { skillNodeId, difficulty } = req.body;
+      
+      // Validate inputs
+      if (!skillNodeId) {
+        return res.status(400).json({ message: "skillNodeId is required" });
+      }
+      
+      // Get the skill node
+      const skillNode = await storage.getSkillTreeNode(skillNodeId);
+      if (!skillNode) {
+        return res.status(404).json({ message: "Skill node not found" });
+      }
+      
+      // Generate a drill using Claude (simplified version)
+      const userId = (req.user as any).id;
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Create template for drill
+      const newDrill = {
+        name: `${skillNode.name} Training Drill`,
+        description: `A custom training drill to improve your ${skillNode.name} skill.`,
+        skillNodeId: skillNode.id,
+        difficulty: difficulty || "intermediate",
+        sportType: skillNode.sportType,
+        position: skillNode.position,
+        category: skillNode.category,
+        duration: 15, // minutes
+        equipment: [],
+        targetMuscles: [],
+        instructions: `Complete this drill to improve your ${skillNode.name} skill.`,
+        tips: ["Keep good form", "Stay focused"],
+        variations: ["Basic version", "Advanced version"],
+        xpReward: 20,
+        isAiGenerated: true,
+        aiPromptUsed: `Generate a ${difficulty || "intermediate"} drill for ${skillNode.name}`,
+      };
+      
+      // Save the drill
+      const createdDrill = await storage.createTrainingDrill(newDrill);
+      
+      return res.json(createdDrill);
+    } catch (error) {
+      console.error("Error generating drill:", error);
+      return res.status(500).json({ message: "Error generating drill" });
+    }
+  });
+  
+  // Complete a drill
+  app.post("/api/player/complete-drill", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { drillId } = req.body;
+      const userId = (req.user as any).id;
+      
+      // Validate inputs
+      if (!drillId) {
+        return res.status(400).json({ message: "drillId is required" });
+      }
+      
+      // Get the drill
+      const drill = await storage.getTrainingDrill(drillId);
+      if (!drill) {
+        return res.status(404).json({ message: "Drill not found" });
+      }
+      
+      // Get the user's current skill
+      const userSkill = await storage.getUserSkillByNodeId(userId, drill.skillNodeId);
+      
+      // Calculate XP earned
+      const baseXP = drill.xpReward || 10;
+      let xpEarned = baseXP;
+      
+      // If the skill wasn't already unlocked, unlock it
+      if (!userSkill || !userSkill.unlocked) {
+        // Create or update the skill
+        await storage.updateUserSkill(userId, drill.skillNodeId, {
+          unlocked: true,
+          unlockedAt: new Date(),
+          lastTrainedAt: new Date(),
+          xp: xpEarned,
+          level: 1
+        });
+      } else {
+        // Update existing skill
+        const newXP = (userSkill.xp || 0) + xpEarned;
+        const currentLevel = userSkill.level || 1;
+        
+        // Check if leveled up (simplified formula - 100 XP per level)
+        const xpForNextLevel = currentLevel * 100;
+        let newLevel = currentLevel;
+        
+        if (newXP >= xpForNextLevel) {
+          newLevel = currentLevel + 1;
+        }
+        
+        await storage.updateUserSkill(userId, drill.skillNodeId, {
+          lastTrainedAt: new Date(),
+          xp: newXP,
+          level: newLevel
+        });
+      }
+      
+      // Record the completion
+      await storage.createDrillCompletion({
+        userId,
+        drillId,
+        completedAt: new Date(),
+        xpEarned
+      });
+      
+      return res.json({ success: true, xpEarned });
+    } catch (error) {
+      console.error("Error completing drill:", error);
+      return res.status(500).json({ message: "Error completing drill" });
+    }
+  });
+  
+  // Get player skill statistics
+  app.get("/api/player/skill-stats/:sportType?", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = (req.user as any).id;
+      const sportType = req.params.sportType;
+      
+      // Get all skill nodes for this sport if specified
+      const nodes = sportType 
+        ? await storage.getSkillTreeNodes(sportType)
+        : await storage.getSkillTreeNodes();
+      
+      // Get user progress
+      const userSkills = await storage.getUserSkills(userId);
+      
+      // Calculate statistics
+      const totalSkills = nodes.length;
+      const unlockedSkills = userSkills.filter(skill => skill.unlocked).length;
+      const masteredSkills = userSkills.filter(skill => skill.level && skill.level >= 5).length;
+      const totalXp = userSkills.reduce((sum, skill) => sum + (skill.xp || 0), 0);
+      
+      // Group by category
+      const categories = [...new Set(nodes.map(node => node.category))];
+      const skillsByCategory = categories.map(category => {
+        const categoryNodes = nodes.filter(node => node.category === category);
+        const categorySkills = userSkills.filter(skill => 
+          categoryNodes.some(node => node.id === skill.skillNodeId)
+        );
+        
+        return {
+          category,
+          totalCount: categoryNodes.length,
+          unlockedCount: categorySkills.filter(skill => skill.unlocked).length,
+          masteredCount: categorySkills.filter(skill => skill.level && skill.level >= 5).length,
+          totalXp: categorySkills.reduce((sum, skill) => sum + (skill.xp || 0), 0)
+        };
+      }).sort((a, b) => b.masteredCount - a.masteredCount || b.unlockedCount - a.unlockedCount);
+      
+      return res.json({
+        totalSkills,
+        unlockedSkills,
+        masteredSkills,
+        totalXp,
+        skillsByCategory
+      });
+    } catch (error) {
+      console.error("Error fetching skill statistics:", error);
+      return res.status(500).json({ message: "Error fetching skill statistics" });
+    }
+  });
+  
+  // Skill Tree API Endpoints - End
+  
   // Register AI Coach routes
   registerAiCoachRoutes(app);
 

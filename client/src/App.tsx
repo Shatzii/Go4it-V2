@@ -58,6 +58,7 @@ import Settings from "@/pages/settings";
 import BlogPost from "@/pages/blog-post";
 import BlogList from "@/pages/blog-list";
 import GarScorePage from "@/pages/gar-score";
+import SkillTreePage from "@/pages/skill-tree-page";
 import AthleteStarProfilesPage from "@/pages/athlete-star-profiles";
 import EnhancedGarVisualizationPage from "@/pages/enhanced-gar-visualization";
 import EnhancedGARPage from "@/pages/enhanced-gar";
@@ -314,6 +315,11 @@ function Router() {
         
         <Route path="/academic-progress/:studentId">
           {() => <ProtectedRoute component={AcademicProgress} />}
+        </Route>
+        
+        {/* Skill Tree Route */}
+        <Route path="/skill-tree">
+          {() => <ProtectedRoute component={SkillTreePage} />}
         </Route>
 
         {/* Fallback to 404 */}
