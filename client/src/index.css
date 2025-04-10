@@ -2,9 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import accessibility styles */
-@import './components/accessibility/accessibility-styles.css';
-
 @layer base {
   * {
     @apply border-border;
