@@ -477,7 +477,7 @@ export class AnalyticsService {
   }
 
   /**
-   * Track academic-athletic integration analytics
+   * Record academic-athletic integration analytics
    */
   async recordAcademicAthletic(
     userId: number,
@@ -580,7 +580,7 @@ export class AnalyticsService {
   }
 
   /**
-   * Track AI coach effectiveness analytics
+   * Record AI coach effectiveness analytics
    */
   async recordAICoachEffectiveness(
     userId: number,
@@ -676,7 +676,7 @@ export class AnalyticsService {
   }
 
   /**
-   * Track Cross-Sport Potential Analytics
+   * Record Cross-Sport Potential Analytics
    */
   async recordCrossSportPotential(
     userId: number,
@@ -776,7 +776,7 @@ export class AnalyticsService {
   }
 
   /**
-   * Track Recruiting Readiness Analytics
+   * Record Recruiting Readiness Analytics
    */
   async recordRecruitingReadiness(
     userId: number,
@@ -873,7 +873,7 @@ export class AnalyticsService {
   }
 
   /**
-   * Track Neurodivergent-Specific Success Patterns
+   * Record Neurodivergent-Specific Success Patterns
    */
   async recordNeurodivergentPatterns(
     userId: number,
@@ -978,7 +978,7 @@ export class AnalyticsService {
   }
 
   /**
-   * Track Community & Social Impact Analytics
+   * Record Community & Social Impact Analytics
    */
   async recordCommunityImpact(
     userId: number,
