@@ -48,7 +48,7 @@ export default function CombineTourDetailPage() {
 
   // Fetch registration status if user is logged in
   const { data: registrationStatus = {}, isLoading: isLoadingRegistration } = useQuery<any>({
-    queryKey: [`/api/combine-tour/registration/${id}`],
+    queryKey: [`/api/combine-tour/registration-status?eventId=${id}`],
     enabled: !!id && !!user,
   });
 
@@ -71,7 +71,7 @@ export default function CombineTourDetailPage() {
         title: "Registration successful!",
         description: "You have been registered for this event",
       });
-      queryClient.invalidateQueries({ queryKey: [`/api/combine-tour/registration/${id}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/combine-tour/registration-status?eventId=${id}`] });
     },
     onError: (error) => {
       toast({
@@ -570,9 +570,8 @@ export default function CombineTourDetailPage() {
             
             <p className="font-medium">{formattedEvent.location}</p>
             <p className="text-muted-foreground text-sm">
-              {formattedEvent.address || ''} 
               {formattedEvent.city && formattedEvent.state ? 
-                `${formattedEvent.city}, ${formattedEvent.state} ${formattedEvent.zipCode || ''}` : ''}
+                `${formattedEvent.city}, ${formattedEvent.state}` : ''}
             </p>
           </Card>
           
