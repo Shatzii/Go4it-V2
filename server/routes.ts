@@ -3505,28 +3505,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Calculate total XP earned from workouts
       const xpEarned = verifiedWorkouts.reduce((total, v) => total + (v.xp_earned || 0), 0);
       
-      // Calculate streak days (using a default value for now since the function might not be implemented)
-      let streakDays = 0;
-      try {
-        streakDays = await storage.getUserStreakDays(userId);
-      } catch (err) {
-        console.log("getUserStreakDays not implemented, using default value");
-        // Calculate a basic streak from recent workouts
-        const sortedVerifications = [...verifications]
-          .filter(v => v.verification_status === 'verified' || v.verification_status === 'approved')
-          .sort((a, b) => new Date(b.submission_date || 0).getTime() - new Date(a.submission_date || 0).getTime());
-        
-        if (sortedVerifications.length > 0) {
-          const lastVerification = sortedVerifications[0];
-          const lastSubmission = new Date(lastVerification.submission_date || new Date());
-          const today = new Date();
-          const diffTime = Math.abs(today.getTime() - lastSubmission.getTime());
-          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-          
-          // If they've verified a workout in the last 2 days, count as active streak
-          streakDays = diffDays <= 2 ? sortedVerifications.length : 0;
-        }
-      }
+      // Calculate streak days using our implemented method
+      const streakDays = await storage.getUserStreakDays(userId);
       
       // Stats to return
       const stats = {
