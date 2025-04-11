@@ -20,6 +20,7 @@ import myplayerRoutes from './routes/myplayer-routes';
 import videoRoutes from './routes/video-routes';
 import playerRoutes from './routes/player-routes';
 import analyticsRoutes from './routes/analytics-routes';
+import combineRoutes from './routes/combine-routes';
 
 // Helper function to determine event status
 function getEventStatus(event: any): 'upcoming' | 'filling_fast' | 'sold_out' | 'past' {
@@ -5315,6 +5316,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register Analytics Routes
   app.use('/api/analytics', isAuthenticatedMiddleware, analyticsRoutes);
+  
+  // Register Combine Routes
+  app.use('/api/combines', isAuthenticatedMiddleware, combineRoutes);
 
   // Content Blocks API Routes
   app.get("/api/content-blocks", async (req: Request, res: Response) => {

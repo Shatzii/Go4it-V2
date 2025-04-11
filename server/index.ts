@@ -11,6 +11,7 @@ import { initializeBlogGeneration } from './blog-generator';
 import { openAIService } from './openai-service.fixed';
 import { transferPortalService } from './services/transfer-portal-service';
 import { athleteScoutService } from './services/athlete-scout-service';
+import { combineService } from './services/combine-service';
 import { authSentinel } from './middleware/auth-sentinel';
 import { registerSkillTreeApi } from './skill-tree-api';
 import skillTreeRoutes from './routes/skill-tree-routes';
@@ -281,6 +282,11 @@ app.use((req, res, next) => {
             log("Initializing Athlete Scout Service...");
             const athleteScoutInitialized = await athleteScoutService.initialize();
             log(`Athlete Scout Service initialization ${athleteScoutInitialized ? 'successful' : 'failed'}`);
+            
+            // Initialize Combine Service
+            log("Initializing Combine Rating Service...");
+            const combineInitialized = await combineService.initialize();
+            log(`Combine Rating Service initialization ${combineInitialized ? 'successful' : 'failed'}`);
             
             // Create default monitors and scouts if none exist
             try {
