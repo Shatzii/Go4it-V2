@@ -3004,7 +3004,7 @@ export class DatabaseStorage implements IStorage {
             eq(skillTreeNodes.isActive, true)
           )
         )
-        .orderBy(skillTreeNodes.level, skillTreeNodes.sortOrder);
+        .orderBy(asc(skillTreeNodes.level), asc(skillTreeNodes.sortOrder));
     } catch (error) {
       console.error(`Error fetching parent skill nodes for child ID ${childNodeId}:`, error);
       return [];
