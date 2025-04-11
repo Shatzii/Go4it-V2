@@ -2828,13 +2828,13 @@ export class DatabaseStorage implements IStorage {
           finalQuery = finalQuery.where(and(...conditions));
         }
         
-        // Try to order by level and sortOrder if they exist
+        // Try to order by level and sort_order if they exist
         try {
-          // Order by level first, then by sortOrder
+          // Order by level first, then by sort_order
           // Using the correct column names in snake_case from schema.ts
           return await finalQuery.orderBy(asc(skillTreeNodes.level), asc(skillTreeNodes.sort_order));
         } catch (err) {
-          console.warn('Could not order by level and sortOrder, returning unordered results');
+          console.warn('Could not order by level and sort_order, returning unordered results');
           return await finalQuery;
         }
       } catch (queryError) {
@@ -2906,9 +2906,9 @@ export class DatabaseStorage implements IStorage {
         }
         
         try {
-          return await query.orderBy(asc(skillTreeNodes.sortOrder));
+          return await query.orderBy(asc(skillTreeNodes.sort_order));
         } catch (err) {
-          console.warn('sortOrder column not found on skillTreeNodes table, returning unordered results');
+          console.warn('sort_order column not found on skillTreeNodes table, returning unordered results');
           return await query;
         }
       } catch (queryError) {
