@@ -12,7 +12,7 @@ import { WhatMakesUsDifferent } from "@/components/what-makes-us-different";
 import FeaturedCombines from "@/components/home/FeaturedCombines";
 import FeaturedBlogPosts from "@/components/home/FeaturedBlogPosts";
 import ScoutVisionCarousel from "@/components/home/ScoutVisionCarousel";
-import FeatureCommercial from "@/components/home/FeatureCommercial";
+import SimpleFeatureCommercial from "@/components/home/SimpleFeatureCommercial";
 
 interface BlogPost {
   id: number;
@@ -129,7 +129,7 @@ export default function HomePage() {
             </h2>
             <p className="text-lg text-blue-300 mt-1">Discover what makes our platform unique</p>
           </div>
-          <FeatureCommercial autoPlay={true} />
+          <SimpleFeatureCommercial />
         </section>
       )}
       
