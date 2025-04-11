@@ -538,7 +538,333 @@ export class AcademicService {
     return this.createOrUpdateAcademicAnalytics(analyticsData);
   }
 
-  // Remove duplicate method - only need one getInstance at the top of the class
+  // Implement the getAcademicProgress method that's referenced in routes
+  async getAcademicProgress(userId: number): Promise<any> {
+    try {
+      // Get basic academic analytics
+      const analytics = await this.getUserAcademicAnalytics(userId);
+      
+      // Get enrollment data
+      const enrollments = await this.getUserEnrollments(userId);
+      
+      // Get study strategies
+      const studyStrategies = await this.getUserStudyStrategies(userId);
+      
+      // Get terms
+      const terms = await this.getUserTerms(userId);
+      
+      // Get assignments for each enrollment
+      const assignmentsPromises = enrollments.map(enrollment => 
+        this.getAssignmentsForEnrollment(enrollment.id)
+      );
+      const assignmentsByEnrollment = await Promise.all(assignmentsPromises);
+      
+      // Calculate current GPA if analytics doesn't exist
+      const currentGPA = analytics?.currentGPA || await this.calculateGPA(userId);
+      
+      // Calculate current term GPA if available
+      let currentTermGPA = 0;
+      const currentTerm = terms.length > 0 ? terms[0] : null;
+      if (currentTerm) {
+        currentTermGPA = await this.calculateGPA(userId, currentTerm.name);
+      }
+      
+      // If no analytics exist yet, generate initial analytics
+      if (!analytics) {
+        const { strongest, weakest } = await this.identifyStrongestAndWeakestSubjects(userId);
+        const { recommendedStudyPatterns, recommendedSubjectFocus } = await this.analyzeStudyPatterns(userId);
+        
+        // Create new analytics
+        await this.createOrUpdateAcademicAnalytics({
+          userId,
+          currentGPA,
+          gpaTimeSeries: [{ date: new Date().toISOString(), gpa: currentGPA }],
+          strongestSubjects: strongest,
+          weakestSubjects: weakest,
+          recommendedStudyPatterns,
+          recommendedSubjectFocus
+        });
+      }
+      
+      // Get course details for each enrollment
+      const courseIds = enrollments.map(e => e.courseId);
+      const courses = courseIds.length > 0 
+        ? await db.select().from(academicCourses).where(inArray(academicCourses.id, courseIds))
+        : [];
+      
+      // Get subject details
+      const subjectIds = courses.map(c => c.subjectId).filter(id => id !== null) as number[];
+      const subjects = subjectIds.length > 0
+        ? await db.select().from(academicSubjects).where(inArray(academicSubjects.id, subjectIds))
+        : [];
+      
+      // Create maps for easier lookup
+      const courseMap = new Map(courses.map(c => [c.id, c]));
+      const subjectMap = new Map(subjects.map(s => [s.id, s]));
+      
+      // Calculate NCAA eligibility based on GPA and core courses
+      const ncaaEligible = this.calculateNcaaEligibility(currentGPA, enrollments, courseMap);
+      
+      // Enhance enrollments with course and subject data
+      const enhancedEnrollments = enrollments.map((enrollment, index) => {
+        const course = courseMap.get(enrollment.courseId);
+        const subject = course?.subjectId ? subjectMap.get(course.subjectId) : null;
+        
+        return {
+          ...enrollment,
+          course: course || null,
+          subject: subject || null,
+          assignments: assignmentsByEnrollment[index] || []
+        };
+      });
+      
+      // Prepare progress report
+      return {
+        userId,
+        currentGPA,
+        currentTermGPA,
+        ncaaEligible,
+        analytics: analytics || null,
+        enrollments: enhancedEnrollments,
+        terms,
+        studyStrategies,
+        currentTerm
+      };
+    } catch (error) {
+      console.error("Error generating academic progress report:", error);
+      throw error;
+    }
+  }
+  
+  async generateAcademicReport(userId: number): Promise<any> {
+    try {
+      // First, update the analytics to make sure they're current
+      await this.updateAcademicAnalytics(userId);
+      
+      // Then get the complete progress data
+      const progressData = await this.getAcademicProgress(userId);
+      
+      // Get the user details
+      const [user] = await db.select().from(users).where(eq(users.id, userId));
+      
+      if (!user) {
+        throw new Error(`User with ID ${userId} not found`);
+      }
+      
+      // Generate ADHD-specific study recommendations
+      const adhdRecommendations = await this.generateAdhdStudyRecommendations(userId);
+      
+      // Generate NCAA eligibility recommendations if not eligible
+      let ncaaRecommendations = [];
+      if (!progressData.ncaaEligible.eligible) {
+        ncaaRecommendations = await this.generateNcaaEligibilityRecommendations(progressData);
+      }
+      
+      // Generate subject improvement recommendations
+      const subjectRecommendations = await this.generateSubjectRecommendations(progressData);
+      
+      // Add generated recommendations to the progress data
+      return {
+        ...progressData,
+        user: {
+          id: user.id,
+          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          role: user.role
+        },
+        recommendations: {
+          adhdStudyStrategies: adhdRecommendations,
+          ncaaEligibility: ncaaRecommendations,
+          subjectImprovement: subjectRecommendations
+        },
+        generatedAt: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error("Error generating academic report:", error);
+      throw error;
+    }
+  }
+  
+  async generateAdhdStudyRecommendations(userId: number): Promise<any[]> {
+    // Get the currently implemented strategies for this user
+    const userStrategies = await this.getUserStudyStrategies(userId);
+    const implementedStrategyIds = userStrategies.map(s => s.strategyId);
+    
+    // Get all effective study strategies that haven't been implemented yet
+    const allStrategies = await this.getStudyStrategies();
+    const newStrategies = allStrategies.filter(s => 
+      !implementedStrategyIds.includes(s.id) && s.effectiveness >= 7
+    );
+    
+    // Group by category and take top 2 from each
+    const categorizedStrategies: Record<string, any[]> = {};
+    
+    for (const strategy of newStrategies) {
+      if (!categorizedStrategies[strategy.category]) {
+        categorizedStrategies[strategy.category] = [];
+      }
+      
+      if (categorizedStrategies[strategy.category].length < 2) {
+        categorizedStrategies[strategy.category].push({
+          id: strategy.id,
+          title: strategy.title,
+          description: strategy.description,
+          tips: strategy.tips,
+          effectiveness: strategy.effectiveness,
+          category: strategy.category
+        });
+      }
+    }
+    
+    // Flatten into array
+    return Object.values(categorizedStrategies).flat();
+  }
+  
+  async generateNcaaEligibilityRecommendations(progressData: any): Promise<any[]> {
+    const recommendations = [];
+    
+    // Check GPA requirements
+    if (!progressData.ncaaEligible.requirements.gpaRequirement.met) {
+      const currentGPA = progressData.ncaaEligible.requirements.gpaRequirement.current;
+      const requiredGPA = progressData.ncaaEligible.requirements.gpaRequirement.required;
+      
+      // Find the weakest subjects to focus on
+      const weakSubjects = progressData.analytics?.weakestSubjects || [];
+      
+      recommendations.push({
+        title: "Improve GPA to Meet NCAA Requirements",
+        description: `Your current GPA (${currentGPA}) is below the NCAA requirement of ${requiredGPA}. Focus on improving grades in your weakest subjects.`,
+        actionItems: [
+          `Create a study schedule focusing on ${weakSubjects.join(', ')}`,
+          "Meet with teachers or tutors for additional help",
+          "Dedicate extra study time to improving your lowest grades first"
+        ]
+      });
+    }
+    
+    // Check core course requirements
+    if (!progressData.ncaaEligible.requirements.coreCourseRequirement.met) {
+      const completedCourses = progressData.ncaaEligible.requirements.coreCourseRequirement.current;
+      const requiredCourses = progressData.ncaaEligible.requirements.coreCourseRequirement.required;
+      
+      recommendations.push({
+        title: "Complete Required NCAA Core Courses",
+        description: `You have completed ${completedCourses} out of ${requiredCourses} required NCAA core courses.`,
+        actionItems: [
+          "Meet with your academic counselor to plan remaining core courses",
+          "Ensure your course load includes NCAA-approved core classes",
+          "Consider summer school options to complete requirements faster"
+        ]
+      });
+    }
+    
+    return recommendations;
+  }
+  
+  async generateSubjectRecommendations(progressData: any): Promise<any[]> {
+    const recommendations = [];
+    
+    // Generate recommendations for weakest subjects
+    const weakSubjects = progressData.analytics?.weakestSubjects || [];
+    
+    if (weakSubjects.length > 0) {
+      // Find the enrollments for these weak subjects
+      const weakSubjectEnrollments = progressData.enrollments.filter(enrollment => {
+        return enrollment.subject && weakSubjects.includes(enrollment.subject.name);
+      });
+      
+      // Create recommendations based on these enrollments
+      for (const subject of weakSubjects) {
+        const subjectEnrollments = weakSubjectEnrollments.filter(
+          e => e.subject && e.subject.name === subject
+        );
+        
+        if (subjectEnrollments.length > 0) {
+          // Calculate average score in this subject
+          const grades = subjectEnrollments.map(e => e.currentPercentage).filter(g => g !== null) as number[];
+          const averageGrade = grades.length > 0 
+            ? grades.reduce((sum, grade) => sum + grade, 0) / grades.length 
+            : 0;
+          
+          recommendations.push({
+            title: `Improve Performance in ${subject}`,
+            description: `Your average grade in ${subject} is ${averageGrade.toFixed(1)}%. Focus on specific improvement strategies.`,
+            actionItems: [
+              `Find a tutor specialized in ${subject}`,
+              "Create flashcards for key concepts",
+              "Practice with online resources and educational apps"
+            ]
+          });
+        }
+      }
+    }
+    
+    return recommendations;
+  }
+  
+  calculateNcaaEligibility(gpa: number, enrollments: CourseEnrollment[], courseMap: Map<number, AcademicCourse>): {
+    eligible: boolean;
+    reason?: string;
+    requirements: {
+      gpaRequirement: { met: boolean; current: number; required: number; };
+      coreCourseRequirement: { met: boolean; current: number; required: number; };
+    };
+  } {
+    // NCAA Division I eligibility requirements:
+    // - Minimum 2.3 GPA in core courses
+    // - Complete 16 core courses (4 English, 3 math, 2 science, etc.)
+    
+    const minGPA = 2.3;
+    const requiredCoreCourses = 16;
+    
+    // Count core courses (this is simplified, real NCAA has specific subject requirements)
+    let coreCoursesCompleted = 0;
+    
+    for (const enrollment of enrollments) {
+      // Get the course
+      const course = courseMap.get(enrollment.courseId);
+      
+      // Check if it's a core course and completed
+      if (course?.isCore && enrollment.status === 'completed') {
+        coreCoursesCompleted++;
+      }
+    }
+    
+    // Check eligibility
+    const gpaRequirementMet = gpa >= minGPA;
+    const coreCourseRequirementMet = coreCoursesCompleted >= requiredCoreCourses;
+    const eligible = gpaRequirementMet && coreCourseRequirementMet;
+    
+    let reason = undefined;
+    if (!eligible) {
+      if (!gpaRequirementMet && !coreCourseRequirementMet) {
+        reason = `GPA below ${minGPA} and only ${coreCoursesCompleted}/${requiredCoreCourses} core courses completed`;
+      } else if (!gpaRequirementMet) {
+        reason = `GPA below required ${minGPA}`;
+      } else {
+        reason = `Only ${coreCoursesCompleted}/${requiredCoreCourses} core courses completed`;
+      }
+    }
+    
+    return {
+      eligible,
+      reason,
+      requirements: {
+        gpaRequirement: {
+          met: gpaRequirementMet,
+          current: gpa,
+          required: minGPA
+        },
+        coreCourseRequirement: {
+          met: coreCourseRequirementMet,
+          current: coreCoursesCompleted,
+          required: requiredCoreCourses
+        }
+      }
+    };
+  }
 }
 
 export default AcademicService.getInstance();
