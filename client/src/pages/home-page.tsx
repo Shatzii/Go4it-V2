@@ -15,6 +15,7 @@ import ScoutVisionCarousel from "@/components/home/ScoutVisionCarousel";
 import SimpleFeatureCommercial from "@/components/home/SimpleFeatureCommercial";
 import GarTestingCommercial from "@/components/home/GarTestingCommercial";
 import RealGarTestingCommercial from "@/components/home/RealGarTestingCommercial";
+import FullyAnimatedGarCommercial from "@/components/home/FullyAnimatedGarCommercial";
 import StarPathCommercial from "@/components/home/StarPathCommercial";
 
 interface BlogPost {
@@ -265,7 +266,7 @@ export default function HomePage() {
           </h2>
           <p className="text-lg text-blue-300 mt-1">Experience our professional athlete assessment system</p>
         </div>
-        <RealGarTestingCommercial />
+        <FullyAnimatedGarCommercial />
       </section>
       
       {/* Star Path Commercial Section */}
