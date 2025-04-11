@@ -426,12 +426,11 @@ const SprintAnimation = ({ colors, isPlaying }: { colors: any, isPlaying: boolea
           repeatDelay: 1
         }}
       >
-        {/* Draw the athlete */}
-        <svg width="60" height="100" viewBox="0 0 60 100" fill="none">
-          {/* Body */}
+        {/* Draw the athlete - Madden-style detailed player */}
+        <svg width="80" height="120" viewBox="0 0 80 120" fill="none">
           <motion.g
             animate={isPlaying ? {
-              rotate: [-5, 5, -5, 5],
+              rotate: [-3, 3, -3, 3],
               y: [0, -2, 0, -2]
             } : {}}
             transition={{ 
@@ -440,74 +439,133 @@ const SprintAnimation = ({ colors, isPlaying }: { colors: any, isPlaying: boolea
             }}
             style={{ transformOrigin: 'center center' }}
           >
-            {/* Torso */}
-            <rect x="22" y="20" width="16" height="34" rx="6" fill={colors.primary} />
+            {/* Body Base - More realistic proportions */}
+            <g>
+              {/* Base Shadow for depth */}
+              <ellipse cx="40" cy="110" rx="12" ry="4" opacity="0.3" fill="#000000" />
+              
+              {/* Shoes/Cleats */}
+              <path d="M28 102 L24 106 L26 110 L34 110 L36 107 L32 102 Z" fill="#111111" />
+              <path d="M52 102 L56 106 L54 110 L46 110 L44 107 L48 102 Z" fill="#111111" />
+              <path d="M28 102 L24 106 L26 110 L34 110 L36 107 L32 102 Z" stroke="#333333" strokeWidth="0.5" />
+              <path d="M52 102 L56 106 L54 110 L46 110 L44 107 L48 102 Z" stroke="#333333" strokeWidth="0.5" />
+              
+              {/* Athletic Socks */}
+              <rect x="30" y="96" width="6" height="6" rx="1" fill="white" />
+              <rect x="44" y="96" width="6" height="6" rx="1" fill="white" />
+              
+              {/* Lower Legs with Muscle Definition */}
+              <path d="M29 75 C27 82, 27 90, 30 96 L36 96 C38 90, 37 82, 35 75 Z" fill="#6b4f35" />
+              <path d="M51 75 C53 82, 53 90, 50 96 L44 96 C42 90, 43 82, 45 75 Z" fill="#6b4f35" />
+              
+              {/* Knee Detail */}
+              <ellipse cx="32" cy="75" rx="3" ry="2" fill="#6b4f35" stroke="#5a4128" strokeWidth="0.5" />
+              <ellipse cx="48" cy="75" rx="3" ry="2" fill="#6b4f35" stroke="#5a4128" strokeWidth="0.5" />
+              
+              {/* Thighs with Muscle Definition - Shorts */}
+              <path d="M34 55 C26 55, 26 65, 29 75 L36 75 C36 65, 37 55, 36 55 Z" fill="#1e293b" />
+              <path d="M46 55 C54 55, 54 65, 51 75 L44 75 C44 65, 43 55, 44 55 Z" fill="#1e293b" />
+              
+              {/* Belt/Waistband */}
+              <path d="M32 55 C32 53, 48 53, 48 55 C48 57, 32 57, 32 55 Z" fill="#333333" />
+              
+              {/* Jersey - More detailed with folds */}
+              <path d="M32 35 C30 38, 28 44, 28 55 L52 55 C52 44, 50 38, 48 35 L44 28 L36 28 L32 35 Z" fill={colors.primary} />
+              <path d="M36 28 L36 55 M44 28 L44 55" stroke="rgba(255,255,255,0.2)" strokeWidth="0.5" />
+              <path d="M32 35 C30 38, 28 44, 28 55 L52 55 C52 44, 50 38, 48 35 L44 28 L36 28 L32 35 Z" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+              
+              {/* Shoulders with padding */}
+              <ellipse cx="32" cy="30" rx="5" ry="4" fill={colors.primary} />
+              <ellipse cx="48" cy="30" rx="5" ry="4" fill={colors.primary} />
+              
+              {/* Neck */}
+              <path d="M36 23 C36 28, 44 28, 44 23" fill="#6b4f35" />
+              
+              {/* Head - Helmet Style */}
+              <ellipse cx="40" cy="16" rx="8" ry="10" fill="#6b4f35" />
+              <path d="M32 16 C32 8, 48 8, 48 16 C48 24, 32 24, 32 16 Z" fill={colors.primary} />
+              <path d="M32 16 C32 10, 48 10, 48 16" fill={colors.secondary} />
+              
+              {/* Helmet Details */}
+              <path d="M36 10 L44 10 L44 14 L36 14 Z" fill="#111111" />
+              <path d="M38 14 L42 14 L42 16 L38 16 Z" fill="#333333" />
+              <rect x="35" y="7" width="10" height="1" fill="white" />
+              <path d="M35 8 L35 10 M45 8 L45 10" stroke="white" strokeWidth="0.5" />
+              
+              {/* Facemask */}
+              <path d="M34 14 L34 20 M37 14 L37 21 M40 14 L40 21 M43 14 L43 21 M46 14 L46 20" stroke="#555555" strokeWidth="1.5" />
+              <path d="M34 18 L46 18" stroke="#555555" strokeWidth="1.5" />
+            </g>
             
-            {/* Head */}
-            <circle cx="30" cy="15" r="10" fill="#7c3aed" />
-            
-            {/* Eyes and Mouth */}
-            <circle cx="26" cy="12" r="1.5" fill="white" />
-            <circle cx="34" cy="12" r="1.5" fill="white" />
-            <path d="M26 18 Q30 20 34 18" stroke="white" fill="transparent" strokeWidth="1" />
-            
-            {/* Arms */}
+            {/* Arms With Muscle Definition */}
             <motion.g
               animate={isPlaying ? {
-                rotate: [-40, 40, -40, 40]
+                rotate: [-40, 30, -40, 30]
               } : {}}
               transition={{ 
                 duration: 0.3,
                 repeat: Infinity
               }}
-              style={{ transformOrigin: '22px 25px' }}
+              style={{ transformOrigin: '32px 30px' }}
             >
-              <rect x="10" y="25" width="12" height="5" rx="2.5" fill={colors.primary} />
+              <path d="M32 30 C25 31, 18 36, 15 42" stroke="#6b4f35" strokeWidth="6" strokeLinecap="round" />
+              <path d="M32 30 C25 31, 18 36, 15 42" stroke="rgba(255,255,255,0.2)" strokeWidth="1" strokeLinecap="round" />
+              <ellipse cx="15" cy="42" rx="3" ry="2.5" fill="#6b4f35" />
+              <ellipse cx="15" cy="42" rx="3" ry="2.5" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
             </motion.g>
             
             <motion.g
               animate={isPlaying ? {
-                rotate: [40, -40, 40, -40]
+                rotate: [40, -30, 40, -30]
               } : {}}
               transition={{ 
                 duration: 0.3,
                 repeat: Infinity
               }}
-              style={{ transformOrigin: '38px 25px' }}
+              style={{ transformOrigin: '48px 30px' }}
             >
-              <rect x="38" y="25" width="12" height="5" rx="2.5" fill={colors.primary} />
+              <path d="M48 30 C55 31, 62 36, 65 42" stroke="#6b4f35" strokeWidth="6" strokeLinecap="round" />
+              <path d="M48 30 C55 31, 62 36, 65 42" stroke="rgba(255,255,255,0.2)" strokeWidth="1" strokeLinecap="round" />
+              <ellipse cx="65" cy="42" rx="3" ry="2.5" fill="#6b4f35" />
+              <ellipse cx="65" cy="42" rx="3" ry="2.5" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
             </motion.g>
             
-            {/* Legs */}
+            {/* Leg Movement - More Natural Joint Bending */}
             <motion.g
               animate={isPlaying ? {
-                rotate: [20, -20, 20, -20]
+                rotate: [15, -15, 15, -15]
               } : {}}
               transition={{ 
                 duration: 0.3,
                 repeat: Infinity
               }}
-              style={{ transformOrigin: '26px 54px' }}
+              style={{ transformOrigin: '34px 55px' }}
             >
-              <rect x="18" y="54" width="8" height="25" rx="4" fill="#1e293b" />
+              <path d="M34 55 C26 55, 26 65, 29 75 L36 75 C36 65, 37 55, 36 55 Z" fill="#1e293b" stroke="rgba(0,0,0,0.2)" strokeWidth="0.5" />
+              <path d="M29 75 C27 82, 27 90, 30 96 L36 96 C38 90, 37 82, 35 75 Z" fill="#6b4f35" stroke="rgba(0,0,0,0.2)" strokeWidth="0.5" />
+              <rect x="30" y="96" width="6" height="6" rx="1" fill="white" />
+              <path d="M28 102 L24 106 L26 110 L34 110 L36 107 L32 102 Z" fill="#111111" stroke="#333333" strokeWidth="0.5" />
             </motion.g>
             
             <motion.g
               animate={isPlaying ? {
-                rotate: [-20, 20, -20, 20]
+                rotate: [-15, 15, -15, 15]
               } : {}}
               transition={{ 
                 duration: 0.3,
                 repeat: Infinity
               }}
-              style={{ transformOrigin: '34px 54px' }}
+              style={{ transformOrigin: '46px 55px' }}
             >
-              <rect x="34" y="54" width="8" height="25" rx="4" fill="#1e293b" />
+              <path d="M46 55 C54 55, 54 65, 51 75 L44 75 C44 65, 43 55, 44 55 Z" fill="#1e293b" stroke="rgba(0,0,0,0.2)" strokeWidth="0.5" />
+              <path d="M51 75 C53 82, 53 90, 50 96 L44 96 C42 90, 43 82, 45 75 Z" fill="#6b4f35" stroke="rgba(0,0,0,0.2)" strokeWidth="0.5" />
+              <rect x="44" y="96" width="6" height="6" rx="1" fill="white" />
+              <path d="M52 102 L56 106 L54 110 L46 110 L44 107 L48 102 Z" fill="#111111" stroke="#333333" strokeWidth="0.5" />
             </motion.g>
           </motion.g>
           
-          {/* Number/jersey */}
-          <text x="30" y="40" textAnchor="middle" className="text-xs font-bold" fill="white">17</text>
+          {/* Jersey Number */}
+          <text x="40" y="42" textAnchor="middle" className="text-lg font-bold" fill="white" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5">17</text>
         </svg>
         
         {/* Speed lines */}
@@ -649,8 +707,8 @@ const VerticalAnimation = ({ colors, isPlaying }: { colors: any, isPlaying: bool
           stiffness: 300
         }}
       >
-        {/* Draw the athlete */}
-        <svg width="70" height="120" viewBox="0 0 70 120" fill="none">
+        {/* Draw the athlete - Basketball player style */}
+        <svg width="80" height="140" viewBox="0 0 80 140" fill="none">
           <motion.g
             animate={isPlaying ? {
               scaleY: [1, 0.9, 1.1, 1],
@@ -663,22 +721,144 @@ const VerticalAnimation = ({ colors, isPlaying }: { colors: any, isPlaying: bool
               repeatDelay: 1.5
             }}
           >
-            {/* Torso */}
-            <rect x="25" y="30" width="20" height="40" rx="6" fill={colors.primary} />
+            {/* Base Shadow for depth */}
+            <ellipse cx="40" cy="130" rx="12" ry="4" opacity="0.3" fill="#000000" />
             
-            {/* Head */}
-            <circle cx="35" cy="20" r="12" fill="#7c3aed" />
+            {/* Basketball Shoes */}
+            <path d="M28 112 L25 118 L30 120 L36 119 L38 114 L34 112 Z" fill="#EC4D28" />
+            <path d="M28 112 L25 118 L30 120 L36 119 L38 114 L34 112 Z" stroke="#000" strokeWidth="0.5" />
+            <path d="M38 114 L40 115 L36 119" stroke="#EC4D28" strokeWidth="2" />
             
-            {/* Eyes and Mouth */}
-            <circle cx="30" cy="17" r="2" fill="white" />
-            <circle cx="40" cy="17" r="2" fill="white" />
-            <motion.path 
-              d="M30 24 Q35 28 40 24" 
-              stroke="white" 
-              fill="transparent" 
-              strokeWidth="1.5"
+            <path d="M52 112 L55 118 L50 120 L44 119 L42 114 L46 112 Z" fill="#EC4D28" />
+            <path d="M52 112 L55 118 L50 120 L44 119 L42 114 L46 112 Z" stroke="#000" strokeWidth="0.5" />
+            <path d="M42 114 L40 115 L44 119" stroke="#EC4D28" strokeWidth="2" />
+            
+            {/* Athletic Socks */}
+            <rect x="30" y="105" width="6" height="7" rx="1" fill="white" stroke="#DDD" strokeWidth="0.5" />
+            <rect x="44" y="105" width="6" height="7" rx="1" fill="white" stroke="#DDD" strokeWidth="0.5" />
+            
+            {/* Basketball Shorts - Detailed */}
+            <path d="M30 60 C20 65, 24 85, 28 105 L33 105 C37 90, 37 70, 35 60 Z" fill="#1e293b" />
+            <path d="M30 60 C20 65, 24 85, 28 105 L33 105 C37 90, 37 70, 35 60 Z" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+            <path d="M50 60 C60 65, 56 85, 52 105 L47 105 C43 90, 43 70, 45 60 Z" fill="#1e293b" />
+            <path d="M50 60 C60 65, 56 85, 52 105 L47 105 C43 90, 43 70, 45 60 Z" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+            
+            {/* Basketball Jersey Trim */}
+            <path d="M30 40 L30 60 L50 60 L50 40 Z" fill={colors.primary} />
+            <path d="M30 40 L30 60 L50 60 L50 40 Z" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+            <path d="M28 45 L30 40 L30 60 M52 45 L50 40 L50 60" stroke="white" strokeWidth="1" />
+            
+            {/* Muscular Arms */}
+            <motion.g
               animate={isPlaying ? {
-                d: ["M30 24 Q35 28 40 24", "M30 27 Q35 30 40 27", "M30 24 Q35 28 40 24"]
+                rotate: [-45, -180, -45],
+                y: [0, -15, 0]
+              } : {}}
+              transition={{
+                duration: 1.5,
+                times: [0, 0.5, 1],
+                repeat: isPlaying ? Infinity : 0,
+                repeatDelay: 1.5
+              }}
+              style={{ transformOrigin: '30px 42px' }}
+            >
+              <path d="M30 42 C20 42, 15 48, 10 52" stroke="#6b4f35" strokeWidth="6" strokeLinecap="round" />
+              <path d="M30 42 C20 42, 15 48, 10 52" stroke="rgba(255,255,255,0.2)" strokeWidth="1" strokeLinecap="round" />
+              <ellipse cx="10" cy="52" rx="3" ry="2.5" fill="#6b4f35" />
+              <ellipse cx="10" cy="52" rx="3" ry="2.5" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+            </motion.g>
+            
+            <motion.g
+              animate={isPlaying ? {
+                rotate: [45, 180, 45],
+                y: [0, -15, 0]
+              } : {}}
+              transition={{
+                duration: 1.5,
+                times: [0, 0.5, 1],
+                repeat: isPlaying ? Infinity : 0,
+                repeatDelay: 1.5
+              }}
+              style={{ transformOrigin: '50px 42px' }}
+            >
+              <path d="M50 42 C60 42, 65 48, 70 52" stroke="#6b4f35" strokeWidth="6" strokeLinecap="round" />
+              <path d="M50 42 C60 42, 65 48, 70 52" stroke="rgba(255,255,255,0.2)" strokeWidth="1" strokeLinecap="round" />
+              <ellipse cx="70" cy="52" rx="3" ry="2.5" fill="#6b4f35" />
+              <ellipse cx="70" cy="52" rx="3" ry="2.5" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+            </motion.g>
+            
+            {/* Leg Muscle Definition */}
+            <motion.g
+              animate={isPlaying ? {
+                rotate: [-30, 0, -30],
+                scaleY: [1, 0.7, 1]
+              } : {}}
+              transition={{
+                duration: 1.5,
+                times: [0, 0.5, 1],
+                repeat: isPlaying ? Infinity : 0,
+                repeatDelay: 1.5
+              }}
+              style={{ transformOrigin: '33px 60px' }}
+            >
+              {/* Left Leg with Muscles */}
+              <path d="M30 60 C20 65, 24 85, 28 105 L33 105 C37 90, 37 70, 35 60 Z" fill="#1e293b" />
+              <path d="M30 60 C20 65, 24 85, 28 105 L33 105 C37 90, 37 70, 35 60 Z" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+              <rect x="30" y="105" width="6" height="7" rx="1" fill="white" stroke="#DDD" strokeWidth="0.5" />
+              <path d="M28 112 L25 118 L30 120 L36 119 L38 114 L34 112 Z" fill="#EC4D28" />
+              <path d="M28 112 L25 118 L30 120 L36 119 L38 114 L34 112 Z" stroke="#000" strokeWidth="0.5" />
+              <path d="M38 114 L40 115 L36 119" stroke="#EC4D28" strokeWidth="2" />
+            </motion.g>
+            
+            <motion.g
+              animate={isPlaying ? {
+                rotate: [30, 0, 30],
+                scaleY: [1, 0.7, 1]
+              } : {}}
+              transition={{
+                duration: 1.5,
+                times: [0, 0.5, 1],
+                repeat: isPlaying ? Infinity : 0,
+                repeatDelay: 1.5
+              }}
+              style={{ transformOrigin: '47px 60px' }}
+            >
+              {/* Right Leg with Muscles */}
+              <path d="M50 60 C60 65, 56 85, 52 105 L47 105 C43 90, 43 70, 45 60 Z" fill="#1e293b" />
+              <path d="M50 60 C60 65, 56 85, 52 105 L47 105 C43 90, 43 70, 45 60 Z" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+              <rect x="44" y="105" width="6" height="7" rx="1" fill="white" stroke="#DDD" strokeWidth="0.5" />
+              <path d="M52 112 L55 118 L50 120 L44 119 L42 114 L46 112 Z" fill="#EC4D28" />
+              <path d="M52 112 L55 118 L50 120 L44 119 L42 114 L46 112 Z" stroke="#000" strokeWidth="0.5" />
+              <path d="M42 114 L40 115 L44 119" stroke="#EC4D28" strokeWidth="2" />
+            </motion.g>
+            
+            {/* Torso - Athletic Build */}
+            <path d="M32 26 C28 30, 26 35, 30 40 L30 60 L50 60 L50 40 C54 35, 52 30, 48 26 Z" fill={colors.primary} />
+            <path d="M32 26 C28 30, 26 35, 30 40 L30 60 L50 60 L50 40 C54 35, 52 30, 48 26 Z" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+            
+            {/* Shoulders */}
+            <ellipse cx="32" cy="38" rx="4" ry="3" fill={colors.primary} />
+            <ellipse cx="48" cy="38" rx="4" ry="3" fill={colors.primary} />
+            
+            {/* Neck */}
+            <path d="M36 26 C36 28, 44 28, 44 26" fill="#6b4f35" />
+            
+            {/* Head with Basketball Headband */}
+            <circle cx="40" cy="18" r="10" fill="#6b4f35" />
+            <path d="M30 18 C30 12, 50 12, 50 18" fill="#6b4f35" />
+            <path d="M30 18 C30 24, 50 24, 50 18" fill="#6b4f35" />
+            <path d="M30 15 L50 15" stroke={colors.primary} strokeWidth="3" />
+            
+            {/* Face Details */}
+            <ellipse cx="36" cy="16" rx="1.5" ry="2" fill="white" />
+            <ellipse cx="44" cy="16" rx="1.5" ry="2" fill="white" />
+            <motion.path 
+              d="M36 22 Q40 24 44 22" 
+              stroke="rgba(255,255,255,0.8)" 
+              fill="transparent" 
+              strokeWidth="1"
+              animate={isPlaying ? {
+                d: ["M36 22 Q40 24 44 22", "M36 24 Q40 26 44 24", "M36 22 Q40 24 44 22"]
               } : {}}
               transition={{
                 duration: 1.5,
@@ -688,74 +868,8 @@ const VerticalAnimation = ({ colors, isPlaying }: { colors: any, isPlaying: bool
               }}
             />
             
-            {/* Arms */}
-            <motion.g
-              animate={isPlaying ? {
-                rotate: [-45, -180, -45],
-                y: [0, -10, 0]
-              } : {}}
-              transition={{
-                duration: 1.5,
-                times: [0, 0.5, 1],
-                repeat: isPlaying ? Infinity : 0,
-                repeatDelay: 1.5
-              }}
-              style={{ transformOrigin: '25px 35px' }}
-            >
-              <rect x="10" y="35" width="15" height="8" rx="4" fill={colors.primary} />
-            </motion.g>
-            
-            <motion.g
-              animate={isPlaying ? {
-                rotate: [45, 180, 45],
-                y: [0, -10, 0]
-              } : {}}
-              transition={{
-                duration: 1.5,
-                times: [0, 0.5, 1],
-                repeat: isPlaying ? Infinity : 0,
-                repeatDelay: 1.5
-              }}
-              style={{ transformOrigin: '45px 35px' }}
-            >
-              <rect x="45" y="35" width="15" height="8" rx="4" fill={colors.primary} />
-            </motion.g>
-            
-            {/* Legs */}
-            <motion.g
-              animate={isPlaying ? {
-                rotate: [-30, 0, -30],
-                scaleY: [1, 0.8, 1]
-              } : {}}
-              transition={{
-                duration: 1.5,
-                times: [0, 0.5, 1],
-                repeat: isPlaying ? Infinity : 0,
-                repeatDelay: 1.5
-              }}
-              style={{ transformOrigin: '30px 70px' }}
-            >
-              <rect x="22" y="70" width="8" height="30" rx="4" fill="#1e293b" />
-            </motion.g>
-            
-            <motion.g
-              animate={isPlaying ? {
-                rotate: [30, 0, 30],
-                scaleY: [1, 0.8, 1]
-              } : {}}
-              transition={{
-                duration: 1.5,
-                times: [0, 0.5, 1],
-                repeat: isPlaying ? Infinity : 0,
-                repeatDelay: 1.5
-              }}
-              style={{ transformOrigin: '40px 70px' }}
-            >
-              <rect x="40" y="70" width="8" height="30" rx="4" fill="#1e293b" />
-            </motion.g>
-            
-            {/* Jersey number */}
-            <text x="35" y="55" textAnchor="middle" className="text-xs font-bold" fill="white">17</text>
+            {/* Jersey Number */}
+            <text x="40" y="50" textAnchor="middle" className="text-lg font-bold" fill="white" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5">17</text>
           </motion.g>
         </svg>
         
@@ -891,49 +1005,95 @@ const AgilityAnimation = ({ colors, isPlaying }: { colors: any, isPlaying: boole
           repeatDelay: 1
         }}
       >
-        {/* Draw the athlete */}
-        <svg width="60" height="100" viewBox="0 0 60 100" fill="none">
-          {/* Body */}
+        {/* Draw the athlete - Football player for agility */}
+        <svg width="80" height="120" viewBox="0 0 80 120" fill="none">
           <g>
-            {/* Torso */}
-            <rect x="22" y="20" width="16" height="34" rx="6" fill={colors.primary} />
+            {/* Base Shadow */}
+            <ellipse cx="40" cy="110" rx="12" ry="4" opacity="0.3" fill="#000000" />
             
-            {/* Head */}
-            <circle cx="30" cy="15" r="10" fill="#7c3aed" />
+            {/* Cleats */}
+            <path d="M25 95 L20 100 L22 102 L30 102 L32 98 L28 95 Z" fill="#111111" />
+            <path d="M25 95 L20 100 L22 102 L30 102 L32 98 L28 95 Z" stroke="#333333" strokeWidth="0.5" />
+            <path d="M55 95 L60 100 L58 102 L50 102 L48 98 L52 95 Z" fill="#111111" />
+            <path d="M55 95 L60 100 L58 102 L50 102 L48 98 L52 95 Z" stroke="#333333" strokeWidth="0.5" />
             
-            {/* Eyes and Mouth */}
-            <circle cx="26" cy="12" r="1.5" fill="white" />
-            <circle cx="34" cy="12" r="1.5" fill="white" />
-            <path d="M26 18 Q30 20 34 18" stroke="white" fill="transparent" strokeWidth="1" />
+            {/* Athletic Socks */}
+            <rect x="28" y="88" width="6" height="7" rx="1" fill="white" />
+            <rect x="46" y="88" width="6" height="7" rx="1" fill="white" />
             
-            {/* Arms */}
+            {/* Leg Muscle Definition - Football Pants */}
+            <path d="M32 50 C22 55, 22 75, 25 88 L37 88 C38 75, 38 55, 36 50 Z" fill="#efefef" stroke="#dedede" strokeWidth="0.5" />
+            <path d="M48 50 C58 55, 58 75, 55 88 L43 88 C42 75, 42 55, 44 50 Z" fill="#efefef" stroke="#dedede" strokeWidth="0.5" />
+            
+            {/* Knee Pads */}
+            <rect x="28" y="70" width="6" height="6" rx="3" fill="#dddddd" stroke="#cccccc" strokeWidth="0.5" />
+            <rect x="46" y="70" width="6" height="6" rx="3" fill="#dddddd" stroke="#cccccc" strokeWidth="0.5" />
+            
+            {/* Hip Pads */}
+            <rect x="32" y="52" width="6" height="4" rx="2" fill="#dddddd" stroke="#cccccc" strokeWidth="0.5" />
+            <rect x="42" y="52" width="6" height="4" rx="2" fill="#dddddd" stroke="#cccccc" strokeWidth="0.5" />
+            
+            {/* Jersey - Football Style */}
+            <path d="M30 28 C26 30, 24 35, 24 50 L56 50 C56 35, 54 30, 50 28 Z" fill={colors.primary} />
+            <path d="M30 28 C26 30, 24 35, 24 50 L56 50 C56 35, 54 30, 50 28 Z" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+            
+            {/* Jersey Lines */}
+            <path d="M30 32 L30 50 M50 32 L50 50" stroke="white" strokeWidth="0.5" />
+            <path d="M24 40 L56 40" stroke="white" strokeWidth="1" />
+            
+            {/* Shoulder Pads */}
+            <ellipse cx="30" cy="30" rx="7" ry="5" fill={colors.primary} />
+            <ellipse cx="50" cy="30" rx="7" ry="5" fill={colors.primary} />
+            <path d="M28 26 C28 28, 32 30, 32 30" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+            <path d="M52 26 C52 28, 48 30, 48 30" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+            
+            {/* Neck */}
+            <path d="M35 22 C35 25, 45 25, 45 22" fill="#6b4f35" />
+            
+            {/* Helmet - Football Style */}
+            <path d="M32 14 C25 14, 25 22, 32 22 L48 22 C55 22, 55 14, 48 14 Z" fill={colors.primary} />
+            <path d="M32 14 C25 14, 25 22, 32 22 L48 22 C55 22, 55 14, 48 14 Z" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+            <path d="M32 14 C28 10, 52 10, 48 14" fill={colors.primary} stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+            
+            {/* Helmet Stripe */}
+            <path d="M40 9 L40 22" stroke="white" strokeWidth="2" />
+            
+            {/* Facemask */}
+            <path d="M32 18 L48 18" stroke="#555555" strokeWidth="1.5" />
+            <path d="M30 16 L30 20 M33 14 L33 21 M37 14 L37 21 M40 14 L40 21 M43 14 L43 21 M47 14 L47 21 M50 16 L50 20" stroke="#555555" strokeWidth="1.5" />
+            
+            {/* Arm Muscles */}
             <motion.g
               animate={isPlaying ? {
-                rotate: [-20, 20, -20]
+                rotate: [-40, 20, -40]
               } : {}}
               transition={{ 
                 duration: 0.5,
                 repeat: Infinity
               }}
-              style={{ transformOrigin: '22px 25px' }}
+              style={{ transformOrigin: '30px 32px' }}
             >
-              <rect x="10" y="25" width="12" height="5" rx="2.5" fill={colors.primary} />
+              <path d="M30 32 C18 32, 18 38, 15 42" stroke="#6b4f35" strokeWidth="6" strokeLinecap="round" />
+              <path d="M30 32 C18 32, 18 38, 15 42" stroke="rgba(255,255,255,0.2)" strokeWidth="1" strokeLinecap="round" />
+              <ellipse cx="15" cy="42" rx="3" ry="2.5" fill="#6b4f35" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
             </motion.g>
             
             <motion.g
               animate={isPlaying ? {
-                rotate: [20, -20, 20]
+                rotate: [40, -20, 40]
               } : {}}
               transition={{ 
                 duration: 0.5,
                 repeat: Infinity
               }}
-              style={{ transformOrigin: '38px 25px' }}
+              style={{ transformOrigin: '50px 32px' }}
             >
-              <rect x="38" y="25" width="12" height="5" rx="2.5" fill={colors.primary} />
+              <path d="M50 32 C62 32, 62 38, 65 42" stroke="#6b4f35" strokeWidth="6" strokeLinecap="round" />
+              <path d="M50 32 C62 32, 62 38, 65 42" stroke="rgba(255,255,255,0.2)" strokeWidth="1" strokeLinecap="round" />
+              <ellipse cx="65" cy="42" rx="3" ry="2.5" fill="#6b4f35" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
             </motion.g>
             
-            {/* Legs */}
+            {/* Dynamic Leg Movement */}
             <motion.g
               animate={isPlaying ? {
                 rotate: [15, -15, 15]
@@ -942,9 +1102,12 @@ const AgilityAnimation = ({ colors, isPlaying }: { colors: any, isPlaying: boole
                 duration: 0.5,
                 repeat: Infinity
               }}
-              style={{ transformOrigin: '26px 54px' }}
+              style={{ transformOrigin: '32px 50px' }}
             >
-              <rect x="18" y="54" width="8" height="25" rx="4" fill="#1e293b" />
+              <path d="M32 50 C22 55, 22 75, 25 88 L37 88 C38 75, 38 55, 36 50 Z" fill="#efefef" stroke="#dedede" strokeWidth="0.5" />
+              <rect x="28" y="70" width="6" height="6" rx="3" fill="#dddddd" stroke="#cccccc" strokeWidth="0.5" />
+              <rect x="28" y="88" width="6" height="7" rx="1" fill="white" />
+              <path d="M25 95 L20 100 L22 102 L30 102 L32 98 L28 95 Z" fill="#111111" stroke="#333333" strokeWidth="0.5" />
             </motion.g>
             
             <motion.g
@@ -955,13 +1118,16 @@ const AgilityAnimation = ({ colors, isPlaying }: { colors: any, isPlaying: boole
                 duration: 0.5,
                 repeat: Infinity
               }}
-              style={{ transformOrigin: '34px 54px' }}
+              style={{ transformOrigin: '48px 50px' }}
             >
-              <rect x="34" y="54" width="8" height="25" rx="4" fill="#1e293b" />
+              <path d="M48 50 C58 55, 58 75, 55 88 L43 88 C42 75, 42 55, 44 50 Z" fill="#efefef" stroke="#dedede" strokeWidth="0.5" />
+              <rect x="46" y="70" width="6" height="6" rx="3" fill="#dddddd" stroke="#cccccc" strokeWidth="0.5" />
+              <rect x="46" y="88" width="6" height="7" rx="1" fill="white" />
+              <path d="M55 95 L60 100 L58 102 L50 102 L48 98 L52 95 Z" fill="#111111" stroke="#333333" strokeWidth="0.5" />
             </motion.g>
             
-            {/* Jersey number */}
-            <text x="30" y="40" textAnchor="middle" className="text-xs font-bold" fill="white">17</text>
+            {/* Jersey Number */}
+            <text x="40" y="40" textAnchor="middle" className="text-lg font-bold" fill="white" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5">17</text>
           </g>
         </svg>
       </motion.div>
@@ -1059,24 +1225,65 @@ const StrengthAnimation = ({ colors, isPlaying }: { colors: any, isPlaying: bool
           repeatDelay: 1
         }}
       >
-        <svg width="70" height="120" viewBox="0 0 70 120" fill="none">
+        <svg width="90" height="130" viewBox="0 0 90 130" fill="none">
           <g>
-            {/* Torso */}
-            <rect x="25" y="50" width="20" height="30" rx="6" fill={colors.primary} />
+            {/* Base Shadow for depth */}
+            <ellipse cx="45" cy="120" rx="15" ry="4" opacity="0.3" fill="#000000" />
             
-            {/* Head */}
-            <circle cx="35" cy="35" r="10" fill="#7c3aed" />
+            {/* Feet/Shoes - Weightlifting */}
+            <rect x="28" y="105" width="12" height="8" rx="2" fill="#222222" stroke="#111111" strokeWidth="0.5" />
+            <rect x="50" y="105" width="12" height="8" rx="2" fill="#222222" stroke="#111111" strokeWidth="0.5" />
+            <path d="M28 109 L40 109" stroke="#444444" strokeWidth="1" />
+            <path d="M50 109 L62 109" stroke="#444444" strokeWidth="1" />
             
-            {/* Eyes and Mouth */}
-            <circle cx="30" cy="32" r="1.5" fill="white" />
-            <circle cx="40" cy="32" r="1.5" fill="white" />
+            {/* Athletic Socks */}
+            <rect x="30" y="98" width="8" height="7" rx="1" fill="white" stroke="#DDDDDD" strokeWidth="0.5" />
+            <rect x="52" y="98" width="8" height="7" rx="1" fill="white" stroke="#DDDDDD" strokeWidth="0.5" />
+            
+            {/* Powerlifting Leg Muscles */}
+            <path d="M32 60 C25 65, 25 85, 30 98 L38 98 C40 85, 40 65, 38 60 Z" fill="#1e293b" />
+            <path d="M32 60 C25 65, 25 85, 30 98 L38 98 C40 85, 40 65, 38 60 Z" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+            <path d="M58 60 C65 65, 65 85, 60 98 L52 98 C50 85, 50 65, 52 60 Z" fill="#1e293b" />
+            <path d="M58 60 C65 65, 65 85, 60 98 L52 98 C50 85, 50 65, 52 60 Z" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+            
+            {/* Muscle Definition Lines */}
+            <path d="M35 70 C32 80, 32 90, 34 98" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+            <path d="M55 70 C58 80, 58 90, 56 98" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+            
+            {/* Weight Belt */}
+            <rect x="30" y="60" width="30" height="5" fill="#663300" stroke="#442200" strokeWidth="0.5" />
+            <rect x="42" y="60" width="6" height="5" fill="#884400" stroke="#663300" strokeWidth="0.5" />
+            
+            {/* Hulking Muscular Torso - Bodybuilder Style */}
+            <path d="M30 35 C25 40, 20 50, 30 60 L60 60 C70 50, 65 40, 60 35 Z" fill={colors.primary} />
+            <path d="M30 35 C25 40, 20 50, 30 60 L60 60 C70 50, 65 40, 60 35 Z" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+            
+            {/* Muscle Definition in Torso */}
+            <path d="M45 35 L45 60" stroke="rgba(0,0,0,0.2)" strokeWidth="0.5" />
+            <path d="M35 45 L55 45" stroke="rgba(0,0,0,0.2)" strokeWidth="0.5" />
+            <path d="M35 53 L55 53" stroke="rgba(0,0,0,0.2)" strokeWidth="0.5" />
+            
+            {/* Massive Shoulders */}
+            <ellipse cx="30" cy="35" rx="8" ry="6" fill={colors.primary} />
+            <ellipse cx="60" cy="35" rx="8" ry="6" fill={colors.primary} />
+            
+            {/* Beefy Neck */}
+            <path d="M35 25 C35 30, 55 30, 55 25" fill="#6b4f35" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+            <path d="M38 28 L52 28" stroke="rgba(0,0,0,0.2)" strokeWidth="0.5" />
+            
+            {/* Head - Focused Expression */}
+            <ellipse cx="45" cy="18" rx="12" ry="14" fill="#6b4f35" />
+            
+            {/* Determined Face/Expression */}
+            <ellipse cx="40" cy="16" rx="2" ry="1.5" fill="white" />
+            <ellipse cx="50" cy="16" rx="2" ry="1.5" fill="white" />
             <motion.path 
-              d="M30 39 Q35 37 40 39" 
+              d="M38 24 Q45 23 52 24" 
               stroke="white" 
               fill="transparent" 
               strokeWidth="1"
               animate={isPlaying ? {
-                d: ["M30 39 Q35 37 40 39", "M30 39 Q35 41 40 39", "M30 39 Q35 37 40 39"]
+                d: ["M38 24 Q45 23 52 24", "M38 24 Q45 22 52 24", "M38 24 Q45 23 52 24"]
               } : {}}
               transition={{
                 duration: 2,
@@ -1086,11 +1293,13 @@ const StrengthAnimation = ({ colors, isPlaying }: { colors: any, isPlaying: bool
               }}
             />
             
-            {/* Arms */}
-            <motion.g
+            {/* Eyebrows - Concentration */}
+            <motion.path 
+              d="M37 13 L43 14" 
+              stroke="rgba(255,255,255,0.5)" 
+              strokeWidth="1"
               animate={isPlaying ? {
-                rotate: [0, -15, 0],
-                y: [0, -5, 0]
+                d: ["M37 13 L43 14", "M37 12 L43 13", "M37 13 L43 14"]
               } : {}}
               transition={{
                 duration: 2,
@@ -1098,15 +1307,13 @@ const StrengthAnimation = ({ colors, isPlaying }: { colors: any, isPlaying: bool
                 repeat: isPlaying ? Infinity : 0,
                 repeatDelay: 1
               }}
-              style={{ transformOrigin: '25px 45px' }}
-            >
-              <rect x="5" y="45" width="20" height="8" rx="4" fill={colors.primary} />
-            </motion.g>
-            
-            <motion.g
+            />
+            <motion.path 
+              d="M47 14 L53 13" 
+              stroke="rgba(255,255,255,0.5)" 
+              strokeWidth="1"
               animate={isPlaying ? {
-                rotate: [0, 15, 0],
-                y: [0, -5, 0]
+                d: ["M47 14 L53 13", "M47 13 L53 12", "M47 14 L53 13"]
               } : {}}
               transition={{
                 duration: 2,
@@ -1114,17 +1321,90 @@ const StrengthAnimation = ({ colors, isPlaying }: { colors: any, isPlaying: bool
                 repeat: isPlaying ? Infinity : 0,
                 repeatDelay: 1
               }}
-              style={{ transformOrigin: '45px 45px' }}
+            />
+            
+            {/* Power lifting bandana */}
+            <path d="M33 10 L57 10 L53 18 L37 18 Z" fill={colors.primary} />
+            <path d="M33 10 L57 10 L53 18 L37 18 Z" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+            <path d="M33 10 L30 18 M57 10 L60 18" stroke={colors.primary} strokeWidth="2" />
+            
+            {/* Bulging Arms */}
+            <motion.g
+              animate={isPlaying ? {
+                rotate: [0, -12, 0],
+                y: [0, -4, 0]
+              } : {}}
+              transition={{
+                duration: 2,
+                times: [0, 0.5, 1],
+                repeat: isPlaying ? Infinity : 0,
+                repeatDelay: 1
+              }}
+              style={{ transformOrigin: '30px 35px' }}
             >
-              <rect x="45" y="45" width="20" height="8" rx="4" fill={colors.primary} />
+              {/* Bicep Definition */}
+              <path d="M30 35 C20 35, 10 38, 8 45" stroke="#6b4f35" strokeWidth="10" strokeLinecap="round" />
+              <path d="M30 35 C20 35, 10 38, 8 45" stroke="rgba(0,0,0,0.2)" strokeWidth="0.5" />
+              <path d="M22 35 C15 38, 10 42, 8 45" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+              
+              {/* Hand */}
+              <ellipse cx="8" cy="45" rx="5" ry="4" fill="#6b4f35" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+              <path d="M5 45 L11 45" stroke="rgba(0,0,0,0.2)" strokeWidth="0.5" />
             </motion.g>
             
-            {/* Legs */}
-            <rect x="25" y="80" width="8" height="25" rx="4" fill="#1e293b" />
-            <rect x="37" y="80" width="8" height="25" rx="4" fill="#1e293b" />
+            <motion.g
+              animate={isPlaying ? {
+                rotate: [0, 12, 0],
+                y: [0, -4, 0]
+              } : {}}
+              transition={{
+                duration: 2,
+                times: [0, 0.5, 1],
+                repeat: isPlaying ? Infinity : 0,
+                repeatDelay: 1
+              }}
+              style={{ transformOrigin: '60px 35px' }}
+            >
+              {/* Bicep Definition */}
+              <path d="M60 35 C70 35, 80 38, 82 45" stroke="#6b4f35" strokeWidth="10" strokeLinecap="round" />
+              <path d="M60 35 C70 35, 80 38, 82 45" stroke="rgba(0,0,0,0.2)" strokeWidth="0.5" />
+              <path d="M68 35 C75 38, 80 42, 82 45" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+              
+              {/* Hand */}
+              <ellipse cx="82" cy="45" rx="5" ry="4" fill="#6b4f35" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+              <path d="M79 45 L85 45" stroke="rgba(0,0,0,0.2)" strokeWidth="0.5" />
+            </motion.g>
             
-            {/* Jersey number */}
-            <text x="35" y="70" textAnchor="middle" className="text-xs font-bold" fill="white">17</text>
+            {/* Veins effect - bodybuilder */}
+            <motion.path
+              d="M25 40 C26 42, 24 45, 25 48"
+              stroke="rgba(0,65,130,0.3)"
+              strokeWidth="0.5"
+              fill="none"
+              animate={isPlaying ? {
+                opacity: [0.2, 0.4, 0.2]
+              } : {}}
+              transition={{
+                duration: 2,
+                repeat: Infinity
+              }}
+            />
+            <motion.path
+              d="M65 40 C64 42, 66 45, 65 48"
+              stroke="rgba(0,65,130,0.3)"
+              strokeWidth="0.5"
+              fill="none"
+              animate={isPlaying ? {
+                opacity: [0.2, 0.4, 0.2]
+              } : {}}
+              transition={{
+                duration: 2,
+                repeat: Infinity
+              }}
+            />
+            
+            {/* Jersey Number */}
+            <text x="45" y="50" textAnchor="middle" className="text-xl font-bold" fill="white" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5">17</text>
           </g>
         </svg>
       </motion.div>
