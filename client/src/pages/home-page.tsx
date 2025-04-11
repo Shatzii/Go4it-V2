@@ -12,6 +12,7 @@ import { WhatMakesUsDifferent } from "@/components/what-makes-us-different";
 import FeaturedCombines from "@/components/home/FeaturedCombines";
 import FeaturedBlogPosts from "@/components/home/FeaturedBlogPosts";
 import ScoutVisionCarousel from "@/components/home/ScoutVisionCarousel";
+import FeatureCommercial from "@/components/home/FeatureCommercial";
 
 interface BlogPost {
   id: number;
@@ -116,7 +117,20 @@ export default function HomePage() {
     <div className="container mx-auto px-3 py-4 sm:px-4 sm:py-8">
       {/* Mobile-optimized Hero and What Makes Us Different Section */}
       <WhatMakesUsDifferent showHeroSection={true} showTitle={false} />
-
+      
+      {/* Animated Commercial Explaining Site Features */}
+      <section className="py-8 my-12 border-t border-b border-gray-800 bg-black/60 rounded-lg">
+        <div className="text-center mb-6">
+          <h2 className="text-3xl font-bold text-white">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
+              Explore Go4It
+            </span> Features
+          </h2>
+          <p className="text-lg text-blue-300 mt-1">Discover what makes our platform unique</p>
+        </div>
+        <FeatureCommercial autoPlay={true} />
+      </section>
+      
       {/* Featured Athletes Section */}
       <section className="mb-16">
         <div className="flex justify-between items-center mb-6">
