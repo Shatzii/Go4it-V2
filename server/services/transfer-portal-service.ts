@@ -285,6 +285,17 @@ class TransferPortalService {
       }
       const position = positions[Math.floor(Math.random() * positions.length)];
 
+      // Generate random hometown
+      const cities = ["Los Angeles", "New York", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "Dallas", "Austin", "Jacksonville"];
+      const states = ["CA", "NY", "IL", "TX", "AZ", "PA", "TX", "TX", "TX", "FL"];
+      const randomIndex = Math.floor(Math.random() * cities.length);
+      const hometown = `${cities[randomIndex]}, ${states[randomIndex]}`;
+
+      // Generate random high school
+      const highSchoolPrefixes = ["North", "South", "East", "West", "Central", "Highland", "Riverside", "Lakeside", "Mountain View", "Oak"];
+      const highSchoolSuffixes = ["High School", "Academy", "Preparatory", "High", "Secondary School"];
+      const randomHighSchool = `${highSchoolPrefixes[Math.floor(Math.random() * highSchoolPrefixes.length)]} ${highSchoolSuffixes[Math.floor(Math.random() * highSchoolSuffixes.length)]}`;
+
       // Create the player entry
       const [playerEntry] = await db
         .insert(schema.transferPortalEntries)
@@ -296,6 +307,8 @@ class TransferPortalService {
           eligibilityRemaining: `${Math.floor(Math.random() * 4) + 1} years`,
           height: `${Math.floor(Math.random() * 12) + 66} inches`, // 5'6" to 6'6"
           weight: `${Math.floor(Math.random() * 100) + 160} lbs`,
+          hometown: hometown, // Add hometown field
+          highSchool: randomHighSchool, // Add high school field
           starRating: Math.floor(Math.random() * 5) + 1,
           portalEntryDate: new Date(),
           portalStatus: "active",
