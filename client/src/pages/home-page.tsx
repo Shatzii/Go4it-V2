@@ -118,20 +118,18 @@ export default function HomePage() {
       {/* Mobile-optimized Hero and What Makes Us Different Section */}
       <WhatMakesUsDifferent showHeroSection={true} showTitle={false} />
       
-      {/* Animated Commercial Explaining Site Features - Only for non-authenticated users */}
-      {!user && (
-        <section className="py-8 my-12 border-t border-b border-gray-800 bg-black/60 rounded-lg">
-          <div className="text-center mb-6">
-            <h2 className="text-3xl font-bold text-white">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
-                Explore Go4It
-              </span> Features
-            </h2>
-            <p className="text-lg text-blue-300 mt-1">Discover what makes our platform unique</p>
-          </div>
-          <SimpleFeatureCommercial />
-        </section>
-      )}
+      {/* Animated Commercial Explaining Site Features */}
+      <section className="py-8 my-12 border-t border-b border-gray-800 bg-black/60 rounded-lg">
+        <div className="text-center mb-6">
+          <h2 className="text-3xl font-bold text-white">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
+              Explore Go4It
+            </span> Features
+          </h2>
+          <p className="text-lg text-blue-300 mt-1">Discover what makes our platform unique</p>
+        </div>
+        <SimpleFeatureCommercial />
+      </section>
       
       {/* Featured Athletes Section */}
       <section className="mb-16">
