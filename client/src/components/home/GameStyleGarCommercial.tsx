@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Trophy, Zap, ChevronRight, ChevronLeft, Award, Timer, Activity } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import AdvancedAnimationPlayer from '@/components/ui/video/AdvancedAnimationPlayer';
 
 // Interface like modern sports video games
 const GameStyleGarCommercial = () => {
@@ -155,21 +156,29 @@ const GameStyleGarCommercial = () => {
                 background: `linear-gradient(to bottom, #0f172a, #111827)`
               }}
             >
-              {currentScene.id === 'sprint' && (
-                <SprintAnimation colors={currentColors} isPlaying={isPlaying} />
-              )}
-              
-              {currentScene.id === 'vertical' && (
-                <VerticalAnimation colors={currentColors} isPlaying={isPlaying} />
-              )}
-              
-              {currentScene.id === 'agility' && (
-                <AgilityAnimation colors={currentColors} isPlaying={isPlaying} />
-              )}
-              
-              {currentScene.id === 'strength' && (
-                <StrengthAnimation colors={currentColors} isPlaying={isPlaying} />
-              )}
+              {/* Advanced 128-bit Animation Player */}
+              <AdvancedAnimationPlayer
+                videoSources={{
+                  sprint: '/videos/40_yard_dash.mp4',
+                  vertical: '/videos/vertical_jump.mp4',
+                  agility: '/videos/agility_drill.mp4',
+                  strength: '/videos/bench_press.mp4'
+                }}
+                svgAnimations={{
+                  sprint: SprintAnimation,
+                  vertical: VerticalAnimation,
+                  agility: AgilityAnimation,
+                  strength: StrengthAnimation
+                }}
+                animationType={currentScene.id}
+                colors={currentColors}
+                metricData={{
+                  label: currentScene.name,
+                  value: currentScene.metrics.result,
+                  unit: ''
+                }}
+                className="w-full h-full"
+              />
               
               {/* Heads-up display */}
               <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4">
