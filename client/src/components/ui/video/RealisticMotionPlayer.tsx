@@ -102,14 +102,26 @@ const RealisticMotionPlayer: React.FC<RealisticMotionPlayerProps> = ({
   
   // Handle video loaded
   const handleVideoLoaded = () => {
-    setVideoLoaded(true);
-    if (autoPlay && videoRef.current) {
-      videoRef.current.play().catch(e => {
-        console.error("Error auto-playing video:", e);
-        setIsPlaying(false);
-      });
-    }
+    // For development purposes - show interface even with placeholder videos
+    setTimeout(() => {
+      setVideoLoaded(true);
+      if (autoPlay && videoRef.current) {
+        videoRef.current.play().catch(e => {
+          console.error("Error auto-playing video:", e);
+          setIsPlaying(false);
+        });
+      }
+    }, 1500); // Show loading for just 1.5 seconds then reveal interface
   };
+  
+  // Force video loaded state after timeout (for demo purposes with placeholder files)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setVideoLoaded(true);
+    }, 2500);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div 
