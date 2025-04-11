@@ -1937,3 +1937,302 @@ export const insertOnboardingProgressSchema = createInsertSchema(onboardingProgr
 
 export type OnboardingProgress = typeof onboardingProgress.$inferSelect;
 export type InsertOnboardingProgress = z.infer<typeof insertOnboardingProgressSchema>;
+
+// Analytics System Tables
+
+// 1. Star Path Progression Analytics
+export const starPathAnalytics = pgTable("star_path_analytics", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  currentStarLevel: integer("current_star_level").notNull(),
+  previousStarLevel: integer("previous_star_level"),
+  daysAtCurrentLevel: integer("days_at_current_level").notNull(),
+  totalDaysInSystem: integer("total_days_in_system").notNull(),
+  progressPercentage: real("progress_percentage").notNull(),
+  nextLevelEstimatedDays: integer("next_level_estimated_days"),
+  progressSnapshotData: jsonb("progress_snapshot_data"),
+  bottleneckIdentified: text("bottleneck_identified"),
+  recommendedFocus: text("recommended_focus"),
+  achievedMilestones: text("achieved_milestones").array(),
+  timestampRecorded: timestamp("timestamp_recorded").defaultNow().notNull(),
+});
+
+// 2. Engagement Patterns & ADHD Analytics
+export const engagementAnalytics = pgTable("engagement_analytics", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  sessionDuration: integer("session_duration").notNull(), // in seconds
+  timeOfDay: timestamp("time_of_day").notNull(),
+  dayOfWeek: integer("day_of_week").notNull(), // 0-6 for Sunday-Saturday
+  featuresUsed: text("features_used").array(),
+  featureTimeDistribution: jsonb("feature_time_distribution"), // JSON mapping features to time spent
+  attentionSpanAverage: real("attention_span_average"), // in seconds
+  contextSwitchCount: integer("context_switch_count"),
+  focusFeature: text("focus_feature"), // which feature kept attention longest
+  deviceType: text("device_type"),
+  sessionCompletionStatus: text("session_completion_status"), // "completed", "interrupted", etc.
+  interfaceElements: jsonb("interface_elements"), // tracking UI components that maintained engagement
+  timestampRecorded: timestamp("timestamp_recorded").defaultNow().notNull(),
+});
+
+// 3. Workout Verification Analytics
+export const workoutAnalytics = pgTable("workout_analytics", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  workoutVerificationId: integer("workout_verification_id"),
+  workoutType: text("workout_type").notNull(),
+  completionSuccess: boolean("completion_success").notNull(),
+  formQualityScore: real("form_quality_score"), // 0-100
+  formImprovementRate: real("form_improvement_rate"), // compared to last similar workout
+  consistencyStreak: integer("consistency_streak").notNull(),
+  bestStreak: integer("best_streak"),
+  difficultyProgression: real("difficulty_progression"), // rate of increasing difficulty
+  caloriesBurned: integer("calories_burned"),
+  workoutDuration: integer("workout_duration"), // in minutes
+  intensityScore: real("intensity_score"), // 0-100
+  preferredTimeOfDay: text("preferred_time_of_day"),
+  preferredEnvironment: text("preferred_environment"), // gym, home, outdoor, etc.
+  equipmentUsed: text("equipment_used").array(),
+  timestampRecorded: timestamp("timestamp_recorded").defaultNow().notNull(),
+});
+
+// 4. Skill Development Velocity Analytics
+export const skillDevelopmentAnalytics = pgTable("skill_development_analytics", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  sportType: text("sport_type").notNull(),
+  skillCategory: text("skill_category").notNull(), // e.g. shooting, passing, defense
+  skillName: text("skill_name").notNull(),
+  currentLevel: integer("current_level").notNull(),
+  improvementRate: real("improvement_rate"), // per week
+  practiceFrequency: integer("practice_frequency"), // days per week
+  timeInvested: integer("time_invested"), // minutes per week
+  plateauIdentified: boolean("plateau_identified"),
+  plateauDuration: integer("plateau_duration"), // days
+  breakthroughFactors: text("breakthrough_factors").array(),
+  correlationFactors: jsonb("correlation_factors"), // factors correlating with improvements
+  drillEfficiency: jsonb("drill_efficiency"), // which drills produce fastest improvement
+  timestampRecorded: timestamp("timestamp_recorded").defaultNow().notNull(),
+});
+
+// 5. Academic-Athletic Integration Analytics
+export const academicAthleticAnalytics = pgTable("academic_athletic_analytics", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  currentGPA: real("current_gpa"),
+  gpaTimeSeries: jsonb("gpa_time_series"),
+  strongestSubjects: text("strongest_subjects").array(),
+  weakestSubjects: text("weakest_subjects").array(),
+  studyHoursPerWeek: integer("study_hours_per_week"),
+  athleticPerformanceCorrelation: real("athletic_performance_correlation"), // -1 to 1
+  cognitiveInfluenceFactor: real("cognitive_influence_factor"), // how academics impact sports decisions
+  academicImprovementRate: real("academic_improvement_rate"),
+  athleticImprovementRate: real("athletic_improvement_rate"),
+  balanceScore: real("balance_score"), // 0-100, how well balanced academics and athletics
+  recommendedStudyPatterns: jsonb("recommended_study_patterns"),
+  recommendedSubjectFocus: text("recommended_subject_focus"),
+  timestampRecorded: timestamp("timestamp_recorded").defaultNow().notNull(),
+});
+
+// 6. AI Coach Effectiveness Analytics
+export const aiCoachAnalytics = pgTable("ai_coach_analytics", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  coachId: integer("coach_id"),
+  personalizationAccuracy: real("personalization_accuracy"), // 0-100
+  recommendationAdherenceRate: real("recommendation_adherence_rate"), // % of recommendations followed
+  userSatisfactionRating: integer("user_satisfaction_rating"), // 1-10
+  improvementWithAI: real("improvement_with_ai"), // improvement rate with AI coach
+  improvementWithoutAI: real("improvement_without_ai"), // baseline comparison
+  aiInteractionFrequency: integer("ai_interaction_frequency"), // times per week
+  averageInteractionDuration: integer("average_interaction_duration"), // seconds
+  mostUsedFeatures: text("most_used_features").array(),
+  commonQueries: text("common_queries").array(),
+  feedbackProvided: text("feedback_provided"),
+  adjustmentsImplemented: jsonb("adjustments_implemented"),
+  timestampRecorded: timestamp("timestamp_recorded").defaultNow().notNull(),
+});
+
+// 7. Cross-Sport Potential Analytics
+export const crossSportAnalytics = pgTable("cross_sport_analytics", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  primarySport: text("primary_sport").notNull(),
+  secondarySports: text("secondary_sports").array(),
+  skillTransferabilityScore: jsonb("skill_transferability_score"), // mapping sports to transferability scores
+  crossTrainingFrequency: integer("cross_training_frequency"), // days per week
+  multiSportPerformanceIndex: real("multi_sport_performance_index"), // composite score
+  sportRecommendationAccuracy: real("sport_recommendation_accuracy"), // 0-100
+  complementarySkillSets: jsonb("complementary_skill_sets"),
+  specialtyVsVersatilityBalance: real("specialty_vs_versatility_balance"), // 0-1, 0=specialist, 1=versatile
+  sportProgressionTimeline: jsonb("sport_progression_timeline"),
+  timestampRecorded: timestamp("timestamp_recorded").defaultNow().notNull(),
+});
+
+// 8. Recruiting Readiness Analytics
+export const recruitingAnalytics = pgTable("recruiting_analytics", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  overallGARScore: real("overall_gar_score"),
+  garScoreProgression: jsonb("gar_score_progression"),
+  highlightGenerationCount: integer("highlight_generation_count"),
+  highlightViewCount: integer("highlight_view_count"),
+  highlightShareCount: integer("highlight_share_count"),
+  scoutViewCount: integer("scout_view_count"),
+  scoutEngagementMetrics: jsonb("scout_engagement_metrics"), // what scouts spend time looking at
+  collegeMatchPercentages: jsonb("college_match_percentages"), // top college matches
+  recruitingProfileCompleteness: real("recruiting_profile_completeness"), // 0-100
+  nationalRankingProjection: integer("national_ranking_projection"),
+  localRankingProjection: integer("local_ranking_projection"),
+  scholarshipPotentialScore: real("scholarship_potential_score"), // 0-100
+  timestampRecorded: timestamp("timestamp_recorded").defaultNow().notNull(),
+});
+
+// 9. Neurodivergent-Specific Success Patterns
+export const neurodivergentAnalytics = pgTable("neurodivergent_analytics", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  adhdFriendlyFeatureUsage: jsonb("adhd_friendly_feature_usage"), // which features are most used
+  accommodationEffectiveness: jsonb("accommodation_effectiveness"), // which accommodations improve outcomes
+  focusDuration: jsonb("focus_duration"), // average focus time by UI element
+  distractionFrequency: integer("distraction_frequency"),
+  recoveryTime: integer("recovery_time"), // time to refocus after distraction
+  optimalSessionDuration: integer("optimal_session_duration"), // in minutes
+  visualVsTextualPreference: real("visual_vs_textual_preference"), // 0-1, 0=text, 1=visual
+  dopamineTriggerEffectiveness: jsonb("dopamine_trigger_effectiveness"),
+  attentionPatterns: jsonb("attention_patterns"),
+  environmentalFactors: jsonb("environmental_factors"), // which environments improve focus
+  timestampRecorded: timestamp("timestamp_recorded").defaultNow().notNull(),
+});
+
+// 10. Community & Social Impact Analytics
+export const communityAnalytics = pgTable("community_analytics", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  peerInteractionCount: integer("peer_interaction_count"),
+  peerLearningEffectiveness: real("peer_learning_effectiveness"), // 0-100
+  coachAthleteMessageCount: integer("coach_athlete_message_count"),
+  responseTimeAverage: integer("response_time_average"), // in minutes
+  parentInvolvementScore: real("parent_involvement_score"), // 0-100
+  teamVsIndividualImprovement: real("team_vs_individual_improvement"), // -1 to 1, negative=individual better
+  regionalComparisonPercentile: real("regional_comparison_percentile"),
+  communityContributionScore: real("community_contribution_score"),
+  socialSupportNetworkSize: integer("social_support_network_size"),
+  collaborativeWorkoutsPercentage: real("collaborative_workouts_percentage"),
+  knowledgeSharingMetrics: jsonb("knowledge_sharing_metrics"),
+  timestampRecorded: timestamp("timestamp_recorded").defaultNow().notNull(),
+});
+
+// User Session Analytics - general tracking table
+export const userSessionAnalytics = pgTable("user_session_analytics", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  sessionStartTime: timestamp("session_start_time").notNull(),
+  sessionEndTime: timestamp("session_end_time"),
+  sessionDuration: integer("session_duration"), // in seconds
+  pagesVisited: text("pages_visited").array(),
+  actionsPerformed: jsonb("actions_performed"),
+  deviceInfo: jsonb("device_info"),
+  browserInfo: jsonb("browser_info"),
+  ipAddress: text("ip_address"),
+  geolocation: text("geolocation"),
+  referrer: text("referrer"),
+  entryPoint: text("entry_point"),
+  exitPoint: text("exit_point"),
+  bounced: boolean("bounced"),
+  convertedGoal: text("converted_goal"),
+  userType: text("user_type"), // new, returning
+});
+
+// Create insert schemas for analytics tables
+export const insertStarPathAnalyticsSchema = createInsertSchema(starPathAnalytics).omit({ id: true });
+export const insertEngagementAnalyticsSchema = createInsertSchema(engagementAnalytics).omit({ id: true });
+export const insertWorkoutAnalyticsSchema = createInsertSchema(workoutAnalytics).omit({ id: true });
+export const insertSkillDevelopmentAnalyticsSchema = createInsertSchema(skillDevelopmentAnalytics).omit({ id: true });
+export const insertAcademicAthleticAnalyticsSchema = createInsertSchema(academicAthleticAnalytics).omit({ id: true });
+export const insertAiCoachAnalyticsSchema = createInsertSchema(aiCoachAnalytics).omit({ id: true });
+export const insertCrossSportAnalyticsSchema = createInsertSchema(crossSportAnalytics).omit({ id: true });
+export const insertRecruitingAnalyticsSchema = createInsertSchema(recruitingAnalytics).omit({ id: true });
+export const insertNeurodivergentAnalyticsSchema = createInsertSchema(neurodivergentAnalytics).omit({ id: true });
+export const insertCommunityAnalyticsSchema = createInsertSchema(communityAnalytics).omit({ id: true });
+export const insertUserSessionAnalyticsSchema = createInsertSchema(userSessionAnalytics).omit({ id: true });
+
+// Relations for analytics tables
+export const starPathAnalyticsRelations = relations(starPathAnalytics, ({ one }) => ({
+  user: one(users, { fields: [starPathAnalytics.userId], references: [users.id] }),
+}));
+
+export const engagementAnalyticsRelations = relations(engagementAnalytics, ({ one }) => ({
+  user: one(users, { fields: [engagementAnalytics.userId], references: [users.id] }),
+}));
+
+export const workoutAnalyticsRelations = relations(workoutAnalytics, ({ one }) => ({
+  user: one(users, { fields: [workoutAnalytics.userId], references: [users.id] }),
+}));
+
+export const skillDevelopmentAnalyticsRelations = relations(skillDevelopmentAnalytics, ({ one }) => ({
+  user: one(users, { fields: [skillDevelopmentAnalytics.userId], references: [users.id] }),
+}));
+
+export const academicAthleticAnalyticsRelations = relations(academicAthleticAnalytics, ({ one }) => ({
+  user: one(users, { fields: [academicAthleticAnalytics.userId], references: [users.id] }),
+}));
+
+export const aiCoachAnalyticsRelations = relations(aiCoachAnalytics, ({ one }) => ({
+  user: one(users, { fields: [aiCoachAnalytics.userId], references: [users.id] }),
+  coach: one(aiCoaches, { fields: [aiCoachAnalytics.coachId], references: [aiCoaches.id] }),
+}));
+
+export const crossSportAnalyticsRelations = relations(crossSportAnalytics, ({ one }) => ({
+  user: one(users, { fields: [crossSportAnalytics.userId], references: [users.id] }),
+}));
+
+export const recruitingAnalyticsRelations = relations(recruitingAnalytics, ({ one }) => ({
+  user: one(users, { fields: [recruitingAnalytics.userId], references: [users.id] }),
+}));
+
+export const neurodivergentAnalyticsRelations = relations(neurodivergentAnalytics, ({ one }) => ({
+  user: one(users, { fields: [neurodivergentAnalytics.userId], references: [users.id] }),
+}));
+
+export const communityAnalyticsRelations = relations(communityAnalytics, ({ one }) => ({
+  user: one(users, { fields: [communityAnalytics.userId], references: [users.id] }),
+}));
+
+export const userSessionAnalyticsRelations = relations(userSessionAnalytics, ({ one }) => ({
+  user: one(users, { fields: [userSessionAnalytics.userId], references: [users.id] }),
+}));
+
+// Export types for analytics tables
+export type StarPathAnalytics = typeof starPathAnalytics.$inferSelect;
+export type InsertStarPathAnalytics = z.infer<typeof insertStarPathAnalyticsSchema>;
+
+export type EngagementAnalytics = typeof engagementAnalytics.$inferSelect;
+export type InsertEngagementAnalytics = z.infer<typeof insertEngagementAnalyticsSchema>;
+
+export type WorkoutAnalytics = typeof workoutAnalytics.$inferSelect;
+export type InsertWorkoutAnalytics = z.infer<typeof insertWorkoutAnalyticsSchema>;
+
+export type SkillDevelopmentAnalytics = typeof skillDevelopmentAnalytics.$inferSelect;
+export type InsertSkillDevelopmentAnalytics = z.infer<typeof insertSkillDevelopmentAnalyticsSchema>;
+
+export type AcademicAthleticAnalytics = typeof academicAthleticAnalytics.$inferSelect;
+export type InsertAcademicAthleticAnalytics = z.infer<typeof insertAcademicAthleticAnalyticsSchema>;
+
+export type AiCoachAnalytics = typeof aiCoachAnalytics.$inferSelect;
+export type InsertAiCoachAnalytics = z.infer<typeof insertAiCoachAnalyticsSchema>;
+
+export type CrossSportAnalytics = typeof crossSportAnalytics.$inferSelect;
+export type InsertCrossSportAnalytics = z.infer<typeof insertCrossSportAnalyticsSchema>;
+
+export type RecruitingAnalytics = typeof recruitingAnalytics.$inferSelect;
+export type InsertRecruitingAnalytics = z.infer<typeof insertRecruitingAnalyticsSchema>;
+
+export type NeurodivergentAnalytics = typeof neurodivergentAnalytics.$inferSelect;
+export type InsertNeurodivergentAnalytics = z.infer<typeof insertNeurodivergentAnalyticsSchema>;
+
+export type CommunityAnalytics = typeof communityAnalytics.$inferSelect;
+export type InsertCommunityAnalytics = z.infer<typeof insertCommunityAnalyticsSchema>;
+
+export type UserSessionAnalytics = typeof userSessionAnalytics.$inferSelect;
+export type InsertUserSessionAnalytics = z.infer<typeof insertUserSessionAnalyticsSchema>;
