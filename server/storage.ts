@@ -2831,7 +2831,8 @@ export class DatabaseStorage implements IStorage {
         // Try to order by level and sortOrder if they exist
         try {
           // Order by level first, then by sortOrder
-          return await finalQuery.orderBy(asc(skillTreeNodes.level), asc(skillTreeNodes.sortOrder));
+          // Using the correct column names in snake_case from schema.ts
+          return await finalQuery.orderBy(asc(skillTreeNodes.level), asc(skillTreeNodes.sort_order));
         } catch (err) {
           console.warn('Could not order by level and sortOrder, returning unordered results');
           return await finalQuery;
