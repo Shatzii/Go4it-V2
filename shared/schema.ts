@@ -2770,3 +2770,22 @@ export const transferPortalMonitorRelations = relations(transferPortalMonitors, 
     references: [users.id],
   }),
 }));
+
+// NCAA Team Rosters
+export const ncaaTeamRosters = pgTable('ncaa_team_rosters', {
+  id: serial('id').primaryKey(),
+  school: text('school').notNull(),
+  sport: text('sport').notNull(),
+  division: text('division'),
+  conference: text('conference'),
+  rosterStatus: text('roster_status').default('normal'),
+  rosterSize: integer('roster_size'),
+  positionNeeds: jsonb('position_needs'),
+  lastUpdated: timestamp('last_updated').defaultNow()
+});
+
+export const insertNcaaTeamRostersSchema = createInsertSchema(ncaaTeamRosters)
+  .omit({ id: true, lastUpdated: true });
+
+export type NcaaTeamRoster = typeof ncaaTeamRosters.$inferSelect;
+export type InsertNcaaTeamRoster = z.infer<typeof insertNcaaTeamRostersSchema>;
