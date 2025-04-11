@@ -440,11 +440,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/auth/register", async (req, res, next) => {
     try {
+      console.log("Registration request received:", {
+        username: req.body.username,
+        email: req.body.email,
+        name: req.body.name,
+        role: req.body.role,
+        // Don't log password
+      });
+      
       const existingUser = await storage.getUserByUsername(req.body.username);
       if (existingUser) {
+        console.log("Registration failed: Username already exists", req.body.username);
         return res.status(400).json({ message: "Username already exists" });
       }
 
+      // Check if we need agreedToTerms
+      if (req.body.agreedToTerms === undefined) {
+        // Add a default value if not provided
+        req.body.agreedToTerms = true;
+      }
+
+      console.log("Creating new user...");
       const user = await storage.createUser({
         ...req.body,
         password: await authHashPassword(req.body.password),
