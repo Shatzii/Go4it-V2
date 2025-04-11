@@ -1,33 +1,38 @@
-import { Router } from 'express';
-import { db } from '../db';
-import analyticsService from '../services/analytics-service';
-import { z } from 'zod';
+/**
+ * Analytics Routes
+ * 
+ * Handles all API endpoints for collecting and retrieving analytics data
+ * for the Go4It Sports platform.
+ */
 
-const router = Router();
+import express, { Request, Response } from 'express';
+import { storage } from '../storage';
+import { isAdminMiddleware as isAdmin, isAuthenticatedMiddleware as isAuthenticated } from '../middleware/auth-middleware';
+import { User } from '../../shared/schema';
+import { AnalyticsService } from '../services/analytics-service';
+
+const router = express.Router();
+const analyticsService = new AnalyticsService(storage);
 
 /**
  * Record user session start
  * POST /api/analytics/session-start
  */
-router.post('/session-start', async (req, res) => {
+router.post('/session-start', isAuthenticated, async (req: Request, res: Response) => {
   try {
-    const schema = z.object({
-      userId: z.number(),
-      deviceInfo: z.record(z.any()),
-      entryPoint: z.string()
-    });
-
-    const result = schema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ error: 'Invalid request data', details: result.error.issues });
+    const { userId, deviceInfo, entryPoint } = req.body;
+    const user = req.user as User;
+    
+    // Only allow a user to record their own analytics or admins to record for anyone
+    if (userId !== user.id && user.role !== 'admin') {
+      return res.status(403).json({ message: 'Unauthorized to record analytics for this user' });
     }
-
-    const { userId, deviceInfo, entryPoint } = result.data;
-    const response = await analyticsService.trackSessionStart(userId, deviceInfo, entryPoint);
-    res.json(response);
+    
+    const result = await analyticsService.recordSessionStart(userId, deviceInfo, entryPoint);
+    return res.json(result);
   } catch (error) {
     console.error('Error recording session start:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    return res.status(500).json({ message: 'Error recording session start' });
   }
 });
 
@@ -35,24 +40,20 @@ router.post('/session-start', async (req, res) => {
  * Record user feature navigation
  * POST /api/analytics/feature-navigation
  */
-router.post('/feature-navigation', async (req, res) => {
+router.post('/feature-navigation', isAuthenticated, async (req: Request, res: Response) => {
   try {
-    const schema = z.object({
-      userId: z.number(),
-      feature: z.string()
-    });
-
-    const result = schema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ error: 'Invalid request data', details: result.error.issues });
+    const { userId, feature } = req.body;
+    const user = req.user as User;
+    
+    if (userId !== user.id && user.role !== 'admin') {
+      return res.status(403).json({ message: 'Unauthorized to record analytics for this user' });
     }
-
-    const { userId, feature } = result.data;
-    const response = await analyticsService.trackFeatureNavigation(userId, feature);
-    res.json(response);
+    
+    const result = await analyticsService.recordFeatureNavigation(userId, feature);
+    return res.json(result);
   } catch (error) {
     console.error('Error recording feature navigation:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    return res.status(500).json({ message: 'Error recording feature navigation' });
   }
 });
 
@@ -60,25 +61,20 @@ router.post('/feature-navigation', async (req, res) => {
  * Record user action
  * POST /api/analytics/user-action
  */
-router.post('/user-action', async (req, res) => {
+router.post('/user-action', isAuthenticated, async (req: Request, res: Response) => {
   try {
-    const schema = z.object({
-      userId: z.number(),
-      action: z.string(),
-      details: z.record(z.any()).optional()
-    });
-
-    const result = schema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ error: 'Invalid request data', details: result.error.issues });
+    const { userId, action, details } = req.body;
+    const user = req.user as User;
+    
+    if (userId !== user.id && user.role !== 'admin') {
+      return res.status(403).json({ message: 'Unauthorized to record analytics for this user' });
     }
-
-    const { userId, action, details = {} } = result.data;
-    const response = await analyticsService.trackUserAction(userId, action, details);
-    res.json(response);
+    
+    const result = await analyticsService.recordUserAction(userId, action, details);
+    return res.json(result);
   } catch (error) {
     console.error('Error recording user action:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    return res.status(500).json({ message: 'Error recording user action' });
   }
 });
 
@@ -86,25 +82,20 @@ router.post('/user-action', async (req, res) => {
  * Record session end
  * POST /api/analytics/session-end
  */
-router.post('/session-end', async (req, res) => {
+router.post('/session-end', isAuthenticated, async (req: Request, res: Response) => {
   try {
-    const schema = z.object({
-      userId: z.number(),
-      exitPoint: z.string(),
-      convertedGoal: z.string().optional()
-    });
-
-    const result = schema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ error: 'Invalid request data', details: result.error.issues });
+    const { userId, exitPoint, convertedGoal } = req.body;
+    const user = req.user as User;
+    
+    if (userId !== user.id && user.role !== 'admin') {
+      return res.status(403).json({ message: 'Unauthorized to record analytics for this user' });
     }
-
-    const { userId, exitPoint, convertedGoal } = result.data;
-    const response = await analyticsService.trackSessionEnd(userId, exitPoint, convertedGoal);
-    res.json(response);
+    
+    const result = await analyticsService.recordSessionEnd(userId, exitPoint, convertedGoal);
+    return res.json(result);
   } catch (error) {
     console.error('Error recording session end:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    return res.status(500).json({ message: 'Error recording session end' });
   }
 });
 
@@ -112,41 +103,30 @@ router.post('/session-end', async (req, res) => {
  * Record star path progress
  * POST /api/analytics/star-path
  */
-router.post('/star-path', async (req, res) => {
+router.post('/star-path', isAuthenticated, async (req: Request, res: Response) => {
   try {
-    const schema = z.object({
-      userId: z.number(),
-      currentStarLevel: z.number(),
-      previousStarLevel: z.number().nullable().optional(),
-      daysAtCurrentLevel: z.number(),
-      totalDaysInSystem: z.number(),
-      progressPercentage: z.number(),
-      progressSnapshotData: z.record(z.any()),
-      bottleneckIdentified: z.string().optional(),
-      achievedMilestones: z.array(z.string()).optional()
-    });
-
-    const result = schema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ error: 'Invalid request data', details: result.error.issues });
-    }
-
     const { 
       userId, 
       currentStarLevel, 
-      previousStarLevel = null, 
-      daysAtCurrentLevel,
-      totalDaysInSystem,
+      previousStarLevel, 
+      daysAtCurrentLevel, 
+      totalDaysInSystem, 
       progressPercentage,
       progressSnapshotData,
       bottleneckIdentified,
       achievedMilestones
-    } = result.data;
+    } = req.body;
     
-    const response = await analyticsService.trackStarPathProgress(
-      userId, 
-      currentStarLevel, 
-      previousStarLevel, 
+    const user = req.user as User;
+    
+    if (userId !== user.id && user.role !== 'admin') {
+      return res.status(403).json({ message: 'Unauthorized to record analytics for this user' });
+    }
+    
+    const result = await analyticsService.recordStarPathProgress(
+      userId,
+      currentStarLevel,
+      previousStarLevel,
       daysAtCurrentLevel,
       totalDaysInSystem,
       progressPercentage,
@@ -155,10 +135,10 @@ router.post('/star-path', async (req, res) => {
       achievedMilestones
     );
     
-    res.json(response);
+    return res.json(result);
   } catch (error) {
     console.error('Error recording star path progress:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    return res.status(500).json({ message: 'Error recording star path progress' });
   }
 });
 
@@ -166,44 +146,32 @@ router.post('/star-path', async (req, res) => {
  * Record workout completion
  * POST /api/analytics/workout
  */
-router.post('/workout', async (req, res) => {
+router.post('/workout', isAuthenticated, async (req: Request, res: Response) => {
   try {
-    const schema = z.object({
-      userId: z.number(),
-      workoutVerificationId: z.number().nullable().optional(),
-      workoutType: z.string(),
-      completionSuccess: z.boolean(),
-      formQualityScore: z.number().optional(),
-      consistencyStreak: z.number().optional(),
-      workoutDuration: z.number().optional(),
-      preferredTimeOfDay: z.string().optional(),
-      preferredEnvironment: z.string().optional(),
-      equipmentUsed: z.array(z.string()).optional()
-    });
-
-    const result = schema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ error: 'Invalid request data', details: result.error.issues });
-    }
-
     const { 
-      userId, 
-      workoutVerificationId = null, 
-      workoutType, 
+      userId,
+      workoutVerificationId,
+      workoutType,
       completionSuccess,
       formQualityScore,
-      consistencyStreak = 1,
+      consistencyStreak,
       workoutDuration,
       preferredTimeOfDay,
       preferredEnvironment,
       equipmentUsed
-    } = result.data;
+    } = req.body;
     
-    const response = await analyticsService.trackWorkoutCompletion(
-      userId, 
-      workoutVerificationId, 
-      workoutType, 
+    const user = req.user as User;
+    
+    if (userId !== user.id && user.role !== 'admin') {
+      return res.status(403).json({ message: 'Unauthorized to record analytics for this user' });
+    }
+    
+    const result = await analyticsService.recordWorkoutCompletion(
+      userId,
+      workoutType,
       completionSuccess,
+      workoutVerificationId,
       formQualityScore,
       consistencyStreak,
       workoutDuration,
@@ -212,10 +180,10 @@ router.post('/workout', async (req, res) => {
       equipmentUsed
     );
     
-    res.json(response);
+    return res.json(result);
   } catch (error) {
     console.error('Error recording workout completion:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    return res.status(500).json({ message: 'Error recording workout completion' });
   }
 });
 
@@ -223,43 +191,31 @@ router.post('/workout', async (req, res) => {
  * Record skill development
  * POST /api/analytics/skill
  */
-router.post('/skill', async (req, res) => {
+router.post('/skill', isAuthenticated, async (req: Request, res: Response) => {
   try {
-    const schema = z.object({
-      userId: z.number(),
-      sportType: z.string(),
-      skillCategory: z.string(),
-      skillName: z.string(),
-      currentLevel: z.number(),
-      practiceFrequency: z.number().optional(),
-      timeInvested: z.number().optional(),
-      plateauIdentified: z.boolean().optional(),
-      plateauDuration: z.number().optional(),
-      breakthroughFactors: z.array(z.string()).optional()
-    });
-
-    const result = schema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ error: 'Invalid request data', details: result.error.issues });
-    }
-
     const { 
-      userId, 
-      sportType, 
-      skillCategory, 
+      userId,
+      sportType,
+      skillCategory,
       skillName,
       currentLevel,
       practiceFrequency,
       timeInvested,
-      plateauIdentified = false,
+      plateauIdentified,
       plateauDuration,
       breakthroughFactors
-    } = result.data;
+    } = req.body;
     
-    const response = await analyticsService.trackSkillDevelopment(
-      userId, 
-      sportType, 
-      skillCategory, 
+    const user = req.user as User;
+    
+    if (userId !== user.id && user.role !== 'admin') {
+      return res.status(403).json({ message: 'Unauthorized to record analytics for this user' });
+    }
+    
+    const result = await analyticsService.recordSkillDevelopment(
+      userId,
+      sportType,
+      skillCategory,
       skillName,
       currentLevel,
       practiceFrequency,
@@ -269,10 +225,10 @@ router.post('/skill', async (req, res) => {
       breakthroughFactors
     );
     
-    res.json(response);
+    return res.json(result);
   } catch (error) {
     console.error('Error recording skill development:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    return res.status(500).json({ message: 'Error recording skill development' });
   }
 });
 
@@ -280,44 +236,36 @@ router.post('/skill', async (req, res) => {
  * Record academic-athletic integration
  * POST /api/analytics/academic
  */
-router.post('/academic', async (req, res) => {
+router.post('/academic', isAuthenticated, async (req: Request, res: Response) => {
   try {
-    const schema = z.object({
-      userId: z.number(),
-      currentGPA: z.number(),
-      strongestSubjects: z.array(z.string()),
-      weakestSubjects: z.array(z.string()),
-      studyHoursPerWeek: z.number(),
-      athleticImprovementRate: z.number()
-    });
-
-    const result = schema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ error: 'Invalid request data', details: result.error.issues });
-    }
-
     const { 
-      userId, 
-      currentGPA, 
-      strongestSubjects, 
+      userId,
+      currentGPA,
+      strongestSubjects,
       weakestSubjects,
       studyHoursPerWeek,
       athleticImprovementRate
-    } = result.data;
+    } = req.body;
     
-    const response = await analyticsService.trackAcademicAthletic(
-      userId, 
-      currentGPA, 
-      strongestSubjects, 
+    const user = req.user as User;
+    
+    if (userId !== user.id && user.role !== 'admin') {
+      return res.status(403).json({ message: 'Unauthorized to record analytics for this user' });
+    }
+    
+    const result = await analyticsService.recordAcademicAthletic(
+      userId,
+      currentGPA,
+      strongestSubjects,
       weakestSubjects,
       studyHoursPerWeek,
       athleticImprovementRate
     );
     
-    res.json(response);
+    return res.json(result);
   } catch (error) {
     console.error('Error recording academic-athletic integration:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    return res.status(500).json({ message: 'Error recording academic-athletic integration' });
   }
 });
 
@@ -325,43 +273,12 @@ router.post('/academic', async (req, res) => {
  * Record AI coach effectiveness
  * POST /api/analytics/ai-coach
  */
-router.post('/ai-coach', async (req, res) => {
+router.post('/ai-coach', isAuthenticated, async (req: Request, res: Response) => {
   try {
-    const schema = z.object({
-      userId: z.number(),
-      coachId: z.number().nullable().optional(),
-      userSatisfactionRating: z.number(),
-      recommendationAdherenceRate: z.number(),
-      aiInteractionFrequency: z.number(),
-      averageInteractionDuration: z.number(),
-      mostUsedFeatures: z.array(z.string()),
-      commonQueries: z.array(z.string()).optional(),
-      feedbackProvided: z.string().optional(),
-      improvementWithAI: z.number().optional()
-    });
-
-    const result = schema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ error: 'Invalid request data', details: result.error.issues });
-    }
-
     const { 
-      userId, 
-      coachId = null, 
-      userSatisfactionRating, 
-      recommendationAdherenceRate,
-      aiInteractionFrequency,
-      averageInteractionDuration,
-      mostUsedFeatures,
-      commonQueries = [],
-      feedbackProvided = '',
-      improvementWithAI
-    } = result.data;
-    
-    const response = await analyticsService.trackAICoachEffectiveness(
-      userId, 
-      coachId, 
-      userSatisfactionRating, 
+      userId,
+      coachId,
+      userSatisfactionRating,
       recommendationAdherenceRate,
       aiInteractionFrequency,
       averageInteractionDuration,
@@ -369,12 +286,31 @@ router.post('/ai-coach', async (req, res) => {
       commonQueries,
       feedbackProvided,
       improvementWithAI
+    } = req.body;
+    
+    const user = req.user as User;
+    
+    if (userId !== user.id && user.role !== 'admin') {
+      return res.status(403).json({ message: 'Unauthorized to record analytics for this user' });
+    }
+    
+    const result = await analyticsService.recordAICoachEffectiveness(
+      userId,
+      userSatisfactionRating,
+      recommendationAdherenceRate,
+      aiInteractionFrequency,
+      averageInteractionDuration,
+      mostUsedFeatures,
+      coachId,
+      commonQueries,
+      feedbackProvided,
+      improvementWithAI
     );
     
-    res.json(response);
+    return res.json(result);
   } catch (error) {
     console.error('Error recording AI coach effectiveness:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    return res.status(500).json({ message: 'Error recording AI coach effectiveness' });
   }
 });
 
@@ -382,41 +318,34 @@ router.post('/ai-coach', async (req, res) => {
  * Record cross-sport potential
  * POST /api/analytics/cross-sport
  */
-router.post('/cross-sport', async (req, res) => {
+router.post('/cross-sport', isAuthenticated, async (req: Request, res: Response) => {
   try {
-    const schema = z.object({
-      userId: z.number(),
-      primarySport: z.string(),
-      secondarySports: z.array(z.string()),
-      crossTrainingFrequency: z.number(),
-      skillTransferabilityScore: z.record(z.number()).optional()
-    });
-
-    const result = schema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ error: 'Invalid request data', details: result.error.issues });
-    }
-
     const { 
-      userId, 
-      primarySport, 
-      secondarySports, 
+      userId,
+      primarySport,
+      secondarySports,
       crossTrainingFrequency,
       skillTransferabilityScore
-    } = result.data;
+    } = req.body;
     
-    const response = await analyticsService.trackCrossSportPotential(
-      userId, 
-      primarySport, 
-      secondarySports, 
+    const user = req.user as User;
+    
+    if (userId !== user.id && user.role !== 'admin') {
+      return res.status(403).json({ message: 'Unauthorized to record analytics for this user' });
+    }
+    
+    const result = await analyticsService.recordCrossSportPotential(
+      userId,
+      primarySport,
+      secondarySports,
       crossTrainingFrequency,
       skillTransferabilityScore
     );
     
-    res.json(response);
+    return res.json(result);
   } catch (error) {
     console.error('Error recording cross-sport potential:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    return res.status(500).json({ message: 'Error recording cross-sport potential' });
   }
 });
 
@@ -424,39 +353,29 @@ router.post('/cross-sport', async (req, res) => {
  * Record recruiting readiness
  * POST /api/analytics/recruiting
  */
-router.post('/recruiting', async (req, res) => {
+router.post('/recruiting', isAuthenticated, async (req: Request, res: Response) => {
   try {
-    const schema = z.object({
-      userId: z.number(),
-      overallGARScore: z.number(),
-      highlightGenerationCount: z.number(),
-      highlightViewCount: z.number(),
-      highlightShareCount: z.number(),
-      scoutViewCount: z.number(),
-      recruitingProfileCompleteness: z.number(),
-      collegeMatchPercentages: z.record(z.number()).optional()
-    });
-
-    const result = schema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ error: 'Invalid request data', details: result.error.issues });
-    }
-
     const { 
-      userId, 
-      overallGARScore, 
-      highlightGenerationCount, 
+      userId,
+      overallGARScore,
+      highlightGenerationCount,
       highlightViewCount,
       highlightShareCount,
       scoutViewCount,
       recruitingProfileCompleteness,
       collegeMatchPercentages
-    } = result.data;
+    } = req.body;
     
-    const response = await analyticsService.trackRecruitingReadiness(
-      userId, 
-      overallGARScore, 
-      highlightGenerationCount, 
+    const user = req.user as User;
+    
+    if (userId !== user.id && user.role !== 'admin') {
+      return res.status(403).json({ message: 'Unauthorized to record analytics for this user' });
+    }
+    
+    const result = await analyticsService.recordRecruitingReadiness(
+      userId,
+      overallGARScore,
+      highlightGenerationCount,
       highlightViewCount,
       highlightShareCount,
       scoutViewCount,
@@ -464,10 +383,10 @@ router.post('/recruiting', async (req, res) => {
       collegeMatchPercentages
     );
     
-    res.json(response);
+    return res.json(result);
   } catch (error) {
     console.error('Error recording recruiting readiness:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    return res.status(500).json({ message: 'Error recording recruiting readiness' });
   }
 });
 
@@ -475,44 +394,36 @@ router.post('/recruiting', async (req, res) => {
  * Record neurodivergent patterns
  * POST /api/analytics/neurodivergent
  */
-router.post('/neurodivergent', async (req, res) => {
+router.post('/neurodivergent', isAuthenticated, async (req: Request, res: Response) => {
   try {
-    const schema = z.object({
-      userId: z.number(),
-      adhdFriendlyFeatureUsage: z.record(z.number()),
-      distractionFrequency: z.number(),
-      recoveryTime: z.number(),
-      optimalSessionDuration: z.number(),
-      visualVsTextualPreference: z.number()
-    });
-
-    const result = schema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ error: 'Invalid request data', details: result.error.issues });
-    }
-
     const { 
-      userId, 
-      adhdFriendlyFeatureUsage, 
-      distractionFrequency, 
+      userId,
+      adhdFriendlyFeatureUsage,
+      distractionFrequency,
       recoveryTime,
       optimalSessionDuration,
       visualVsTextualPreference
-    } = result.data;
+    } = req.body;
     
-    const response = await analyticsService.trackNeurodivergentPatterns(
-      userId, 
-      adhdFriendlyFeatureUsage, 
-      distractionFrequency, 
+    const user = req.user as User;
+    
+    if (userId !== user.id && user.role !== 'admin') {
+      return res.status(403).json({ message: 'Unauthorized to record analytics for this user' });
+    }
+    
+    const result = await analyticsService.recordNeurodivergentPatterns(
+      userId,
+      adhdFriendlyFeatureUsage,
+      distractionFrequency,
       recoveryTime,
       optimalSessionDuration,
       visualVsTextualPreference
     );
     
-    res.json(response);
+    return res.json(result);
   } catch (error) {
     console.error('Error recording neurodivergent patterns:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    return res.status(500).json({ message: 'Error recording neurodivergent patterns' });
   }
 });
 
@@ -520,47 +431,38 @@ router.post('/neurodivergent', async (req, res) => {
  * Record community impact
  * POST /api/analytics/community
  */
-router.post('/community', async (req, res) => {
+router.post('/community', isAuthenticated, async (req: Request, res: Response) => {
   try {
-    const schema = z.object({
-      userId: z.number(),
-      peerInteractionCount: z.number(),
-      coachAthleteMessageCount: z.number(),
-      responseTimeAverage: z.number(),
-      parentInvolvementScore: z.number(),
-      collaborativeWorkoutsPercentage: z.number(),
-      socialSupportNetworkSize: z.number()
-    });
-
-    const result = schema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ error: 'Invalid request data', details: result.error.issues });
-    }
-
     const { 
-      userId, 
-      peerInteractionCount, 
-      coachAthleteMessageCount, 
+      userId,
+      peerInteractionCount,
+      coachAthleteMessageCount,
       responseTimeAverage,
       parentInvolvementScore,
       collaborativeWorkoutsPercentage,
       socialSupportNetworkSize
-    } = result.data;
+    } = req.body;
     
-    const response = await analyticsService.trackCommunityImpact(
-      userId, 
-      peerInteractionCount, 
-      coachAthleteMessageCount, 
+    const user = req.user as User;
+    
+    if (userId !== user.id && user.role !== 'admin') {
+      return res.status(403).json({ message: 'Unauthorized to record analytics for this user' });
+    }
+    
+    const result = await analyticsService.recordCommunityImpact(
+      userId,
+      peerInteractionCount,
+      coachAthleteMessageCount,
       responseTimeAverage,
       parentInvolvementScore,
       collaborativeWorkoutsPercentage,
       socialSupportNetworkSize
     );
     
-    res.json(response);
+    return res.json(result);
   } catch (error) {
     console.error('Error recording community impact:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    return res.status(500).json({ message: 'Error recording community impact' });
   }
 });
 
@@ -568,18 +470,21 @@ router.post('/community', async (req, res) => {
  * Get analytics overview for a user
  * GET /api/analytics/overview/:userId
  */
-router.get('/overview/:userId', async (req, res) => {
+router.get('/overview/:userId', isAuthenticated, async (req: Request, res: Response) => {
   try {
     const userId = parseInt(req.params.userId);
-    if (isNaN(userId)) {
-      return res.status(400).json({ error: 'Invalid user ID' });
+    const user = req.user as User;
+    
+    // Only allow viewing own analytics or admins/coaches to view anyone's
+    if (userId !== user.id && user.role !== 'admin' && user.role !== 'coach') {
+      return res.status(403).json({ message: 'Unauthorized to view analytics for this user' });
     }
-
-    const response = await analyticsService.getUserAnalyticsOverview(userId);
-    res.json(response);
+    
+    const overview = await analyticsService.getAnalyticsOverview(userId);
+    return res.json(overview);
   } catch (error) {
-    console.error('Error getting analytics overview:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    console.error('Error fetching analytics overview:', error);
+    return res.status(500).json({ message: 'Error fetching analytics overview' });
   }
 });
 
@@ -587,9 +492,16 @@ router.get('/overview/:userId', async (req, res) => {
  * Get analytics dashboard data
  * GET /api/analytics/dashboard
  */
-router.get('/dashboard', async (req, res) => {
+router.get('/dashboard', isAuthenticated, async (req: Request, res: Response) => {
   try {
-    const userId = req.query.userId ? parseInt(req.query.userId as string) : undefined;
+    const user = req.user as User;
+    const userId = req.query.userId ? parseInt(req.query.userId as string) : user.id;
+    
+    // Only allow viewing own analytics or admins/coaches to view anyone's
+    if (userId !== user.id && user.role !== 'admin' && user.role !== 'coach') {
+      return res.status(403).json({ message: 'Unauthorized to view analytics for this user' });
+    }
+    
     let dateRange: { start: Date, end: Date } | undefined;
     
     if (req.query.startDate && req.query.endDate) {
@@ -598,12 +510,35 @@ router.get('/dashboard', async (req, res) => {
         end: new Date(req.query.endDate as string)
       };
     }
-
-    const response = await analyticsService.getAnalyticsDashboardData(userId, dateRange);
-    res.json(response);
+    
+    const dashboard = await analyticsService.getAnalyticsDashboard(userId, dateRange);
+    return res.json({ dashboard });
   } catch (error) {
-    console.error('Error getting analytics dashboard data:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    console.error('Error fetching analytics dashboard:', error);
+    return res.status(500).json({ message: 'Error fetching analytics dashboard' });
+  }
+});
+
+/**
+ * Get aggregate system analytics (admin only)
+ * GET /api/analytics/system
+ */
+router.get('/system', isAdmin, async (req: Request, res: Response) => {
+  try {
+    let dateRange: { start: Date, end: Date } | undefined;
+    
+    if (req.query.startDate && req.query.endDate) {
+      dateRange = {
+        start: new Date(req.query.startDate as string),
+        end: new Date(req.query.endDate as string)
+      };
+    }
+    
+    const systemAnalytics = await analyticsService.getSystemAnalytics(dateRange);
+    return res.json(systemAnalytics);
+  } catch (error) {
+    console.error('Error fetching system analytics:', error);
+    return res.status(500).json({ message: 'Error fetching system analytics' });
   }
 });
 

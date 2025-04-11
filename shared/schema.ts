@@ -2236,3 +2236,199 @@ export type InsertCommunityAnalytics = z.infer<typeof insertCommunityAnalyticsSc
 
 export type UserSessionAnalytics = typeof userSessionAnalytics.$inferSelect;
 export type InsertUserSessionAnalytics = z.infer<typeof insertUserSessionAnalyticsSchema>;
+
+// GAR Analysis Tables
+
+// Sport positions table
+export const sportPositions = pgTable('sport_positions', {
+  id: serial('id').primaryKey(),
+  sportType: text('sport_type').notNull(),
+  positionName: text('position_name').notNull(),
+  description: text('description'),
+  ageMinimum: integer('age_minimum'),
+  physicalRequirements: json('physical_requirements'),
+  technicalRequirements: json('technical_requirements'),
+  tacticalRequirements: json('tactical_requirements'),
+  psychologicalRequirements: json('psychological_requirements'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
+export const insertSportPositionSchema = createInsertSchema(sportPositions)
+  .omit({ id: true, createdAt: true, updatedAt: true });
+
+export type SportPosition = typeof sportPositions.$inferSelect;
+export type InsertSportPosition = z.infer<typeof insertSportPositionSchema>;
+
+// Biomechanics data table
+export const biomechanicsData = pgTable('biomechanics_data', {
+  id: serial('id').primaryKey(),
+  athleteId: integer('athlete_id').notNull().references(() => users.id),
+  captureDate: timestamp('capture_date').defaultNow(),
+  sportType: text('sport_type'),
+  positionPlayed: text('position_played'),
+  category: text('category').notNull(), // bodyMechanics, physicalAttributes, movementPatterns, etc.
+  metrics: json('metrics').notNull(), // JSON containing all measured metrics
+  videoReference: text('video_reference'),
+  captureMethod: text('capture_method'),
+  aiAnalysisNotes: text('ai_analysis_notes'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
+export const insertBiomechanicsDataSchema = createInsertSchema(biomechanicsData)
+  .omit({ id: true, createdAt: true, updatedAt: true, captureDate: true });
+
+export type BiomechanicsData = typeof biomechanicsData.$inferSelect;
+export type InsertBiomechanicsData = z.infer<typeof insertBiomechanicsDataSchema>;
+
+// Neurodivergent profiles table
+export const neurodivergentProfiles = pgTable('neurodivergent_profiles', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  hasAdhd: boolean('has_adhd').default(false),
+  adhdType: text('adhd_type'), // inattentive, hyperactive, combined
+  adhdDiagnosisDate: timestamp('adhd_diagnosis_date'),
+  adhdMedication: boolean('adhd_medication').default(false),
+  hasDyslexia: boolean('has_dyslexia').default(false),
+  hasAutism: boolean('has_autism').default(false),
+  sensoryProcessingNeeds: json('sensory_processing_needs'),
+  learningPreferences: json('learning_preferences'),
+  environmentalAdaptations: json('environmental_adaptations'),
+  birthDate: timestamp('birth_date'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
+export const insertNeurodivergentProfileSchema = createInsertSchema(neurodivergentProfiles)
+  .omit({ id: true, createdAt: true, updatedAt: true });
+
+export type NeurodivergentProfile = typeof neurodivergentProfiles.$inferSelect;
+export type InsertNeurodivergentProfile = z.infer<typeof insertNeurodivergentProfileSchema>;
+
+// Athlete body metrics table
+export const athleteBodyMetrics = pgTable('athlete_body_metrics', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  height: numeric('height'), // in cm
+  weight: numeric('weight'), // in kg
+  wingspan: numeric('wingspan'), // in cm
+  standingReach: numeric('standing_reach'), // in cm
+  verticalJump: numeric('vertical_jump'), // in cm
+  sprintSpeed: numeric('sprint_speed'), // in seconds (e.g., 40yd dash)
+  agility: numeric('agility'), // measured score
+  strengthScore: numeric('strength_score'), // composite score
+  flexibilityScore: numeric('flexibility_score'), // composite score
+  bodyFatPercentage: numeric('body_fat_percentage'),
+  muscleMass: numeric('muscle_mass'), // in kg
+  bmi: numeric('bmi'),
+  vo2Max: numeric('vo2_max'),
+  restingHeartRate: integer('resting_heart_rate'),
+  growthVelocity: numeric('growth_velocity'), // cm/year
+  heightPercentile: integer('height_percentile'),
+  weightPercentile: integer('weight_percentile'),
+  handedness: text('handedness'), // left, right, ambidextrous
+  footedness: text('footedness'), // left, right, ambidextrous
+  measurementDate: timestamp('measurement_date').defaultNow(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
+export const insertAthleteBodyMetricsSchema = createInsertSchema(athleteBodyMetrics)
+  .omit({ id: true, createdAt: true, updatedAt: true, measurementDate: true });
+
+export type AthleteBodyMetrics = typeof athleteBodyMetrics.$inferSelect;
+export type InsertAthleteBodyMetrics = z.infer<typeof insertAthleteBodyMetricsSchema>;
+
+// Athlete assessments table
+export const athleteAssessments = pgTable('athlete_assessments', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  assessmentDate: timestamp('assessment_date').defaultNow(),
+  assessorId: integer('assessor_id').references(() => users.id),
+  athleteAge: numeric('athlete_age'), // Decimal to allow half years
+  speed: integer('speed'), // 0-100 score
+  agility: integer('agility'), // 0-100 score
+  strength: integer('strength'), // 0-100 score
+  endurance: integer('endurance'), // 0-100 score
+  flexibility: integer('flexibility'), // 0-100 score
+  balance: integer('balance'), // 0-100 score
+  coordination: integer('coordination'), // 0-100 score
+  focus: integer('focus'), // 0-100 score
+  determination: integer('determination'), // 0-100 score
+  teamwork: integer('teamwork'), // 0-100 score
+  pressureResponse: integer('pressure_response'), // 0-100 score
+  confidence: integer('confidence'), // 0-100 score
+  sportSpecificSkills: json('sport_specific_skills'),
+  motorSkills: json('motor_skills'),
+  notes: text('notes'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
+export const insertAthleteAssessmentSchema = createInsertSchema(athleteAssessments)
+  .omit({ id: true, createdAt: true, updatedAt: true, assessmentDate: true });
+
+export type AthleteAssessment = typeof athleteAssessments.$inferSelect;
+export type InsertAthleteAssessment = z.infer<typeof insertAthleteAssessmentSchema>;
+
+// Athlete skills table
+export const athleteSkills = pgTable('athlete_skills', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  sportId: integer('sport_id'),
+  skillName: text('skill_name').notNull(),
+  level: integer('level').default(1),
+  experience: integer('experience'), // in hours
+  lastPracticed: timestamp('last_practiced'),
+  notes: text('notes'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
+export const insertAthleteSkillSchema = createInsertSchema(athleteSkills)
+  .omit({ id: true, createdAt: true, updatedAt: true });
+
+export type AthleteSkill = typeof athleteSkills.$inferSelect;
+export type InsertAthleteSkill = z.infer<typeof insertAthleteSkillSchema>;
+
+// GAR scores table
+export const garScores = pgTable('gar_scores', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  sportId: integer('sport_id').notNull(),
+  overallScore: numeric('overall_score').notNull(),
+  physicalScore: numeric('physical_score').notNull(),
+  technicalScore: numeric('technical_score').notNull(),
+  psychologicalScore: numeric('psychological_score').notNull(),
+  developmentalScore: numeric('developmental_score').notNull(),
+  adhdCompatibilityScore: numeric('adhd_compatibility_score'),
+  scoreDate: timestamp('score_date').defaultNow(),
+  ageAtAssessment: numeric('age_at_assessment'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
+export const insertGarScoreSchema = createInsertSchema(garScores)
+  .omit({ id: true, createdAt: true, updatedAt: true, scoreDate: true });
+
+export type GarScore = typeof garScores.$inferSelect;
+export type InsertGarScore = z.infer<typeof insertGarScoreSchema>;
+
+// Sport attributes table
+export const sportAttributes = pgTable('sport_attributes', {
+  id: serial('id').primaryKey(),
+  sportId: integer('sport_id').notNull(),
+  attributeName: text('attribute_name').notNull(),
+  importance: numeric('importance').notNull(), // 0-1 scale
+  description: text('description'),
+  developmentAge: json('development_age'), // JSON object with early, middle, late importance
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
+export const insertSportAttributeSchema = createInsertSchema(sportAttributes)
+  .omit({ id: true, createdAt: true, updatedAt: true });
+
+export type SportAttribute = typeof sportAttributes.$inferSelect;
+export type InsertSportAttribute = z.infer<typeof insertSportAttributeSchema>;
