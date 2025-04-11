@@ -4,6 +4,45 @@ import { storage } from "./storage";
 // This module registers the skill tree API endpoints directly
 // so they won't be intercepted by Vite during development
 export function registerSkillTreeApi(app: Express) {
+  // Root Nodes API endpoint - added for direct access to root nodes
+  app.get('/api/skill-tree/root-nodes', async (req: Request, res: Response) => {
+    try {
+      const { sport_type, position } = req.query;
+      // Check if the storage method exists
+      if (typeof storage.getRootSkillTreeNodes === 'function') {
+        const nodes = await storage.getRootSkillTreeNodes(
+          sport_type as string | undefined, 
+          position as string | undefined
+        );
+        res.json(nodes);
+      } else if (typeof storage.getSkillTreeNodes === 'function') {
+        // Fallback to retrieving all nodes and filtering root nodes
+        console.log('Using fallback method to get root nodes');
+        const allNodes = await storage.getSkillTreeNodes(
+          sport_type as string | undefined,
+          position as string | undefined
+        );
+        
+        // Get all relationship records
+        const relationships = await storage.getSkillTreeRelationships();
+        
+        // Find all child IDs in relationships to exclude them from root nodes
+        const childIds = new Set(relationships.map(rel => rel.child_id));
+        
+        // Root nodes are those that don't appear as children in any relationship
+        const rootNodes = allNodes.filter(node => !childIds.has(node.id));
+        
+        res.json(rootNodes);
+      } else {
+        console.warn('Neither getRootSkillTreeNodes nor getSkillTreeNodes method found in storage');
+        res.json([]);
+      }
+    } catch (error) {
+      console.error('Error fetching root skill tree nodes:', error);
+      res.status(500).json({ error: 'Failed to fetch root skill tree nodes' });
+    }
+  });
+
   // Skill Tree API Routes
   app.get('/api/skill-tree/nodes', async (req: Request, res: Response) => {
     try {
