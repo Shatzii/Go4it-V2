@@ -150,7 +150,9 @@ const Player: React.FC<PlayerProps> = ({
           ease: "linear"
         }}
         style={{
-          border: `2px solid ${color}`,
+          borderWidth: '2px',
+          borderStyle: 'solid',
+          borderColor: color,
           boxShadow: `0 0 5px ${color}`,
           zIndex: -1
         }}
@@ -166,11 +168,10 @@ const Player: React.FC<PlayerProps> = ({
       <motion.div
         key={`pulse-${i}`}
         className="absolute inset-0 rounded-full"
-        initial={{ opacity: 0.7, scale: 1, borderWidth: 2 }}
+        initial={{ opacity: 0.7, scale: 1 }}
         animate={{ 
           opacity: 0, 
-          scale: 1.7, 
-          borderWidth: 0 
+          scale: 1.7
         }}
         transition={{
           duration: 1.5,
@@ -179,7 +180,9 @@ const Player: React.FC<PlayerProps> = ({
           ease: "easeOut"
         }}
         style={{ 
-          border: `2px solid ${color}`,
+          borderWidth: '2px',
+          borderStyle: 'solid',
+          borderColor: color,
           boxShadow: `0 0 ${glow}px ${color}`
         }}
       />
