@@ -47,6 +47,7 @@ import VerificationDetail from "@/pages/verification-detail";
 import SubmitVerification from "@/pages/submit-verification";
 import WeightRoom from "@/pages/weight-room";
 import CombineTour from "@/pages/combine-tour";
+import CombineTourDetail from "@/pages/combine-tour-detail";
 import HighlightGenerator from "@/pages/highlight-generator";
 import SimpleLogin from "@/pages/simple-login";
 
@@ -248,9 +249,13 @@ function Router() {
           {() => <ProtectedRoute component={ScoutVisionFeed} />}
         </Route>
         
-        {/* Combine Tour Route */}
+        {/* Combine Tour Routes */}
         <Route path="/combine-tour">
           {() => <ProtectedRoute component={CombineTour} />}
+        </Route>
+        
+        <Route path="/combine-tour/:id">
+          {() => <ProtectedRoute component={CombineTourDetail} />}
         </Route>
         
         {/* Coach Portal Route */}
