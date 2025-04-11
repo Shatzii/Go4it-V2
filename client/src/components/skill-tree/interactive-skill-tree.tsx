@@ -79,7 +79,7 @@ const InteractiveSkillTree: React.FC<InteractiveSkillTreeProps> = ({ sportType, 
 
   // Fetch user's skill progress
   const { data: userSkills, isLoading: isLoadingSkills } = useQuery({
-    queryKey: ['/api/player/skill-progress', sportType],
+    queryKey: ['/api/skill-tree/user-progress', sportType],
     enabled: !!sportType,
   });
 
