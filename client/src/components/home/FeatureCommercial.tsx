@@ -1,34 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Card, CardContent } from "@/components/ui/card";
+import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { 
   Play, 
   Pause, 
-  RotateCcw, 
-  Star, 
+  RefreshCw,
   Trophy, 
-  TrendingUp, 
-  Activity,
-  Zap,
-  Dumbbell,
-  Brain,
-  Footprints,
-  Timer,
-  Award,
-  Crown,
-  Lock,
-  Sparkles,
   VideoIcon,
+  Brain,
   BarChart3,
   BadgeCheck,
   Leaf,
   BookOpen,
   Lightbulb,
-  LucideIcon
+  Sparkles,
+  ChevronRight,
+  ChevronLeft
 } from 'lucide-react';
-import { Link } from 'wouter';
 
 // Utility function to adjust color brightness
 const adjustColorBrightness = (color: string, percent: number): string => {
@@ -52,6 +40,7 @@ interface Position {
   y: number;
 }
 
+// Player Component
 interface PlayerProps {
   position: Position;
   color: string;
@@ -63,73 +52,66 @@ interface PlayerProps {
   hasAnimation?: boolean;
 }
 
-// Player component with PlayStation 5-quality visuals
 const Player: React.FC<PlayerProps> = ({ 
   position, 
   color, 
   isUser = false, 
-  jersey = '7', 
-  name = '', 
+  jersey = "1", 
+  name,
   size = 'md',
   isSelected = false,
-  hasAnimation = true
+  hasAnimation = false
 }) => {
+  // Size mapping
   const sizeMap = {
-    sm: { circleSize: 28, fontSize: 12, glow: 5, shadowSize: 2 },
-    md: { circleSize: 34, fontSize: 16, glow: 8, shadowSize: 3 },
-    lg: { circleSize: 40, fontSize: 18, glow: 12, shadowSize: 4 }
+    sm: { circleSize: 24, fontSize: 12, shadowSize: 2, glow: 4 },
+    md: { circleSize: 32, fontSize: 14, shadowSize: 3, glow: 6 },
+    lg: { circleSize: 40, fontSize: 16, shadowSize: 4, glow: 8 }
   };
   
-  const { circleSize, fontSize, glow, shadowSize } = sizeMap[size];
+  const { circleSize, fontSize, shadowSize, glow } = sizeMap[size];
   
-  // Create particle positions for motion blur effect
-  const particleCount = 6;
-  const particles = Array.from({ length: particleCount }).map((_, i) => {
-    const opacity = 0.4 - (i * (0.4 / particleCount));
-    const scale = 1 - (i * 0.03);
-    return { opacity, scale, delay: i * 0.01 };
-  });
-  
-  // Motion blur trail for player movement
-  const renderMotionTrail = () => {
-    if (!isUser || !hasAnimation) return null;
-    
-    return particles.map((particle, index) => (
-      <motion.div
-        key={`trail-${index}`}
-        className="absolute inset-0 rounded-full"
-        initial={{ opacity: 0 }}
-        animate={{ 
-          opacity: particle.opacity,
-          scale: particle.scale
-        }}
-        transition={{
-          opacity: { duration: 0.2, delay: particle.delay },
-          scale: { duration: 0.2, delay: particle.delay }
-        }}
-        style={{ 
-          backgroundColor: color,
-          filter: 'blur(3px)'
-        }}
-      />
-    ));
-  };
-  
-  // Generates 3D-like shadow beneath player
+  // Player shadow effect
   const renderPlayerShadow = () => (
     <div 
-      className="absolute rounded-full bg-black/40 blur-sm" 
+      className="absolute rounded-full bg-black/50 blur-sm" 
       style={{
-        width: circleSize * 0.7,
-        height: circleSize * 0.3,
+        width: circleSize,
+        height: circleSize / 4,
         bottom: -shadowSize,
         left: '50%',
         transform: 'translateX(-50%)',
-        filter: `blur(${shadowSize}px)`,
         zIndex: -1
       }}
     />
   );
+  
+  // Motion trail effect
+  const renderMotionTrail = () => {
+    if (!hasAnimation) return null;
+    
+    return (
+      <motion.div
+        className="absolute inset-0 rounded-full"
+        initial={{ opacity: 0.5, scale: 1.1 }}
+        animate={{ 
+          opacity: [0.5, 0.2, 0],
+          scale: [1, 1.05, 1.1],
+          x: [0, -3, -6],
+          y: [0, 0, 0]
+        }}
+        transition={{
+          duration: 0.5,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+        style={{
+          background: `radial-gradient(circle at 30% 30%, ${color}, ${adjustColorBrightness(color, -30)})`,
+          filter: 'blur(2px)'
+        }}
+      />
+    );
+  };
   
   // Player highlight ring effect
   const renderHighlightRing = () => {
@@ -276,7 +258,9 @@ const Player: React.FC<PlayerProps> = ({
             style={{ 
               fontSize: fontSize - 2,
               background: 'rgba(0,0,0,0.6)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              borderWidth: '1px',
+              borderStyle: 'solid',
+              borderColor: 'rgba(255,255,255,0.1)',
               boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
               textShadow: '0 1px 2px rgba(0,0,0,0.5)'
             }}
@@ -336,10 +320,18 @@ const Ball: React.FC<BallProps> = ({ position, visible = true, sport = 'basketba
                  }} />
             <div className="absolute inset-0 rounded-full" 
                  style={{ 
-                   borderTop: '1px solid rgba(255,255,255,0.4)',
-                   borderLeft: '1px solid rgba(255,255,255,0.2)',
-                   borderBottom: '1px solid rgba(0,0,0,0.2)',
-                   borderRight: '1px solid rgba(0,0,0,0.1)'
+                   borderTopWidth: '1px',
+                   borderTopStyle: 'solid',
+                   borderTopColor: 'rgba(255,255,255,0.4)',
+                   borderLeftWidth: '1px',
+                   borderLeftStyle: 'solid',
+                   borderLeftColor: 'rgba(255,255,255,0.2)',
+                   borderBottomWidth: '1px',
+                   borderBottomStyle: 'solid',
+                   borderBottomColor: 'rgba(0,0,0,0.2)',
+                   borderRightWidth: '1px',
+                   borderRightStyle: 'solid',
+                   borderRightColor: 'rgba(0,0,0,0.1)'
                  }} />
           </>
         );
@@ -354,8 +346,12 @@ const Ball: React.FC<BallProps> = ({ position, visible = true, sport = 'basketba
                  }} />
             <div className="absolute inset-0 rounded-full" 
                  style={{ 
-                   borderTop: '1px solid rgba(255,255,255,0.2)',
-                   borderBottom: '1px solid rgba(0,0,0,0.2)',
+                   borderTopWidth: '1px',
+                   borderTopStyle: 'solid',
+                   borderTopColor: 'rgba(255,255,255,0.2)',
+                   borderBottomWidth: '1px',
+                   borderBottomStyle: 'solid',
+                   borderBottomColor: 'rgba(0,0,0,0.2)',
                  }} />
             <div className="absolute h-[2px] w-[90%] top-1/2 left-[5%] bg-white/30" />
           </>
@@ -705,6 +701,20 @@ const FeatureCommercial: React.FC<FeatureCommercialProps> = ({ autoPlay = true }
     setCurrentFrameIndex(0);
     if (!isPlaying) setIsPlaying(true);
   };
+
+  // Previous feature
+  const goToPreviousFeature = () => {
+    setCurrentFeatureIndex(prev => (prev - 1 + featureScenes.length) % featureScenes.length);
+    setCurrentFrameIndex(0);
+    if (!isPlaying) setIsPlaying(true);
+  };
+
+  // Next feature
+  const goToNextFeature = () => {
+    setCurrentFeatureIndex(prev => (prev + 1) % featureScenes.length);
+    setCurrentFrameIndex(0);
+    if (!isPlaying) setIsPlaying(true);
+  };
   
   // Handle animation timing
   useEffect(() => {
@@ -752,51 +762,39 @@ const FeatureCommercial: React.FC<FeatureCommercialProps> = ({ autoPlay = true }
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isPlaying, currentFrameIndex, totalFrames, currentFeatureIndex, frameDuration, pauseOnCompletion, featureScenes.length]);
-  
-  // Get the current positions for all elements
-  const userPosition = currentFeature.playerPaths.user[Math.min(currentFrameIndex, totalFrames - 1)];
-  const ballPosition = currentFeature.ballPath ? 
-    currentFeature.ballPath[Math.min(currentFrameIndex, totalFrames - 1)] : userPosition;
-  
-  // Get the icon for the current feature
-  const FeatureIcon = iconComponents[currentFeature.icon];
-  
+  }, [isPlaying, currentFrameIndex, totalFrames, currentFeatureIndex, frameDuration, pauseOnCompletion]);
+
+  // Custom field backgrounds for different sports
   const getCourtBackground = () => {
     switch (currentFeature.sport) {
       case 'basketball':
         return (
-          <div className="absolute inset-0 flex items-center justify-center opacity-20">
-            <div className="w-[85%] h-[70%] border-2 border-white/50 rounded-md">
-              <div className="absolute left-1/2 top-[15%] w-16 h-16 border-2 border-white/50 rounded-full -translate-x-1/2" />
-              <div className="absolute left-1/2 bottom-0 w-24 h-12 border-2 border-white/50 -translate-x-1/2 border-b-0" />
-              <div className="absolute w-full h-[1px] top-1/2 bg-white/30" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-[80%] h-[70%] border border-gray-600/30 rounded-lg">
+              <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 w-16 h-16 border border-gray-600/30 rounded-full" />
+              <div className="absolute w-full h-[1px] top-1/2 bg-gray-600/20" />
             </div>
           </div>
         );
       case 'football':
         return (
-          <div className="absolute inset-0 flex items-center justify-center opacity-20">
-            <div className="w-[90%] h-[80%] border-2 border-white/50 rounded-md">
-              <div className="absolute left-1/2 w-[1px] h-full bg-white/30" />
-              <div className="absolute w-12 h-12 left-1/2 top-0 border-2 border-white/50 -translate-x-1/2 border-t-0" />
-              <div className="absolute w-12 h-12 left-1/2 bottom-0 border-2 border-white/50 -translate-x-1/2 border-b-0" />
-              <div className="absolute w-full h-[1px] top-1/4 bg-white/30" />
-              <div className="absolute w-full h-[1px] top-2/4 bg-white/30" />
-              <div className="absolute w-full h-[1px] top-3/4 bg-white/30" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-[85%] h-[75%] border border-gray-600/30 rounded-lg">
+              <div className="absolute w-full h-[1px] top-1/4 bg-gray-600/20" />
+              <div className="absolute w-full h-[1px] top-1/2 bg-gray-600/20" />
+              <div className="absolute w-full h-[1px] top-3/4 bg-gray-600/20" />
+              <div className="absolute left-1/2 w-[1px] h-full bg-gray-600/20" />
             </div>
           </div>
         );
       case 'soccer':
         return (
-          <div className="absolute inset-0 flex items-center justify-center opacity-20">
-            <div className="w-[85%] h-[70%] border-2 border-white/50 rounded-md">
-              <div className="absolute left-1/2 w-[1px] h-full bg-white/30" />
-              <div className="absolute w-36 h-16 left-0 top-1/2 border-2 border-white/50 -translate-y-1/2 border-l-0" />
-              <div className="absolute w-8 h-24 left-0 top-1/2 border-2 border-white/50 -translate-y-1/2 border-l-0" />
-              <div className="absolute w-36 h-16 right-0 top-1/2 border-2 border-white/50 -translate-y-1/2 border-r-0" />
-              <div className="absolute w-8 h-24 right-0 top-1/2 border-2 border-white/50 -translate-y-1/2 border-r-0" />
-              <div className="absolute left-1/2 top-1/2 w-16 h-16 border-2 border-white/50 rounded-full -translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-[85%] h-[70%] border border-gray-600/30 rounded-lg">
+              <div className="absolute left-1/2 top-1/2 w-16 h-16 border border-gray-600/30 rounded-full transform -translate-x-1/2 -translate-y-1/2" />
+              <div className="absolute w-20 h-10 left-0 top-1/2 border-t border-r border-b border-gray-600/30 transform -translate-y-1/2" />
+              <div className="absolute w-20 h-10 right-0 top-1/2 border-t border-l border-b border-gray-600/30 transform -translate-y-1/2" />
+              <div className="absolute left-1/2 w-[1px] h-full bg-gray-600/20" />
             </div>
           </div>
         );
@@ -804,9 +802,10 @@ const FeatureCommercial: React.FC<FeatureCommercialProps> = ({ autoPlay = true }
         return null;
     }
   };
-  
+
+  // Create field container with animated elements
   return (
-    <div className="relative w-full max-w-3xl mx-auto">
+    <div className="relative w-full max-w-4xl mx-auto">
       {/* Feature Title */}
       <div className="text-center mb-6">
         <div className="flex items-center justify-center mb-2">
@@ -816,7 +815,9 @@ const FeatureCommercial: React.FC<FeatureCommercialProps> = ({ autoPlay = true }
               boxShadow: `0 0 15px rgba(34,211,238,0.3)`
             }}
           >
-            <FeatureIcon className="w-8 h-8 text-cyan-400" />
+            {React.createElement(iconComponents[currentFeature.icon], { 
+              className: "w-8 h-8 text-cyan-400"
+            })}
           </div>
         </div>
         <h3 className="text-2xl font-bold text-white">
@@ -828,7 +829,7 @@ const FeatureCommercial: React.FC<FeatureCommercialProps> = ({ autoPlay = true }
       {/* Animation Area */}
       <div 
         ref={commercialContainerRef}
-        className="relative w-full h-[300px] bg-gray-900/50 rounded-xl mb-6 overflow-hidden"
+        className="relative w-full h-[400px] bg-gray-900/50 rounded-xl mb-6 overflow-hidden"
         style={{
           boxShadow: 'inset 0 0 30px rgba(0,0,0,0.5), 0 0 15px rgba(34,211,238,0.2)'
         }}
@@ -836,9 +837,67 @@ const FeatureCommercial: React.FC<FeatureCommercialProps> = ({ autoPlay = true }
         {/* Sport-specific court background */}
         {getCourtBackground()}
         
+        {/* Dynamic background effects */}
+        <div className="absolute inset-0">
+          {/* Grid lines */}
+          <div className="absolute inset-0 opacity-10">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div 
+                key={`h-line-${i}`} 
+                className="absolute w-full h-[1px] bg-gray-400"
+                style={{ top: `${i * 25}%` }}
+              />
+            ))}
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div 
+                key={`v-line-${i}`} 
+                className="absolute h-full w-[1px] bg-gray-400"
+                style={{ left: `${i * 25}%` }}
+              />
+            ))}
+          </div>
+          
+          {/* Radial gradient for the current feature */}
+          <div 
+            className="absolute inset-0 opacity-30"
+            style={{
+              background: `radial-gradient(circle at 50% 50%, ${currentFeature.color}10 0%, transparent 70%)`
+            }}
+          />
+          
+          {/* Animated particles */}
+          {Array.from({ length: 15 }).map((_, i) => (
+            <motion.div
+              key={`particle-${i}`}
+              className="absolute rounded-full bg-blue-400"
+              initial={{
+                x: Math.random() * 100 + '%',
+                y: Math.random() * 100 + '%',
+                opacity: 0.1 + Math.random() * 0.2,
+                scale: 0.3 + Math.random() * 0.7
+              }}
+              animate={{
+                y: [null, Math.random() * 100 + '%'],
+                x: [null, Math.random() * 100 + '%'],
+                opacity: [null, 0.05 + Math.random() * 0.1]
+              }}
+              transition={{
+                duration: 5 + Math.random() * 10,
+                repeat: Infinity,
+                repeatType: 'reverse'
+              }}
+              style={{
+                width: `${Math.random() * 4 + 1}px`,
+                height: `${Math.random() * 4 + 1}px`,
+                backgroundColor: adjustColorBrightness(currentFeature.color, Math.random() * 40)
+              }}
+            />
+          ))}
+        </div>
+        
         {/* Outer glow effect */}
         <div 
-          className="absolute inset-4 rounded-lg opacity-30"
+          className="absolute inset-4 rounded-lg opacity-20"
           style={{
             boxShadow: `0 0 30px 5px ${currentFeature.color}`,
             filter: 'blur(20px)'
@@ -847,7 +906,7 @@ const FeatureCommercial: React.FC<FeatureCommercialProps> = ({ autoPlay = true }
         
         {/* Players */}
         <Player
-          position={userPosition}
+          position={currentFeature.playerPaths.user[currentFrameIndex]}
           color={currentFeature.color}
           isUser={true}
           jersey="1"
@@ -882,20 +941,39 @@ const FeatureCommercial: React.FC<FeatureCommercialProps> = ({ autoPlay = true }
         {/* Ball - only show when a ball path is defined */}
         {currentFeature.ballPath && (
           <Ball
-            position={ballPosition}
+            position={currentFeature.ballPath[Math.min(currentFrameIndex, currentFeature.ballPath.length - 1)]}
             visible={true}
             sport={currentFeature.sport}
             size="md"
           />
         )}
         
+        {/* Navigation arrows */}
+        <motion.button
+          className="absolute left-2 top-1/2 transform -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-black/60 transition-colors"
+          onClick={goToPreviousFeature}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </motion.button>
+        
+        <motion.button
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-black/60 transition-colors"
+          onClick={goToNextFeature}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <ChevronRight className="w-5 h-5" />
+        </motion.button>
+        
         {/* Progress indicator */}
         <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-1">
-          {featureScenes.map((_, index) => (
+          {featureScenes.map((scene, index) => (
             <button
               key={`progress-${index}`}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentFeatureIndex ? 'w-6 bg-blue-400' : 'bg-gray-600'
+              className={`h-2 rounded-full transition-all duration-300 ${
+                index === currentFeatureIndex ? 'w-8 bg-blue-400' : 'w-2 bg-gray-600 hover:bg-gray-500'
               }`}
               onClick={() => goToFeature(index)}
               aria-label={`View feature ${index + 1}`}
@@ -919,40 +997,56 @@ const FeatureCommercial: React.FC<FeatureCommercialProps> = ({ autoPlay = true }
             className="h-8 w-8 bg-black/50 border-gray-700 hover:bg-black/70"
             onClick={resetAnimation}
           >
-            <RotateCcw className="h-4 w-4" />
+            <RefreshCw className="h-4 w-4" />
           </Button>
+        </div>
+        
+        {/* Feature info card */}
+        <div className="absolute left-0 right-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent pt-16 pb-8 px-4">
+          <div className="flex items-center space-x-3">
+            <div 
+              className="rounded-full p-2"
+              style={{ 
+                background: `linear-gradient(135deg, ${currentFeature.color}, ${adjustColorBrightness(currentFeature.color, -30)})`,
+                boxShadow: `0 0 10px ${currentFeature.color}40`
+              }}
+            >
+              {React.createElement(iconComponents[currentFeature.icon], { 
+                className: "w-5 h-5 text-white"
+              })}
+            </div>
+            <div>
+              <h4 className="text-white font-bold text-lg">{currentFeature.title}</h4>
+            </div>
+          </div>
         </div>
       </div>
       
-      {/* Feature Navigation */}
-      <div className="flex justify-center flex-wrap gap-2">
-        {featureScenes.map((feature, index) => {
-          const Icon = iconComponents[feature.icon];
-          return (
-            <Button
-              key={feature.id}
-              variant={currentFeatureIndex === index ? "default" : "ghost"}
-              size="sm"
-              className={`flex items-center gap-1.5 px-3 py-1 ${
-                currentFeatureIndex === index 
-                  ? 'bg-gradient-to-br from-blue-500 to-cyan-400' 
-                  : 'hover:bg-gray-800'
-              }`}
-              onClick={() => goToFeature(index)}
-            >
-              <Icon className="h-3.5 w-3.5" />
-              <span className="text-xs">{feature.title}</span>
-            </Button>
-          );
-        })}
-      </div>
-      
-      {/* CTA Button */}
-      <div className="flex justify-center mt-6">
-        <Button asChild size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-400 hover:opacity-90 drop-shadow-[0_0_10px_rgba(34,211,238,0.4)] text-lg font-semibold">
-          <Link href="/auth">Get Started Today</Link>
-        </Button>
-      </div>
+      {/* Feature explanation text below the animation */}
+      <motion.div
+        key={currentFeature.id}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.3 }}
+        className="text-center text-gray-300 text-sm max-w-3xl mx-auto"
+      >
+        {currentFeature.id === 'ai-coach' && (
+          <p>Personalized AI coaching tailored to neurodivergent athletes. Get detailed feedback on technique, strategy, and game awareness.</p>
+        )}
+        {currentFeature.id === 'video-analysis' && (
+          <p>Upload game footage and receive AI-powered analysis highlighting strengths, areas for improvement, and ADHD-optimized development recommendations.</p>
+        )}
+        {currentFeature.id === 'gar-rating' && (
+          <p>Our proprietary Growth and Ability Rating system measures physical, technical, mental, and neurodivergent-specific skills for comprehensive development tracking.</p>
+        )}
+        {currentFeature.id === 'skill-tree' && (
+          <p>Visualize your development with our immersive skill tree. Unlock new abilities and track progress through a PlayStation-quality interface.</p>
+        )}
+        {currentFeature.id === 'academics' && (
+          <p>Track academic performance alongside athletic development. Monitor GPA, NCAA eligibility, and receive ADHD-specific study strategies.</p>
+        )}
+      </motion.div>
     </div>
   );
 };
