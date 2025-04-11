@@ -14,6 +14,7 @@ import { athleteScoutService } from './services/athlete-scout-service';
 import { authSentinel } from './middleware/auth-sentinel';
 import { registerSkillTreeApi } from './skill-tree-api';
 import skillTreeRoutes from './routes/skill-tree-routes';
+import { seedSkillTree } from './seed-skill-tree';
 import net from 'net';
 
 const app = express();
@@ -171,6 +172,14 @@ app.use((req, res, next) => {
     // Register enhanced skill tree routes
     app.use('/api/skills', skillTreeRoutes);
     log("Registered Enhanced Skill Tree Routes");
+    
+    // Seed skill tree data if needed
+    try {
+      await seedSkillTree();
+      log("Skill tree sample data initialized");
+    } catch (error) {
+      log(`Error seeding skill tree data: ${error}`, "error");
+    }
     
     // Load API keys from database
     try {
