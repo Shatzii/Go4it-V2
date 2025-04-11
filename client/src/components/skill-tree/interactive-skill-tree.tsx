@@ -73,7 +73,7 @@ const InteractiveSkillTree: React.FC<InteractiveSkillTreeProps> = ({ sportType, 
 
   // Fetch skill tree data
   const { data: skillTreeData, isLoading: isLoadingSkillTree } = useQuery({
-    queryKey: ['/api/ai-coach/skill-tree', sportType, position],
+    queryKey: ['/api/skill-tree/root-nodes', sportType, position],
     enabled: !!sportType,
   });
 
@@ -85,7 +85,7 @@ const InteractiveSkillTree: React.FC<InteractiveSkillTreeProps> = ({ sportType, 
 
   // Fetch drills for selected skill
   const { data: drills, isLoading: isLoadingDrills } = useQuery({
-    queryKey: ['/api/ai-coach/skill-drills', selectedSkill?.id],
+    queryKey: ['/api/skill-tree/nodes/' + selectedSkill?.id + '/drills'],
     enabled: !!selectedSkill?.id && skillDialogOpen,
   });
 
@@ -210,7 +210,7 @@ const InteractiveSkillTree: React.FC<InteractiveSkillTreeProps> = ({ sportType, 
     if (!selectedDrill) return;
     
     try {
-      const response = await fetch('/api/player/complete-drill', {
+      const response = await fetch('/api/skill-tree/complete-drill', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -256,7 +256,7 @@ const InteractiveSkillTree: React.FC<InteractiveSkillTreeProps> = ({ sportType, 
     setIsGeneratingDrill(true);
     
     try {
-      const response = await fetch('/api/ai-coach/generate-drill', {
+      const response = await fetch('/api/skill-tree/generate-drill', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

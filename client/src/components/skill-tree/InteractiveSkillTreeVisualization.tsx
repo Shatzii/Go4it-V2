@@ -72,7 +72,7 @@ const InteractiveSkillTreeVisualization: React.FC<InteractiveSkillTreeVisualizat
     nodes: SkillNode[];
     relationships: SkillRelationship[];
   }>({
-    queryKey: ['/api/ai-coach/skill-tree', sportType, position],
+    queryKey: ['/api/skill-tree/root-nodes', sportType, position],
     enabled: !!sportType,
   });
 
