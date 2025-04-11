@@ -3482,6 +3482,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
       const weeklyWorkouts = verifications.filter(v => {
+        // Handle the case where startedAt might be null
+        if (!v.startedAt) return false;
         const verificationDate = new Date(v.startedAt);
         return verificationDate >= oneWeekAgo;
       });
