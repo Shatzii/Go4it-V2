@@ -12,7 +12,7 @@ import { User } from '../../shared/schema';
 import { AnalyticsService } from '../services/analytics-service';
 
 const router = express.Router();
-const analyticsService = new AnalyticsService(storage);
+const analyticsService = new AnalyticsService();
 
 /**
  * Record user session start
@@ -480,7 +480,7 @@ router.get('/overview/:userId', isAuthenticated, async (req: Request, res: Respo
       return res.status(403).json({ message: 'Unauthorized to view analytics for this user' });
     }
     
-    const overview = await analyticsService.getAnalyticsOverview(userId);
+    const overview = await analyticsService.getUserAnalyticsOverview(userId);
     return res.json(overview);
   } catch (error) {
     console.error('Error fetching analytics overview:', error);
@@ -511,7 +511,7 @@ router.get('/dashboard', isAuthenticated, async (req: Request, res: Response) =>
       };
     }
     
-    const dashboard = await analyticsService.getAnalyticsDashboard(userId, dateRange);
+    const dashboard = await analyticsService.getAnalyticsDashboardData(userId, dateRange);
     return res.json({ dashboard });
   } catch (error) {
     console.error('Error fetching analytics dashboard:', error);
