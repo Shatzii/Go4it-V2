@@ -1,118 +1,70 @@
-// Utility functions for combine tour events
-import { formatDistanceToNow, isPast } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 
-// Define the event data structure
-export type CombineEvent = {
+// Interface for formatted combine events
+export interface FormattedCombineEvent {
   id: number;
   name: string;
   location: string;
   city: string;
-  state: string;
-  date: string;
+  state?: string;
+  country?: string;
+  venueDetails?: string;
+  startDate: string;
   endDate: string;
-  registrationDeadline: string;
-  maximumAttendees: number;
-  currentAttendees: number;
-  price: string | number;
-  status: string;
-  slug: string;
-  featuredImage?: string;
+  registrationUrl?: string;
   description?: string;
-};
-
-export type FormattedCombineEvent = {
-  id: number;
-  name: string;
-  location: string;
-  date: string;
-  registrationDeadline: string;
-  spotsAvailable: number;
-  totalSpots: number;
-  price: number;
-  testingTypes: string[];
-  description: string;
-  status: 'upcoming' | 'filling_fast' | 'sold_out' | 'past';
-  isRegistered: boolean;
+  sportTypes?: string[];
+  ageGroups?: string[];
+  status?: string;
+  featured?: boolean;
+  capacity?: number;
+  registeredCount?: number;
+  price?: number;
+  bannerImage?: string;
   featuredImage?: string;
-};
-
-// Define statuses
-export type EventStatus = 'upcoming' | 'filling_fast' | 'sold_out' | 'past';
-
-/**
- * Determine the display status of a combine event
- */
-export function getEventStatus(event: CombineEvent): EventStatus {
-  const now = new Date();
-  const eventDate = new Date(event.date);
-  const endDate = new Date(event.endDate || event.date);
-  
-  // If end date is in the past, it's a past event
-  if (isPast(endDate)) {
-    return 'past';
-  }
-  
-  // Calculate spots available
-  const spotsAvailable = event.maximumAttendees - (event.currentAttendees || 0);
-  
-  // If no spots, it's sold out
-  if (spotsAvailable <= 0) {
-    return 'sold_out';
-  }
-  
-  // If less than 20% spots available, it's filling fast
-  const fillPercentage = (event.currentAttendees || 0) / event.maximumAttendees;
-  if (fillPercentage > 0.8) {
-    return 'filling_fast';
-  }
-  
-  // Otherwise, it's upcoming
-  return 'upcoming';
+  contactEmail?: string;
+  contactPhone?: string;
+  slug?: string;
+  latitude?: number;
+  longitude?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  // Formatted fields
+  dateFormatted: string;
+  timeFormatted: string;
+  endDateFormatted: string | null;
+  statusClass: string;
+  statusText: string;
+  spotsAvailable?: number;
+  totalSpots?: number;
+  registrationDeadline?: string;
+  registrationDeadlineFormatted?: string | null;
+  isRegistered?: boolean;
 }
 
-/**
- * Format a combine event for display
- */
-export function formatCombineEvent(event: CombineEvent): FormattedCombineEvent {
-  // Calculate spots available
-  const spotsAvailable = event.maximumAttendees - (event.currentAttendees || 0);
-  
-  return {
-    id: event.id,
-    name: event.name,
-    location: `${event.location}, ${event.city}, ${event.state}`,
-    date: event.date,
-    registrationDeadline: event.registrationDeadline,
-    spotsAvailable: spotsAvailable > 0 ? spotsAvailable : 0,
-    totalSpots: event.maximumAttendees || 0,
-    price: typeof event.price === 'string' ? parseFloat(event.price) : event.price,
-    testingTypes: ["physical", "cognitive", "psychological"], // Default testing types
-    description: event.description || "",
-    status: getEventStatus(event),
-    isRegistered: false, // This would be determined by user registration data
-    featuredImage: event.featuredImage
-  };
-}
-
-/**
- * Format a time distance in a human readable way
- */
-export function formatTimeDistance(date: string | Date): string {
+// Format dates for display
+export function formatDateTime(dateString: string, formatStr: string = 'MMM d, yyyy'): string {
   try {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return formatDistanceToNow(dateObj, { addSuffix: true });
+    return format(new Date(dateString), formatStr);
   } catch (error) {
-    return 'Invalid date';
+    console.error('Error formatting date:', error);
+    return dateString;
   }
 }
 
-/**
- * Get human-readable status text
- */
-export function getStatusText(status: EventStatus): string {
-  switch (status) {
+// Get status text for display
+export function getStatusText(status: string | undefined): string {
+  if (!status) return 'Upcoming';
+  
+  switch (status.toLowerCase()) {
     case 'upcoming':
-      return 'Registration Open';
+      return 'Upcoming';
+    case 'ongoing':
+      return 'In Progress';
+    case 'completed':
+      return 'Completed';
+    case 'cancelled':
+      return 'Cancelled';
     case 'filling_fast':
       return 'Filling Fast';
     case 'sold_out':
@@ -120,36 +72,86 @@ export function getStatusText(status: EventStatus): string {
     case 'past':
       return 'Past Event';
     default:
-      return 'Unknown Status';
+      return status;
   }
 }
 
-/**
- * Get CSS class for status
- */
-export function getStatusClass(status: EventStatus): string {
-  switch (status) {
+// Get CSS class for status badges
+export function getStatusClass(status: string | undefined): string {
+  if (!status) return 'bg-blue-100 text-blue-800';
+  
+  switch (status.toLowerCase()) {
     case 'upcoming':
-      return 'bg-green-600 text-white';
+      return 'bg-blue-100 text-blue-800';
+    case 'ongoing':
+      return 'bg-green-100 text-green-800';
+    case 'completed':
+      return 'bg-gray-100 text-gray-800';
+    case 'cancelled':
+      return 'bg-red-100 text-red-800';
     case 'filling_fast':
-      return 'bg-yellow-500 text-white';
+      return 'bg-yellow-100 text-yellow-800';
     case 'sold_out':
-      return 'bg-red-600 text-white';
+      return 'bg-purple-100 text-purple-800';
     case 'past':
-      return 'bg-gray-600 text-white';
+      return 'bg-gray-100 text-gray-800';
     default:
-      return 'bg-gray-400 text-white';
+      return 'bg-gray-100 text-gray-800';
   }
 }
 
-/**
- * Format a date string for display
- */
-export function formatDateTime(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+// Calculate spots availability
+export function calculateAvailability(event: any) {
+  if (event.capacity && typeof event.registeredCount === 'number') {
+    return {
+      spotsAvailable: Math.max(0, event.capacity - event.registeredCount),
+      totalSpots: event.capacity
+    };
+  }
+  return {};
+}
+
+// Format a combine event for display
+export function formatCombineEvent(event: any): FormattedCombineEvent {
+  // Handle the case where event doesn't have required dates
+  if (!event || !event.startDate) {
+    return {
+      id: event?.id || 0,
+      name: event?.name || 'Event',
+      location: event?.location || 'Unknown Location',
+      city: event?.city || '',
+      startDate: event?.startDate || new Date().toISOString(),
+      endDate: event?.endDate || new Date().toISOString(),
+      dateFormatted: 'Unknown Date',
+      timeFormatted: 'Unknown Time',
+      endDateFormatted: null,
+      statusClass: getStatusClass(event?.status),
+      statusText: getStatusText(event?.status),
+    };
+  }
+
+  // Format dates
+  const startDate = new Date(event.startDate);
+  const endDate = event.endDate ? new Date(event.endDate) : null;
+  const registrationDeadline = event.registrationDeadline ? new Date(event.registrationDeadline) : null;
+
+  // Calculate availability
+  const availability = calculateAvailability(event);
+
+  return {
+    ...event,
+    dateFormatted: format(startDate, 'MMMM d, yyyy'),
+    timeFormatted: format(startDate, 'h:mm a'),
+    endDateFormatted: endDate ? format(endDate, 'MMMM d, yyyy') : null,
+    registrationDeadlineFormatted: registrationDeadline ? format(registrationDeadline, 'MMMM d, yyyy') : null,
+    statusClass: getStatusClass(event.status),
+    statusText: getStatusText(event.status),
+    ...availability
+  };
+}
+
+// Format a list of combine events
+export function formatCombineEvents(events: any[]): FormattedCombineEvent[] {
+  if (!events || !Array.isArray(events)) return [];
+  return events.map(formatCombineEvent);
 }
