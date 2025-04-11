@@ -36,7 +36,7 @@ import {
   athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, sql, inArray } from "drizzle-orm";
+import { eq, desc, and, sql, inArray, asc } from "drizzle-orm";
 import session from "express-session";
 import MemoryStore from "memorystore";
 import connectPgSimple from "connect-pg-simple";
@@ -2905,7 +2905,7 @@ export class DatabaseStorage implements IStorage {
         }
         
         try {
-          return await query.orderBy(skillTreeNodes.sortOrder);
+          return await query.orderBy(asc(skillTreeNodes.sortOrder));
         } catch (err) {
           console.warn('sortOrder column not found on skillTreeNodes table, returning unordered results');
           return await query;
