@@ -18,24 +18,26 @@ import SkillRankingVisualizer from './SkillRankingVisualizer';
 type SkillNode = {
   id: number;
   name: string;
-  description: string;
-  sportType: string;
-  position?: string;
+  description: string | null;
+  sport_type: string; // Using snake_case to match DB schema
+  position: string | null;
   level: number;
-  xpToUnlock: number;
-  iconUrl?: string;
+  xp_to_unlock: number | null; // Using snake_case to match DB schema
+  icon_path: string | null; // Using snake_case to match DB schema
   unlockCriteria?: any;
-  active: boolean;
+  active?: boolean;
   prerequisiteSkills?: string[];
-  skillCategory: string;
-  difficulty: string;
+  parent_category: string | null; // Using parent_category instead of skillCategory
+  difficulty?: string;
+  created_at?: Date | null; // Added to match DB schema
 };
 
 type SkillRelationship = {
   id: number;
-  parentNodeId: number;
-  childNodeId: number;
-  relationshipType: string;
+  parent_id: number | null; // Using snake_case to match DB schema
+  child_id: number; // Using snake_case to match DB schema
+  relationship_type: string; // Using snake_case to match DB schema
+  created_at?: Date | null; // Added to match DB schema
 };
 
 type UserSkill = {
@@ -79,6 +81,7 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({
     queryKey: ['/api/skill-tree/nodes', sportType, position],
     queryFn: async () => {
       const params = new URLSearchParams();
+      // Use sport instead of sportType to match route parameter name
       if (sportType) params.append('sport', sportType);
       if (position) params.append('position', position);
       
@@ -103,7 +106,11 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({
   useEffect(() => {
     // Set the first category as selected when data loads
     if (skillTreeData?.nodes && skillTreeData.nodes.length > 0) {
-      const categories = [...new Set(skillTreeData.nodes.map((node: SkillNode) => node.skillCategory))];
+      const categories = [...new Set(
+        skillTreeData.nodes
+          .map((node: SkillNode) => node.parent_category || 'Uncategorized')
+          .filter(Boolean)
+      )];
       if (categories.length > 0 && !selectedCategory) {
         setSelectedCategory(categories[0]);
       }
@@ -140,22 +147,22 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({
     
     // Find relationships where this skill is a child
     const prerequisites = skillTreeData.relationships
-      .filter(rel => rel.childNodeId === skill.id)
-      .map(rel => rel.parentNodeId);
+      .filter(rel => rel.child_id === skill.id)
+      .map(rel => rel.parent_id);
     
     // If no prerequisites, it can be unlocked
     if (prerequisites.length === 0) return true;
     
-    // Check if all prerequisites are unlocked
-    return prerequisites.every(preqId => isSkillUnlocked(preqId));
+    // Check if all prerequisites are unlocked (and handle null parents)
+    return prerequisites.every(preqId => preqId !== null && isSkillUnlocked(preqId));
   };
 
   // Get all child nodes of a given node
   const getChildNodes = (nodeId: number): number[] => {
     if (!skillTreeData) return [];
     const children = skillTreeData.relationships
-      .filter((rel: SkillRelationship) => rel.parentNodeId === nodeId)
-      .map((rel: SkillRelationship) => rel.childNodeId);
+      .filter((rel: SkillRelationship) => rel.parent_id === nodeId)
+      .map((rel: SkillRelationship) => rel.child_id);
     
     // Recursively get all descendants
     let allChildren: number[] = [...children];
@@ -170,8 +177,9 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({
   const getParentNodes = (nodeId: number): number[] => {
     if (!skillTreeData) return [];
     const parents = skillTreeData.relationships
-      .filter((rel: SkillRelationship) => rel.childNodeId === nodeId)
-      .map((rel: SkillRelationship) => rel.parentNodeId);
+      .filter((rel: SkillRelationship) => rel.child_id === nodeId)
+      .map((rel: SkillRelationship) => rel.parent_id)
+      .filter((id): id is number => id !== null); // Filter out null parent_ids
     
     // Recursively get all ancestors
     let allParents: number[] = [...parents];
@@ -245,7 +253,9 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({
   };
 
   // Render skill difficulty badge
-  const renderDifficultyBadge = (difficulty: string) => {
+  const renderDifficultyBadge = (difficulty: string | undefined) => {
+    if (!difficulty) return null;
+    
     const colorMap: Record<string, string> = {
       beginner: 'bg-green-500/20 text-green-500 border-green-500/50',
       intermediate: 'bg-yellow-500/20 text-yellow-500 border-yellow-500/50',
@@ -266,7 +276,11 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({
   const renderCategoryTabs = () => {
     if (!skillTreeData?.nodes) return null;
     
-    const categories = [...new Set(skillTreeData.nodes.map((node: SkillNode) => node.skillCategory))];
+    const categories = [...new Set(
+      skillTreeData.nodes
+        .map((node: SkillNode) => node.parent_category || 'Uncategorized')
+        .filter(Boolean)
+    )];
     
     return (
       <div className="flex overflow-x-auto mb-4 pb-2 gap-2">
@@ -293,8 +307,11 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({
     const connections: JSX.Element[] = [];
     
     relationships.forEach((rel: SkillRelationship) => {
-      const sourceEl = document.getElementById(`skill-${rel.parentNodeId}`);
-      const targetEl = document.getElementById(`skill-${rel.childNodeId}`);
+      // Skip relationships with null parent_id
+      if (rel.parent_id === null) return;
+      
+      const sourceEl = document.getElementById(`skill-${rel.parent_id}`);
+      const targetEl = document.getElementById(`skill-${rel.child_id}`);
       
       if (sourceEl && targetEl) {
         const sourceRect = sourceEl.getBoundingClientRect();
@@ -308,10 +325,10 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({
         const y2 = targetRect.top + targetRect.height / 2 - containerRect.top;
         
         // Determine line style based on skill state
-        const parentUnlocked = isSkillUnlocked(rel.parentNodeId);
-        const childUnlocked = isSkillUnlocked(rel.childNodeId);
-        const isHighlighted = highlightedPath.includes(rel.parentNodeId) && 
-                              highlightedPath.includes(rel.childNodeId);
+        const parentUnlocked = isSkillUnlocked(rel.parent_id);
+        const childUnlocked = isSkillUnlocked(rel.child_id);
+        const isHighlighted = highlightedPath.includes(rel.parent_id) && 
+                              highlightedPath.includes(rel.child_id);
         
         // Draw the connection line
         connections.push(
@@ -339,7 +356,7 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({
     if (!skillTreeData?.nodes || !selectedCategory) return null;
     
     const categoryNodes = skillTreeData.nodes.filter(
-      (node: SkillNode) => node.skillCategory === selectedCategory
+      (node: SkillNode) => (node.parent_category || 'Uncategorized') === selectedCategory
     );
     
     // Calculate optimal grid layout

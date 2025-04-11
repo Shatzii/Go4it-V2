@@ -9,7 +9,9 @@ const router = Router();
 router.get('/user', async (req: Request, res: Response) => {
   try {
     if (!req.user) {
-      return res.status(401).json({ error: 'Authentication required' });
+      // For non-authenticated users, return an empty array
+      // This allows the visualization to still render without skills
+      return res.json([]);
     }
 
     const userSkills = await db.select()
@@ -32,15 +34,24 @@ router.get('/nodes', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Sport type is required' });
     }
 
-    let query = db.select()
-      .from(skillTreeNodes)
-      .where(eq(skillTreeNodes.sportType, sport as string));
+    // Start with base query
+    let nodes;
     
     if (position) {
-      query = query.where(eq(skillTreeNodes.position, position as string));
+      nodes = await db.select()
+        .from(skillTreeNodes)
+        .where(
+          and(
+            eq(skillTreeNodes.sport_type, sport as string),
+            eq(skillTreeNodes.position, position as string)
+          )
+        );
+    } else {
+      nodes = await db.select()
+        .from(skillTreeNodes)
+        .where(eq(skillTreeNodes.sport_type, sport as string));
     }
 
-    const nodes = await query;
     const relationships = await db.select()
       .from(skillTreeRelationships);
 
@@ -85,10 +96,10 @@ router.post('/unlock/:id', async (req: Request, res: Response) => {
 
     // Check prerequisites
     const prerequisites = await db.select({
-      parentNodeId: skillTreeRelationships.parentNodeId
+      parentId: skillTreeRelationships.parent_id
     })
     .from(skillTreeRelationships)
-    .where(eq(skillTreeRelationships.childNodeId, skillId));
+    .where(eq(skillTreeRelationships.child_id, skillId));
 
     if (prerequisites.length > 0) {
       // Get user's unlocked skills for prerequisites
@@ -103,9 +114,14 @@ router.post('/unlock/:id', async (req: Request, res: Response) => {
       
       const unlockedSkillIds = prereqSkills.map(s => s.skillNodeId);
       
-      // Check if all prerequisites are unlocked
-      const allPrereqsMet = prerequisites.every(p => 
-        unlockedSkillIds.includes(p.parentNodeId)
+      // Filter out any null parent IDs and check if all remaining prerequisites are unlocked
+      // Extract valid parent IDs first to avoid type issues
+      const validParentIds = prerequisites
+        .map(p => p.parentId)
+        .filter((id): id is number => id !== null);
+        
+      const allPrereqsMet = validParentIds.every(parentId => 
+        unlockedSkillIds.includes(parentId)
       );
       
       if (!allPrereqsMet) {
@@ -114,7 +130,7 @@ router.post('/unlock/:id', async (req: Request, res: Response) => {
     }
 
     // XP check (if required)
-    if (skillNode.xpToUnlock > 0) {
+    if (skillNode.xp_to_unlock && skillNode.xp_to_unlock > 0) {
       // Get user's total XP (implement this based on your XP system)
       // For now, we'll just assume the user has enough XP
     }
@@ -196,7 +212,7 @@ router.post('/train', async (req: Request, res: Response) => {
         .from(trainingDrills)
         .where(eq(trainingDrills.id, drillId));
       
-      if (drill) {
+      if (drill && drill.xpReward !== null) {
         xpGained = drill.xpReward;
       }
     }
@@ -247,11 +263,18 @@ router.post('/train', async (req: Request, res: Response) => {
 // Get user's skill stats
 router.get('/stats', async (req: Request, res: Response) => {
   try {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
-
     const { sport } = req.query;
+    
+    if (!req.user) {
+      // For non-authenticated users, return default stats
+      return res.json({
+        totalSkills: 0,
+        unlockedSkills: 0,
+        masteredSkills: 0,
+        totalXp: 0,
+        skillsByCategory: []
+      });
+    }
     
     if (!sport) {
       return res.status(400).json({ error: 'Sport type is required' });
@@ -260,7 +283,7 @@ router.get('/stats', async (req: Request, res: Response) => {
     // Get all skill nodes for this sport
     const allSkillNodes = await db.select()
       .from(skillTreeNodes)
-      .where(eq(skillTreeNodes.sportType, sport as string));
+      .where(eq(skillTreeNodes.sport_type, sport as string));
     
     const totalSkills = allSkillNodes.length;
     
@@ -277,7 +300,7 @@ router.get('/stats', async (req: Request, res: Response) => {
     .where(
       and(
         eq(skills.userId, req.user.id),
-        eq(skillTreeNodes.sportType, sport as string)
+        eq(skillTreeNodes.sport_type, sport as string)
       )
     );
     
@@ -297,9 +320,12 @@ router.get('/stats', async (req: Request, res: Response) => {
     }> = {};
     
     allSkillNodes.forEach(node => {
-      if (!categories[node.skillCategory]) {
-        categories[node.skillCategory] = {
-          category: node.skillCategory,
+      // Default to 'Uncategorized' if parent_category is null
+      const category = node.parent_category || 'Uncategorized';
+      
+      if (!categories[category]) {
+        categories[category] = {
+          category: category,
           totalCount: 0,
           unlockedCount: 0,
           masteredCount: 0,
@@ -307,11 +333,12 @@ router.get('/stats', async (req: Request, res: Response) => {
         };
       }
       
-      categories[node.skillCategory].totalCount++;
+      categories[category].totalCount++;
     });
     
     userSkills.forEach(s => {
-      const category = s.node.skillCategory;
+      // Default to 'Uncategorized' if parent_category is null
+      const category = s.node.parent_category || 'Uncategorized';
       if (s.skill.unlocked) {
         categories[category].unlockedCount++;
       }
@@ -408,7 +435,7 @@ router.post('/generate-drill', async (req: Request, res: Response) => {
       .values({
         name: generatedDrill.name,
         description: generatedDrill.description,
-        sport: skillNode.sportType,
+        sport: skillNode.sport_type,
         position: skillNode.position,
         difficulty: generatedDrill.difficulty,
         estimatedDuration: generatedDrill.duration,

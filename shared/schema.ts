@@ -589,29 +589,24 @@ export const skillTreeNodes = pgTable("skill_tree_nodes", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description"),
-  sportType: text("sport_type").notNull(),
+  sport_type: text("sport_type").notNull(), // Using snake_case to match DB schema
   position: text("position"),
   level: integer("level").notNull().default(1),
-  xpToUnlock: integer("xp_to_unlock").default(0),
-  iconUrl: text("icon_url"),
-  unlockCriteria: jsonb("unlock_criteria"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-  active: boolean("active").default(true),
-  prerequisiteSkills: text("prerequisite_skills").array(),
-  skillCategory: text("skill_category").notNull(), // e.g., "Offensive", "Defensive", "Physical"
-  difficulty: text("difficulty").default("intermediate"), // beginner, intermediate, advanced, elite
+  xp_to_unlock: integer("xp_to_unlock").default(0), // Using snake_case to match DB schema
+  icon_path: text("icon_path"), // Using icon_path instead of iconUrl
+  parent_category: text("parent_category"), // Using parent_category instead of skillCategory
+  created_at: timestamp("created_at").defaultNow(), // Using snake_case to match DB schema
 });
 
 export const skillTreeRelationships = pgTable("skill_tree_relationships", {
   id: serial("id").primaryKey(),
-  parentNodeId: integer("parent_node_id").notNull().references(() => skillTreeNodes.id),
-  childNodeId: integer("child_node_id").notNull().references(() => skillTreeNodes.id),
-  relationshipType: text("relationship_type").default("requires"), // requires, enhances, unlocks
-  createdAt: timestamp("created_at").defaultNow(),
+  parent_id: integer("parent_id").references(() => skillTreeNodes.id), // Using snake_case to match DB schema
+  child_id: integer("child_id").notNull().references(() => skillTreeNodes.id), // Using snake_case to match DB schema
+  relationship_type: text("relationship_type").default("requires"), // requires, enhances, unlocks
+  created_at: timestamp("created_at").defaultNow(), // Using snake_case to match DB schema
 }, (table) => {
   return {
-    relationshipUnique: unique().on(table.parentNodeId, table.childNodeId),
+    relationshipUnique: unique().on(table.parent_id, table.child_id),
   };
 });
 
@@ -998,12 +993,12 @@ export const skillTreeNodesRelations = relations(skillTreeNodes, ({ many }) => (
 
 export const skillTreeRelationshipsRelations = relations(skillTreeRelationships, ({ one }) => ({
   parent: one(skillTreeNodes, {
-    fields: [skillTreeRelationships.parentNodeId],
+    fields: [skillTreeRelationships.parent_id],
     references: [skillTreeNodes.id],
     relationName: "parent",
   }),
   child: one(skillTreeNodes, {
-    fields: [skillTreeRelationships.childNodeId],
+    fields: [skillTreeRelationships.child_id],
     references: [skillTreeNodes.id],
     relationName: "child",
   }),
