@@ -7,22 +7,32 @@ async function createTestWorkoutData(userId: number) {
 
   try {
     // First check if the user exists
-    const userResult = await db.execute(sql`SELECT id FROM users WHERE id = ${userId}`);
-    const users = userResult as any[];
+    console.log(`Checking if user ${userId} exists...`);
+    const userResult = await db.execute(sql`SELECT * FROM users WHERE id = ${userId}`);
+    console.log('User query result:', JSON.stringify(userResult));
     
-    if (!users.length) {
-      console.error(`User with ID ${userId} not found`);
+    // Try a direct query to verify connection is working
+    const allUsers = await db.execute(sql`SELECT id, username FROM users LIMIT 3`);
+    console.log('Sample users in database:', JSON.stringify(allUsers));
+    
+    // The db.execute() returns an object with a 'rows' property containing the results
+    if (!userResult.rows || userResult.rows.length === 0) {
+      console.error(`User with ID ${userId} not found in database`);
       return;
     }
+    
+    console.log(`Found user: ${userResult.rows[0].username}`);
+    
 
     // Check if the user already has workout verifications
     const existingResult = await db.execute(sql`
       SELECT COUNT(*) as count FROM workout_verifications WHERE user_id = ${userId}
     `);
-    const existing = existingResult as any[];
     
-    if (existing.length > 0 && existing[0].count > 0) {
-      console.log(`User ${userId} already has ${existing[0].count} workout verifications. Skipping.`);
+    console.log('Existing verification count query result:', JSON.stringify(existingResult));
+    
+    if (existingResult.rows && existingResult.rows.length > 0 && existingResult.rows[0].count > 0) {
+      console.log(`User ${userId} already has ${existingResult.rows[0].count} workout verifications. Skipping.`);
       return;
     }
 
@@ -162,9 +172,9 @@ async function createTestWorkoutData(userId: number) {
     const starPathExistsResult = await db.execute(sql`
       SELECT COUNT(*) as count FROM athlete_star_path WHERE user_id = ${userId}
     `);
-    const starPathExists = starPathExistsResult as any[];
+    console.log('Star path check result:', JSON.stringify(starPathExistsResult));
     
-    if (starPathExists.length > 0 && starPathExists[0].count > 0) {
+    if (starPathExistsResult.rows && starPathExistsResult.rows.length > 0 && starPathExistsResult.rows[0].count > 0) {
       await db.execute(sql`
         UPDATE athlete_star_path 
         SET verified_workouts = (
