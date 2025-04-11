@@ -2011,6 +2011,105 @@ export const skillDevelopmentAnalytics = pgTable("skill_development_analytics", 
 });
 
 // 5. Academic-Athletic Integration Analytics
+// Academic Subjects
+export const academicSubjects = pgTable("academic_subjects", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  category: text("category").notNull(), // e.g., Math, Science, Language Arts, etc.
+  description: text("description"),
+  isCore: boolean("is_core").default(true), // Whether it's a core academic subject
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Academic Courses
+export const academicCourses = pgTable("academic_courses", {
+  id: serial("id").primaryKey(),
+  subjectId: integer("subject_id").references(() => academicSubjects.id),
+  name: text("name").notNull(),
+  courseLevel: text("course_level"), // e.g., AP, Honors, Standard
+  gradeLevel: integer("grade_level"), // e.g., 9, 10, 11, 12
+  credits: real("credits"),
+  description: text("description"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Student Course Enrollments
+export const courseEnrollments = pgTable("course_enrollments", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  courseId: integer("course_id").notNull().references(() => academicCourses.id),
+  semester: text("semester").notNull(), // e.g., "Fall 2023"
+  currentGrade: text("current_grade"), // Letter or numerical grade
+  currentPercentage: real("current_percentage"),
+  status: text("status").default("active").notNull(), // active, completed, dropped
+  teacherName: text("teacher_name"),
+  notes: text("notes"),
+  startDate: date("start_date"),
+  endDate: date("end_date"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Course Assignments
+export const academicAssignments = pgTable("academic_assignments", {
+  id: serial("id").primaryKey(),
+  courseEnrollmentId: integer("course_enrollment_id").notNull().references(() => courseEnrollments.id),
+  title: text("title").notNull(),
+  description: text("description"),
+  dueDate: date("due_date"),
+  status: text("status").default("pending").notNull(), // pending, completed, late, excused
+  grade: text("grade"),
+  percentage: real("percentage"),
+  weight: real("weight").default(1.0), // How much this assignment weighs toward final grade
+  assignmentType: text("assignment_type"), // homework, quiz, test, project, etc.
+  submittedDate: date("submitted_date"),
+  feedback: text("feedback"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Academic Term Progress
+export const academicTerms = pgTable("academic_terms", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  termName: text("term_name").notNull(), // e.g., "Fall 2023"
+  startDate: date("start_date"),
+  endDate: date("end_date"),
+  overallGPA: real("overall_gpa"),
+  totalCredits: real("total_credits"),
+  status: text("status").default("active").notNull(), // active, completed
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// ADHD-specific Study Strategies
+export const adhdStudyStrategies = pgTable("adhd_study_strategies", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(), // e.g., focus, planning, time management
+  effectiveness: integer("effectiveness"), // Scale of 1-10
+  implementationDifficulty: integer("implementation_difficulty"), // Scale of 1-10
+  recommendedSubjects: text("recommended_subjects").array(),
+  tips: text("tips").array(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Student Study Strategy Implementations
+export const studentStudyStrategies = pgTable("student_study_strategies", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  strategyId: integer("strategy_id").notNull().references(() => adhdStudyStrategies.id),
+  implementationDate: date("implementation_date").defaultNow(),
+  effectiveness: integer("effectiveness"), // Student rating of effectiveness
+  notes: text("notes"),
+  usageFrequency: text("usage_frequency"), // daily, weekly, occasionally
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Academic Athletic Analytics - Overall analysis combining sports and academics
 export const academicAthleticAnalytics = pgTable("academic_athletic_analytics", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
@@ -2139,6 +2238,15 @@ export const userSessionAnalytics = pgTable("user_session_analytics", {
   userType: text("user_type"), // new, returning
 });
 
+// Create insert schemas for academic tables
+export const insertAcademicSubjectsSchema = createInsertSchema(academicSubjects).omit({ id: true });
+export const insertAcademicCoursesSchema = createInsertSchema(academicCourses).omit({ id: true });
+export const insertCourseEnrollmentsSchema = createInsertSchema(courseEnrollments).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertAcademicAssignmentsSchema = createInsertSchema(academicAssignments).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertAcademicTermsSchema = createInsertSchema(academicTerms).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertAdhdStudyStrategiesSchema = createInsertSchema(adhdStudyStrategies).omit({ id: true });
+export const insertStudentStudyStrategiesSchema = createInsertSchema(studentStudyStrategies).omit({ id: true, createdAt: true, updatedAt: true });
+
 // Create insert schemas for analytics tables
 export const insertStarPathAnalyticsSchema = createInsertSchema(starPathAnalytics).omit({ id: true });
 export const insertEngagementAnalyticsSchema = createInsertSchema(engagementAnalytics).omit({ id: true });
@@ -2151,6 +2259,30 @@ export const insertRecruitingAnalyticsSchema = createInsertSchema(recruitingAnal
 export const insertNeurodivergentAnalyticsSchema = createInsertSchema(neurodivergentAnalytics).omit({ id: true });
 export const insertCommunityAnalyticsSchema = createInsertSchema(communityAnalytics).omit({ id: true });
 export const insertUserSessionAnalyticsSchema = createInsertSchema(userSessionAnalytics).omit({ id: true });
+
+// Relations for academic tables
+export const academicCoursesRelations = relations(academicCourses, ({ one }) => ({
+  subject: one(academicSubjects, { fields: [academicCourses.subjectId], references: [academicSubjects.id] }),
+}));
+
+export const courseEnrollmentsRelations = relations(courseEnrollments, ({ one, many }) => ({
+  user: one(users, { fields: [courseEnrollments.userId], references: [users.id] }),
+  course: one(academicCourses, { fields: [courseEnrollments.courseId], references: [academicCourses.id] }),
+  assignments: many(academicAssignments),
+}));
+
+export const academicAssignmentsRelations = relations(academicAssignments, ({ one }) => ({
+  enrollment: one(courseEnrollments, { fields: [academicAssignments.courseEnrollmentId], references: [courseEnrollments.id] }),
+}));
+
+export const academicTermsRelations = relations(academicTerms, ({ one }) => ({
+  user: one(users, { fields: [academicTerms.userId], references: [users.id] }),
+}));
+
+export const studentStudyStrategiesRelations = relations(studentStudyStrategies, ({ one }) => ({
+  user: one(users, { fields: [studentStudyStrategies.userId], references: [users.id] }),
+  strategy: one(adhdStudyStrategies, { fields: [studentStudyStrategies.strategyId], references: [adhdStudyStrategies.id] }),
+}));
 
 // Relations for analytics tables
 export const starPathAnalyticsRelations = relations(starPathAnalytics, ({ one }) => ({
@@ -2197,6 +2329,28 @@ export const communityAnalyticsRelations = relations(communityAnalytics, ({ one 
 export const userSessionAnalyticsRelations = relations(userSessionAnalytics, ({ one }) => ({
   user: one(users, { fields: [userSessionAnalytics.userId], references: [users.id] }),
 }));
+
+// Export types for academic tables
+export type AcademicSubject = typeof academicSubjects.$inferSelect;
+export type InsertAcademicSubject = z.infer<typeof insertAcademicSubjectsSchema>;
+
+export type AcademicCourse = typeof academicCourses.$inferSelect;
+export type InsertAcademicCourse = z.infer<typeof insertAcademicCoursesSchema>;
+
+export type CourseEnrollment = typeof courseEnrollments.$inferSelect;
+export type InsertCourseEnrollment = z.infer<typeof insertCourseEnrollmentsSchema>;
+
+export type AcademicAssignment = typeof academicAssignments.$inferSelect;
+export type InsertAcademicAssignment = z.infer<typeof insertAcademicAssignmentsSchema>;
+
+export type AcademicTerm = typeof academicTerms.$inferSelect;
+export type InsertAcademicTerm = z.infer<typeof insertAcademicTermsSchema>;
+
+export type AdhdStudyStrategy = typeof adhdStudyStrategies.$inferSelect;
+export type InsertAdhdStudyStrategy = z.infer<typeof insertAdhdStudyStrategiesSchema>;
+
+export type StudentStudyStrategy = typeof studentStudyStrategies.$inferSelect;
+export type InsertStudentStudyStrategy = z.infer<typeof insertStudentStudyStrategiesSchema>;
 
 // Export types for analytics tables
 export type StarPathAnalytics = typeof starPathAnalytics.$inferSelect;
