@@ -11,9 +11,10 @@ import {
   recruitingAnalytics,
   neurodivergentAnalytics,
   communityAnalytics,
-  userSessionAnalytics
+  userSessionAnalytics,
+  users
 } from '../../shared/schema';
-import { eq, and, desc, gte, lte } from 'drizzle-orm';
+import { eq, and, desc, gte, lte, sql } from 'drizzle-orm';
 import { format } from 'date-fns';
 
 export class AnalyticsService {
@@ -55,7 +56,7 @@ export class AnalyticsService {
   }
 
   /**
-   * Track user navigation to a new page/feature
+   * Record user navigation to a new page/feature
    */
   async recordFeatureNavigation(userId: number, feature: string) {
     const session = this.activeSessions.get(userId);
@@ -91,7 +92,7 @@ export class AnalyticsService {
   }
 
   /**
-   * Track user action within a feature
+   * Record user action within a feature
    */
   async recordUserAction(userId: number, action: string, details: any) {
     const session = this.activeSessions.get(userId);
@@ -240,7 +241,7 @@ export class AnalyticsService {
   }
 
   /**
-   * Track star path progression analytics
+   * Record star path progression analytics
    */
   async recordStarPathProgress(
     userId: number, 
@@ -293,7 +294,7 @@ export class AnalyticsService {
   }
 
   /**
-   * Track workout verification analytics
+   * Record workout verification analytics
    */
   async recordWorkoutCompletion(
     userId: number,
@@ -378,7 +379,7 @@ export class AnalyticsService {
   }
 
   /**
-   * Track skill development analytics
+   * Record skill development analytics
    */
   async recordSkillDevelopment(
     userId: number,
@@ -777,7 +778,7 @@ export class AnalyticsService {
   /**
    * Track Recruiting Readiness Analytics
    */
-  async trackRecruitingReadiness(
+  async recordRecruitingReadiness(
     userId: number,
     overallGARScore: number,
     highlightGenerationCount: number,
@@ -874,7 +875,7 @@ export class AnalyticsService {
   /**
    * Track Neurodivergent-Specific Success Patterns
    */
-  async trackNeurodivergentPatterns(
+  async recordNeurodivergentPatterns(
     userId: number,
     adhdFriendlyFeatureUsage: Record<string, number>,
     distractionFrequency: number,
@@ -979,7 +980,7 @@ export class AnalyticsService {
   /**
    * Track Community & Social Impact Analytics
    */
-  async trackCommunityImpact(
+  async recordCommunityImpact(
     userId: number,
     peerInteractionCount: number,
     coachAthleteMessageCount: number,
@@ -1254,6 +1255,173 @@ export class AnalyticsService {
   }
 
   /**
+   * Get system-wide analytics (for admin dashboard)
+   */
+  async getSystemAnalytics(dateRange?: { start: Date, end: Date }) {
+    try {
+      // Query filters
+      const dateFilter = dateRange
+        ? and(
+            gte(userSessionAnalytics.sessionStartTime, dateRange.start),
+            lte(userSessionAnalytics.sessionStartTime, dateRange.end)
+          )
+        : undefined;
+      
+      // Get session data
+      const sessionData = dateFilter
+        ? await db.select().from(userSessionAnalytics).where(dateFilter)
+        : await db.select().from(userSessionAnalytics);
+      
+      // Get user counts
+      const userCount = await db.select({ count: sql`count(*)` }).from(users);
+      const totalUsers = Number(userCount[0].count) || 0;
+      
+      // Get workout data
+      const workoutData = dateFilter
+        ? await db.select().from(workoutAnalytics).where(dateFilter)
+        : await db.select().from(workoutAnalytics);
+      
+      // Get star path data
+      const starPathData = dateFilter
+        ? await db.select().from(starPathAnalytics).where(dateFilter)
+        : await db.select().from(starPathAnalytics);
+      
+      // Get neurodivergent analytics
+      const neurodivergentData = dateFilter
+        ? await db.select().from(neurodivergentAnalytics).where(dateFilter)
+        : await db.select().from(neurodivergentAnalytics);
+      
+      // Calculate system metrics
+      const systemMetrics = {
+        totalUsers,
+        activeUsers: new Set(sessionData.map(s => s.userId)).size,
+        totalSessions: sessionData.length,
+        avgSessionDuration: this.calculateAverage(sessionData.map(s => s.sessionDuration)),
+        bounceRate: this.calculatePercentage(sessionData.filter(s => s.bounced).length, sessionData.length),
+        deviceBreakdown: this.calculateDeviceBreakdown(sessionData),
+      };
+      
+      // Calculate workout metrics
+      const workoutMetrics = {
+        totalWorkouts: workoutData.length,
+        completionRate: this.calculatePercentage(
+          workoutData.filter(w => w.completionSuccess).length,
+          workoutData.length
+        ),
+        avgWorkoutDuration: this.calculateAverage(workoutData.map(w => w.workoutDuration)),
+        popularWorkoutTypes: this.getTopItems(workoutData.map(w => w.workoutType), 5),
+      };
+      
+      // Calculate ADHD-specific metrics
+      const adhdMetrics = {
+        avgAttentionSpan: this.calculateAverage(neurodivergentData.map(n => n.optimalSessionDuration)) || 0,
+        avgVisualPreference: this.calculateAverage(neurodivergentData.map(n => n.visualVsTextualPreference)) || 0,
+        avgRecoveryTime: this.calculateAverage(neurodivergentData.map(n => n.recoveryTime)) || 0,
+        mostEffectiveFeatures: this.calculateMostEffectiveAdhdFeatures(neurodivergentData)
+      };
+      
+      return {
+        success: true,
+        systemMetrics,
+        workoutMetrics,
+        adhdMetrics,
+        starPathDistribution: this.calculateStarPathDistribution(starPathData),
+        timeOfDayUsage: this.calculateUsageByTimeOfDay(sessionData)
+      };
+    } catch (error) {
+      console.error('Error getting system analytics:', error);
+      return {
+        success: false,
+        message: 'Error getting system analytics',
+        error
+      };
+    }
+  }
+  
+  /**
+   * Calculate most effective ADHD-friendly features
+   */
+  private calculateMostEffectiveAdhdFeatures(neurodivergentData: any[]) {
+    // Extract all accommodationEffectiveness objects
+    const allAccommodations: Record<string, number[]> = {};
+    
+    neurodivergentData.forEach(data => {
+      if (data.accommodationEffectiveness) {
+        Object.entries(data.accommodationEffectiveness).forEach(([feature, effectiveness]) => {
+          if (!allAccommodations[feature]) {
+            allAccommodations[feature] = [];
+          }
+          allAccommodations[feature].push(effectiveness as number);
+        });
+      }
+    });
+    
+    // Calculate average effectiveness for each feature
+    const avgEffectiveness = Object.entries(allAccommodations).map(([feature, scores]) => ({
+      feature,
+      effectiveness: this.calculateAverage(scores)
+    }));
+    
+    // Sort by effectiveness (descending)
+    return avgEffectiveness.sort((a, b) => b.effectiveness - a.effectiveness);
+  }
+  
+  /**
+   * Calculate Star Path level distribution
+   */
+  private calculateStarPathDistribution(starPathData: any[]) {
+    const distribution: Record<number, number> = {};
+    
+    starPathData.forEach(data => {
+      const level = data.currentStarLevel;
+      if (!distribution[level]) {
+        distribution[level] = 0;
+      }
+      distribution[level]++;
+    });
+    
+    return Object.entries(distribution).map(([level, count]) => ({
+      level: parseInt(level),
+      count,
+      percentage: (count / starPathData.length) * 100
+    }));
+  }
+  
+  /**
+   * Calculate usage by time of day
+   */
+  private calculateUsageByTimeOfDay(sessionData: any[]) {
+    const timeSlots = {
+      morning: 0,   // 6am-12pm
+      afternoon: 0, // 12pm-6pm
+      evening: 0,   // 6pm-12am
+      night: 0      // 12am-6am
+    };
+    
+    sessionData.forEach(session => {
+      if (!session.sessionStartTime) return;
+      
+      const hour = new Date(session.sessionStartTime).getHours();
+      
+      if (hour >= 6 && hour < 12) {
+        timeSlots.morning++;
+      } else if (hour >= 12 && hour < 18) {
+        timeSlots.afternoon++;
+      } else if (hour >= 18 && hour < 24) {
+        timeSlots.evening++;
+      } else {
+        timeSlots.night++;
+      }
+    });
+    
+    return Object.entries(timeSlots).map(([timeSlot, count]) => ({
+      timeSlot,
+      count,
+      percentage: (count / sessionData.length) * 100
+    }));
+  }
+  
+  /**
    * Get analytics dashboard data
    */
   async getAnalyticsDashboardData(userId?: number, dateRange?: { start: Date, end: Date }) {
@@ -1454,6 +1622,22 @@ export class AnalyticsService {
   }
 
   /**
+   * Helper to aggregate by user and return full objects
+   */
+  private aggregateByUserObject<T extends { userId: number }>(data: T[]): T[] {
+    const userMap: Record<number, T> = {};
+    
+    // Group by user and take most recent value
+    data.forEach(item => {
+      if (!userMap[item.userId]) {
+        userMap[item.userId] = item;
+      }
+    });
+    
+    return Object.values(userMap);
+  }
+
+  /**
    * Helper to aggregate the most recent value by user
    */
   private aggregateByUser<T extends { userId: number }>(data: T[], field: keyof T): number[] {
@@ -1608,21 +1792,7 @@ export class AnalyticsService {
     };
   }
 
-  /**
-   * Helper to aggregate data by user, returning the object instead of just one field
-   */
-  private aggregateByUserObject<T extends { userId: number }>(data: T[]): T[] {
-    const userMap: Record<number, T> = {};
-    
-    // Group by user and take most recent value
-    data.forEach(item => {
-      if (!userMap[item.userId]) {
-        userMap[item.userId] = item;
-      }
-    });
-    
-    return Object.values(userMap);
-  }
+
 
   /**
    * Helper function to calculate average
