@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import { format, subDays } from "date-fns";
 import analyticsService from "../lib/analytics";
-import { useAuthContext } from "../hooks/use-auth";
+import useAuthContext from "../hooks/use-auth";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
