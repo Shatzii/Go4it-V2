@@ -81,8 +81,8 @@ const CombineEventCard = ({ event }: { event: CombineTourEvent }) => {
       return <Badge variant="outline" className="bg-gray-600 text-white">Past Event</Badge>;
     }
     
-    if (event.maximumAttendees && event.currentAttendees) {
-      const fillRatio = event.currentAttendees / event.maximumAttendees;
+    if (event.capacity && event.registeredCount) {
+      const fillRatio = event.registeredCount / event.capacity;
       
       if (fillRatio >= 1) {
         return <Badge variant="outline" className="bg-red-600 text-white">Sold Out</Badge>;
