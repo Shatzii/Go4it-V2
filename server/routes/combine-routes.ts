@@ -283,7 +283,11 @@ router.put('/analysis/:analysisId', isAuthenticated, async (req: Request, res: R
     const analysisId = parseInt(req.params.analysisId);
     const analysisData = req.body;
     
-    const analysis = await combineService.updateAnalysisResult(analysisId, analysisData);
+    // Update the analysis by using saveAnalysisResults with the ID
+    const analysis = await combineService.saveAnalysisResults({
+      ...analysisData,
+      id: analysisId
+    });
     
     if (!analysis) {
       return res.status(404).json({ message: 'Analysis result not found' });
