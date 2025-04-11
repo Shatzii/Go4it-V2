@@ -2097,99 +2097,228 @@ export class DatabaseStorage implements IStorage {
   // Workout Verification Methods
   // -------------------------
   
-  async getWorkoutVerification(id: number): Promise<WorkoutVerification | undefined> {
-    const [verification] = await db.select()
-      .from(workoutVerifications)
-      .where(eq(workoutVerifications.id, id));
-    return verification;
-  }
-  
-  async getWorkoutVerifications(userId: number, limit: number = 10): Promise<WorkoutVerification[]> {
-    return await db.select()
-      .from(workoutVerifications)
-      .where(eq(workoutVerifications.userId, userId))
-      .orderBy(desc(workoutVerifications.createdAt))
-      .limit(limit);
-  }
-  
-  async getPendingWorkoutVerifications(userId: number): Promise<WorkoutVerification[]> {
-    return await db.select()
-      .from(workoutVerifications)
-      .where(
-        and(
-          eq(workoutVerifications.userId, userId),
-          eq(workoutVerifications.status, "pending")
-        )
-      )
-      .orderBy(desc(workoutVerifications.createdAt));
-  }
-  
-  async createWorkoutVerification(data: InsertWorkoutVerification): Promise<WorkoutVerification> {
-    const [createdVerification] = await db.insert(workoutVerifications)
-      .values(data)
-      .returning();
-    return createdVerification;
-  }
-  
-  async updateWorkoutVerification(id: number, data: Partial<WorkoutVerification>): Promise<WorkoutVerification> {
-    const [updatedVerification] = await db.update(workoutVerifications)
-      .set(data)
-      .where(eq(workoutVerifications.id, id))
-      .returning();
-    return updatedVerification;
-  }
-  
-  async verifyWorkout(id: number, aiScore: number, formQuality: number, repAccuracy: number, xpEarned: number): Promise<WorkoutVerification> {
-    const [verifiedWorkout] = await db.update(workoutVerifications)
-      .set({
-        status: "completed",
-        aiScore,
-        formQuality,
-        repAccuracy,
-        completedAt: new Date(),
-        xpEarned
-      })
-      .where(eq(workoutVerifications.id, id))
-      .returning();
+  async getWorkoutVerification(id: number): Promise<any | undefined> {
+    try {
+      // Query using raw SQL to get around schema discrepancies
+      const result = await db.execute(sql`
+        SELECT * FROM workout_verifications WHERE id = ${id}
+      `);
       
-    // If there's a star path associated with this workout, update the XP
-    if (verifiedWorkout.starPathId) {
-      // Get the star path
-      const [starPath] = await db.select()
-        .from(athleteStarPath)
-        .where(eq(athleteStarPath.id, verifiedWorkout.starPathId));
-        
-      if (starPath) {
-        // Update the star path with the earned XP
-        await db.update(athleteStarPath)
-          .set({ 
-            currentXp: starPath.currentXp + xpEarned,
-            workoutsCompleted: starPath.workoutsCompleted + 1,
-            lastWorkoutAt: new Date()
-          })
-          .where(eq(athleteStarPath.id, starPath.id));
+      if (result.length > 0) {
+        return result[0];
       }
+      return undefined;
+    } catch (error) {
+      console.error("Error fetching workout verification:", error);
+      return undefined;
     }
-    
-    // Call the method to add XP to player's overall account
-    if (xpEarned > 0) {
-      await this.addXpToPlayer(
-        verifiedWorkout.userId, 
-        xpEarned, 
-        "workout_verification", 
-        `Completed ${verifiedWorkout.workoutType} workout with ${repAccuracy.toFixed(1)}% accuracy`,
-        { workoutVerificationId: id }
-      );
-    }
-    
-    return verifiedWorkout;
   }
   
-  async getWorkoutVerificationCheckpoints(workoutVerificationId: number): Promise<WorkoutVerificationCheckpoint[]> {
-    return await db.select()
-      .from(workoutVerificationCheckpoints)
-      .where(eq(workoutVerificationCheckpoints.workoutVerificationId, workoutVerificationId))
-      .orderBy(workoutVerificationCheckpoints.timestamp);
+  async getWorkoutVerifications(userId: number, limit: number = 50): Promise<any[]> {
+    try {
+      // Query using raw SQL to get around schema discrepancies
+      const result = await db.execute(sql`
+        SELECT * FROM workout_verifications 
+        WHERE user_id = ${userId}
+        ORDER BY submission_date DESC
+        LIMIT ${limit}
+      `);
+      
+      return result;
+    } catch (error) {
+      console.error("Error fetching workout verifications:", error);
+      return [];
+    }
+  }
+  
+  async getPendingWorkoutVerifications(userId: number): Promise<any[]> {
+    try {
+      // Query using raw SQL to get around schema discrepancies
+      const result = await db.execute(sql`
+        SELECT * FROM workout_verifications 
+        WHERE user_id = ${userId} AND verification_status = 'pending'
+        ORDER BY submission_date DESC
+      `);
+      
+      return result;
+    } catch (error) {
+      console.error("Error fetching pending workout verifications:", error);
+      return [];
+    }
+  }
+  
+  async createWorkoutVerification(data: any): Promise<any> {
+    try {
+      // Format the data for the actual database schema
+      const values = {
+        user_id: data.userId,
+        title: data.title || "Workout Verification",
+        workout_type: data.workoutType || data.exerciseType || "general",
+        verification_status: data.status || "pending",
+        submission_date: new Date(),
+        duration: data.duration || 0,
+        proof_type: data.proofType || "video",
+        proof_data: data.videoUrl || data.proofData,
+        notes: data.feedback || data.notes,
+        verification_method: data.verificationMethod || "ai"
+      };
+      
+      // Insert using raw SQL to get around schema discrepancies
+      const result = await db.execute(sql`
+        INSERT INTO workout_verifications 
+        (user_id, title, workout_type, verification_status, submission_date, duration, proof_type, proof_data, notes, verification_method)
+        VALUES 
+        (${values.user_id}, ${values.title}, ${values.workout_type}, ${values.verification_status}, 
+         ${values.submission_date}, ${values.duration}, ${values.proof_type}, ${values.proof_data}, ${values.notes}, ${values.verification_method})
+        RETURNING *
+      `);
+      
+      return result[0];
+    } catch (error) {
+      console.error("Error creating workout verification:", error);
+      throw error;
+    }
+  }
+  
+  async updateWorkoutVerification(id: number, data: any): Promise<any> {
+    try {
+      // Build an update SQL statement based on provided fields
+      let updateFields = [];
+      let params = [];
+      
+      if (data.verification_status !== undefined) {
+        updateFields.push('verification_status = ?');
+        params.push(data.verification_status);
+      }
+      
+      if (data.verified_by !== undefined) {
+        updateFields.push('verified_by = ?');
+        params.push(data.verified_by);
+      }
+      
+      if (data.verification_date !== undefined) {
+        updateFields.push('verification_date = ?');
+        params.push(data.verification_date);
+      }
+      
+      if (data.notes !== undefined) {
+        updateFields.push('notes = ?');
+        params.push(data.notes);
+      }
+      
+      if (data.xp_earned !== undefined) {
+        updateFields.push('xp_earned = ?');
+        params.push(data.xp_earned);
+      }
+      
+      if (updateFields.length === 0) {
+        throw new Error("No valid fields provided for update");
+      }
+      
+      // Update using raw SQL to get around schema discrepancies
+      const updateSql = `
+        UPDATE workout_verifications 
+        SET ${updateFields.join(', ')}
+        WHERE id = ?
+        RETURNING *
+      `;
+      params.push(id);
+      
+      const result = await db.execute(sql.raw(updateSql, params));
+      
+      if (result.length === 0) {
+        throw new Error("Workout verification not found");
+      }
+      
+      return result[0];
+    } catch (error) {
+      console.error("Error updating workout verification:", error);
+      throw error;
+    }
+  }
+  
+  async verifyWorkout(id: number, verificationData: any): Promise<any> {
+    try {
+      // Data to update for verification
+      const updateData = {
+        verification_status: "approved",
+        verification_date: new Date(),
+        xp_earned: verificationData.xpEarned || 100,
+        notes: verificationData.feedback || "Verified by AI system"
+      };
+      
+      // Update the workout verification
+      const verifiedWorkout = await this.updateWorkoutVerification(id, updateData);
+      
+      // Add XP to player's account if needed
+      if (updateData.xp_earned > 0) {
+        try {
+          await this.addXpToPlayer(
+            verifiedWorkout.user_id, 
+            updateData.xp_earned, 
+            "workout_verification", 
+            `Completed ${verifiedWorkout.workout_type} workout verification`,
+            String(id)
+          );
+        } catch (error) {
+          console.error("Error adding XP to player:", error);
+          // Continue even if XP addition fails
+        }
+      }
+      
+      return verifiedWorkout;
+    } catch (error) {
+      console.error("Error verifying workout:", error);
+      throw error;
+    }
+  }
+  
+  async getWorkoutVerificationCheckpoints(verificationId: number): Promise<any[]> {
+    try {
+      // Query for workout verification checkpoints
+      const result = await db.execute(sql`
+        SELECT * FROM workout_verification_checkpoints 
+        WHERE verification_id = ${verificationId}
+        ORDER BY checkpoint_order ASC
+      `);
+      
+      return result;
+    } catch (error) {
+      console.error("Error fetching workout verification checkpoints:", error);
+      return [];
+    }
+  }
+  
+  async createWorkoutCheckpoint(data: any): Promise<any> {
+    try {
+      // Format data for insertion
+      const values = {
+        verification_id: data.verificationId,
+        exercise_name: data.exerciseName,
+        is_completed: data.isCompleted || false,
+        completed_amount: data.completedAmount || 0,
+        target_amount: data.targetAmount,
+        feedback: data.feedback,
+        media_proof: data.mediaProof,
+        checkpoint_order: data.checkpointOrder
+      };
+      
+      // Insert using raw SQL
+      const result = await db.execute(sql`
+        INSERT INTO workout_verification_checkpoints 
+        (verification_id, exercise_name, is_completed, completed_amount, target_amount, feedback, media_proof, checkpoint_order)
+        VALUES 
+        (${values.verification_id}, ${values.exercise_name}, ${values.is_completed}, 
+         ${values.completed_amount}, ${values.target_amount}, ${values.feedback}, 
+         ${values.media_proof}, ${values.checkpoint_order})
+        RETURNING *
+      `);
+      
+      return result[0];
+    } catch (error) {
+      console.error("Error creating workout checkpoint:", error);
+      throw error;
+    }
   }
   
   async createWorkoutVerificationCheckpoint(data: InsertWorkoutVerificationCheckpoint): Promise<WorkoutVerificationCheckpoint> {
@@ -2343,6 +2472,77 @@ export class DatabaseStorage implements IStorage {
     return equipments[equipmentId];
   }
 
+  async getUserStreakDays(userId: number): Promise<number> {
+    try {
+      // Get the last 30 days of workout verifications
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      // Query using raw SQL to get all workout verifications in the last 30 days
+      const result = await db.execute(sql`
+        SELECT submission_date 
+        FROM workout_verifications 
+        WHERE user_id = ${userId} 
+        AND verification_status = 'approved'
+        AND submission_date >= ${thirtyDaysAgo.toISOString()}
+        ORDER BY submission_date DESC
+      `);
+      
+      if (result.length === 0) {
+        return 0;
+      }
+      
+      // Check if there's a verification in the last 2 days to consider streak active
+      const lastVerification = new Date(result[0].submission_date);
+      const today = new Date();
+      const diffTime = Math.abs(today.getTime() - lastVerification.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays > 2) {
+        // Streak is broken if no workout in last 2 days
+        return 0;
+      }
+      
+      // Calculate consecutive days
+      let streak = 1; // Start with 1 for the most recent day
+      let lastDate = new Date(result[0].submission_date);
+      lastDate.setHours(0, 0, 0, 0); // Normalize to start of day
+      
+      for (let i = 1; i < result.length; i++) {
+        const currentDate = new Date(result[i].submission_date);
+        currentDate.setHours(0, 0, 0, 0); // Normalize to start of day
+        
+        // Check if the current date is the day before the last date
+        const expectedPreviousDate = new Date(lastDate);
+        expectedPreviousDate.setDate(expectedPreviousDate.getDate() - 1);
+        
+        if (
+          currentDate.getDate() === expectedPreviousDate.getDate() &&
+          currentDate.getMonth() === expectedPreviousDate.getMonth() &&
+          currentDate.getFullYear() === expectedPreviousDate.getFullYear()
+        ) {
+          streak++;
+          lastDate = currentDate;
+        } else if (
+          currentDate.getDate() === lastDate.getDate() &&
+          currentDate.getMonth() === lastDate.getMonth() &&
+          currentDate.getFullYear() === lastDate.getFullYear()
+        ) {
+          // Same day, continue with last date
+          continue;
+        } else {
+          // Streak broken
+          break;
+        }
+      }
+      
+      return streak;
+    } catch (error) {
+      console.error("Error calculating streak days:", error);
+      return 0;
+    }
+  }
+  
   async addXpToPlayer(userId: number, amount: number, source: string, reason: string, metadata?: any): Promise<any> {
     console.log(`Adding ${amount} XP to user ID: ${userId} from ${source}: ${reason}`);
     

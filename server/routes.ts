@@ -3431,28 +3431,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Enhance data with additional info
       const enhancedVerifications = await Promise.all(verifications.map(async (verification) => {
         // Count the number of videos used for verification
-        const videoCount = verification.videoUrl ? 1 : 0;
+        const videoCount = verification.proof_data ? 1 : 0;
         
         // Add any checkpoint data
-        const checkpoints = await storage.getWorkoutVerificationCheckpoints(verification.id);
+        let checkpoints = [];
+        try {
+          checkpoints = await storage.getWorkoutVerificationCheckpoints(verification.id);
+        } catch (err) {
+          console.log("No checkpoints found for verification:", verification.id);
+        }
         
-        // Calculate expected XP reward
+        // Calculate expected XP reward based on duration (if available)
         const baseXP = 50;
         const durationXP = Math.min(verification.duration || 0, 10) * 10;
-        const xpReward = baseXP + durationXP;
+        const xpReward = verification.xp_earned || (baseXP + durationXP);
         
-        // Convert field names for compatibility with frontend
+        // Map database fields to frontend expected fields
         return {
           ...verification,
-          workoutType: verification.exerciseType,
-          submissionDate: verification.startedAt,
-          verificationDate: verification.verifiedAt || verification.completedAt,
-          status: verification.status,
+          id: verification.id,
+          userId: verification.user_id,
+          title: verification.title || "Workout Verification",
+          status: verification.verification_status || "pending",
+          verificationStatus: verification.verification_status || "pending",
+          workoutType: verification.workout_type || "general",
+          submissionDate: verification.submission_date || new Date().toISOString(),
+          verificationDate: verification.verification_date || null,
+          duration: verification.duration || 0,
           videoCount,
           checkpoints,
           xpReward,
-          verifier: verification.verifiedById ? 'Coach' : 'AI System',
-          rejectionReason: verification.feedback
+          verifier: verification.verified_by ? 'Coach' : 'AI System',
+          rejectionReason: verification.notes
         };
       }));
       
@@ -3476,23 +3486,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Get verified workouts
       const verifications = await storage.getWorkoutVerifications(userId);
-      const verifiedWorkouts = verifications.filter(v => v.status === 'verified' || v.status === 'completed');
+      const verifiedWorkouts = verifications.filter(v => 
+        v.verification_status === 'verified' || 
+        v.verification_status === 'approved' || 
+        v.verification_status === 'completed'
+      );
       
       // Get weekly workouts (last 7 days)
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
       const weeklyWorkouts = verifications.filter(v => {
-        // Handle the case where startedAt might be null
-        if (!v.startedAt) return false;
-        const verificationDate = new Date(v.startedAt);
+        // Handle the case where submission_date might be null
+        if (!v.submission_date) return false;
+        const verificationDate = new Date(v.submission_date);
         return verificationDate >= oneWeekAgo;
       });
       
       // Calculate total XP earned from workouts
-      const xpEarned = verifiedWorkouts.reduce((total, v) => total + (v.xpEarned || 0), 0);
+      const xpEarned = verifiedWorkouts.reduce((total, v) => total + (v.xp_earned || 0), 0);
       
-      // Calculate streak days (this would ideally be pulled from the XP system)
-      const streakDays = await storage.getUserStreakDays(userId);
+      // Calculate streak days (using a default value for now since the function might not be implemented)
+      let streakDays = 0;
+      try {
+        streakDays = await storage.getUserStreakDays(userId);
+      } catch (err) {
+        console.log("getUserStreakDays not implemented, using default value");
+        // Calculate a basic streak from recent workouts
+        const sortedVerifications = [...verifications]
+          .filter(v => v.verification_status === 'verified' || v.verification_status === 'approved')
+          .sort((a, b) => new Date(b.submission_date || 0).getTime() - new Date(a.submission_date || 0).getTime());
+        
+        if (sortedVerifications.length > 0) {
+          const lastVerification = sortedVerifications[0];
+          const lastSubmission = new Date(lastVerification.submission_date || new Date());
+          const today = new Date();
+          const diffTime = Math.abs(today.getTime() - lastSubmission.getTime());
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          
+          // If they've verified a workout in the last 2 days, count as active streak
+          streakDays = diffDays <= 2 ? sortedVerifications.length : 0;
+        }
+      }
       
       // Stats to return
       const stats = {
@@ -3500,7 +3534,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         weeklyCompleted: weeklyWorkouts.length,
         totalVerified: verifiedWorkouts.length,
         xpEarned,
-        streakDays: streakDays || 0
+        streakDays: streakDays
       };
       
       return res.json(stats);
