@@ -2797,29 +2797,14 @@ export class DatabaseStorage implements IStorage {
         // Build a conditions array for the where clause
         const conditions = [];
         
-        // Try to add the is_active condition if the column exists
-        try {
-          conditions.push(eq(skillTreeNodes.is_active, true));
-        } catch (err) {
-          console.warn('is_active column not found on skillTreeNodes table');
-        }
-        
-        // Try to add the sport_type condition if provided and column exists
+        // Add the sport_type condition if provided
         if (sportType) {
-          try {
-            conditions.push(eq(skillTreeNodes.sport_type, sportType));
-          } catch (err) {
-            console.warn('sport_type column not found on skillTreeNodes table');
-          }
+          conditions.push(eq(skillTreeNodes.sport_type, sportType));
         }
         
-        // Try to add the position condition if provided and column exists
+        // Add the position condition if provided
         if (position) {
-          try {
-            conditions.push(eq(skillTreeNodes.position, position));
-          } catch (err) {
-            console.warn('position column not found on skillTreeNodes table');
-          }
+          conditions.push(eq(skillTreeNodes.position, position));
         }
         
         // Apply all conditions if any
@@ -2828,15 +2813,8 @@ export class DatabaseStorage implements IStorage {
           finalQuery = finalQuery.where(and(...conditions));
         }
         
-        // Try to order by level and sort_order if they exist
-        try {
-          // Order by level first, then by sort_order
-          // Using the correct column names in snake_case from schema.ts
-          return await finalQuery.orderBy(asc(skillTreeNodes.level), asc(skillTreeNodes.sort_order));
-        } catch (err) {
-          console.warn('Could not order by level and sort_order, returning unordered results');
-          return await finalQuery;
-        }
+        // Order by level 
+        return await finalQuery.orderBy(asc(skillTreeNodes.level));
       } catch (queryError) {
         console.error('Error constructing skill tree nodes query:', queryError);
         return [];
