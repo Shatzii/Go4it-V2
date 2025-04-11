@@ -1,5 +1,6 @@
 import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,100 +18,67 @@ import {
   FileCheck, 
   History, 
   Plus,
-  Calendar
+  Calendar,
+  Loader2
 } from "lucide-react";
 import { Link } from "wouter";
+
+// Type definitions for verification data
+interface WorkoutVerification {
+  id: number;
+  title: string;
+  status: string;
+  verificationStatus?: string;
+  workoutType: string;
+  submissionDate: string;
+  verificationDate?: string;
+  duration: number;
+  videoCount: number;
+  xpReward: number;
+  verifier?: string;
+  rejectionReason?: string;
+  userId: number;
+}
+
+// Type definitions for stats data
+interface WorkoutStats {
+  weeklyGoal: number;
+  weeklyCompleted: number;
+  totalVerified: number;
+  xpEarned: number;
+  streakDays: number;
+}
 
 export default function WorkoutVerification() {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  // This would be fetched from the API in a real implementation
+  // Fetch user workout verifications
+  const { data: verificationsData, isLoading: isLoadingVerifications, error: verificationsError } = useQuery<WorkoutVerification[]>({
+    queryKey: ['/api/workout-verifications/user'],
+    enabled: !!user,
+  });
+
+  // Fetch workout stats
+  const { data: statsData, isLoading: isLoadingStats, error: statsError } = useQuery<WorkoutStats>({
+    queryKey: ['/api/workout-verifications/stats'],
+    enabled: !!user,
+  });
+
+  // Organize verifications by status
   const verifications = {
-    pending: [
-      {
-        id: 1,
-        title: "Advanced Shooting Drills",
-        submissionDate: "2024-04-04T15:30:00Z",
-        status: "pending",
-        workoutType: "Shooting",
-        duration: 45,
-        videoCount: 2,
-        xpReward: 350,
-      },
-      {
-        id: 2,
-        title: "Conditioning Training",
-        submissionDate: "2024-04-02T09:15:00Z",
-        status: "pending",
-        workoutType: "Conditioning",
-        duration: 60,
-        videoCount: 3,
-        xpReward: 400,
-      }
-    ],
-    verified: [
-      {
-        id: 3,
-        title: "Ball Handling Circuit",
-        submissionDate: "2024-03-30T14:00:00Z",
-        verificationDate: "2024-03-31T10:20:00Z",
-        status: "verified",
-        workoutType: "Ball Handling",
-        duration: 30,
-        videoCount: 1,
-        xpReward: 250,
-        verifier: "Coach Williams"
-      },
-      {
-        id: 4,
-        title: "Leg Day Strength Training",
-        submissionDate: "2024-03-28T16:45:00Z",
-        verificationDate: "2024-03-29T09:10:00Z",
-        status: "verified",
-        workoutType: "Strength",
-        duration: 50,
-        videoCount: 2,
-        xpReward: 350,
-        verifier: "Coach Thompson"
-      },
-      {
-        id: 5,
-        title: "Morning Cardio Session",
-        submissionDate: "2024-03-25T07:30:00Z",
-        verificationDate: "2024-03-25T18:05:00Z",
-        status: "verified",
-        workoutType: "Cardio",
-        duration: 40,
-        videoCount: 1,
-        xpReward: 300,
-        verifier: "Coach Williams"
-      }
-    ],
-    rejected: [
-      {
-        id: 6,
-        title: "Jump Training",
-        submissionDate: "2024-03-22T11:20:00Z",
-        verificationDate: "2024-03-23T13:30:00Z",
-        status: "rejected",
-        workoutType: "Plyometrics",
-        duration: 35,
-        videoCount: 1,
-        xpReward: 275,
-        verifier: "Coach Johnson",
-        rejectionReason: "Video quality too low to verify movements. Please resubmit with clearer footage."
-      }
-    ]
+    pending: verificationsData?.filter((v: WorkoutVerification) => v.status === 'pending' || v.verificationStatus === 'pending') || [],
+    verified: verificationsData?.filter((v: WorkoutVerification) => v.status === 'verified' || v.verificationStatus === 'approved') || [],
+    rejected: verificationsData?.filter((v: WorkoutVerification) => v.status === 'rejected' || v.verificationStatus === 'rejected') || []
   };
 
-  // Progress stats
-  const stats = {
+  // Stats fallback
+  const stats: WorkoutStats = statsData || {
     weeklyGoal: 5,
-    weeklyCompleted: 3,
-    totalVerified: 27,
-    xpEarned: 7650,
-    streakDays: 12
+    weeklyCompleted: 0,
+    totalVerified: 0,
+    xpEarned: 0,
+    streakDays: 0
   };
 
   return (
@@ -177,7 +145,7 @@ export default function WorkoutVerification() {
             <div className="flex flex-col items-center">
               <span className="text-3xl font-bold mb-1">{stats.xpEarned.toLocaleString()}</span>
               <span className="text-sm text-muted-foreground">XP Earned from Workouts</span>
-              <span className="text-sm mt-2">+{verifications.pending.reduce((total, v) => total + v.xpReward, 0)} XP Pending</span>
+              <span className="text-sm mt-2">+{verifications.pending.reduce((total: number, v: WorkoutVerification) => total + v.xpReward, 0)} XP Pending</span>
             </div>
           </CardContent>
         </Card>
@@ -270,7 +238,7 @@ export default function WorkoutVerification() {
                       </Badge>
                     </div>
                     <CardDescription>
-                      Verified on {new Date(verification.verificationDate).toLocaleDateString()}
+                      Verified on {verification.verificationDate ? new Date(verification.verificationDate).toLocaleDateString() : 'Unknown date'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="pb-2">
@@ -328,7 +296,7 @@ export default function WorkoutVerification() {
                       </Badge>
                     </div>
                     <CardDescription>
-                      Reviewed on {new Date(verification.verificationDate).toLocaleDateString()}
+                      Reviewed on {verification.verificationDate ? new Date(verification.verificationDate).toLocaleDateString() : 'Unknown date'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="pb-2">
