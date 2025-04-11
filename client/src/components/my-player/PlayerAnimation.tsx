@@ -558,7 +558,7 @@ const soccerAttackPlay: PlayerAnimation = {
   }
 };
 
-// Main animation component
+// Main animation component with PlayStation 5-quality visuals
 const PlayerAnimation: React.FC<{
   sport?: 'basketball' | 'football' | 'soccer';
   userName?: string;
