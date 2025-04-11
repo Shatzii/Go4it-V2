@@ -42,13 +42,13 @@ type SkillRelationship = {
 
 type UserSkill = {
   id: number;
-  userId: number;
-  skillNodeId: number;
+  user_id: number; // Using snake_case to match DB schema
+  skill_node_id: number; // Using snake_case to match DB schema
   level: number;
   xp: number;
   unlocked: boolean;
-  unlockedAt?: string;
-  lastTrainedAt?: string;
+  unlocked_at?: string; // Using snake_case to match DB schema
+  last_trained_at?: string; // Using snake_case to match DB schema
   notes?: string;
 };
 
@@ -120,21 +120,21 @@ const SkillTreeVisualization: React.FC<SkillTreeVisualizationProps> = ({
   // Helper to check if a skill is unlocked
   const isSkillUnlocked = (skillId: number): boolean => {
     if (!userSkills) return false;
-    const skill = userSkills.find((s: UserSkill) => s.skillNodeId === skillId);
+    const skill = userSkills.find((s: UserSkill) => s.skill_node_id === skillId);
     return !!skill && skill.unlocked;
   };
 
   // Helper to get skill level
   const getSkillLevel = (skillId: number): number => {
     if (!userSkills) return 0;
-    const skill = userSkills.find((s: UserSkill) => s.skillNodeId === skillId);
+    const skill = userSkills.find((s: UserSkill) => s.skill_node_id === skillId);
     return skill?.level || 0;
   };
 
   // Helper to get skill XP
   const getSkillXp = (skillId: number): number => {
     if (!userSkills) return 0;
-    const skill = userSkills.find((s: UserSkill) => s.skillNodeId === skillId);
+    const skill = userSkills.find((s: UserSkill) => s.skill_node_id === skillId);
     return skill?.xp || 0;
   };
 
