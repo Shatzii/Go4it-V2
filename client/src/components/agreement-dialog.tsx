@@ -67,20 +67,33 @@ export function AgreementDialog({ open, onClose, onAccept, agreementType }: Agre
                   "Confidential Information" means any non-public information related to the Platform, 
                   including but not limited to its features, functionality, design, user interface, 
                   algorithms, technology, code, performance metrics, bugs, user feedback mechanisms, 
-                  business plans, and marketing strategies. Confidential Information also includes 
-                  any access credentials provided to you to access the Platform.
+                  business plans, and marketing strategies. Confidential Information also includes:
                 </p>
+                <ul className="list-disc pl-5 space-y-2">
+                  <li>The proprietary GAR (Growth and Ability Rating) scoring system and its algorithms</li>
+                  <li>The innovative Star Path, Skill Tree, and XP system mechanics</li>
+                  <li>The My Player game interface and its integration with real-world athletic training</li>
+                  <li>The ADHD-focused design methodologies and user experience features</li>
+                  <li>The neurodivergent athlete development strategies</li>
+                  <li>Any source code, design documents, or implementation details</li>
+                  <li>Any access credentials provided to you to access the Platform</li>
+                  <li>The business concept and strategy for connecting student athletes with coaching opportunities</li>
+                </ul>
 
                 <h4 className="font-medium mt-4">3. OBLIGATIONS</h4>
                 <p>As a Beta Tester, you agree to:</p>
                 <ul className="list-disc pl-5 space-y-2">
-                  <li>Keep all Confidential Information strictly confidential;</li>
+                  <li>Keep all Confidential Information strictly confidential and secure;</li>
                   <li>Not disclose, publish, distribute, or otherwise share any Confidential Information with any third party without the Company's prior written consent;</li>
+                  <li>Not use any concepts, ideas, or systems similar to those in the Platform in any other application or service;</li>
+                  <li>Not attempt to create a competing product based on the concepts or systems used in the Platform;</li>
                   <li>Use the Platform only for the purpose of testing and providing feedback to the Company;</li>
                   <li>Not reverse engineer, decompile, or attempt to discover the source code of the Platform;</li>
-                  <li>Not capture or share screenshots, videos, or recordings of the Platform without explicit permission;</li>
+                  <li>Not capture or share screenshots, videos, or recordings of the Platform without explicit written permission;</li>
                   <li>Not share your access credentials with any other person or entity;</li>
                   <li>Not use the Platform for any commercial purpose or gain;</li>
+                  <li>Report any potential security vulnerabilities directly to the Company instead of disclosing them publicly;</li>
+                  <li>Immediately notify the Company of any unauthorized access to or use of Confidential Information;</li>
                   <li>Provide honest and constructive feedback to the Company about the Platform when requested.</li>
                 </ul>
 
@@ -88,8 +101,20 @@ export function AgreementDialog({ open, onClose, onAccept, agreementType }: Agre
                 <p>
                   All intellectual property rights in the Platform, including but not limited to 
                   copyrights, patents, trademarks, and trade secrets, remain the sole property of 
-                  the Company. Nothing in this Agreement grants you any rights to any intellectual 
-                  property in the Platform.
+                  the Company. This includes but is not limited to:
+                </p>
+                <ul className="list-disc pl-5 space-y-2">
+                  <li>The GAR scoring system and all its components</li>
+                  <li>The Star Path, Skill Tree, XP system, and achievement mechanics</li>
+                  <li>The My Player game interface design and functionality</li>
+                  <li>All algorithms related to player assessment, matching, and development</li>
+                  <li>The ADHD-focused user experience design methodology</li>
+                  <li>All branding, logos, and marketing materials</li>
+                </ul>
+                <p className="mt-2">
+                  Nothing in this Agreement grants you any rights to any intellectual property in the Platform.
+                  You acknowledge that any unauthorized use or disclosure of the Company's intellectual property
+                  may cause the Company irreparable harm for which monetary damages may be inadequate.
                 </p>
 
                 <h4 className="font-medium mt-4">5. TERM AND TERMINATION</h4>

@@ -132,11 +132,8 @@ export default function AuthPage() {
         };
         
         // Complete the registration process
-        const result = await register(registrationData);
-        
-        if (!result) {
-          throw new Error("Registration failed");
-        }
+        // register() will throw an error if it fails, so we don't need to check the result
+        await register(registrationData);
         
         // Reset state and forms
         setPendingRegistration(null);
