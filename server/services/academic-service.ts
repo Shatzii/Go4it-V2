@@ -1,410 +1,544 @@
 import { db } from '../db';
-import { users } from '@shared/schema';
-import { eq } from 'drizzle-orm';
-import OpenAI from 'openai';
+import {
+  academicSubjects,
+  academicCourses,
+  courseEnrollments,
+  academicAssignments,
+  academicTerms,
+  adhdStudyStrategies,
+  studentStudyStrategies,
+  academicAthleticAnalytics,
+  users,
+  type AcademicSubject,
+  type AcademicCourse,
+  type CourseEnrollment,
+  type AcademicAssignment,
+  type AcademicTerm,
+  type AdhdStudyStrategy,
+  type StudentStudyStrategy,
+  type AcademicAthleticAnalytics,
+  type InsertAcademicSubject,
+  type InsertAcademicCourse,
+  type InsertCourseEnrollment,
+  type InsertAcademicAssignment,
+  type InsertAcademicTerm,
+  type InsertAdhdStudyStrategy,
+  type InsertStudentStudyStrategy,
+  type InsertAcademicAthleticAnalytics
+} from '@shared/schema';
+import { eq, and, like, gte, lte, desc, sql, asc, ilike, inArray } from 'drizzle-orm';
+import { Cache, CacheContainer } from 'node-ts-cache';
+import { MemoryStorage } from 'node-ts-cache-storage-memory';
 
-// Define interfaces for academic data
-interface SubjectScore {
-  name: string;
-  score: number;
-  grade: string;
-  comments: string;
-  strengths: string[];
-  improvements: string[];
-}
+const academicCache = new CacheContainer(new MemoryStorage());
 
-interface AcademicCategory {
-  category: string;
-  subjects: SubjectScore[];
-  overallGPA: number;
-}
+export class AcademicService {
+  private constructor() {}
 
-interface AcademicTimeframe {
-  label: string;
-  gpa: number;
-  subjects: Record<string, number>;
-}
+  private static instance: AcademicService;
+  
+  public static getInstance(): AcademicService {
+    if (!AcademicService.instance) {
+      AcademicService.instance = new AcademicService();
+    }
+    return AcademicService.instance;
+  }
 
-interface ADHDInsights {
-  learningStyle: string;
-  focusScore: number;
-  focusStrategies: string[];
-  organizationTips: string[];
-  studyEnvironmentSuggestions: string[];
-  recommendedTools: string[];
-}
+  async getSubjects(): Promise<AcademicSubject[]> {
+    return db.select().from(academicSubjects).orderBy(asc(academicSubjects.name));
+  }
 
-interface NcaaEligibilityStatus {
-  eligible: boolean;
-  coreCoursesCompleted: number;
-  coreCoursesRequired: number;
-  minimumGPAMet: boolean;
-  notes: string;
-}
+  async getSubjectById(id: number): Promise<AcademicSubject | undefined> {
+    const [subject] = await db.select().from(academicSubjects).where(eq(academicSubjects.id, id));
+    return subject;
+  }
 
-interface AcademicProgressData {
-  categories: AcademicCategory[];
-  overallGPA: number;
-  historicalData: AcademicTimeframe[];
-  strengths: string[];
-  improvementAreas: string[];
-  adhd: ADHDInsights;
-  ncaaEligibilityStatus: NcaaEligibilityStatus;
-}
+  async createSubject(data: InsertAcademicSubject): Promise<AcademicSubject> {
+    const [subject] = await db.insert(academicSubjects).values(data).returning();
+    return subject;
+  }
 
-/**
- * Get academic progress data for a student
- */
-export async function getAcademicProgress(studentId: number): Promise<AcademicProgressData | null> {
-  try {
-    // For now, return mock data until the database schema is updated
-    // This would normally fetch from the database based on studentId
+  async getCourses(filters?: { subjectId?: number, courseLevel?: string, gradeLevel?: number }): Promise<AcademicCourse[]> {
+    let query = db.select().from(academicCourses);
     
-    // Get user information for context
-    const [user] = await db.select().from(users).where(eq(users.id, studentId));
-    
-    if (!user) {
-      console.error(`User not found with ID: ${studentId}`);
-      return null;
+    if (filters) {
+      if (filters.subjectId) {
+        query = query.where(eq(academicCourses.subjectId, filters.subjectId));
+      }
+      if (filters.courseLevel) {
+        query = query.where(eq(academicCourses.courseLevel, filters.courseLevel));
+      }
+      if (filters.gradeLevel) {
+        query = query.where(eq(academicCourses.gradeLevel, filters.gradeLevel));
+      }
     }
     
-    // In a real implementation, we would fetch academic data from the database
-    // For now, generate a realistic academic profile
-    return generateAcademicProfile(user);
-    
-  } catch (error) {
-    console.error("Error getting academic progress:", error);
-    return null;
+    return query.orderBy(asc(academicCourses.name));
   }
-}
 
-/**
- * Generate a new academic report for a student using OpenAI
- */
-export async function generateAcademicReport(studentId: number): Promise<AcademicProgressData | null> {
-  try {
-    // Get user information for context
-    const [user] = await db.select().from(users).where(eq(users.id, studentId));
+  async getCourseById(id: number): Promise<AcademicCourse | undefined> {
+    const [course] = await db.select().from(academicCourses).where(eq(academicCourses.id, id));
+    return course;
+  }
+
+  async createCourse(data: InsertAcademicCourse): Promise<AcademicCourse> {
+    const [course] = await db.insert(academicCourses).values(data).returning();
+    return course;
+  }
+
+  async getUserEnrollments(userId: number): Promise<CourseEnrollment[]> {
+    return db.select()
+      .from(courseEnrollments)
+      .where(eq(courseEnrollments.userId, userId))
+      .orderBy(desc(courseEnrollments.createdAt));
+  }
+
+  async getEnrollmentById(id: number): Promise<CourseEnrollment | undefined> {
+    const [enrollment] = await db.select().from(courseEnrollments).where(eq(courseEnrollments.id, id));
+    return enrollment;
+  }
+
+  async createEnrollment(data: InsertCourseEnrollment): Promise<CourseEnrollment> {
+    const [enrollment] = await db.insert(courseEnrollments).values(data).returning();
+    return enrollment;
+  }
+
+  async updateEnrollmentGrade(id: number, grade: string, percentage: number): Promise<CourseEnrollment> {
+    const [enrollment] = await db
+      .update(courseEnrollments)
+      .set({ 
+        currentGrade: grade, 
+        currentPercentage: percentage,
+        updatedAt: new Date()
+      })
+      .where(eq(courseEnrollments.id, id))
+      .returning();
+    return enrollment;
+  }
+
+  async getAssignmentsForEnrollment(enrollmentId: number): Promise<AcademicAssignment[]> {
+    return db.select()
+      .from(academicAssignments)
+      .where(eq(academicAssignments.courseEnrollmentId, enrollmentId))
+      .orderBy(asc(academicAssignments.dueDate));
+  }
+
+  async createAssignment(data: InsertAcademicAssignment): Promise<AcademicAssignment> {
+    const [assignment] = await db.insert(academicAssignments).values(data).returning();
+    return assignment;
+  }
+
+  async updateAssignmentGrade(id: number, grade: string, percentage: number): Promise<AcademicAssignment> {
+    const [assignment] = await db
+      .update(academicAssignments)
+      .set({ 
+        grade, 
+        percentage,
+        status: 'completed',
+        updatedAt: new Date()
+      })
+      .where(eq(academicAssignments.id, id))
+      .returning();
+    return assignment;
+  }
+
+  async getUserTerms(userId: number): Promise<AcademicTerm[]> {
+    return db.select()
+      .from(academicTerms)
+      .where(eq(academicTerms.userId, userId))
+      .orderBy(desc(academicTerms.startDate));
+  }
+
+  async createTerm(data: InsertAcademicTerm): Promise<AcademicTerm> {
+    const [term] = await db.insert(academicTerms).values(data).returning();
+    return term;
+  }
+
+  async getStudyStrategies(category?: string): Promise<AdhdStudyStrategy[]> {
+    let query = db.select().from(adhdStudyStrategies);
     
-    if (!user) {
-      console.error(`User not found with ID: ${studentId}`);
-      return null;
+    if (category) {
+      query = query.where(eq(adhdStudyStrategies.category, category));
     }
     
-    // In a real implementation, we would:
-    // 1. Pull current grades from an academic system
-    // 2. Use OpenAI to analyze the grades and provide insights
-    // 3. Save the analysis to the database
-    
-    // For now, generate an academic profile
-    return generateAcademicProfile(user);
-    
-  } catch (error) {
-    console.error("Error generating academic report:", error);
-    return null;
+    return query.orderBy(desc(adhdStudyStrategies.effectiveness));
   }
-}
 
-/**
- * Helper function to generate a realistic academic profile
- * In a real implementation, this would use real data and OpenAI for insights
- */
-function generateAcademicProfile(user: any): AcademicProgressData {
-  // Basic subject lists
-  const coreSubjects = ["Mathematics", "English", "Science", "History"];
-  const electiveSubjects = ["Physical Education", "Art", "Music", "Computer Science"];
-  const apHonorsSubjects = ["AP History", "AP Biology", "Honors English"];
-  
-  // Helper to generate a random GPA (biased towards better grades for athletes)
-  const randomGPA = (min = 2.0, max = 4.0) => {
-    return Math.round((Math.random() * (max - min) + min) * 10) / 10;
-  };
-  
-  // Get letter grade from GPA
-  const getLetterGrade = (gpa: number): string => {
-    if (gpa >= 4.0) return 'A+';
-    if (gpa >= 3.7) return 'A';
-    if (gpa >= 3.3) return 'A-';
-    if (gpa >= 3.0) return 'B+';
-    if (gpa >= 2.7) return 'B';
-    if (gpa >= 2.3) return 'B-';
-    if (gpa >= 2.0) return 'C+';
-    if (gpa >= 1.7) return 'C';
-    if (gpa >= 1.3) return 'C-';
-    if (gpa >= 1.0) return 'D+';
-    if (gpa >= 0.7) return 'D';
-    return 'F';
-  };
-  
-  // Generate a subject with random but realistic data
-  const generateSubject = (name: string): SubjectScore => {
-    const score = randomGPA();
+  async createStudyStrategy(data: InsertAdhdStudyStrategy): Promise<AdhdStudyStrategy> {
+    const [strategy] = await db.insert(adhdStudyStrategies).values(data).returning();
+    return strategy;
+  }
+
+  async getUserStudyStrategies(userId: number): Promise<StudentStudyStrategy[]> {
+    return db.select()
+      .from(studentStudyStrategies)
+      .where(eq(studentStudyStrategies.userId, userId))
+      .orderBy(desc(studentStudyStrategies.implementationDate));
+  }
+
+  async implementStudyStrategy(data: InsertStudentStudyStrategy): Promise<StudentStudyStrategy> {
+    const [strategy] = await db.insert(studentStudyStrategies).values(data).returning();
+    return strategy;
+  }
+
+  async updateStudyStrategyEffectiveness(id: number, effectiveness: number): Promise<StudentStudyStrategy> {
+    const [strategy] = await db
+      .update(studentStudyStrategies)
+      .set({ 
+        effectiveness,
+        updatedAt: new Date()
+      })
+      .where(eq(studentStudyStrategies.id, id))
+      .returning();
+    return strategy;
+  }
+
+  async getUserAcademicAnalytics(userId: number): Promise<AcademicAthleticAnalytics | undefined> {
+    const [analytics] = await db
+      .select()
+      .from(academicAthleticAnalytics)
+      .where(eq(academicAthleticAnalytics.userId, userId))
+      .orderBy(desc(academicAthleticAnalytics.timestampRecorded))
+      .limit(1);
+    return analytics;
+  }
+
+  async createOrUpdateAcademicAnalytics(data: InsertAcademicAthleticAnalytics): Promise<AcademicAthleticAnalytics> {
+    // Check if analytics already exist for this user
+    const existing = await this.getUserAcademicAnalytics(data.userId);
+    
+    if (existing) {
+      // Update existing analytics
+      const [analytics] = await db
+        .update(academicAthleticAnalytics)
+        .set({
+          ...data,
+          timestampRecorded: new Date()
+        })
+        .where(eq(academicAthleticAnalytics.id, existing.id))
+        .returning();
+      return analytics;
+    } else {
+      // Create new analytics
+      const [analytics] = await db
+        .insert(academicAthleticAnalytics)
+        .values(data)
+        .returning();
+      return analytics;
+    }
+  }
+
+  async calculateGPA(userId: number, termName?: string): Promise<number> {
+    let enrollments: CourseEnrollment[];
+    
+    if (termName) {
+      // Get enrollments for specific term
+      enrollments = await db.select()
+        .from(courseEnrollments)
+        .where(and(
+          eq(courseEnrollments.userId, userId),
+          eq(courseEnrollments.semester, termName),
+          eq(courseEnrollments.status, 'completed')
+        ));
+    } else {
+      // Get all completed enrollments
+      enrollments = await db.select()
+        .from(courseEnrollments)
+        .where(and(
+          eq(courseEnrollments.userId, userId),
+          eq(courseEnrollments.status, 'completed')
+        ));
+    }
+    
+    if (enrollments.length === 0) {
+      return 0;
+    }
+
+    // Get courses for these enrollments to get credit values
+    const courseIds = enrollments.map(e => e.courseId);
+    const courses = await db.select()
+      .from(academicCourses)
+      .where(inArray(academicCourses.id, courseIds));
+    
+    // Map of course ID to credits
+    const courseCreditsMap = new Map(courses.map(c => [c.id, c.credits || 1]));
+    
+    let totalQualityPoints = 0;
+    let totalCredits = 0;
+    
+    // Calculate GPA
+    for (const enrollment of enrollments) {
+      // Convert letter grade to GPA value
+      let gradeValue = 0;
+      if (enrollment.currentGrade) {
+        switch (enrollment.currentGrade.toUpperCase()) {
+          case 'A+': gradeValue = 4.0; break;
+          case 'A': gradeValue = 4.0; break;
+          case 'A-': gradeValue = 3.7; break;
+          case 'B+': gradeValue = 3.3; break;
+          case 'B': gradeValue = 3.0; break;
+          case 'B-': gradeValue = 2.7; break;
+          case 'C+': gradeValue = 2.3; break;
+          case 'C': gradeValue = 2.0; break;
+          case 'C-': gradeValue = 1.7; break;
+          case 'D+': gradeValue = 1.3; break;
+          case 'D': gradeValue = 1.0; break;
+          case 'D-': gradeValue = 0.7; break;
+          case 'F': gradeValue = 0.0; break;
+          default:
+            // If percentage is available, use that to estimate grade
+            if (enrollment.currentPercentage) {
+              if (enrollment.currentPercentage >= 90) gradeValue = 4.0;
+              else if (enrollment.currentPercentage >= 80) gradeValue = 3.0;
+              else if (enrollment.currentPercentage >= 70) gradeValue = 2.0;
+              else if (enrollment.currentPercentage >= 60) gradeValue = 1.0;
+              else gradeValue = 0.0;
+            }
+        }
+      } else if (enrollment.currentPercentage) {
+        // Use percentage to estimate grade if letter grade is not available
+        if (enrollment.currentPercentage >= 90) gradeValue = 4.0;
+        else if (enrollment.currentPercentage >= 80) gradeValue = 3.0;
+        else if (enrollment.currentPercentage >= 70) gradeValue = 2.0;
+        else if (enrollment.currentPercentage >= 60) gradeValue = 1.0;
+        else gradeValue = 0.0;
+      }
+      
+      // Get course credits
+      const credits = courseCreditsMap.get(enrollment.courseId) || 1;
+      
+      totalQualityPoints += gradeValue * credits;
+      totalCredits += credits;
+    }
+    
+    return totalCredits > 0 ? +(totalQualityPoints / totalCredits).toFixed(2) : 0;
+  }
+
+  async identifyStrongestAndWeakestSubjects(userId: number): Promise<{ strongest: string[], weakest: string[] }> {
+    // Get all completed enrollments
+    const enrollments = await db.select()
+      .from(courseEnrollments)
+      .where(and(
+        eq(courseEnrollments.userId, userId),
+        eq(courseEnrollments.status, 'completed')
+      ));
+      
+    if (enrollments.length === 0) {
+      return { strongest: [], weakest: [] };
+    }
+    
+    // Get courses for these enrollments
+    const courseIds = enrollments.map(e => e.courseId);
+    const courses = await db.select()
+      .from(academicCourses)
+      .where(inArray(academicCourses.id, courseIds));
+    
+    // Get subjects for these courses
+    const subjectIds = [...new Set(courses.map(c => c.subjectId).filter(id => id !== null))] as number[];
+    const subjectsData = await db.select()
+      .from(academicSubjects)
+      .where(inArray(academicSubjects.id, subjectIds));
+    
+    // Create maps for lookups
+    const courseMap = new Map(courses.map(c => [c.id, c]));
+    const subjectMap = new Map(subjectsData.map(s => [s.id, s]));
+    
+    // Group enrollments by subject and calculate average grade for each subject
+    const subjectGrades: Record<string, { total: number, count: number, average: number }> = {};
+    
+    for (const enrollment of enrollments) {
+      const course = courseMap.get(enrollment.courseId);
+      if (!course || !course.subjectId) continue;
+      
+      const subject = subjectMap.get(course.subjectId);
+      if (!subject) continue;
+      
+      const subjectName = subject.name;
+      
+      // Convert grade/percentage to numerical value
+      let gradeValue = 0;
+      if (enrollment.currentPercentage) {
+        gradeValue = enrollment.currentPercentage;
+      } else if (enrollment.currentGrade) {
+        switch (enrollment.currentGrade.toUpperCase()) {
+          case 'A+': case 'A': gradeValue = 95; break;
+          case 'A-': gradeValue = 90; break;
+          case 'B+': gradeValue = 87; break;
+          case 'B': gradeValue = 84; break;
+          case 'B-': gradeValue = 80; break;
+          case 'C+': gradeValue = 77; break;
+          case 'C': gradeValue = 74; break;
+          case 'C-': gradeValue = 70; break;
+          case 'D+': gradeValue = 67; break;
+          case 'D': gradeValue = 64; break;
+          case 'D-': gradeValue = 60; break;
+          case 'F': gradeValue = 55; break;
+        }
+      }
+      
+      // Initialize or update subject grade data
+      if (!subjectGrades[subjectName]) {
+        subjectGrades[subjectName] = { total: 0, count: 0, average: 0 };
+      }
+      
+      subjectGrades[subjectName].total += gradeValue;
+      subjectGrades[subjectName].count += 1;
+    }
+    
+    // Calculate averages
+    for (const subject in subjectGrades) {
+      const data = subjectGrades[subject];
+      data.average = data.total / data.count;
+    }
+    
+    // Sort subjects by average
+    const sortedSubjects = Object.entries(subjectGrades)
+      .sort((a, b) => b[1].average - a[1].average)
+      .map(([name]) => name);
+    
+    // Identify strongest (top 3) and weakest subjects (bottom 3)
+    const strongest = sortedSubjects.slice(0, Math.min(3, sortedSubjects.length));
+    const weakest = sortedSubjects.slice(-Math.min(3, sortedSubjects.length)).reverse();
+    
+    return { strongest, weakest };
+  }
+
+  async analyzeStudyPatterns(userId: number): Promise<{ 
+    recommendedStudyPatterns: any;
+    recommendedSubjectFocus: string;
+  }> {
+    // Get implemented strategies for this user
+    const studentStrategies = await db.select()
+      .from(studentStudyStrategies)
+      .where(eq(studentStudyStrategies.userId, userId));
+      
+    // Get the actual strategy details
+    const strategyIds = studentStrategies.map(s => s.strategyId);
+    const strategies = await db.select()
+      .from(adhdStudyStrategies)
+      .where(inArray(adhdStudyStrategies.id, strategyIds));
+    
+    // Map strategy effectiveness ratings
+    const strategyMap = new Map(strategies.map(s => [s.id, s]));
+    
+    // Group strategies by category and identify most effective ones
+    const categoryEffectiveness: Record<string, { 
+      totalEffectiveness: number; 
+      count: number; 
+      strategies: Array<{ name: string; effectiveness: number; tips: string[] }> 
+    }> = {};
+    
+    for (const userStrategy of studentStrategies) {
+      const strategy = strategyMap.get(userStrategy.strategyId);
+      if (!strategy) continue;
+      
+      const effectiveness = userStrategy.effectiveness || strategy.effectiveness || 0;
+      
+      if (!categoryEffectiveness[strategy.category]) {
+        categoryEffectiveness[strategy.category] = {
+          totalEffectiveness: 0,
+          count: 0,
+          strategies: []
+        };
+      }
+      
+      categoryEffectiveness[strategy.category].totalEffectiveness += effectiveness;
+      categoryEffectiveness[strategy.category].count += 1;
+      
+      // Add this strategy if it's effective (rating 7+)
+      if (effectiveness >= 7) {
+        categoryEffectiveness[strategy.category].strategies.push({
+          name: strategy.title,
+          effectiveness,
+          tips: strategy.tips || []
+        });
+      }
+    }
+    
+    // Identify subjects that need focus
+    const { weakest } = await this.identifyStrongestAndWeakestSubjects(userId);
+    const recommendedSubjectFocus = weakest.length > 0 ? weakest[0] : '';
+    
+    // Build recommended study patterns
+    const recommendedStudyPatterns: Record<string, any> = {};
+    
+    for (const category in categoryEffectiveness) {
+      const data = categoryEffectiveness[category];
+      const avgEffectiveness = data.count > 0 ? data.totalEffectiveness / data.count : 0;
+      
+      recommendedStudyPatterns[category] = {
+        averageEffectiveness: avgEffectiveness,
+        recommendedStrategies: data.strategies
+          .sort((a, b) => b.effectiveness - a.effectiveness)
+          .slice(0, 3)
+      };
+    }
     
     return {
-      name,
-      score,
-      grade: getLetterGrade(score),
-      comments: getSubjectComment(name, score),
-      strengths: getSubjectStrengths(name, score),
-      improvements: getSubjectImprovements(name, score)
+      recommendedStudyPatterns,
+      recommendedSubjectFocus
     };
-  };
-  
-  // Generate subject comments based on subject and score
-  const getSubjectComment = (subject: string, score: number): string => {
-    if (score >= 3.7) {
-      return `Excellent performance in ${subject}. Shows deep understanding and consistent effort.`;
-    } else if (score >= 3.0) {
-      return `Good progress in ${subject}. Participates actively and completes assignments on time.`;
-    } else if (score >= 2.0) {
-      return `Satisfactory work in ${subject}, but could benefit from more consistent study habits.`;
-    } else {
-      return `Struggling with core concepts in ${subject}. Would benefit from additional support.`;
+  }
+
+  async updateAcademicAnalytics(userId: number): Promise<AcademicAthleticAnalytics> {
+    // Calculate GPA
+    const currentGPA = await this.calculateGPA(userId);
+    
+    // Get strongest and weakest subjects
+    const { strongest, weakest } = await this.identifyStrongestAndWeakestSubjects(userId);
+    
+    // Get study patterns and recommendations
+    const { recommendedStudyPatterns, recommendedSubjectFocus } = await this.analyzeStudyPatterns(userId);
+    
+    // Get existing analytics
+    const existingAnalytics = await this.getUserAcademicAnalytics(userId);
+    
+    // Prepare time series data for GPA
+    const gpaTimeSeries = existingAnalytics?.gpaTimeSeries || [];
+    
+    // Skip adding a new entry if GPA hasn't changed
+    if (!existingAnalytics || existingAnalytics.currentGPA !== currentGPA) {
+      const newEntry = {
+        date: new Date().toISOString(),
+        gpa: currentGPA
+      };
+      
+      if (Array.isArray(gpaTimeSeries)) {
+        gpaTimeSeries.push(newEntry);
+      }
     }
-  };
-  
-  // Generate subject strengths
-  const getSubjectStrengths = (subject: string, score: number): string[] => {
-    const allStrengths: Record<string, string[]> = {
-      "Mathematics": ["Problem-solving skills", "Attention to detail", "Computational accuracy", "Understanding of concepts"],
-      "English": ["Writing clarity", "Reading comprehension", "Discussion participation", "Critical analysis"],
-      "Science": ["Experimental technique", "Data analysis", "Conceptual understanding", "Scientific reasoning"],
-      "History": ["Historical context", "Document analysis", "Making connections", "Presenting arguments"],
-      "Physical Education": ["Athletic ability", "Team leadership", "Consistent effort", "Skill development"],
-      "Art": ["Creativity", "Technical skill", "Visual communication", "Project dedication"],
-      "Music": ["Technical proficiency", "Musical interpretation", "Performance quality", "Practice discipline"],
-      "Computer Science": ["Logical thinking", "Problem-solving", "Coding clarity", "Project completion"],
-      "AP History": ["Advanced analysis", "Research skills", "Essay structure", "Historical reasoning"],
-      "AP Biology": ["Advanced concepts", "Lab techniques", "Scientific writing", "Exam preparation"],
-      "Honors English": ["Advanced writing", "Literary analysis", "Critical thinking", "Discussion leadership"]
+    
+    // Calculate improvement rates
+    let academicImprovementRate = 0;
+    if (gpaTimeSeries.length >= 2) {
+      const sortedEntries = [...gpaTimeSeries].sort((a, b) => 
+        new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+      
+      const oldestEntry = sortedEntries[0];
+      const newestEntry = sortedEntries[sortedEntries.length - 1];
+      
+      if (oldestEntry.gpa > 0) {
+        academicImprovementRate = ((newestEntry.gpa - oldestEntry.gpa) / oldestEntry.gpa) * 100;
+      }
+    }
+    
+    // Create or update analytics
+    const analyticsData: InsertAcademicAthleticAnalytics = {
+      userId,
+      currentGPA,
+      gpaTimeSeries,
+      strongestSubjects: strongest,
+      weakestSubjects: weakest,
+      recommendedStudyPatterns,
+      recommendedSubjectFocus,
+      academicImprovementRate
     };
     
-    // Default strengths for any subject not listed
-    const defaultStrengths = ["Consistent attendance", "Assignment completion", "Class participation"];
-    
-    // Get subject-specific strengths or default if not found
-    const subjectStrengths = allStrengths[subject] || defaultStrengths;
-    
-    // Return 2-3 strengths based on score
-    const numStrengths = score >= 3.0 ? 3 : 2;
-    return subjectStrengths.slice(0, numStrengths);
-  };
-  
-  // Generate subject improvements
-  const getSubjectImprovements = (subject: string, score: number): string[] => {
-    const allImprovements: Record<string, string[]> = {
-      "Mathematics": ["Show all work clearly", "Practice regular problem sets", "Review errors on tests", "Seek help early for challenging concepts"],
-      "English": ["Improve grammar and mechanics", "Read more widely", "Develop stronger thesis statements", "Participate more in discussions"],
-      "Science": ["Take more detailed notes", "Review terminology regularly", "Improve lab techniques", "Connect concepts to applications"],
-      "History": ["Improve citation format", "Develop more nuanced arguments", "Make broader historical connections", "Review key dates and events"],
-      "Physical Education": ["Develop specific skills", "Increase participation in team activities", "Work on endurance", "Focus on technique"],
-      "Art": ["Refine technical skills", "Experiment with new media", "Complete projects on time", "Incorporate feedback"],
-      "Music": ["Practice more consistently", "Work on technical challenges", "Listen to varied performances", "Prepare for performances earlier"],
-      "Computer Science": ["Comment code more thoroughly", "Test programs more rigorously", "Improve algorithm efficiency", "Work on user interface design"],
-      "AP History": ["Prepare earlier for AP exam", "Practice DBQ format", "Develop stronger thesis statements", "Review content more regularly"],
-      "AP Biology": ["Memorize key terminology", "Practice free response questions", "Improve lab write-ups", "Make concept connections"],
-      "Honors English": ["Deepen literary analysis", "Improve citation format", "Incorporate varied sources", "Edit work more carefully"]
-    };
-    
-    // Default improvements for any subject not listed
-    const defaultImprovements = ["Turn in assignments on time", "Participate more in class", "Take better notes", "Ask questions when confused"];
-    
-    // Get subject-specific improvements or default if not found
-    const subjectImprovements = allImprovements[subject] || defaultImprovements;
-    
-    // Return 2-3 improvements based on score (lower scores get more improvement suggestions)
-    const numImprovements = score < 3.0 ? 3 : 2;
-    return subjectImprovements.slice(0, numImprovements);
-  };
-  
-  // Generate categories with subjects
-  const coreCategory = {
-    category: "Core",
-    subjects: coreSubjects.map(subject => generateSubject(subject)),
-    overallGPA: 0 // Will calculate after generating subjects
-  };
-  
-  const electivesCategory = {
-    category: "Electives",
-    subjects: electiveSubjects.slice(0, 2).map(subject => generateSubject(subject)),
-    overallGPA: 0
-  };
-  
-  const apHonorsCategory = {
-    category: "AP/Honors",
-    subjects: [generateSubject(apHonorsSubjects[0])],
-    overallGPA: 0
-  };
-  
-  // Calculate category GPAs
-  coreCategory.overallGPA = parseFloat(
-    (coreCategory.subjects.reduce((sum, subject) => sum + subject.score, 0) / coreCategory.subjects.length).toFixed(1)
-  );
-  
-  electivesCategory.overallGPA = parseFloat(
-    (electivesCategory.subjects.reduce((sum, subject) => sum + subject.score, 0) / electivesCategory.subjects.length).toFixed(1)
-  );
-  
-  apHonorsCategory.overallGPA = parseFloat(
-    (apHonorsCategory.subjects.reduce((sum, subject) => sum + subject.score, 0) / apHonorsCategory.subjects.length).toFixed(1)
-  );
-  
-  // Calculate overall GPA
-  const allSubjects = [
-    ...coreCategory.subjects,
-    ...electivesCategory.subjects,
-    ...apHonorsCategory.subjects
-  ];
-  
-  const overallGPA = parseFloat(
-    (allSubjects.reduce((sum, subject) => sum + subject.score, 0) / allSubjects.length).toFixed(1)
-  );
-  
-  // Generate historical data (3 quarters)
-  const historicalData: AcademicTimeframe[] = [];
-  
-  // Quarter 1: Slightly lower GPA
-  const q1GPA = Math.max(2.0, overallGPA - 0.4);
-  const q1Data: AcademicTimeframe = {
-    label: "Q1",
-    gpa: parseFloat(q1GPA.toFixed(1)),
-    subjects: {}
-  };
-  
-  // Quarter 2: Getting better
-  const q2GPA = Math.max(2.0, overallGPA - 0.2);
-  const q2Data: AcademicTimeframe = {
-    label: "Q2",
-    gpa: parseFloat(q2GPA.toFixed(1)),
-    subjects: {}
-  };
-  
-  // Quarter 3: Current GPA
-  const q3Data: AcademicTimeframe = {
-    label: "Q3",
-    gpa: overallGPA,
-    subjects: {}
-  };
-  
-  // Add subject data for each quarter
-  allSubjects.forEach(subject => {
-    // Q1: Subject might be worse
-    q1Data.subjects[subject.name] = parseFloat((Math.max(1.0, subject.score - 0.3 - Math.random() * 0.5)).toFixed(1));
-    
-    // Q2: Subject improving
-    q2Data.subjects[subject.name] = parseFloat((Math.max(1.5, subject.score - 0.2 - Math.random() * 0.3)).toFixed(1));
-    
-    // Q3: Current scores
-    q3Data.subjects[subject.name] = subject.score;
-  });
-  
-  historicalData.push(q1Data, q2Data, q3Data);
-  
-  // Generate NCAA eligibility status
-  const ncaaEligibilityStatus: NcaaEligibilityStatus = {
-    eligible: overallGPA >= 2.3,
-    coreCoursesCompleted: 10,
-    coreCoursesRequired: 16,
-    minimumGPAMet: overallGPA >= 2.3,
-    notes: overallGPA >= 2.3 
-      ? "On track for eligibility. Maintain core GPA above 2.3 and complete remaining core courses."
-      : "Core GPA needs improvement to meet NCAA eligibility requirements. Focus on core courses and maintain regular study habits."
-  };
-  
-  // Generate ADHD-specific insights
-  const adhdInsights: ADHDInsights = {
-    learningStyle: "Visual-Kinesthetic learner with strengths in hands-on and interactive learning environments",
-    focusScore: parseFloat((Math.min(4.0, Math.max(1.0, overallGPA))).toFixed(1)),
-    focusStrategies: [
-      "Use the Pomodoro Technique: 25 minutes of focused work followed by 5-minute breaks",
-      "Incorporate movement breaks between study sessions",
-      "Create visual mind maps for complex topics",
-      "Use color-coding systems for notes and assignments",
-      "Study in a quiet environment with minimal distractions"
-    ],
-    organizationTips: [
-      "Maintain a digital calendar with assignment due dates and color-coded subjects",
-      "Break large assignments into smaller, manageable tasks",
-      "Use checklists for daily and weekly academic goals",
-      "Set up a consistent study space with all necessary materials",
-      "Implement a weekly backpack and folder organization system"
-    ],
-    studyEnvironmentSuggestions: [
-      "Find a consistent study location with minimal visual distractions",
-      "Use noise-cancelling headphones or background white noise",
-      "Ensure proper lighting to reduce eye strain"
-    ],
-    recommendedTools: [
-      "Digital calendar", 
-      "Task timer", 
-      "Mind mapping software", 
-      "Text-to-speech tools", 
-      "Speech-to-text tools", 
-      "Note organization app"
-    ]
-  };
-  
-  // Generate overall strengths and improvement areas
-  let strengths: string[] = [];
-  let improvementAreas: string[] = [];
-  
-  // Add general strengths
-  if (coreCategory.overallGPA >= 3.0) {
-    strengths.push("Strong academic performance in core subjects");
+    return this.createOrUpdateAcademicAnalytics(analyticsData);
   }
-  if (electivesCategory.overallGPA >= 3.5) {
-    strengths.push("Excellent performance in elective courses");
-  }
-  if (apHonorsCategory.overallGPA >= 3.0) {
-    strengths.push("Handling advanced coursework effectively");
-  }
-  
-  // Add trend-based strength if improving
-  if (q3Data.gpa > q1Data.gpa + 0.3) {
-    strengths.push("Demonstrated significant academic improvement over the quarter");
-  }
-  
-  // Add subject-specific strengths
-  const highestSubject = allSubjects.reduce((highest, current) => 
-    current.score > highest.score ? current : highest
-  );
-  
-  if (highestSubject.score >= 3.5) {
-    strengths.push(`Exceptional performance in ${highestSubject.name} (${highestSubject.grade})`);
-  }
-  
-  // Add general areas for improvement
-  if (coreCategory.overallGPA < 3.0) {
-    improvementAreas.push("Focus on improving core academic subjects");
-  }
-  if (overallGPA < 2.3) {
-    improvementAreas.push("Work on meeting NCAA eligibility requirements (minimum 2.3 GPA)");
-  }
-  
-  // Add subject-specific improvements
-  const lowestSubject = allSubjects.reduce((lowest, current) => 
-    current.score < lowest.score ? current : lowest
-  );
-  
-  if (lowestSubject.score < 2.7) {
-    improvementAreas.push(`Prioritize improvement in ${lowestSubject.name} (currently ${lowestSubject.grade})`);
-  }
-  
-  // Add study habit improvements
-  improvementAreas.push("Develop more consistent study habits across all subjects");
-  improvementAreas.push("Improve time management for assignments and projects");
-  
-  // General strengths for all students
-  strengths.push("Active participation in class discussions");
-  strengths.push("Good attendance record and punctuality");
-  
-  return {
-    categories: [coreCategory, electivesCategory, apHonorsCategory],
-    overallGPA,
-    historicalData,
-    strengths,
-    improvementAreas,
-    adhd: adhdInsights,
-    ncaaEligibilityStatus
-  };
+
+  // Remove duplicate method - only need one getInstance at the top of the class
 }
+
+export default AcademicService.getInstance();
