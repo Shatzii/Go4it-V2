@@ -2830,7 +2830,8 @@ export class DatabaseStorage implements IStorage {
         
         // Try to order by level and sortOrder if they exist
         try {
-          return await finalQuery.orderBy(skillTreeNodes.level, skillTreeNodes.sortOrder);
+          // Order by level first, then by sortOrder
+          return await finalQuery.orderBy(asc(skillTreeNodes.level), asc(skillTreeNodes.sortOrder));
         } catch (err) {
           console.warn('Could not order by level and sortOrder, returning unordered results');
           return await finalQuery;
@@ -2974,7 +2975,7 @@ export class DatabaseStorage implements IStorage {
             eq(skillTreeNodes.isActive, true)
           )
         )
-        .orderBy(skillTreeNodes.level, skillTreeNodes.sortOrder);
+        .orderBy(asc(skillTreeNodes.level), asc(skillTreeNodes.sortOrder));
     } catch (error) {
       console.error(`Error fetching child skill nodes for parent ID ${parentNodeId}:`, error);
       return [];

@@ -2031,6 +2031,7 @@ export const academicCourses = pgTable("academic_courses", {
   credits: real("credits"),
   description: text("description"),
   isActive: boolean("is_active").default(true),
+  isCore: boolean("is_core").default(false), // Indicates if course is an NCAA core course
   createdAt: timestamp("created_at").defaultNow(),
 });
 
