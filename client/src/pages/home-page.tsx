@@ -14,6 +14,7 @@ import FeaturedBlogPosts from "@/components/home/FeaturedBlogPosts";
 import ScoutVisionCarousel from "@/components/home/ScoutVisionCarousel";
 import SimpleFeatureCommercial from "@/components/home/SimpleFeatureCommercial";
 import GarTestingCommercial from "@/components/home/GarTestingCommercial";
+import StarPathCommercial from "@/components/home/StarPathCommercial";
 
 interface BlogPost {
   id: number;
@@ -264,6 +265,19 @@ export default function HomePage() {
           <p className="text-lg text-blue-300 mt-1">Experience our professional athlete assessment system</p>
         </div>
         <GarTestingCommercial />
+      </section>
+      
+      {/* Star Path Commercial Section */}
+      <section className="py-8 my-12 border-t border-b border-gray-800 bg-black/60 rounded-lg">
+        <div className="text-center mb-6">
+          <h2 className="text-3xl font-bold text-white">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
+              Star Path
+            </span> Journey
+          </h2>
+          <p className="text-lg text-blue-300 mt-1">Transform your real-world training into digital progress</p>
+        </div>
+        <StarPathCommercial />
       </section>
       
       {/* Scout Vision Section */}
