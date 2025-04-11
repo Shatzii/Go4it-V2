@@ -2804,12 +2804,12 @@ export class DatabaseStorage implements IStorage {
           console.warn('is_active column not found on skillTreeNodes table');
         }
         
-        // Try to add the sportType condition if provided and column exists
+        // Try to add the sport_type condition if provided and column exists
         if (sportType) {
           try {
-            conditions.push(eq(skillTreeNodes.sportType, sportType));
+            conditions.push(eq(skillTreeNodes.sport_type, sportType));
           } catch (err) {
-            console.warn('sportType column not found on skillTreeNodes table');
+            console.warn('sport_type column not found on skillTreeNodes table');
           }
         }
         
@@ -2957,10 +2957,10 @@ export class DatabaseStorage implements IStorage {
   async getChildSkillNodes(parentNodeId: number): Promise<SkillTreeNode[]> {
     try {
       const relationships = await db.select({
-        childId: skillTreeRelationships.childId
+        childId: skillTreeRelationships.child_id
       })
       .from(skillTreeRelationships)
-      .where(eq(skillTreeRelationships.parentId, parentNodeId));
+      .where(eq(skillTreeRelationships.parent_id, parentNodeId));
       
       if (relationships.length === 0) {
         return [];
@@ -2986,10 +2986,10 @@ export class DatabaseStorage implements IStorage {
   async getParentSkillNodes(childNodeId: number): Promise<SkillTreeNode[]> {
     try {
       const relationships = await db.select({
-        parentId: skillTreeRelationships.parentId
+        parentId: skillTreeRelationships.parent_id
       })
       .from(skillTreeRelationships)
-      .where(eq(skillTreeRelationships.childId, childNodeId));
+      .where(eq(skillTreeRelationships.child_id, childNodeId));
       
       if (relationships.length === 0) {
         return [];
@@ -3038,12 +3038,12 @@ export class DatabaseStorage implements IStorage {
         // Conditions for filtering
         const conditions = [];
         
-        // Add sportType filter if provided and column exists
+        // Add sport_type filter if provided and column exists
         if (sportType) {
           try {
-            conditions.push(eq(trainingDrills.sportType, sportType));
+            conditions.push(eq(trainingDrills.sport_type, sportType));
           } catch (err) {
-            console.warn('sportType column not found on trainingDrills table');
+            console.warn('sport_type column not found on trainingDrills table');
           }
         }
         
