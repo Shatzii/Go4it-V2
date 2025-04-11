@@ -2410,6 +2410,120 @@ export const insertGarScoreSchema = createInsertSchema(garScores)
 export type GarScore = typeof garScores.$inferSelect;
 export type InsertGarScore = z.infer<typeof insertGarScoreSchema>;
 
+// Combine Ratings Template
+export const combineRatingTemplates = pgTable('combine_rating_templates', {
+  id: serial('id').primaryKey(),
+  template_id: text('template_id').notNull().unique(), // e.g., bas_cen_5star_1
+  name: text('name').notNull(),
+  star_level: integer('star_level').notNull(),
+  sport: text('sport').notNull(),
+  position: text('position').notNull(),
+  age_group: text('age_group'),
+  metrics: jsonb('metrics'), // height, weight, forty_yard_dash, etc.
+  traits: jsonb('traits'), // movement, mental, resilience
+  film_expectations: text('film_expectations').array(),
+  training_focus: text('training_focus').array(),
+  avatar: text('avatar'),
+  rank: text('rank'),
+  xp_level: integer('xp_level'),
+  created_at: timestamp('created_at').defaultNow(),
+  updated_at: timestamp('updated_at').defaultNow(),
+});
+
+export const insertCombineRatingTemplateSchema = createInsertSchema(combineRatingTemplates)
+  .omit({ id: true, created_at: true, updated_at: true });
+
+export type CombineRatingTemplate = typeof combineRatingTemplates.$inferSelect;
+export type InsertCombineRatingTemplate = z.infer<typeof insertCombineRatingTemplateSchema>;
+
+// Combine Athlete Ratings
+export const combineAthleteRatings = pgTable('combine_athlete_ratings', {
+  id: serial('id').primaryKey(),
+  user_id: integer('user_id').notNull().references(() => users.id),
+  event_id: integer('event_id').references(() => combineTourEvents.id),
+  template_id: text('template_id').references(() => combineRatingTemplates.template_id),
+  sport: text('sport').notNull(),
+  position: text('position').notNull(),
+  star_level: integer('star_level').notNull(),
+  metrics: jsonb('metrics'), // Actual recorded metrics
+  traits: jsonb('traits'), // Observed traits
+  notes: text('notes'),
+  rated_by: integer('rated_by').references(() => users.id),
+  created_at: timestamp('created_at').defaultNow(),
+  updated_at: timestamp('updated_at').defaultNow(),
+});
+
+export const insertCombineAthleteRatingSchema = createInsertSchema(combineAthleteRatings)
+  .omit({ id: true, created_at: true, updated_at: true });
+
+export type CombineAthleteRating = typeof combineAthleteRatings.$inferSelect;
+export type InsertCombineAthleteRating = z.infer<typeof insertCombineAthleteRatingSchema>;
+
+// Combine Analysis Results
+export const combineAnalysisResults = pgTable('combine_analysis_results', {
+  id: serial('id').primaryKey(),
+  user_id: integer('user_id').notNull().references(() => users.id),
+  event_id: integer('event_id').references(() => combineTourEvents.id),
+  video_id: integer('video_id').references(() => videos.id),
+  position_fit: text('position_fit').array(), // Array of recommended positions
+  skill_analysis: jsonb('skill_analysis'), // Complete breakdown of skills
+  next_steps: jsonb('next_steps'), // Training recommendations
+  challenges: text('challenges').array(), // Recommended challenges
+  recovery_status: text('recovery_status'),
+  recovery_score: integer('recovery_score'),
+  ai_analysis_date: timestamp('ai_analysis_date').defaultNow(),
+  ai_coach_notes: text('ai_coach_notes'),
+  created_at: timestamp('created_at').defaultNow(),
+  updated_at: timestamp('updated_at').defaultNow(),
+});
+
+export const insertCombineAnalysisResultSchema = createInsertSchema(combineAnalysisResults)
+  .omit({ id: true, created_at: true, updated_at: true, ai_analysis_date: true });
+
+export type CombineAnalysisResult = typeof combineAnalysisResults.$inferSelect;
+export type InsertCombineAnalysisResult = z.infer<typeof insertCombineAnalysisResultSchema>;
+
+// Relations for Combine Rating Templates
+export const combineRatingTemplateRelations = relations(combineRatingTemplates, ({ many }) => ({
+  athleteRatings: many(combineAthleteRatings),
+}));
+
+// Relations for Combine Athlete Ratings
+export const combineAthleteRatingRelations = relations(combineAthleteRatings, ({ one }) => ({
+  user: one(users, {
+    fields: [combineAthleteRatings.user_id],
+    references: [users.id],
+  }),
+  template: one(combineRatingTemplates, {
+    fields: [combineAthleteRatings.template_id],
+    references: [combineRatingTemplates.template_id],
+  }),
+  event: one(combineTourEvents, {
+    fields: [combineAthleteRatings.event_id],
+    references: [combineTourEvents.id],
+  }),
+  rater: one(users, {
+    fields: [combineAthleteRatings.rated_by],
+    references: [users.id],
+  }),
+}));
+
+// Relations for Combine Analysis Results
+export const combineAnalysisResultRelations = relations(combineAnalysisResults, ({ one }) => ({
+  user: one(users, {
+    fields: [combineAnalysisResults.user_id],
+    references: [users.id],
+  }),
+  event: one(combineTourEvents, {
+    fields: [combineAnalysisResults.event_id],
+    references: [combineTourEvents.id],
+  }),
+  video: one(videos, {
+    fields: [combineAnalysisResults.video_id],
+    references: [videos.id],
+  }),
+}));
+
 // Sport attributes table
 export const sportAttributes = pgTable('sport_attributes', {
   id: serial('id').primaryKey(),
