@@ -16,7 +16,7 @@ import {
 import { eq, and, desc, gte, lte } from 'drizzle-orm';
 import { format } from 'date-fns';
 
-class AnalyticsService {
+export class AnalyticsService {
   // Session tracking
   private activeSessions: Map<number, {
     startTime: Date;
@@ -34,7 +34,7 @@ class AnalyticsService {
   /**
    * Tracking user session start
    */
-  async trackSessionStart(userId: number, deviceInfo: any, entryPoint: string) {
+  async recordSessionStart(userId: number, deviceInfo: any, entryPoint: string) {
     this.activeSessions.set(userId, {
       startTime: new Date(),
       features: new Set(),
@@ -57,7 +57,7 @@ class AnalyticsService {
   /**
    * Track user navigation to a new page/feature
    */
-  async trackFeatureNavigation(userId: number, feature: string) {
+  async recordFeatureNavigation(userId: number, feature: string) {
     const session = this.activeSessions.get(userId);
     if (!session) return { success: false, message: 'No active session' };
 
@@ -93,7 +93,7 @@ class AnalyticsService {
   /**
    * Track user action within a feature
    */
-  async trackUserAction(userId: number, action: string, details: any) {
+  async recordUserAction(userId: number, action: string, details: any) {
     const session = this.activeSessions.get(userId);
     if (!session) return { success: false, message: 'No active session' };
 
@@ -113,7 +113,7 @@ class AnalyticsService {
   /**
    * End user session and save analytics data
    */
-  async trackSessionEnd(userId: number, exitPoint: string, convertedGoal?: string) {
+  async recordSessionEnd(userId: number, exitPoint: string, convertedGoal?: string) {
     const session = this.activeSessions.get(userId);
     if (!session) return { success: false, message: 'No active session' };
 
@@ -242,7 +242,7 @@ class AnalyticsService {
   /**
    * Track star path progression analytics
    */
-  async trackStarPathProgress(
+  async recordStarPathProgress(
     userId: number, 
     currentStarLevel: number,
     previousStarLevel: number | null,
@@ -295,7 +295,7 @@ class AnalyticsService {
   /**
    * Track workout verification analytics
    */
-  async trackWorkoutCompletion(
+  async recordWorkoutCompletion(
     userId: number,
     workoutVerificationId: number | null,
     workoutType: string,
@@ -380,7 +380,7 @@ class AnalyticsService {
   /**
    * Track skill development analytics
    */
-  async trackSkillDevelopment(
+  async recordSkillDevelopment(
     userId: number,
     sportType: string,
     skillCategory: string,
@@ -478,7 +478,7 @@ class AnalyticsService {
   /**
    * Track academic-athletic integration analytics
    */
-  async trackAcademicAthletic(
+  async recordAcademicAthletic(
     userId: number,
     currentGPA: number,
     strongestSubjects: string[],
@@ -581,7 +581,7 @@ class AnalyticsService {
   /**
    * Track AI coach effectiveness analytics
    */
-  async trackAICoachEffectiveness(
+  async recordAICoachEffectiveness(
     userId: number,
     coachId: number | null,
     userSatisfactionRating: number,
@@ -677,7 +677,7 @@ class AnalyticsService {
   /**
    * Track Cross-Sport Potential Analytics
    */
-  async trackCrossSportPotential(
+  async recordCrossSportPotential(
     userId: number,
     primarySport: string,
     secondarySports: string[],
