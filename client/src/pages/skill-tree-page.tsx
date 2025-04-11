@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { PageHeader } from '@/components/ui/page-header';
 import InteractiveSkillTree from '@/components/skill-tree/interactive-skill-tree';
+import SkillTreeVisualization from '@/components/skill-tree/SkillTreeVisualization';
 import { useAuth } from '@/contexts/auth-context';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -189,11 +190,29 @@ function SkillTreePage() {
         {renderSkillsOverview()}
       </div>
 
-      <div className="my-6 bg-gray-900/30 rounded-xl border p-1">
-        <InteractiveSkillTree 
-          sportType={selectedSport} 
-          position={selectedPosition}
-        />
+      <div className="my-6 bg-gray-900/30 rounded-xl border p-4">
+        <Tabs defaultValue="modern" className="w-full mb-6">
+          <TabsList>
+            <TabsTrigger value="modern">Modern View</TabsTrigger>
+            <TabsTrigger value="classic">Classic View</TabsTrigger>
+          </TabsList>
+          <TabsContent value="modern">
+            <SkillTreeVisualization 
+              sportType={selectedSport} 
+              position={selectedPosition}
+              onSkillSelected={(skill) => {
+                console.log('Selected skill:', skill);
+                // Here you would typically show a modal or details panel
+              }}
+            />
+          </TabsContent>
+          <TabsContent value="classic">
+            <InteractiveSkillTree 
+              sportType={selectedSport} 
+              position={selectedPosition}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
