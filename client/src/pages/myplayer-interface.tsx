@@ -289,16 +289,11 @@ export default function MyPlayerInterface() {
                 </motion.div>
               </div>
               
-              {/* 3D Player Visualization */}
+              {/* 3D Player Visualization with PlayStation 5-quality effects */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <PlayerAnimation 
-                  position={{ x: 0, y: 0 }} 
-                  color="#3b82f6" 
-                  isUser={true} 
-                  size="lg"
-                  animationState={animationState}
-                  jersey={playerData.level.toString()}
-                  name={user?.name || "Player"}
+                  sport={playerData.sportType as 'basketball' | 'football' | 'soccer'} 
+                  userName={user?.name || "Player"}
                 />
               </div>
             </div>

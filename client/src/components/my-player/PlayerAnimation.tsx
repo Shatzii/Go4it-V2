@@ -16,7 +16,9 @@ import {
   Brain,
   Footprints,
   Timer,
-  Award
+  Award,
+  Crown,
+  Lock
 } from 'lucide-react';
 
 // Utility function to adjust color brightness
