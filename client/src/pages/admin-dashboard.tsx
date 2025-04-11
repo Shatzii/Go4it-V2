@@ -177,6 +177,190 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      {/* Quick Access Links Section */}
+      <Card className="mb-6">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg flex items-center">
+            <ArrowUpRight className="h-5 w-5 mr-2" />
+            Quick Access Links
+          </CardTitle>
+          <CardDescription>
+            Quick access to all platform features and pages
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium">Analytics</h3>
+              <div className="space-y-1">
+                <Link href="/analytics-dashboard">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <ChartBarStacked className="h-4 w-4 mr-2" />
+                    Analytics Dashboard
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium">Combines</h3>
+              <div className="space-y-1">
+                <Link href="/combine-tour">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <MapPinIcon className="h-4 w-4 mr-2" />
+                    Combine Tour
+                  </Button>
+                </Link>
+                <Link href="/combine-public">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <MapPinIcon className="h-4 w-4 mr-2" />
+                    Combine Public
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium">Academic</h3>
+              <div className="space-y-1">
+                <Link href="/academic-progress">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <FileText className="h-4 w-4 mr-2" />
+                    Academic Progress
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium">Performance</h3>
+              <div className="space-y-1">
+                <Link href="/gar-score">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <Activity className="h-4 w-4 mr-2" />
+                    GAR Score
+                  </Button>
+                </Link>
+                <Link href="/skill-tree">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Skill Tree
+                  </Button>
+                </Link>
+                <Link href="/enhanced-skill-tree">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Enhanced Skill Tree
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium">Content</h3>
+              <div className="space-y-1">
+                <Link href="/blog">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <Newspaper className="h-4 w-4 mr-2" />
+                    Blog
+                  </Button>
+                </Link>
+                <Link href="/video-highlights">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <FileVideo className="h-4 w-4 mr-2" />
+                    Video Highlights
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium">MyPlayer</h3>
+              <div className="space-y-1">
+                <Link href="/myplayer-xp">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <PersonStanding className="h-4 w-4 mr-2" />
+                    XP System
+                  </Button>
+                </Link>
+                <Link href="/myplayer-star-path">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Star Path
+                  </Button>
+                </Link>
+                <Link href="/workout-verification">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <Activity className="h-4 w-4 mr-2" />
+                    Workout Verification
+                  </Button>
+                </Link>
+                <Link href="/weight-room">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <PersonStanding className="h-4 w-4 mr-2" />
+                    Weight Room
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium">Recruiting</h3>
+              <div className="space-y-1">
+                <Link href="/coach-connection">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <UserCheck className="h-4 w-4 mr-2" />
+                    Coach Connection
+                  </Button>
+                </Link>
+                <Link href="/coach-portal">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <Users className="h-4 w-4 mr-2" />
+                    Coach Portal
+                  </Button>
+                </Link>
+                <Link href="/nextup-spotlight">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    NextUp Spotlight
+                  </Button>
+                </Link>
+                <Link href="/scoutvision-feed">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <Search className="h-4 w-4 mr-2" />
+                    ScoutVision Feed
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium">Film Analysis</h3>
+              <div className="space-y-1">
+                <Link href="/video-analysis">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <FileVideo className="h-4 w-4 mr-2" />
+                    Video Analysis
+                  </Button>
+                </Link>
+                <Link href="/film-comparison">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <FileVideo className="h-4 w-4 mr-2" />
+                    Film Comparison
+                  </Button>
+                </Link>
+                <Link href="/ai-video-player">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <FileVideo className="h-4 w-4 mr-2" />
+                    AI Video Player
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="mb-6 relative">
         <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
         <Input

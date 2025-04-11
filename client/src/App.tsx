@@ -48,6 +48,7 @@ import SubmitVerification from "@/pages/submit-verification";
 import WeightRoom from "@/pages/weight-room";
 import CombineTour from "@/pages/combine-tour";
 import CombineTourDetail from "@/pages/combine-tour-detail";
+import CombinePublic from "@/pages/combine-public";
 import HighlightGenerator from "@/pages/highlight-generator";
 import SimpleLogin from "@/pages/simple-login";
 
@@ -257,6 +258,11 @@ function Router() {
         
         <Route path="/combine-tour/:id">
           {() => <ProtectedRoute component={CombineTourDetail} />}
+        </Route>
+        
+        {/* Combine Public Route */}
+        <Route path="/combine-public">
+          {() => <ProtectedRoute component={CombinePublic} />}
         </Route>
         
         {/* Coach Portal Route */}
