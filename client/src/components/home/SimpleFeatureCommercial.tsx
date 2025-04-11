@@ -140,49 +140,269 @@ const features = [
     color: '#06b6d4',
     bgImage: 'linear-gradient(135deg, #155e75 0%, #06b6d4 100%)',
     demo: (
-      <div className="relative h-full w-full flex items-center justify-center overflow-hidden">
-        {/* Radar Chart */}
-        <div className="relative w-48 h-48">
+      <div className="relative h-full w-full overflow-hidden">
+        {/* Combine Testing Field */}
+        <div className="absolute inset-0">
+          {/* Field markings */}
+          <div className="absolute left-0 right-0 top-[70%] h-[2px] bg-white/20"></div>
+          <div className="absolute left-1/4 top-[60%] bottom-0 w-[2px] bg-white/20"></div>
+          <div className="absolute left-2/4 top-[60%] bottom-0 w-[2px] bg-white/20"></div>
+          <div className="absolute left-3/4 top-[60%] bottom-0 w-[2px] bg-white/20"></div>
+        </div>
+        
+        {/* GAR Radar Chart in background */}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 w-32 h-32">
           <div className="absolute inset-0 border border-cyan-500/30 rounded-full"></div>
-          <div className="absolute inset-[15%] border border-cyan-500/50 rounded-full"></div>
-          <div className="absolute inset-[30%] border border-cyan-500/70 rounded-full"></div>
-          <div className="absolute inset-[45%] border border-cyan-500 rounded-full"></div>
-          
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 text-cyan-400 text-xs">Physical</div>
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 text-cyan-400 text-xs">Mental</div>
-          <div className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 text-cyan-400 text-xs">Technical</div>
-          <div className="absolute right-0 top-1/2 translate-x-1/2 -translate-y-1/2 text-cyan-400 text-xs">Focus</div>
+          <div className="absolute inset-[20%] border border-cyan-500/50 rounded-full"></div>
+          <div className="absolute inset-[40%] border border-cyan-500/70 rounded-full"></div>
+          <div className="absolute inset-[60%] border border-cyan-500 rounded-full"></div>
           
           {/* Radar Fill */}
           <motion.div
             className="absolute inset-0"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
+            transition={{ duration: 0.7 }}
           >
             <svg width="100%" height="100%" viewBox="0 0 100 100">
               <motion.path
                 d="M50,10 L25,50 L50,90 L75,50 Z"
-                fill="rgba(6, 182, 212, 0.3)"
+                fill="rgba(6, 182, 212, 0.2)"
                 stroke="#06b6d4"
                 strokeWidth="1"
                 initial={{ scale: 0.5, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 1 }}
+                transition={{ duration: 0.7 }}
               />
             </svg>
           </motion.div>
         </div>
         
-        {/* Score Banner */}
-        <motion.div
-          className="absolute top-4 left-1/2 -translate-x-1/2 bg-cyan-500 text-white px-4 py-1 rounded-full font-bold shadow-lg"
-          initial={{ y: -50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
+        {/* Animated Athletes Doing Combine Tests */}
+        
+        {/* 40-Yard Dash */}
+        <motion.div 
+          className="absolute left-[10%] top-[70%] w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center"
+          initial={{ x: 0 }}
+          animate={{ 
+            x: [0, 240],
+            y: [0, -2, 0, -2, 0]
+          }}
+          transition={{ 
+            duration: 1.5, 
+            repeat: Infinity,
+            repeatDelay: 3.5,
+            ease: "easeInOut" 
+          }}
         >
-          GAR SCORE: 84/100
+          <span className="text-white text-xs font-bold">1</span>
         </motion.div>
+        
+        {/* Sprint Timer */}
+        <motion.div
+          className="absolute left-[85%] top-[70%] bg-black/50 backdrop-blur-sm px-2 py-1 rounded text-xs"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 1, 1, 0] }}
+          transition={{ 
+            duration: 2, 
+            repeat: Infinity,
+            repeatDelay: 3,
+            times: [0, 0.1, 0.8, 1]
+          }}
+        >
+          <span className="text-cyan-400 font-mono font-bold">4.53s</span>
+        </motion.div>
+        
+        {/* Vertical Jump */}
+        <motion.div
+          className="absolute left-[25%] top-[85%] w-5 h-5 bg-green-500 rounded-full flex items-center justify-center"
+          animate={{ 
+            y: [0, -60, 0],
+          }}
+          transition={{ 
+            duration: 1.2, 
+            repeat: Infinity,
+            repeatDelay: 2.8,
+            ease: "easeOut"
+          }}
+        >
+          <span className="text-white text-xs font-bold">2</span>
+        </motion.div>
+        
+        {/* Vertical Jump Measurement */}
+        <motion.div
+          className="absolute left-[27%] top-[55%] bg-black/50 backdrop-blur-sm px-2 py-1 rounded text-xs"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 1, 1, 0] }}
+          transition={{ 
+            duration: 1.5, 
+            repeat: Infinity,
+            repeatDelay: 2.5,
+            times: [0, 0.2, 0.7, 1],
+            delay: 0.5
+          }}
+        >
+          <span className="text-green-400 font-mono font-bold">36.5"</span>
+        </motion.div>
+        
+        {/* Agility Drill */}
+        <motion.div
+          className="absolute left-[50%] top-[85%] w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center"
+          animate={{ 
+            x: [0, 20, 0, -20, 0],
+            y: [0, -20, -30, -20, 0],
+          }}
+          transition={{ 
+            duration: 2, 
+            repeat: Infinity,
+            repeatDelay: 2,
+            ease: "linear"
+          }}
+        >
+          <span className="text-white text-xs font-bold">3</span>
+        </motion.div>
+        
+        {/* Agility Cones */}
+        <div className="absolute left-[45%] top-[82%] w-2 h-2 bg-orange-500/70 transform rotate-45"></div>
+        <div className="absolute left-[50%] top-[77%] w-2 h-2 bg-orange-500/70 transform rotate-45"></div>
+        <div className="absolute left-[55%] top-[82%] w-2 h-2 bg-orange-500/70 transform rotate-45"></div>
+        
+        {/* Bench Press */}
+        <motion.div
+          className="absolute left-[75%] top-[85%] w-5 h-5 bg-red-500 rounded-full flex items-center justify-center"
+          animate={{ 
+            y: [0, -5, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ 
+            duration: 0.5, 
+            repeat: Infinity,
+            repeatDelay: 0.2,
+          }}
+        >
+          <span className="text-white text-xs font-bold">4</span>
+        </motion.div>
+        
+        {/* Bench Press Bar */}
+        <motion.div
+          className="absolute left-[69%] top-[83%] w-12 h-1 bg-gray-400 rounded-full"
+          animate={{ 
+            y: [0, -5, 0],
+          }}
+          transition={{ 
+            duration: 0.5, 
+            repeat: Infinity,
+            repeatDelay: 0.2,
+          }}
+        />
+        
+        {/* Rep Counter */}
+        <motion.div
+          className="absolute left-[75%] top-[75%] bg-black/50 backdrop-blur-sm px-2 py-1 rounded text-xs"
+          animate={{ opacity: [0.7, 1, 0.7] }}
+          transition={{ duration: 1, repeat: Infinity }}
+        >
+          <span className="text-red-400 font-mono font-bold">
+            <motion.span
+              animate={{ opacity: [1, 0, 1] }}
+              transition={{ duration: 0.2, repeat: Infinity, repeatDelay: 0.5 }}
+            >
+              Rep: 12
+            </motion.span>
+          </span>
+        </motion.div>
+        
+        {/* GAR Score Calculation */}
+        <motion.div
+          className="absolute top-[25%] left-1/2 -translate-x-1/2 bg-cyan-900/80 backdrop-blur-sm p-3 rounded-lg border border-cyan-500/30 shadow-lg"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="text-center mb-2">
+            <span className="text-cyan-400 font-bold text-sm">GAR SCORE: </span>
+            <motion.span 
+              className="text-white font-bold"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8, duration: 0.5 }}
+            >
+              84/100
+            </motion.span>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="flex justify-between items-center">
+              <span className="text-cyan-200">Speed:</span>
+              <motion.div
+                className="w-12 h-1.5 bg-gray-800 rounded-full overflow-hidden"
+                initial={{ width: 12 }}
+                animate={{ width: 12 }}
+              >
+                <motion.div
+                  className="h-full bg-cyan-400 rounded-full"
+                  initial={{ width: '0%' }}
+                  animate={{ width: '85%' }}
+                  transition={{ delay: 0.3, duration: 0.7 }}
+                />
+              </motion.div>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-cyan-200">Strength:</span>
+              <motion.div
+                className="w-12 h-1.5 bg-gray-800 rounded-full overflow-hidden"
+                initial={{ width: 12 }}
+                animate={{ width: 12 }}
+              >
+                <motion.div
+                  className="h-full bg-cyan-400 rounded-full"
+                  initial={{ width: '0%' }}
+                  animate={{ width: '78%' }}
+                  transition={{ delay: 0.4, duration: 0.7 }}
+                />
+              </motion.div>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-cyan-200">Agility:</span>
+              <motion.div
+                className="w-12 h-1.5 bg-gray-800 rounded-full overflow-hidden"
+                initial={{ width: 12 }}
+                animate={{ width: 12 }}
+              >
+                <motion.div
+                  className="h-full bg-cyan-400 rounded-full"
+                  initial={{ width: '0%' }}
+                  animate={{ width: '90%' }}
+                  transition={{ delay: 0.5, duration: 0.7 }}
+                />
+              </motion.div>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-cyan-200">Focus:</span>
+              <motion.div
+                className="w-12 h-1.5 bg-gray-800 rounded-full overflow-hidden"
+                initial={{ width: 12 }}
+                animate={{ width: 12 }}
+              >
+                <motion.div
+                  className="h-full bg-cyan-400 rounded-full"
+                  initial={{ width: '0%' }}
+                  animate={{ width: '82%' }}
+                  transition={{ delay: 0.6, duration: 0.7 }}
+                />
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
+        
+        {/* Exercise Labels */}
+        <div className="absolute left-[10%] bottom-2 text-[10px] text-cyan-400">40-Yard Dash</div>
+        <div className="absolute left-[25%] bottom-2 text-[10px] text-cyan-400">Vertical Jump</div>
+        <div className="absolute left-[50%] bottom-2 text-[10px] text-cyan-400">Agility Drill</div>
+        <div className="absolute left-[75%] bottom-2 text-[10px] text-cyan-400">Bench Press</div>
       </div>
     )
   },
