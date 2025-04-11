@@ -3414,6 +3414,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  /**
+   * @route GET /api/workout-verifications/user
+   * @desc Get workout verifications for current user
+   */
+  app.get("/api/workout-verifications/user", isAuthenticatedMiddleware, async (req: Request, res: Response) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      // Get all workout verifications for the user
+      const verifications = await storage.getWorkoutVerifications(userId);
+      
+      // Enhance data with additional info
+      const enhancedVerifications = await Promise.all(verifications.map(async (verification) => {
+        // Count the number of videos used for verification
+        const videoCount = verification.videoUrl ? 1 : 0;
+        
+        // Add any checkpoint data
+        const checkpoints = await storage.getWorkoutVerificationCheckpoints(verification.id);
+        
+        // Calculate expected XP reward
+        const baseXP = 50;
+        const durationXP = Math.min(verification.duration || 0, 10) * 10;
+        const xpReward = baseXP + durationXP;
+        
+        // Convert field names for compatibility with frontend
+        return {
+          ...verification,
+          workoutType: verification.exerciseType,
+          submissionDate: verification.startedAt,
+          verificationDate: verification.verifiedAt || verification.completedAt,
+          status: verification.status,
+          videoCount,
+          checkpoints,
+          xpReward,
+          verifier: verification.verifiedById ? 'Coach' : 'AI System',
+          rejectionReason: verification.feedback
+        };
+      }));
+      
+      return res.json(enhancedVerifications);
+    } catch (error) {
+      console.error("Error fetching user workout verifications:", error);
+      return res.status(500).json({ message: "Error fetching workout verifications" });
+    }
+  });
+  
+  /**
+   * @route GET /api/workout-verifications/stats
+   * @desc Get workout verification statistics for current user
+   */
+  app.get("/api/workout-verifications/stats", isAuthenticatedMiddleware, async (req: Request, res: Response) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      // Get verified workouts
+      const verifications = await storage.getWorkoutVerifications(userId);
+      const verifiedWorkouts = verifications.filter(v => v.status === 'verified' || v.status === 'completed');
+      
+      // Get weekly workouts (last 7 days)
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      const weeklyWorkouts = verifications.filter(v => {
+        const verificationDate = new Date(v.startedAt);
+        return verificationDate >= oneWeekAgo;
+      });
+      
+      // Calculate total XP earned from workouts
+      const xpEarned = verifiedWorkouts.reduce((total, v) => total + (v.xpEarned || 0), 0);
+      
+      // Calculate streak days (this would ideally be pulled from the XP system)
+      const streakDays = await storage.getUserStreakDays(userId);
+      
+      // Stats to return
+      const stats = {
+        weeklyGoal: 5, // Default goal of 5 workouts per week
+        weeklyCompleted: weeklyWorkouts.length,
+        totalVerified: verifiedWorkouts.length,
+        xpEarned,
+        streakDays: streakDays || 0
+      };
+      
+      return res.json(stats);
+    } catch (error) {
+      console.error("Error fetching workout stats:", error);
+      return res.status(500).json({ message: "Error fetching workout statistics" });
+    }
+  });
+  
   app.get("/api/weight-room/equipment/:id", async (req: Request, res: Response) => {
     try {
       const equipmentId = parseInt(req.params.id);
