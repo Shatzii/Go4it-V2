@@ -4157,6 +4157,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Register for combine tour event
+  app.post("/api/combine-tour/register/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const eventId = parseInt(req.params.id);
+      const userId = (req.user as any).id;
+      
+      // Get the event details
+      const event = await storage.getCombineTourEvent(eventId);
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      // Check if there are capacity limits (if implemented)
+      if (event.capacity !== undefined && event.registeredCount !== undefined && event.registeredCount >= event.capacity) {
+        return res.status(400).json({ message: "This event is already at capacity" });
+      }
+      
+      // Check if registration deadline has passed (if implemented)
+      if (event.registrationDeadline) {
+        const now = new Date();
+        const deadline = new Date(event.registrationDeadline);
+        if (deadline < now) {
+          return res.status(400).json({ message: "Registration deadline has passed" });
+        }
+      }
+      
+      // Create registration record
+      await storage.createCombineEventRegistration({
+        eventId,
+        userId,
+        status: "registered",
+        registeredAt: new Date(),
+      });
+      
+      // Update event registration count
+      if (event.registeredCount !== undefined) {
+        await storage.updateCombineTourEvent(eventId, {
+          registeredCount: (event.registeredCount || 0) + 1
+        });
+      }
+      
+      return res.status(200).json({
+        success: true,
+        message: "Registration successful",
+        eventId
+      });
+      
+    } catch (error) {
+      console.error("Error registering for combine tour event:", error);
+      return res.status(500).json({ message: "Failed to register for event" });
+    }
+  });
+
   // Webhook endpoint for Active Network callbacks
   app.post("/api/combine-tour/webhook", async (req: Request, res: Response) => {
     try {
