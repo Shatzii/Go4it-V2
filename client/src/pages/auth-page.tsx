@@ -24,9 +24,7 @@ const registerSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   role: z.enum(["athlete", "coach"]),
-  agreedToTerms: z.boolean().refine((val) => val === true, {
-    message: "You must agree to the terms and conditions to register",
-  }),
+  // Remove the agreedToTerms field from schema - we'll handle this with the agreement modal
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -67,7 +65,6 @@ export default function AuthPage() {
       email: "",
       password: "",
       role: "athlete",
-      agreedToTerms: false,
     },
   });
 
