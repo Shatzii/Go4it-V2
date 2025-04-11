@@ -94,8 +94,15 @@ export default function AuthPage() {
   };
 
   const onRegisterSubmit = async (data: RegisterFormValues) => {
+    if (isSubmitting) return; // Prevent double submission
+    
     setIsSubmitting(true);
     try {
+      // Validate required fields
+      if (!data.username || !data.password || !data.email || !data.name || !data.role) {
+        throw new Error("Please fill in all required fields");
+      }
+
       // Show the NDA agreement dialog
       setPendingRegistration(data);
       setShowAgreement(true);
@@ -103,17 +110,16 @@ export default function AuthPage() {
       // Clear any previous form errors
       registerForm.clearErrors();
       
-      // Log registration attempt
       console.log("Attempting registration with data:", data);
-      
-    } catch (error) {
+    } catch (error: any) {
       console.error("Registration error:", error);
       toast({
         title: "Registration Error",
-        description: "There was a problem with registration. Please try again.",
+        description: error.message || "There was a problem with registration. Please try again.",
         variant: "destructive"
       });
       setIsSubmitting(false);
+      setPendingRegistration(null);
     }
   };
   
