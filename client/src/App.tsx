@@ -68,6 +68,7 @@ import AcademicProgress from "@/pages/academic-progress";
 import VideoHighlightsPage from "@/pages/video-highlights-page";
 import AIVideoPlayerDemo from "@/pages/ai-video-player-demo";
 import EnhancedSkillTreePage from "@/pages/enhanced-skill-tree-page";
+import AnalyticsDashboard from "@/pages/analytics-dashboard";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -347,6 +348,11 @@ function Router() {
         {/* AI Video Player Demo Route */}
         <Route path="/ai-video-player">
           {() => <ProtectedRoute component={AIVideoPlayerDemo} />}
+        </Route>
+        
+        {/* Analytics Dashboard Route */}
+        <Route path="/analytics-dashboard">
+          {() => <ProtectedRoute component={AnalyticsDashboard} />}
         </Route>
 
         {/* Fallback to 404 */}

@@ -27,7 +27,9 @@ import {
   Activity,
   Award,
   Target,
-  BookOpen
+  BookOpen,
+  Clock,
+  Eye
 } from "lucide-react";
 import { format, subDays } from "date-fns";
 import analyticsService from "../lib/analytics";
@@ -54,6 +56,9 @@ import {
 // Helper functions
 const formatPercent = (value: number) => `${value.toFixed(1)}%`;
 const formatNumber = (value: number) => value.toLocaleString();
+
+// Common chart colors
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
 // Dashboard UI components
 const DashboardHeader = ({ title }: { title: string }) => (
@@ -188,8 +193,6 @@ const StarPathTab = ({ data, isLoading }: any) => {
       { name: 'Mental Focus', value: 0 },
     ],
   };
-
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
   return (
     <div className="space-y-4">
@@ -938,38 +941,7 @@ const UserEngagementTab = ({ data, isLoading }: any) => {
   );
 };
 
-// Icons needed for the components above
-const Clock = ({ className = "" }: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <circle cx="12" cy="12" r="10" />
-    <polyline points="12 6 12 12 16 14" />
-  </svg>
-);
-
-const Eye = ({ className = "" }: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-    <circle cx="12" cy="12" r="3" />
-  </svg>
-);
+// No custom icon components needed as we're importing from lucide-react
 
 // Main Analytics Dashboard
 export default function AnalyticsDashboard() {
@@ -1004,10 +976,12 @@ export default function AnalyticsDashboard() {
       dateRange.endDate,
     ],
     queryFn: async () => {
-      return analyticsService.getAnalyticsDashboard(
+      const response = await analyticsService.getAnalyticsDashboard(
         dateRange.startDate,
         dateRange.endDate
       );
+      // Server returns data in the format { dashboard: {...} }
+      return response;
     },
     enabled: !!user?.id,
   });
@@ -1040,19 +1014,19 @@ export default function AnalyticsDashboard() {
           <TabsTrigger value="engagement">User Engagement</TabsTrigger>
         </TabsList>
         <TabsContent value="star-path" className="space-y-4">
-          <StarPathTab data={data?.dashboard} isLoading={isLoading} />
+          <StarPathTab data={data?.data?.dashboard} isLoading={isLoading} />
         </TabsContent>
         <TabsContent value="workout" className="space-y-4">
-          <WorkoutAnalyticsTab data={data?.dashboard} isLoading={isLoading} />
+          <WorkoutAnalyticsTab data={data?.data?.dashboard} isLoading={isLoading} />
         </TabsContent>
         <TabsContent value="neurodivergent" className="space-y-4">
-          <NeurodivergentTab data={data?.dashboard} isLoading={isLoading} />
+          <NeurodivergentTab data={data?.data?.dashboard} isLoading={isLoading} />
         </TabsContent>
         <TabsContent value="academic" className="space-y-4">
-          <AcademicAthleticTab data={data?.dashboard} isLoading={isLoading} />
+          <AcademicAthleticTab data={data?.data?.dashboard} isLoading={isLoading} />
         </TabsContent>
         <TabsContent value="engagement" className="space-y-4">
-          <UserEngagementTab data={data?.dashboard} isLoading={isLoading} />
+          <UserEngagementTab data={data?.data?.dashboard} isLoading={isLoading} />
         </TabsContent>
       </Tabs>
     </div>
