@@ -234,6 +234,7 @@ export interface IStorage {
   
   // Skill Tree operations
   getSkillTreeNodes(sportType?: string, position?: string): Promise<SkillTreeNode[]>;
+  getRootSkillTreeNodes(sportType?: string, position?: string): Promise<SkillTreeNode[]>;
   getSkillTreeNode(id: number): Promise<SkillTreeNode | undefined>;
   getSkillTreeNodesByLevel(level: number): Promise<SkillTreeNode[]>;
   createSkillTreeNode(node: InsertSkillTreeNode): Promise<SkillTreeNode>;
@@ -2845,6 +2846,27 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error(`Error fetching skill tree node with ID ${id}:`, error);
       return undefined;
+    }
+  }
+  
+  async getRootSkillTreeNodes(sportType?: string, position?: string): Promise<SkillTreeNode[]> {
+    try {
+      // First get all skill tree nodes based on sport and position filters
+      const allNodes = await this.getSkillTreeNodes(sportType, position);
+      
+      // Get all relationships to find child nodes
+      const relationships = await this.getSkillTreeRelationships();
+      
+      // Create a set of all node IDs that are children in relationships
+      const childNodeIds = new Set(relationships.map(rel => rel.child_id));
+      
+      // Root nodes are those that don't appear as children in any relationship
+      const rootNodes = allNodes.filter(node => !childNodeIds.has(node.id));
+      
+      return rootNodes;
+    } catch (error) {
+      console.error('Error in getRootSkillTreeNodes:', error);
+      return [];
     }
   }
 
