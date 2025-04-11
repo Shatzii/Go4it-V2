@@ -21,6 +21,7 @@ import videoRoutes from './routes/video-routes';
 import playerRoutes from './routes/player-routes';
 import analyticsRoutes from './routes/analytics-routes';
 import combineRoutes from './routes/combine-routes';
+import combinePublicRoutes from './routes/combine-public-routes';
 import academicRoutes from './routes/academic-routes';
 
 // Helper function to determine event status
@@ -5389,6 +5390,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register Combine Routes
   app.use('/api/combines', isAuthenticatedMiddleware, combineRoutes);
+  
+  // Register the public combine routes
+  app.use('/api/combine-public', combinePublicRoutes);
   
   // Register Academic Routes
   app.use('/api/academics', academicRoutes);

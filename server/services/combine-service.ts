@@ -1,505 +1,598 @@
 import { db } from '../db';
-import { combineRatingTemplates, combineAthleteRatings, combineAnalysisResults } from '@shared/schema';
-import { eq, and, desc } from 'drizzle-orm';
-import fs from 'fs';
-import path from 'path';
+import { storage } from '../storage';
+import {
+  combineRatingTemplates,
+  combineAthleteRatings,
+  combineAnalysisResults,
+  users,
+  videos,
+  CombineAthleteRating,
+  CombineAnalysisResult,
+  CombineRatingTemplate,
+} from '@shared/schema';
+import { eq, and } from 'drizzle-orm';
 
-/**
- * Service for handling combine-related functions including rating templates,
- * athlete ratings, and analysis results
- */
 export class CombineService {
-  private initialized = false;
-  private templateCount = 0;
-  
-  // Cache of event ratings for quick access
-  private eventRatingsCache: Record<number, any[]> = {};
-
   /**
-   * Initialize the service by loading templates if needed
+   * Get all templates with optional filtering
    */
-  async initialize() {
-    try {
-      // Check if templates already exist
-      const existingTemplates = await db.select({
-        count: { count: combineRatingTemplates.id }
-      }).from(combineRatingTemplates);
-      
-      this.templateCount = existingTemplates[0]?.count || 0;
-      
-      if (this.templateCount === 0) {
-        await this.loadTemplatesFromFiles();
-      }
-      
-      console.log(`Combine Service initialized with ${this.templateCount} templates`);
-      this.initialized = true;
-      return true;
-    } catch (error) {
-      console.error('Failed to initialize Combine Service:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Load template JSON files from the temp_extract directory
-   */
-  private async loadTemplatesFromFiles() {
-    try {
-      const extractDir = path.join(process.cwd(), 'temp_extract');
-      
-      // Get all JSON files in the directory
-      const files = fs.readdirSync(extractDir).filter(file => file.endsWith('.json'));
-      
-      let loadedCount = 0;
-      
-      // Process each JSON file
-      for (const file of files) {
-        try {
-          const filePath = path.join(extractDir, file);
-          const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-          
-          // Skip if no template ID or if not a rating template
-          if (!data.id || !data.star_level || !data.sport || !data.position) {
-            continue;
-          }
-          
-          // Insert template into database
-          await db.insert(combineRatingTemplates).values({
-            template_id: data.id,
-            name: data.name,
-            star_level: data.star_level,
-            sport: data.sport,
-            position: data.position,
-            age_group: data.age_group,
-            metrics: data.metrics,
-            traits: data.traits,
-            film_expectations: data.film_expectations,
-            training_focus: data.training_focus,
-            avatar: data.avatar,
-            rank: data.rank,
-            xp_level: data.xp_level
-          }).onConflictDoNothing();
-          
-          loadedCount++;
-        } catch (err) {
-          console.error(`Error processing template file ${file}:`, err);
-        }
-      }
-      
-      this.templateCount = loadedCount;
-      console.log(`Loaded ${loadedCount} combine rating templates`);
-      
-    } catch (error) {
-      console.error('Failed to load combine templates:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get all rating templates
-   */
-  async getAllTemplates(filters: {
-    sport?: string;
-    position?: string;
-    starLevel?: number;
-  } = {}) {
+  async getAllTemplates(filters: { sport?: string, position?: string, starLevel?: number } = {}): Promise<CombineRatingTemplate[]> {
     try {
       let query = db.select().from(combineRatingTemplates);
       
-      const conditions = [];
       if (filters.sport) {
-        conditions.push(eq(combineRatingTemplates.sport, filters.sport));
-      }
-      if (filters.position) {
-        conditions.push(eq(combineRatingTemplates.position, filters.position));
-      }
-      if (filters.starLevel) {
-        conditions.push(eq(combineRatingTemplates.star_level, filters.starLevel));
+        query = query.where(eq(combineRatingTemplates.sport, filters.sport));
       }
       
-      if (conditions.length > 0) {
-        query = query.where(and(...conditions));
+      if (filters.position) {
+        query = query.where(eq(combineRatingTemplates.position, filters.position));
+      }
+      
+      if (filters.starLevel) {
+        query = query.where(eq(combineRatingTemplates.star_level, filters.starLevel));
       }
       
       return await query;
     } catch (error) {
-      console.error('Failed to get combine templates:', error);
-      throw error;
+      console.error('Error fetching combine rating templates:', error);
+      return [];
     }
   }
-
+  
   /**
    * Get a specific template by ID
    */
-  async getTemplateById(templateId: string) {
+  async getTemplateById(templateId: string): Promise<CombineRatingTemplate | undefined> {
     try {
-      const [template] = await db.select()
+      const [template] = await db
+        .select()
         .from(combineRatingTemplates)
         .where(eq(combineRatingTemplates.template_id, templateId));
       
       return template;
     } catch (error) {
-      console.error(`Failed to get template with ID ${templateId}:`, error);
-      throw error;
+      console.error('Error fetching combine rating template:', error);
+      return undefined;
     }
   }
-
+  
   /**
-   * Create an athlete rating based on a template
+   * Create a new rating template
    */
-  async createAthleteRating(data: {
-    userId: number;
-    templateId?: string;
-    eventId?: number;
-    sport: string;
-    position: string;
-    starLevel: number;
-    metrics: any;
-    traits: any;
-    notes?: string;
-    ratedBy?: number;
-  }) {
+  async createTemplate(templateData: any): Promise<CombineRatingTemplate | undefined> {
     try {
-      const [rating] = await db.insert(combineAthleteRatings)
-        .values({
-          user_id: data.userId,
-          template_id: data.templateId,
-          event_id: data.eventId,
-          sport: data.sport,
-          position: data.position,
-          star_level: data.starLevel,
-          metrics: data.metrics,
-          traits: data.traits,
-          notes: data.notes,
-          rated_by: data.ratedBy
+      const [template] = await db
+        .insert(combineRatingTemplates)
+        .values(templateData)
+        .returning();
+      
+      return template;
+    } catch (error) {
+      console.error('Error creating combine rating template:', error);
+      return undefined;
+    }
+  }
+  
+  /**
+   * Update an existing template
+   */
+  async updateTemplate(templateId: string, templateData: any): Promise<CombineRatingTemplate | undefined> {
+    try {
+      const [template] = await db
+        .update(combineRatingTemplates)
+        .set(templateData)
+        .where(eq(combineRatingTemplates.template_id, templateId))
+        .returning();
+      
+      return template;
+    } catch (error) {
+      console.error('Error updating combine rating template:', error);
+      return undefined;
+    }
+  }
+  
+  /**
+   * Delete a template
+   */
+  async deleteTemplate(templateId: string): Promise<boolean> {
+    try {
+      const result = await db
+        .delete(combineRatingTemplates)
+        .where(eq(combineRatingTemplates.template_id, templateId))
+        .returning();
+      
+      return result.length > 0;
+    } catch (error) {
+      console.error('Error deleting combine rating template:', error);
+      return false;
+    }
+  }
+  
+  /**
+   * Save analysis results (create or update)
+   */
+  async saveAnalysisResults(analysisData: any): Promise<CombineAnalysisResult | undefined> {
+    try {
+      if (analysisData.id) {
+        // Update existing analysis
+        const [analysis] = await db
+          .update(combineAnalysisResults)
+          .set(analysisData)
+          .where(eq(combineAnalysisResults.id, analysisData.id))
+          .returning();
+        
+        return analysis;
+      } else {
+        // Create new analysis
+        const [analysis] = await db
+          .insert(combineAnalysisResults)
+          .values(analysisData)
+          .returning();
+        
+        return analysis;
+      }
+    } catch (error) {
+      console.error('Error saving analysis results:', error);
+      return undefined;
+    }
+  }
+  
+  /**
+   * Get combine statistics
+   */
+  async getCombineStats(): Promise<any> {
+    try {
+      // Count total templates
+      const [templateCount] = await db
+        .select({ count: db.fn.count() })
+        .from(combineRatingTemplates);
+      
+      // Count total athlete ratings
+      const [ratingCount] = await db
+        .select({ count: db.fn.count() })
+        .from(combineAthleteRatings);
+      
+      // Count total analysis results
+      const [analysisCount] = await db
+        .select({ count: db.fn.count() })
+        .from(combineAnalysisResults);
+      
+      // Get most common sports
+      const sports = await db
+        .select({ 
+          sport: combineRatingTemplates.sport,
+          count: db.fn.count()
         })
+        .from(combineRatingTemplates)
+        .groupBy(combineRatingTemplates.sport)
+        .orderBy(db.sql`count DESC`)
+        .limit(5);
+      
+      return {
+        totalTemplates: Number(templateCount.count),
+        totalRatings: Number(ratingCount.count),
+        totalAnalysis: Number(analysisCount.count),
+        topSports: sports.map(s => ({ 
+          name: s.sport, 
+          count: Number(s.count) 
+        }))
+      };
+    } catch (error) {
+      console.error('Error getting combine stats:', error);
+      return {
+        totalTemplates: 0,
+        totalRatings: 0,
+        totalAnalysis: 0,
+        topSports: []
+      };
+    }
+  }
+  
+  /**
+   * Compare athlete metrics to a template
+   */
+  async compareToTemplate(templateId: string, metrics: Record<string, number>): Promise<any> {
+    try {
+      const template = await this.getTemplateById(templateId);
+      
+      if (!template || !template.metrics) {
+        throw new Error('Template not found or has no metrics');
+      }
+      
+      const templateMetrics = template.metrics as Record<string, number>;
+      const comparison: Record<string, any> = {};
+      
+      // Calculate percentages and differences
+      Object.keys(templateMetrics).forEach(key => {
+        if (metrics[key] !== undefined) {
+          const templateValue = templateMetrics[key];
+          const athleteValue = metrics[key];
+          
+          comparison[key] = {
+            template: templateValue,
+            athlete: athleteValue,
+            difference: athleteValue - templateValue,
+            percentage: templateValue > 0 ? (athleteValue / templateValue) * 100 : 0
+          };
+        }
+      });
+      
+      // Calculate overall match percentage
+      let totalPercentage = 0;
+      let metrics_count = Object.keys(comparison).length;
+      
+      if (metrics_count > 0) {
+        Object.values(comparison).forEach(item => {
+          totalPercentage += item.percentage;
+        });
+        
+        return {
+          templateId,
+          templateName: template.name,
+          sport: template.sport,
+          position: template.position,
+          starLevel: template.star_level,
+          metrics: comparison,
+          overallMatch: totalPercentage / metrics_count
+        };
+      } else {
+        return {
+          templateId,
+          templateName: template.name,
+          sport: template.sport,
+          position: template.position,
+          starLevel: template.star_level,
+          metrics: {},
+          overallMatch: 0
+        };
+      }
+    } catch (error) {
+      console.error('Error comparing to template:', error);
+      return undefined;
+    }
+  }
+  /**
+   * Get all rating templates for a sport and position
+   */
+  async getRatingTemplates(sport?: string, position?: string): Promise<CombineRatingTemplate[]> {
+    try {
+      let query = db.select().from(combineRatingTemplates);
+      
+      if (sport) {
+        query = query.where(eq(combineRatingTemplates.sport, sport));
+      }
+      
+      if (position) {
+        query = query.where(eq(combineRatingTemplates.position, position));
+      }
+      
+      return await query;
+    } catch (error) {
+      console.error('Error fetching combine rating templates:', error);
+      return [];
+    }
+  }
+  
+  /**
+   * Get rating template by ID
+   */
+  async getRatingTemplate(templateId: string): Promise<CombineRatingTemplate | undefined> {
+    try {
+      const [template] = await db
+        .select()
+        .from(combineRatingTemplates)
+        .where(eq(combineRatingTemplates.template_id, templateId));
+      
+      return template;
+    } catch (error) {
+      console.error('Error fetching combine rating template:', error);
+      return undefined;
+    }
+  }
+  
+  /**
+   * Get all ratings for an athlete
+   */
+  async getAthleteRatings(userId: number): Promise<CombineAthleteRating[]> {
+    try {
+      const ratings = await db
+        .select()
+        .from(combineAthleteRatings)
+        .where(eq(combineAthleteRatings.user_id, userId));
+      
+      // Enhance with rated_by name
+      const enhancedRatings = await Promise.all(
+        ratings.map(async (rating) => {
+          if (rating.rated_by) {
+            const rater = await storage.getUser(rating.rated_by);
+            return {
+              ...rating,
+              user_name: (await storage.getUser(rating.user_id))?.name,
+              rater_name: rater?.name
+            };
+          }
+          
+          return {
+            ...rating,
+            user_name: (await storage.getUser(rating.user_id))?.name
+          };
+        })
+      );
+      
+      return enhancedRatings as CombineAthleteRating[];
+    } catch (error) {
+      console.error('Error fetching athlete ratings:', error);
+      return [];
+    }
+  }
+  
+  /**
+   * Get all ratings for an event
+   */
+  async getEventRatings(eventId: number): Promise<CombineAthleteRating[]> {
+    try {
+      const ratings = await db
+        .select()
+        .from(combineAthleteRatings)
+        .where(eq(combineAthleteRatings.event_id, eventId));
+      
+      // Enhance with user names
+      const enhancedRatings = await Promise.all(
+        ratings.map(async (rating) => {
+          return {
+            ...rating,
+            user_name: (await storage.getUser(rating.user_id))?.name
+          };
+        })
+      );
+      
+      return enhancedRatings as CombineAthleteRating[];
+    } catch (error) {
+      console.error('Error fetching event ratings:', error);
+      return [];
+    }
+  }
+  
+  /**
+   * Create a rating for an athlete
+   */
+  async createAthleteRating(ratingData: any): Promise<CombineAthleteRating | undefined> {
+    try {
+      // Validate the template exists if provided
+      if (ratingData.template_id) {
+        const template = await this.getRatingTemplate(ratingData.template_id);
+        if (!template) {
+          throw new Error('Rating template not found');
+        }
+      }
+      
+      // Validate the user exists
+      const user = await storage.getUser(ratingData.user_id);
+      if (!user) {
+        throw new Error('User not found');
+      }
+      
+      // Insert the rating
+      const [rating] = await db
+        .insert(combineAthleteRatings)
+        .values(ratingData)
         .returning();
       
       return rating;
     } catch (error) {
-      console.error('Failed to create athlete rating:', error);
-      throw error;
+      console.error('Error creating athlete rating:', error);
+      return undefined;
     }
   }
-
+  
   /**
-   * Get all ratings for a specific athlete
+   * Get analysis results for an athlete
    */
-  async getAthleteRatings(userId: number) {
+  async getAthleteAnalysisResults(userId: number): Promise<CombineAnalysisResult[]> {
     try {
-      return await db.select()
-        .from(combineAthleteRatings)
-        .where(eq(combineAthleteRatings.user_id, userId))
-        .orderBy(desc(combineAthleteRatings.created_at));
+      const results = await db
+        .select()
+        .from(combineAnalysisResults)
+        .where(eq(combineAnalysisResults.user_id, userId));
+      
+      return results;
     } catch (error) {
-      console.error(`Failed to get ratings for athlete ${userId}:`, error);
-      throw error;
+      console.error('Error fetching athlete analysis results:', error);
+      return [];
     }
   }
-
+  
   /**
-   * Store analysis results for an athlete
+   * Create analysis result for an athlete
    */
-  async saveAnalysisResults(data: {
-    userId: number;
-    eventId?: number;
-    videoId?: number;
-    positionFit: string[];
-    skillAnalysis: any;
-    nextSteps: any;
-    challenges?: string[];
-    recoveryStatus?: string;
-    recoveryScore?: number;
-    aiCoachNotes?: string;
-  }) {
+  async createAnalysisResult(analysisData: any): Promise<CombineAnalysisResult | undefined> {
     try {
-      const [result] = await db.insert(combineAnalysisResults)
-        .values({
-          user_id: data.userId,
-          event_id: data.eventId,
-          video_id: data.videoId,
-          position_fit: data.positionFit,
-          skill_analysis: data.skillAnalysis,
-          next_steps: data.nextSteps,
-          challenges: data.challenges,
-          recovery_status: data.recoveryStatus,
-          recovery_score: data.recoveryScore,
-          ai_coach_notes: data.aiCoachNotes
-        })
+      // Validate the user exists
+      const user = await storage.getUser(analysisData.user_id);
+      if (!user) {
+        throw new Error('User not found');
+      }
+      
+      // Insert the analysis result
+      const [result] = await db
+        .insert(combineAnalysisResults)
+        .values(analysisData)
         .returning();
       
       return result;
     } catch (error) {
-      console.error('Failed to save analysis results:', error);
-      throw error;
+      console.error('Error creating analysis result:', error);
+      return undefined;
     }
   }
-
+  
   /**
-   * Get analysis results for a specific athlete
+   * Get event registrations with status
    */
-  async getAthleteAnalysisResults(userId: number) {
+  async getEventRegistrations(eventId: number): Promise<any[]> {
     try {
-      return await db.select()
-        .from(combineAnalysisResults)
-        .where(eq(combineAnalysisResults.user_id, userId))
-        .orderBy(desc(combineAnalysisResults.ai_analysis_date));
-    } catch (error) {
-      console.error(`Failed to get analysis results for athlete ${userId}:`, error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get the most recent analysis result for an athlete
-   */
-  async getLatestAnalysisResult(userId: number) {
-    try {
-      const [result] = await db.select()
-        .from(combineAnalysisResults)
-        .where(eq(combineAnalysisResults.user_id, userId))
-        .orderBy(desc(combineAnalysisResults.ai_analysis_date))
-        .limit(1);
-      
-      return result;
-    } catch (error) {
-      console.error(`Failed to get latest analysis for athlete ${userId}:`, error);
-      throw error;
-    }
-  }
-
-  /**
-   * Create a new rating template
-   */
-  async createTemplate(data: {
-    templateId: string;
-    name: string;
-    starLevel: number;
-    sport: string;
-    position: string;
-    ageGroup?: string;
-    metrics: any;
-    traits?: any;
-    filmExpectations?: any;
-    trainingFocus?: any;
-    avatar?: string;
-    rank?: number;
-    xpLevel?: number;
-  }) {
-    try {
-      const [template] = await db.insert(combineRatingTemplates)
-        .values({
-          template_id: data.templateId,
-          name: data.name,
-          star_level: data.starLevel,
-          sport: data.sport,
-          position: data.position,
-          age_group: data.ageGroup,
-          metrics: data.metrics,
-          traits: data.traits,
-          film_expectations: data.filmExpectations,
-          training_focus: data.trainingFocus,
-          avatar: data.avatar,
-          rank: data.rank,
-          xp_level: data.xpLevel
-        })
-        .returning();
-      
-      this.templateCount++;
-      return template;
-    } catch (error) {
-      console.error('Failed to create rating template:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Update an existing rating template
-   */
-  async updateTemplate(templateId: string, data: {
-    name?: string;
-    starLevel?: number;
-    sport?: string;
-    position?: string;
-    ageGroup?: string;
-    metrics?: any;
-    traits?: any;
-    filmExpectations?: any;
-    trainingFocus?: any;
-    avatar?: string;
-    rank?: number;
-    xpLevel?: number;
-  }) {
-    try {
-      const [template] = await db.update(combineRatingTemplates)
-        .set({
-          name: data.name,
-          star_level: data.starLevel,
-          sport: data.sport,
-          position: data.position,
-          age_group: data.ageGroup,
-          metrics: data.metrics,
-          traits: data.traits,
-          film_expectations: data.filmExpectations,
-          training_focus: data.trainingFocus,
-          avatar: data.avatar,
-          rank: data.rank,
-          xp_level: data.xpLevel
-        })
-        .where(eq(combineRatingTemplates.template_id, templateId))
-        .returning();
-      
-      return template;
-    } catch (error) {
-      console.error(`Failed to update template with ID ${templateId}:`, error);
-      throw error;
-    }
-  }
-
-  /**
-   * Delete a combine rating template
-   */
-  async deleteTemplate(templateId: string) {
-    try {
-      const [deletedTemplate] = await db.delete(combineRatingTemplates)
-        .where(eq(combineRatingTemplates.template_id, templateId))
-        .returning();
-      
-      if (deletedTemplate) {
-        this.templateCount--;
+      // Get the event
+      const event = await storage.getCombineTourEvent(eventId);
+      if (!event) {
+        throw new Error('Event not found');
       }
       
-      return deletedTemplate;
-    } catch (error) {
-      console.error(`Failed to delete template with ID ${templateId}:`, error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get all athlete ratings for a specific combine event
-   */
-  async getEventRatings(eventId: number) {
-    try {
-      // Check cache first
-      if (this.eventRatingsCache[eventId]) {
-        return this.eventRatingsCache[eventId];
-      }
+      // Get registrations from storage
+      const registrations = await storage.getRegistrationsByEvent(eventId);
       
-      const ratings = await db.select()
-        .from(combineAthleteRatings)
-        .where(eq(combineAthleteRatings.event_id, eventId))
-        .orderBy(desc(combineAthleteRatings.created_at));
-      
-      // Cache the results
-      this.eventRatingsCache[eventId] = ratings;
-      
-      return ratings;
-    } catch (error) {
-      console.error(`Failed to get ratings for event ${eventId}:`, error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get combine statistics
-   */
-  async getCombineStats() {
-    try {
-      const templateCount = await db.select({
-        count: { count: combineRatingTemplates.id }
-      }).from(combineRatingTemplates);
-      
-      const ratingCount = await db.select({
-        count: { count: combineAthleteRatings.id }
-      }).from(combineAthleteRatings);
-      
-      const analysisCount = await db.select({
-        count: { count: combineAnalysisResults.id }
-      }).from(combineAnalysisResults);
-      
-      const sportBreakdown = await db.select({
-        sport: combineAthleteRatings.sport,
-        count: { count: combineAthleteRatings.id }
-      })
-      .from(combineAthleteRatings)
-      .groupBy(combineAthleteRatings.sport);
-      
-      const positionBreakdown = await db.select({
-        position: combineAthleteRatings.position,
-        count: { count: combineAthleteRatings.id }
-      })
-      .from(combineAthleteRatings)
-      .groupBy(combineAthleteRatings.position);
-      
-      const starLevelBreakdown = await db.select({
-        starLevel: combineAthleteRatings.star_level,
-        count: { count: combineAthleteRatings.id }
-      })
-      .from(combineAthleteRatings)
-      .groupBy(combineAthleteRatings.star_level);
-      
-      return {
-        templateCount: templateCount[0]?.count || 0,
-        ratingCount: ratingCount[0]?.count || 0,
-        analysisCount: analysisCount[0]?.count || 0,
-        sportBreakdown,
-        positionBreakdown,
-        starLevelBreakdown
-      };
-    } catch (error) {
-      console.error('Failed to get combine stats:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Compare athlete metrics to a template
-   */
-  async compareToTemplate(templateId: string, metrics: any) {
-    try {
-      const template = await this.getTemplateById(templateId);
-      
-      if (!template) {
-        throw new Error(`Template with ID ${templateId} not found`);
-      }
-      
-      const templateMetrics = template.metrics || {};
-      const comparisonResults: Record<string, any> = {};
-      
-      // Compare each metric
-      for (const [key, value] of Object.entries(templateMetrics)) {
-        const athleteValue = metrics[key];
-        
-        if (athleteValue !== undefined) {
-          const diff = typeof athleteValue === 'number' && typeof value === 'number'
-            ? athleteValue - (value as number)
-            : 0;
-          
-          comparisonResults[key] = {
-            templateValue: value,
-            athleteValue,
-            difference: diff,
-            percentageDiff: typeof value === 'number' && value !== 0
-              ? (diff / (value as number) * 100).toFixed(2) + '%'
-              : 'N/A'
+      // Enhance with user information
+      const enhancedRegistrations = await Promise.all(
+        registrations.map(async (registration) => {
+          const user = await storage.getUser(registration.userId);
+          return {
+            ...registration,
+            userName: user?.name,
+            userEmail: user?.email,
+            eventName: event.name,
+            eventDate: event.startDate
           };
-        }
+        })
+      );
+      
+      return enhancedRegistrations;
+    } catch (error) {
+      console.error('Error fetching event registrations:', error);
+      return [];
+    }
+  }
+  
+  /**
+   * Calculate GAR score from combine ratings
+   */
+  async calculateAthleteGarScore(userId: number): Promise<Record<string, number>> {
+    try {
+      // Get the athlete's combine ratings
+      const ratings = await this.getAthleteRatings(userId);
+      
+      if (ratings.length === 0) {
+        return {
+          overall: 0,
+          physical: 0,
+          mental: 0,
+          technical: 0
+        };
       }
       
+      // Extract metrics and traits from ratings
+      const allMetrics: Record<string, number[]> = {};
+      const allTraits: Record<string, Record<string, number[]>> = {};
+      
+      ratings.forEach(rating => {
+        // Process metrics
+        if (rating.metrics) {
+          const metrics = rating.metrics as Record<string, number>;
+          Object.entries(metrics).forEach(([key, value]) => {
+            if (typeof value === 'number') {
+              if (!allMetrics[key]) {
+                allMetrics[key] = [];
+              }
+              allMetrics[key].push(value);
+            }
+          });
+        }
+        
+        // Process traits
+        if (rating.traits) {
+          const traits = rating.traits as Record<string, Record<string, number>>;
+          Object.entries(traits).forEach(([category, categoryTraits]) => {
+            if (!allTraits[category]) {
+              allTraits[category] = {};
+            }
+            
+            Object.entries(categoryTraits).forEach(([trait, value]) => {
+              if (typeof value === 'number') {
+                if (!allTraits[category][trait]) {
+                  allTraits[category][trait] = [];
+                }
+                allTraits[category][trait].push(value);
+              }
+            });
+          });
+        }
+      });
+      
+      // Calculate average scores
+      const averageMetrics: Record<string, number> = {};
+      Object.entries(allMetrics).forEach(([key, values]) => {
+        const sum = values.reduce((acc, val) => acc + val, 0);
+        averageMetrics[key] = sum / values.length;
+      });
+      
+      const averageTraits: Record<string, Record<string, number>> = {};
+      Object.entries(allTraits).forEach(([category, categoryTraits]) => {
+        averageTraits[category] = {};
+        
+        Object.entries(categoryTraits).forEach(([trait, values]) => {
+          const sum = values.reduce((acc, val) => acc + val, 0);
+          averageTraits[category][trait] = sum / values.length;
+        });
+      });
+      
+      // Calculate GAR scores
+      const physicalMetrics = ['speed', 'strength', 'agility', 'endurance', 'vertical_jump'];
+      const technicalMetrics = ['technique', 'ball_control', 'accuracy', 'game_iq'];
+      
+      let physicalScore = 0;
+      let physicalCount = 0;
+      
+      let technicalScore = 0;
+      let technicalCount = 0;
+      
+      Object.entries(averageMetrics).forEach(([key, value]) => {
+        if (physicalMetrics.includes(key)) {
+          physicalScore += value;
+          physicalCount++;
+        } else if (technicalMetrics.includes(key)) {
+          technicalScore += value;
+          technicalCount++;
+        }
+      });
+      
+      // Mental score from traits
+      let mentalScore = 0;
+      let mentalCount = 0;
+      
+      if (averageTraits.mental) {
+        Object.values(averageTraits.mental).forEach(value => {
+          mentalScore += value;
+          mentalCount++;
+        });
+      }
+      
+      // Calculate final scores (normalized to 0-100)
+      const normalizedPhysical = physicalCount > 0 ? (physicalScore / physicalCount) * 10 : 0;
+      const normalizedTechnical = technicalCount > 0 ? (technicalScore / technicalCount) * 10 : 0;
+      const normalizedMental = mentalCount > 0 ? (mentalScore / mentalCount) * 10 : 0;
+      
+      // Overall GAR is weighted average
+      const overallGar = (
+        (normalizedPhysical * 0.4) + 
+        (normalizedTechnical * 0.4) + 
+        (normalizedMental * 0.2)
+      );
+      
       return {
-        templateId,
-        templateName: template.name,
-        sport: template.sport,
-        position: template.position,
-        starLevel: template.star_level,
-        metrics: comparisonResults
+        overall: Math.round(overallGar),
+        physical: Math.round(normalizedPhysical),
+        mental: Math.round(normalizedMental),
+        technical: Math.round(normalizedTechnical)
       };
     } catch (error) {
-      console.error(`Failed to compare metrics to template ${templateId}:`, error);
-      throw error;
+      console.error('Error calculating athlete GAR score:', error);
+      return {
+        overall: 0,
+        physical: 0,
+        mental: 0,
+        technical: 0
+      };
     }
   }
 }
 
+// Export the service as a singleton instance
 export const combineService = new CombineService();
