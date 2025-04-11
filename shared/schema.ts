@@ -2695,3 +2695,78 @@ export const insertSportAttributeSchema = createInsertSchema(sportAttributes)
 
 export type SportAttribute = typeof sportAttributes.$inferSelect;
 export type InsertSportAttribute = z.infer<typeof insertSportAttributeSchema>;
+
+// Transfer Portal Monitors
+export const transferPortalMonitors = pgTable('transfer_portal_monitors', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  description: text('description').notNull(),
+  active: boolean('active').default(true),
+  sport: text('sport').notNull(),
+  sportType: text('sport_type').notNull(),
+  divisions: text('divisions').array(),
+  conferences: text('conferences').array(),
+  monitorType: text('monitor_type').notNull(),
+  updateFrequency: integer('update_frequency').default(360),
+  lastRunAt: timestamp('last_run_at'),
+  alertThreshold: integer('alert_threshold').default(3),
+  notifyCoaches: boolean('notify_coaches').default(true),
+  positionGroups: text('position_groups').array(),
+  createdAt: timestamp('created_at').defaultNow(),
+  createdBy: integer('created_by').references(() => users.id),
+  transferCount: integer('transfer_count').default(0)
+});
+
+export const insertTransferPortalMonitorSchema = createInsertSchema(transferPortalMonitors)
+  .omit({ id: true, lastRunAt: true, createdAt: true, transferCount: true });
+
+export type TransferPortalMonitor = typeof transferPortalMonitors.$inferSelect;
+export type InsertTransferPortalMonitor = z.infer<typeof insertTransferPortalMonitorSchema>;
+
+// Transfer Portal Entries
+export const transferPortalEntries = pgTable('transfer_portal_entries', {
+  id: serial('id').primaryKey(),
+  playerName: text('player_name').notNull(),
+  previousSchool: text('previous_school').notNull(),
+  sport: text('sport').notNull(),
+  position: text('position').notNull(),
+  eligibilityRemaining: text('eligibility_remaining'),
+  height: text('height'),
+  weight: text('weight'),
+  hometown: text('hometown'),
+  highSchool: text('high_school'),
+  starRating: integer('star_rating'),
+  portalEntryDate: timestamp('portal_entry_date').notNull(),
+  lastSeasonStats: json('last_season_stats'),
+  careerStats: json('career_stats'),
+  academicInfo: json('academic_info'),
+  injuryHistory: json('injury_history'),
+  videoHighlights: text('video_highlights').array(),
+  portalStatus: text('portal_status').default('active'),
+  committedTo: text('committed_to'),
+  commitDate: timestamp('commit_date'),
+  bestFitSchools: text('best_fit_schools').array(),
+  fitReasons: json('fit_reasons'),
+  transferRating: integer('transfer_rating'),
+  notes: text('notes'),
+  socialMediaHandles: json('social_media_handles'),
+  contactInfo: json('contact_info'),
+  agentName: text('agent_name'),
+  portalDeadline: timestamp('portal_deadline'),
+  nilDeals: json('nil_deals'),
+  lastUpdated: timestamp('last_updated').defaultNow()
+});
+
+export const insertTransferPortalEntrySchema = createInsertSchema(transferPortalEntries)
+  .omit({ id: true, lastUpdated: true });
+
+export type TransferPortalEntry = typeof transferPortalEntries.$inferSelect;
+export type InsertTransferPortalEntry = z.infer<typeof insertTransferPortalEntrySchema>;
+
+// Relations for Transfer Portal
+export const transferPortalMonitorRelations = relations(transferPortalMonitors, ({ one }) => ({
+  creator: one(users, {
+    fields: [transferPortalMonitors.createdBy],
+    references: [users.id],
+  }),
+}));
