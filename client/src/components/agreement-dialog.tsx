@@ -56,10 +56,11 @@ export function AgreementDialog({ open, onClose, onAccept, agreementType }: Agre
                 
                 <h4 className="font-medium mt-4">1. INTRODUCTION</h4>
                 <p>
-                  This Non-Disclosure Agreement ("Agreement") is entered into between Go4It Sports,
-                  Inc. ("Company") and you, as a beta tester ("Beta Tester" or "you") of the Go4It Sports
+                  This Non-Disclosure Agreement ("Agreement") is entered into between Shatzii LLC
+                  ("Company") and you, as a beta tester ("Beta Tester" or "you") of the Go4It Sports
                   Performance Platform ("Platform"). This Agreement governs your access to and use of
-                  the Platform during its beta testing phase.
+                  the Platform during its beta testing phase. All technology, code, and concepts related 
+                  to the Platform are the exclusive property of Shatzii LLC.
                 </p>
 
                 <h4 className="font-medium mt-4">2. CONFIDENTIAL INFORMATION</h4>
@@ -100,8 +101,8 @@ export function AgreementDialog({ open, onClose, onAccept, agreementType }: Agre
                 <h4 className="font-medium mt-4">4. INTELLECTUAL PROPERTY</h4>
                 <p>
                   All intellectual property rights in the Platform, including but not limited to 
-                  copyrights, patents, trademarks, and trade secrets, remain the sole property of 
-                  the Company. This includes but is not limited to:
+                  copyrights, patents, trademarks, trade secrets, technology, code, and concepts, 
+                  are the sole and exclusive property of Shatzii LLC. This includes but is not limited to:
                 </p>
                 <ul className="list-disc pl-5 space-y-2">
                   <li>The GAR scoring system and all its components</li>
@@ -110,9 +111,12 @@ export function AgreementDialog({ open, onClose, onAccept, agreementType }: Agre
                   <li>All algorithms related to player assessment, matching, and development</li>
                   <li>The ADHD-focused user experience design methodology</li>
                   <li>All branding, logos, and marketing materials</li>
+                  <li>All source code, technology, and implementation details</li>
+                  <li>All underlying concepts, ideas, and methodologies</li>
                 </ul>
                 <p className="mt-2">
                   Nothing in this Agreement grants you any rights to any intellectual property in the Platform.
+                  All technology, code, and concepts remain the exclusive property of Shatzii LLC.
                   You acknowledge that any unauthorized use or disclosure of the Company's intellectual property
                   may cause the Company irreparable harm for which monetary damages may be inadequate.
                 </p>
@@ -129,10 +133,12 @@ export function AgreementDialog({ open, onClose, onAccept, agreementType }: Agre
                 <h4 className="font-medium mt-4">6. FEEDBACK</h4>
                 <p>
                   Any feedback, suggestions, ideas, or recommendations you provide to the Company 
-                  regarding the Platform ("Feedback") shall become the property of the Company. You 
-                  hereby assign all rights, title, and interest in and to such Feedback to the Company, 
-                  and the Company is free to use, disclose, reproduce, license, or otherwise distribute 
-                  and exploit the Feedback as it sees fit, without obligation or restriction of any kind.
+                  regarding the Platform ("Feedback") shall become the exclusive property of Shatzii LLC. You 
+                  hereby irrevocably assign all rights, title, and interest in and to such Feedback to Shatzii LLC, 
+                  including all intellectual property rights therein. Shatzii LLC is free to use, disclose, reproduce, 
+                  license, or otherwise distribute and exploit the Feedback in any manner for any purpose, without 
+                  obligation, compensation, attribution, or restriction of any kind. You waive any and all moral rights 
+                  in the Feedback and agree not to assert any such rights against Shatzii LLC.
                 </p>
 
                 <h4 className="font-medium mt-4">7. DISCLAIMER OF WARRANTIES</h4>
