@@ -7,6 +7,7 @@ import * as schema from "@shared/schema";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 interface TransferPortalMonitorOptions {
+  sport?: string;
   sportType?: string;
   divisions?: string[];
   conferences?: string[];
@@ -60,6 +61,7 @@ class TransferPortalService {
           name,
           description,
           active: true,
+          sport: options.sport || sportType, // Set sport field with sportType as fallback
           sportType,
           monitorType,
           createdBy,
