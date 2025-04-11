@@ -2973,10 +2973,10 @@ export class DatabaseStorage implements IStorage {
         .where(
           and(
             inArray(skillTreeNodes.id, childIds),
-            eq(skillTreeNodes.isActive, true)
+            eq(skillTreeNodes.is_active, true)
           )
         )
-        .orderBy(asc(skillTreeNodes.level), asc(skillTreeNodes.sortOrder));
+        .orderBy(asc(skillTreeNodes.level), asc(skillTreeNodes.sort_order));
     } catch (error) {
       console.error(`Error fetching child skill nodes for parent ID ${parentNodeId}:`, error);
       return [];
