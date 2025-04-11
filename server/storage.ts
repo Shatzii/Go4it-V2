@@ -56,6 +56,14 @@ export interface IStorage {
   createSpotlightProfile(profile: InsertSpotlightProfile): Promise<SpotlightProfile>;
   updateSpotlightProfile(id: number, data: Partial<SpotlightProfile>): Promise<SpotlightProfile | undefined>;
   deleteSpotlightProfile(id: number): Promise<boolean>;
+  
+  // Combine Event Registration operations
+  getCombineEventRegistrations(eventId: number): Promise<Registration[]>;
+  getCombineEventRegistrationsByUser(userId: number): Promise<Registration[]>;
+  getCombineEventRegistration(userId: number, eventId: number): Promise<Registration | undefined>;
+  createCombineEventRegistration(registration: InsertRegistration): Promise<Registration>;
+  updateCombineEventRegistration(id: number, data: Partial<Registration>): Promise<Registration | undefined>;
+  cancelCombineEventRegistration(userId: number, eventId: number): Promise<boolean>;
 
   // User operations
   getUser(id: number): Promise<User | undefined>;
@@ -4095,6 +4103,60 @@ export class DatabaseStorage implements IStorage {
       return true;
     } catch (error) {
       console.error('Database error in deleteRegistration:', error);
+      return false;
+    }
+  }
+  
+  // Combine Event Registration operations
+  async getCombineEventRegistrations(eventId: number): Promise<Registration[]> {
+    return this.getRegistrationsByEvent(eventId);
+  }
+  
+  async getCombineEventRegistrationsByUser(userId: number): Promise<Registration[]> {
+    return this.getRegistrationsByUser(userId);
+  }
+  
+  async getCombineEventRegistration(userId: number, eventId: number): Promise<Registration | undefined> {
+    try {
+      const [registrationData] = await db.select()
+        .from(registrations)
+        .where(
+          and(
+            eq(registrations.userId, userId),
+            eq(registrations.eventId, eventId)
+          )
+        );
+      return registrationData;
+    } catch (error) {
+      console.error('Database error in getCombineEventRegistration:', error);
+      return undefined;
+    }
+  }
+  
+  async createCombineEventRegistration(registration: InsertRegistration): Promise<Registration> {
+    return this.createRegistration(registration);
+  }
+  
+  async updateCombineEventRegistration(id: number, data: Partial<Registration>): Promise<Registration | undefined> {
+    return this.updateRegistration(id, data);
+  }
+  
+  async cancelCombineEventRegistration(userId: number, eventId: number): Promise<boolean> {
+    try {
+      const registration = await this.getCombineEventRegistration(userId, eventId);
+      if (!registration) {
+        return false;
+      }
+      
+      // Update status to cancelled instead of deleting
+      const updated = await this.updateRegistration(registration.id, {
+        status: "cancelled",
+        cancelledAt: new Date()
+      });
+      
+      return !!updated;
+    } catch (error) {
+      console.error('Database error in cancelCombineEventRegistration:', error);
       return false;
     }
   }
