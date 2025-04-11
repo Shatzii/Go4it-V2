@@ -79,20 +79,20 @@ function EnhancedSkillTreePage() {
 
   // Get user's skill tree stats
   const { data: skillStats, isLoading: isLoadingStats } = useQuery({
-    queryKey: ['/api/player/skill-stats', selectedSport],
+    queryKey: ['/api/skill-tree/stats', selectedSport],
     enabled: !!user?.id && !!selectedSport,
   });
 
   // Fetch user's skill progress
   const { data: userSkills, isLoading: isLoadingSkills } = useQuery({
-    queryKey: ['/api/player/skill-progress', selectedSport],
+    queryKey: ['/api/skill-tree/progress', selectedSport],
     enabled: !!user?.id && !!selectedSport,
   });
 
   // Fetch drills for selected skill
   const { data: drills, isLoading: isLoadingDrills } = useQuery({
-    queryKey: ['/api/ai-coach/skill-drills', selectedSkill?.id],
-    enabled: !!selectedSkill?.id && skillDialogOpen,
+    queryKey: ['/api/skill-tree/nodes/', selectedSkill?.id, '/drills'],
+    enabled: !!selectedSkill?.idd && skillDialogOpen,
   });
 
   // Set default sport based on user profile
@@ -147,7 +147,7 @@ function EnhancedSkillTreePage() {
     setIsGeneratingDrill(true);
     
     try {
-      const response = await fetch('/api/ai-coach/generate-drill', {
+      const response = await fetch('/api/skill-tree/generate-drill', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -191,7 +191,7 @@ function EnhancedSkillTreePage() {
     if (!selectedDrill) return;
     
     try {
-      const response = await fetch('/api/player/complete-drill', {
+      const response = await fetch('/api/skill-tree/complete-drill', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
