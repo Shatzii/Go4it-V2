@@ -2797,11 +2797,11 @@ export class DatabaseStorage implements IStorage {
         // Build a conditions array for the where clause
         const conditions = [];
         
-        // Try to add the isActive condition if the column exists
+        // Try to add the is_active condition if the column exists
         try {
-          conditions.push(eq(skillTreeNodes.isActive, true));
+          conditions.push(eq(skillTreeNodes.is_active, true));
         } catch (err) {
-          console.warn('isActive column not found on skillTreeNodes table');
+          console.warn('is_active column not found on skillTreeNodes table');
         }
         
         // Try to add the sportType condition if provided and column exists
@@ -2890,12 +2890,12 @@ export class DatabaseStorage implements IStorage {
           return []; // Can't filter by level, return empty array
         }
         
-        // Add isActive condition if exists
+        // Add is_active condition if exists
         try {
-          conditions.push(eq(skillTreeNodes.isActive, true));
+          conditions.push(eq(skillTreeNodes.is_active, true));
         } catch (err) {
-          console.warn('isActive column not found on skillTreeNodes table');
-          // Continue without isActive filter
+          console.warn('is_active column not found on skillTreeNodes table');
+          // Continue without is_active filter
         }
         
         // Execute query with appropriate conditions
@@ -3002,10 +3002,10 @@ export class DatabaseStorage implements IStorage {
         .where(
           and(
             inArray(skillTreeNodes.id, parentIds),
-            eq(skillTreeNodes.isActive, true)
+            eq(skillTreeNodes.is_active, true)
           )
         )
-        .orderBy(asc(skillTreeNodes.level), asc(skillTreeNodes.sortOrder));
+        .orderBy(asc(skillTreeNodes.level), asc(skillTreeNodes.sort_order));
     } catch (error) {
       console.error(`Error fetching parent skill nodes for child ID ${childNodeId}:`, error);
       return [];
