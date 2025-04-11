@@ -13,6 +13,7 @@ import { transferPortalService } from './services/transfer-portal-service';
 import { athleteScoutService } from './services/athlete-scout-service';
 import { authSentinel } from './middleware/auth-sentinel';
 import { registerSkillTreeApi } from './skill-tree-api';
+import skillTreeRoutes from './routes/skill-tree-routes';
 import net from 'net';
 
 const app = express();
@@ -166,6 +167,10 @@ app.use((req, res, next) => {
     // Register skill tree API endpoints directly before other API routes
     registerSkillTreeApi(app);
     log("Registered Skill Tree API endpoints");
+    
+    // Register enhanced skill tree routes
+    app.use('/api/skills', skillTreeRoutes);
+    log("Registered Enhanced Skill Tree Routes");
     
     // Load API keys from database
     try {
