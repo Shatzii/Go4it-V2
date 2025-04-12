@@ -1229,6 +1229,38 @@ export default function AdminDashboard() {
         {/* System Tab */}
         <TabsContent value="system">
           <div className="grid gap-6">
+            {/* Animation Features Quick Access */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Animation Features</CardTitle>
+                <CardDescription>
+                  Quick access to all animation-related features and tools
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <Link to="/text-to-animation">
+                    <Button variant="outline" className="w-full justify-start">
+                      <FileVideo className="h-4 w-4 mr-2" />
+                      Text to Animation Studio
+                    </Button>
+                  </Link>
+                  <Link to="/athletic-combine-showcase">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Activity className="h-4 w-4 mr-2" />
+                      Athletic Combine Showcase
+                    </Button>
+                  </Link>
+                  <Link to="/ai-video-player">
+                    <Button variant="outline" className="w-full justify-start">
+                      <ChartBar className="h-4 w-4 mr-2" />
+                      AI Video Player
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Advanced Animation Studio - Professional grade animation management */}
             <AdvancedAnimationStudio />
             
