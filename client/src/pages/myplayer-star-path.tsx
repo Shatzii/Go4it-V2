@@ -103,13 +103,16 @@ export default function MyPlayerStarPath() {
     if (user && !starPath && !isStarPathLoading) {
       const createStarPath = async () => {
         try {
-          await apiRequest('/api/player/star-path', {
+          await fetch('/api/player/star-path', {
             method: 'POST',
-            data: { 
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
               userId: user.id,
               sportType: 'basketball', // Default sport type
               position: '' // Default position
-            }
+            })
           });
           
           // Invalidate the star path query to trigger refetch
@@ -128,8 +131,11 @@ export default function MyPlayerStarPath() {
           });
         }
       }
+      
+      // Call the function to create the star path
+      createStarPath();
     }
-  });
+  }, [user, starPath, isStarPathLoading, queryClient, toast]);
   
   // Fetch player badges
   const { data: badges, isLoading: isBadgesLoading } = useQuery({
