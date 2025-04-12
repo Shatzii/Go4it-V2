@@ -14,6 +14,8 @@ import HighlightConfigManager from "@/components/admin/highlight-config-manager"
 import ProfileImageUpdater from "@/components/admin/ProfileImageUpdater";
 import CombineEventManager from "@/components/admin/CombineEventManager";
 import CyberShieldSecurityManager from "@/components/admin/CyberShieldSecurityManager";
+import FeatureAccessManager from "@/components/admin/FeatureAccessManager";
+import AnimationDashboard from "@/components/admin/AnimationDashboard";
 import { 
   ChartBarStacked, 
   ChartBar, 
@@ -1163,6 +1165,12 @@ export default function AdminDashboard() {
         {/* System Tab */}
         <TabsContent value="system">
           <div className="grid gap-6">
+            {/* Animation Dashboard */}
+            <AnimationDashboard />
+            
+            {/* Feature Access Manager */}
+            <FeatureAccessManager />
+            
             {/* CyberShield Security Manager */}
             <CyberShieldSecurityManager />
           </div>
