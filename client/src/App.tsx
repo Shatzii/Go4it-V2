@@ -71,6 +71,7 @@ import VideoHighlightsPage from "@/pages/video-highlights-page";
 import AIVideoPlayerDemo from "@/pages/ai-video-player-demo";
 import EnhancedSkillTreePage from "@/pages/enhanced-skill-tree-page";
 import AnalyticsDashboard from "@/pages/analytics-dashboard";
+import TextToAnimationPage from "@/pages/text-to-animation";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -364,6 +365,11 @@ function Router() {
         {/* Analytics Dashboard Route */}
         <Route path="/analytics-dashboard">
           {() => <ProtectedRoute component={AnalyticsDashboard} />}
+        </Route>
+        
+        {/* Text to Animation Studio Route */}
+        <Route path="/text-to-animation">
+          {() => <ProtectedRoute component={TextToAnimationPage} />}
         </Route>
 
         {/* Fallback to 404 */}
