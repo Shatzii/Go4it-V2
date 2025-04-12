@@ -152,36 +152,45 @@ export default function MyPlayerStarPath() {
   // Fetch attribute data based on selected type
   const { data: attributeData, isLoading: isAttributesLoading } = useQuery({
     queryKey: ['/api/player/star-path', user?.id, 'attributes', attributeType],
-    queryFn: () => apiRequest(`/api/player/star-path/${user?.id}/attributes/${attributeType}`),
-    enabled: !!user && !!user.id,
-    onSuccess: (data) => {
-      if (data?.attributes) {
-        setAttributeValues(data.attributes);
-      }
-    }
+    queryFn: async () => {
+      if (!user || !user.id) throw new Error('User not authenticated');
+      const response = await fetch(`/api/player/star-path/${user.id}/attributes/${attributeType}`);
+      if (!response.ok) throw new Error('Failed to fetch attributes');
+      return response.json();
+    },
+    enabled: !!user && !!user.id
   });
   
   // Reset editing state when attribute type changes
   useEffect(() => {
     setIsEditingAttributes(false);
-    if (attributeData?.attributes) {
+    if (attributeData && 'attributes' in attributeData) {
       setAttributeValues(attributeData.attributes);
     }
   }, [attributeType, attributeData]);
   
   // Level up mutation
   const levelUpMutation = useMutation({
-    mutationFn: () => {
+    mutationFn: async () => {
       if (!user) throw new Error('User not authenticated');
-      return apiRequest(`/api/player/star-path/${user.id}/level-up`, {
-        method: 'POST'
+      const response = await fetch(`/api/player/star-path/${user.id}/level-up`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to level up star path');
+      }
+      
+      return response.json();
     },
     onSuccess: (data) => {
       // Show success message
       toast({
         title: "Level Up!",
-        description: data.message || `You've reached ${data.newLevel} stars!`,
+        description: data.message || `You've reached ${data.newLevel || 'next'} stars!`,
         variant: "default",
       });
       
@@ -204,12 +213,21 @@ export default function MyPlayerStarPath() {
   
   // Update attributes mutation
   const updateAttributesMutation = useMutation({
-    mutationFn: (attributeData: any) => {
+    mutationFn: async (attributeData: any) => {
       if (!user) throw new Error('User not authenticated');
-      return apiRequest(`/api/player/star-path/${user.id}/attributes`, {
+      const response = await fetch(`/api/player/star-path/${user.id}/attributes`, {
         method: 'POST',
-        data: attributeData
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(attributeData)
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update attributes');
+      }
+      
+      return response.json();
     },
     onSuccess: (data) => {
       toast({
@@ -233,17 +251,36 @@ export default function MyPlayerStarPath() {
   // If any data is loading, show skeleton UI
   const isLoading = isProgressLoading || isStarPathLoading || isBadgesLoading || isTransactionsLoading;
   
+  // Define a type for player progress
+  interface PlayerProgress {
+    currentXp: number;
+    xpToNextLevel: number;
+    level: number;
+    streak: number;
+    totalXp: number;
+    badges: any[];
+    recentTransactions: any[];
+    starPath: {
+      currentStarLevel?: number;
+      [key: string]: any;
+    } | null;
+    [key: string]: any; // Allow additional properties
+  }
+
   // Create a complete player progress object that merges the fetched data
-  const playerProgress = useMemo(() => {
+  const playerProgress = useMemo<PlayerProgress | null>(() => {
     if (isLoading || !progress) return null;
     
+    // Create a safely typed object with defaults for all required properties
+    const progressData = progress as Record<string, any>;
+    
     return {
-      ...progress,
-      currentXp: progress.levelXp || 0,
-      xpToNextLevel: progress.xpToNextLevel || 100,
-      level: progress.currentLevel || 1,
-      streak: progress.streakDays || 0,
-      totalXp: progress.totalXp || 0,
+      ...progressData,
+      currentXp: progressData.levelXp || 0,
+      xpToNextLevel: progressData.xpToNextLevel || 100,
+      level: progressData.currentLevel || 1,
+      streak: progressData.streakDays || 0,
+      totalXp: progressData.totalXp || 0,
       badges: badges || [],
       recentTransactions: transactions || [],
       // Include star path data if available
