@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, RotateCcw, Video, Maximize2, Minimize2, Layers } from 'lucide-react';
-import RealisticMotionPlayer from './RealisticMotionPlayer';
-import ThreeJsAnimationPlayer from './ThreeJsAnimationPlayer';
+import { Play, Pause, RotateCcw, Maximize2, Minimize2 } from 'lucide-react';
 
 interface AnimationPlayerProps {
   videoSources: {
@@ -26,10 +24,8 @@ interface AnimationPlayerProps {
 }
 
 /**
- * Advanced Animation Player Component - Manages multiple animation technologies:
- * 1. Ultra-realistic 3D animations using Three.js for console-quality visuals
- * 2. High-quality pre-rendered video animations
- * 3. SVG-based fallback animations for compatibility
+ * Advanced Animation Player Component - Shows highest quality animations possible
+ * using HTML5 video and iframe techniques for 128-bit visuals
  */
 const AdvancedAnimationPlayer: React.FC<AnimationPlayerProps> = ({
   videoSources,
@@ -39,51 +35,31 @@ const AdvancedAnimationPlayer: React.FC<AnimationPlayerProps> = ({
   metricData,
   className = '',
 }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [videoAvailable, setVideoAvailable] = useState(false);
-  // Animation modes: 'threejs' (console quality), 'video' (high-quality), 'svg' (standard)
-  const [animationMode, setAnimationMode] = useState<'threejs' | 'video' | 'svg'>('threejs');
+  const [isPlaying, setIsPlaying] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   
-  // Current animation component
+  // Current animation component for fallback if needed
   const SvgAnimation = svgAnimations[animationType];
   
-  // Check if video is available
-  useEffect(() => {
-    const checkVideoAvailability = async () => {
-      try {
-        const videoPath = videoSources[animationType];
-        
-        // For demo purposes - in production, this would be a real check
-        // In development, simulate video availability even with placeholder files
-        setVideoAvailable(true);
-        
-        // In production, you would do a real check like this:
-        // const response = await fetch(videoPath, { method: 'HEAD' });
-        // setVideoAvailable(response.ok);
-      } catch (error) {
-        console.warn("Error checking video availability:", error);
-        setVideoAvailable(true); // Force to true for demo
-      }
-    };
-    
-    checkVideoAvailability();
-  }, [animationType, videoSources]);
-  
-  // Toggle play/pause
+  // Set up the iframe source based on animation type
+  const iframeSrc = `/videos/hd/${animationType === 'sprint' ? '40_yard_dash' : 
+                                  animationType === 'vertical' ? 'vertical_jump' : 
+                                  animationType === 'agility' ? 'agility_drill' : 
+                                  'bench_press'}.html`;
+
+  // Toggle play/pause (control the iframe content)
   const togglePlayPause = () => {
     setIsPlaying(!isPlaying);
-  };
-  
-  // Cycle through animation modes
-  const cycleAnimationMode = () => {
-    if (animationMode === 'threejs') {
-      setAnimationMode('video');
-    } else if (animationMode === 'video') {
-      setAnimationMode('svg');
-    } else {
-      setAnimationMode('threejs');
+    
+    // Send message to iframe to play/pause
+    if (iframeRef.current && iframeRef.current.contentWindow) {
+      iframeRef.current.contentWindow.postMessage(
+        { action: isPlaying ? 'pause' : 'play' },
+        '*'
+      );
     }
   };
   
@@ -114,61 +90,14 @@ const AdvancedAnimationPlayer: React.FC<AnimationPlayerProps> = ({
     };
   }, []);
   
-  // Function to get current quality level text
-  const getQualityLevelText = () => {
-    switch (animationMode) {
-      case 'threejs':
-        return '128-Bit 3D Rendering';
-      case 'video':
-        return 'HD Video';
-      case 'svg':
-        return 'Standard Graphics';
-      default:
-        return 'Standard';
-    }
-  };
-  
-  // Function to get color for quality indicator
-  const getQualityColor = () => {
-    switch (animationMode) {
-      case 'threejs':
-        return 'bg-purple-500/20 border-purple-500/40';
-      case 'video':
-        return 'bg-green-500/20 border-green-500/40';
-      case 'svg':
-        return 'bg-gray-800/80 border-gray-700';
-      default:
-        return 'bg-gray-800/80 border-gray-700';
-    }
-  };
-  
-  // Function to get dot color for quality indicator
-  const getQualityDotColor = () => {
-    switch (animationMode) {
-      case 'threejs':
-        return 'bg-purple-500';
-      case 'video':
-        return 'bg-green-500';
-      case 'svg':
-        return 'bg-gray-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
-  
-  // Function to get text color for quality indicator
-  const getQualityTextColor = () => {
-    switch (animationMode) {
-      case 'threejs':
-        return 'text-purple-400';
-      case 'video':
-        return 'text-green-400';
-      case 'svg':
-        return 'text-gray-400';
-      default:
-        return 'text-gray-400';
-    }
-  };
+  // Show loaded state after a short timeout
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   return (
     <div 
@@ -176,61 +105,57 @@ const AdvancedAnimationPlayer: React.FC<AnimationPlayerProps> = ({
       className={`relative rounded-xl overflow-hidden ${className}`}
       style={{ backgroundColor: '#0f172a' }}
     >
-      {/* Play button overlay when paused */}
-      {!isPlaying && animationMode === 'svg' && (
-        <div 
-          className="absolute inset-0 flex items-center justify-center z-20 cursor-pointer"
-          onClick={togglePlayPause}
-        >
-          <motion.div
-            className="w-16 h-16 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
+      {/* Loading overlay */}
+      <AnimatePresence>
+        {!isLoaded && (
+          <motion.div 
+            className="absolute inset-0 z-50 bg-black/80 flex items-center justify-center"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
-            <Play className="h-8 w-8 text-white ml-1" />
+            <div className="flex flex-col items-center">
+              <div 
+                className="w-12 h-12 rounded-full border-4 border-t-transparent animate-spin"
+                style={{ borderColor: `${colors.primary} transparent transparent transparent` }}
+              />
+              <p className="mt-4 text-white">Loading 128-bit animation...</p>
+            </div>
           </motion.div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
       
       {/* Main animation container */}
-      <div className="aspect-video relative">
-        {/* Show appropriate animation based on mode */}
-        {animationMode === 'threejs' ? (
-          <ThreeJsAnimationPlayer 
-            animationType={animationType as any}
-            colors={colors}
-            metricData={metricData}
-            autoPlay={isPlaying}
-            className="w-full h-full"
-          />
-        ) : animationMode === 'video' && videoAvailable ? (
-          <RealisticMotionPlayer 
-            videoSources={videoSources}
-            animationType={animationType}
-            colors={colors}
-            metricData={metricData}
-            autoPlay={isPlaying}
-            loop={true}
-            width="100%"
-            height="100%"
-            onComplete={() => console.log("Animation complete")}
-          />
-        ) : (
-          <div className="w-full h-full">
-            <SvgAnimation colors={colors} isPlaying={isPlaying} />
-          </div>
-        )}
+      <div className="aspect-video relative bg-[#0c1325]">
+        {/* Iframe for high-quality animations */}
+        <iframe
+          ref={iframeRef}
+          src={iframeSrc}
+          className="w-full h-full border-0"
+          style={{ backgroundColor: '#0c1325' }}
+          allow="autoplay"
+        />
         
         {/* Quality badge */}
-        <div 
-          className={`absolute top-2 right-2 px-2 py-1 rounded-md ${getQualityColor()} 
-            backdrop-blur-sm flex items-center gap-1.5 text-xs transition-all duration-300`}
-        >
-          <div className={`w-1.5 h-1.5 rounded-full ${getQualityDotColor()}`}></div>
-          <span className={`font-medium ${getQualityTextColor()}`}>
-            {getQualityLevelText()}
-          </span>
+        <div className="absolute top-2 right-2 px-2 py-1 rounded-md bg-green-500/20 border border-green-500/40 backdrop-blur-sm flex items-center gap-1.5 text-xs">
+          <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+          <span className="font-medium text-green-400">128-Bit Ultra HD</span>
         </div>
+        
+        {/* Metric display */}
+        {metricData && (
+          <div 
+            className="absolute top-2 left-2 px-3 py-2 rounded-lg z-10"
+            style={{ 
+              backgroundColor: `${colors.primary}80`,
+              backdropFilter: 'blur(4px)',
+              color: 'white',
+              textShadow: '0 1px 2px rgba(0,0,0,0.5)'
+            }}
+          >
+            <p className="text-xs opacity-80">{metricData.label}</p>
+            <p className="text-xl font-bold">{metricData.value}</p>
+          </div>
+        )}
       </div>
       
       {/* Controls bar */}
@@ -240,31 +165,22 @@ const AdvancedAnimationPlayer: React.FC<AnimationPlayerProps> = ({
             className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition"
             onClick={togglePlayPause}
           >
-            {isPlaying ? (
-              <Pause className="h-4 w-4 text-white" />
-            ) : (
+            {!isPlaying ? (
               <Play className="h-4 w-4 text-white" />
+            ) : (
+              <Pause className="h-4 w-4 text-white" />
             )}
           </button>
           
           <button 
             className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition"
-            onClick={() => setIsPlaying(false)}
+            onClick={() => window.location.reload()}
           >
             <RotateCcw className="h-4 w-4 text-white" />
           </button>
         </div>
         
         <div className="flex items-center gap-2">
-          <button 
-            className="px-2 py-1 text-xs rounded flex items-center gap-1 hover:bg-white/10 transition"
-            onClick={cycleAnimationMode}
-            style={{ color: colors.accent }}
-          >
-            <Layers className="h-3 w-3" />
-            <span>Quality: {animationMode === 'threejs' ? 'Ultra' : animationMode === 'video' ? 'High' : 'Standard'}</span>
-          </button>
-          
           <button 
             className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition"
             onClick={toggleFullscreen}
