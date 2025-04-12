@@ -16,6 +16,7 @@ import CombineEventManager from "@/components/admin/CombineEventManager";
 import CyberShieldSecurityManager from "@/components/admin/CyberShieldSecurityManager";
 import FeatureAccessManager from "@/components/admin/FeatureAccessManager";
 import AnimationDashboard from "@/components/admin/AnimationDashboard";
+import AdvancedAnimationStudio from "@/components/admin/AdvancedAnimationStudio";
 import { 
   ChartBarStacked, 
   ChartBar, 
@@ -1165,8 +1166,8 @@ export default function AdminDashboard() {
         {/* System Tab */}
         <TabsContent value="system">
           <div className="grid gap-6">
-            {/* Animation Dashboard */}
-            <AnimationDashboard />
+            {/* Advanced Animation Studio - Professional grade animation management */}
+            <AdvancedAnimationStudio />
             
             {/* Feature Access Manager */}
             <FeatureAccessManager />
