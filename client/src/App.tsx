@@ -73,6 +73,7 @@ import EnhancedSkillTreePage from "@/pages/enhanced-skill-tree-page";
 import AnalyticsDashboard from "@/pages/analytics-dashboard";
 import TextToAnimationPage from "@/pages/text-to-animation";
 import AthleticCombineShowcasePage from "@/pages/athletic-combine-showcase";
+import AthleteSocialHub from "@/pages/athlete-social-hub";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -376,6 +377,11 @@ function Router() {
         {/* Athletic Combine Showcase Route */}
         <Route path="/athletic-combine-showcase">
           {() => <ProtectedRoute component={AthleticCombineShowcasePage} />}
+        </Route>
+
+        {/* Athlete Social Hub Route */}
+        <Route path="/athlete-social-hub">
+          {() => <ProtectedRoute component={AthleteSocialHub} />}
         </Route>
 
         {/* Fallback to 404 */}
