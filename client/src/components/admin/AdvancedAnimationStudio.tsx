@@ -183,14 +183,14 @@ const animationPresets = [
 // Define rendering engines with capabilities
 const renderingEngines = [
   { 
-    id: 'ultra_hd', 
-    name: 'Ultra HD Pipeline', 
-    description: 'Photorealistic rendering engine with 128-bit color depth',
-    version: '4.2.1',
-    capabilities: ['PBR Materials', '128-bit Color', 'HDR Lighting', 'Temporal AA', 'Motion Blur'],
-    performance: 95,
-    quality: 98,
-    compatibility: 85
+    id: 'quantum_hdr', 
+    name: 'Quantum HDR Pipeline', 
+    description: 'Hyper-realistic neural rendering with 256-bit color depth and advanced ray tracing',
+    version: '5.0.1',
+    capabilities: ['Neural Rendering', '256-bit Color', 'Quantum Ray Tracing', 'AI-driven Anti-aliasing', 'Volumetric Lighting'],
+    performance: 98,
+    quality: 100,
+    compatibility: 80
   },
   { 
     id: 'web_real', 
@@ -1313,6 +1313,15 @@ const AdvancedAnimationStudio: React.FC = () => {
   const [selectedPreset, setSelectedPreset] = useState<any>(null);
   const { toast } = useToast();
   
+  // Add a splash screen notice about the new 256-bit Quantum HDR technology
+  useEffect(() => {
+    toast({
+      title: "Quantum HDR Technology Activated",
+      description: "Using industry-leading 256-bit neural rendering with quantum ray tracing.",
+      duration: 6000,
+    });
+  }, []);
+  
   const handleSelectPreset = (preset: any) => {
     setSelectedPreset(preset);
     setActiveTab('editor');
@@ -1333,7 +1342,7 @@ const AdvancedAnimationStudio: React.FC = () => {
               Advanced Animation Studio
             </CardTitle>
             <CardDescription>
-              Create, edit, and manage high-quality 128-bit animations with AI assistance
+              Create, edit, and manage state-of-the-art 256-bit Quantum HDR animations with neural rendering
             </CardDescription>
           </div>
           
