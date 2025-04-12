@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, RotateCcw, Video, Maximize2, Minimize2 } from 'lucide-react';
+import { Play, Pause, RotateCcw, Video, Maximize2, Minimize2, Layers } from 'lucide-react';
 import RealisticMotionPlayer from './RealisticMotionPlayer';
+import ThreeJsAnimationPlayer from './ThreeJsAnimationPlayer';
 
 interface AnimationPlayerProps {
   videoSources: {
@@ -25,8 +26,10 @@ interface AnimationPlayerProps {
 }
 
 /**
- * Advanced Animation Player Component - Manages both video and SVG animations
- * with seamless transition between high-quality pre-rendered videos and fallback SVG animations
+ * Advanced Animation Player Component - Manages multiple animation technologies:
+ * 1. Ultra-realistic 3D animations using Three.js for console-quality visuals
+ * 2. High-quality pre-rendered video animations
+ * 3. SVG-based fallback animations for compatibility
  */
 const AdvancedAnimationPlayer: React.FC<AnimationPlayerProps> = ({
   videoSources,
@@ -38,7 +41,8 @@ const AdvancedAnimationPlayer: React.FC<AnimationPlayerProps> = ({
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [videoAvailable, setVideoAvailable] = useState(false);
-  const [useVideoMode, setUseVideoMode] = useState(true);
+  // Animation modes: 'threejs' (console quality), 'video' (high-quality), 'svg' (standard)
+  const [animationMode, setAnimationMode] = useState<'threejs' | 'video' | 'svg'>('threejs');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -72,9 +76,15 @@ const AdvancedAnimationPlayer: React.FC<AnimationPlayerProps> = ({
     setIsPlaying(!isPlaying);
   };
   
-  // Toggle video/SVG mode
-  const toggleVideoMode = () => {
-    setUseVideoMode(!useVideoMode);
+  // Cycle through animation modes
+  const cycleAnimationMode = () => {
+    if (animationMode === 'threejs') {
+      setAnimationMode('video');
+    } else if (animationMode === 'video') {
+      setAnimationMode('svg');
+    } else {
+      setAnimationMode('threejs');
+    }
   };
   
   // Toggle fullscreen
@@ -104,6 +114,62 @@ const AdvancedAnimationPlayer: React.FC<AnimationPlayerProps> = ({
     };
   }, []);
   
+  // Function to get current quality level text
+  const getQualityLevelText = () => {
+    switch (animationMode) {
+      case 'threejs':
+        return '128-Bit 3D Rendering';
+      case 'video':
+        return 'HD Video';
+      case 'svg':
+        return 'Standard Graphics';
+      default:
+        return 'Standard';
+    }
+  };
+  
+  // Function to get color for quality indicator
+  const getQualityColor = () => {
+    switch (animationMode) {
+      case 'threejs':
+        return 'bg-purple-500/20 border-purple-500/40';
+      case 'video':
+        return 'bg-green-500/20 border-green-500/40';
+      case 'svg':
+        return 'bg-gray-800/80 border-gray-700';
+      default:
+        return 'bg-gray-800/80 border-gray-700';
+    }
+  };
+  
+  // Function to get dot color for quality indicator
+  const getQualityDotColor = () => {
+    switch (animationMode) {
+      case 'threejs':
+        return 'bg-purple-500';
+      case 'video':
+        return 'bg-green-500';
+      case 'svg':
+        return 'bg-gray-500';
+      default:
+        return 'bg-gray-500';
+    }
+  };
+  
+  // Function to get text color for quality indicator
+  const getQualityTextColor = () => {
+    switch (animationMode) {
+      case 'threejs':
+        return 'text-purple-400';
+      case 'video':
+        return 'text-green-400';
+      case 'svg':
+        return 'text-gray-400';
+      default:
+        return 'text-gray-400';
+    }
+  };
+  
   return (
     <div 
       ref={containerRef}
@@ -111,7 +177,7 @@ const AdvancedAnimationPlayer: React.FC<AnimationPlayerProps> = ({
       style={{ backgroundColor: '#0f172a' }}
     >
       {/* Play button overlay when paused */}
-      {!isPlaying && !(videoAvailable && useVideoMode) && (
+      {!isPlaying && animationMode === 'svg' && (
         <div 
           className="absolute inset-0 flex items-center justify-center z-20 cursor-pointer"
           onClick={togglePlayPause}
@@ -128,8 +194,16 @@ const AdvancedAnimationPlayer: React.FC<AnimationPlayerProps> = ({
       
       {/* Main animation container */}
       <div className="aspect-video relative">
-        {/* Show either video player or SVG animation based on availability and preference */}
-        {videoAvailable && useVideoMode ? (
+        {/* Show appropriate animation based on mode */}
+        {animationMode === 'threejs' ? (
+          <ThreeJsAnimationPlayer 
+            animationType={animationType as any}
+            colors={colors}
+            metricData={metricData}
+            autoPlay={isPlaying}
+            className="w-full h-full"
+          />
+        ) : animationMode === 'video' && videoAvailable ? (
           <RealisticMotionPlayer 
             videoSources={videoSources}
             animationType={animationType}
@@ -147,19 +221,16 @@ const AdvancedAnimationPlayer: React.FC<AnimationPlayerProps> = ({
           </div>
         )}
         
-        {/* Video quality badge */}
-        {videoAvailable && (
-          <div 
-            className={`absolute top-2 ${useVideoMode ? 'right-2' : 'left-2'} px-2 py-1 rounded-md 
-              ${useVideoMode ? 'bg-green-500/20 border border-green-500/40' : 'bg-gray-800/80 border border-gray-700'} 
-              backdrop-blur-sm flex items-center gap-1.5 text-xs transition-all duration-300`}
-          >
-            <div className={`w-1.5 h-1.5 rounded-full ${useVideoMode ? 'bg-green-500' : 'bg-gray-500'}`}></div>
-            <span className={`font-medium ${useVideoMode ? 'text-green-400' : 'text-gray-400'}`}>
-              {useVideoMode ? '128-Bit HD Video' : 'Standard Graphics'}
-            </span>
-          </div>
-        )}
+        {/* Quality badge */}
+        <div 
+          className={`absolute top-2 right-2 px-2 py-1 rounded-md ${getQualityColor()} 
+            backdrop-blur-sm flex items-center gap-1.5 text-xs transition-all duration-300`}
+        >
+          <div className={`w-1.5 h-1.5 rounded-full ${getQualityDotColor()}`}></div>
+          <span className={`font-medium ${getQualityTextColor()}`}>
+            {getQualityLevelText()}
+          </span>
+        </div>
       </div>
       
       {/* Controls bar */}
@@ -185,16 +256,14 @@ const AdvancedAnimationPlayer: React.FC<AnimationPlayerProps> = ({
         </div>
         
         <div className="flex items-center gap-2">
-          {videoAvailable && (
-            <button 
-              className="px-2 py-1 text-xs rounded flex items-center gap-1 hover:bg-white/10 transition"
-              onClick={toggleVideoMode}
-              style={{ color: colors.accent }}
-            >
-              <Video className="h-3 w-3" />
-              <span>{useVideoMode ? 'Standard Mode' : '128-Bit Mode'}</span>
-            </button>
-          )}
+          <button 
+            className="px-2 py-1 text-xs rounded flex items-center gap-1 hover:bg-white/10 transition"
+            onClick={cycleAnimationMode}
+            style={{ color: colors.accent }}
+          >
+            <Layers className="h-3 w-3" />
+            <span>Quality: {animationMode === 'threejs' ? 'Ultra' : animationMode === 'video' ? 'High' : 'Standard'}</span>
+          </button>
           
           <button 
             className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition"
