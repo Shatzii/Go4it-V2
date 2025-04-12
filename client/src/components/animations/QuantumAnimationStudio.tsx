@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,10 +11,11 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Play, Pause, SkipForward, SkipBack, Rewind, FastForward, Download, 
   Settings, RefreshCw, FilePlus, Trash2, Upload, Repeat, Lightbulb,
-  Camera, Video, Cpu, Film, Zap, Gauge
+  Camera, Video, Cpu, Film, Zap, Gauge, Eye, CheckCircle, AlertCircle, Clock
 } from "lucide-react";
 
 // Animation styles enum
@@ -141,6 +142,7 @@ interface AnimationJob {
 export default function QuantumAnimationStudio() {
   // Tab state
   const [activeTab, setActiveTab] = useState("story");
+  const { toast } = useToast();
   
   // Form data
   const [storyForm, setStoryForm] = useState<StoryGeneratorFormData>({
@@ -172,6 +174,36 @@ export default function QuantumAnimationStudio() {
   // Advanced options state
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   
+  // Fetch animation jobs from API
+  const fetchAnimationJobs = async () => {
+    try {
+      const response = await fetch('/api/animations/jobs');
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      const data = await response.json();
+      setJobs(data);
+    } catch (error) {
+      console.error('Error fetching animation jobs:', error);
+      toast({
+        title: 'Failed to fetch animation jobs',
+        description: 'There was an error loading your animation jobs. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+  
+  // Load animation jobs on component mount
+  useEffect(() => {
+    fetchAnimationJobs();
+    
+    // Set up polling for job status updates (every 5 seconds)
+    const intervalId = setInterval(fetchAnimationJobs, 5000);
+    
+    // Clean up interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
+  
   // Handle story template selection
   const handleTemplateSelect = (templateId: string) => {
     const template = storyTemplates.find(t => t.id === templateId);
@@ -187,47 +219,111 @@ export default function QuantumAnimationStudio() {
   };
   
   // Generate a story from text
-  const handleGenerateStory = () => {
+  const handleGenerateStory = async () => {
     setIsGeneratingStory(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Call the real API endpoint
+      const response = await fetch('/api/animations/generate/story', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: storyForm.text,
+          style: storyForm.style,
+          sportType: storyForm.sportType,
+          duration: storyForm.duration,
+          quality: storyForm.quality
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Add job to local state for immediate feedback
       const newJob: AnimationJob = {
-        id: `story_${Date.now()}`,
+        id: data.jobId,
         title: storyForm.text.split('.')[0] || 'New Story',
         type: 'story',
-        status: 'processing',
+        status: 'pending',
         progress: 0,
         createdAt: new Date(),
         preview: getPreviewImageForStyle(storyForm.style, storyForm.sportType)
       };
       
       setJobs(prev => [newJob, ...prev]);
-      simulateJobProgress(newJob.id);
+      
+      // Fetch updated jobs from the server
+      fetchAnimationJobs();
+    } catch (error) {
+      console.error('Error generating story animation:', error);
+      toast({
+        title: 'Animation Generation Failed',
+        description: 'There was an error generating your animation. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
       setIsGeneratingStory(false);
-    }, 1500);
+    }
   };
   
   // Generate a commercial
-  const handleGenerateCommercial = () => {
+  const handleGenerateCommercial = async () => {
     setIsGeneratingCommercial(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Call the real API endpoint
+      const response = await fetch('/api/animations/generate/commercial', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productName: commercialForm.productName,
+          tagline: commercialForm.tagline,
+          description: commercialForm.description,
+          sportType: commercialForm.sportType,
+          duration: commercialForm.duration,
+          quality: commercialForm.quality,
+          callToAction: commercialForm.callToAction
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Add job to local state for immediate feedback
       const newJob: AnimationJob = {
-        id: `commercial_${Date.now()}`,
+        id: data.jobId,
         title: `${commercialForm.productName} Commercial`,
         type: 'commercial',
-        status: 'processing',
+        status: 'pending',
         progress: 0,
         createdAt: new Date(),
         preview: getPreviewImageForStyle(AnimationStyle.COMMERCIAL, commercialForm.sportType)
       };
       
       setJobs(prev => [newJob, ...prev]);
-      simulateJobProgress(newJob.id);
+      
+      // Fetch updated jobs from the server
+      fetchAnimationJobs();
+    } catch (error) {
+      console.error('Error generating commercial animation:', error);
+      toast({
+        title: 'Commercial Generation Failed',
+        description: 'There was an error generating your commercial. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
       setIsGeneratingCommercial(false);
-    }, 1500);
+    }
   };
   
   // Simulate job progress
