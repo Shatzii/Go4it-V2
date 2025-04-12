@@ -23,6 +23,7 @@ import analyticsRoutes from './routes/analytics-routes';
 import combineRoutes from './routes/combine-routes';
 import combinePublicRoutes from './routes/combine-public-routes';
 import academicRoutes from './routes/academic-routes';
+import animationRoutes from './routes/animation-routes';
 
 // Helper function to determine event status
 function getEventStatus(event: any): 'upcoming' | 'filling_fast' | 'sold_out' | 'past' {
