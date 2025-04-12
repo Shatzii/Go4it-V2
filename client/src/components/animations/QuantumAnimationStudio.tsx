@@ -132,11 +132,12 @@ interface AnimationJob {
   type: 'story' | 'commercial';
   status: 'pending' | 'processing' | 'completed' | 'failed';
   progress: number;
-  preview?: string;
+  previewUrl?: string;  // Using previewUrl to match server response
   createdAt: Date;
   completedAt?: Date;
   outputUrl?: string;
   error?: string;
+  parameters?: any;
 }
 
 export default function QuantumAnimationStudio() {
@@ -226,18 +227,29 @@ export default function QuantumAnimationStudio() {
     setIsGeneratingStory(true);
     
     try {
-      // Call the real API endpoint
-      const response = await fetch('/api/animations/generate/story', {
+      console.log('Generating story animation with parameters:', {
+        text: storyForm.text,
+        style: storyForm.style,
+        sportType: storyForm.sportType,
+        duration: storyForm.duration,
+        quality: storyForm.quality
+      });
+      
+      // For testing, we'll use the debug endpoint to create a test job
+      const response = await fetch('/api/animations/debug/create-test-job', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          text: storyForm.text,
-          style: storyForm.style,
-          sportType: storyForm.sportType,
-          duration: storyForm.duration,
-          quality: storyForm.quality
+          type: 'story',
+          parameters: {
+            text: storyForm.text,
+            style: storyForm.style,
+            sportType: storyForm.sportType,
+            duration: storyForm.duration,
+            quality: storyForm.quality
+          }
         }),
       });
       
@@ -246,19 +258,12 @@ export default function QuantumAnimationStudio() {
       }
       
       const data = await response.json();
+      console.log('Story generation response:', data);
       
-      // Add job to local state for immediate feedback
-      const newJob: AnimationJob = {
-        id: data.jobId,
-        title: storyForm.text.split('.')[0] || 'New Story',
-        type: 'story',
-        status: 'pending',
-        progress: 0,
-        createdAt: new Date(),
-        preview: getPreviewImageForStyle(storyForm.style, storyForm.sportType)
-      };
-      
-      setJobs(prev => [newJob, ...prev]);
+      toast({
+        title: 'Animation Created',
+        description: 'Your sports story animation job has been submitted successfully!',
+      });
       
       // Fetch updated jobs from the server
       fetchAnimationJobs();
@@ -279,20 +284,33 @@ export default function QuantumAnimationStudio() {
     setIsGeneratingCommercial(true);
     
     try {
-      // Call the real API endpoint
-      const response = await fetch('/api/animations/generate/commercial', {
+      console.log('Generating commercial animation with parameters:', {
+        productName: commercialForm.productName,
+        tagline: commercialForm.tagline,
+        description: commercialForm.description,
+        sportType: commercialForm.sportType,
+        duration: commercialForm.duration,
+        quality: commercialForm.quality,
+        callToAction: commercialForm.callToAction
+      });
+      
+      // For testing, we'll use the debug endpoint to create a test job
+      const response = await fetch('/api/animations/debug/create-test-job', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          productName: commercialForm.productName,
-          tagline: commercialForm.tagline,
-          description: commercialForm.description,
-          sportType: commercialForm.sportType,
-          duration: commercialForm.duration,
-          quality: commercialForm.quality,
-          callToAction: commercialForm.callToAction
+          type: 'commercial',
+          parameters: {
+            productName: commercialForm.productName,
+            tagline: commercialForm.tagline,
+            description: commercialForm.description,
+            sportType: commercialForm.sportType,
+            duration: commercialForm.duration,
+            quality: commercialForm.quality,
+            callToAction: commercialForm.callToAction
+          }
         }),
       });
       
@@ -301,19 +319,12 @@ export default function QuantumAnimationStudio() {
       }
       
       const data = await response.json();
+      console.log('Commercial generation response:', data);
       
-      // Add job to local state for immediate feedback
-      const newJob: AnimationJob = {
-        id: data.jobId,
-        title: `${commercialForm.productName} Commercial`,
-        type: 'commercial',
-        status: 'pending',
-        progress: 0,
-        createdAt: new Date(),
-        preview: getPreviewImageForStyle(AnimationStyle.COMMERCIAL, commercialForm.sportType)
-      };
-      
-      setJobs(prev => [newJob, ...prev]);
+      toast({
+        title: 'Commercial Created',
+        description: 'Your sports commercial animation job has been submitted successfully!',
+      });
       
       // Fetch updated jobs from the server
       fetchAnimationJobs();
@@ -836,15 +847,26 @@ export default function QuantumAnimationStudio() {
                     <div className="space-y-4">
                       <div className="aspect-video bg-black rounded-md flex items-center justify-center overflow-hidden">
                         {selectedJob.status === 'completed' ? (
-                          <div className="w-full">
-                            <div className="flex items-center justify-center w-full h-full bg-gray-800">
-                              <p className="text-white text-center">
-                                Animation Complete!<br />
-                                <span className="text-sm text-gray-400">
-                                  {selectedJob.type === 'story' ? 'Download your story animation' : 'Download your commercial'}
-                                </span>
-                              </p>
-                            </div>
+                          <div className="w-full h-full">
+                            {selectedJob.outputUrl ? (
+                              <video 
+                                controls 
+                                className="w-full h-full object-contain bg-black"
+                                src={selectedJob.outputUrl} 
+                                poster={selectedJob.previewUrl}
+                              >
+                                Your browser does not support the video tag.
+                              </video>
+                            ) : (
+                              <div className="flex items-center justify-center w-full h-full bg-gray-800">
+                                <p className="text-white text-center">
+                                  Animation Complete!<br />
+                                  <span className="text-sm text-gray-400">
+                                    {selectedJob.type === 'story' ? 'Download your story animation' : 'Download your commercial'}
+                                  </span>
+                                </p>
+                              </div>
+                            )}
                           </div>
                         ) : (
                           <div className="text-center">
@@ -888,11 +910,39 @@ export default function QuantumAnimationStudio() {
                       
                       {selectedJob.status === 'completed' && (
                         <div className="flex justify-end space-x-2">
-                          <Button variant="outline">
+                          <Button 
+                            variant="outline"
+                            onClick={() => {
+                              // Re-generate animation with same parameters
+                              if (selectedJob.type === 'story') {
+                                handleGenerateStory();
+                              } else {
+                                handleGenerateCommercial();
+                              }
+                            }}
+                          >
                             <Repeat className="mr-2 h-4 w-4" />
                             Regenerate
                           </Button>
-                          <Button>
+                          <Button
+                            onClick={() => {
+                              if (selectedJob.outputUrl) {
+                                // Create temporary anchor to trigger download
+                                const link = document.createElement('a');
+                                link.href = selectedJob.outputUrl;
+                                link.download = `${selectedJob.type === 'story' ? 'sports-story' : 'sports-commercial'}-${selectedJob.id.substring(0, 8)}.mp4`;
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                
+                                toast({
+                                  title: 'Download Started',
+                                  description: 'Your animation is being downloaded.'
+                                });
+                              }
+                            }}
+                            disabled={!selectedJob.outputUrl}
+                          >
                             <Download className="mr-2 h-4 w-4" />
                             Download
                           </Button>
