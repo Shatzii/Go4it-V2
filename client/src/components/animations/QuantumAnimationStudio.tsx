@@ -326,40 +326,7 @@ export default function QuantumAnimationStudio() {
     }
   };
   
-  // Simulate job progress
-  const simulateJobProgress = (jobId: string) => {
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += Math.random() * 10;
-      
-      if (progress >= 100) {
-        progress = 100;
-        clearInterval(interval);
-        
-        setJobs(prev => 
-          prev.map(job => 
-            job.id === jobId 
-              ? { 
-                  ...job, 
-                  status: 'completed', 
-                  progress: 100, 
-                  completedAt: new Date(),
-                  outputUrl: `/sample-videos/output_${job.type}.mp4`
-                } 
-              : job
-          )
-        );
-      } else {
-        setJobs(prev => 
-          prev.map(job => 
-            job.id === jobId 
-              ? { ...job, progress } 
-              : job
-          )
-        );
-      }
-    }, 1500);
-  };
+  // NOTE: simulateJobProgress has been removed as we now use real API calls for job progress tracking
   
   // Get preview image based on style and sport
   const getPreviewImageForStyle = (style: AnimationStyle, sportType: string): string => {
