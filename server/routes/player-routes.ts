@@ -373,17 +373,24 @@ playerRoutes.post('/star-path/:userId/attributes', async (req: Request, res: Res
       return res.status(404).json({ message: 'Star path not found for this user' });
     }
     
-    const { category, attributes } = req.body;
+    const { type, attributes } = req.body;
     
-    if (!category || !attributes || typeof attributes !== 'object') {
-      return res.status(400).json({ message: 'Invalid request. Category and attributes required' });
+    if (!type || !attributes || typeof attributes !== 'object') {
+      return res.status(400).json({ message: 'Invalid request. Type and attributes required' });
     }
     
-    // Update the attributes for the specified category
+    // Validate type
+    if (!['physical', 'technical', 'mental'].includes(type)) {
+      return res.status(400).json({ 
+        message: 'Invalid type. Must be physical, technical, or mental' 
+      });
+    }
+    
+    // Update the attributes for the specified type
     const updatedAttributes = {
       ...starPath.attributes,
-      [category]: {
-        ...(starPath.attributes[category] || {}),
+      [type]: {
+        ...(starPath.attributes[type] || {}),
         ...attributes
       }
     };

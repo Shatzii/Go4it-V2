@@ -92,17 +92,23 @@ export default function MyPlayerStarPath() {
   const { data: starPath, isLoading: isStarPathLoading } = useQuery({
     queryKey: ['/api/player/star-path', user?.id],
     enabled: !!user,
-    // If star path doesn't exist yet, create one
-    onError: async (error) => {
-      if (user && error.message?.includes('not found')) {
-        // Create star path for this user
+    retry: 1,
+    // Star Path handling is built into the error handler
+    refetchOnWindowFocus: false,
+  });
+  
+  // Create star path if it doesn't exist
+  useEffect(() => {
+    // Only run this effect if we have a user but no star path and we're not loading
+    if (user && !starPath && !isStarPathLoading) {
+      const createStarPath = async () => {
         try {
           await apiRequest('/api/player/star-path', {
             method: 'POST',
             data: { 
               userId: user.id,
-              sportType: user.primarySport || 'basketball',
-              position: user.position || null
+              sportType: 'basketball', // Default sport type
+              position: '' // Default position
             }
           });
           
