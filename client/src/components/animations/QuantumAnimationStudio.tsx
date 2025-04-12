@@ -177,12 +177,15 @@ export default function QuantumAnimationStudio() {
   // Fetch animation jobs from API
   const fetchAnimationJobs = async () => {
     try {
-      const response = await fetch('/api/animations/jobs');
+      // For development/testing, use the debug endpoint
+      const response = await fetch('/api/animations/debug/jobs');
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
       const data = await response.json();
-      setJobs(data);
+      console.log('Fetched animation jobs:', data);
+      // Use the jobs array from the response
+      setJobs(data.jobs || []);
     } catch (error) {
       console.error('Error fetching animation jobs:', error);
       toast({
