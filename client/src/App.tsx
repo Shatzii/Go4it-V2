@@ -74,6 +74,7 @@ import AnalyticsDashboard from "@/pages/analytics-dashboard";
 import TextToAnimationPage from "@/pages/text-to-animation";
 import AthleticCombineShowcasePage from "@/pages/athletic-combine-showcase";
 import AthleteSocialHub from "@/pages/athlete-social-hub";
+import SkillDevelopmentTracker from "@/pages/skill-development-tracker";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -382,6 +383,11 @@ function Router() {
         {/* Athlete Social Hub Route */}
         <Route path="/athlete-social-hub">
           {() => <ProtectedRoute component={AthleteSocialHub} />}
+        </Route>
+
+        {/* Skill Development Tracker Route */}
+        <Route path="/skill-development-tracker">
+          {() => <ProtectedRoute component={SkillDevelopmentTracker} />}
         </Route>
 
         {/* Fallback to 404 */}
