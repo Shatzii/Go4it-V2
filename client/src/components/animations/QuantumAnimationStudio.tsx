@@ -104,6 +104,15 @@ const storyTemplates = [
     style: AnimationStyle.COMMERCIAL,
     sportType: 'general',
     duration: 30
+  },
+  {
+    id: 'athletic-combine',
+    title: 'Athletic Combine Commercial',
+    description: 'High-quality 256-bit commercial showcasing athletic combine testing',
+    text: 'This high-energy commercial showcases elite student athletes performing at a Go4It Sports combine. The animation begins with an explosive 40-yard dash sequence featuring accurate motion metrics and cutting-edge visualization. Next, we transition to vertical jump testing with real-time height and power analysis displayed in brilliant 256-bit color. The finale features a dynamic basketball one-on-one skills showcase with motion-captured moves and athletic rating overlays. Throughout the commercial, performance data is rendered with stunning visual effects that emphasize each athlete\'s explosive abilities.',
+    style: AnimationStyle.COMMERCIAL,
+    sportType: 'general',
+    duration: 45
   }
 ];
 

@@ -72,6 +72,7 @@ import AIVideoPlayerDemo from "@/pages/ai-video-player-demo";
 import EnhancedSkillTreePage from "@/pages/enhanced-skill-tree-page";
 import AnalyticsDashboard from "@/pages/analytics-dashboard";
 import TextToAnimationPage from "@/pages/text-to-animation";
+import AthleticCombineShowcasePage from "@/pages/athletic-combine-showcase";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -370,6 +371,11 @@ function Router() {
         {/* Text to Animation Studio Route */}
         <Route path="/text-to-animation">
           {() => <ProtectedRoute component={TextToAnimationPage} />}
+        </Route>
+
+        {/* Athletic Combine Showcase Route */}
+        <Route path="/athletic-combine-showcase">
+          {() => <ProtectedRoute component={AthleticCombineShowcasePage} />}
         </Route>
 
         {/* Fallback to 404 */}
