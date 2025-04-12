@@ -133,6 +133,22 @@ router.get('/debug/jobs', async (req: Request, res: Response) => {
   }
 });
 
+// Debug endpoint to clear all animation jobs
+router.delete('/debug/jobs', async (req: Request, res: Response) => {
+  try {
+    const count = animationJobs.length;
+    animationJobs.length = 0;
+    console.log('Cleared all animation jobs');
+    return res.status(200).json({ 
+      message: 'Successfully cleared all animation jobs',
+      count
+    });
+  } catch (error) {
+    console.error('Error clearing animation jobs:', error);
+    return res.status(500).json({ message: 'Error clearing animation jobs' });
+  }
+});
+
 // Get a specific animation job
 router.get('/jobs/:jobId', isAuthenticatedMiddleware, async (req: Request, res: Response) => {
   try {
