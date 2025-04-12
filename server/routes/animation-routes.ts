@@ -110,7 +110,7 @@ router.post('/generate/commercial', isAuthenticatedMiddleware, async (req: Reque
 // Get all animation jobs for the current user
 router.get('/jobs', isAuthenticatedMiddleware, async (req: Request, res: Response) => {
   try {
-    const userJobs = animationJobs.filter(job => job.userId === req.user.id);
+    const userJobs = animationJobs.filter(job => job.userId === req.user?.id || 0);
     return res.status(200).json(userJobs);
   } catch (error) {
     console.error('Error fetching animation jobs:', error);
@@ -121,7 +121,7 @@ router.get('/jobs', isAuthenticatedMiddleware, async (req: Request, res: Respons
 // Get a specific animation job
 router.get('/jobs/:jobId', isAuthenticatedMiddleware, async (req: Request, res: Response) => {
   try {
-    const job = animationJobs.find(j => j.id === req.params.jobId && j.userId === req.user.id);
+    const job = animationJobs.find(j => j.id === req.params.jobId && j.userId === req.user?.id);
     
     if (!job) {
       return res.status(404).json({ message: 'Animation job not found' });
