@@ -170,29 +170,72 @@ router.post('/debug/create-test-job', async (req: Request, res: Response) => {
   try {
     // Create job entry
     const jobId = uuidv4();
-    const newJob: AnimationJob = {
-      id: jobId,
-      userId: 1, // Default test user ID
-      title: "Test Animation Job",
-      type: 'story',
-      status: 'pending',
-      progress: 0,
-      createdAt: new Date(),
-      parameters: { 
-        text: "Test story for basketball skills training", 
-        style: "realistic", 
-        sportType: "basketball", 
-        duration: 30, 
-        quality: "standard" 
-      },
-      previewUrl: `/images/previews/realistic_basketball.jpg`
-    };
+    
+    // Check if type and parameters were provided
+    console.log('Debug test job request:', JSON.stringify(req.body));
+    const { type = 'story', parameters = {} } = req.body;
+    console.log('Extracted type:', type);
+    console.log('Extracted parameters:', JSON.stringify(parameters));
+    
+    let newJob: AnimationJob;
+    
+    if (type === 'commercial') {
+      // Commercial animation
+      const { 
+        productName = "Go4It Pro Equipment", 
+        tagline = "Elevate Your Game", 
+        description = "Professional sports equipment for athletes", 
+        sportType = "basketball", 
+        duration = 30, 
+        quality = "standard",
+        callToAction = "Shop Now" 
+      } = parameters;
+      
+      newJob = {
+        id: jobId,
+        userId: 1, // Default test user ID
+        title: `${productName} Commercial`,
+        type: 'commercial',
+        status: 'pending',
+        progress: 0,
+        createdAt: new Date(),
+        parameters: { productName, tagline, description, sportType, duration, quality, callToAction },
+        previewUrl: `/images/previews/commercial_${sportType.toLowerCase()}.jpg`
+      };
+    } else {
+      // Default to story animation
+      const { 
+        text = "Test story for basketball skills training", 
+        style = "realistic", 
+        sportType = "basketball", 
+        duration = 30, 
+        quality = "standard" 
+      } = parameters;
+      
+      newJob = {
+        id: jobId,
+        userId: 1, // Default test user ID
+        title: "Test Animation Job",
+        type: 'story',
+        status: 'pending',
+        progress: 0,
+        createdAt: new Date(),
+        parameters: { text, style, sportType, duration, quality },
+        previewUrl: `/images/previews/${style.toLowerCase()}_${sportType.toLowerCase()}.jpg`
+      };
+    }
     
     // Save job
     animationJobs.push(newJob);
     
     // Start processing
     setTimeout(() => processAnimationJob(jobId), 500);
+    
+    console.log('Created test job:', {
+      id: jobId,
+      type: newJob.type,
+      parameters: newJob.parameters
+    });
     
     return res.status(201).json({ 
       message: 'Test animation job created successfully', 
