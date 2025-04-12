@@ -284,6 +284,24 @@ export default function AdminDashboard() {
             </div>
 
             <div className="space-y-2">
+              <h3 className="text-sm font-medium">Athlete Social</h3>
+              <div className="space-y-1">
+                <Link href="/athlete-social-hub">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <Users className="h-4 w-4 mr-2" />
+                    Athlete Social Hub
+                  </Button>
+                </Link>
+                <Link href="/athletic-combine-showcase">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <Activity className="h-4 w-4 mr-2" />
+                    Athletic Combine Showcase
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            <div className="space-y-2">
               <h3 className="text-sm font-medium">MyPlayer</h3>
               <div className="space-y-1">
                 <Link href="/myplayer-xp">
