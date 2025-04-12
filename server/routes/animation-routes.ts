@@ -118,6 +118,21 @@ router.get('/jobs', isAuthenticatedMiddleware, async (req: Request, res: Respons
   }
 });
 
+// Debug endpoint to get all animation jobs (admin only)
+router.get('/debug/jobs', async (req: Request, res: Response) => {
+  // In production, this would have proper admin authentication
+  try {
+    console.log('Current animation jobs:', animationJobs);
+    return res.status(200).json({
+      count: animationJobs.length,
+      jobs: animationJobs
+    });
+  } catch (error) {
+    console.error('Error in debug endpoint:', error);
+    return res.status(500).json({ message: 'Error in debug endpoint' });
+  }
+});
+
 // Get a specific animation job
 router.get('/jobs/:jobId', isAuthenticatedMiddleware, async (req: Request, res: Response) => {
   try {
@@ -131,6 +146,46 @@ router.get('/jobs/:jobId', isAuthenticatedMiddleware, async (req: Request, res: 
   } catch (error) {
     console.error('Error fetching animation job:', error);
     return res.status(500).json({ message: 'Error fetching animation job' });
+  }
+});
+
+// Create a test job (for debugging without authentication)
+router.post('/debug/create-test-job', async (req: Request, res: Response) => {
+  try {
+    // Create job entry
+    const jobId = uuidv4();
+    const newJob: AnimationJob = {
+      id: jobId,
+      userId: 1, // Default test user ID
+      title: "Test Animation Job",
+      type: 'story',
+      status: 'pending',
+      progress: 0,
+      createdAt: new Date(),
+      parameters: { 
+        text: "Test story for basketball skills training", 
+        style: "realistic", 
+        sportType: "basketball", 
+        duration: 30, 
+        quality: "standard" 
+      },
+      previewUrl: `/images/previews/realistic_basketball.jpg`
+    };
+    
+    // Save job
+    animationJobs.push(newJob);
+    
+    // Start processing
+    setTimeout(() => processAnimationJob(jobId), 500);
+    
+    return res.status(201).json({ 
+      message: 'Test animation job created successfully', 
+      jobId: jobId
+    });
+    
+  } catch (error) {
+    console.error('Error creating test job:', error);
+    return res.status(500).json({ message: 'Error creating test job' });
   }
 });
 
@@ -162,6 +217,8 @@ async function processAnimationJob(jobId: string) {
       } else {
         job.outputUrl = `/videos/samples/commercial_sample.mp4`;
       }
+      
+      console.log(`Job ${jobId} completed successfully`);
     } else {
       job.progress = Math.round(progress);
     }
