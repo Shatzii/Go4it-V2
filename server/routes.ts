@@ -5397,6 +5397,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register Academic Routes
   app.use('/api/academics', academicRoutes);
+  
+  // Register animation routes
+  app.use('/api/animations', animationRoutes);
 
   // Content Blocks API Routes
   app.get("/api/content-blocks", async (req: Request, res: Response) => {

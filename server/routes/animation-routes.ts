@@ -39,7 +39,7 @@ router.post('/generate/story', isAuthenticatedMiddleware, async (req: Request, r
     const jobId = uuidv4();
     const newJob: AnimationJob = {
       id: jobId,
-      userId: req.user.id,
+      userId: req.user?.id || 0,
       title: text.split('.')[0] || 'New Story',
       type: 'story',
       status: 'pending',
@@ -80,7 +80,7 @@ router.post('/generate/commercial', isAuthenticatedMiddleware, async (req: Reque
     const jobId = uuidv4();
     const newJob: AnimationJob = {
       id: jobId,
-      userId: req.user.id,
+      userId: req.user?.id || 0,
       title: `${productName} Commercial`,
       type: 'commercial',
       status: 'pending',
