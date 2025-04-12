@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; background: #000; }
+    .container { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+    .animation { width: 100%; height: 100%; object-fit: cover; }
+    .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+               background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent); pointer-events: none; }
+    .metrics { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); color: #fff;
+               padding: 10px; border-radius: 5px; font-family: sans-serif; text-align: right; }
+    .value { font-size: 24px; font-weight: bold; color: #3b82f6; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Video animation placeholder - In production this would be a real high-quality video -->
+    <div class="animation" style="background: linear-gradient(to right, #0f172a, #1e293b); position: relative;">
+      <!-- Track visual -->
+      <div style="position: absolute; height: 100px; left: 10%; right: 10%; top: 50%; transform: translateY(-50%); 
+                  border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;"></div>
+      
+      <!-- Runner animation -->
+      <div id="runner" style="position: absolute; width: 40px; height: 60px; bottom: 42%; left: 15%; 
+                   background: #3b82f6; border-radius: 5px;">
+        <div style="position: absolute; width: 20px; height: 20px; background: #1e293b; 
+                    border-radius: 50%; top: -15px; left: 10px;"></div>
+        <!-- Number -->
+        <div style="position: absolute; top: 20px; width: 100%; text-align: center; color: white; font-weight: bold;">4</div>
+      </div>
+
+      <!-- Start/finish lines -->
+      <div style="position: absolute; width: 2px; height: 150px; background: #1d4ed8; top: 50%; transform: translateY(-50%); left: 15%;"></div>
+      <div style="position: absolute; width: 2px; height: 150px; background: #3b82f6; top: 50%; transform: translateY(-50%); right: 15%;"></div>
+    </div>
+
+    <div class="overlay"></div>
+    <div class="metrics">
+      <div style="font-size: 12px; opacity: 0.8;">TIME</div>
+      <div class="value">4.42s</div>
+    </div>
+  </div>
+
+  <script>
+    // Animation script
+    const runner = document.getElementById('runner');
+    let position = 15;
+    const finalPosition = 85;
+    const duration = 3000; // 3 seconds for the run
+    const startTime = Date.now();
+    
+    function animate() {
+      const elapsed = Date.now() - startTime;
+      if (elapsed < duration) {
+        // Ease-out animation for realistic acceleration and deceleration
+        const progress = elapsed / duration;
+        const easeOut = 1 - Math.pow(1 - progress, 2);
+        position = 15 + (finalPosition - 15) * easeOut;
+        runner.style.left = position + '%';
+        
+        // Add a slight bouncing effect
+        const bounce = Math.sin(progress * Math.PI * 8) * 3;
+        runner.style.bottom = (42 + bounce) + '%';
+        
+        requestAnimationFrame(animate);
+      } else {
+        // Complete the animation at exactly the final position
+        runner.style.left = finalPosition + '%';
+      }
+    }
+    
+    // Start the animation
+    setTimeout(() => {
+      animate();
+    }, 500);
+  </script>
+</body>
+</html>
