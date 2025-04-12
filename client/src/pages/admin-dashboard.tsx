@@ -274,6 +274,12 @@ export default function AdminDashboard() {
                     Video Highlights
                   </Button>
                 </Link>
+                <Link href="/text-to-animation">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Text-to-Animation Studio
+                  </Button>
+                </Link>
               </div>
             </div>
 
@@ -1003,6 +1009,63 @@ export default function AdminDashboard() {
           <div className="grid gap-6">
             {/* Highlight Generator Configurations */}
             <HighlightConfigManager />
+
+            {/* Text-to-Animation Studio */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center">
+                    <Sparkles className="h-5 w-5 mr-2" />
+                    Text-to-Animation Studio
+                  </CardTitle>
+                  <CardDescription>
+                    Create high-quality sports animations and commercials from text descriptions
+                  </CardDescription>
+                </div>
+                <Link href="/text-to-animation">
+                  <Button className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4" />
+                    Open Studio
+                  </Button>
+                </Link>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Card className="bg-secondary/10">
+                    <CardHeader className="p-4">
+                      <CardTitle className="text-base">Story Generator</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0">
+                      <p className="text-sm text-muted-foreground">
+                        Create sports stories, training demos, and game analyses with multiple animation styles
+                      </p>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-secondary/10">
+                    <CardHeader className="p-4">
+                      <CardTitle className="text-base">Commercial Generator</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0">
+                      <p className="text-sm text-muted-foreground">
+                        Generate professional-quality commercials for sports products and services
+                      </p>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-secondary/10">
+                    <CardHeader className="p-4">
+                      <CardTitle className="text-base">Animation Jobs</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0">
+                      <p className="text-sm text-muted-foreground">
+                        Track and manage all animation generation jobs in one place
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Blog Management Section */}
             <Card>
