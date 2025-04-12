@@ -52,6 +52,7 @@ import {
   ThumbsUp,
   Clock
 } from 'lucide-react';
+import AchievementTracker from '@/components/athlete-social/AchievementTracker';
 
 /**
  * Athlete Social Connection Hub
@@ -61,6 +62,82 @@ export default function AthleteSocialHub() {
   const [activeTab, setActiveTab] = useState("feed");
   const [postContent, setPostContent] = useState("");
   const { toast } = useToast();
+  
+  // Sample achievement data for the AchievementTracker component
+  const achievements = [
+    {
+      id: 1,
+      title: "3-Point Sharpshooter",
+      description: "Make 50 three-pointers in practice sessions",
+      progress: 100,
+      category: "technical" as const,
+      completed: true,
+      xp: 150
+    },
+    {
+      id: 2,
+      title: "Speed Demon",
+      description: "Improve 40-yard dash time by 0.3 seconds",
+      progress: 80,
+      category: "physical" as const,
+      completed: false,
+      xp: 200
+    },
+    {
+      id: 3,
+      title: "Team Captain",
+      description: "Lead your team through a tournament",
+      progress: 100,
+      category: "mental" as const,
+      completed: true,
+      xp: 250
+    },
+    {
+      id: 4,
+      title: "Championship Winner",
+      description: "Win a regional or state championship",
+      progress: 100,
+      category: "competition" as const,
+      completed: true,
+      xp: 500
+    },
+    {
+      id: 5,
+      title: "Vertical Leap",
+      description: "Increase vertical jump by 3 inches",
+      progress: 67,
+      category: "physical" as const,
+      completed: false,
+      xp: 200
+    },
+    {
+      id: 6,
+      title: "Free Throw Master",
+      description: "Achieve 85% free throw accuracy",
+      progress: 76,
+      category: "technical" as const,
+      completed: false,
+      xp: 150
+    },
+    {
+      id: 7,
+      title: "Game Intelligence",
+      description: "Complete basketball IQ assessment with 90% score",
+      progress: 45,
+      category: "mental" as const,
+      completed: false,
+      xp: 175
+    },
+    {
+      id: 8,
+      title: "All-Conference Selection",
+      description: "Get selected for the all-conference team",
+      progress: 100,
+      category: "competition" as const,
+      completed: true,
+      xp: 300
+    }
+  ];
 
   // Sample data for athletes
   const athletes = [
@@ -445,6 +522,30 @@ export default function AthleteSocialHub() {
               <Separator className="my-4" />
               
               <div className="space-y-3">
+                <h3 className="text-sm font-semibold">GAR Score Metrics</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="border rounded-lg p-2 text-center">
+                    <div className="text-xs text-muted-foreground">Physical</div>
+                    <div className="text-lg font-bold text-primary">86</div>
+                  </div>
+                  <div className="border rounded-lg p-2 text-center">
+                    <div className="text-xs text-muted-foreground">Mental</div>
+                    <div className="text-lg font-bold text-primary">78</div>
+                  </div>
+                  <div className="border rounded-lg p-2 text-center">
+                    <div className="text-xs text-muted-foreground">Technical</div>
+                    <div className="text-lg font-bold text-primary">82</div>
+                  </div>
+                  <div className="border rounded-lg p-2 text-center">
+                    <div className="text-xs text-muted-foreground">Overall</div>
+                    <div className="text-lg font-bold text-primary">83</div>
+                  </div>
+                </div>
+              </div>
+              
+              <Separator className="my-4" />
+              
+              <div className="space-y-3">
                 <h3 className="text-sm font-semibold">Recent Achievements</h3>
                 <div className="space-y-2">
                   <div className="flex items-center">
@@ -463,6 +564,43 @@ export default function AthleteSocialHub() {
                 <Button variant="ghost" size="sm" className="w-full mt-2">
                   View All Achievements
                 </Button>
+              </div>
+              
+              <Separator className="my-4" />
+              
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold">Athletic Progression</h3>
+                <div className="space-y-2">
+                  <div className="space-y-1">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs">Vertical Jump</span>
+                      <span className="text-xs text-muted-foreground">+2.5" in 3 months</span>
+                    </div>
+                    <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div className="bg-emerald-500 h-full rounded-full" style={{ width: '70%' }} />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs">40-Yard Dash</span>
+                      <span className="text-xs text-muted-foreground">-0.2s in 3 months</span>
+                    </div>
+                    <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div className="bg-emerald-500 h-full rounded-full" style={{ width: '65%' }} />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs">Ball Handling</span>
+                      <span className="text-xs text-muted-foreground">+12% in 3 months</span>
+                    </div>
+                    <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div className="bg-emerald-500 h-full rounded-full" style={{ width: '80%' }} />
+                    </div>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -495,42 +633,132 @@ export default function AthleteSocialHub() {
               
               {/* Feed Tab */}
               <TabsContent value="feed" className="space-y-4">
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="space-y-4">
-                      <div className="flex items-start gap-4">
-                        <Avatar>
-                          <AvatarImage src="/avatars/user.jpg" alt="Profile" />
-                          <AvatarFallback>AP</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <Textarea 
-                            placeholder="Share your achievements, questions, or training insights..." 
-                            className="resize-none"
-                            value={postContent}
-                            onChange={(e) => setPostContent(e.target.value)}
-                          />
-                          <div className="flex justify-between mt-3">
-                            <div className="flex space-x-2">
-                              <Button variant="outline" size="sm">
-                                <Image className="h-4 w-4 mr-2" />
-                                Photo
-                              </Button>
-                              <Button variant="outline" size="sm">
-                                <Video className="h-4 w-4 mr-2" />
-                                Video
-                              </Button>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="md:col-span-2 space-y-4">
+                    <Card>
+                      <CardContent className="pt-6">
+                        <div className="space-y-4">
+                          <div className="flex items-start gap-4">
+                            <Avatar>
+                              <AvatarImage src="/avatars/user.jpg" alt="Profile" />
+                              <AvatarFallback>AP</AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <Textarea 
+                                placeholder="Share your achievements, questions, or training insights..." 
+                                className="resize-none"
+                                value={postContent}
+                                onChange={(e) => setPostContent(e.target.value)}
+                              />
+                              <div className="flex justify-between mt-3">
+                                <div className="flex space-x-2">
+                                  <Button variant="outline" size="sm">
+                                    <Image className="h-4 w-4 mr-2" />
+                                    Photo
+                                  </Button>
+                                  <Button variant="outline" size="sm">
+                                    <Video className="h-4 w-4 mr-2" />
+                                    Video
+                                  </Button>
+                                </div>
+                                <Button size="sm" onClick={handleSubmitPost} disabled={!postContent.trim()}>
+                                  <Send className="h-4 w-4 mr-2" />
+                                  Post
+                                </Button>
+                              </div>
                             </div>
-                            <Button size="sm" onClick={handleSubmitPost} disabled={!postContent.trim()}>
-                              <Send className="h-4 w-4 mr-2" />
-                              Post
-                            </Button>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                      </CardContent>
+                    </Card>
+                  </div>
+                
+                  <div className="md:row-span-2">
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg flex items-center">
+                          <Activity className="h-4 w-4 mr-2" />
+                          Trending in Sports
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="space-y-3">
+                          <div className="space-y-1">
+                            <div className="flex justify-between">
+                              <span className="font-medium text-sm">#CollegeRecruitment</span>
+                              <Badge variant="outline" className="text-xs">1.2k posts</Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              College scouts looking for summer standouts
+                            </p>
+                          </div>
+                          
+                          <div className="space-y-1">
+                            <div className="flex justify-between">
+                              <span className="font-medium text-sm">#SummerCamps</span>
+                              <Badge variant="outline" className="text-xs">856 posts</Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              Elite training camps filling up fast
+                            </p>
+                          </div>
+                          
+                          <div className="space-y-1">
+                            <div className="flex justify-between">
+                              <span className="font-medium text-sm">#VerticalJumpTraining</span>
+                              <Badge variant="outline" className="text-xs">543 posts</Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              New techniques gaining popularity
+                            </p>
+                          </div>
+                          
+                          <div className="space-y-1">
+                            <div className="flex justify-between">
+                              <span className="font-medium text-sm">#ADHDAthleteSuccess</span>
+                              <Badge variant="outline" className="text-xs">428 posts</Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              Sharing focus techniques that work
+                            </p>
+                          </div>
+                          
+                          <div className="space-y-1">
+                            <div className="flex justify-between">
+                              <span className="font-medium text-sm">#NutritionTips</span>
+                              <Badge variant="outline" className="text-xs">312 posts</Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              Pre-game meal ideas gaining traction
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <Separator />
+                        
+                        <div>
+                          <h3 className="font-semibold text-sm mb-2">Upcoming Deadlines</h3>
+                          <div className="space-y-2">
+                            <div className="flex items-start">
+                              <Calendar className="h-4 w-4 mr-2 mt-0.5 text-primary" />
+                              <div>
+                                <p className="text-sm font-medium">Summer Elite Camp Registration</p>
+                                <p className="text-xs text-muted-foreground">Closes in 3 days</p>
+                              </div>
+                            </div>
+                            <div className="flex items-start">
+                              <Calendar className="h-4 w-4 mr-2 mt-0.5 text-primary" />
+                              <div>
+                                <p className="text-sm font-medium">College Showcase Application</p>
+                                <p className="text-xs text-muted-foreground">Closes in 7 days</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
                 
                 {posts.map((post) => (
                   <Card key={post.id} className="overflow-hidden">
@@ -723,73 +951,141 @@ export default function AthleteSocialHub() {
               
               {/* Mentors Tab */}
               <TabsContent value="mentors" className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Find a Mentor</CardTitle>
-                    <CardDescription>
-                      Connect with experienced coaches and former athletes who can help you improve
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
-                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                        {mentors.map((mentor) => (
-                          <Card key={mentor.id}>
-                            <CardHeader className="text-center pb-2">
-                              <Avatar className="h-16 w-16 mx-auto">
-                                <AvatarImage src={mentor.avatar} alt={mentor.name} />
-                                <AvatarFallback>{mentor.name.charAt(0)}</AvatarFallback>
-                              </Avatar>
-                              <CardTitle className="mt-2 text-lg">{mentor.name}</CardTitle>
-                              <Badge>{mentor.sport}</Badge>
-                            </CardHeader>
-                            <CardContent className="text-center pb-2">
-                              <div className="text-sm text-muted-foreground mb-3">
-                                {mentor.specialty}
-                              </div>
-                              <div className="grid grid-cols-2 gap-2 mb-3">
-                                <div className="flex flex-col items-center">
-                                  <span className="text-sm font-medium">{mentor.experience}</span>
-                                  <span className="text-xs text-muted-foreground">Experience</span>
-                                </div>
-                                <div className="flex flex-col items-center">
-                                  <div className="flex items-center">
-                                    <span className="text-sm font-medium mr-1">{mentor.rating}</span>
-                                    <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="md:col-span-2">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Find a Mentor</CardTitle>
+                        <CardDescription>
+                          Connect with experienced coaches and former athletes who can help you improve
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-6">
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            {mentors.map((mentor) => (
+                              <Card key={mentor.id}>
+                                <CardHeader className="text-center pb-2">
+                                  <Avatar className="h-16 w-16 mx-auto">
+                                    <AvatarImage src={mentor.avatar} alt={mentor.name} />
+                                    <AvatarFallback>{mentor.name.charAt(0)}</AvatarFallback>
+                                  </Avatar>
+                                  <CardTitle className="mt-2 text-lg">{mentor.name}</CardTitle>
+                                  <Badge>{mentor.sport}</Badge>
+                                </CardHeader>
+                                <CardContent className="text-center pb-2">
+                                  <div className="text-sm text-muted-foreground mb-3">
+                                    {mentor.specialty}
                                   </div>
-                                  <span className="text-xs text-muted-foreground">Rating</span>
-                                </div>
-                              </div>
-                              <div className="text-sm mb-3">
-                                <span className="font-medium">{mentor.athletes}</span>
-                                <span className="text-muted-foreground"> athletes mentored</span>
-                              </div>
-                            </CardContent>
-                            <CardFooter>
-                              <Button 
-                                className="w-full" 
-                                disabled={!mentor.available}
-                                onClick={() => handleConnectMentor(mentor.id)}
-                              >
-                                {mentor.available ? 'Connect with Mentor' : 'Currently Unavailable'}
-                              </Button>
-                            </CardFooter>
-                          </Card>
-                        ))}
-                      </div>
-                      
-                      <div className="bg-primary/5 p-4 rounded-lg">
-                        <h3 className="font-semibold mb-2">Want to become a mentor?</h3>
-                        <p className="text-sm text-muted-foreground mb-3">
-                          If you have experience and knowledge to share, consider applying to become a mentor on the Go4It platform.
-                        </p>
-                        <Button variant="outline" className="w-full sm:w-auto">
-                          Apply to Mentor
+                                  <div className="grid grid-cols-2 gap-2 mb-3">
+                                    <div className="flex flex-col items-center">
+                                      <span className="text-sm font-medium">{mentor.experience}</span>
+                                      <span className="text-xs text-muted-foreground">Experience</span>
+                                    </div>
+                                    <div className="flex flex-col items-center">
+                                      <div className="flex items-center">
+                                        <span className="text-sm font-medium mr-1">{mentor.rating}</span>
+                                        <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
+                                      </div>
+                                      <span className="text-xs text-muted-foreground">Rating</span>
+                                    </div>
+                                  </div>
+                                  <div className="text-sm mb-3">
+                                    <span className="font-medium">{mentor.athletes}</span>
+                                    <span className="text-muted-foreground"> athletes mentored</span>
+                                  </div>
+                                </CardContent>
+                                <CardFooter>
+                                  <Button 
+                                    className="w-full" 
+                                    disabled={!mentor.available}
+                                    onClick={() => handleConnectMentor(mentor.id)}
+                                  >
+                                    {mentor.available ? 'Connect with Mentor' : 'Currently Unavailable'}
+                                  </Button>
+                                </CardFooter>
+                              </Card>
+                            ))}
+                          </div>
+                          
+                          <div className="bg-primary/5 p-4 rounded-lg">
+                            <h3 className="font-semibold mb-2">Want to become a mentor?</h3>
+                            <p className="text-sm text-muted-foreground mb-3">
+                              If you have experience and knowledge to share, consider applying to become a mentor on the Go4It platform.
+                            </p>
+                            <Button variant="outline" className="w-full sm:w-auto">
+                              Apply to Mentor
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                  
+                  <div className="md:col-span-1 space-y-4">
+                    <AchievementTracker 
+                      achievements={achievements} 
+                      onViewAll={() => {
+                        toast({
+                          title: "Viewing Achievements",
+                          description: "Opening all achievements page"
+                        });
+                      }} 
+                    />
+                    
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-lg">Development Focus</CardTitle>
+                        <CardDescription>Areas to improve with mentor guidance</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium">Ball Handling</span>
+                            <span className="text-sm text-muted-foreground">Priority</span>
+                          </div>
+                          <div className="w-full bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
+                            <div className="bg-red-500 h-full rounded-full" style={{ width: '85%' }} />
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium">Decision Making</span>
+                            <span className="text-sm text-muted-foreground">High</span>
+                          </div>
+                          <div className="w-full bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
+                            <div className="bg-orange-500 h-full rounded-full" style={{ width: '70%' }} />
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium">Shooting Form</span>
+                            <span className="text-sm text-muted-foreground">Medium</span>
+                          </div>
+                          <div className="w-full bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
+                            <div className="bg-yellow-500 h-full rounded-full" style={{ width: '50%' }} />
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium">Defensive Positioning</span>
+                            <span className="text-sm text-muted-foreground">Medium</span>
+                          </div>
+                          <div className="w-full bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
+                            <div className="bg-yellow-500 h-full rounded-full" style={{ width: '45%' }} />
+                          </div>
+                        </div>
+                        
+                        <Button variant="outline" size="sm" className="w-full mt-2">
+                          Update Development Focus
                         </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
               </TabsContent>
               
               {/* Events Tab */}
