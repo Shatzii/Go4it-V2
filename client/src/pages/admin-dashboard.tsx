@@ -292,6 +292,12 @@ export default function AdminDashboard() {
                     Athlete Social Hub
                   </Button>
                 </Link>
+                <Link href="/skill-development-tracker">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    Skill Development Tracker
+                  </Button>
+                </Link>
                 <Link href="/athletic-combine-showcase">
                   <Button variant="ghost" size="sm" className="w-full justify-start">
                     <Activity className="h-4 w-4 mr-2" />
