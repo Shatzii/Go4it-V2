@@ -2,7 +2,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Link, useLocation } from "wouter";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -18,7 +18,6 @@ import {
   Star,
   Trophy,
   ChevronRight,
-  Camera,
   ChevronLeft,
   ArrowRight,
   CheckCircle2,
@@ -35,11 +34,9 @@ import {
   Lightbulb,
   Hourglass,
   Calendar,
-  Clock,
   Video,
   Users,
-  ListChecks,
-  BadgeCheck
+  ListChecks
 } from "lucide-react";
 
 // Types for star path
@@ -68,6 +65,13 @@ interface StarLevel {
   achievementTypes: string[];
 }
 
+interface AttributeSliderProps {
+  name: string;
+  value: number;
+  onChange: (value: number) => void;
+  disabled?: boolean;
+}
+
 export default function MyPlayerStarPath() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -90,10 +94,10 @@ export default function MyPlayerStarPath() {
     enabled: !!user,
     // If star path doesn't exist yet, create one
     onError: async (error) => {
-      if (user && error.message.includes('not found')) {
+      if (user && error.message?.includes('not found')) {
         // Create star path for this user
         try {
-          const data = await apiRequest('/api/player/star-path', {
+          await apiRequest('/api/player/star-path', {
             method: 'POST',
             data: { 
               userId: user.id,
@@ -137,9 +141,11 @@ export default function MyPlayerStarPath() {
   const { data: attributeData, isLoading: isAttributesLoading } = useQuery({
     queryKey: ['/api/player/star-path', user?.id, 'attributes', attributeType],
     queryFn: () => apiRequest(`/api/player/star-path/${user?.id}/attributes/${attributeType}`),
-    enabled: !!user,
+    enabled: !!user && !!user.id,
     onSuccess: (data) => {
-      setAttributeValues(data.attributes || {});
+      if (data?.attributes) {
+        setAttributeValues(data.attributes);
+      }
     }
   });
   
@@ -201,7 +207,7 @@ export default function MyPlayerStarPath() {
       });
       
       // Invalidate queries to refresh data
-      queryClient.invalidateQueries({queryKey: ['/api/player/star-path', user?.id]});
+      queryClient.invalidateQueries({queryKey: ['/api/player/star-path', user?.id, 'attributes', attributeType]});
     },
     onError: (error) => {
       toast({
@@ -491,65 +497,39 @@ export default function MyPlayerStarPath() {
     const currentMin = starLevels[currentStarLevel - 1].minXp;
     const nextMin = starLevels[currentStarLevel].minXp;
     const range = nextMin - currentMin;
-    const progress = playerProgress.totalXp - currentMin;
-    const percent = Math.min(100, Math.floor((progress / range) * 100));
+    const current = playerProgress.totalXp - currentMin;
+    const percent = Math.min(100, Math.round((current / range) * 100));
     
-    return { 
-      percent, 
-      current: currentStarLevel, 
+    return {
+      percent,
+      current: currentStarLevel,
       next: currentStarLevel + 1,
-      xpRemaining: Math.max(0, nextMin - playerProgress.totalXp)
+      xpRemaining: nextMin - playerProgress.totalXp
     };
   }, [playerProgress, getCurrentStarLevel, starLevels]);
-  
-  // Function to get color classes based on star level
-  const getStarLevelStyles = (level: number) => {
-    const starLevel = starLevels[level - 1] || starLevels[0];
-    return {
-      color: starLevel.color,
-      borderColor: starLevel.borderColor,
-      shadowColor: starLevel.shadowColor
-    };
-  };
 
-  // Create star animation effect
+  // Handle fade in animations
   useEffect(() => {
-    // Animate star briefly when the component mounts
-    setAnimateStar(true);
-    const timer = setTimeout(() => setAnimateStar(false), 1500);
+    // Reset animation when we change pages or mount component
+    setAnimateStar(false);
+    
+    // If we're at the page initially and the player has a high star level, animate
+    const timer = setTimeout(() => {
+      if (playerProgress && getCurrentStarLevel >= 3) {
+        setAnimateStar(true);
+        setTimeout(() => setAnimateStar(false), 1500);
+      }
+    }, 1000);
     
     return () => clearTimeout(timer);
-  }, []);
+  }, [playerProgress, getCurrentStarLevel]);
 
-  // Loading state
-  if (isLoading || !playerProgress) {
-    return (
-      <div className="container mx-auto py-6">
-        <div className="flex items-center justify-between mb-6">
-          <Skeleton className="h-10 w-48" />
-          <Skeleton className="h-10 w-24" />
-        </div>
-        
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-8 w-64 mb-2" />
-            <Skeleton className="h-4 w-full" />
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-8">
-              <Skeleton className="h-60 w-full rounded-lg" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Skeleton className="h-32 w-full" />
-                <Skeleton className="h-32 w-full" />
-                <Skeleton className="h-32 w-full" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-  
+  // Get dynamic styles based on current star level
+  const getStarLevelStyles = (level: number) => {
+    if (level < 1 || level > 5) return starLevels[0];
+    return starLevels[level - 1];
+  };
+
   const starLevelStyles = getStarLevelStyles(getCurrentStarLevel);
 
   return (
@@ -559,352 +539,533 @@ export default function MyPlayerStarPath() {
           <h1 className="text-3xl font-bold tracking-tight">MyPlayer Star Path</h1>
           <p className="text-muted-foreground">Track your journey to becoming a five-star athlete</p>
         </div>
-        <Button variant="outline" size="sm" onClick={() => navigate("/myplayer-xp")}>
-          <ChevronLeft className="mr-2 h-4 w-4" />
-          Back to XP Dashboard
-        </Button>
+        
+        {!isLoading && playerProgress && (
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex items-center gap-2 text-sm">
+              <span className="text-muted-foreground">Current Star Level:</span>
+              <div className="flex">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`h-5 w-5 ${
+                      i < getCurrentStarLevel 
+                        ? starLevelStyles.color
+                        : "text-muted-foreground/30"
+                    }`}
+                    fill={i < getCurrentStarLevel ? "currentColor" : "none"}
+                  />
+                ))}
+              </div>
+            </div>
+            
+            <AnimatePresence>
+              {animateStar && (
+                <motion.div
+                  initial={{ scale: 0, rotate: -180, opacity: 0 }}
+                  animate={{ scale: 1.5, rotate: 0, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50"
+                >
+                  <Star 
+                    className={`h-24 w-24 ${starLevelStyles.color}`} 
+                    fill="currentColor" 
+                    strokeWidth={0.5}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+            
+            {levelUpMutation.isPending ? (
+              <Button disabled>
+                <Hourglass className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </Button>
+            ) : (
+              <Button onClick={() => levelUpMutation.mutate()}>
+                Level up (Debug)
+              </Button>
+            )}
+          </div>
+        )}
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="col-span-12 lg:col-span-4 space-y-6">
-          <Card className={`border-2 ${starLevelStyles.borderColor} ${starLevelStyles.shadowColor} shadow-lg`}>
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center text-2xl">
-                <span className={`mr-2 ${starLevelStyles.color}`}>
-                  {Array(getCurrentStarLevel).fill(0).map((_, i) => (
-                    <Star key={i} className="inline h-6 w-6 fill-current" />
-                  ))}
-                </span>
-                <AnimatePresence>
-                  {animateStar && getCurrentStarLevel < 5 && (
-                    <motion.div
-                      initial={{ scale: 0.5, opacity: 0 }}
-                      animate={{ scale: 1.2, opacity: 1 }}
-                      exit={{ scale: 0.5, opacity: 0 }}
-                      className="inline-block relative"
-                    >
-                      <Star className="h-6 w-6 text-yellow-400" />
-                      <motion.div
-                        className="absolute inset-0 rounded-full"
-                        initial={{ boxShadow: "0 0 0px 0px rgba(250, 204, 21, 0)" }}
-                        animate={{ boxShadow: "0 0 15px 5px rgba(250, 204, 21, 0.5)" }}
-                        exit={{ boxShadow: "0 0 0px 0px rgba(250, 204, 21, 0)" }}
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-                <span className="ml-1">{starLevels[getCurrentStarLevel-1].title}</span>
-              </CardTitle>
-              <CardDescription>
-                {starLevels[getCurrentStarLevel-1].description}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-4">
-                <Progress value={getStarProgress.percent} className="h-3 mb-2" />
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>{getStarProgress.current} Star</span>
-                  <span>{getStarProgress.xpRemaining > 0 ? `${formatXP(getStarProgress.xpRemaining)} XP to ${getStarProgress.next} Star` : "Maximum Star Level Reached"}</span>
-                </div>
-              </div>
-              
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                <div className="flex flex-col items-center p-3 bg-muted/50 rounded-lg">
-                  <span className="text-3xl font-bold">{formatXP(playerProgress.totalXp)}</span>
-                  <span className="text-xs text-muted-foreground">Total XP</span>
-                </div>
-                <div className="flex flex-col items-center p-3 bg-muted/50 rounded-lg">
-                  <div className="flex items-center text-3xl font-bold">
-                    <span>{getCurrentStarLevel}</span>
-                    <Star className={`h-5 w-5 ml-1 ${starLevelStyles.color}`} />
-                  </div>
-                  <span className="text-xs text-muted-foreground">Star Level</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Lightbulb className="mr-2 h-5 w-5" />
-                Next Achievements
-              </CardTitle>
-              <CardDescription>
-                Milestones to reach your next star level
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {getCurrentStarLevel < 5 ? (
-                pathNodes
-                  .filter(node => node.starLevel === getCurrentStarLevel || node.starLevel === getCurrentStarLevel + 1)
-                  .filter(node => !node.isCompleted)
-                  .slice(0, 4)
-                  .map((node) => (
-                    <div key={node.id} className="flex items-start space-x-3">
-                      <div className={`flex-shrink-0 p-1.5 ${node.isActive ? "bg-primary/10" : "bg-muted"} rounded-full`}>
-                        {node.iconComponent}
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="text-sm font-medium">{node.title}</h4>
-                        <p className="text-xs text-muted-foreground">{node.description}</p>
-                        <div className="mt-1 flex items-center text-xs">
-                          <Zap className="h-3 w-3 mr-1 text-amber-500" />
-                          <span>{formatXP(node.xpRequired)} XP required</span>
-                        </div>
-                      </div>
-                      <div>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-8 w-8" 
-                          onClick={() => setSelectedNode(node)}
-                        >
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))
-              ) : (
-                <div className="py-4 text-center">
-                  <Award className="h-12 w-12 text-primary mx-auto mb-2" />
-                  <h3 className="text-lg font-semibold">All Star Levels Completed!</h3>
-                  <p className="text-sm text-muted-foreground">
-                    You've reached the maximum 5-Star level. Continue to enhance your profile and maintain your elite status.
-                  </p>
-                </div>
-              )}
-            </CardContent>
-            <CardFooter>
-              <div className="flex gap-2">
-                <Button className="flex-1" variant="outline" onClick={() => navigate("/weight-room")}>
-                  Train to Earn XP <Dumbbell className="ml-2 h-4 w-4" />
-                </Button>
-                <Button className="flex-1" variant="default" onClick={() => navigate("/myplayer-video-recorder")}>
-                  Record Workout <Camera className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
-            </CardFooter>
-          </Card>
+      {isLoading ? (
+        <div className="grid gap-4">
+          <Skeleton className="h-[200px] w-full rounded-xl" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Skeleton className="h-[200px] rounded-xl" />
+            <Skeleton className="h-[200px] rounded-xl" />
+            <Skeleton className="h-[200px] rounded-xl" />
+          </div>
         </div>
-        
-        <div className="col-span-12 lg:col-span-8">
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Medal className="mr-2 h-5 w-5" />
-                Your Star Journey
-              </CardTitle>
-              <CardDescription>
-                Navigate through your athletic development pathway
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="relative h-[400px] overflow-x-auto">
-                <div className="absolute top-1/2 left-0 right-0 h-2 bg-muted transform -translate-y-1/2" />
-                
-                {/* Path nodes */}
-                <div className="relative" style={{ width: "800px", height: "400px" }}>
-                  {pathNodes.map((node) => (
-                    <motion.div
-                      key={node.id}
-                      className={`absolute cursor-pointer transition-all duration-300 transform-gpu ${node.isCompleted ? "scale-105" : ""}`}
-                      style={{ 
-                        left: `${node.position.x}%`, 
-                        top: `${node.position.y}%`,
-                      }}
-                      whileHover={{ scale: 1.05 }}
-                      onClick={() => setSelectedNode(node)}
-                    >
-                      <div className={`
-                        flex flex-col items-center 
-                        ${node.isCompleted ? "opacity-100" : "opacity-70"}
-                        ${node.isActive ? "border-primary" : "border-muted"}
-                      `}>
-                        <div className={`
-                          h-12 w-12 rounded-full flex items-center justify-center border-2
-                          ${node.isCompleted 
-                            ? `bg-primary text-primary-foreground ${getStarLevelStyles(node.starLevel).borderColor} shadow-lg` 
-                            : "bg-muted border-muted-foreground"
-                          }
-                        `}>
-                          {node.iconComponent}
-                          {node.isCompleted && (
-                            <motion.div
-                              className="absolute inset-0 rounded-full"
-                              initial={{ boxShadow: "0 0 0px 0px rgba(var(--primary), 0)" }}
-                              animate={{ boxShadow: "0 0 10px 2px rgba(var(--primary), 0.3)" }}
-                              transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
-                            />
-                          )}
-                        </div>
-                        <span className="text-xs font-medium mt-1 max-w-[80px] text-center leading-tight">
-                          {node.title}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground">{formatXP(node.xpRequired)} XP</span>
-                      </div>
-                    </motion.div>
-                  ))}
-                
-                  {/* Star level indicators */}
-                  {starLevels.map((level, index) => (
-                    <div 
-                      key={index}
-                      className="absolute flex flex-col items-center"
-                      style={{ 
-                        left: `${index * 20 + 10}%`, 
-                        top: "20%" 
-                      }}
-                    >
-                      <div className={`
-                        h-10 w-10 rounded-full flex items-center justify-center
-                        ${getCurrentStarLevel >= level.level ? level.color : "text-muted"}
-                        ${getCurrentStarLevel >= level.level ? "bg-background border-2 " + level.borderColor : "bg-muted"}
-                      `}>
-                        <div className="relative">
-                          <Star className={`h-6 w-6 ${getCurrentStarLevel >= level.level ? "fill-current" : ""}`} />
-                          {getCurrentStarLevel >= level.level && (
-                            <motion.div
-                              className="absolute inset-0 rounded-full"
-                              initial={{ boxShadow: "0 0 0px 0px rgba(var(--primary), 0)" }}
-                              animate={{ boxShadow: "0 0 10px 2px rgba(var(--primary), 0.3)" }}
-                              transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
-                            />
-                          )}
-                        </div>
-                      </div>
-                      <span className={`text-xs font-medium mt-1 ${getCurrentStarLevel >= level.level ? "text-foreground" : "text-muted-foreground"}`}>
-                        {level.level} Star
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Star Path Visualization */}
+          <div className="lg:col-span-2 space-y-6">
+            <Card className="overflow-hidden">
+              <CardHeader className="pb-0">
+                <CardTitle>Athletic Development Path</CardTitle>
+                <CardDescription>Track your journey to becoming a five-star athlete</CardDescription>
+              </CardHeader>
+              
+              <CardContent className="pt-6">
+                <div className="mb-4">
+                  <div className="flex justify-between mb-2">
+                    <div className="flex items-center">
+                      <Badge 
+                        variant="outline" 
+                        className={`${starLevelStyles.borderColor} ${starLevelStyles.shadowColor} shadow-sm`}
+                      >
+                        <Star className={`mr-1 h-3 w-3 ${starLevelStyles.color}`} fill="currentColor" />
+                        {getCurrentStarLevel} Star
+                      </Badge>
+                      <span className="ml-3 text-sm font-medium">
+                        {starLevels[getCurrentStarLevel - 1].title}
                       </span>
                     </div>
-                  ))}
+                    <span className="text-sm text-muted-foreground">
+                      {getStarProgress.current < 5 && `${formatXP(playerProgress?.totalXp || 0)} / ${formatXP(starLevels[getCurrentStarLevel].minXp)} XP`}
+                    </span>
+                  </div>
+                  
+                  <Progress
+                    value={getStarProgress.percent}
+                    className="h-2"
+                  />
+                  
+                  {getStarProgress.current < 5 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {formatXP(getStarProgress.xpRemaining)} XP needed for next star level
+                    </p>
+                  )}
                 </div>
-              </div>
-              
-              {/* Selected node details */}
-              {selectedNode && (
-                <Card className="mt-6 border-2 border-primary">
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between">
-                      <div>
-                        <Badge className="mb-2">{`${selectedNode.starLevel} Star Path`}</Badge>
-                        <CardTitle className="flex items-center text-xl">
-                          {selectedNode.iconComponent}
-                          <span className="ml-2">{selectedNode.title}</span>
-                        </CardTitle>
-                      </div>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        onClick={() => setSelectedNode(null)}
+                
+                <ScrollArea className="h-[400px] pr-4 -mr-4 overflow-hidden">
+                  <div className="relative">
+                    {/* The Star Path Visualization */}
+                    <div className="relative w-full h-[350px] border-b border-border">
+                      {/* Path nodes */}
+                      {pathNodes.map(node => (
+                        <motion.div
+                          key={node.id}
+                          className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+                          style={{
+                            left: `${node.position.x}%`,
+                            top: `${node.position.y}%`,
+                          }}
+                          whileHover={{ scale: 1.1 }}
+                          onClick={() => setSelectedNode(node)}
+                        >
+                          <div 
+                            className={`
+                              flex items-center justify-center rounded-full 
+                              p-3 border-2 transition-colors
+                              ${node.isCompleted 
+                                ? `bg-background border-primary text-primary` 
+                                : `bg-muted/50 border-muted-foreground/20 text-muted-foreground/70`
+                              }
+                              ${node.isActive 
+                                ? 'ring-2 ring-offset-2 ring-primary/20' 
+                                : ''
+                              }
+                            `}
+                          >
+                            {node.iconComponent}
+                          </div>
+                          
+                          <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 text-center">
+                            <p className={`font-medium text-xs whitespace-nowrap ${node.isCompleted ? 'text-foreground' : 'text-muted-foreground/70'}`}>
+                              {node.title}
+                            </p>
+                          </div>
+                        </motion.div>
+                      ))}
+                      
+                      {/* Connect nodes with lines */}
+                      <svg
+                        className="absolute inset-0 w-full h-full"
+                        style={{ zIndex: -1 }}
                       >
-                        <XCircle className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <CardDescription>{selectedNode.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="text-sm font-semibold mb-2 flex items-center">
-                          <Trophy className="h-4 w-4 mr-1 text-amber-500" />
-                          Achievements Unlocked
-                        </h4>
-                        <ul className="space-y-1 text-sm">
-                          {selectedNode.achievements.map((achievement, i) => (
-                            <li key={i} className="flex items-center">
-                              <CheckCircle2 className={`h-3 w-3 mr-2 ${selectedNode.isCompleted ? "text-green-500" : "text-muted-foreground"}`} />
-                              <span className={selectedNode.isCompleted ? "" : "text-muted-foreground"}>
-                                {achievement}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-semibold mb-2 flex items-center">
-                          <Zap className="h-4 w-4 mr-1 text-cyan-500" />
-                          Features Unlocked
-                        </h4>
-                        <ul className="space-y-1 text-sm">
-                          {selectedNode.unlocks.map((feature, i) => (
-                            <li key={i} className="flex items-center">
-                              <BadgeCheck className={`h-3 w-3 mr-2 ${selectedNode.isCompleted ? "text-blue-500" : "text-muted-foreground"}`} />
-                              <span className={selectedNode.isCompleted ? "" : "text-muted-foreground"}>
-                                {feature}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                        {pathNodes.slice(0, -1).map((node, index) => {
+                          const nextNode = pathNodes[index + 1];
+                          return (
+                            <line
+                              key={`line-${node.id}-${nextNode.id}`}
+                              x1={`${node.position.x}%`}
+                              y1={`${node.position.y}%`}
+                              x2={`${nextNode.position.x}%`}
+                              y2={`${nextNode.position.y}%`}
+                              stroke={
+                                node.isCompleted && nextNode.isCompleted
+                                  ? "var(--primary)"
+                                  : node.isCompleted
+                                  ? "var(--primary-foreground)"
+                                  : "var(--border)"
+                              }
+                              strokeWidth={node.isCompleted ? 2 : 1}
+                              strokeDasharray={!node.isCompleted && !nextNode.isCompleted ? "4 4" : ""}
+                            />
+                          );
+                        })}
+                      </svg>
                     </div>
                     
-                    <div className="mt-4">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm">Progress</span>
-                        <span className="text-sm font-medium">
-                          {selectedNode.isCompleted ? "Completed" : `${formatXP(Math.max(0, playerProgress.totalXp - selectedNode.xpRequired))} / ${formatXP(playerProgress.totalXp >= selectedNode.xpRequired ? playerProgress.totalXp : selectedNode.xpRequired)} XP`}
-                        </span>
-                      </div>
-                      <Progress 
-                        value={selectedNode.isCompleted ? 100 : Math.min(100, (playerProgress.totalXp / selectedNode.xpRequired) * 100)} 
-                        className="h-2" 
-                      />
+                    {/* Star levels legend */}
+                    <div className="flex justify-between my-4">
+                      {starLevels.map((level) => (
+                        <div key={level.level} className="text-center">
+                          <Badge
+                            variant="outline"
+                            className={`
+                              ${getCurrentStarLevel >= level.level ? level.borderColor : 'border-muted-foreground/30'}
+                              ${getCurrentStarLevel >= level.level ? level.shadowColor : ''}
+                              shadow-sm
+                            `}
+                          >
+                            <Star
+                              className={`mr-1 h-3 w-3 ${
+                                getCurrentStarLevel >= level.level
+                                  ? level.color
+                                  : "text-muted-foreground/30"
+                              }`}
+                              fill={getCurrentStarLevel >= level.level ? "currentColor" : "none"}
+                            />
+                            {level.level} Star
+                          </Badge>
+                          <p className={`text-xs mt-1 ${
+                            getCurrentStarLevel >= level.level
+                              ? ""
+                              : "text-muted-foreground/50"
+                          }`}>
+                            {level.title}
+                          </p>
+                        </div>
+                      ))}
                     </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    {selectedNode.isCompleted ? (
-                      <Button className="w-full" variant="default">
-                        View Details <ArrowRight className="ml-2 h-4 w-4" />
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+                       
+            {/* Selected Node Details */}
+            {selectedNode && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex justify-between">
+                    <div>
+                      <Badge variant="outline" className="mb-2">
+                        Level {selectedNode.starLevel} Milestone
+                      </Badge>
+                      <CardTitle className="flex items-center">
+                        {selectedNode.title}
+                        {selectedNode.isCompleted && (
+                          <CheckCircle2 className="ml-2 h-5 w-5 text-green-500" />
+                        )}
+                      </CardTitle>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => setSelectedNode(null)}>
+                      <XCircle className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="pb-3">
+                  <p className="mb-4">{selectedNode.description}</p>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <h4 className="font-medium text-sm mb-2 flex items-center">
+                        <Award className="mr-2 h-4 w-4" />
+                        Achievements
+                      </h4>
+                      <ul className="space-y-1 text-sm text-muted-foreground list-disc list-inside">
+                        {selectedNode.achievements.map((achievement, i) => (
+                          <li key={i}>{achievement}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-sm mb-2 flex items-center">
+                        <Zap className="mr-2 h-4 w-4" />
+                        Unlocks
+                      </h4>
+                      <ul className="space-y-1 text-sm text-muted-foreground list-disc list-inside">
+                        {selectedNode.unlocks.map((unlock, i) => (
+                          <li key={i}>{unlock}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center text-muted-foreground">
+                      <Star className="mr-1 h-4 w-4" />
+                      {selectedNode.starLevel === 5 ? "Five-Star Level Milestone" : `Star Level ${selectedNode.starLevel} Milestone`}
+                    </div>
+                    <div className="flex items-center text-muted-foreground">
+                      <Flame className="mr-1 h-4 w-4" />
+                      {formatXP(selectedNode.xpRequired)} XP Required
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  {selectedNode.isCompleted ? (
+                    <div className="w-full flex items-center justify-between">
+                      <span className="text-sm text-green-500 flex items-center">
+                        <CheckCircle2 className="mr-2 h-4 w-4" />
+                        Completed
+                      </span>
+                      <Button size="sm" variant="ghost">
+                        View Details
+                        <ChevronRight className="ml-1 h-4 w-4" />
                       </Button>
+                    </div>
+                  ) : (
+                    <div className="w-full">
+                      {selectedNode.isActive ? (
+                        <Button className="w-full">
+                          Start Milestone
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      ) : (
+                        <Button className="w-full" variant="outline" disabled>
+                          Locked - Complete Previous Milestones
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </CardFooter>
+              </Card>
+            )}
+          </div>
+          
+          {/* Sidebar with Player Stats & Attributes */}
+          <div className="space-y-6">
+            {/* Star Level Card */}
+            <Card className={`border-2 ${starLevelStyles.borderColor} ${starLevelStyles.shadowColor} shadow-sm`}>
+              <CardHeader className="pb-3">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle className="text-2xl flex items-center">
+                      {starLevels[getCurrentStarLevel - 1].title}
+                    </CardTitle>
+                    <CardDescription>
+                      {starLevels[getCurrentStarLevel - 1].description}
+                    </CardDescription>
+                  </div>
+                  <div className="flex">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-5 w-5 ${
+                          i < getCurrentStarLevel 
+                            ? starLevelStyles.color
+                            : "text-muted-foreground/20"
+                        }`}
+                        fill={i < getCurrentStarLevel ? "currentColor" : "none"}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-muted-foreground">Total XP</span>
+                      <span className="font-medium">{formatXP(playerProgress?.totalXp || 0)} XP</span>
+                    </div>
+                    <Progress value={getStarProgress.percent} className="h-2" />
+                  </div>
+                  
+                  {getStarProgress.current < 5 && (
+                    <div className="flex justify-between text-sm">
+                      <span>Next Level</span>
+                      <span className="font-medium">{formatXP(getStarProgress.xpRemaining)} XP needed</span>
+                    </div>
+                  )}
+                  
+                  <div className="flex justify-between text-sm">
+                    <span>Active Streak</span>
+                    <span className="font-medium">{playerProgress?.streak || 0} days</span>
+                  </div>
+                  
+                  <div className="flex justify-between text-sm">
+                    <span>Achievements</span>
+                    <span className="font-medium">{playerProgress?.badges?.length || 0} earned</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Attributes Card */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle>Player Attributes</CardTitle>
+                <CardDescription>
+                  Adjust and track your athlete attributes
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pb-2">
+                <Tabs 
+                  value={attributeType} 
+                  onValueChange={(v) => setAttributeType(v as 'physical' | 'technical' | 'mental')}
+                  className="space-y-4"
+                >
+                  <TabsList className="grid grid-cols-3">
+                    <TabsTrigger value="physical" className="flex items-center">
+                      <Dumbbell className="mr-2 h-4 w-4" />
+                      Physical
+                    </TabsTrigger>
+                    <TabsTrigger value="technical" className="flex items-center">
+                      <Lightbulb className="mr-2 h-4 w-4" />
+                      Technical
+                    </TabsTrigger>
+                    <TabsTrigger value="mental" className="flex items-center">
+                      <Brain className="mr-2 h-4 w-4" />
+                      Mental
+                    </TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="physical" className="space-y-4">
+                    {isAttributesLoading ? (
+                      <>
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                      </>
                     ) : (
                       <>
-                        <Button className="w-1/2" variant="outline">
-                          How to Earn <Lightbulb className="ml-2 h-4 w-4" />
-                        </Button>
-                        <Button className="w-1/2" variant="default">
-                          Start Training <Dumbbell className="ml-2 h-4 w-4" />
-                        </Button>
+                        <AttributeSlider 
+                          name="Speed" 
+                          value={attributeValues.speed || 0} 
+                          onChange={(value) => setAttributeValues({...attributeValues, speed: value})}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Strength" 
+                          value={attributeValues.strength || 0} 
+                          onChange={(value) => setAttributeValues({...attributeValues, strength: value})}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Agility" 
+                          value={attributeValues.agility || 0} 
+                          onChange={(value) => setAttributeValues({...attributeValues, agility: value})}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Endurance" 
+                          value={attributeValues.endurance || 0} 
+                          onChange={(value) => setAttributeValues({...attributeValues, endurance: value})}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Vertical Jump" 
+                          value={attributeValues.verticalJump || 0} 
+                          onChange={(value) => setAttributeValues({...attributeValues, verticalJump: value})}
+                          disabled={!isEditingAttributes}
+                        />
                       </>
                     )}
-                  </CardFooter>
-                </Card>
-              )}
-            </CardContent>
-          </Card>
-          
-          {/* Attribute Editor Card */}
-          <Card className="mt-6">
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <div>
-                  <CardTitle className="flex items-center">
-                    <BarChart3 className="mr-2 h-5 w-5" />
-                    Player Attributes
-                  </CardTitle>
-                  <CardDescription>
-                    View and edit your player's attributes
-                  </CardDescription>
-                </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="technical" className="space-y-4">
+                    {isAttributesLoading ? (
+                      <>
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                      </>
+                    ) : (
+                      <>
+                        <AttributeSlider 
+                          name="Technique" 
+                          value={attributeValues.technique || 0} 
+                          onChange={(value) => setAttributeValues({...attributeValues, technique: value})}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Ball Control" 
+                          value={attributeValues.ballControl || 0} 
+                          onChange={(value) => setAttributeValues({...attributeValues, ballControl: value})}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Accuracy" 
+                          value={attributeValues.accuracy || 0} 
+                          onChange={(value) => setAttributeValues({...attributeValues, accuracy: value})}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Game IQ" 
+                          value={attributeValues.gameIQ || 0} 
+                          onChange={(value) => setAttributeValues({...attributeValues, gameIQ: value})}
+                          disabled={!isEditingAttributes}
+                        />
+                      </>
+                    )}
+                  </TabsContent>
+                  
+                  <TabsContent value="mental" className="space-y-4">
+                    {isAttributesLoading ? (
+                      <>
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                      </>
+                    ) : (
+                      <>
+                        <AttributeSlider 
+                          name="Focus" 
+                          value={attributeValues.focus || 0} 
+                          onChange={(value) => setAttributeValues({...attributeValues, focus: value})}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Confidence" 
+                          value={attributeValues.confidence || 0} 
+                          onChange={(value) => setAttributeValues({...attributeValues, confidence: value})}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Determination" 
+                          value={attributeValues.determination || 0} 
+                          onChange={(value) => setAttributeValues({...attributeValues, determination: value})}
+                          disabled={!isEditingAttributes}
+                        />
+                        <AttributeSlider 
+                          name="Teamwork" 
+                          value={attributeValues.teamwork || 0} 
+                          onChange={(value) => setAttributeValues({...attributeValues, teamwork: value})}
+                          disabled={!isEditingAttributes}
+                        />
+                      </>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+              <CardFooter className="pt-2">
                 {isEditingAttributes ? (
-                  <div>
+                  <div className="flex w-full gap-2">
                     <Button 
                       variant="outline" 
-                      size="sm" 
-                      className="mr-2"
+                      className="flex-1"
                       onClick={() => {
-                        setIsEditingAttributes(false);
-                        // Reset values to what's in attributeData
+                        // Reset form
                         if (attributeData?.attributes) {
                           setAttributeValues(attributeData.attributes);
                         }
+                        setIsEditingAttributes(false);
                       }}
                     >
                       Cancel
                     </Button>
                     <Button 
-                      size="sm"
+                      className="flex-1"
                       onClick={() => {
+                        // Save changes
                         updateAttributesMutation.mutate({
                           type: attributeType,
                           attributes: attributeValues
@@ -917,196 +1078,23 @@ export default function MyPlayerStarPath() {
                   </div>
                 ) : (
                   <Button 
-                    size="sm"
+                    variant="outline" 
+                    className="w-full"
                     onClick={() => setIsEditingAttributes(true)}
                   >
                     Edit Attributes
                   </Button>
                 )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="physical" onValueChange={(value) => setAttributeType(value as 'physical' | 'technical' | 'mental')}>
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="physical">Physical</TabsTrigger>
-                  <TabsTrigger value="technical">Technical</TabsTrigger>
-                  <TabsTrigger value="mental">Mental</TabsTrigger>
-                </TabsList>
-                
-                {/* Loading State */}
-                {isAttributesLoading && (
-                  <div className="mt-4 space-y-4">
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                  </div>
-                )}
-                
-                {!isAttributesLoading && (
-                  <>
-                    <TabsContent value="physical" className="space-y-6 pt-4">
-                      <div className="space-y-4">
-                        <AttributeSlider 
-                          name="Speed" 
-                          value={attributeValues.speed || 0}
-                          onChange={(value) => {
-                            if (isEditingAttributes) {
-                              setAttributeValues(prev => ({...prev, speed: value}));
-                            }
-                          }}
-                          disabled={!isEditingAttributes}
-                        />
-                        <AttributeSlider 
-                          name="Strength" 
-                          value={attributeValues.strength || 0}
-                          onChange={(value) => {
-                            if (isEditingAttributes) {
-                              setAttributeValues(prev => ({...prev, strength: value}));
-                            }
-                          }}
-                          disabled={!isEditingAttributes}
-                        />
-                        <AttributeSlider 
-                          name="Agility" 
-                          value={attributeValues.agility || 0}
-                          onChange={(value) => {
-                            if (isEditingAttributes) {
-                              setAttributeValues(prev => ({...prev, agility: value}));
-                            }
-                          }}
-                          disabled={!isEditingAttributes}
-                        />
-                        <AttributeSlider 
-                          name="Endurance" 
-                          value={attributeValues.endurance || 0}
-                          onChange={(value) => {
-                            if (isEditingAttributes) {
-                              setAttributeValues(prev => ({...prev, endurance: value}));
-                            }
-                          }}
-                          disabled={!isEditingAttributes}
-                        />
-                        <AttributeSlider 
-                          name="Vertical Jump" 
-                          value={attributeValues.verticalJump || 0}
-                          onChange={(value) => {
-                            if (isEditingAttributes) {
-                              setAttributeValues(prev => ({...prev, verticalJump: value}));
-                            }
-                          }}
-                          disabled={!isEditingAttributes}
-                        />
-                      </div>
-                    </TabsContent>
-                    
-                    <TabsContent value="technical" className="space-y-6 pt-4">
-                      <div className="space-y-4">
-                        <AttributeSlider 
-                          name="Technique" 
-                          value={attributeValues.technique || 0}
-                          onChange={(value) => {
-                            if (isEditingAttributes) {
-                              setAttributeValues(prev => ({...prev, technique: value}));
-                            }
-                          }}
-                          disabled={!isEditingAttributes}
-                        />
-                        <AttributeSlider 
-                          name="Ball Control" 
-                          value={attributeValues.ballControl || 0}
-                          onChange={(value) => {
-                            if (isEditingAttributes) {
-                              setAttributeValues(prev => ({...prev, ballControl: value}));
-                            }
-                          }}
-                          disabled={!isEditingAttributes}
-                        />
-                        <AttributeSlider 
-                          name="Accuracy" 
-                          value={attributeValues.accuracy || 0}
-                          onChange={(value) => {
-                            if (isEditingAttributes) {
-                              setAttributeValues(prev => ({...prev, accuracy: value}));
-                            }
-                          }}
-                          disabled={!isEditingAttributes}
-                        />
-                        <AttributeSlider 
-                          name="Game IQ" 
-                          value={attributeValues.gameIQ || 0}
-                          onChange={(value) => {
-                            if (isEditingAttributes) {
-                              setAttributeValues(prev => ({...prev, gameIQ: value}));
-                            }
-                          }}
-                          disabled={!isEditingAttributes}
-                        />
-                      </div>
-                    </TabsContent>
-                    
-                    <TabsContent value="mental" className="space-y-6 pt-4">
-                      <div className="space-y-4">
-                        <AttributeSlider 
-                          name="Focus" 
-                          value={attributeValues.focus || 0}
-                          onChange={(value) => {
-                            if (isEditingAttributes) {
-                              setAttributeValues(prev => ({...prev, focus: value}));
-                            }
-                          }}
-                          disabled={!isEditingAttributes}
-                        />
-                        <AttributeSlider 
-                          name="Confidence" 
-                          value={attributeValues.confidence || 0}
-                          onChange={(value) => {
-                            if (isEditingAttributes) {
-                              setAttributeValues(prev => ({...prev, confidence: value}));
-                            }
-                          }}
-                          disabled={!isEditingAttributes}
-                        />
-                        <AttributeSlider 
-                          name="Determination" 
-                          value={attributeValues.determination || 0}
-                          onChange={(value) => {
-                            if (isEditingAttributes) {
-                              setAttributeValues(prev => ({...prev, determination: value}));
-                            }
-                          }}
-                          disabled={!isEditingAttributes}
-                        />
-                        <AttributeSlider 
-                          name="Teamwork" 
-                          value={attributeValues.teamwork || 0}
-                          onChange={(value) => {
-                            if (isEditingAttributes) {
-                              setAttributeValues(prev => ({...prev, teamwork: value}));
-                            }
-                          }}
-                          disabled={!isEditingAttributes}
-                        />
-                      </div>
-                    </TabsContent>
-                  </>
-                )}
-              </Tabs>
-            </CardContent>
-          </Card>
+              </CardFooter>
+            </Card>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
-
-// Helper component for attribute sliders
-interface AttributeSliderProps {
-  name: string;
-  value: number;
-  onChange: (value: number) => void;
-  disabled?: boolean;
 }
 
+// Attribute slider component
 function AttributeSlider({ name, value, onChange, disabled = false }: AttributeSliderProps) {
   return (
     <div className="space-y-2">
@@ -1116,16 +1104,19 @@ function AttributeSlider({ name, value, onChange, disabled = false }: AttributeS
           {value}
         </span>
       </div>
-      <Slider 
-        value={[value]} 
-        min={0} 
-        max={100} 
+      <Slider
+        defaultValue={[value]}
+        max={100}
+        min={0}
         step={1}
-        onValueChange={([newValue]) => onChange(newValue)}
-        disabled={disabled}
         className={disabled ? 'opacity-70' : ''}
+        disabled={disabled}
+        onValueChange={(values) => {
+          if (!disabled && values.length > 0) {
+            onChange(values[0]);
+          }
+        }}
       />
     </div>
-  )
-}
+  );
 }
