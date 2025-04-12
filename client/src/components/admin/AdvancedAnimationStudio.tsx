@@ -177,6 +177,41 @@ const animationPresets = [
       { id: 'motion_data', name: 'Motion Capture Data', path: '/data/strength/motion_bench.json', type: 'json' },
       { id: 'character_model', name: 'Athlete Model', path: '/models/athlete_strength.glb', type: 'model' }
     ]
+  },
+  {
+    id: 'athletic_combine',
+    name: 'Athletic Combine Showcase',
+    category: 'commercial',
+    description: 'High-quality commercial animation showcasing athletic combine measurements in 256-bit color',
+    status: 'active',
+    version: '4.0.1',
+    frameRate: 120,
+    duration: 45.0,
+    resolution: '4K',
+    fileSize: 48.5,
+    lastModified: '2025-04-12T09:45:00Z',
+    dependencies: [
+      'core-motion', 
+      'physics-engine', 
+      'neural-rendering', 
+      'motion-blur',
+      'ray-tracing',
+      'hdr-pipeline',
+      'multi-athlete-sync'
+    ],
+    metrics: [
+      { id: 'sprint_time', name: '40-Yard Dash', unit: 'seconds', precision: 2 },
+      { id: 'vertical_height', name: 'Vertical Jump', unit: 'inches', precision: 1 },
+      { id: 'agility_score', name: 'Agility Rating', unit: '', precision: 0 },
+      { id: 'basketball_skill', name: 'Basketball Rating', unit: '', precision: 0 }
+    ],
+    assets: [
+      { id: 'combine_video', name: 'Commercial Base', path: '/videos/athletic_combine_commercial.mp4', type: 'video' },
+      { id: 'html_file', name: 'HTML Renderer', path: '/videos/hd/athletic_combine.html', type: 'html' },
+      { id: 'motion_data', name: 'Motion Capture Data', path: '/data/combine/motion_showcase.json', type: 'json' },
+      { id: 'character_models', name: 'Athlete Models', path: '/models/athlete_combine_pack.glb', type: 'model' },
+      { id: 'stadium_model', name: 'Stadium Environment', path: '/models/combine_stadium.glb', type: 'model' }
+    ]
   }
 ];
 
@@ -290,6 +325,7 @@ const AnimationLibrary: React.FC<{ onSelectPreset: (preset: any) => void }> = ({
             <SelectItem value="jump">Jump</SelectItem>
             <SelectItem value="agility">Agility</SelectItem>
             <SelectItem value="strength">Strength</SelectItem>
+            <SelectItem value="commercial">Commercial</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -530,8 +566,16 @@ const MotionEditor: React.FC<{ selectedPreset: any }> = ({ selectedPreset }) => 
                     <Input id="position-z" className="h-7 text-xs" defaultValue="0" />
                   </div>
                   <div className="grid grid-cols-2 items-center gap-2">
-                    <Label htmlFor="rotation" className="text-xs">Rotation</Label>
-                    <Input id="rotation" className="h-7 text-xs" defaultValue="0" />
+                    <Label htmlFor="rotation-x" className="text-xs">Rotation X</Label>
+                    <Input id="rotation-x" className="h-7 text-xs" defaultValue="0" />
+                  </div>
+                  <div className="grid grid-cols-2 items-center gap-2">
+                    <Label htmlFor="rotation-y" className="text-xs">Rotation Y</Label>
+                    <Input id="rotation-y" className="h-7 text-xs" defaultValue="0" />
+                  </div>
+                  <div className="grid grid-cols-2 items-center gap-2">
+                    <Label htmlFor="rotation-z" className="text-xs">Rotation Z</Label>
+                    <Input id="rotation-z" className="h-7 text-xs" defaultValue="0" />
                   </div>
                   <div className="grid grid-cols-2 items-center gap-2">
                     <Label htmlFor="scale" className="text-xs">Scale</Label>
@@ -541,265 +585,212 @@ const MotionEditor: React.FC<{ selectedPreset: any }> = ({ selectedPreset }) => 
               </CardContent>
             </Card>
             
-            <Card className="col-span-1 md:col-span-2">
+            <Card className="col-span-1">
               <CardHeader className="p-3">
-                <CardTitle className="text-sm font-medium">Motion Metrics</CardTitle>
+                <CardTitle className="text-sm font-medium">Animation</CardTitle>
               </CardHeader>
               <CardContent className="p-3 pt-0">
-                {selectedPreset && (
-                  <div className="space-y-4">
-                    {selectedPreset.metrics.map((metric: any) => (
-                      <div key={metric.id} className="space-y-1">
-                        <div className="flex items-center justify-between">
-                          <Label htmlFor={`metric-${metric.id}`} className="text-xs font-medium">
-                            {metric.name} ({metric.unit})
-                          </Label>
-                          <Input 
-                            id={`metric-${metric.id}`}
-                            className="w-24 h-7 text-xs text-right"
-                            defaultValue="0"
-                          />
-                        </div>
-                        <Slider 
-                          id={`slider-${metric.id}`}
-                          defaultValue={[50]}
-                          max={100}
-                          step={1}
-                        />
+                <div className="space-y-2">
+                  <div className="grid grid-cols-2 items-center gap-2">
+                    <Label htmlFor="duration" className="text-xs">Duration (sec)</Label>
+                    <Input id="duration" className="h-7 text-xs" defaultValue={selectedPreset?.duration.toString() || "5.0"} />
+                  </div>
+                  <div className="grid grid-cols-2 items-center gap-2">
+                    <Label htmlFor="framerate" className="text-xs">Frame Rate</Label>
+                    <Input id="framerate" className="h-7 text-xs" defaultValue={selectedPreset?.frameRate.toString() || "60"} />
+                  </div>
+                  <div className="grid grid-cols-2 items-center gap-2">
+                    <Label htmlFor="easing" className="text-xs">Easing</Label>
+                    <Select defaultValue="easeInOut">
+                      <SelectTrigger id="easing" className="h-7 text-xs">
+                        <SelectValue placeholder="Select easing" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="linear">Linear</SelectItem>
+                        <SelectItem value="easeIn">Ease In</SelectItem>
+                        <SelectItem value="easeOut">Ease Out</SelectItem>
+                        <SelectItem value="easeInOut">Ease In Out</SelectItem>
+                        <SelectItem value="elastic">Elastic</SelectItem>
+                        <SelectItem value="bounce">Bounce</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-2 items-center gap-2">
+                    <Label htmlFor="loop" className="text-xs">Loop</Label>
+                    <Select defaultValue="none">
+                      <SelectTrigger id="loop" className="h-7 text-xs">
+                        <SelectValue placeholder="Select loop type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        <SelectItem value="loop">Loop</SelectItem>
+                        <SelectItem value="pingpong">Ping Pong</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="auto-keyframe" className="text-xs">Auto Keyframe</Label>
+                    <Switch id="auto-keyframe" defaultChecked />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="motion-blur" className="text-xs">Motion Blur</Label>
+                    <Switch id="motion-blur" defaultChecked />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="col-span-1">
+              <CardHeader className="p-3">
+                <CardTitle className="text-sm font-medium">Metrics</CardTitle>
+              </CardHeader>
+              <CardContent className="p-3 pt-0">
+                <ScrollArea className="h-36">
+                  <div className="space-y-2">
+                    {selectedPreset?.metrics.map((metric: { id: string, name: string, unit: string, precision: number }) => (
+                      <div key={metric.id} className="flex justify-between items-center text-xs">
+                        <span>{metric.name}</span>
+                        <span className="font-mono">{`0.0 ${metric.unit}`}</span>
                       </div>
                     ))}
                   </div>
-                )}
+                </ScrollArea>
+                <div className="flex justify-end mt-3">
+                  <Button size="sm" variant="outline" className="text-xs h-7">
+                    <Wand2 className="h-3 w-3 mr-1" /> Auto Calculate
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </div>
         </>
       ) : (
-        <div className="space-y-4">
-          <div className="border rounded-md bg-black p-4 h-[400px] overflow-auto">
-            <pre className="text-green-500 text-sm font-mono">
-              {codeValue}
-            </pre>
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setEditorMode('visual')}>
-              <Eye className="h-4 w-4 mr-1" /> Visual Preview
-            </Button>
-            <Button onClick={handleSave}>
-              <Save className="h-4 w-4 mr-1" /> Save Changes
-            </Button>
-          </div>
+        <div className="border rounded-md bg-black p-4 h-[500px] overflow-y-auto">
+          <pre className="text-sm text-white font-mono">
+            {codeValue}
+          </pre>
         </div>
       )}
+      
+      <div className="flex justify-end gap-2">
+        <Button variant="outline">Cancel</Button>
+        <Button onClick={handleSave}>Save Changes</Button>
+      </div>
     </div>
   );
 };
 
-const RenderingEngine: React.FC = () => {
-  const [selectedEngine, setSelectedEngine] = useState(renderingEngines[0]);
+const RenderPreview: React.FC<{ selectedPreset: any, renderingEngine: any }> = ({ selectedPreset, renderingEngine }) => {
   const [renderProgress, setRenderProgress] = useState(0);
-  const [isRendering, setIsRendering] = useState(false);
   const { toast } = useToast();
   
-  const startRendering = () => {
-    setIsRendering(true);
-    setRenderProgress(0);
-    
-    // Simulate rendering process
-    const interval = setInterval(() => {
-      setRenderProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setIsRendering(false);
-          toast({
-            title: "Rendering Complete",
-            description: "All animations have been processed successfully.",
-          });
-          return 100;
-        }
-        return prev + 5;
-      });
-    }, 300);
-  };
+  // Simulate rendering process
+  useEffect(() => {
+    if (selectedPreset && renderingEngine) {
+      setRenderProgress(0);
+      const timer = setInterval(() => {
+        setRenderProgress(prev => {
+          if (prev >= 100) {
+            clearInterval(timer);
+            toast({
+              title: "Rendering Complete",
+              description: "All animations have been processed successfully.",
+            });
+            return 100;
+          }
+          return prev + 1;
+        });
+      }, 100);
+      
+      return () => clearInterval(timer);
+    }
+  }, [selectedPreset, renderingEngine, toast]);
+  
+  if (!selectedPreset || !renderingEngine) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8">
+        <FileVideo className="h-16 w-16 text-muted-foreground mb-4" />
+        <h3 className="text-lg font-medium">No Animation Selected</h3>
+        <p className="text-muted-foreground text-center mt-2">
+          Select an animation preset and rendering engine to preview and render
+        </p>
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Rendering Engine Selection</CardTitle>
-            <CardDescription>
-              Choose the appropriate rendering engine for your animations
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[100px]">Engine</TableHead>
-                    <TableHead>Capabilities</TableHead>
-                    <TableHead className="text-right">Performance</TableHead>
-                    <TableHead className="text-right">Quality</TableHead>
-                    <TableHead className="text-right">Select</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {renderingEngines.map(engine => (
-                    <TableRow key={engine.id}>
-                      <TableCell className="font-medium">{engine.name}</TableCell>
-                      <TableCell>
-                        <div className="text-xs line-clamp-1">
-                          {engine.capabilities.join(', ')}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="w-16 ml-auto bg-gray-200 rounded-full h-2.5">
-                          <div 
-                            className="bg-blue-600 h-2.5 rounded-full" 
-                            style={{ width: `${engine.performance}%` }}
-                          ></div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="w-16 ml-auto bg-gray-200 rounded-full h-2.5">
-                          <div 
-                            className="bg-green-600 h-2.5 rounded-full" 
-                            style={{ width: `${engine.quality}%` }}
-                          ></div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button 
-                          variant={selectedEngine.id === engine.id ? "default" : "outline"} 
-                          size="sm"
-                          onClick={() => setSelectedEngine(engine)}
-                        >
-                          {selectedEngine.id === engine.id ? "Selected" : "Select"}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+      <Card>
+        <CardHeader>
+          <CardTitle>Render Preview</CardTitle>
+          <CardDescription>
+            Rendering {selectedPreset.name} with {renderingEngine.name}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="aspect-video bg-black rounded-lg overflow-hidden relative">
+              <div className="absolute inset-0 flex items-center justify-center">
+                {renderProgress < 100 ? (
+                  <div className="text-center">
+                    <div className="inline-block p-3 rounded-full bg-primary/20 animate-pulse mb-4">
+                      <Video className="h-8 w-8 text-primary" />
+                    </div>
+                    <h3 className="text-white font-medium">Rendering Animation</h3>
+                    <p className="text-white/70 text-sm mt-1">{renderProgress}% Complete</p>
+                  </div>
+                ) : (
+                  <Video className="h-12 w-12 text-white opacity-20" />
+                )}
+              </div>
             </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Engine Configuration: {selectedEngine.name}</CardTitle>
-            <CardDescription>
-              {selectedEngine.description}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-blue-600">{selectedEngine.performance}%</div>
-                  <div className="text-sm text-muted-foreground">Performance</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-green-600">{selectedEngine.quality}%</div>
-                  <div className="text-sm text-muted-foreground">Quality</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-amber-600">{selectedEngine.compatibility}%</div>
-                  <div className="text-sm text-muted-foreground">Compatibility</div>
+            
+            <Progress value={renderProgress} />
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h4 className="text-sm font-medium mb-2">Render Settings</h4>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Engine:</span>
+                    <span>{renderingEngine.name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Resolution:</span>
+                    <span>{selectedPreset.resolution}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Frame Rate:</span>
+                    <span>{selectedPreset.frameRate} FPS</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Duration:</span>
+                    <span>{selectedPreset.duration}s</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Estimated Size:</span>
+                    <span>{selectedPreset.fileSize} MB</span>
+                  </div>
                 </div>
               </div>
               
-              <div className="space-y-3">
-                <div>
-                  <h4 className="text-sm font-medium mb-1">Capabilities</h4>
-                  <div className="flex flex-wrap gap-1">
-                    {selectedEngine.capabilities.map(cap => (
-                      <Badge key={cap} variant="secondary">
-                        {cap}
+              <div>
+                <h4 className="text-sm font-medium mb-2">Render Queue</h4>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  {animationPresets.map(preset => (
+                    <div key={preset.id} className="flex justify-between">
+                      <span>{preset.name}</span>
+                      <Badge variant={renderProgress > preset.id.length * 10 ? "secondary" : "outline"}>
+                        {renderProgress > preset.id.length * 10 ? "Complete" : "Pending"}
                       </Badge>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <Label htmlFor="quality-setting">Quality Setting</Label>
-                    <span className="text-sm">Ultra</span>
-                  </div>
-                  <Slider id="quality-setting" defaultValue={[90]} max={100} step={1} />
-
-                  <div className="flex justify-between">
-                    <Label htmlFor="performance-setting">Performance Priority</Label>
-                    <span className="text-sm">Balanced</span>
-                  </div>
-                  <Slider id="performance-setting" defaultValue={[50]} max={100} step={1} />
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <Label htmlFor="motion-blur">Motion Blur</Label>
-                    <Switch id="motion-blur" defaultChecked />
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <Label htmlFor="temporal-aa">Temporal Anti-aliasing</Label>
-                    <Switch id="temporal-aa" defaultChecked />
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <Label htmlFor="real-time-shadows">Real-time Shadows</Label>
-                    <Switch id="real-time-shadows" defaultChecked />
-                  </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
-          </CardContent>
-          <CardFooter>
-            <Button 
-              onClick={startRendering} 
-              disabled={isRendering}
-              className="w-full"
-            >
-              {isRendering ? (
-                <>
-                  <Clapperboard className="h-4 w-4 mr-2 animate-spin" />
-                  Rendering ({renderProgress}%)
-                </>
-              ) : (
-                <>
-                  <Clapperboard className="h-4 w-4 mr-2" />
-                  Render All Animations
-                </>
-              )}
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
-      
-      {isRendering && (
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Rendering Progress</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <Progress value={renderProgress} />
-              <div className="text-xs text-muted-foreground">
-                Rendering animations with {selectedEngine.name} ({renderProgress}% complete)
-              </div>
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                {animationPresets.map(preset => (
-                  <div key={preset.id} className="flex justify-between">
-                    <span>{preset.name}</span>
-                    <Badge variant={renderProgress > preset.id.length * 10 ? "success" : "outline"}>
-                      {renderProgress > preset.id.length * 10 ? "Complete" : "Pending"}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
@@ -1015,37 +1006,37 @@ const MotionCapture: React.FC = () => {
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="flex justify-between">
                   <span>Camera Calibration</span>
-                  <Badge variant={captureProgress > 10 ? "success" : "outline"}>
+                  <Badge variant={captureProgress > 10 ? "secondary" : "outline"}>
                     {captureProgress > 10 ? "Complete" : "In Progress"}
                   </Badge>
                 </div>
                 <div className="flex justify-between">
                   <span>Skeletal Tracking</span>
-                  <Badge variant={captureProgress > 30 ? "success" : "outline"}>
+                  <Badge variant={captureProgress > 30 ? "secondary" : "outline"}>
                     {captureProgress > 30 ? "Complete" : "Pending"}
                   </Badge>
                 </div>
                 <div className="flex justify-between">
                   <span>Motion Recording</span>
-                  <Badge variant={captureProgress > 50 ? "success" : "outline"}>
+                  <Badge variant={captureProgress > 50 ? "secondary" : "outline"}>
                     {captureProgress > 50 ? "Complete" : "Pending"}
                   </Badge>
                 </div>
                 <div className="flex justify-between">
                   <span>Data Processing</span>
-                  <Badge variant={captureProgress > 70 ? "success" : "outline"}>
+                  <Badge variant={captureProgress > 70 ? "secondary" : "outline"}>
                     {captureProgress > 70 ? "Complete" : "Pending"}
                   </Badge>
                 </div>
                 <div className="flex justify-between">
                   <span>Model Fitting</span>
-                  <Badge variant={captureProgress > 85 ? "success" : "outline"}>
+                  <Badge variant={captureProgress > 85 ? "secondary" : "outline"}>
                     {captureProgress > 85 ? "Complete" : "Pending"}
                   </Badge>
                 </div>
                 <div className="flex justify-between">
                   <span>Export</span>
-                  <Badge variant={captureProgress > 95 ? "success" : "outline"}>
+                  <Badge variant={captureProgress > 95 ? "secondary" : "outline"}>
                     {captureProgress > 95 ? "Complete" : "Pending"}
                   </Badge>
                 </div>
@@ -1114,6 +1105,7 @@ const AIEnhancement: React.FC = () => {
                       <SelectItem value="jump">Jump Animations</SelectItem>
                       <SelectItem value="agility">Agility Animations</SelectItem>
                       <SelectItem value="strength">Strength Animations</SelectItem>
+                      <SelectItem value="commercial">Commercial Animations</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1171,75 +1163,113 @@ const AIEnhancement: React.FC = () => {
                         <Label htmlFor="processing-quality" className="text-sm">Processing Quality</Label>
                         <span className="text-xs">Ultra</span>
                       </div>
-                      <Slider id="processing-quality" defaultValue={[90]} max={100} step={1} />
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <div className="flex justify-between">
-                        <Label htmlFor="processing-detail" className="text-sm">Detail Level</Label>
-                        <span className="text-xs">High</span>
+                      <Slider
+                        id="processing-quality"
+                        defaultValue={[90]}
+                        max={100}
+                        step={10}
+                      />
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>Draft</span>
+                        <span>Standard</span>
+                        <span>High</span>
+                        <span>Ultra</span>
                       </div>
-                      <Slider id="processing-detail" defaultValue={[80]} max={100} step={1} />
                     </div>
                     
                     <div className="space-y-1">
                       <div className="flex justify-between">
-                        <Label htmlFor="processing-speed" className="text-sm">Processing Speed vs Quality</Label>
+                        <Label htmlFor="processing-speed" className="text-sm">Processing Speed</Label>
                         <span className="text-xs">Balanced</span>
                       </div>
-                      <Slider id="processing-speed" defaultValue={[50]} max={100} step={1} />
+                      <Slider
+                        id="processing-speed"
+                        defaultValue={[50]}
+                        max={100}
+                        step={10}
+                      />
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>Quality</span>
+                        <span>Balanced</span>
+                        <span>Speed</span>
+                      </div>
                     </div>
                   </div>
                 </div>
                 
                 <div className="space-y-2">
                   <Label>Output Format</Label>
-                  <Select defaultValue="html5_json">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select output format" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="html5_json">HTML5 + JSON</SelectItem>
-                      <SelectItem value="webgl">WebGL Model</SelectItem>
-                      <SelectItem value="mp4_overlay">MP4 with Data Overlay</SelectItem>
-                      <SelectItem value="interactive">Interactive HTML5</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="p-4 border rounded-md bg-blue-50 text-blue-700 text-sm">
-                  <div className="flex items-start">
-                    <Brain className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-semibold">AI Processing Info</p>
-                      <p className="text-xs mt-1">
-                        Using {aiModel === 'expert' ? 'GPT-4o' : aiModel === 'advanced' ? 'Claude' : 'Basic'} model for enhancement. 
-                        This process will analyze and improve motion data, enhance visual quality, and optimize 
-                        performance metrics.
-                      </p>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="space-y-1">
+                      <div className="flex items-center h-9">
+                        <Switch id="output-mp4" defaultChecked />
+                        <Label htmlFor="output-mp4" className="ml-2 text-sm">MP4</Label>
+                      </div>
+                      <Select defaultValue="h264">
+                        <SelectTrigger className="h-7 text-xs">
+                          <SelectValue placeholder="Codec" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="h264">H.264</SelectItem>
+                          <SelectItem value="h265">H.265</SelectItem>
+                          <SelectItem value="av1">AV1</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center h-9">
+                        <Switch id="output-webm" />
+                        <Label htmlFor="output-webm" className="ml-2 text-sm">WebM</Label>
+                      </div>
+                      <Select defaultValue="vp9" disabled>
+                        <SelectTrigger className="h-7 text-xs">
+                          <SelectValue placeholder="Codec" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="vp8">VP8</SelectItem>
+                          <SelectItem value="vp9">VP9</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center h-9">
+                        <Switch id="output-html" defaultChecked />
+                        <Label htmlFor="output-html" className="ml-2 text-sm">HTML</Label>
+                      </div>
+                      <Select defaultValue="webgl2">
+                        <SelectTrigger className="h-7 text-xs">
+                          <SelectValue placeholder="Renderer" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="webgl2">WebGL 2</SelectItem>
+                          <SelectItem value="webgpu">WebGPU</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             
-            <Button 
-              onClick={startEnhancement} 
-              disabled={isProcessing}
-              className="w-full"
-            >
-              {isProcessing ? (
-                <>
-                  <Wand2 className="h-4 w-4 mr-2 animate-spin" />
-                  Enhancing ({enhancementProgress}%)
-                </>
-              ) : (
-                <>
-                  <Wand2 className="h-4 w-4 mr-2" />
-                  Start AI Enhancement
-                </>
-              )}
-            </Button>
+            <div className="flex justify-end">
+              <Button 
+                onClick={startEnhancement} 
+                disabled={isProcessing}
+                className="w-full md:w-auto"
+              >
+                {isProcessing ? (
+                  <>
+                    <Brain className="h-4 w-4 mr-2 animate-pulse" />
+                    Processing ({enhancementProgress}%)
+                  </>
+                ) : (
+                  <>
+                    <Brain className="h-4 w-4 mr-2" />
+                    Start AI Enhancement
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -1247,58 +1277,136 @@ const AIEnhancement: React.FC = () => {
       {isProcessing && (
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">AI Enhancement Progress</CardTitle>
+            <CardTitle className="text-sm">Enhancement Progress</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <Progress value={enhancementProgress} />
-              <div className="text-sm text-muted-foreground">
-                Enhancing animations with AI ({enhancementProgress}% complete)
+              <div className="text-xs text-muted-foreground">
+                Enhancing {enhancementTarget === 'all' ? 'all animations' : `${enhancementTarget} animations`} with {aiModel} AI model
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
-                <div className="space-y-2">
-                  <div className="text-xs font-medium">Model Analysis</div>
-                  <div className="flex justify-between text-xs">
-                    <span>Motion Data Analysis</span>
-                    <Badge variant={enhancementProgress > 10 ? "success" : "outline"} className="text-xs">
-                      {enhancementProgress > 10 ? "Complete" : "In Progress"}
+              
+              <div className="grid grid-cols-3 gap-2 text-xs">
+                <div className="space-y-1.5">
+                  <div className="flex justify-between">
+                    <span>Preprocessing</span>
+                    <Badge variant={enhancementProgress > 10 ? "secondary" : "outline"} className="text-xs">
+                      {enhancementProgress > 10 ? "Done" : "..."}
                     </Badge>
                   </div>
-                  <div className="flex justify-between text-xs">
-                    <span>Pattern Recognition</span>
-                    <Badge variant={enhancementProgress > 25 ? "success" : "outline"} className="text-xs">
-                      {enhancementProgress > 25 ? "Complete" : "Pending"}
+                  <Progress value={enhancementProgress > 10 ? 100 : enhancementProgress * 10} className="h-1" />
+                </div>
+                <div className="space-y-1.5">
+                  <div className="flex justify-between">
+                    <span>Motion Analysis</span>
+                    <Badge variant={enhancementProgress > 25 ? "secondary" : "outline"} className="text-xs">
+                      {enhancementProgress > 25 ? "Done" : "..."}
                     </Badge>
                   </div>
-                  <div className="flex justify-between text-xs">
-                    <span>Physics Simulation</span>
-                    <Badge variant={enhancementProgress > 40 ? "success" : "outline"} className="text-xs">
-                      {enhancementProgress > 40 ? "Complete" : "Pending"}
+                  <Progress value={enhancementProgress > 25 ? 100 : Math.max(0, (enhancementProgress - 10) * 6.67)} className="h-1" />
+                </div>
+                <div className="space-y-1.5">
+                  <div className="flex justify-between">
+                    <span>AI Processing</span>
+                    <Badge variant={enhancementProgress > 40 ? "secondary" : "outline"} className="text-xs">
+                      {enhancementProgress > 40 ? "Done" : "..."}
                     </Badge>
                   </div>
+                  <Progress value={enhancementProgress > 40 ? 100 : Math.max(0, (enhancementProgress - 25) * 6.67)} className="h-1" />
                 </div>
                 
-                <div className="space-y-2">
-                  <div className="text-xs font-medium">Enhancement Pipeline</div>
-                  <div className="flex justify-between text-xs">
-                    <span>Motion Smoothing</span>
-                    <Badge variant={enhancementProgress > 55 ? "success" : "outline"} className="text-xs">
-                      {enhancementProgress > 55 ? "Complete" : "Pending"}
+                <div className="space-y-1.5">
+                  <div className="flex justify-between">
+                    <span>Neural Rendering</span>
+                    <Badge variant={enhancementProgress > 55 ? "secondary" : "outline"} className="text-xs">
+                      {enhancementProgress > 55 ? "Done" : "..."}
                     </Badge>
                   </div>
-                  <div className="flex justify-between text-xs">
-                    <span>Detail Enhancement</span>
-                    <Badge variant={enhancementProgress > 70 ? "success" : "outline"} className="text-xs">
-                      {enhancementProgress > 70 ? "Complete" : "Pending"}
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span>Final Optimization</span>
-                    <Badge variant={enhancementProgress > 85 ? "success" : "outline"} className="text-xs">
-                      {enhancementProgress > 85 ? "Complete" : "Pending"}
-                    </Badge>
-                  </div>
+                  <Progress value={enhancementProgress > 55 ? 100 : Math.max(0, (enhancementProgress - 40) * 6.67)} className="h-1" />
                 </div>
+                <div className="space-y-1.5">
+                  <div className="flex justify-between">
+                    <span>Color Grading</span>
+                    <Badge variant={enhancementProgress > 70 ? "secondary" : "outline"} className="text-xs">
+                      {enhancementProgress > 70 ? "Done" : "..."}
+                    </Badge>
+                  </div>
+                  <Progress value={enhancementProgress > 70 ? 100 : Math.max(0, (enhancementProgress - 55) * 6.67)} className="h-1" />
+                </div>
+                <div className="space-y-1.5">
+                  <div className="flex justify-between">
+                    <span>Final Export</span>
+                    <Badge variant={enhancementProgress > 85 ? "secondary" : "outline"} className="text-xs">
+                      {enhancementProgress > 85 ? "Done" : "..."}
+                    </Badge>
+                  </div>
+                  <Progress value={enhancementProgress > 85 ? 100 : Math.max(0, (enhancementProgress - 70) * 6.67)} className="h-1" />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+      
+      {enhancementProgress >= 100 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Enhanced Animations</CardTitle>
+            <CardDescription>
+              AI-enhanced animations ready for export
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Animation</TableHead>
+                    <TableHead>Resolution</TableHead>
+                    <TableHead>Duration</TableHead>
+                    <TableHead>Size</TableHead>
+                    <TableHead>Quality</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {animationPresets.filter(preset => 
+                    enhancementTarget === 'all' || preset.category === enhancementTarget
+                  ).map(preset => (
+                    <TableRow key={preset.id}>
+                      <TableCell className="font-medium">{preset.name}</TableCell>
+                      <TableCell>{preset.resolution}</TableCell>
+                      <TableCell>{preset.duration}s</TableCell>
+                      <TableCell>{(preset.fileSize * 1.3).toFixed(1)} MB</TableCell>
+                      <TableCell>
+                        <Badge variant="outline">
+                          Enhanced
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button variant="outline" size="icon">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button variant="outline" size="icon">
+                            <Download className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              
+              <div className="flex justify-end gap-2">
+                <Button variant="outline">
+                  <Download className="h-4 w-4 mr-2" />
+                  Download All
+                </Button>
+                <Button>
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Share Collection
+                </Button>
               </div>
             </div>
           </CardContent>
@@ -1308,101 +1416,148 @@ const AIEnhancement: React.FC = () => {
   );
 };
 
-const AdvancedAnimationStudio: React.FC = () => {
+export default function AdvancedAnimationStudio() {
   const [activeTab, setActiveTab] = useState('library');
   const [selectedPreset, setSelectedPreset] = useState<any>(null);
-  const { toast } = useToast();
-  
-  // Add a splash screen notice about the new 256-bit Quantum HDR technology
-  useEffect(() => {
-    toast({
-      title: "Quantum HDR Technology Activated",
-      description: "Using industry-leading 256-bit neural rendering with quantum ray tracing.",
-      duration: 6000,
-    });
-  }, []);
-  
-  const handleSelectPreset = (preset: any) => {
-    setSelectedPreset(preset);
-    setActiveTab('editor');
-    
-    toast({
-      title: "Animation Selected",
-      description: `Loaded "${preset.name}" into the Motion Editor.`,
-    });
-  };
+  const [selectedEngine, setSelectedEngine] = useState<any>(null);
   
   return (
-    <Card className="w-full">
-      <CardHeader className="border-b">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-          <div>
-            <CardTitle className="text-xl font-bold flex items-center">
-              <Video className="mr-2 h-5 w-5" /> 
-              Advanced Animation Studio
-            </CardTitle>
-            <CardDescription>
-              Create, edit, and manage state-of-the-art 256-bit Quantum HDR animations with neural rendering
-            </CardDescription>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="h-8">
-              <FileJson className="h-3.5 w-3.5 mr-1" /> Import
-            </Button>
-            <Button variant="outline" size="sm" className="h-8">
-              <Share2 className="h-3.5 w-3.5 mr-1" /> Export
-            </Button>
-            <Button variant="default" size="sm" className="h-8">
-              <Save className="h-3.5 w-3.5 mr-1" /> Save All
-            </Button>
-          </div>
-        </div>
-      </CardHeader>
+    <div className="container mx-auto p-4 space-y-6">
+      <div className="flex flex-col space-y-2">
+        <h1 className="text-3xl font-bold">Advanced Animation Studio</h1>
+        <p className="text-muted-foreground">
+          Design, edit, and render sports animations with professional tools
+        </p>
+      </div>
       
-      <CardContent className="p-4 pt-0">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
-          <TabsList className="grid grid-cols-5 mb-6">
-            <TabsTrigger value="library" className="flex items-center gap-1 text-xs md:text-sm">
-              <FileVideo className="h-3.5 w-3.5" /> Library
-            </TabsTrigger>
-            <TabsTrigger value="editor" className="flex items-center gap-1 text-xs md:text-sm">
-              <PenTool className="h-3.5 w-3.5" /> Motion Editor
-            </TabsTrigger>
-            <TabsTrigger value="rendering" className="flex items-center gap-1 text-xs md:text-sm">
-              <Layers className="h-3.5 w-3.5" /> Rendering
-            </TabsTrigger>
-            <TabsTrigger value="capture" className="flex items-center gap-1 text-xs md:text-sm">
-              <Camera className="h-3.5 w-3.5" /> Motion Capture
-            </TabsTrigger>
-            <TabsTrigger value="ai" className="flex items-center gap-1 text-xs md:text-sm">
-              <Brain className="h-3.5 w-3.5" /> AI Enhancement
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="library">
-            <AnimationLibrary onSelectPreset={handleSelectPreset} />
-          </TabsContent>
-          
-          <TabsContent value="editor">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid grid-cols-2 md:grid-cols-5 mb-4">
+          <TabsTrigger value="library">
+            <FileVideo className="mr-2 h-4 w-4" />
+            <span className="hidden md:inline">Animation Library</span>
+            <span className="inline md:hidden">Library</span>
+          </TabsTrigger>
+          <TabsTrigger value="editor" disabled={!selectedPreset}>
+            <PenTool className="mr-2 h-4 w-4" />
+            <span className="hidden md:inline">Motion Editor</span>
+            <span className="inline md:hidden">Editor</span>
+          </TabsTrigger>
+          <TabsTrigger value="capture">
+            <Camera className="mr-2 h-4 w-4" />
+            <span className="hidden md:inline">Motion Capture</span>
+            <span className="inline md:hidden">Capture</span>
+          </TabsTrigger>
+          <TabsTrigger value="render" disabled={!selectedPreset}>
+            <Clapperboard className="mr-2 h-4 w-4" />
+            <span className="hidden md:inline">Render Preview</span>
+            <span className="inline md:hidden">Render</span>
+          </TabsTrigger>
+          <TabsTrigger value="enhance">
+            <Wand2 className="mr-2 h-4 w-4" />
+            <span className="hidden md:inline">AI Enhancement</span>
+            <span className="inline md:hidden">Enhance</span>
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="library">
+          <AnimationLibrary onSelectPreset={(preset) => {
+            setSelectedPreset(preset);
+            setActiveTab('editor');
+          }} />
+        </TabsContent>
+        
+        <TabsContent value="editor">
+          {selectedPreset ? (
             <MotionEditor selectedPreset={selectedPreset} />
-          </TabsContent>
-          
-          <TabsContent value="rendering">
-            <RenderingEngine />
-          </TabsContent>
-          
-          <TabsContent value="capture">
-            <MotionCapture />
-          </TabsContent>
-          
-          <TabsContent value="ai">
-            <AIEnhancement />
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
+          ) : (
+            <div className="flex flex-col items-center justify-center p-8">
+              <FileVideo className="h-16 w-16 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium">No Animation Selected</h3>
+              <p className="text-muted-foreground text-center mt-2">
+                Select an animation from the library tab to edit motion data
+              </p>
+            </div>
+          )}
+        </TabsContent>
+        
+        <TabsContent value="capture">
+          <MotionCapture />
+        </TabsContent>
+        
+        <TabsContent value="render">
+          <div className="space-y-6">
+            {!selectedEngine && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Select Rendering Engine</CardTitle>
+                  <CardDescription>
+                    Choose a rendering engine to preview and render your animations
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {renderingEngines.map(engine => (
+                      <Card 
+                        key={engine.id} 
+                        className={`cursor-pointer hover:shadow-md transition-shadow overflow-hidden ${selectedEngine?.id === engine.id ? 'ring-2 ring-primary' : ''}`}
+                        onClick={() => setSelectedEngine(engine)}
+                      >
+                        <CardHeader className="p-4 pb-2">
+                          <CardTitle className="text-md font-semibold">{engine.name}</CardTitle>
+                          <CardDescription>{engine.description}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-4 pt-2">
+                          <div className="flex flex-wrap gap-1 mb-3">
+                            {engine.capabilities.map(capability => (
+                              <Badge key={capability} variant="outline" className="text-xs">
+                                {capability}
+                              </Badge>
+                            ))}
+                          </div>
+                          <div className="grid grid-cols-3 gap-2 text-sm">
+                            <div className="space-y-1">
+                              <p className="text-xs text-muted-foreground">Performance</p>
+                              <Progress value={engine.performance} className="h-1.5" />
+                              <p className="text-xs font-medium text-right">{engine.performance}%</p>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-xs text-muted-foreground">Quality</p>
+                              <Progress value={engine.quality} className="h-1.5" />
+                              <p className="text-xs font-medium text-right">{engine.quality}%</p>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-xs text-muted-foreground">Compatibility</p>
+                              <Progress value={engine.compatibility} className="h-1.5" />
+                              <p className="text-xs font-medium text-right">{engine.compatibility}%</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            
+            <RenderPreview selectedPreset={selectedPreset} renderingEngine={selectedEngine} />
+            
+            {selectedEngine && (
+              <div className="flex justify-end">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setSelectedEngine(null)}
+                >
+                  Change Rendering Engine
+                </Button>
+              </div>
+            )}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="enhance">
+          <AIEnhancement />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
-};
-
-export default AdvancedAnimationStudio;
+}
