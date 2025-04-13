@@ -46,12 +46,12 @@ export default function GarScorePage() {
           <CardHeader>
             <CardTitle>Understanding Your GAR Score</CardTitle>
             <CardDescription>
-              The Go4it Athletic Rating is our proprietary system for evaluating athletic performance
+              The Go4It Sports Athletic Rating is our proprietary system for evaluating athletic performance
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="mb-4">
-              The Go4it Athletic Rating (GAR) is a dynamic scientifically backed multi-dimensional wholistic system that scores more than physical stats. Our system captures mental, emotional and learning traits to provide the most complete rating known to date.
+              The Go4It Sports Athletic Rating (GAR) is a dynamic scientifically backed multi-dimensional wholistic system that scores more than physical stats. Our system captures mental, emotional and learning traits to provide the most complete rating known to date.
             </p>
             <h3 className="font-semibold mb-2">How it works:</h3>
             <ul className="list-disc pl-5 space-y-2 text-gray-300">
