@@ -96,16 +96,13 @@ export const socialService = {
    * Get upcoming events
    */
   async getUpcomingEvents() {
-    return apiRequest('/api/social/events');
+    return apiRequest('GET', '/api/social/events');
   },
   
   /**
    * RSVP to an event
    */
   async respondToEvent(eventId: number, status: 'going' | 'maybe' | 'not-going') {
-    return apiRequest(`/api/social/events/${eventId}/rsvp`, {
-      method: 'POST',
-      body: { status },
-    });
+    return apiRequest('POST', `/api/social/events/${eventId}/rsvp`, { status });
   },
 };

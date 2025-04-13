@@ -179,10 +179,7 @@ export default function ContentBlockManager() {
   // Mutation for creating a content block
   const createContentBlockMutation = useMutation({
     mutationFn: async (data: any) => {
-      return apiRequest('/api/content-blocks', {
-        method: 'POST',
-        data
-      });
+      return apiRequest('POST', '/api/content-blocks', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/content-blocks'] });

@@ -49,10 +49,7 @@ export function useAthleteConnections() {
   // Send connection request
   const sendConnectionRequest = useMutation({
     mutationFn: async (connectionId: number) => {
-      return apiRequest('/api/social/connections/request', {
-        method: 'POST',
-        body: { connectionId },
-      });
+      return apiRequest('POST', '/api/social/connections/request', { connectionId });
     },
     onSuccess: () => {
       // Invalidate connections cache to refresh data
@@ -63,9 +60,7 @@ export function useAthleteConnections() {
   // Cancel connection request
   const cancelConnectionRequest = useMutation({
     mutationFn: async (connectionId: number) => {
-      return apiRequest(`/api/social/connections/request/${connectionId}`, {
-        method: 'DELETE',
-      });
+      return apiRequest('DELETE', `/api/social/connections/request/${connectionId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/social/connections'] });
@@ -75,9 +70,7 @@ export function useAthleteConnections() {
   // Accept connection request
   const acceptConnectionRequest = useMutation({
     mutationFn: async (connectionId: number) => {
-      return apiRequest(`/api/social/connections/request/${connectionId}/accept`, {
-        method: 'POST',
-      });
+      return apiRequest('POST', `/api/social/connections/request/${connectionId}/accept`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/social/connections'] });
