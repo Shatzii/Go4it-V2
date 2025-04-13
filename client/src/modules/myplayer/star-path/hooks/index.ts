@@ -1,9 +1,8 @@
 /**
- * Star Path Hooks
+ * Star Path Hooks Exports
  * 
- * This file exports all hook functions for the Star Path module.
- * These hooks provide a simplified interface for components to interact with Star Path data.
+ * This file exports all available hooks in the Star Path module
+ * for easier importing throughout the application.
  */
 
-// Export all star path hooks
 export * from './useStarPath';

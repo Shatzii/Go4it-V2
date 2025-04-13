@@ -1,9 +1,8 @@
 /**
- * Star Path Services
+ * Star Path Services Exports
  * 
- * This file exports all service functions for the Star Path module.
- * These services handle API interactions for the Star Path feature.
+ * This file exports all service functions in the Star Path module
+ * for easier importing throughout the application.
  */
 
-// Export all services from starPathService
 export * from './starPathService';

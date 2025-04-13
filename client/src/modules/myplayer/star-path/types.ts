@@ -1,11 +1,14 @@
 /**
  * Star Path Types
  * 
- * This file defines all types and interfaces used within the Star Path feature module.
- * These types are used throughout the components, hooks, and services of the Star Path module.
+ * This file contains all type definitions used throughout the Star Path module.
+ * These types ensure consistency and type safety across components, hooks, and services.
  */
 
-// Star Path Progress levels and statuses
+/**
+ * Star Path Levels Enum
+ * Represents the different levels a player can achieve in their Star Path journey
+ */
 export const enum StarPathLevel {
   RISING_PROSPECT = 1,
   EMERGING_TALENT = 2,
@@ -14,7 +17,22 @@ export const enum StarPathLevel {
   FIVE_STAR_ATHLETE = 5
 }
 
-// Milestone type definitions
+/**
+ * Star Path Level Names
+ * Provides display names for each star level
+ */
+export const StarPathLevelNames = {
+  [StarPathLevel.RISING_PROSPECT]: "Rising Prospect",
+  [StarPathLevel.EMERGING_TALENT]: "Emerging Talent",
+  [StarPathLevel.STANDOUT_PERFORMER]: "Standout Performer",
+  [StarPathLevel.ELITE_PROSPECT]: "Elite Prospect",
+  [StarPathLevel.FIVE_STAR_ATHLETE]: "Five-Star Athlete"
+};
+
+/**
+ * Milestone Interface
+ * Represents achievement milestones that players can reach along their Star Path
+ */
 export interface Milestone {
   id: number;
   description: string;
@@ -23,7 +41,10 @@ export interface Milestone {
   isCompleted: boolean;
 }
 
-// Star Path progress interface
+/**
+ * Star Path Progress Interface
+ * Represents a player's current progress along their Star Path journey
+ */
 export interface StarPathProgress {
   id?: number;
   userId: number;
@@ -45,7 +66,10 @@ export interface StarPathProgress {
   levelThresholds: number[];
 }
 
-// Attribute categories for star path
+/**
+ * Attribute Category Interface
+ * Represents a category of player attributes (physical, mental, technical)
+ */
 export interface AttributeCategory {
   id: string;
   name: string;
@@ -54,7 +78,10 @@ export interface AttributeCategory {
   attributes: Attribute[];
 }
 
-// Individual attribute
+/**
+ * Attribute Interface
+ * Represents a specific player attribute within a category
+ */
 export interface Attribute {
   id: string;
   name: string;
@@ -64,7 +91,10 @@ export interface Attribute {
   category: string;
 }
 
-// Achievement definition
+/**
+ * Achievement Interface
+ * Represents an achievement or badge a player can earn
+ */
 export interface Achievement {
   id: number;
   title: string;
@@ -75,18 +105,24 @@ export interface Achievement {
   isEarned: boolean;
 }
 
-// Training result after completing a drill or workout
+/**
+ * Training Completion Result Interface
+ * Response from completing a training session
+ */
 export interface CompletedTrainingResult {
   success: boolean;
   xpEarned: number;
+  starXpEarned: number;
   currentLevel: number;
   newProgress: number;
   message: string;
   leveledUp: boolean;
-  starXpEarned: number;
 }
 
-// Milestone claim result
+/**
+ * Claim Milestone Result Interface
+ * Response from claiming a milestone reward
+ */
 export interface ClaimMilestoneResult {
   success: boolean;
   milestoneId: number;
@@ -96,7 +132,10 @@ export interface ClaimMilestoneResult {
   rewardDetails: string;
 }
 
-// Daily check-in result
+/**
+ * Daily Check-In Result Interface
+ * Response from performing a daily check-in
+ */
 export interface DailyCheckInResult {
   success: boolean;
   streakDays: number;
@@ -106,7 +145,10 @@ export interface DailyCheckInResult {
   message: string;
 }
 
-// Star Path service responses
+/**
+ * Star Path API Response Interface
+ * Standard format for API responses from Star Path endpoints
+ */
 export interface StarPathResponse {
   success: boolean;
   message: string;
@@ -114,14 +156,20 @@ export interface StarPathResponse {
   error?: string;
 }
 
-// Attribute update payload
+/**
+ * Attribute Update Interface
+ * Parameters for updating a player attribute
+ */
 export interface AttributeUpdate {
   attributeId: string;
   newValue: number;
   notes?: string;
 }
 
-// Star Path creation/update payload
+/**
+ * Star Path Create/Update Interface
+ * Parameters for creating or updating a Star Path
+ */
 export interface StarPathCreateUpdate {
   userId: number;
   sportType?: string;
