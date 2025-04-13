@@ -291,11 +291,11 @@ export const componentRegistry = pgTable("component_registry", {
   lastUpdatedBy: integer("last_updated_by").references(() => users.id),
 });
 
-export const insertComponentRegistryItemSchema = createInsertSchema(componentRegistry)
+export const insertComponentRegistrySchema = createInsertSchema(componentRegistry)
   .omit({ id: true, updatedAt: true });
 
 export type ComponentRegistryItem = typeof componentRegistry.$inferSelect;
-export type InsertComponentRegistryItem = z.infer<typeof insertComponentRegistryItemSchema>;
+export type InsertComponentRegistryItem = z.infer<typeof insertComponentRegistrySchema>;
 
 // Content revisions for versioning
 export const contentRevisions = pgTable("content_revisions", {
@@ -1923,15 +1923,8 @@ export type InsertUserDrillProgress = z.infer<typeof insertUserDrillProgressSche
 // Additional CMS types and exports
 // Note: Page Component and Pages schemas are already defined above
 
-// CMS Component Registry
-export const insertComponentRegistrySchema = createInsertSchema(componentRegistry).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export type ComponentRegistryItem = typeof componentRegistry.$inferSelect;
-export type InsertComponentRegistryItem = z.infer<typeof insertComponentRegistrySchema>;
+// Additional CMS exports
+// Note: Component Registry types and schemas already defined above
 
 // AI Coach types
 export type AiCoach = typeof aiCoaches.$inferSelect;
