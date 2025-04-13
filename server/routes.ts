@@ -25,6 +25,7 @@ import combinePublicRoutes from './routes/combine-public-routes';
 import academicRoutes from './routes/academic-routes';
 import animationRoutes from './routes/animation-routes';
 import cmsRoutes from './routes/cms-routes';
+import cmsCacheRoutes from './routes/cms-cache-routes';
 
 // Helper function to determine event status
 function getEventStatus(event: any): 'upcoming' | 'filling_fast' | 'sold_out' | 'past' {
@@ -5402,6 +5403,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register animation routes
   app.use('/api/animations', animationRoutes);
   app.use('/api/cms', cmsRoutes);
+  app.use('/api/cms/cache', cmsCacheRoutes);
 
   // Legacy Content Blocks API Routes (will be deprecated)
   app.get("/api/content-blocks", async (req: Request, res: Response) => {
