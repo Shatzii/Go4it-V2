@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
+import ContentBlockManager from "@/components/admin/ContentBlockManager";
 import {
   Table,
   TableBody,
@@ -655,6 +656,7 @@ export default function ContentManager() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="w-full bg-gray-900 border border-gray-800">
           <TabsTrigger value="blog-posts" className="flex-1">Blog Posts</TabsTrigger>
+          <TabsTrigger value="content-blocks" className="flex-1">Content Blocks</TabsTrigger>
           <TabsTrigger value="site-images" className="flex-1">Site Images</TabsTrigger>
         </TabsList>
 
@@ -881,6 +883,11 @@ export default function ContentManager() {
               </Card>
             </>
           )}
+        </TabsContent>
+
+        {/* Content Blocks Tab */}
+        <TabsContent value="content-blocks" className="space-y-6">
+          <ContentBlockManager />
         </TabsContent>
       </Tabs>
     </div>
