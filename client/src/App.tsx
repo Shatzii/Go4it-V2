@@ -55,6 +55,7 @@ import SimpleLogin from "@/pages/simple-login";
 // New feature page imports - Phase 2
 import MyPlayerStarPath from "@/pages/myplayer-star-path";
 import MyPlayerAICoach from "@/pages/myplayer-ai-coach";
+import HybridAICoach from "@/pages/hybrid-ai-coach";
 import MyPlayerInterface from "@/pages/myplayer-interface";
 import ScoutVisionFeed from "@/pages/scoutvision-feed";
 import CoachPortal from "@/pages/coach-portal";
@@ -240,6 +241,10 @@ function Router() {
         
         <Route path="/myplayer-ai-coach">
           {() => <ProtectedRoute component={MyPlayerAICoach} />}
+        </Route>
+        
+        <Route path="/hybrid-ai-coach">
+          {() => <ProtectedRoute component={HybridAICoach} />}
         </Route>
 
         <Route path="/myplayer-interface">
