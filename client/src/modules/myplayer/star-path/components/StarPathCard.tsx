@@ -1,181 +1,131 @@
-/**
- * StarPathCard Component
- * 
- * Displays an athlete's progress through the Star Path system with a visual indicator
- * of their current star level and progress toward the next level.
- */
+import React from 'react';
+import { Link } from 'wouter';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { StarIcon, TrophyIcon, ZapIcon, ActivityIcon, CheckCircleIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import type { StarPathProgress } from '../index';
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { StarIcon, Trophy, Award, Medal } from "lucide-react";
-import { useState } from "react";
-import { useNavigate } from "wouter";
-import { Button } from "@/components/ui/button";
-
-// Define interface for component props
-export interface StarPathCardProps {
-  userId: number;
-  currentStarLevel: number;
-  targetStarLevel: number;
-  progress: number;
-  sportType: string;
-  position?: string;
-  streakDays?: number;
-  xpTotal?: number;
-  completedDrills?: number;
-  verifiedWorkouts?: number;
-  nextMilestone?: string;
+type StarPathCardProps = {
+  progress: StarPathProgress;
   className?: string;
-}
-
-/**
- * Maps star level to its display name
- */
-const getStarLevelName = (level: number): string => {
-  switch (level) {
-    case 1:
-      return "Rising Prospect";
-    case 2:
-      return "Emerging Talent";
-    case 3:
-      return "Standout Performer";
-    case 4:
-      return "Elite Prospect";
-    case 5:
-      return "Five-Star Athlete";
-    default:
-      return "Rookie";
-  }
+  onTrainClick?: () => void;
+  onCheckInClick?: () => void;
 };
 
-/**
- * Returns color based on star level
- */
-const getStarColor = (level: number): string => {
-  switch (level) {
-    case 1:
-      return "text-blue-400";
-    case 2:
-      return "text-cyan-400";
-    case 3:
-      return "text-emerald-400";
-    case 4:
-      return "text-amber-400";
-    case 5:
-      return "text-purple-400";
-    default:
-      return "text-slate-400";
-  }
-};
-
-export const StarPathCard = ({
-  userId,
-  currentStarLevel,
-  targetStarLevel,
-  progress,
-  sportType,
-  position,
-  streakDays = 0,
-  xpTotal = 0,
-  completedDrills = 0,
-  verifiedWorkouts = 0,
-  nextMilestone = "",
-  className = "",
-}: StarPathCardProps) => {
-  const [showDetails, setShowDetails] = useState(false);
-  const navigate = useNavigate();
-
-  // Navigate to detailed star path page for this user
-  const handleViewDetails = () => {
-    navigate(`/myplayer/star-path/${userId}`);
-  };
-
-  // Display stars based on current level
-  const renderStars = () => {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <StarIcon
-          key={i}
-          className={`h-5 w-5 ${i <= currentStarLevel ? getStarColor(currentStarLevel) : "text-gray-300"}`}
-          fill={i <= currentStarLevel ? "currentColor" : "none"}
-        />
-      );
-    }
-    return stars;
-  };
-
+export function StarPathCard({ progress, className, onTrainClick, onCheckInClick }: StarPathCardProps) {
+  const canCheckIn = !progress.lastCheckIn || 
+    new Date(progress.lastCheckIn).toDateString() !== new Date().toDateString();
+  
+  // Maps star levels to their display names
+  const starLevelNames = [
+    'Rising Prospect',
+    'Emerging Talent',
+    'Standout Performer',
+    'Elite Prospect',
+    'Five-Star Athlete'
+  ];
+  
+  // Get the current level name
+  const currentLevelName = starLevelNames[progress.currentStarLevel - 1] || 'Rookie';
+  
+  // Calculate percentage to next level
+  const percentToNextLevel = Math.min(
+    100,
+    Math.round((progress.currentXp / progress.nextLevelXp) * 100)
+  );
+  
+  // Format XP display
+  const formatXP = (xp: number) => xp.toLocaleString();
+  
   return (
-    <Card className={`w-full ${className}`}>
+    <Card className={cn("w-full", className)}>
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-xl font-bold">Star Path</CardTitle>
-          <Badge variant="outline" className="bg-blue-900/20">
-            {sportType} {position && `| ${position}`}
+          <CardTitle className="text-2xl flex items-center">
+            <StarIcon className="mr-2 h-6 w-6 text-yellow-500 inline" /> 
+            Star Path
+          </CardTitle>
+          <Badge variant="outline" className="flex items-center gap-1 py-1 px-2 bg-blue-950 text-white">
+            <ActivityIcon className="h-3.5 w-3.5" />
+            {progress.streakDays} day streak
           </Badge>
         </div>
-        <CardDescription>Your path to athletic excellence</CardDescription>
+        <CardDescription className="flex items-center">
+          Your journey from prospect to star athlete
+        </CardDescription>
       </CardHeader>
+      
       <CardContent>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex space-x-1">{renderStars()}</div>
-          <Badge className="bg-blue-600 hover:bg-blue-700">
-            {getStarLevelName(currentStarLevel)}
-          </Badge>
-        </div>
-
-        <div className="space-y-3">
-          <div>
-            <div className="flex justify-between mb-1 text-sm font-medium">
-              <span>Progress to {getStarLevelName(currentStarLevel + 1)}</span>
-              <span>{progress}%</span>
+        <div className="space-y-4">
+          {/* Current Level Badge */}
+          <div className="flex justify-between">
+            <div className="flex flex-col">
+              <span className="text-sm text-muted-foreground">Current Level</span>
+              <div className="flex items-center">
+                <span className="text-xl font-bold">{currentLevelName}</span>
+                <Badge className="ml-2 bg-amber-500" variant="secondary">Level {progress.currentStarLevel}</Badge>
+              </div>
             </div>
-            <Progress value={progress} className="h-2" />
+            <div className="flex flex-col items-end">
+              <span className="text-sm text-muted-foreground">Total XP</span>
+              <span className="text-xl font-bold">{formatXP(progress.xpTotal)}</span>
+            </div>
           </div>
-
-          {showDetails && (
-            <div className="grid grid-cols-2 gap-3 mt-4">
-              <div className="flex flex-col items-center p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
-                <Trophy className="h-5 w-5 text-amber-500 mb-1" />
-                <span className="text-xs text-gray-500 dark:text-gray-400">XP Total</span>
-                <span className="font-bold">{xpTotal.toLocaleString()}</span>
-              </div>
-              <div className="flex flex-col items-center p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
-                <Award className="h-5 w-5 text-emerald-500 mb-1" />
-                <span className="text-xs text-gray-500 dark:text-gray-400">Drills</span>
-                <span className="font-bold">{completedDrills}</span>
-              </div>
-              <div className="flex flex-col items-center p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
-                <Medal className="h-5 w-5 text-blue-500 mb-1" />
-                <span className="text-xs text-gray-500 dark:text-gray-400">Workouts</span>
-                <span className="font-bold">{verifiedWorkouts}</span>
-              </div>
-              <div className="flex flex-col items-center p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
-                <div className="flex items-center justify-center h-5 w-5 text-red-500 mb-1">
-                  🔥
-                </div>
-                <span className="text-xs text-gray-500 dark:text-gray-400">Streak</span>
-                <span className="font-bold">{streakDays} days</span>
-              </div>
+          
+          {/* Progress Bar */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-sm">
+              <span>Progress to Level {progress.currentStarLevel + 1}</span>
+              <span>{formatXP(progress.currentXp)} / {formatXP(progress.nextLevelXp)} XP</span>
             </div>
-          )}
-
-          {nextMilestone && (
-            <div className="mt-2 text-sm">
-              <span className="font-semibold">Next milestone:</span> {nextMilestone}
+            <Progress value={percentToNextLevel} className="h-2" />
+          </div>
+          
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-2 mt-4">
+            <div className="flex flex-col items-center p-2 bg-muted rounded-md">
+              <CheckCircleIcon className="h-5 w-5 text-green-500 mb-1" />
+              <span className="text-lg font-bold">{progress.completedDrills}</span>
+              <span className="text-xs text-center">Drills Done</span>
+            </div>
+            <div className="flex flex-col items-center p-2 bg-muted rounded-md">
+              <ZapIcon className="h-5 w-5 text-yellow-500 mb-1" />
+              <span className="text-lg font-bold">{progress.verifiedWorkouts}</span>
+              <span className="text-xs text-center">Workouts</span>
+            </div>
+            <div className="flex flex-col items-center p-2 bg-muted rounded-md">
+              <TrophyIcon className="h-5 w-5 text-blue-500 mb-1" />
+              <span className="text-lg font-bold">{progress.skillTreeProgress}%</span>
+              <span className="text-xs text-center">Skills</span>
+            </div>
+          </div>
+          
+          {/* Next Milestone */}
+          {progress.nextMilestone && (
+            <div className="text-sm mt-2">
+              <span className="text-muted-foreground">Next Milestone: </span>
+              <span>{progress.nextMilestone}</span>
             </div>
           )}
         </div>
       </CardContent>
+      
       <CardFooter className="flex justify-between pt-2">
-        <Button variant="outline" size="sm" onClick={() => setShowDetails(!showDetails)}>
-          {showDetails ? "Hide" : "Show"} Details
+        <Button variant="default" className="w-[48%]" onClick={onTrainClick}>
+          Train Now
         </Button>
-        <Button size="sm" onClick={handleViewDetails}>
-          View Full Path
+        <Button 
+          variant={canCheckIn ? "secondary" : "outline"} 
+          className="w-[48%]" 
+          onClick={onCheckInClick}
+          disabled={!canCheckIn}
+        >
+          {canCheckIn ? 'Daily Check-In' : 'Already Checked In'}
         </Button>
       </CardFooter>
     </Card>
   );
-};
+}
