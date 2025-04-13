@@ -5,20 +5,16 @@
  * These functions handle data fetching and state management for the Star Path module.
  */
 
-import { queryClient } from '@/lib/queryClient';
-import { 
-  StarPathProgress, 
-  StarPathCreateUpdate, 
-  StarPathResponse, 
+import {
+  StarPathProgress,
+  StarPathCreateUpdate,
+  StarPathResponse,
   AttributeCategory,
+  AttributeUpdate,
   CompletedTrainingResult,
   ClaimMilestoneResult,
   DailyCheckInResult,
-  AttributeUpdate
 } from '../types';
-
-// API endpoint base path
-const BASE_PATH = '/api/player/star-path';
 
 /**
  * Fetch a user's Star Path progress
@@ -27,26 +23,22 @@ const BASE_PATH = '/api/player/star-path';
  */
 export const fetchStarPath = async (userId: number): Promise<StarPathProgress | null> => {
   try {
-    const response = await fetch(`${BASE_PATH}/${userId}`);
+    const response = await fetch(`/api/star-path/${userId}`);
     
     if (!response.ok) {
-      if (response.status === 404) {
-        return null; // No star path found for this user
-      }
-      throw new Error(`Failed to fetch Star Path: ${response.statusText}`);
+      throw new Error(`Failed to fetch Star Path: ${response.status}`);
     }
     
     const data: StarPathResponse = await response.json();
     
-    if (!data.success || !data.data) {
-      console.error('Error fetching Star Path:', data.error || data.message);
-      return null;
+    if (!data.success) {
+      throw new Error(data.error || 'Unknown error fetching Star Path data');
     }
     
-    return data.data;
+    return data.data || null;
   } catch (error) {
     console.error('Error fetching Star Path:', error);
-    return null;
+    throw error;
   }
 };
 
@@ -59,30 +51,28 @@ export const createOrUpdateStarPath = async (
   starPathData: StarPathCreateUpdate
 ): Promise<StarPathProgress | null> => {
   try {
-    const response = await fetch(BASE_PATH, {
+    const response = await fetch('/api/star-path', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(starPathData)
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(starPathData),
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to create/update Star Path: ${response.statusText}`);
+      throw new Error(`Failed to create/update Star Path: ${response.status}`);
     }
     
     const data: StarPathResponse = await response.json();
     
-    if (!data.success || !data.data) {
-      console.error('Error creating/updating Star Path:', data.error || data.message);
-      return null;
+    if (!data.success) {
+      throw new Error(data.error || 'Unknown error creating/updating Star Path');
     }
     
-    // Invalidate the cache to refresh data
-    await queryClient.invalidateQueries({ queryKey: [`${BASE_PATH}/${starPathData.userId}`] });
-    
-    return data.data;
+    return data.data || null;
   } catch (error) {
     console.error('Error creating/updating Star Path:', error);
-    return null;
+    throw error;
   }
 };
 
@@ -93,27 +83,26 @@ export const createOrUpdateStarPath = async (
  * @returns Attribute category data
  */
 export const fetchAttributesByCategory = async (
-  userId: number, 
+  userId: number,
   category: string
 ): Promise<AttributeCategory | null> => {
   try {
-    const response = await fetch(`${BASE_PATH}/${userId}/attributes/${category}`);
+    const response = await fetch(`/api/star-path/${userId}/attributes/${category}`);
     
     if (!response.ok) {
-      throw new Error(`Failed to fetch attributes: ${response.statusText}`);
+      throw new Error(`Failed to fetch attributes: ${response.status}`);
     }
     
     const data = await response.json();
     
     if (!data.success) {
-      console.error('Error fetching attributes:', data.error || data.message);
-      return null;
+      throw new Error(data.error || 'Unknown error fetching attributes');
     }
     
-    return data.data;
+    return data.data || null;
   } catch (error) {
     console.error(`Error fetching ${category} attributes:`, error);
-    return null;
+    throw error;
   }
 };
 
@@ -124,34 +113,32 @@ export const fetchAttributesByCategory = async (
  * @returns Success status
  */
 export const updateAttribute = async (
-  userId: number, 
+  userId: number,
   attributeUpdate: AttributeUpdate
 ): Promise<boolean> => {
   try {
-    const response = await fetch(`${BASE_PATH}/${userId}/attributes/update`, {
+    const response = await fetch(`/api/star-path/${userId}/attributes/update`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(attributeUpdate)
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(attributeUpdate),
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to update attribute: ${response.statusText}`);
+      throw new Error(`Failed to update attribute: ${response.status}`);
     }
     
     const data = await response.json();
     
     if (!data.success) {
-      console.error('Error updating attribute:', data.error || data.message);
-      return false;
+      throw new Error(data.error || 'Unknown error updating attribute');
     }
-    
-    // Invalidate relevant queries to refresh data
-    await queryClient.invalidateQueries({ queryKey: [`${BASE_PATH}/${userId}/attributes`] });
     
     return true;
   } catch (error) {
     console.error('Error updating attribute:', error);
-    return false;
+    throw error;
   }
 };
 
@@ -162,39 +149,37 @@ export const updateAttribute = async (
  * @returns Training completion results
  */
 export const completeTraining = async (
-  userId: number, 
+  userId: number,
   trainingData: {
     drillId: number;
     duration: number;
     score?: number;
     skillNodeId?: number;
   }
-): Promise<CompletedTrainingResult | null> => {
+): Promise<CompletedTrainingResult> => {
   try {
-    const response = await fetch(`${BASE_PATH}/${userId}/complete-training`, {
+    const response = await fetch(`/api/star-path/${userId}/training/complete`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(trainingData)
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(trainingData),
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to complete training: ${response.statusText}`);
+      throw new Error(`Failed to record training completion: ${response.status}`);
     }
     
     const data = await response.json();
     
     if (!data.success) {
-      console.error('Error completing training:', data.error || data.message);
-      return null;
+      throw new Error(data.error || 'Unknown error recording training completion');
     }
-    
-    // Invalidate relevant queries to refresh data
-    await queryClient.invalidateQueries({ queryKey: [`${BASE_PATH}/${userId}`] });
     
     return data.data;
   } catch (error) {
     console.error('Error completing training:', error);
-    return null;
+    throw error;
   }
 };
 
@@ -205,34 +190,28 @@ export const completeTraining = async (
  * @returns Milestone claim results
  */
 export const claimMilestone = async (
-  userId: number, 
+  userId: number,
   milestoneId: number
-): Promise<ClaimMilestoneResult | null> => {
+): Promise<ClaimMilestoneResult> => {
   try {
-    const response = await fetch(`${BASE_PATH}/${userId}/claim-milestone`, {
+    const response = await fetch(`/api/star-path/${userId}/milestones/${milestoneId}/claim`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ milestoneId })
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to claim milestone: ${response.statusText}`);
+      throw new Error(`Failed to claim milestone: ${response.status}`);
     }
     
     const data = await response.json();
     
     if (!data.success) {
-      console.error('Error claiming milestone:', data.error || data.message);
-      return null;
+      throw new Error(data.error || 'Unknown error claiming milestone');
     }
-    
-    // Invalidate relevant queries to refresh data
-    await queryClient.invalidateQueries({ queryKey: [`${BASE_PATH}/${userId}`] });
     
     return data.data;
   } catch (error) {
     console.error('Error claiming milestone:', error);
-    return null;
+    throw error;
   }
 };
 
@@ -243,27 +222,23 @@ export const claimMilestone = async (
  */
 export const dailyCheckIn = async (userId: number): Promise<DailyCheckInResult | null> => {
   try {
-    const response = await fetch(`${BASE_PATH}/${userId}/daily-check-in`, {
-      method: 'POST'
+    const response = await fetch(`/api/star-path/${userId}/check-in`, {
+      method: 'POST',
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to perform daily check-in: ${response.statusText}`);
+      throw new Error(`Failed to perform daily check-in: ${response.status}`);
     }
     
     const data = await response.json();
     
     if (!data.success) {
-      console.error('Error performing daily check-in:', data.error || data.message);
-      return null;
+      throw new Error(data.error || 'Unknown error performing daily check-in');
     }
     
-    // Invalidate relevant queries to refresh data
-    await queryClient.invalidateQueries({ queryKey: [`${BASE_PATH}/${userId}`] });
-    
-    return data.data;
+    return data.data || null;
   } catch (error) {
     console.error('Error performing daily check-in:', error);
-    return null;
+    throw error;
   }
 };
