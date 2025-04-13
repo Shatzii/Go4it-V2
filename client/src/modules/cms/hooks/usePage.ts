@@ -13,7 +13,7 @@ export function usePage(
   options: { enabled?: boolean } = {}
 ) {
   return useQuery<PageData>({
-    queryKey: ['/api/cms/pages', slug],
+    queryKey: ['/api/pages', slug],
     queryFn: async () => {
       const response = await getPage(slug);
       return response;
