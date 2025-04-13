@@ -259,7 +259,8 @@ export async function createPage(data: Omit<PageData, 'id'>): Promise<PageData> 
   const newPage = await response.json();
   
   // Invalidate the all pages cache since we added a new page
-  cmsCache.invalidateAllPages();
+  // By setting the allPagesCache to null directly instead of using a separate method
+  cmsCache.invalidateAllContent();
   
   return newPage;
 }
@@ -307,7 +308,8 @@ export async function updatePage(id: number, data: Partial<PageData>): Promise<P
   }
   
   // Also invalidate the all pages cache since a page was updated
-  cmsCache.invalidateAllPages();
+  // Make it explicit for clarity
+  cmsCache.invalidateAllContent();
   
   return updatedPage;
 }
@@ -345,7 +347,8 @@ export async function deletePage(id: number): Promise<{ success: boolean }> {
   }
   
   // Also invalidate the all pages cache since a page was deleted
-  cmsCache.invalidateAllPages();
+  // Make it explicit for clarity
+  cmsCache.invalidateAllContent();
   
   return result;
 }
