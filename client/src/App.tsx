@@ -178,6 +178,22 @@ function Router() {
           {() => <ProtectedRoute component={AdminDashboard} adminOnly={true} />}
         </Route>
         
+        <Route path="/admin/content-manager">
+          {({ params }) => {
+            // Dynamically import the Content Manager page
+            const ContentManager = require("@/pages/admin/content-manager").default;
+            return <ProtectedRoute component={ContentManager} adminOnly={true} />;
+          }}
+        </Route>
+        
+        <Route path="/admin/analytics-dashboard">
+          {({ params }) => {
+            // Dynamically import the Analytics Dashboard page
+            const AnalyticsDashboard = require("@/pages/admin/analytics-dashboard").default;
+            return <ProtectedRoute component={AnalyticsDashboard} adminOnly={true} />;
+          }}
+        </Route>
+        
         <Route path="/upload-video">
           {() => <ProtectedRoute component={UploadVideo} />}
         </Route>
