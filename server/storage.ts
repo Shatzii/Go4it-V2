@@ -50,6 +50,33 @@ export interface IStorage {
   // System stats for admin dashboard
   getSystemStats(): Promise<any>;
   
+  // CMS: Component Registry operations
+  getComponentTypes(): Promise<ComponentRegistryItem[]>;
+  getComponentTypeByIdentifier(identifier: string): Promise<ComponentRegistryItem | undefined>;
+  getComponentCategories(): Promise<string[]>;
+  createComponentType(data: InsertComponentRegistryItem): Promise<ComponentRegistryItem>;
+  updateComponentType(identifier: string, data: Partial<ComponentRegistryItem>): Promise<ComponentRegistryItem | undefined>;
+  deleteComponentType(identifier: string): Promise<boolean>;
+  countComponentsUsingType(identifier: string): Promise<number>;
+  
+  // CMS: Page operations
+  getPages(): Promise<Page[]>;
+  getPage(id: number): Promise<Page | undefined>;
+  getPageBySlug(slug: string): Promise<Page | undefined>;
+  createPage(data: InsertPage): Promise<Page>;
+  updatePage(id: number, data: Partial<Page>): Promise<Page | undefined>;
+  deletePage(id: number): Promise<boolean>;
+  publishPage(id: number, isPublished: boolean): Promise<Page | undefined>;
+  clonePage(id: number, newSlug: string): Promise<Page | undefined>;
+  
+  // CMS: Page Components operations
+  getPageComponents(pageId: number): Promise<PageComponent[]>;
+  getPageComponent(id: number): Promise<PageComponent | undefined>;
+  createPageComponent(data: InsertPageComponent): Promise<PageComponent>;
+  updatePageComponent(id: number, data: Partial<PageComponent>): Promise<PageComponent | undefined>;
+  deletePageComponent(id: number): Promise<boolean>;
+  updatePageComponentPositions(components: { id: number, position: number }[]): Promise<boolean>;
+  
   // Spotlight Profile operations
   getSpotlightProfiles(limit?: number): Promise<SpotlightProfile[]>;
   getSpotlightProfilesByUser(userId: number): Promise<SpotlightProfile[]>;

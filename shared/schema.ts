@@ -1896,6 +1896,37 @@ export const insertTrainingPlanActivitySchema = createInsertSchema(trainingPlanA
 export type InsertTrainingPlanActivity = z.infer<typeof insertTrainingPlanActivitySchema>;
 export type InsertUserDrillProgress = z.infer<typeof insertUserDrillProgressSchema>;
 
+// CMS Page Components
+export const insertPageComponentSchema = createInsertSchema(pageComponents).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type PageComponent = typeof pageComponents.$inferSelect;
+export type InsertPageComponent = z.infer<typeof insertPageComponentSchema>;
+
+// CMS Pages
+export const insertPageSchema = createInsertSchema(pages).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  publishDate: true,
+});
+
+export type Page = typeof pages.$inferSelect;
+export type InsertPage = z.infer<typeof insertPageSchema>;
+
+// CMS Component Registry
+export const insertComponentRegistrySchema = createInsertSchema(componentRegistry).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type ComponentRegistryItem = typeof componentRegistry.$inferSelect;
+export type InsertComponentRegistryItem = z.infer<typeof insertComponentRegistrySchema>;
+
 // AI Coach types
 export type AiCoach = typeof aiCoaches.$inferSelect;
 export type InsertAiCoach = z.infer<typeof insertAiCoachSchema>;
