@@ -16,6 +16,7 @@ import {
   combineTourEvents, type CombineTourEvent, type InsertCombineTourEvent,
   registrations, type Registration, type InsertRegistration,
   payments, type Payment, type InsertPayment,
+  anthropicTrainingPlans, type AnthropicTrainingPlan, type InsertAnthropicTrainingPlan,
   skillTreeNodes, type SkillTreeNode, type InsertSkillTreeNode,
   skillTreeRelationships, type SkillTreeRelationship, type InsertSkillTreeRelationship,
   trainingDrills, type TrainingDrill, type InsertTrainingDrill,
@@ -214,6 +215,18 @@ export interface IStorage {
   getWeightRoomEquipmentById(equipmentId: number): Promise<any | undefined>;
   addXpToPlayer(userId: number, amount: number, source: string, reason: string, metadata?: any): Promise<any>;
   getSportRecommendations(userId: number): Promise<any[]>;
+  
+  // Anthropic AI Coach methods
+  getAnthropicTrainingPlan(id: number): Promise<AnthropicTrainingPlan | undefined>;
+  getAnthropicTrainingPlansByUserId(userId: number): Promise<AnthropicTrainingPlan[]>;
+  createAnthropicTrainingPlan(plan: InsertAnthropicTrainingPlan): Promise<AnthropicTrainingPlan>;
+  updateAnthropicTrainingPlan(id: number, data: Partial<AnthropicTrainingPlan>): Promise<AnthropicTrainingPlan | undefined>;
+  completeAnthropicTrainingPlanDay(id: number, dayNumber: number): Promise<AnthropicTrainingPlan | undefined>;
+  finishAnthropicTrainingPlan(id: number, rating: number, feedback: string): Promise<AnthropicTrainingPlan | undefined>;
+  
+  // Hybrid AI Coach methods (using both Claude and GPT)
+  getHybridCoachingResponse(userId: number, message: string, modelPreference?: 'claude' | 'gpt' | 'both'): Promise<{message: string, source: string}>;
+  getPersonalizedTrainingAdvice(userId: number, sport: string, skillLevel: string, focusArea: string): Promise<{advice: string, drills: any[], source: string}>;
   
   // Star Path and Workout Verification
   getAthleteStarPath(userId: number): Promise<AthleteStarPath | undefined>;
@@ -4294,16 +4307,212 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Anthropic AI Coach methods
-  getAnthropicTrainingPlan(id: number): Promise<AnthropicTrainingPlan | undefined>;
-  getAnthropicTrainingPlansByUserId(userId: number): Promise<AnthropicTrainingPlan[]>;
-  createAnthropicTrainingPlan(plan: InsertAnthropicTrainingPlan): Promise<AnthropicTrainingPlan>;
-  updateAnthropicTrainingPlan(id: number, data: Partial<AnthropicTrainingPlan>): Promise<AnthropicTrainingPlan | undefined>;
-  completeAnthropicTrainingPlanDay(id: number, dayNumber: number): Promise<AnthropicTrainingPlan | undefined>;
-  finishAnthropicTrainingPlan(id: number, rating: number, feedback: string): Promise<AnthropicTrainingPlan | undefined>;
+  async getAnthropicTrainingPlan(id: number): Promise<AnthropicTrainingPlan | undefined> {
+    try {
+      const [plan] = await db.select()
+        .from(anthropicTrainingPlans)
+        .where(eq(anthropicTrainingPlans.id, id));
+      return plan;
+    } catch (error) {
+      console.error('Database error in getAnthropicTrainingPlan:', error);
+      return undefined;
+    }
+  }
+
+  async getAnthropicTrainingPlansByUserId(userId: number): Promise<AnthropicTrainingPlan[]> {
+    try {
+      const plans = await db.select()
+        .from(anthropicTrainingPlans)
+        .where(eq(anthropicTrainingPlans.userId, userId))
+        .orderBy(desc(anthropicTrainingPlans.createdAt));
+      return plans;
+    } catch (error) {
+      console.error('Database error in getAnthropicTrainingPlansByUserId:', error);
+      return [];
+    }
+  }
+
+  async createAnthropicTrainingPlan(plan: InsertAnthropicTrainingPlan): Promise<AnthropicTrainingPlan> {
+    try {
+      const [createdPlan] = await db.insert(anthropicTrainingPlans)
+        .values(plan)
+        .returning();
+      return createdPlan;
+    } catch (error) {
+      console.error('Database error in createAnthropicTrainingPlan:', error);
+      throw error;
+    }
+  }
+
+  async updateAnthropicTrainingPlan(id: number, data: Partial<AnthropicTrainingPlan>): Promise<AnthropicTrainingPlan | undefined> {
+    try {
+      const [updatedPlan] = await db.update(anthropicTrainingPlans)
+        .set({
+          ...data,
+          updatedAt: new Date()
+        })
+        .where(eq(anthropicTrainingPlans.id, id))
+        .returning();
+      return updatedPlan;
+    } catch (error) {
+      console.error('Database error in updateAnthropicTrainingPlan:', error);
+      return undefined;
+    }
+  }
+
+  async completeAnthropicTrainingPlanDay(id: number, dayNumber: number): Promise<AnthropicTrainingPlan | undefined> {
+    try {
+      // First get the plan to check if it's valid
+      const plan = await this.getAnthropicTrainingPlan(id);
+      if (!plan) return undefined;
+      if (dayNumber > plan.durationDays) return undefined;
+      
+      // Update the plan
+      const [updatedPlan] = await db.update(anthropicTrainingPlans)
+        .set({
+          completedDay: dayNumber,
+          updatedAt: new Date(),
+          // If this completes the plan, mark it as completed
+          ...(dayNumber >= plan.durationDays ? {
+            isCompleted: true,
+            completedAt: new Date()
+          } : {})
+        })
+        .where(eq(anthropicTrainingPlans.id, id))
+        .returning();
+      return updatedPlan;
+    } catch (error) {
+      console.error('Database error in completeAnthropicTrainingPlanDay:', error);
+      return undefined;
+    }
+  }
+
+  async finishAnthropicTrainingPlan(id: number, rating: number, feedback: string): Promise<AnthropicTrainingPlan | undefined> {
+    try {
+      const [updatedPlan] = await db.update(anthropicTrainingPlans)
+        .set({
+          isCompleted: true,
+          completedAt: new Date(),
+          rating,
+          feedback,
+          updatedAt: new Date()
+        })
+        .where(eq(anthropicTrainingPlans.id, id))
+        .returning();
+      return updatedPlan;
+    } catch (error) {
+      console.error('Database error in finishAnthropicTrainingPlan:', error);
+      return undefined;
+    }
+  }
   
   // Hybrid AI Coach methods (using both Claude and GPT)
-  getHybridCoachingResponse(userId: number, message: string, modelPreference?: 'claude' | 'gpt' | 'both'): Promise<{message: string, source: string}>;
-  getPersonalizedTrainingAdvice(userId: number, sport: string, skillLevel: string, focusArea: string): Promise<{advice: string, drills: any[], source: string}>;
+  async getHybridCoachingResponse(userId: number, message: string, modelPreference: 'claude' | 'gpt' | 'both' = 'both'): Promise<{message: string, source: string}> {
+    try {
+      // In a real implementation, we would:
+      // 1. Analyze the message to determine which AI model would be best for this type of query
+      // 2. Call the appropriate AI service based on the analysis result and user preference
+      // 3. Return the response along with which model was used
+      
+      console.log(`Getting hybrid coaching response for user ${userId} with model preference ${modelPreference}`);
+      
+      // For now, we'll simulate the selection logic
+      if (modelPreference === 'claude') {
+        // Use Claude (Anthropic) for the response
+        // This would call the Anthropic service in a real implementation
+        return { 
+          message: "This would be a Claude response with detailed explanations and personalized advice.",
+          source: 'claude' 
+        };
+      } else if (modelPreference === 'gpt') {
+        // Use GPT (OpenAI) for the response
+        // This would call the OpenAI service in a real implementation
+        return { 
+          message: "This would be a GPT response with quick tactical insights and stats analysis.",
+          source: 'gpt' 
+        };
+      } else {
+        // For 'both' preference, we should intelligently determine which model to use
+        // Here's a simple example of how we might choose based on message content
+        
+        // Check for keywords in the message to determine the appropriate model
+        const messageContent = message.toLowerCase();
+        
+        // Claude is better for training plans, mental health, long-form content
+        if (messageContent.includes('training plan') || 
+            messageContent.includes('mental') || 
+            messageContent.includes('motivation') || 
+            messageContent.includes('technique') ||
+            messageContent.includes('form')) {
+          return { 
+            message: "This would be a Claude response selected for its strengths in detailed explanations and coaching.",
+            source: 'claude' 
+          };
+        }
+        
+        // GPT is better for quick stats, tactical advice, game strategy
+        else if (messageContent.includes('stats') || 
+                messageContent.includes('game plan') || 
+                messageContent.includes('strategy') || 
+                messageContent.includes('data') ||
+                messageContent.includes('quick')) {
+          return { 
+            message: "This would be a GPT response selected for its strengths in tactical analysis and quick stats.",
+            source: 'gpt' 
+          };
+        }
+        
+        // Default to Claude for general coaching questions
+        else {
+          return { 
+            message: "This would be a response from Claude as the default for general coaching questions.",
+            source: 'claude' 
+          };
+        }
+      }
+    } catch (error) {
+      console.error('Error in getHybridCoachingResponse:', error);
+      throw error;
+    }
+  }
+
+  async getPersonalizedTrainingAdvice(userId: number, sport: string, skillLevel: string, focusArea: string): Promise<{advice: string, drills: any[], source: string}> {
+    try {
+      // In a real implementation, we'd:
+      // 1. Determine which model would be best for this type of training advice
+      // 2. Get user's previous training data and performance metrics
+      // 3. Call the appropriate AI model with this context
+      // 4. Format and return the response
+      
+      console.log(`Getting personalized training advice for user ${userId} in ${sport} with focus on ${focusArea}`);
+      
+      // For training plans and skill development, Claude is typically better
+      // For specific drills and technique breakdowns, Claude provides more detailed explanations
+      
+      // This would call the appropriate AI service in a real implementation
+      return {
+        advice: `This would be personalized advice for ${focusArea} in ${sport} at ${skillLevel} level, generated by Claude for its strength in detailed training plans.`,
+        drills: [
+          {
+            name: "Example Drill 1",
+            description: "Description of a drill that would help with the focus area",
+            duration: 15, // minutes
+            difficulty: skillLevel
+          },
+          {
+            name: "Example Drill 2",
+            description: "Description of another drill focused on this skill area",
+            duration: 20,
+            difficulty: skillLevel
+          }
+        ],
+        source: 'claude' // indicating which AI generated this plan
+      };
+    } catch (error) {
+      console.error('Error in getPersonalizedTrainingAdvice:', error);
+      throw error;
+    }
+  }
 }
 
 export const storage = new DatabaseStorage();
