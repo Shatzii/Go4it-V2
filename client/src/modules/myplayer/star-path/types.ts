@@ -1,57 +1,131 @@
-import { StarLevel } from './index';
+/**
+ * Star Path Types
+ * 
+ * This file defines all types and interfaces used within the Star Path feature module.
+ * These types are used throughout the components, hooks, and services of the Star Path module.
+ */
 
-export interface StarPathProgress {
+// Star Path Progress levels and statuses
+export const enum StarPathLevel {
+  RISING_PROSPECT = 1,
+  EMERGING_TALENT = 2,
+  STANDOUT_PERFORMER = 3,
+  ELITE_PROSPECT = 4,
+  FIVE_STAR_ATHLETE = 5
+}
+
+// Milestone type definitions
+export interface Milestone {
   id: number;
+  description: string;
+  xpRequired: number;
+  rewards: string[];
+  isCompleted: boolean;
+}
+
+// Star Path progress interface
+export interface StarPathProgress {
+  id?: number;
   userId: number;
   currentStarLevel: number;
   targetStarLevel: number;
-  progress: number;
-  sportType: string | null;
-  position: string | null;
   storylinePhase: string;
+  progress: number;
   xpTotal: number;
   completedDrills: number;
   verifiedWorkouts: number;
   skillTreeProgress: number;
   streakDays: number;
-  personalBest?: Record<string, number>;
+  lastActive: Date | null;
+  milestones: Milestone[];
+  sportType: string | null;
+  position: string | null;
   nextMilestone?: string;
-  lastUpdated: Date | null;
-  milestones: StarPathMilestone[];
+  achievements: Achievement[];
   levelThresholds: number[];
 }
 
-export interface StarPathMilestone {
-  id: number;
-  userId: number;
-  starPathId: number;
-  level: StarLevel;
+// Attribute categories for star path
+export interface AttributeCategory {
+  id: string;
   name: string;
   description: string;
-  xpRequired: number;
-  reward: string;
-  isCompleted: boolean;
-  completedAt: Date | null;
-  isClaimed: boolean;
-  claimedAt: Date | null;
+  color: string;
+  attributes: Attribute[];
 }
 
-export interface StarPathCheckInData {
-  userId: number;
-  date: string;
+// Individual attribute
+export interface Attribute {
+  id: string;
+  name: string;
+  value: number;
+  maxValue: number;
+  growth: number; // Percentage growth since last update
+  category: string;
 }
 
-export interface StarPathStatsUpdate {
-  userId: number;
-  progress?: number;
-  xpTotal?: number;
-  completedDrills?: number;
-  verifiedWorkouts?: number;
-  skillTreeProgress?: number;
-  streakDays?: number;
+// Achievement definition
+export interface Achievement {
+  id: number;
+  title: string;
+  description: string;
+  iconPath: string;
+  dateEarned: Date | null;
+  xpValue: number;
+  isEarned: boolean;
 }
 
-export interface ClaimRewardData {
-  userId: number;
+// Training result after completing a drill or workout
+export interface CompletedTrainingResult {
+  success: boolean;
+  xpEarned: number;
+  currentLevel: number;
+  newProgress: number;
+  message: string;
+  leveledUp: boolean;
+  starXpEarned: number;
+}
+
+// Milestone claim result
+export interface ClaimMilestoneResult {
+  success: boolean;
   milestoneId: number;
+  xpEarned: number;
+  message: string;
+  newProgress: number;
+  rewardDetails: string;
+}
+
+// Daily check-in result
+export interface DailyCheckInResult {
+  success: boolean;
+  streakDays: number;
+  milestoneReached: boolean;
+  milestoneReward: string;
+  xpEarned: number;
+  message: string;
+}
+
+// Star Path service responses
+export interface StarPathResponse {
+  success: boolean;
+  message: string;
+  data?: StarPathProgress;
+  error?: string;
+}
+
+// Attribute update payload
+export interface AttributeUpdate {
+  attributeId: string;
+  newValue: number;
+  notes?: string;
+}
+
+// Star Path creation/update payload
+export interface StarPathCreateUpdate {
+  userId: number;
+  sportType?: string;
+  position?: string;
+  currentStarLevel?: number;
+  targetStarLevel?: number;
 }
