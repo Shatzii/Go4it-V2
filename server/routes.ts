@@ -5380,7 +5380,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register Anthropic AI Coach routes (Claude-powered coaching companion)
   registerAnthropicCoachRoutes(app);
-  registerHybridCoachRoutes(app);
 
   // Register Scout Vision routes
   app.use('/api', scoutRoutes);
