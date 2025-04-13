@@ -75,6 +75,7 @@ import TextToAnimationPage from "@/pages/text-to-animation";
 import AthleticCombineShowcasePage from "@/pages/athletic-combine-showcase";
 import AthleteSocialHub from "@/pages/athlete-social-hub";
 import SkillDevelopmentTracker from "@/pages/skill-development-tracker";
+import ContentManager from "@/pages/admin/content-manager";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -179,19 +180,11 @@ function Router() {
         </Route>
         
         <Route path="/admin/content-manager">
-          {({ params }) => {
-            // Dynamically import the Content Manager page
-            const ContentManager = require("@/pages/admin/content-manager").default;
-            return <ProtectedRoute component={ContentManager} adminOnly={true} />;
-          }}
+          {() => <ProtectedRoute component={ContentManager} adminOnly={true} />}
         </Route>
         
         <Route path="/admin/analytics-dashboard">
-          {({ params }) => {
-            // Dynamically import the Analytics Dashboard page
-            const AnalyticsDashboard = require("@/pages/admin/analytics-dashboard").default;
-            return <ProtectedRoute component={AnalyticsDashboard} adminOnly={true} />;
-          }}
+          {() => <ProtectedRoute component={AnalyticsDashboard} adminOnly={true} />}
         </Route>
         
         <Route path="/upload-video">
