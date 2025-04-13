@@ -31,7 +31,7 @@ interface CacheStats {
   misses: number;
   invalidations: number;
   size: number;
-  hitRatio?: number;
+  hitRatio: number;
 }
 
 class CMSCache {
@@ -50,6 +50,7 @@ class CMSCache {
     misses: 0,
     invalidations: 0,
     size: 0,
+    hitRatio: 0
   };
 
   /**
@@ -410,6 +411,26 @@ class CMSCache {
     this.stats.invalidations++;
     this.updateStats();
     this.logDebug(`Cache INVALIDATE ALL: cleared ${totalSize} cached items`);
+  }
+  
+  /**
+   * Reset cache statistics counters without clearing the cache
+   * Useful for measuring cache performance over specific time periods
+   */
+  resetCacheStats(): void {
+    this.stats = {
+      hits: 0,
+      misses: 0,
+      invalidations: 0,
+      size: this.contentBlockCache.size + 
+            this.contentSectionCache.size + 
+            this.pageCache.size + 
+            (this.allContentBlocksCache ? 1 : 0) + 
+            (this.allPagesCache ? 1 : 0),
+      hitRatio: 0
+    };
+    
+    this.logDebug('Cache statistics counters reset');
   }
 }
 
