@@ -1032,6 +1032,63 @@ export default function AdminDashboard() {
         {/* Content Tab - Blog & Highlight Management */}
         <TabsContent value="content">
           <div className="grid gap-6">
+            {/* CMS Content Manager */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center">
+                    <FileText className="h-5 w-5 mr-2" />
+                    CMS Content Manager
+                  </CardTitle>
+                  <CardDescription>
+                    Manage content blocks, page sections, and website content using the comprehensive CMS
+                  </CardDescription>
+                </div>
+                <Link href="/admin/content-manager">
+                  <Button className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Open Content Manager
+                  </Button>
+                </Link>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Card className="bg-secondary/10">
+                    <CardHeader className="p-4">
+                      <CardTitle className="text-base">Content Blocks</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0">
+                      <p className="text-sm text-muted-foreground">
+                        Manage reusable content blocks that can be placed throughout the site
+                      </p>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-secondary/10">
+                    <CardHeader className="p-4">
+                      <CardTitle className="text-base">Page Sections</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0">
+                      <p className="text-sm text-muted-foreground">
+                        Create and organize content sections to build dynamic pages
+                      </p>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-secondary/10">
+                    <CardHeader className="p-4">
+                      <CardTitle className="text-base">Media Library</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0">
+                      <p className="text-sm text-muted-foreground">
+                        Upload and manage images, videos, and other media assets
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Highlight Generator Configurations */}
             <HighlightConfigManager />
 
