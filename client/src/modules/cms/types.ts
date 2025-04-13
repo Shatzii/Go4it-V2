@@ -114,3 +114,15 @@ export interface PageData {
   createdBy?: number;         // User ID who created the page
   lastUpdatedBy?: number;     // User ID who last updated the page
 }
+
+/**
+ * Cache Statistics
+ * Represents the performance metrics of the CMS cache
+ */
+export interface CacheStats {
+  hits: number;               // Number of cache hits
+  misses: number;             // Number of cache misses
+  invalidations: number;      // Number of cache invalidations
+  size: number;               // Current cache size (number of items)
+  hitRatio: number;           // Cache hit ratio (hits / total requests)
+}
