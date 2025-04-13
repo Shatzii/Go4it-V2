@@ -12,6 +12,7 @@ import path from "path";
 import { WebSocketServer, WebSocket } from 'ws';
 import { generateTokens } from './services/auth-token-service';
 import { registerAiCoachRoutes } from './routes/ai-coach-routes';
+import { registerAnthropicCoachRoutes } from './routes/anthropic-coach-routes';
 import { aiCoachService } from './services/ai-coach-service';
 import { User, insertNcaaEligibilitySchema } from "@shared/schema";
 import { isAdminMiddleware, isAuthenticatedMiddleware } from './middleware/auth-middleware';
@@ -5375,6 +5376,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI Coach Routes
   // Using registerAiCoachRoutes function instead of aiCoachRoutes 
   registerAiCoachRoutes(app);
+  
+  // Register Anthropic AI Coach routes (Claude-powered coaching companion)
+  registerAnthropicCoachRoutes(app);
 
   // Register Scout Vision routes
   app.use('/api', scoutRoutes);
