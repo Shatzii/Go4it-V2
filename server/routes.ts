@@ -6868,6 +6868,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register AI Coach routes
   registerAiCoachRoutes(app);
+  
+  // Register Anthropic Coach routes
+  registerAnthropicCoachRoutes(app);
+  
+  // Register Hybrid Coach routes
+  registerHybridCoachRoutes(app);
 
   return server;
 }
