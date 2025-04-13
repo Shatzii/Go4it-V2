@@ -44,7 +44,7 @@ export async function getContentSection(section: string): Promise<ContentBlock[]
  * @returns Promise with the created content block
  */
 export async function createContentBlock(data: Omit<ContentBlock, 'id'>): Promise<ContentBlock> {
-  const response = await fetch('/api/cms/content', {
+  const response = await fetch('/api/content-blocks', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -66,7 +66,7 @@ export async function createContentBlock(data: Omit<ContentBlock, 'id'>): Promis
  * @returns Promise with the updated content block
  */
 export async function updateContentBlock(id: number, data: Partial<ContentBlock>): Promise<ContentBlock> {
-  const response = await fetch(`/api/cms/content/${id}`, {
+  const response = await fetch(`/api/content-blocks/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -87,7 +87,7 @@ export async function updateContentBlock(id: number, data: Partial<ContentBlock>
  * @returns Promise with success status
  */
 export async function deleteContentBlock(id: number): Promise<{ success: boolean }> {
-  const response = await fetch(`/api/cms/content/${id}`, {
+  const response = await fetch(`/api/content-blocks/${id}`, {
     method: 'DELETE',
   });
   
@@ -104,7 +104,7 @@ export async function deleteContentBlock(id: number): Promise<{ success: boolean
  * @returns Promise with the page data
  */
 export async function getPage(slug: string): Promise<PageData> {
-  const response = await fetch(`/api/cms/pages/${slug}`);
+  const response = await fetch(`/api/pages/${slug}`);
   if (!response.ok) {
     throw new Error(`Failed to fetch page ${slug}: ${response.statusText}`);
   }
@@ -117,7 +117,7 @@ export async function getPage(slug: string): Promise<PageData> {
  * @returns Promise with all pages
  */
 export async function getAllPages(): Promise<PageData[]> {
-  const response = await fetch('/api/cms/pages');
+  const response = await fetch('/api/pages');
   if (!response.ok) {
     throw new Error(`Failed to fetch pages: ${response.statusText}`);
   }
@@ -131,7 +131,7 @@ export async function getAllPages(): Promise<PageData[]> {
  * @returns Promise with the created page
  */
 export async function createPage(data: Omit<PageData, 'id'>): Promise<PageData> {
-  const response = await fetch('/api/cms/pages', {
+  const response = await fetch('/api/pages', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -153,7 +153,7 @@ export async function createPage(data: Omit<PageData, 'id'>): Promise<PageData> 
  * @returns Promise with the updated page
  */
 export async function updatePage(id: number, data: Partial<PageData>): Promise<PageData> {
-  const response = await fetch(`/api/cms/pages/${id}`, {
+  const response = await fetch(`/api/pages/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -174,7 +174,7 @@ export async function updatePage(id: number, data: Partial<PageData>): Promise<P
  * @returns Promise with success status
  */
 export async function deletePage(id: number): Promise<{ success: boolean }> {
-  const response = await fetch(`/api/cms/pages/${id}`, {
+  const response = await fetch(`/api/pages/${id}`, {
     method: 'DELETE',
   });
   

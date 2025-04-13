@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { ContentBlock } from '../types';
-import { getContentBlock, getContentBlocksBySection, getAllContentBlocks } from '../services/contentService';
+import { getContentBlock, getContentSection, getAllContentBlocks } from '../services/contentService';
 
 /**
  * Custom hook for fetching a content block by its identifier
@@ -14,7 +14,7 @@ export function useContent(
   options: { enabled?: boolean } = {}
 ) {
   return useQuery<ContentBlock>({
-    queryKey: ['/api/cms/content-blocks', identifier],
+    queryKey: ['/api/content-blocks', identifier],
     queryFn: async () => {
       const response = await getContentBlock(identifier);
       return response;
@@ -35,9 +35,9 @@ export function useContentSection(
   options: { enabled?: boolean } = {}
 ) {
   return useQuery<ContentBlock[]>({
-    queryKey: ['/api/cms/content-sections', section],
+    queryKey: ['/api/content-blocks/section', section],
     queryFn: async () => {
-      const response = await getContentBlocksBySection(section);
+      const response = await getContentSection(section);
       return response;
     },
     ...options,
@@ -52,7 +52,7 @@ export function useContentSection(
  */
 export function useAllContent(options: { enabled?: boolean } = {}) {
   return useQuery<ContentBlock[]>({
-    queryKey: ['/api/cms/content-blocks'],
+    queryKey: ['/api/content-blocks'],
     queryFn: async () => {
       const response = await getAllContentBlocks();
       return response;
