@@ -245,6 +245,40 @@ export const pages = pgTable("pages", {
   lastUpdatedBy: integer("last_updated_by").references(() => users.id),
 });
 
+// CMS Page Components
+export const pageComponents = pgTable("page_components", {
+  id: serial("id").primaryKey(),
+  pageId: integer("page_id").notNull().references(() => pages.id),
+  type: text("type").notNull(),
+  title: text("title"),
+  content: text("content"),
+  configuration: jsonb("configuration"),
+  position: integer("position").default(0),
+  section: text("section").default("main"),
+  active: boolean("active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  createdBy: integer("created_by").references(() => users.id),
+  lastUpdatedBy: integer("last_updated_by").references(() => users.id),
+});
+
+// CMS Component Registry
+export const componentRegistry = pgTable("component_registry", {
+  id: serial("id").primaryKey(),
+  identifier: text("identifier").unique().notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  category: text("category").default("general"),
+  icon: text("icon").default("box"),
+  schema: jsonb("schema"),
+  defaultConfig: jsonb("default_config"),
+  previewImage: text("preview_image"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  createdBy: integer("created_by").references(() => users.id),
+  lastUpdatedBy: integer("last_updated_by").references(() => users.id),
+});
+
 // Content revisions for versioning
 export const contentRevisions = pgTable("content_revisions", {
   id: serial("id").primaryKey(),
