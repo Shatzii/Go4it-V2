@@ -77,6 +77,7 @@ import AthleticCombineShowcasePage from "@/pages/athletic-combine-showcase";
 import AthleteSocialHub from "@/pages/athlete-social-hub";
 import SkillDevelopmentTracker from "@/pages/skill-development-tracker";
 import ContentManager from "@/pages/admin/content-manager";
+import CmsManager from "@/pages/admin/cms-manager";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -182,6 +183,10 @@ function Router() {
         
         <Route path="/admin/content-manager">
           {() => <ProtectedRoute component={ContentManager} adminOnly={true} />}
+        </Route>
+        
+        <Route path="/admin/cms-manager">
+          {() => <ProtectedRoute component={CmsManager} adminOnly={true} />}
         </Route>
         
         <Route path="/admin/analytics-dashboard">
