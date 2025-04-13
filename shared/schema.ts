@@ -245,6 +245,12 @@ export const pages = pgTable("pages", {
   lastUpdatedBy: integer("last_updated_by").references(() => users.id),
 });
 
+export const insertPageSchema = createInsertSchema(pages)
+  .omit({ id: true, updatedAt: true });
+
+export type Page = typeof pages.$inferSelect;
+export type InsertPage = z.infer<typeof insertPageSchema>;
+
 // CMS Page Components
 export const pageComponents = pgTable("page_components", {
   id: serial("id").primaryKey(),
@@ -261,6 +267,12 @@ export const pageComponents = pgTable("page_components", {
   createdBy: integer("created_by").references(() => users.id),
   lastUpdatedBy: integer("last_updated_by").references(() => users.id),
 });
+
+export const insertPageComponentSchema = createInsertSchema(pageComponents)
+  .omit({ id: true, updatedAt: true });
+
+export type PageComponent = typeof pageComponents.$inferSelect;
+export type InsertPageComponent = z.infer<typeof insertPageComponentSchema>;
 
 // CMS Component Registry
 export const componentRegistry = pgTable("component_registry", {
@@ -279,6 +291,12 @@ export const componentRegistry = pgTable("component_registry", {
   lastUpdatedBy: integer("last_updated_by").references(() => users.id),
 });
 
+export const insertComponentRegistryItemSchema = createInsertSchema(componentRegistry)
+  .omit({ id: true, updatedAt: true });
+
+export type ComponentRegistryItem = typeof componentRegistry.$inferSelect;
+export type InsertComponentRegistryItem = z.infer<typeof insertComponentRegistryItemSchema>;
+
 // Content revisions for versioning
 export const contentRevisions = pgTable("content_revisions", {
   id: serial("id").primaryKey(),
@@ -290,6 +308,12 @@ export const contentRevisions = pgTable("content_revisions", {
   createdBy: integer("created_by").references(() => users.id),
   comment: text("comment"),
 });
+
+export const insertContentRevisionSchema = createInsertSchema(contentRevisions)
+  .omit({ id: true });
+
+export type ContentRevision = typeof contentRevisions.$inferSelect;
+export type InsertContentRevision = z.infer<typeof insertContentRevisionSchema>;
 
 // Blog Posts
 export const blogPosts = pgTable("blog_posts", {
@@ -1896,26 +1920,8 @@ export const insertTrainingPlanActivitySchema = createInsertSchema(trainingPlanA
 export type InsertTrainingPlanActivity = z.infer<typeof insertTrainingPlanActivitySchema>;
 export type InsertUserDrillProgress = z.infer<typeof insertUserDrillProgressSchema>;
 
-// CMS Page Components
-export const insertPageComponentSchema = createInsertSchema(pageComponents).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export type PageComponent = typeof pageComponents.$inferSelect;
-export type InsertPageComponent = z.infer<typeof insertPageComponentSchema>;
-
-// CMS Pages
-export const insertPageSchema = createInsertSchema(pages).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  publishDate: true,
-});
-
-export type Page = typeof pages.$inferSelect;
-export type InsertPage = z.infer<typeof insertPageSchema>;
+// Additional CMS types and exports
+// Note: Page Component and Pages schemas are already defined above
 
 // CMS Component Registry
 export const insertComponentRegistrySchema = createInsertSchema(componentRegistry).omit({
