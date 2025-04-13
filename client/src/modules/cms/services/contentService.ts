@@ -1,133 +1,186 @@
-/**
- * Content Service
- * 
- * Service for fetching and managing content from the CMS system.
- * Acts as the bridge between the front-end components and the backend content API.
- */
-
-import { ContentBlock, ContentSection, PageData } from '../types';
+import { ContentBlock, PageData } from '../types';
 
 /**
- * Fetches all content blocks from the CMS
+ * Fetch all content blocks
+ * @returns Promise with all content blocks
  */
-export const getAllContentBlocks = async (): Promise<ContentBlock[]> => {
-  const response = await fetch('/api/content-blocks');
+export async function getAllContentBlocks(): Promise<ContentBlock[]> {
+  const response = await fetch('/api/cms/content-blocks');
   if (!response.ok) {
-    throw new Error('Failed to fetch content blocks');
+    throw new Error(`Failed to fetch content blocks: ${response.statusText}`);
   }
   return response.json();
-};
+}
 
 /**
- * Fetches content blocks by section identifier
- * @param section The section identifier to fetch blocks for
+ * Fetch a specific content block by identifier
+ * @param identifier The unique identifier for the content block
+ * @returns Promise with the content block
  */
-export const getContentBlocksBySection = async (section: string): Promise<ContentBlock[]> => {
-  const response = await fetch(`/api/content-blocks/section/${section}`);
+export async function getContentBlock(identifier: string): Promise<ContentBlock> {
+  const response = await fetch(`/api/cms/content/${identifier}`);
   if (!response.ok) {
-    throw new Error(`Failed to fetch content blocks for section: ${section}`);
+    throw new Error(`Failed to fetch content block ${identifier}: ${response.statusText}`);
   }
   return response.json();
-};
+}
 
 /**
- * Fetches a content block by its unique identifier
- * @param identifier The unique identifier of the content block
+ * Fetch all content blocks for a specific section
+ * @param section The section name
+ * @returns Promise with all content blocks in the section
  */
-export const getContentBlockByIdentifier = async (identifier: string): Promise<ContentBlock | null> => {
-  try {
-    const response = await fetch(`/api/content-blocks/identifier/${identifier}`);
-    if (!response.ok) {
-      console.error(`Content block with identifier ${identifier} not found`);
-      return null;
-    }
-    return response.json();
-  } catch (error) {
-    console.error(`Error fetching content block with identifier ${identifier}:`, error);
-    return null;
+export async function getContentSection(section: string): Promise<ContentBlock[]> {
+  const response = await fetch(`/api/cms/content/section/${section}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch content section ${section}: ${response.statusText}`);
   }
-};
+  return response.json();
+}
 
 /**
- * Creates a content section by fetching all blocks for the given section
- * @param sectionId The section identifier
- * @param title Optional title for the section
- * @param description Optional description for the section
+ * Create a new content block
+ * @param data The content block data to create
+ * @returns Promise with the created content block
  */
-export const createContentSection = async (
-  sectionId: string, 
-  title?: string, 
-  description?: string
-): Promise<ContentSection> => {
-  const blocks = await getContentBlocksBySection(sectionId);
+export async function createContentBlock(data: Omit<ContentBlock, 'id'>): Promise<ContentBlock> {
+  const response = await fetch('/api/cms/content', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
   
-  return {
-    id: sectionId,
-    name: title || sectionId,
-    description,
-    blocks: blocks.sort((a, b) => {
-      // Sort by order if available, otherwise by id
-      if (a.order !== null && b.order !== null) {
-        return a.order - b.order;
-      }
-      return a.id - b.id;
-    })
-  };
-};
-
-/**
- * Fetches page data by slug, including all sections and content blocks
- * @param slug The page slug to fetch
- */
-export const getPageData = async (slug: string): Promise<PageData | null> => {
-  // In a future implementation, this would fetch from a proper page API
-  // For now, we'll build a simple page based on predefined sections
-  
-  try {
-    // This is a simplified implementation
-    // In a real CMS, we would fetch the page structure from an API
-    
-    // Mock page layout based on slug
-    let sections: string[] = [];
-    let title = '';
-    
-    switch (slug) {
-      case 'home':
-        title = 'Go4It Sports - Home';
-        sections = ['hero', 'what-makes-us-different', 'featured-athletes', 'testimonials'];
-        break;
-      case 'about':
-        title = 'About Go4It Sports';
-        sections = ['about-hero', 'our-mission', 'team', 'partners'];
-        break;
-      case 'features':
-        title = 'Go4It Sports Features';
-        sections = ['features-hero', 'skill-assessment', 'video-analysis', 'progress-tracking'];
-        break;
-      default:
-        // If no predefined page exists, return null
-        return null;
-    }
-    
-    // Fetch content for each section
-    const contentSections = await Promise.all(
-      sections.map(sectionId => createContentSection(sectionId))
-    );
-    
-    return {
-      slug,
-      title,
-      layout: {
-        id: `${slug}-layout`,
-        name: `${title} Layout`,
-        sections,
-        template: 'default',
-        isDefault: true
-      },
-      sections: contentSections
-    };
-  } catch (error) {
-    console.error(`Error fetching page data for slug ${slug}:`, error);
-    return null;
+  if (!response.ok) {
+    throw new Error(`Failed to create content block: ${response.statusText}`);
   }
-};
+  
+  return response.json();
+}
+
+/**
+ * Update an existing content block
+ * @param id The ID of the content block to update
+ * @param data The updated content block data
+ * @returns Promise with the updated content block
+ */
+export async function updateContentBlock(id: number, data: Partial<ContentBlock>): Promise<ContentBlock> {
+  const response = await fetch(`/api/cms/content/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to update content block ${id}: ${response.statusText}`);
+  }
+  
+  return response.json();
+}
+
+/**
+ * Delete a content block
+ * @param id The ID of the content block to delete
+ * @returns Promise with success status
+ */
+export async function deleteContentBlock(id: number): Promise<{ success: boolean }> {
+  const response = await fetch(`/api/cms/content/${id}`, {
+    method: 'DELETE',
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to delete content block ${id}: ${response.statusText}`);
+  }
+  
+  return response.json();
+}
+
+/**
+ * Fetch a page by its slug
+ * @param slug The unique slug identifier for the page
+ * @returns Promise with the page data
+ */
+export async function getPage(slug: string): Promise<PageData> {
+  const response = await fetch(`/api/cms/pages/${slug}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch page ${slug}: ${response.statusText}`);
+  }
+  
+  return response.json();
+}
+
+/**
+ * Fetch all pages
+ * @returns Promise with all pages
+ */
+export async function getAllPages(): Promise<PageData[]> {
+  const response = await fetch('/api/cms/pages');
+  if (!response.ok) {
+    throw new Error(`Failed to fetch pages: ${response.statusText}`);
+  }
+  
+  return response.json();
+}
+
+/**
+ * Create a new page
+ * @param data The page data to create
+ * @returns Promise with the created page
+ */
+export async function createPage(data: Omit<PageData, 'id'>): Promise<PageData> {
+  const response = await fetch('/api/cms/pages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to create page: ${response.statusText}`);
+  }
+  
+  return response.json();
+}
+
+/**
+ * Update an existing page
+ * @param id The ID of the page to update
+ * @param data The updated page data
+ * @returns Promise with the updated page
+ */
+export async function updatePage(id: number, data: Partial<PageData>): Promise<PageData> {
+  const response = await fetch(`/api/cms/pages/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to update page ${id}: ${response.statusText}`);
+  }
+  
+  return response.json();
+}
+
+/**
+ * Delete a page
+ * @param id The ID of the page to delete
+ * @returns Promise with success status
+ */
+export async function deletePage(id: number): Promise<{ success: boolean }> {
+  const response = await fetch(`/api/cms/pages/${id}`, {
+    method: 'DELETE',
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to delete page ${id}: ${response.statusText}`);
+  }
+  
+  return response.json();
+}
