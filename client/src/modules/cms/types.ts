@@ -1,36 +1,66 @@
 /**
  * CMS Module Types
  * 
- * Core type definitions for the CMS module that powers the dynamic content
- * management across the Go4It Sports platform.
+ * This file defines the types used throughout the CMS module for content management
+ * and dynamic page rendering.
  */
 
-export interface ContentMetadata {
-  iconName?: string;
-  backgroundColor?: string;
-  layout?: 'default' | 'hero' | 'card' | 'grid' | 'list';
-  priority?: number;
-  isHidden?: boolean;
-  position?: 'left' | 'right' | 'center' | 'full';
-  imagePosition?: 'left' | 'right' | 'top' | 'bottom';
-  additionalClasses?: string;
-  animation?: string;
-  [key: string]: any; // For additional custom metadata
-}
-
+/**
+ * Content Block - Basic unit of content used throughout the application
+ */
 export interface ContentBlock {
   id: number;
-  identifier: string; 
   title: string;
   content: string;
+  identifier: string;
   section: string;
-  order: number | null;
-  active: boolean | null;
-  lastUpdated: string | null;
-  lastUpdatedBy: number | null;
-  metadata: ContentMetadata | null;
+  sortOrder?: number;
+  createdAt: Date;
+  updatedAt: Date;
+  lastUpdatedBy?: number;
+  publishedAt?: Date;
+  type?: string;
+  metadata?: Record<string, any>;
+  format?: 'html' | 'markdown' | 'json' | 'text';
 }
 
+/**
+ * Page Component - Components that make up a page
+ */
+export interface PageComponent {
+  id: number;
+  name: string;
+  type: string;
+  data: any;
+  sortOrder: number;
+}
+
+/**
+ * Page Data - Represents a full page in the CMS
+ */
+export interface PageData {
+  id: number;
+  slug: string;
+  title: string;
+  description?: string;
+  coverImage?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt?: Date;
+  components: PageComponent[];
+  metadata?: Record<string, any>;
+  seo?: {
+    title?: string;
+    description?: string;
+    keywords?: string[];
+    canonicalUrl?: string;
+    ogImage?: string;
+  };
+}
+
+/**
+ * Content Section - Group of related content blocks
+ */
 export interface ContentSection {
   id: string;
   name: string;
@@ -38,47 +68,11 @@ export interface ContentSection {
   blocks: ContentBlock[];
 }
 
-export interface PageLayout {
-  id: string;
-  name: string;
-  sections: string[]; // Section identifiers
-  template: string;
-  isDefault?: boolean;
-}
-
-export interface PageData {
-  slug: string;
-  title: string;
-  description?: string;
-  layout: PageLayout;
-  sections: ContentSection[];
-  metadata?: {
-    seo?: {
-      title?: string;
-      description?: string;
-      keywords?: string[];
-      ogImage?: string;
-    },
-    [key: string]: any;
-  };
-}
-
-export type ContentType = 'block' | 'section' | 'page' | 'layout' | 'component';
-
-export interface CmsComponentProps {
-  content: ContentBlock;
-  className?: string;
-}
-
-export interface CmsSectionProps {
-  section: ContentSection;
-  className?: string;
-}
-
-export interface ContentComponentMapping {
-  [identifier: string]: React.ComponentType<CmsComponentProps>;
-}
-
-export interface SectionComponentMapping {
-  [identifier: string]: React.ComponentType<CmsSectionProps>;
+/**
+ * CMS Metadata - Additional information about CMS content
+ */
+export interface CMSMetadata {
+  lastUpdated: Date;
+  version: string;
+  status: 'draft' | 'published' | 'archived';
 }

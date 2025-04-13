@@ -8,23 +8,39 @@ import type { ContentBlock } from '../types';
  */
 export function useContent(section?: string, identifier?: string) {
   return useQuery({
-    queryKey: ['/api/cms/content-blocks', section, identifier].filter(Boolean),
+    queryKey: ['/api/cms/content', section, identifier].filter(Boolean),
     queryFn: async () => {
-      let url = '/api/cms/content-blocks';
+      // Build the query URL based on provided filters
+      let url = '/api/cms/content';
+      const params = new URLSearchParams();
+      
+      if (section) {
+        params.append('section', section);
+      }
       
       if (identifier) {
-        url = `${url}/identifier/${identifier}`;
-      } else if (section) {
-        url = `${url}/section/${section}`;
+        params.append('identifier', identifier);
+      }
+      
+      const queryString = params.toString();
+      if (queryString) {
+        url += `?${queryString}`;
       }
       
       const response = await fetch(url);
       
       if (!response.ok) {
-        throw new Error(`Failed to fetch content blocks: ${response.statusText}`);
+        throw new Error(`Failed to fetch content: ${response.statusText}`);
       }
       
-      return await response.json() as identifier ? ContentBlock : ContentBlock[];
+      const data = await response.json();
+      
+      // If requesting a specific identifier, return the first item directly
+      if (identifier && Array.isArray(data) && data.length > 0) {
+        return data[0] as ContentBlock;
+      }
+      
+      return data as ContentBlock[];
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
   });

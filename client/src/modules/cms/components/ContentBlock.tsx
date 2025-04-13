@@ -1,87 +1,69 @@
+import React from 'react';
+import { useContent } from '../hooks/useContent';
+import { ContentBlock as ContentBlockType } from '../types';
+import { formatContent } from '../utils/contentFormatter';
+
+interface ContentBlockProps {
+  identifier?: string;
+  block?: ContentBlockType;
+  className?: string;
+}
+
 /**
  * ContentBlock Component
  * 
- * A flexible content block component that can render different styles
- * of content based on metadata and props.
+ * Renders a single content block from the CMS.
+ * Can fetch content by identifier or use a provided content block directly.
  */
-
-import React from 'react';
-import { CmsComponentProps } from '../types';
-import { formatContent } from '../hooks/useContent';
-import { cn } from '@/lib/utils';
-
-const ContentBlock: React.FC<CmsComponentProps> = ({ content, className }) => {
-  if (!content) return null;
+export function ContentBlock({ identifier, block, className = '' }: ContentBlockProps) {
+  const { data, isLoading, error } = useContent(undefined, identifier);
   
-  const { title, content: contentText, metadata } = content;
+  if (isLoading) {
+    return (
+      <div className="space-y-2">
+        <div className="animate-pulse bg-muted h-6 w-1/2 rounded-md"></div>
+        <div className="animate-pulse bg-muted h-20 rounded-md"></div>
+      </div>
+    );
+  }
   
-  // Extract metadata for styling
-  const layout = metadata?.layout || 'default';
-  const backgroundColor = metadata?.backgroundColor || 'bg-white';
-  const position = metadata?.position || 'left';
-  const additionalClasses = metadata?.additionalClasses || '';
-  const animation = metadata?.animation || '';
+  if (error) {
+    return (
+      <div className="p-4 border border-destructive text-destructive rounded-md">
+        <p>Error loading content: {error instanceof Error ? error.message : 'Unknown error'}</p>
+      </div>
+    );
+  }
   
-  // Apply animation classes if specified
-  const animationClass = animation ? `animate-${animation}` : '';
+  // Use provided block or fetched data
+  const contentBlock = block || data;
   
-  // Base styles based on layout type
-  const getBaseStyles = (): string => {
-    switch (layout) {
-      case 'hero':
-        return 'p-8 rounded-lg shadow-lg text-center';
-      case 'card':
-        return 'p-6 rounded-lg shadow-md flex flex-col';
-      case 'grid':
-        return 'p-4 rounded-md';
-      case 'list':
-        return 'p-4 border-b';
-      default:
-        return 'p-4 rounded-md';
+  if (!contentBlock) {
+    if (identifier) {
+      return (
+        <div className="p-4 border border-amber-200 bg-amber-50 text-amber-800 rounded-md">
+          <p>Content block not found: {identifier}</p>
+        </div>
+      );
     }
-  };
+    return null;
+  }
   
-  // Position styles
-  const getPositionStyles = (): string => {
-    switch (position) {
-      case 'left':
-        return 'text-left';
-      case 'right':
-        return 'text-right';
-      case 'center':
-        return 'text-center';
-      case 'full':
-        return 'w-full';
-      default:
-        return 'text-left';
-    }
-  };
+  // When using with an array (possible in some cases)
+  const displayBlock = Array.isArray(contentBlock) ? contentBlock[0] : contentBlock;
   
   return (
-    <div 
-      className={cn(
-        getBaseStyles(),
-        getPositionStyles(),
-        backgroundColor,
-        animationClass,
-        additionalClasses,
-        className
-      )}
-    >
-      {title && (
-        <h3 className="text-xl font-bold mb-2">{title}</h3>
+    <div className={`cms-content-block ${className}`}>
+      {displayBlock.title && (
+        <h3 className="text-xl font-semibold mb-2">{displayBlock.title}</h3>
       )}
       
-      {contentText && (
-        <div 
-          className="content-text"
-          dangerouslySetInnerHTML={{ __html: formatContent(contentText) }}
-        />
-      )}
-      
-      {/* If there are any custom HTML or component features in metadata, they could be rendered here */}
+      <div 
+        className="cms-content prose prose-headings:mt-4 prose-headings:mb-2"
+        dangerouslySetInnerHTML={{ 
+          __html: formatContent(displayBlock.content, displayBlock.format) 
+        }}
+      />
     </div>
   );
-};
-
-export default ContentBlock;
+}
