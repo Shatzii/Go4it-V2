@@ -45,6 +45,7 @@ import session from "express-session";
 import MemoryStore from "memorystore";
 import connectPgSimple from "connect-pg-simple";
 import { pool } from "./db";
+import * as cmsStorage from "./cms-storage-implementation";
 
 export interface IStorage {
   // Session store
@@ -538,6 +539,93 @@ export class DatabaseStorage implements IStorage {
         recentUsers: []
       };
     }
+  }
+
+  // CMS: Component Registry operations
+  async getComponentTypes(): Promise<ComponentRegistryItem[]> {
+    return cmsStorage.getComponentTypes();
+  }
+  
+  async getComponentTypeByIdentifier(identifier: string): Promise<ComponentRegistryItem | undefined> {
+    return cmsStorage.getComponentTypeByIdentifier(identifier);
+  }
+  
+  async getComponentCategories(): Promise<string[]> {
+    return cmsStorage.getComponentCategories();
+  }
+  
+  async createComponentType(data: InsertComponentRegistryItem): Promise<ComponentRegistryItem> {
+    return cmsStorage.createComponentType(data);
+  }
+  
+  async updateComponentType(identifier: string, data: Partial<ComponentRegistryItem>): Promise<ComponentRegistryItem | undefined> {
+    return cmsStorage.updateComponentType(identifier, data);
+  }
+  
+  async deleteComponentType(identifier: string): Promise<boolean> {
+    return cmsStorage.deleteComponentType(identifier);
+  }
+  
+  async countComponentsUsingType(identifier: string): Promise<number> {
+    return cmsStorage.countComponentsUsingType(identifier);
+  }
+  
+  // CMS: Page operations
+  async getPages(): Promise<Page[]> {
+    return cmsStorage.getPages();
+  }
+  
+  async getPage(id: number): Promise<Page | undefined> {
+    return cmsStorage.getPage(id);
+  }
+  
+  async getPageBySlug(slug: string): Promise<Page | undefined> {
+    return cmsStorage.getPageBySlug(slug);
+  }
+  
+  async createPage(data: InsertPage): Promise<Page> {
+    return cmsStorage.createPage(data);
+  }
+  
+  async updatePage(id: number, data: Partial<Page>): Promise<Page | undefined> {
+    return cmsStorage.updatePage(id, data);
+  }
+  
+  async deletePage(id: number): Promise<boolean> {
+    return cmsStorage.deletePage(id);
+  }
+  
+  async publishPage(id: number, isPublished: boolean): Promise<Page | undefined> {
+    return cmsStorage.publishPage(id, isPublished);
+  }
+  
+  async clonePage(id: number, newSlug: string): Promise<Page | undefined> {
+    return cmsStorage.clonePage(id, newSlug);
+  }
+  
+  // CMS: Page Components operations
+  async getPageComponents(pageId: number): Promise<PageComponent[]> {
+    return cmsStorage.getPageComponents(pageId);
+  }
+  
+  async getPageComponent(id: number): Promise<PageComponent | undefined> {
+    return cmsStorage.getPageComponent(id);
+  }
+  
+  async createPageComponent(data: InsertPageComponent): Promise<PageComponent> {
+    return cmsStorage.createPageComponent(data);
+  }
+  
+  async updatePageComponent(id: number, data: Partial<PageComponent>): Promise<PageComponent | undefined> {
+    return cmsStorage.updatePageComponent(id, data);
+  }
+  
+  async deletePageComponent(id: number): Promise<boolean> {
+    return cmsStorage.deletePageComponent(id);
+  }
+  
+  async updatePageComponentPositions(components: { id: number, position: number }[]): Promise<boolean> {
+    return cmsStorage.updatePageComponentPositions(components);
   }
 
   async getAllAthletes(): Promise<User[]> {
