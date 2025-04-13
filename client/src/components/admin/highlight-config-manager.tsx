@@ -107,7 +107,7 @@ export default function HighlightConfigManager() {
   // Create new config mutation
   const createConfigMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const response = await apiRequest("/api/highlight-generator/configs", "POST", data);
+      const response = await apiRequest("POST", "/api/highlight-generator/configs", data);
       return response;
     },
     onSuccess: () => {
@@ -132,7 +132,7 @@ export default function HighlightConfigManager() {
   // Update config mutation
   const updateConfigMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: Partial<typeof formData> }) => {
-      const response = await apiRequest(`/api/highlight-generator/configs/${id}`, "PUT", data);
+      const response = await apiRequest("PUT", `/api/highlight-generator/configs/${id}`, data);
       return response;
     },
     onSuccess: () => {
@@ -157,7 +157,7 @@ export default function HighlightConfigManager() {
   // Delete config mutation
   const deleteConfigMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await apiRequest(`/api/highlight-generator/configs/${id}`, "DELETE");
+      const response = await apiRequest("DELETE", `/api/highlight-generator/configs/${id}`);
       return response;
     },
     onSuccess: () => {
