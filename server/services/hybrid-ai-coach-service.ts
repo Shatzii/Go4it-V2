@@ -272,77 +272,93 @@ The athlete is a neurodivergent student (age 12-18) with ADHD, so include approp
 You have expertise across multiple sports and understand how to create training plans that accommodate focus challenges and leverage hyperfocus strengths.
 Provide structured, clear responses that break information into manageable chunks.`;
         
-        const response = await anthropic.messages.create({
-          model: 'claude-3-7-sonnet-20250219', // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
-          max_tokens: 1500,
-          system: systemPrompt,
-          messages: [{ role: 'user', content: prompt }],
-        });
-        
-        // Parse Claude's response into structured data
-        const responseText = response.content[0].text;
-        
-        // Extract the advice (first 2-3 paragraphs)
-        const advice = responseText.split('\n\n').slice(0, 3).join('\n\n');
-        
-        // Extract the drills
-        const drillsSection = responseText.substring(advice.length);
-        const drillBlocks = drillsSection.split(/\n\s*(?=\d+\.\s+|[A-Z][a-z]+:)/g)
-          .filter(block => block.trim().length > 0);
-        
-        const drills: TrainingDrill[] = [];
-        
-        for (const block of drillBlocks) {
-          if (!block.includes(':')) continue;
-          
-          const nameMatch = block.match(/(?:\d+\.\s+)?([^:]+):/);
-          if (!nameMatch) continue;
-          
-          const name = nameMatch[1].trim();
-          const descriptionMatch = block.match(/Description:([^]*?)(?:Duration:|Difficulty:|ADHD Considerations:|$)/i);
-          const durationMatch = block.match(/Duration:([^]*?)(?:Difficulty:|ADHD Considerations:|$)/i);
-          const difficultyMatch = block.match(/Difficulty:([^]*?)(?:ADHD Considerations:|$)/i);
-          const adhdMatch = block.match(/ADHD Considerations:([^]*?)(?:\n\n\d+\.|$)/i);
-          
-          drills.push({
-            name,
-            description: descriptionMatch ? descriptionMatch[1].trim() : '',
-            duration: durationMatch ? durationMatch[1].trim() : '',
-            difficulty: difficultyMatch ? difficultyMatch[1].trim() : '',
-            adhdConsiderations: adhdMatch ? adhdMatch[1].trim() : null
+        try {
+          const response = await anthropic.messages.create({
+            model: 'claude-3-7-sonnet-20250219', // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
+            max_tokens: 1500,
+            system: systemPrompt,
+            messages: [{ role: 'user', content: prompt }],
+            signal: controller.signal,
           });
+          
+          // Clear timeout since request completed successfully
+          clearTimeout(timeoutId);
+          
+          // Parse Claude's response into structured data
+          const responseText = response.content[0].text;
+          
+          // Extract the advice (first 2-3 paragraphs)
+          const advice = responseText.split('\n\n').slice(0, 3).join('\n\n');
+          
+          // Extract the drills
+          const drillsSection = responseText.substring(advice.length);
+          const drillBlocks = drillsSection.split(/\n\s*(?=\d+\.\s+|[A-Z][a-z]+:)/g)
+            .filter(block => block.trim().length > 0);
+          
+          const drills: TrainingDrill[] = [];
+          
+          for (const block of drillBlocks) {
+            if (!block.includes(':')) continue;
+            
+            const nameMatch = block.match(/(?:\d+\.\s+)?([^:]+):/);
+            if (!nameMatch) continue;
+            
+            const name = nameMatch[1].trim();
+            const descriptionMatch = block.match(/Description:([^]*?)(?:Duration:|Difficulty:|ADHD Considerations:|$)/i);
+            const durationMatch = block.match(/Duration:([^]*?)(?:Difficulty:|ADHD Considerations:|$)/i);
+            const difficultyMatch = block.match(/Difficulty:([^]*?)(?:ADHD Considerations:|$)/i);
+            const adhdMatch = block.match(/ADHD Considerations:([^]*?)(?:\n\n\d+\.|$)/i);
+            
+            drills.push({
+              name,
+              description: descriptionMatch ? descriptionMatch[1].trim() : '',
+              duration: durationMatch ? durationMatch[1].trim() : '',
+              difficulty: difficultyMatch ? difficultyMatch[1].trim() : '',
+              adhdConsiderations: adhdMatch ? adhdMatch[1].trim() : null
+            });
+          }
+          
+          return {
+            advice,
+            drills: drills.length > 0 ? drills : [
+              {
+                name: 'Basic Training Exercise',
+                description: 'A foundational exercise for building skills in this area',
+                duration: '15-20 minutes',
+                difficulty: 'Moderate',
+                adhdConsiderations: 'Break into smaller chunks with short breaks'
+              }
+            ],
+            source: 'claude'
+          };
+        } catch (error) {
+          // Clear timeout to prevent memory leaks
+          clearTimeout(timeoutId);
+          console.error('Error in Claude API call:', error);
+          throw error;
         }
-        
-        return {
-          advice,
-          drills: drills.length > 0 ? drills : [
-            {
-              name: 'Basic Training Exercise',
-              description: 'A foundational exercise for building skills in this area',
-              duration: '15-20 minutes',
-              difficulty: 'Moderate',
-              adhdConsiderations: 'Break into smaller chunks with short breaks'
-            }
-          ],
-          source: 'claude'
-        };
         
       } else {
         // Call GPT API
-        const response = await openai.chat.completions.create({
-          model: 'gpt-4o', // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-          messages: [
-            {
-              role: 'system',
-              content: `You are a specialized sports coach for neurodivergent teenage athletes, particularly those with ADHD.
+        try {
+          const response = await openai.chat.completions.create({
+            model: 'gpt-4o', // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+            messages: [
+              {
+                role: 'system',
+                content: `You are a specialized sports coach for neurodivergent teenage athletes, particularly those with ADHD.
 You have expertise across multiple sports and understand how to create training plans that accommodate focus challenges and leverage hyperfocus strengths.
 Provide structured, clear responses that break information into manageable chunks.`
-            },
-            { role: 'user', content: prompt }
-          ],
-          max_tokens: 1500,
-          response_format: { type: 'json_object' } 
-        });
+              },
+              { role: 'user', content: prompt }
+            ],
+            max_tokens: 1500,
+            response_format: { type: 'json_object' },
+            signal: controller.signal
+          });
+          
+          // Clear timeout since request completed successfully
+          clearTimeout(timeoutId);
         
         // Try to parse the JSON response
         try {
@@ -393,6 +409,12 @@ Provide structured, clear responses that break information into manageable chunk
             source: 'gpt'
           };
         }
+        } catch (error) {
+          // Clear timeout to prevent memory leaks
+          clearTimeout(timeoutId);
+          console.error('Error in GPT API call:', error);
+          throw error;
+        }
       }
       
     } catch (error) {
@@ -432,14 +454,19 @@ Provide a complete analysis including:
 You have deep expertise in biomechanics, sports psychology, and ADHD-specific training approaches.
 Provide detailed, constructive feedback focused on both technical skills and neurodivergent-friendly learning strategies.`;
         
-        const response = await anthropic.messages.create({
-          model: 'claude-3-7-sonnet-20250219', // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
-          max_tokens: 1500,
-          system: systemPrompt,
-          messages: [{ role: 'user', content: prompt }],
-        });
-        
-        const responseText = response.content[0].text;
+        try {
+          const response = await anthropic.messages.create({
+            model: 'claude-3-7-sonnet-20250219', // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
+            max_tokens: 1500,
+            system: systemPrompt,
+            messages: [{ role: 'user', content: prompt }],
+            signal: controller.signal
+          });
+          
+          // Clear timeout since request completed successfully
+          clearTimeout(timeoutId);
+          
+          const responseText = response.content[0].text;
         
         // Parse Claude's response
         const overallMatch = responseText.match(/(?:Overall[^:]*:|1\.)[^]*?(?=(?:Technical|2\.))/i);
@@ -472,54 +499,71 @@ Provide detailed, constructive feedback focused on both technical skills and neu
           },
           source: 'claude'
         };
+      } catch (error) {
+        // Clear timeout to prevent memory leaks
+        clearTimeout(timeoutId);
+        console.error('Error in Claude API call:', error);
+        throw error;
+      }
         
       } else {
         // Call GPT API
-        const response = await openai.chat.completions.create({
-          model: 'gpt-4o', // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-          messages: [
-            {
-              role: 'system',
-              content: `You are an expert sports performance analyst specializing in helping neurodivergent athletes.
+        try {
+          const response = await openai.chat.completions.create({
+            model: 'gpt-4o', // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+            messages: [
+              {
+                role: 'system',
+                content: `You are an expert sports performance analyst specializing in helping neurodivergent athletes.
 You have deep expertise in biomechanics, sports psychology, and ADHD-specific training approaches.
 Provide detailed, constructive feedback focused on both technical skills and neurodivergent-friendly learning strategies.`
-            },
-            { role: 'user', content: prompt }
-          ],
-          max_tokens: 1500,
-          response_format: { type: 'json_object' }
-        });
-        
-        try {
-          const content = response.choices[0].message.content || '{}';
-          const parsedResponse = JSON.parse(content);
+              },
+              { role: 'user', content: prompt }
+            ],
+            max_tokens: 1500,
+            response_format: { type: 'json_object' },
+            signal: controller.signal
+          });
           
-          return {
-            feedback: {
-              overallAssessment: parsedResponse.overallAssessment || 'Analysis unavailable',
-              technicalAnalysis: parsedResponse.technicalAnalysis || 'Technical analysis unavailable',
-              strengths: Array.isArray(parsedResponse.strengths) ? parsedResponse.strengths : ['Good effort shown in performance'],
-              improvementAreas: Array.isArray(parsedResponse.improvementAreas) ? parsedResponse.improvementAreas : ['Continue practicing fundamentals'],
-              adhdConsiderations: parsedResponse.adhdConsiderations || 'Break training into shorter segments with clear goals',
-              nextSteps: parsedResponse.nextSteps || 'Focus on fundamentals and gradually increase complexity'
-            },
-            source: 'gpt'
-          };
+          // Clear timeout since request completed successfully
+          clearTimeout(timeoutId);
+          
+          try {
+            const content = response.choices[0].message.content || '{}';
+            const parsedResponse = JSON.parse(content);
+            
+            return {
+              feedback: {
+                overallAssessment: parsedResponse.overallAssessment || 'Analysis unavailable',
+                technicalAnalysis: parsedResponse.technicalAnalysis || 'Technical analysis unavailable',
+                strengths: Array.isArray(parsedResponse.strengths) ? parsedResponse.strengths : ['Good effort shown in performance'],
+                improvementAreas: Array.isArray(parsedResponse.improvementAreas) ? parsedResponse.improvementAreas : ['Continue practicing fundamentals'],
+                adhdConsiderations: parsedResponse.adhdConsiderations || 'Break training into shorter segments with clear goals',
+                nextSteps: parsedResponse.nextSteps || 'Focus on fundamentals and gradually increase complexity'
+              },
+              source: 'gpt'
+            };
+          } catch (parseError) {
+            console.error('Error parsing GPT response:', parseError);
+            
+            // Fallback
+            return {
+              feedback: {
+                overallAssessment: 'Analysis unavailable due to processing error',
+                technicalAnalysis: 'Technical analysis unavailable',
+                strengths: ['Good effort shown in performance'],
+                improvementAreas: ['Continue practicing fundamentals'],
+                adhdConsiderations: 'Break training into shorter segments with clear goals',
+                nextSteps: 'Focus on fundamentals and gradually increase complexity'
+              },
+              source: 'gpt'
+            };
+          }
         } catch (error) {
-          console.error('Error parsing GPT response:', error);
-          
-          // Fallback
-          return {
-            feedback: {
-              overallAssessment: 'Analysis unavailable due to processing error',
-              technicalAnalysis: 'Technical analysis unavailable',
-              strengths: ['Good effort shown in performance'],
-              improvementAreas: ['Continue practicing fundamentals'],
-              adhdConsiderations: 'Break training into shorter segments with clear goals',
-              nextSteps: 'Focus on fundamentals and gradually increase complexity'
-            },
-            source: 'gpt'
-          };
+          // Clear timeout to prevent memory leaks
+          clearTimeout(timeoutId);
+          console.error('Error in OpenAI API call:', error);
+          throw error;
         }
       }
       
