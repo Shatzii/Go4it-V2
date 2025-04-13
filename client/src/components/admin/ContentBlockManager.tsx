@@ -194,10 +194,7 @@ export default function ContentBlockManager() {
   // Mutation for updating a content block
   const updateContentBlockMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      return apiRequest(`/api/content-blocks/${id}`, {
-        method: 'PATCH',
-        data
-      });
+      return apiRequest('PATCH', `/api/content-blocks/${id}`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/content-blocks'] });
@@ -212,9 +209,7 @@ export default function ContentBlockManager() {
   // Mutation for deleting a content block
   const deleteContentBlockMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest(`/api/content-blocks/${id}`, {
-        method: 'DELETE'
-      });
+      return apiRequest('DELETE', `/api/content-blocks/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/content-blocks'] });
