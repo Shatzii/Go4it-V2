@@ -1,6 +1,6 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { cmsCache } from '../services/cms/cache-service';
-import { isAuthenticated, isAdmin } from '../middleware/auth';
+import { isAdminMiddleware } from '../middleware/auth-middleware';
 
 const router = express.Router();
 
@@ -8,13 +8,13 @@ const router = express.Router();
  * Get cache statistics
  * GET /api/cms/cache/stats
  */
-router.get('/stats', isAuthenticated, isAdmin, (req, res) => {
+router.get('/stats', (req: Request, res: Response) => {
   try {
     const stats = cmsCache.getCacheStats();
-    res.json(stats);
+    return res.json(stats);
   } catch (error) {
-    console.error('Error getting cache stats:', error);
-    res.status(500).json({ message: 'Failed to get cache statistics' });
+    console.error("Error fetching cache statistics:", error);
+    return res.status(500).json({ message: "Error fetching cache statistics" });
   }
 });
 
@@ -22,15 +22,18 @@ router.get('/stats', isAuthenticated, isAdmin, (req, res) => {
  * Invalidate content block cache
  * POST /api/cms/cache/invalidate/block/:identifier
  */
-router.post('/invalidate/block/:identifier', isAuthenticated, isAdmin, (req, res) => {
-  const { identifier } = req.params;
-  
+router.post('/invalidate/block/:identifier', isAdminMiddleware, (req: Request, res: Response) => {
   try {
+    const identifier = req.params.identifier;
     cmsCache.invalidateContentBlock(identifier);
-    res.json({ message: `Content block "${identifier}" cache invalidated` });
+    
+    return res.json({ 
+      success: true, 
+      message: `Cache invalidated for content block: ${identifier}` 
+    });
   } catch (error) {
-    console.error(`Error invalidating content block "${identifier}" cache:`, error);
-    res.status(500).json({ message: 'Failed to invalidate content block cache' });
+    console.error("Error invalidating content block cache:", error);
+    return res.status(500).json({ message: "Error invalidating content block cache" });
   }
 });
 
@@ -38,15 +41,18 @@ router.post('/invalidate/block/:identifier', isAuthenticated, isAdmin, (req, res
  * Invalidate content section cache
  * POST /api/cms/cache/invalidate/section/:section
  */
-router.post('/invalidate/section/:section', isAuthenticated, isAdmin, (req, res) => {
-  const { section } = req.params;
-  
+router.post('/invalidate/section/:section', isAdminMiddleware, (req: Request, res: Response) => {
   try {
+    const section = req.params.section;
     cmsCache.invalidateContentSection(section);
-    res.json({ message: `Content section "${section}" cache invalidated` });
+    
+    return res.json({ 
+      success: true, 
+      message: `Cache invalidated for section: ${section}` 
+    });
   } catch (error) {
-    console.error(`Error invalidating content section "${section}" cache:`, error);
-    res.status(500).json({ message: 'Failed to invalidate content section cache' });
+    console.error("Error invalidating section cache:", error);
+    return res.status(500).json({ message: "Error invalidating section cache" });
   }
 });
 
@@ -54,15 +60,18 @@ router.post('/invalidate/section/:section', isAuthenticated, isAdmin, (req, res)
  * Invalidate page cache
  * POST /api/cms/cache/invalidate/page/:slug
  */
-router.post('/invalidate/page/:slug', isAuthenticated, isAdmin, (req, res) => {
-  const { slug } = req.params;
-  
+router.post('/invalidate/page/:slug', isAdminMiddleware, (req: Request, res: Response) => {
   try {
+    const slug = req.params.slug;
     cmsCache.invalidatePage(slug);
-    res.json({ message: `Page "${slug}" cache invalidated` });
+    
+    return res.json({ 
+      success: true, 
+      message: `Cache invalidated for page: ${slug}` 
+    });
   } catch (error) {
-    console.error(`Error invalidating page "${slug}" cache:`, error);
-    res.status(500).json({ message: 'Failed to invalidate page cache' });
+    console.error("Error invalidating page cache:", error);
+    return res.status(500).json({ message: "Error invalidating page cache" });
   }
 });
 
@@ -70,13 +79,17 @@ router.post('/invalidate/page/:slug', isAuthenticated, isAdmin, (req, res) => {
  * Invalidate all cache
  * POST /api/cms/cache/invalidate/all
  */
-router.post('/invalidate/all', isAuthenticated, isAdmin, (req, res) => {
+router.post('/invalidate/all', isAdminMiddleware, (req: Request, res: Response) => {
   try {
     cmsCache.invalidateAllContent();
-    res.json({ message: 'All cache invalidated' });
+    
+    return res.json({ 
+      success: true, 
+      message: "All cache has been invalidated" 
+    });
   } catch (error) {
-    console.error('Error invalidating all cache:', error);
-    res.status(500).json({ message: 'Failed to invalidate all cache' });
+    console.error("Error invalidating all cache:", error);
+    return res.status(500).json({ message: "Error invalidating all cache" });
   }
 });
 
@@ -84,13 +97,17 @@ router.post('/invalidate/all', isAuthenticated, isAdmin, (req, res) => {
  * Reset cache statistics
  * POST /api/cms/cache/reset-stats
  */
-router.post('/reset-stats', isAuthenticated, isAdmin, (req, res) => {
+router.post('/reset-stats', isAdminMiddleware, (req: Request, res: Response) => {
   try {
     cmsCache.resetCacheStats();
-    res.json({ message: 'Cache statistics reset' });
+    
+    return res.json({ 
+      success: true, 
+      message: "Cache statistics have been reset" 
+    });
   } catch (error) {
-    console.error('Error resetting cache statistics:', error);
-    res.status(500).json({ message: 'Failed to reset cache statistics' });
+    console.error("Error resetting cache statistics:", error);
+    return res.status(500).json({ message: "Error resetting cache statistics" });
   }
 });
 

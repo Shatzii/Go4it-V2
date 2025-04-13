@@ -2823,3 +2823,21 @@ export const insertNcaaTeamRostersSchema = createInsertSchema(ncaaTeamRosters)
 
 export type NcaaTeamRoster = typeof ncaaTeamRosters.$inferSelect;
 export type InsertNcaaTeamRoster = z.infer<typeof insertNcaaTeamRostersSchema>;
+
+/**
+ * CMS Types
+ */
+
+// Content Block and Page types would already be derived from the tables above
+
+/**
+ * Cache Statistics
+ * Represents the performance metrics of the CMS cache
+ */
+export interface CacheStats {
+  hits: number;               // Number of cache hits
+  misses: number;             // Number of cache misses
+  invalidations: number;      // Number of cache invalidations
+  size: number;               // Current cache size (number of items)
+  hitRatio: number;           // Cache hit ratio (hits / total requests)
+}
