@@ -1,2 +1,2 @@
-// Export all services from the Star Path feature
+// Export all services from the Star Path module
 export { starPathService } from './starPathService';
