@@ -263,6 +263,12 @@ export default function AdminDashboard() {
             <div className="space-y-2">
               <h3 className="text-sm font-medium">Content</h3>
               <div className="space-y-1">
+                <Link href="/admin/cms-manager">
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <PenTool className="h-4 w-4 mr-2" />
+                    CMS Manager
+                  </Button>
+                </Link>
                 <Link href="/blog">
                   <Button variant="ghost" size="sm" className="w-full justify-start">
                     <Newspaper className="h-4 w-4 mr-2" />
