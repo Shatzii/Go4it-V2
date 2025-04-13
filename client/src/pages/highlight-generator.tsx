@@ -51,13 +51,7 @@ export default function HighlightGenerator() {
       startTime: number;
       endTime: number;
     }) => {
-      return await apiRequest(`/api/videos/${videoId}/generate-highlight`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      return await apiRequest('POST', `/api/videos/${videoId}/generate-highlight`, data);
     },
     onSuccess: (data) => {
       toast({
