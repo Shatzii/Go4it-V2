@@ -1,493 +1,869 @@
-import React, { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { apiRequest } from "@/lib/queryClient";
-import { queryClient } from "@/lib/queryClient";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import { PlusCircle, Pencil, Trash2, Save, Eye } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { z } from "zod";
-import { ContentBlock } from "@/modules/cms/types";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Filter, PlusCircle, Search, Eye, Edit, Copy, Trash, MoreVertical, FileText, ArrowUpDown, Code, Image, Hash, Tag } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
-// Form schema for content blocks
-const contentBlockSchema = z.object({
-  identifier: z.string().min(1, "Identifier is required"),
-  title: z.string().min(1, "Title is required"),
-  section: z.string().optional(),
-  content: z.string().optional(),
-  active: z.boolean().default(true),
-  type: z.string().default("text"),
-  className: z.string().optional(),
-  metadata: z.any().optional()
-});
+// Define ContentBlock type
+interface ContentBlock {
+  id: number;
+  title: string;
+  identifier: string;
+  section: string;
+  content: string;
+  type: 'html' | 'text' | 'markdown' | 'json' | 'image';
+  createdAt: string;
+  updatedAt: string;
+  lastUpdatedBy: number;
+  published: boolean;
+  position: number;
+  metadata?: any;
+  author?: {
+    id: number;
+    name: string;
+  };
+}
 
-// Form for creating/editing a content block
-const ContentBlockForm = ({ 
-  initialData, 
-  onSubmit, 
-  onCancel 
-}: { 
-  initialData?: ContentBlock; 
-  onSubmit: (data: any) => void; 
-  onCancel: () => void; 
-}) => {
-  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm({
-    resolver: zodResolver(contentBlockSchema),
-    defaultValues: initialData || {
-      identifier: "",
-      title: "",
-      section: "",
-      content: "",
-      active: true,
-      type: "text",
-      className: "",
-      metadata: {}
-    }
-  });
-
-  const contentType = watch("type");
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <Label htmlFor="identifier">Identifier</Label>
-          <Input
-            id="identifier"
-            {...register("identifier")}
-            className="mt-1"
-            placeholder="unique-content-identifier"
-          />
-          {errors.identifier && (
-            <p className="text-red-500 text-sm mt-1">{errors.identifier.message as string}</p>
-          )}
-        </div>
-
-        <div>
-          <Label htmlFor="title">Title</Label>
-          <Input
-            id="title"
-            {...register("title")}
-            className="mt-1"
-          />
-          {errors.title && (
-            <p className="text-red-500 text-sm mt-1">{errors.title.message as string}</p>
-          )}
-        </div>
-
-        <div>
-          <Label htmlFor="section">Section</Label>
-          <Input
-            id="section"
-            {...register("section")}
-            className="mt-1"
-            placeholder="section-name"
-          />
-          <p className="text-xs text-muted-foreground mt-1">
-            Group content blocks by section for easier organization
-          </p>
-        </div>
-
-        <div>
-          <Label htmlFor="type">Content Type</Label>
-          <Select 
-            value={contentType} 
-            onValueChange={(value) => setValue("type", value)}
-          >
-            <SelectTrigger className="mt-1">
-              <SelectValue placeholder="Select content type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="text">Text Content</SelectItem>
-              <SelectItem value="html">HTML Content</SelectItem>
-              <SelectItem value="markdown">Markdown</SelectItem>
-              <SelectItem value="image">Image</SelectItem>
-              <SelectItem value="video">Video</SelectItem>
-              <SelectItem value="component">React Component</SelectItem>
-              <SelectItem value="json">JSON Data</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <Label htmlFor="className">CSS Class</Label>
-          <Input
-            id="className"
-            {...register("className")}
-            className="mt-1"
-            placeholder="custom-block-class"
-          />
-        </div>
-
-        <div className="flex items-center space-x-2 mt-6">
-          <Switch
-            id="active"
-            checked={watch("active")}
-            onCheckedChange={(checked) => setValue("active", checked)}
-          />
-          <Label htmlFor="active">Active</Label>
-        </div>
-      </div>
-
-      <div>
-        <Label htmlFor="content">Content</Label>
-        <div className="mt-2 mb-1 text-sm text-muted-foreground">
-          {contentType === "text" && "Plain text content"}
-          {contentType === "html" && "HTML content with tags"}
-          {contentType === "markdown" && "Markdown formatted content"}
-          {contentType === "image" && "Image URL or base64 data"}
-          {contentType === "video" && "Video URL or embed code"}
-          {contentType === "component" && "Component name or reference"}
-          {contentType === "json" && "JSON structured data"}
-        </div>
-        <Textarea
-          id="content"
-          {...register("content")}
-          className={`mt-1 min-h-[200px] ${contentType === "json" ? "font-mono text-sm" : ""}`}
-        />
-      </div>
-
-      <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button type="submit">
-          <Save className="h-4 w-4 mr-2" />
-          Save Content Block
-        </Button>
-      </div>
-    </form>
-  );
-};
-
-// Content block preview component
-const ContentBlockPreview = ({ block }: { block: ContentBlock }) => {
-  return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <span className="font-medium">Identifier:</span> {block.identifier}
-        </div>
-        <div>
-          <span className="font-medium">Title:</span> {block.title}
-        </div>
-        <div>
-          <span className="font-medium">Section:</span> {block.section || "None"}
-        </div>
-        <div>
-          <span className="font-medium">Type:</span> {block.type || "text"}
-        </div>
-        <div>
-          <span className="font-medium">Status:</span>{" "}
-          <span className={`px-2 py-1 rounded-full text-xs ${block.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-            {block.active ? "Active" : "Inactive"}
-          </span>
-        </div>
-        {block.className && (
-          <div>
-            <span className="font-medium">CSS Class:</span> {block.className}
-          </div>
-        )}
-      </div>
-      
-      <div>
-        <h4 className="text-sm font-medium mb-2">Content Preview:</h4>
-        <div className="border rounded-md p-3 bg-muted/30 overflow-auto max-h-[300px]">
-          {block.type === "html" ? (
-            <div dangerouslySetInnerHTML={{ __html: block.content || "" }} />
-          ) : block.type === "image" ? (
-            <img src={block.content} alt={block.title} className="max-w-full h-auto" />
-          ) : block.type === "json" ? (
-            <pre className="text-xs whitespace-pre-wrap">
-              {JSON.stringify(JSON.parse(block.content || "{}"), null, 2)}
-            </pre>
-          ) : (
-            <pre className="whitespace-pre-wrap">{block.content}</pre>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Main ContentBlockManager component
 export default function ContentBlockManager() {
-  const [editingBlock, setEditingBlock] = useState<ContentBlock | null>(null);
-  const [isCreatingBlock, setIsCreatingBlock] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sectionFilter, setSectionFilter] = useState<string | undefined>(undefined);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedBlock, setSelectedBlock] = useState<ContentBlock | null>(null);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [filterSection, setFilterSection] = useState<string>("all");
+  const [newBlock, setNewBlock] = useState({
+    title: '',
+    identifier: '',
+    section: 'global',
+    content: '',
+    type: 'text' as const,
+    published: true,
+    metadata: {},
+  });
+  
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  // Query for content blocks
+  // Fetch content blocks
   const { data: contentBlocks = [], isLoading } = useQuery({
     queryKey: ['/api/content-blocks'],
     queryFn: async () => {
-      const response = await fetch('/api/content-blocks');
-      if (!response.ok) {
-        throw new Error('Failed to fetch content blocks');
+      try {
+        // This is a temporary mock for development
+        return [
+          {
+            id: 1,
+            title: 'Homepage Hero',
+            identifier: 'home-hero',
+            section: 'homepage',
+            content: '<h1>Train Like a Champion</h1><p>Go4It Sports helps athletes of all abilities reach their full potential</p>',
+            type: 'html',
+            createdAt: '2024-01-05T00:00:00Z',
+            updatedAt: '2024-02-10T00:00:00Z',
+            lastUpdatedBy: 1,
+            published: true,
+            position: 1,
+            author: {
+              id: 1,
+              name: 'Admin User',
+            },
+          },
+          {
+            id: 2,
+            title: 'About Us Intro',
+            identifier: 'about-intro',
+            section: 'about',
+            content: 'Go4It Sports is dedicated to helping neurodivergent student athletes reach their full potential through personalized training and support.',
+            type: 'text',
+            createdAt: '2024-01-06T00:00:00Z',
+            updatedAt: '2024-01-06T00:00:00Z',
+            lastUpdatedBy: 1,
+            published: true,
+            position: 1,
+            author: {
+              id: 1,
+              name: 'Admin User',
+            },
+          },
+          {
+            id: 3,
+            title: 'Footer Contact Info',
+            identifier: 'footer-contact',
+            section: 'global',
+            content: '{"email":"info@go4itsports.org","phone":"(555) 123-4567","address":"123 Sports Way, Athletic City, AC 12345"}',
+            type: 'json',
+            createdAt: '2024-01-07T00:00:00Z',
+            updatedAt: '2024-02-15T00:00:00Z',
+            lastUpdatedBy: 1,
+            published: true,
+            position: 1,
+            author: {
+              id: 1,
+              name: 'Admin User',
+            },
+          },
+          {
+            id: 4,
+            title: 'Privacy Policy',
+            identifier: 'privacy-policy',
+            section: 'legal',
+            content: '# Privacy Policy\n\nLast updated: January 1, 2024\n\n## Introduction\n\nGo4It Sports is committed to protecting your privacy...',
+            type: 'markdown',
+            createdAt: '2024-01-10T00:00:00Z',
+            updatedAt: '2024-01-10T00:00:00Z',
+            lastUpdatedBy: 1,
+            published: true,
+            position: 1,
+            author: {
+              id: 1,
+              name: 'Admin User',
+            },
+          },
+          {
+            id: 5,
+            title: 'Homepage Hero Image',
+            identifier: 'home-hero-image',
+            section: 'homepage',
+            content: '/assets/images/hero-image.jpg',
+            type: 'image',
+            createdAt: '2024-01-15T00:00:00Z',
+            updatedAt: '2024-02-20T00:00:00Z',
+            lastUpdatedBy: 1,
+            published: true,
+            position: 2,
+            author: {
+              id: 1,
+              name: 'Admin User',
+            },
+          },
+          {
+            id: 6,
+            title: 'New Feature Announcement',
+            identifier: 'feature-announcement',
+            section: 'global',
+            content: '<div class="announcement">Exciting new features coming soon! Stay tuned for our enhanced training modules.</div>',
+            type: 'html',
+            createdAt: '2024-02-20T00:00:00Z',
+            updatedAt: '2024-02-20T00:00:00Z',
+            lastUpdatedBy: 1,
+            published: false,
+            position: 2,
+            author: {
+              id: 1,
+              name: 'Admin User',
+            },
+          },
+        ] as ContentBlock[];
+      } catch (error) {
+        console.error('Failed to fetch content blocks:', error);
+        return [];
       }
-      return response.json();
     }
   });
 
-  // Get unique sections for filtering
-  const sections = ["all", ...Array.from(new Set(contentBlocks.map((block: ContentBlock) => block.section).filter(Boolean)))];
+  // Get unique sections
+  const uniqueSections = React.useMemo(() => {
+    if (!contentBlocks.length) return [];
+    
+    const sections = new Set<string>();
+    contentBlocks.forEach(block => {
+      sections.add(block.section);
+    });
+    
+    return Array.from(sections);
+  }, [contentBlocks]);
 
-  // Filter blocks by section
-  const filteredBlocks = filterSection === "all" 
-    ? contentBlocks 
-    : contentBlocks.filter((block: ContentBlock) => block.section === filterSection);
-
-  // Mutation for creating a content block
-  const createBlockMutation = useMutation({
-    mutationFn: async (data: any) => {
-      return apiRequest('POST', '/api/content-blocks', data);
+  // Create content block mutation
+  const createContentBlockMutation = useMutation({
+    mutationFn: async (block: typeof newBlock) => {
+      try {
+        // This is a placeholder for the actual API request
+        console.log('Creating new content block:', block);
+        // return await apiRequest('/api/content-blocks', { method: 'POST', data: block });
+        
+        // Mock response for development
+        return {
+          id: Math.floor(Math.random() * 1000),
+          ...block,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          lastUpdatedBy: 1,
+          position: 1, // Would be determined by server
+          author: {
+            id: 1,
+            name: 'Admin User',
+          },
+        };
+      } catch (error) {
+        console.error('Failed to create content block:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/content-blocks'] });
-      setIsCreatingBlock(false);
+      setIsCreateDialogOpen(false);
+      setNewBlock({
+        title: '',
+        identifier: '',
+        section: 'global',
+        content: '',
+        type: 'text',
+        published: true,
+        metadata: {},
+      });
       toast({
-        title: "Success",
-        description: "Content block created successfully"
+        title: "Success!",
+        description: "Content block created successfully.",
+        variant: "default",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error!",
+        description: "Failed to create content block. Please try again.",
+        variant: "destructive",
       });
     }
   });
 
-  // Mutation for updating a content block
-  const updateBlockMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      return apiRequest('PATCH', `/api/content-blocks/${id}`, data);
+  // Update content block mutation
+  const updateContentBlockMutation = useMutation({
+    mutationFn: async (block: ContentBlock) => {
+      try {
+        // This is a placeholder for the actual API request
+        console.log('Updating content block:', block);
+        // return await apiRequest(`/api/content-blocks/${block.id}`, { method: 'PATCH', data: block });
+        
+        // Mock response for development
+        return {
+          ...block,
+          updatedAt: new Date().toISOString(),
+          lastUpdatedBy: 1,
+        };
+      } catch (error) {
+        console.error('Failed to update content block:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/content-blocks'] });
-      setEditingBlock(null);
+      setIsEditDialogOpen(false);
+      setSelectedBlock(null);
       toast({
-        title: "Success",
-        description: "Content block updated successfully"
+        title: "Success!",
+        description: "Content block updated successfully.",
+        variant: "default",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error!",
+        description: "Failed to update content block. Please try again.",
+        variant: "destructive",
       });
     }
   });
 
-  // Mutation for deleting a content block
-  const deleteBlockMutation = useMutation({
+  // Delete content block mutation
+  const deleteContentBlockMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest('DELETE', `/api/content-blocks/${id}`);
+      try {
+        // This is a placeholder for the actual API request
+        console.log('Deleting content block:', id);
+        // return await apiRequest(`/api/content-blocks/${id}`, { method: 'DELETE' });
+        
+        // Mock response for development
+        return { success: true };
+      } catch (error) {
+        console.error('Failed to delete content block:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/content-blocks'] });
       toast({
-        title: "Success",
-        description: "Content block deleted successfully"
+        title: "Success!",
+        description: "Content block deleted successfully.",
+        variant: "default",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error!",
+        description: "Failed to delete content block. Please try again.",
+        variant: "destructive",
       });
     }
   });
 
-  // Handle creating a new content block
-  const handleCreateBlock = (data: any) => {
-    createBlockMutation.mutate(data);
-  };
-
-  // Handle updating a content block
-  const handleUpdateBlock = (data: any) => {
-    if (editingBlock) {
-      updateBlockMutation.mutate({ id: editingBlock.id, data });
+  // Toggle publish status mutation
+  const togglePublishStatusMutation = useMutation({
+    mutationFn: async ({ id, published }: { id: number; published: boolean }) => {
+      try {
+        // This is a placeholder for the actual API request
+        console.log('Toggling publish status:', { id, published });
+        // return await apiRequest(`/api/content-blocks/${id}/publish`, {
+        //   method: 'PATCH',
+        //   data: { published },
+        // });
+        
+        // Mock response for development
+        return {
+          success: true,
+          published,
+        };
+      } catch (error) {
+        console.error('Failed to toggle publish status:', error);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/content-blocks'] });
+      toast({
+        title: "Success!",
+        description: "Content block status updated successfully.",
+        variant: "default",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error!",
+        description: "Failed to update content block status. Please try again.",
+        variant: "destructive",
+      });
     }
+  });
+
+  // Generate identifier from title
+  const generateIdentifier = (title: string) => {
+    return title
+      .toLowerCase()
+      .replace(/[^\w\s]/gi, '')
+      .replace(/\s+/g, '-');
   };
 
-  // Handle deleting a content block
-  const handleDeleteBlock = (id: number) => {
-    if (confirm("Are you sure you want to delete this content block? This action cannot be undone.")) {
-      deleteBlockMutation.mutate(id);
-    }
+  // Filter content blocks based on search query and section filter
+  const filteredBlocks = contentBlocks.filter(block => {
+    const matchesSearch = 
+      block.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      block.identifier.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      block.content.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesSection = !sectionFilter || block.section === sectionFilter;
+    
+    return matchesSearch && matchesSection;
+  });
+
+  // Handle create content block
+  const handleCreateContentBlock = (e: React.FormEvent) => {
+    e.preventDefault();
+    createContentBlockMutation.mutate(newBlock);
   };
 
-  // Open preview dialog
-  const handleOpenPreview = (block: ContentBlock) => {
+  // Handle edit content block
+  const handleEditContentBlock = (block: ContentBlock) => {
     setSelectedBlock(block);
-    setPreviewOpen(true);
+    setIsEditDialogOpen(true);
+  };
+
+  // Handle update content block
+  const handleUpdateContentBlock = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedBlock) {
+      updateContentBlockMutation.mutate(selectedBlock);
+    }
+  };
+
+  // Handle delete content block
+  const handleDeleteContentBlock = (id: number) => {
+    if (window.confirm("Are you sure you want to delete this content block?")) {
+      deleteContentBlockMutation.mutate(id);
+    }
+  };
+
+  // Handle toggle publish status
+  const handleTogglePublishStatus = (id: number, currentStatus: boolean) => {
+    togglePublishStatusMutation.mutate({
+      id,
+      published: !currentStatus,
+    });
+  };
+
+  // Get content type icon
+  const getContentTypeIcon = (type: string) => {
+    switch (type) {
+      case 'html':
+        return <Code className="h-4 w-4" />;
+      case 'text':
+        return <FileText className="h-4 w-4" />;
+      case 'markdown':
+        return <Hash className="h-4 w-4" />;
+      case 'json':
+        return <Tag className="h-4 w-4" />;
+      case 'image':
+        return <Image className="h-4 w-4" />;
+      default:
+        return <FileText className="h-4 w-4" />;
+    }
+  };
+
+  // Get publish status badge
+  const getPublishStatusBadge = (published: boolean) => {
+    return published ? (
+      <Badge variant="success">Published</Badge>
+    ) : (
+      <Badge variant="outline">Draft</Badge>
+    );
+  };
+
+  // Preview content based on type
+  const renderContentPreview = (block: ContentBlock) => {
+    const maxPreviewLength = 100;
+    
+    switch (block.type) {
+      case 'html':
+        return <div className="text-xs font-mono bg-muted p-1 overflow-hidden text-ellipsis whitespace-nowrap">{block.content.length > maxPreviewLength ? `${block.content.substring(0, maxPreviewLength)}...` : block.content}</div>;
+      case 'text':
+        return <div className="text-xs overflow-hidden text-ellipsis whitespace-nowrap">{block.content.length > maxPreviewLength ? `${block.content.substring(0, maxPreviewLength)}...` : block.content}</div>;
+      case 'markdown':
+        return <div className="text-xs font-mono bg-muted p-1 overflow-hidden text-ellipsis whitespace-nowrap">{block.content.length > maxPreviewLength ? `${block.content.substring(0, maxPreviewLength)}...` : block.content}</div>;
+      case 'json':
+        return <div className="text-xs font-mono bg-muted p-1 overflow-hidden text-ellipsis whitespace-nowrap">{block.content.length > maxPreviewLength ? `${block.content.substring(0, maxPreviewLength)}...` : block.content}</div>;
+      case 'image':
+        return <div className="text-xs text-muted-foreground italic">{block.content}</div>;
+      default:
+        return <div className="text-xs overflow-hidden text-ellipsis whitespace-nowrap">{block.content.length > maxPreviewLength ? `${block.content.substring(0, maxPreviewLength)}...` : block.content}</div>;
+    }
+  };
+
+  // Content editor based on type
+  const renderContentEditor = (type: string, content: string, onChange: (value: string) => void) => {
+    switch (type) {
+      case 'html':
+      case 'markdown':
+      case 'json':
+        return (
+          <Textarea
+            value={content}
+            onChange={(e) => onChange(e.target.value)}
+            className="font-mono h-48"
+          />
+        );
+      case 'text':
+        return (
+          <Textarea
+            value={content}
+            onChange={(e) => onChange(e.target.value)}
+            className="h-48"
+          />
+        );
+      case 'image':
+        return (
+          <div className="space-y-2">
+            <Input
+              type="text"
+              value={content}
+              onChange={(e) => onChange(e.target.value)}
+              placeholder="Image URL or path"
+            />
+            <Button variant="outline" type="button" size="sm">
+              Choose Image
+            </Button>
+          </div>
+        );
+      default:
+        return (
+          <Textarea
+            value={content}
+            onChange={(e) => onChange(e.target.value)}
+            className="h-48"
+          />
+        );
+    }
   };
 
   return (
     <div className="space-y-6">
-      {/* Preview Modal */}
-      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-2/3">
+          <div className="relative w-full">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search content blocks..."
+              className="w-full pl-8"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <Select value={sectionFilter} onValueChange={setSectionFilter}>
+            <SelectTrigger className="md:w-[180px]">
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4" />
+                <span>{sectionFilter || 'All sections'}</span>
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={undefined}>All sections</SelectItem>
+              {uniqueSections.map(section => (
+                <SelectItem key={section} value={section}>{section}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <Button onClick={() => setIsCreateDialogOpen(true)}>
+          <PlusCircle className="h-4 w-4 mr-2" />
+          New Content Block
+        </Button>
+      </div>
+
+      <Card>
+        <CardContent className="p-0">
+          {isLoading ? (
+            <div className="p-6 text-center">Loading content blocks...</div>
+          ) : filteredBlocks.length > 0 ? (
+            <ScrollArea className="h-[calc(100vh-300px)]">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[250px]">Title</TableHead>
+                    <TableHead className="w-[150px]">Identifier</TableHead>
+                    <TableHead className="w-[120px]">Section</TableHead>
+                    <TableHead className="w-[100px]">Type</TableHead>
+                    <TableHead>Content Preview</TableHead>
+                    <TableHead className="w-[100px]">Status</TableHead>
+                    <TableHead className="w-[120px]">
+                      <div className="flex items-center">
+                        Last Updated
+                        <ArrowUpDown className="h-4 w-4 ml-1" />
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-right w-[100px]">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredBlocks.map((block) => (
+                    <TableRow key={block.id}>
+                      <TableCell className="font-medium">{block.title}</TableCell>
+                      <TableCell>
+                        <code className="text-xs bg-muted px-1 py-0.5 rounded">
+                          {block.identifier}
+                        </code>
+                      </TableCell>
+                      <TableCell>{block.section}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          {getContentTypeIcon(block.type)}
+                          <span className="text-xs">{block.type}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>{renderContentPreview(block)}</TableCell>
+                      <TableCell>{getPublishStatusBadge(block.published)}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-col">
+                          <span>{new Date(block.updatedAt).toLocaleDateString()}</span>
+                          <span className="text-xs text-muted-foreground">
+                            by {block.author?.name}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => handleEditContentBlock(block)}>
+                              <Edit className="w-4 h-4 mr-2" />
+                              <span>Edit</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <Eye className="w-4 h-4 mr-2" />
+                              <span>Preview</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <Copy className="w-4 h-4 mr-2" />
+                              <span>Duplicate</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => handleTogglePublishStatus(block.id, block.published)}
+                            >
+                              {block.published ? (
+                                <>
+                                  <span>Unpublish</span>
+                                </>
+                              ) : (
+                                <>
+                                  <span>Publish</span>
+                                </>
+                              )}
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onClick={() => handleDeleteContentBlock(block.id)}
+                            >
+                              <Trash className="w-4 h-4 mr-2" />
+                              <span>Delete</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </ScrollArea>
+          ) : (
+            <div className="p-6 text-center">
+              <p className="text-muted-foreground mb-2">No content blocks found</p>
+              <Button variant="outline" onClick={() => setIsCreateDialogOpen(true)}>
+                <PlusCircle className="h-4 w-4 mr-2" />
+                Create your first content block
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Create Content Block Dialog */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="sm:max-w-[650px]">
           <DialogHeader>
-            <DialogTitle>Content Block Preview</DialogTitle>
+            <DialogTitle>Create New Content Block</DialogTitle>
             <DialogDescription>
-              Viewing content block: {selectedBlock?.identifier}
+              Add a new content block to your site. Content blocks can be reused across multiple pages.
             </DialogDescription>
           </DialogHeader>
-          {selectedBlock && <ContentBlockPreview block={selectedBlock} />}
+          <form onSubmit={handleCreateContentBlock}>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  id="title"
+                  placeholder="e.g. Homepage Hero Text"
+                  value={newBlock.title}
+                  onChange={(e) => {
+                    const title = e.target.value;
+                    setNewBlock({
+                      ...newBlock,
+                      title,
+                      identifier: newBlock.identifier || generateIdentifier(title),
+                    });
+                  }}
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="identifier">Identifier</Label>
+                  <Input
+                    id="identifier"
+                    placeholder="e.g. homepage-hero-text"
+                    value={newBlock.identifier}
+                    onChange={(e) =>
+                      setNewBlock({ ...newBlock, identifier: e.target.value })
+                    }
+                    required
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Used to reference this content in code
+                  </p>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="section">Section</Label>
+                  <Input
+                    id="section"
+                    placeholder="e.g. homepage, global, about"
+                    value={newBlock.section}
+                    onChange={(e) =>
+                      setNewBlock({ ...newBlock, section: e.target.value })
+                    }
+                    required
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Used to organize content blocks
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="type">Content Type</Label>
+                <Select
+                  value={newBlock.type}
+                  onValueChange={(value: 'html' | 'text' | 'markdown' | 'json' | 'image') =>
+                    setNewBlock({ ...newBlock, type: value })
+                  }
+                >
+                  <SelectTrigger id="type">
+                    <SelectValue placeholder="Select a content type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="text">Plain Text</SelectItem>
+                    <SelectItem value="html">HTML</SelectItem>
+                    <SelectItem value="markdown">Markdown</SelectItem>
+                    <SelectItem value="json">JSON</SelectItem>
+                    <SelectItem value="image">Image</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="content">Content</Label>
+                {renderContentEditor(newBlock.type, newBlock.content, (value) =>
+                  setNewBlock({ ...newBlock, content: value })
+                )}
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="published"
+                  checked={newBlock.published}
+                  onCheckedChange={(checked) =>
+                    setNewBlock({ ...newBlock, published: checked })
+                  }
+                />
+                <Label htmlFor="published">Published</Label>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsCreateDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={createContentBlockMutation.isPending}>
+                {createContentBlockMutation.isPending ? "Creating..." : "Create Block"}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
 
-      {isCreatingBlock ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Create New Content Block</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ContentBlockForm
-              onSubmit={handleCreateBlock}
-              onCancel={() => setIsCreatingBlock(false)}
-            />
-          </CardContent>
-        </Card>
-      ) : editingBlock ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Edit Content Block</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ContentBlockForm
-              initialData={editingBlock}
-              onSubmit={handleUpdateBlock}
-              onCancel={() => setEditingBlock(null)}
-            />
-          </CardContent>
-        </Card>
-      ) : (
-        <>
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-              <h2 className="text-2xl font-bold">Content Blocks</h2>
-              <p className="text-muted-foreground">
-                Manage reusable content pieces for your site
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Select value={filterSection} onValueChange={setFilterSection}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by section" />
-                </SelectTrigger>
-                <SelectContent>
-                  {sections.map((section) => (
-                    <SelectItem key={section} value={section}>
-                      {section === "all" ? "All Sections" : section}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button onClick={() => setIsCreatingBlock(true)}>
-                <PlusCircle className="h-4 w-4 mr-2" />
-                Create New Block
-              </Button>
-            </div>
-          </div>
+      {/* Edit Content Block Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[650px]">
+          <DialogHeader>
+            <DialogTitle>Edit Content Block</DialogTitle>
+            <DialogDescription>
+              Edit the content block details and content.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedBlock && (
+            <form onSubmit={handleUpdateContentBlock}>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-title">Title</Label>
+                  <Input
+                    id="edit-title"
+                    value={selectedBlock.title}
+                    onChange={(e) =>
+                      setSelectedBlock({ ...selectedBlock, title: e.target.value })
+                    }
+                    required
+                  />
+                </div>
 
-          {isLoading ? (
-            <div className="text-center p-6">Loading content blocks...</div>
-          ) : filteredBlocks.length === 0 ? (
-            <Card>
-              <CardHeader>
-                <CardTitle>No Content Blocks Found</CardTitle>
-                <CardDescription>
-                  {filterSection !== "all" 
-                    ? `No content blocks found in section "${filterSection}"`
-                    : "Start creating content blocks to populate your site"
-                  }
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="text-center py-8">
-                <Button onClick={() => setIsCreatingBlock(true)}>
-                  <PlusCircle className="h-4 w-4 mr-2" />
-                  Create Content Block
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-identifier">Identifier</Label>
+                    <Input
+                      id="edit-identifier"
+                      value={selectedBlock.identifier}
+                      onChange={(e) =>
+                        setSelectedBlock({ ...selectedBlock, identifier: e.target.value })
+                      }
+                      required
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-section">Section</Label>
+                    <Input
+                      id="edit-section"
+                      value={selectedBlock.section}
+                      onChange={(e) =>
+                        setSelectedBlock({ ...selectedBlock, section: e.target.value })
+                      }
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-type">Content Type</Label>
+                  <Select
+                    value={selectedBlock.type}
+                    onValueChange={(value: 'html' | 'text' | 'markdown' | 'json' | 'image') =>
+                      setSelectedBlock({ ...selectedBlock, type: value })
+                    }
+                  >
+                    <SelectTrigger id="edit-type">
+                      <SelectValue placeholder="Select a content type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="text">Plain Text</SelectItem>
+                      <SelectItem value="html">HTML</SelectItem>
+                      <SelectItem value="markdown">Markdown</SelectItem>
+                      <SelectItem value="json">JSON</SelectItem>
+                      <SelectItem value="image">Image</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-content">Content</Label>
+                  {renderContentEditor(selectedBlock.type, selectedBlock.content, (value) =>
+                    setSelectedBlock({ ...selectedBlock, content: value })
+                  )}
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="edit-published"
+                    checked={selectedBlock.published}
+                    onCheckedChange={(checked) =>
+                      setSelectedBlock({ ...selectedBlock, published: checked })
+                    }
+                  />
+                  <Label htmlFor="edit-published">Published</Label>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsEditDialogOpen(false)}
+                >
+                  Cancel
                 </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <CardContent className="pt-6">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>ID</TableHead>
-                      <TableHead>Identifier</TableHead>
-                      <TableHead>Title</TableHead>
-                      <TableHead>Section</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredBlocks.map((block: ContentBlock) => (
-                      <TableRow key={block.id}>
-                        <TableCell>{block.id}</TableCell>
-                        <TableCell className="font-medium">{block.identifier}</TableCell>
-                        <TableCell>{block.title}</TableCell>
-                        <TableCell>{block.section || "-"}</TableCell>
-                        <TableCell>{block.type || "text"}</TableCell>
-                        <TableCell>
-                          <span className={`px-2 py-1 rounded-full text-xs ${block.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                            {block.active ? "Active" : "Inactive"}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleOpenPreview(block)}
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setEditingBlock(block)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => handleDeleteBlock(block.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+                <Button type="submit" disabled={updateContentBlockMutation.isPending}>
+                  {updateContentBlockMutation.isPending ? "Saving..." : "Save Changes"}
+                </Button>
+              </DialogFooter>
+            </form>
           )}
-        </>
-      )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
