@@ -6,7 +6,3 @@
  */
 
 export * from './StarPathCard';
-// Add additional component exports as they are implemented
-// export * from './StarPathMilestones';
-// export * from './StarPathActivities';
-// export * from './StarPathProgress';
