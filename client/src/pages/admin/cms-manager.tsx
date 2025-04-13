@@ -4,8 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import ContentBlockManager from "@/components/admin/ContentBlockManager";
 import PageManager from "@/components/admin/PageManager";
 import PageComponentEditor from "@/components/admin/PageComponentEditor";
+import ComponentRegistryManager from "@/components/admin/ComponentRegistryManager";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { LayoutGrid, FileText, Blocks, Settings, Users, Code, Package, FileCode } from "lucide-react";
+import { LayoutGrid, FileText, Blocks, Settings, Users, Code, Package, FileCode, Puzzle } from "lucide-react";
 
 export default function CmsManager() {
   const [selectedTab, setSelectedTab] = useState('content-blocks');
@@ -23,7 +24,7 @@ export default function CmsManager() {
 
         <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-4">
           <div className="flex justify-between items-center">
-            <TabsList className="grid grid-cols-3 w-[400px]">
+            <TabsList className="grid grid-cols-4 w-[550px]">
               <TabsTrigger value="content-blocks" className="flex items-center">
                 <Blocks className="w-4 h-4 mr-2" />
                 Content Blocks
@@ -39,6 +40,10 @@ export default function CmsManager() {
               >
                 <LayoutGrid className="w-4 h-4 mr-2" />
                 Page Editor
+              </TabsTrigger>
+              <TabsTrigger value="component-registry" className="flex items-center">
+                <Puzzle className="w-4 h-4 mr-2" />
+                Components
               </TabsTrigger>
             </TabsList>
             
@@ -133,6 +138,20 @@ export default function CmsManager() {
                 </CardContent>
               </Card>
             )}
+          </TabsContent>
+
+          <TabsContent value="component-registry" className="space-y-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-2xl">Component Registry</CardTitle>
+                <CardDescription>
+                  Manage the available component types that can be used in pages
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ComponentRegistryManager />
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-4">
