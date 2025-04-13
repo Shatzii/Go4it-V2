@@ -1,2 +1,2 @@
-// Export all components from the star-path feature
+// Export all components from the Star Path feature
 export * from './StarPathCard';
