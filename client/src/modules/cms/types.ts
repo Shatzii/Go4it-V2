@@ -23,6 +23,54 @@ export interface ContentBlock {
 }
 
 /**
+ * Content Block Props
+ * Props for the ContentBlock component
+ */
+export interface ContentBlockProps {
+  identifier: string;
+  className?: string;
+}
+
+/**
+ * Content Section
+ * Represents a group of content blocks
+ */
+export interface ContentSection {
+  id: number;
+  name?: string;
+  description?: string;
+  blocks: ContentBlock[];
+  className?: string;
+  metadata?: any;
+}
+
+/**
+ * Content Section Props
+ * Props for the ContentSection component
+ */
+export interface ContentSectionProps {
+  section: ContentSection;
+  className?: string;
+}
+
+/**
+ * Page Props
+ * Props for the Page component
+ */
+export interface PageProps {
+  slug: string;
+  className?: string;
+}
+
+/**
+ * Component Mapping
+ * Maps identifiers to React components
+ */
+export interface ComponentMapping {
+  [identifier: string]: React.ComponentType<any>;
+}
+
+/**
  * Page Component Types
  * Different component types that can be used in a page
  */
