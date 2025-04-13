@@ -91,7 +91,7 @@ export default function MobileNav() {
           
           {/* Menu Categories */}
           <div className="mb-4">
-            <h3 className="text-white text-sm font-bold mb-2 px-2">My Go4It</h3>
+            <h3 className="text-white text-sm font-bold mb-2 px-2">My Go4It Sports</h3>
             <div className="grid grid-cols-4 gap-2 mb-6">
               <Link href="/profile">
                 <a className="flex flex-col items-center" onClick={() => setShowMoreMenu(false)}>
