@@ -1,249 +1,213 @@
 import express, { Request, Response } from 'express';
-import { db } from '../db';
-import { 
-  aiCoaches, 
-  aiCoachSessions, 
-  aiCoachMessages, 
-  coachFeedback, 
-  coachRecommendations, 
-  athleteProfiles 
-} from '@shared/schema';
-import { isAuthenticatedMiddleware, isAdminMiddleware } from '../middleware/auth-middleware';
-import { 
-  generatePersonalizedCoachingResponse, 
-  generateTrainingPlan, 
-  generateVideoFeedback 
-} from '../services/anthropic-service';
-import { and, eq, desc } from 'drizzle-orm';
+import { anthropicService } from '../services/anthropic-service';
+import { storage } from '../storage';
+import { isAuthenticatedMiddleware } from '../middleware/auth-middleware';
 
-// Function to register Anthropic Coach routes
+/**
+ * Register the Anthropic Claude-powered coaching companion routes
+ */
 export function registerAnthropicCoachRoutes(app: express.Express) {
-  // Get personalized coach response (uses Claude AI)
+  // Chat with the AI coach
   app.post('/api/anthropic-coach/chat', isAuthenticatedMiddleware, async (req: Request, res: Response) => {
     try {
-      const userId = (req.user as any).id;
-      const { message, messageHistory } = req.body;
-
+      const { message, messageHistory = [] } = req.body;
+      const user = req.user as any;
+      
       if (!message) {
-        return res.status(400).json({ message: 'Message content is required' });
+        return res.status(400).json({ message: 'Message is required' });
       }
-
-      // Get athlete profile for personalization
-      let athleteProfile = await db
-        .select()
-        .from(athleteProfiles)
-        .where(eq(athleteProfiles.userId, userId))
-        .then(results => results[0] || null);
-
-      // If no profile exists, create a minimal default one
-      if (!athleteProfile) {
-        athleteProfile = {
-          name: 'Athlete',
-          sportFocus: 'general athletics',
-          adhdProfile: 'needs structured coaching',
-          strengths: ['dedication'],
-          areasForGrowth: ['technique', 'consistency'],
-          skillLevel: 'developing'
-        };
+      
+      // Get user context from the profile if available
+      const athleteProfile = await storage.getAthleteProfileByUserId(user.id);
+      
+      // Create a custom system prompt based on user data
+      let systemPrompt = undefined;
+      if (athleteProfile) {
+        const sportInfo = athleteProfile.sportType ? `sport: ${athleteProfile.sportType}` : '';
+        const positionInfo = athleteProfile.position ? `position: ${athleteProfile.position}` : '';
+        
+        if (sportInfo || positionInfo) {
+          systemPrompt = `
+            You are a personalized coaching companion for Go4It Sports.
+            This athlete plays ${sportInfo} ${positionInfo}. 
+            Tailor your advice specifically to their sport and position when relevant.
+            Remember that this athlete is a neurodivergent student (12-18 years old), likely with ADHD.
+            Use clear, concise communication with visual cues like bullet points and numbered lists.
+            Be encouraging, positive, and break complex topics into manageable chunks.
+          `;
+        }
       }
-
-      // Generate personalized coaching response using Anthropic's Claude
-      const response = await generatePersonalizedCoachingResponse(
-        userId,
-        message,
-        messageHistory || [],
-        athleteProfile
+      
+      // Get response from the AI
+      const response = await anthropicService.getChatResponse(
+        message, 
+        messageHistory.map((msg: any) => ({
+          role: msg.role === 'user' ? 'user' : 'assistant',
+          content: msg.content
+        })),
+        systemPrompt
       );
-
-      return res.status(200).json({
+      
+      return res.json({
         message: response,
         timestamp: new Date().toISOString()
       });
     } catch (error) {
-      console.error('Error generating coaching response:', error);
-      return res.status(500).json({ message: 'Error generating coaching response' });
+      console.error("Error in AI coach chat:", error);
+      return res.status(500).json({ message: "Error generating coach response" });
     }
   });
 
-  // Generate a training plan (uses Claude AI)
+  // Generate a personalized training plan
   app.post('/api/anthropic-coach/training-plan', isAuthenticatedMiddleware, async (req: Request, res: Response) => {
     try {
-      const userId = (req.user as any).id;
       const { sportType, focusArea } = req.body;
-
-      if (!sportType) {
-        return res.status(400).json({ message: 'Sport type is required' });
+      const user = req.user as any;
+      
+      if (!sportType || !focusArea) {
+        return res.status(400).json({ message: 'Sport type and focus area are required' });
       }
 
-      // Get athlete profile for personalization
-      let athleteProfile = await db
-        .select()
-        .from(athleteProfiles)
-        .where(eq(athleteProfiles.userId, userId))
-        .then(results => results[0] || null);
-
-      // If no profile exists, create a minimal default one
-      if (!athleteProfile) {
-        athleteProfile = {
-          skillLevel: 'developing',
-          adhdProfile: 'needs structured coaching',
-          physicalMetrics: 'standard for age group'
-        };
+      // Get user context from the profile if available
+      const athleteProfile = await storage.getAthleteProfileByUserId(user.id);
+      let athleteContext = '';
+      
+      if (athleteProfile) {
+        const contextParts = [];
+        if (athleteProfile.age) contextParts.push(`Age: ${athleteProfile.age}`);
+        if (athleteProfile.position) contextParts.push(`Position: ${athleteProfile.position}`);
+        if (athleteProfile.height) contextParts.push(`Height: ${athleteProfile.height}"`);
+        if (athleteProfile.weight) contextParts.push(`Weight: ${athleteProfile.weight} lbs`);
+        
+        athleteContext = contextParts.join(', ');
       }
-
-      // Generate training plan using Anthropic's Claude
-      const trainingPlan = await generateTrainingPlan(
-        userId,
-        sportType,
-        athleteProfile,
-        focusArea || 'overall improvement'
-      );
-
-      // Save the training plan to recommendations table
-      const [savedPlan] = await db
-        .insert(coachRecommendations)
-        .values({
-          userId,
-          title: trainingPlan.title,
-          category: 'training_plan',
-          content: JSON.stringify(trainingPlan),
-          sportType: sportType
-        })
-        .returning();
-
-      return res.status(200).json({
-        plan: trainingPlan,
+      
+      // Generate training plan from the AI
+      const plan = await anthropicService.generateTrainingPlan(sportType, focusArea, athleteContext);
+      
+      // Save the training plan in the database
+      const savedPlan = await storage.createAnthropicTrainingPlan({
+        userId: user.id,
+        title: plan.title,
+        sportType: plan.sportType,
+        focusArea: plan.focusArea,
+        durationDays: plan.durationDays,
+        recommendedLevel: plan.recommendedLevel,
+        overview: plan.overview,
+        planData: plan,
+        createdAt: new Date()
+      });
+      
+      return res.json({
+        plan: plan,
         planId: savedPlan.id
       });
     } catch (error) {
-      console.error('Error generating training plan:', error);
-      return res.status(500).json({ message: 'Error generating training plan' });
+      console.error("Error generating training plan:", error);
+      return res.status(500).json({ message: "Error generating training plan" });
     }
   });
 
-  // Generate video feedback (uses Claude AI)
+  // Get video performance feedback
   app.post('/api/anthropic-coach/video-feedback', isAuthenticatedMiddleware, async (req: Request, res: Response) => {
     try {
-      const userId = (req.user as any).id;
       const { sportType, videoDescription, videoId } = req.body;
-
+      const user = req.user as any;
+      
       if (!sportType || !videoDescription) {
         return res.status(400).json({ message: 'Sport type and video description are required' });
       }
-
-      // Get athlete profile for personalization
-      let athleteProfile = await db
-        .select()
-        .from(athleteProfiles)
-        .where(eq(athleteProfiles.userId, userId))
-        .then(results => results[0] || null);
-
-      // If no profile exists, create a minimal default one
-      if (!athleteProfile) {
-        athleteProfile = {
-          skillLevel: 'developing',
-          adhdProfile: 'needs structured coaching'
-        };
-      }
-
-      // Generate video feedback using Anthropic's Claude
-      const feedback = await generateVideoFeedback(
-        userId,
-        sportType,
-        videoDescription,
-        athleteProfile
-      );
-
-      // If videoId is provided, save the feedback
+      
+      // Generate feedback from the AI
+      const feedback = await anthropicService.generateVideoFeedback(sportType, videoDescription);
+      
+      // If videoId was provided, associate the feedback with the video
       if (videoId) {
-        try {
-          // Save feedback to the database
-          await db
-            .insert(coachFeedback)
-            .values({
-              userId,
-              videoId,
-              rating: 5, // Default rating
-              feedback: JSON.stringify(feedback),
-              source: 'anthropic_ai'
-            });
-        } catch (dbError) {
-          console.error('Error saving video feedback to database:', dbError);
-          // Continue anyway, as we want to return the feedback even if saving fails
+        const video = await storage.getVideo(videoId);
+        
+        // Check if user has access to this video
+        if (!video || (video.userId !== user.id && user.role !== 'admin' && user.role !== 'coach')) {
+          return res.status(403).json({ message: "Not authorized to analyze this video" });
         }
+        
+        // Save the feedback in the database
+        await storage.createVideoAnalysis({
+          videoId: videoId,
+          analysisData: feedback,
+          analysisType: 'anthropic-coach',
+          createdAt: new Date(),
+          athleteId: video.userId
+        });
       }
-
-      return res.status(200).json(feedback);
+      
+      return res.json(feedback);
     } catch (error) {
-      console.error('Error generating video feedback:', error);
-      return res.status(500).json({ message: 'Error generating video feedback' });
+      console.error("Error generating video feedback:", error);
+      return res.status(500).json({ message: "Error generating video feedback" });
     }
   });
 
-  // Get user's saved training plans
+  // Get all saved training plans for a user
   app.get('/api/anthropic-coach/training-plans', isAuthenticatedMiddleware, async (req: Request, res: Response) => {
     try {
-      const userId = (req.user as any).id;
+      const user = req.user as any;
       
-      const trainingPlans = await db
-        .select()
-        .from(coachRecommendations)
-        .where(
-          and(
-            eq(coachRecommendations.userId, userId),
-            eq(coachRecommendations.category, 'training_plan')
-          )
-        )
-        .orderBy(desc(coachRecommendations.createdAt));
-
-      return res.status(200).json(trainingPlans);
+      // Get training plans from the database
+      const plans = await storage.getAnthropicTrainingPlansByUserId(user.id);
+      
+      return res.json(plans.map(plan => ({
+        id: plan.id,
+        title: plan.title,
+        sportType: plan.sportType,
+        focusArea: plan.focusArea,
+        durationDays: plan.durationDays,
+        recommendedLevel: plan.recommendedLevel,
+        overview: plan.overview,
+        days: plan.planData.days,
+        createdAt: plan.createdAt
+      })));
     } catch (error) {
-      console.error('Error fetching training plans:', error);
-      return res.status(500).json({ message: 'Error fetching training plans' });
+      console.error("Error fetching training plans:", error);
+      return res.status(500).json({ message: "Error fetching training plans" });
     }
   });
 
-  // Get a specific training plan
+  // Get a specific training plan by ID
   app.get('/api/anthropic-coach/training-plans/:id', isAuthenticatedMiddleware, async (req: Request, res: Response) => {
     try {
-      const userId = (req.user as any).id;
-      const planId = parseInt(req.params.id);
+      const id = parseInt(req.params.id);
+      const user = req.user as any;
       
-      if (isNaN(planId)) {
-        return res.status(400).json({ message: 'Invalid plan ID' });
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid plan ID" });
       }
       
-      const [plan] = await db
-        .select()
-        .from(coachRecommendations)
-        .where(
-          and(
-            eq(coachRecommendations.id, planId),
-            eq(coachRecommendations.userId, userId),
-            eq(coachRecommendations.category, 'training_plan')
-          )
-        );
+      // Get the training plan from the database
+      const plan = await storage.getAnthropicTrainingPlan(id);
       
       if (!plan) {
-        return res.status(404).json({ message: 'Training plan not found' });
+        return res.status(404).json({ message: "Training plan not found" });
       }
       
-      // Parse the content back to JSON
-      let planContent;
-      try {
-        planContent = JSON.parse(plan.content);
-      } catch (parseError) {
-        console.error('Error parsing training plan content:', parseError);
-        return res.status(500).json({ message: 'Error parsing training plan content' });
+      // Check if user has access to this plan
+      if (plan.userId !== user.id && user.role !== 'admin' && user.role !== 'coach') {
+        return res.status(403).json({ message: "Not authorized to access this training plan" });
       }
       
-      return res.status(200).json({
-        ...plan,
-        content: planContent
+      return res.json({
+        id: plan.id,
+        title: plan.title,
+        sportType: plan.sportType,
+        focusArea: plan.focusArea,
+        durationDays: plan.durationDays,
+        recommendedLevel: plan.recommendedLevel,
+        overview: plan.overview,
+        days: plan.planData.days,
+        createdAt: plan.createdAt
       });
     } catch (error) {
-      console.error(`Error fetching training plan ${req.params.id}:`, error);
-      return res.status(500).json({ message: 'Error fetching training plan' });
+      console.error("Error fetching training plan:", error);
+      return res.status(500).json({ message: "Error fetching training plan" });
     }
   });
 }
