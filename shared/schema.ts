@@ -216,12 +216,45 @@ export const contentBlocks = pgTable("content_blocks", {
   identifier: text("identifier").unique().notNull(),
   title: text("title").notNull(),
   content: text("content").notNull(),
+  format: text("format").default("html"),
   section: text("section").notNull(),
   order: integer("order").default(0),
   active: boolean("active").default(true),
-  lastUpdated: timestamp("last_updated").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  createdBy: integer("created_by").references(() => users.id),
   lastUpdatedBy: integer("last_updated_by").references(() => users.id),
   metadata: jsonb("metadata"),
+});
+
+// CMS Pages
+export const pages = pgTable("pages", {
+  id: serial("id").primaryKey(),
+  slug: text("slug").unique().notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  content: text("content"),
+  className: text("class_name"),
+  components: jsonb("components"),
+  metadata: jsonb("metadata"),
+  active: boolean("active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  publishDate: timestamp("publish_date"),
+  createdBy: integer("created_by").references(() => users.id),
+  lastUpdatedBy: integer("last_updated_by").references(() => users.id),
+});
+
+// Content revisions for versioning
+export const contentRevisions = pgTable("content_revisions", {
+  id: serial("id").primaryKey(),
+  contentType: text("content_type").notNull(), // 'block' or 'page'
+  contentId: integer("content_id").notNull(),
+  version: integer("version").notNull(),
+  content: jsonb("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  createdBy: integer("created_by").references(() => users.id),
+  comment: text("comment"),
 });
 
 // Blog Posts
