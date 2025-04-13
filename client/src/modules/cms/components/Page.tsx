@@ -1,14 +1,8 @@
 import React from 'react';
 import { usePage } from '../hooks/usePage';
-import { PageData, PageComponent } from '../types';
+import { PageData, PageComponent, PageProps } from '../types';
 import { ContentBlock } from './ContentBlock';
 import { formatContent } from '../utils/contentFormatter';
-
-interface PageProps {
-  slug: string;
-  fallback?: React.ReactNode;
-  className?: string;
-}
 
 /**
  * Page Component
@@ -105,7 +99,7 @@ function renderComponent(component: PageComponent, page: PageData, index: number
           <div className="cms-section-blocks">
             {page.blocks && 
              page.blocks.filter(block => block.section === component.section).map((block, idx) => (
-              <ContentBlock key={`block-${idx}`} block={block} />
+              <ContentBlock key={`block-${idx}`} identifier={block.identifier} />
             ))}
           </div>
         </div>

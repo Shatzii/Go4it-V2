@@ -15,7 +15,7 @@ import { ContentBlock } from './ContentBlock';
 import { ContentSection } from './ContentSection';
 
 // Registry of content block components
-const contentComponentRegistry: ContentComponentMapping = {
+const contentComponentRegistry: ComponentMapping = {
   'default': ContentBlock,
   // Add more specialized content block components as needed
   // 'hero-banner': HeroBanner,
@@ -24,7 +24,7 @@ const contentComponentRegistry: ContentComponentMapping = {
 };
 
 // Registry of section components
-const sectionComponentRegistry: SectionComponentMapping = {
+const sectionComponentRegistry: ComponentMapping = {
   'default': ContentSection,
   // Add more specialized section components as needed
   // 'hero-section': HeroSection,
