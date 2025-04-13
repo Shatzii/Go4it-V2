@@ -1,2 +1,2 @@
-// Export all hooks from the star-path feature
+// Export all hooks from the Star Path feature
 export * from './useStarPath';

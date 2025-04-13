@@ -1,131 +1,138 @@
 import React from 'react';
-import { Link } from 'wouter';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { StarIcon, TrophyIcon, ZapIcon, ActivityIcon, CheckCircleIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import type { StarPathProgress } from '../index';
+import { Progress } from '@/components/ui/progress';
+import { StarLevel, StarPathProgress } from '../index';
+import { CalendarCheck, Star, Trophy, Activity, Dumbbell } from 'lucide-react';
+import { format } from 'date-fns';
 
-type StarPathCardProps = {
+interface StarPathCardProps {
   progress: StarPathProgress;
-  className?: string;
-  onTrainClick?: () => void;
-  onCheckInClick?: () => void;
-};
+  onClaimReward?: (milestoneId: number) => void;
+  onCheckIn?: () => void;
+}
 
-export function StarPathCard({ progress, className, onTrainClick, onCheckInClick }: StarPathCardProps) {
-  const canCheckIn = !progress.lastCheckIn || 
-    new Date(progress.lastCheckIn).toDateString() !== new Date().toDateString();
-  
-  // Maps star levels to their display names
-  const starLevelNames = [
-    'Rising Prospect',
-    'Emerging Talent',
-    'Standout Performer',
-    'Elite Prospect',
-    'Five-Star Athlete'
-  ];
-  
-  // Get the current level name
-  const currentLevelName = starLevelNames[progress.currentStarLevel - 1] || 'Rookie';
-  
-  // Calculate percentage to next level
-  const percentToNextLevel = Math.min(
-    100,
-    Math.round((progress.currentXp / progress.nextLevelXp) * 100)
-  );
-  
-  // Format XP display
-  const formatXP = (xp: number) => xp.toLocaleString();
-  
+export const StarPathCard: React.FC<StarPathCardProps> = ({ 
+  progress, 
+  onClaimReward, 
+  onCheckIn 
+}) => {
+  const canCheckIn = progress.lastUpdated ? 
+    new Date().getTime() - new Date(progress.lastUpdated).getTime() > 24 * 60 * 60 * 1000 : 
+    true;
+
+  const formatStarLevel = (level: number): string => {
+    switch(level) {
+      case StarLevel.RisingProspect: return "Rising Prospect";
+      case StarLevel.EmergingTalent: return "Emerging Talent";
+      case StarLevel.StandoutPerformer: return "Standout Performer";
+      case StarLevel.EliteProspect: return "Elite Prospect";
+      case StarLevel.FiveStarAthlete: return "Five-Star Athlete";
+      default: return "Unknown";
+    }
+  };
+
+  // Calculate XP progress bar percentage
+  const xpProgressPercentage = progress.xpTotal > 0 && progress.levelThresholds.length > 0 ?
+    Math.min(100, (progress.xpTotal / progress.levelThresholds[progress.level]) * 100) : 0;
+
   return (
-    <Card className={cn("w-full", className)}>
-      <CardHeader className="pb-2">
+    <Card className="shadow-lg bg-background border-primary/20 overflow-hidden">
+      <div className={`absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 rounded-full bg-primary/10 flex items-center justify-center`}>
+        <Star className="h-8 w-8 text-primary" />
+      </div>
+      
+      <CardHeader>
         <div className="flex justify-between items-center">
-          <CardTitle className="text-2xl flex items-center">
-            <StarIcon className="mr-2 h-6 w-6 text-yellow-500 inline" /> 
-            Star Path
-          </CardTitle>
-          <Badge variant="outline" className="flex items-center gap-1 py-1 px-2 bg-blue-950 text-white">
-            <ActivityIcon className="h-3.5 w-3.5" />
-            {progress.streakDays} day streak
+          <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
+            {formatStarLevel(progress.currentStarLevel)}
+          </Badge>
+          <Badge variant="outline" className="bg-secondary/10 text-secondary border-secondary/30">
+            Level {progress.level}
           </Badge>
         </div>
-        <CardDescription className="flex items-center">
-          Your journey from prospect to star athlete
+        <CardTitle className="text-2xl font-bold tracking-tight mt-2">
+          Star Path Progression
+        </CardTitle>
+        <CardDescription>
+          Track your journey from prospect to 5-star athlete
         </CardDescription>
       </CardHeader>
       
-      <CardContent>
-        <div className="space-y-4">
-          {/* Current Level Badge */}
-          <div className="flex justify-between">
-            <div className="flex flex-col">
-              <span className="text-sm text-muted-foreground">Current Level</span>
-              <div className="flex items-center">
-                <span className="text-xl font-bold">{currentLevelName}</span>
-                <Badge className="ml-2 bg-amber-500" variant="secondary">Level {progress.currentStarLevel}</Badge>
-              </div>
-            </div>
-            <div className="flex flex-col items-end">
-              <span className="text-sm text-muted-foreground">Total XP</span>
-              <span className="text-xl font-bold">{formatXP(progress.xpTotal)}</span>
-            </div>
+      <CardContent className="space-y-4">
+        <div className="space-y-1.5">
+          <div className="flex justify-between text-sm">
+            <span>XP Progress</span>
+            <span className="text-muted-foreground">{progress.xpTotal} / {progress.levelThresholds[progress.level]} XP</span>
           </div>
-          
-          {/* Progress Bar */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-sm">
-              <span>Progress to Level {progress.currentStarLevel + 1}</span>
-              <span>{formatXP(progress.currentXp)} / {formatXP(progress.nextLevelXp)} XP</span>
-            </div>
-            <Progress value={percentToNextLevel} className="h-2" />
-          </div>
-          
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-2 mt-4">
-            <div className="flex flex-col items-center p-2 bg-muted rounded-md">
-              <CheckCircleIcon className="h-5 w-5 text-green-500 mb-1" />
-              <span className="text-lg font-bold">{progress.completedDrills}</span>
-              <span className="text-xs text-center">Drills Done</span>
-            </div>
-            <div className="flex flex-col items-center p-2 bg-muted rounded-md">
-              <ZapIcon className="h-5 w-5 text-yellow-500 mb-1" />
-              <span className="text-lg font-bold">{progress.verifiedWorkouts}</span>
-              <span className="text-xs text-center">Workouts</span>
-            </div>
-            <div className="flex flex-col items-center p-2 bg-muted rounded-md">
-              <TrophyIcon className="h-5 w-5 text-blue-500 mb-1" />
-              <span className="text-lg font-bold">{progress.skillTreeProgress}%</span>
-              <span className="text-xs text-center">Skills</span>
-            </div>
-          </div>
-          
-          {/* Next Milestone */}
-          {progress.nextMilestone && (
-            <div className="text-sm mt-2">
-              <span className="text-muted-foreground">Next Milestone: </span>
-              <span>{progress.nextMilestone}</span>
-            </div>
-          )}
+          <Progress value={xpProgressPercentage} className="h-2" />
         </div>
+        
+        <div className="grid grid-cols-2 gap-4 mt-4">
+          <div className="bg-muted/50 rounded-lg p-3 flex items-center space-x-3">
+            <CalendarCheck className="h-5 w-5 text-primary" />
+            <div>
+              <div className="text-sm font-medium">Streak</div>
+              <div className="text-xl font-bold">{progress.streakDays} days</div>
+            </div>
+          </div>
+          
+          <div className="bg-muted/50 rounded-lg p-3 flex items-center space-x-3">
+            <Trophy className="h-5 w-5 text-amber-500" />
+            <div>
+              <div className="text-sm font-medium">Star Level</div>
+              <div className="text-xl font-bold">{progress.currentStarLevel}/5</div>
+            </div>
+          </div>
+          
+          <div className="bg-muted/50 rounded-lg p-3 flex items-center space-x-3">
+            <Activity className="h-5 w-5 text-emerald-500" />
+            <div>
+              <div className="text-sm font-medium">Drills</div>
+              <div className="text-xl font-bold">{progress.completedDrills}</div>
+            </div>
+          </div>
+          
+          <div className="bg-muted/50 rounded-lg p-3 flex items-center space-x-3">
+            <Dumbbell className="h-5 w-5 text-blue-500" />
+            <div>
+              <div className="text-sm font-medium">Workouts</div>
+              <div className="text-xl font-bold">{progress.verifiedWorkouts}</div>
+            </div>
+          </div>
+        </div>
+        
+        {progress.nextMilestone && (
+          <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
+            <h4 className="font-semibold text-sm mb-1">Next Milestone</h4>
+            <p className="text-sm text-muted-foreground">{progress.nextMilestone}</p>
+          </div>
+        )}
       </CardContent>
       
-      <CardFooter className="flex justify-between pt-2">
-        <Button variant="default" className="w-[48%]" onClick={onTrainClick}>
-          Train Now
-        </Button>
-        <Button 
-          variant={canCheckIn ? "secondary" : "outline"} 
-          className="w-[48%]" 
-          onClick={onCheckInClick}
-          disabled={!canCheckIn}
-        >
-          {canCheckIn ? 'Daily Check-In' : 'Already Checked In'}
-        </Button>
+      <CardFooter className="flex justify-between border-t pt-4">
+        {progress.lastUpdated && (
+          <div className="text-xs text-muted-foreground">
+            Last updated: {format(new Date(progress.lastUpdated), 'MMM dd, yyyy')}
+          </div>
+        )}
+        
+        {onCheckIn && (
+          <button
+            onClick={onCheckIn}
+            disabled={!canCheckIn}
+            className={`px-4 py-2 rounded-md text-sm font-medium ${
+              canCheckIn 
+                ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
+                : 'bg-muted text-muted-foreground cursor-not-allowed'
+            }`}
+          >
+            Daily Check-In
+          </button>
+        )}
       </CardFooter>
     </Card>
   );
-}
+};
+
+export default StarPathCard;
