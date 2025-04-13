@@ -1,56 +1,19 @@
 /**
- * Star Path Module
+ * Star Path Feature Module
  * 
- * This module provides comprehensive athlete progression tracking through a star-based leveling system.
- * The Star Path represents an athlete's journey from Rising Prospect to Five-Star status,
- * with achievements, milestones, and rewards along the way.
+ * This module contains the Star Path progression system components, hooks and services.
+ * The Star Path is a core feature of the Go4It Sports platform that tracks an athlete's
+ * progression from a Rising Prospect (1-star) to a Five-Star Athlete (5-star).
  */
 
-// Re-export components
-export * from './components';
-
-// Re-export hooks
-export * from './hooks';
-
-// Re-export services
-export * from './services';
-
-// Re-export types
+// Export types
 export * from './types';
 
-// Star Path specific constants and enums
-export enum StarLevel {
-  RISING_PROSPECT = 1,
-  EMERGING_TALENT = 2, 
-  STANDOUT_PERFORMER = 3,
-  ELITE_PROSPECT = 4,
-  FIVE_STAR_ATHLETE = 5
-}
+// Export hooks
+export * from './hooks';
 
-// Additional types needed specifically for hooks
-export interface TrainingSessionData {
-  userId: number;
-  duration: number;
-  exercises: string[];
-  metrics?: Record<string, number>;
-}
+// Export services
+export * from './services';
 
-export interface CompletedTrainingResult {
-  success: boolean;
-  xpEarned: number;
-  newLevel?: StarLevel;
-  message: string;
-}
-
-export interface ClaimMilestoneResult {
-  success: boolean;
-  rewardClaimed: string;
-  message: string;
-}
-
-export interface DailyCheckInResult {
-  success: boolean;
-  streakDays: number;
-  bonusXp?: number;
-  message: string;
-}
+// Export components (if there are any to export)
+export * from './components';
