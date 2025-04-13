@@ -137,7 +137,7 @@ export function GlobalAgreementModal() {
 
         <div className="px-6 py-4 bg-destructive/5 border-y border-destructive/20">
           <p className="text-sm text-destructive font-medium">
-            Please read and agree to the Non-Disclosure Agreement (NDA) before accessing Go4it. This agreement is legally binding.
+            Please read and agree to the Non-Disclosure Agreement (NDA) before accessing Go4It Sports. This agreement is legally binding.
           </p>
         </div>
 
@@ -145,7 +145,7 @@ export function GlobalAgreementModal() {
           <div className="space-y-4 text-sm">
             <p className="font-semibold">THIS CONFIDENTIALITY AND NON-DISCLOSURE AGREEMENT is effective upon acceptance.</p>
 
-            <p><strong>BETWEEN:</strong> Go4it Sports ("Company")</p>
+            <p><strong>BETWEEN:</strong> Go4It Sports ("Company")</p>
             <p><strong>AND:</strong> The User ("Recipient")</p>
 
             <h3 className="text-lg font-semibold mt-6">1. Confidential Information</h3>

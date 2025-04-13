@@ -123,7 +123,7 @@ export function EnhancedGarVisualizationPage() {
                   <div>
                     <h3 className="text-lg font-semibold">GAR Score Explained</h3>
                     <p className="text-gray-400">
-                      Go4it Athletic Rating (GAR) is our proprietary system that analyzes various aspects of athletic 
+                      Go4It Sports Athletic Rating (GAR) is our proprietary system that analyzes various aspects of athletic 
                       performance to provide a comprehensive score of your abilities. This advanced visualization 
                       shows your progress over time and breaks down your performance by category.
                     </p>

@@ -494,7 +494,7 @@ export default function Profile() {
                   <CardHeader>
                     <CardTitle>GAR Score</CardTitle>
                     <CardDescription>
-                      Your Go4it Athletic Rating performance metrics and analysis
+                      Your Go4It Sports Athletic Rating performance metrics and analysis
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
