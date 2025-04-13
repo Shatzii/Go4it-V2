@@ -509,10 +509,7 @@ export default function ContentManager() {
   // Mutation for creating a blog post
   const createBlogPostMutation = useMutation({
     mutationFn: async (data: any) => {
-      return apiRequest('/api/blog-posts', {
-        method: 'POST',
-        data
-      });
+      return apiRequest('POST', '/api/blog-posts', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/blog-posts'] });
@@ -527,10 +524,7 @@ export default function ContentManager() {
   // Mutation for updating a blog post
   const updateBlogPostMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      return apiRequest(`/api/blog-posts/${id}`, {
-        method: 'PATCH',
-        data
-      });
+      return apiRequest('PATCH', `/api/blog-posts/${id}`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/blog-posts'] });
@@ -545,9 +539,7 @@ export default function ContentManager() {
   // Mutation for deleting a blog post
   const deleteBlogPostMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest(`/api/blog-posts/${id}`, {
-        method: 'DELETE'
-      });
+      return apiRequest('DELETE', `/api/blog-posts/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/blog-posts'] });
@@ -561,10 +553,7 @@ export default function ContentManager() {
   // Mutation for creating a site image
   const createSiteImageMutation = useMutation({
     mutationFn: async (data: any) => {
-      return apiRequest('/api/site-images', {
-        method: 'POST',
-        data
-      });
+      return apiRequest('POST', '/api/site-images', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/site-images'] });
@@ -579,10 +568,7 @@ export default function ContentManager() {
   // Mutation for updating a site image
   const updateSiteImageMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      return apiRequest(`/api/site-images/${id}`, {
-        method: 'PATCH',
-        data
-      });
+      return apiRequest('PATCH', `/api/site-images/${id}`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/site-images'] });
@@ -597,9 +583,7 @@ export default function ContentManager() {
   // Mutation for deleting a site image
   const deleteSiteImageMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest(`/api/site-images/${id}`, {
-        method: 'DELETE'
-      });
+      return apiRequest('DELETE', `/api/site-images/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/site-images'] });
