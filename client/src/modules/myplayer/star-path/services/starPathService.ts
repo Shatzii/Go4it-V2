@@ -1,127 +1,144 @@
 /**
  * Star Path Service
  * 
- * Provides methods for interacting with the Star Path API
- * This creates a reusable API layer that can be easily integrated with CMS
+ * This service handles all API calls related to the Star Path feature.
+ * It provides methods to fetch and update star path progress, milestones,
+ * and handle daily check-ins for the streak system.
  */
 
-import { apiRequest } from '@/lib/queryClient';
-
-export interface StarPathProgress {
-  userId: number;
-  sportType: string;
-  currentStarLevel: number;
-  targetStarLevel: number;
-  progress: number;
-  storylinePhase: string;
-  startDate: string;
-  lastUpdated: string;
-  milestones: {
-    [key: string]: {
-      title: string;
-      description: string;
-      completed: boolean;
-      completedDate?: string;
-      requirementsMet: boolean;
-      xpReward: number;
-    }
-  };
-  attributes: {
-    physical: {
-      [key: string]: number;
-    };
-    mental: {
-      [key: string]: number;
-    };
-    technical: {
-      [key: string]: number;
-    };
-  };
-  completedDrills: number;
-  verifiedWorkouts: number;
-  skillTreeProgress: number;
-  xpTotal: number;
-  xpHistory: {
-    [date: string]: number;
-  };
-  streakDays: number;
-  nextMilestone?: string;
-}
-
-export interface StarPathMilestone {
-  id: string;
-  title: string;
-  description: string;
-  sportType: string;
-  level: number;
-  xpReward: number;
-  requirementType: 'skill' | 'workout' | 'video' | 'other';
-  requirements: {
-    description: string;
-    targetValue: number;
-    currentValue?: number;
-  }[];
-  isCompleted: boolean;
-  completedDate?: string;
-}
+import { apiRequest } from '@lib/queryClient';
+import type { 
+  StarPathProgress, 
+  StarPathMilestone,
+  StarPathStreak,
+  StarPathXpHistory 
+} from '../hooks/useStarPath';
 
 /**
- * Service for interacting with the star path API endpoints
+ * Get the user's current star path progress
+ * @param userId The user's ID
+ * @returns Star path progress data
  */
-export const starPathService = {
-  /**
-   * Get the current star path progress for a user
-   */
-  async getStarPathProgress(userId: number, sportType?: string): Promise<StarPathProgress> {
-    const sportParam = sportType ? `&sportType=${encodeURIComponent(sportType)}` : '';
-    return apiRequest(`/api/player/star-path/${userId}${sportParam}`);
-  },
+export const getStarPathProgress = async (userId: number): Promise<StarPathProgress> => {
+  const response = await apiRequest(`/api/star-path/progress/${userId}`);
+  return response;
+};
 
-  /**
-   * Get all milestones for a specific star level
-   */
-  async getStarPathMilestones(level: number, sportType?: string): Promise<StarPathMilestone[]> {
-    const sportParam = sportType ? `&sportType=${encodeURIComponent(sportType)}` : '';
-    return apiRequest(`/api/player/star-path/milestones?level=${level}${sportParam}`);
-  },
+/**
+ * Get the milestones for a user's star path
+ * @param userId The user's ID
+ * @returns List of milestones with completion status
+ */
+export const getStarPathMilestones = async (userId: number): Promise<StarPathMilestone[]> => {
+  const response = await apiRequest(`/api/star-path/milestones/${userId}`);
+  return response;
+};
 
-  /**
-   * Get attribute details for a specific category
-   */
-  async getStarPathAttributes(userId: number, category: 'physical' | 'mental' | 'technical'): Promise<Record<string, number>> {
-    return apiRequest(`/api/player/star-path/${userId}/attributes/${category}`);
-  },
+/**
+ * Get the XP requirements for each star level
+ * @returns Record mapping star level to XP required
+ */
+export const getStarLevelXpRequirements = async (): Promise<Record<string, number>> => {
+  const response = await apiRequest('/api/star-path/xp-requirements');
+  return response;
+};
 
-  /**
-   * Update star path progress (typically after completing a milestone)
-   */
-  async updateStarPathProgress(userId: number, data: Partial<StarPathProgress>): Promise<StarPathProgress> {
-    return apiRequest(`/api/player/star-path/${userId}`, {
-      method: 'PATCH',
-      body: data,
-    });
-  },
+/**
+ * Update a user's star path progress
+ * @param userId The user's ID
+ * @param progress Partial progress data to update
+ * @returns Updated star path progress
+ */
+export const updateStarPathProgress = async (
+  userId: number,
+  progress: Partial<StarPathProgress>
+): Promise<StarPathProgress> => {
+  const response = await apiRequest(`/api/star-path/progress/${userId}`, {
+    method: 'PATCH',
+    body: progress
+  });
+  return response;
+};
 
-  /**
-   * Complete a milestone
-   */
-  async completeMilestone(userId: number, milestoneId: string): Promise<{ success: boolean; xpAwarded: number }> {
-    return apiRequest(`/api/player/star-path/${userId}/milestones/${milestoneId}/complete`, {
-      method: 'POST',
-    });
-  },
+/**
+ * Perform daily check-in to maintain streak
+ * @param userId The user's ID
+ * @returns Result of check-in with XP awarded
+ */
+export const performDailyCheckIn = async (userId: number): Promise<{ 
+  success: boolean; 
+  xpAwarded: number; 
+  currentStreak: number 
+}> => {
+  const response = await apiRequest(`/api/star-path/check-in/${userId}`, {
+    method: 'POST'
+  });
+  return response;
+};
 
-  /**
-   * Get star path XP history (for trends and charts)
-   */
-  async getXpHistory(userId: number, days: number = 30): Promise<{ date: string; xp: number }[]> {
-    return apiRequest(`/api/player/star-path/${userId}/xp-history?days=${days}`);
-  },
+/**
+ * Get the user's XP history for charts and analytics
+ * @param userId The user's ID
+ * @returns Array of XP history entries
+ */
+export const getXpHistory = async (userId: number): Promise<StarPathXpHistory[]> => {
+  const response = await apiRequest(`/api/star-path/xp-history/${userId}`);
+  return response;
+};
 
-  /**
-   * Get user's current streak information
-   */
-  async getStreakInfo(userId: number): Promise<{ currentStreak: number; longestStreak: number; lastActive: string }> {
-    return apiRequest(`/api/player/star-path/${userId}/streak`);
-  },
+/**
+ * Get the user's streak information
+ * @param userId The user's ID
+ * @returns Streak data including current and longest streaks
+ */
+export const getStreakInfo = async (userId: number): Promise<StarPathStreak> => {
+  const response = await apiRequest(`/api/star-path/streak/${userId}`);
+  return response;
+};
+
+/**
+ * Complete a training session and earn XP
+ * @param userId The user's ID
+ * @param sessionData Training session data
+ * @returns Result with XP awarded
+ */
+export const completeTrainingSession = async (
+  userId: number,
+  sessionData: {
+    drillId?: number;
+    duration: number;
+    completionType: 'drill' | 'workout' | 'tutorial';
+    skillNodeIds?: number[];
+  }
+): Promise<{
+  success: boolean;
+  xpAwarded: number;
+  updatedProgress: StarPathProgress;
+}> => {
+  const response = await apiRequest(`/api/star-path/training-session/${userId}`, {
+    method: 'POST',
+    body: sessionData
+  });
+  return response;
+};
+
+/**
+ * Claim a milestone reward
+ * @param userId The user's ID
+ * @param milestoneId The milestone ID to claim
+ * @returns Result with reward details
+ */
+export const claimMilestoneReward = async (
+  userId: number,
+  milestoneId: number
+): Promise<{
+  success: boolean;
+  reward: string;
+  updatedProgress: StarPathProgress;
+}> => {
+  const response = await apiRequest(`/api/star-path/claim-reward/${userId}`, {
+    method: 'POST',
+    body: { milestoneId }
+  });
+  return response;
 };
