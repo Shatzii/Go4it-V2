@@ -7,7 +7,7 @@ const hybridCoachService = new HybridAICoachService();
 /**
  * Chat with the hybrid AI coach
  */
-router.post('/coach/chat', async (req: Request, res: Response) => {
+router.post('/hybrid-coach/chat', async (req: Request, res: Response) => {
   try {
     const { message, messageHistory, modelPreference } = req.body;
     
@@ -34,7 +34,7 @@ router.post('/coach/chat', async (req: Request, res: Response) => {
 /**
  * Generate personalized training advice
  */
-router.post('/coach/training-advice', async (req: Request, res: Response) => {
+router.post('/hybrid-coach/training-advice', async (req: Request, res: Response) => {
   try {
     const { sport, skillLevel, focusArea } = req.body;
     
@@ -71,7 +71,7 @@ router.post('/coach/training-advice', async (req: Request, res: Response) => {
 /**
  * Generate video feedback based on description
  */
-router.post('/coach/video-feedback', async (req: Request, res: Response) => {
+router.post('/hybrid-coach/video-feedback', async (req: Request, res: Response) => {
   try {
     const { sportType, videoDescription } = req.body;
     
