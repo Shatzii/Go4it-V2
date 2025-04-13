@@ -1,134 +1,257 @@
+/**
+ * useStarPath Hook
+ * 
+ * Custom hook for fetching and managing Star Path data.
+ * This hook provides functionality to fetch user's star path progress,
+ * milestones, and streak information. It also provides methods to update
+ * progress and complete daily activities.
+ */
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { starPathService, type StarPathProgress } from '../services/starPathService';
+import { 
+  getStarPathProgress, 
+  getStarPathMilestones, 
+  getXpHistory, 
+  getStreakInfo, 
+  updateStarPathProgress,
+  performDailyCheckIn,
+  completeTrainingSession,
+  claimMilestoneReward,
+  getStarLevelXpRequirements
+} from '../services/starPathService';
 
 /**
- * Custom hook for working with Star Path data
- * 
- * Provides methods for fetching and updating Star Path progress
- * This hook makes it easy to integrate the Star Path feature into any component
+ * StarPathProgress interface representing user's progress data
  */
-export const useStarPath = (userId: number, sportType?: string) => {
+export interface StarPathProgress {
+  userId: number;
+  sportType: string;
+  position?: string | null;
+  currentStarLevel: number;
+  targetStarLevel: number;
+  progress: number;
+  storylinePhase: string;
+  xpTotal: number;
+  completedDrills: number;
+  verifiedWorkouts: number;
+  streakDays: number;
+  skillTreeProgress: number;
+  storylineUnlocks: string[];
+  nextMilestone?: string;
+  storylineActive?: boolean;
+  levelThresholds: number[];
+}
+
+/**
+ * StarPathMilestone interface representing an achievement milestone
+ */
+export interface StarPathMilestone {
+  id: number;
+  name: string;
+  description: string;
+  xpRequired: number;
+  rewards: string[];
+  completed: boolean;
+  starLevel: number;
+}
+
+/**
+ * StarPathStreak interface representing a user's activity streak
+ */
+export interface StarPathStreak {
+  currentStreak: number;
+  longestStreak: number;
+  lastActive: string;
+}
+
+/**
+ * StarPathXpHistory interface for charting historical XP data
+ */
+export interface StarPathXpHistory {
+  date: string;
+  xp: number;
+}
+
+/**
+ * useStarPath hook providing Star Path functionality
+ * @param userId The user's ID
+ * @returns Object containing Star Path state and methods
+ */
+export const useStarPath = (userId: number) => {
   const queryClient = useQueryClient();
   
-  // Get current star path progress
-  const {
-    data: starPathProgress,
-    isLoading: isLoadingProgress,
-    error: progressError,
-    refetch: refetchProgress
-  } = useQuery({
-    queryKey: [`/api/player/star-path/${userId}`, sportType],
-    queryFn: () => starPathService.getStarPathProgress(userId, sportType),
-    enabled: !!userId,
+  // Query for fetching the user's star path progress
+  const progressQuery = useQuery({
+    queryKey: ['/api/star-path/progress', userId],
+    queryFn: () => getStarPathProgress(userId),
+    enabled: !!userId
   });
   
-  // Get star path milestones for current level
-  const {
-    data: currentLevelMilestones,
-    isLoading: isLoadingMilestones,
-    error: milestonesError
-  } = useQuery({
-    queryKey: [`/api/player/star-path/milestones`, starPathProgress?.currentStarLevel, sportType],
-    queryFn: () => 
-      starPathService.getStarPathMilestones(
-        starPathProgress?.currentStarLevel || 1, 
-        sportType
-      ),
-    enabled: !!starPathProgress?.currentStarLevel,
+  // Query for fetching the user's milestones
+  const milestonesQuery = useQuery({
+    queryKey: ['/api/star-path/milestones', userId],
+    queryFn: () => getStarPathMilestones(userId),
+    enabled: !!userId
   });
   
-  // Get XP history for charts
-  const {
-    data: xpHistory,
-    isLoading: isLoadingXpHistory,
-    error: xpHistoryError
-  } = useQuery({
-    queryKey: [`/api/player/star-path/${userId}/xp-history`],
-    queryFn: () => starPathService.getXpHistory(userId),
-    enabled: !!userId,
+  // Query for fetching XP history for charts
+  const xpHistoryQuery = useQuery({
+    queryKey: ['/api/star-path/xp-history', userId],
+    queryFn: () => getXpHistory(userId),
+    enabled: !!userId
   });
   
-  // Get streak information
-  const {
-    data: streakInfo,
-    isLoading: isLoadingStreakInfo,
-    error: streakInfoError
-  } = useQuery({
-    queryKey: [`/api/player/star-path/${userId}/streak`],
-    queryFn: () => starPathService.getStreakInfo(userId),
-    enabled: !!userId,
+  // Query for fetching user's streak information
+  const streakQuery = useQuery({
+    queryKey: ['/api/star-path/streak', userId],
+    queryFn: () => getStreakInfo(userId),
+    enabled: !!userId
   });
   
-  // Complete a milestone mutation
-  const completeMilestoneMutation = useMutation({
-    mutationFn: (milestoneId: string) => 
-      starPathService.completeMilestone(userId, milestoneId),
-    onSuccess: () => {
-      // Invalidate all related queries to refresh data
-      queryClient.invalidateQueries({ queryKey: [`/api/player/star-path/${userId}`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/player/star-path/milestones`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/player/star-path/${userId}/xp-history`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/player/star-path/${userId}/streak`] });
-    },
+  // Query for fetching star level XP requirements
+  const xpRequirementsQuery = useQuery({
+    queryKey: ['/api/star-path/xp-requirements'],
+    queryFn: () => getStarLevelXpRequirements()
   });
   
-  // Update star path progress mutation
+  // Mutation for updating star path progress
   const updateProgressMutation = useMutation({
-    mutationFn: (data: Partial<StarPathProgress>) => 
-      starPathService.updateStarPathProgress(userId, data),
+    mutationFn: (progress: Partial<StarPathProgress>) => 
+      updateStarPathProgress(userId, progress),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/player/star-path/${userId}`] });
-    },
+      // Invalidate relevant queries to refetch data
+      queryClient.invalidateQueries({ queryKey: ['/api/star-path/progress', userId] });
+    }
   });
   
-  // Calculate if the user is making good progress
-  const calculateProgressStatus = (): 'excellent' | 'good' | 'fair' | 'needs-improvement' => {
-    if (!starPathProgress) return 'fair';
+  // Mutation for daily check-in
+  const checkInMutation = useMutation({
+    mutationFn: () => performDailyCheckIn(userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/star-path/progress', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/star-path/streak', userId] });
+    }
+  });
+  
+  // Mutation for completing a training session
+  const completeTrainingMutation = useMutation({
+    mutationFn: (sessionData: {
+      drillId?: number;
+      duration: number;
+      completionType: 'drill' | 'workout' | 'tutorial';
+      skillNodeIds?: number[];
+    }) => completeTrainingSession(userId, sessionData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/star-path/progress', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/star-path/milestones', userId] });
+      // Also invalidate skill tree progress if skill nodes were trained
+      queryClient.invalidateQueries({ queryKey: ['/api/skill-tree/progress', userId] });
+    }
+  });
+  
+  // Mutation for claiming a milestone reward
+  const claimRewardMutation = useMutation({
+    mutationFn: (milestoneId: number) => claimMilestoneReward(userId, milestoneId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/star-path/progress', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/star-path/milestones', userId] });
+    }
+  });
+  
+  // Compute the progress percentage to next star level
+  const computeProgressPercentage = (): number => {
+    if (!progressQuery.data || !xpRequirementsQuery.data) return 0;
     
-    const { progress, completedDrills, verifiedWorkouts, skillTreeProgress } = starPathProgress;
+    const { currentStarLevel, targetStarLevel, xpTotal } = progressQuery.data;
+    const xpRequirements = xpRequirementsQuery.data;
     
-    if (progress >= 75 && completedDrills >= 10 && verifiedWorkouts >= 5) {
-      return 'excellent';
-    } else if (progress >= 50 && completedDrills >= 5 && verifiedWorkouts >= 3) {
-      return 'good';
-    } else if (progress >= 25 && completedDrills >= 2 && verifiedWorkouts >= 1) {
-      return 'fair';
-    } else {
-      return 'needs-improvement';
+    // If already at max level, return 100%
+    if (currentStarLevel === 5) return 100;
+    
+    const currentLevelXP = xpRequirements[currentStarLevel.toString()] || 0;
+    const nextLevelXP = xpRequirements[(currentStarLevel + 1).toString()] || 0;
+    
+    if (nextLevelXP === currentLevelXP) return 100;
+    
+    // Calculate percentage between current and next level
+    const xpProgress = xpTotal - currentLevelXP;
+    const xpNeeded = nextLevelXP - currentLevelXP;
+    
+    return Math.min(Math.round((xpProgress / xpNeeded) * 100), 100);
+  };
+  
+  /**
+   * Get a formatted description of the user's star level
+   */
+  const getStarLevelDescription = (): string => {
+    if (!progressQuery.data) return 'Loading...';
+    
+    const level = progressQuery.data.currentStarLevel;
+    switch (level) {
+      case 1: return "Rising Prospect";
+      case 2: return "Emerging Talent";
+      case 3: return "Standout Performer";
+      case 4: return "Elite Prospect";
+      case 5: return "Five-Star Athlete";
+      default: return "New Athlete";
     }
   };
   
+  // Helper function to check if user can perform daily check-in
+  const canCheckIn = (): boolean => {
+    if (!streakQuery.data) return false;
+    
+    const lastActive = new Date(streakQuery.data.lastActive);
+    const now = new Date();
+    
+    // Check if last active day was yesterday or earlier
+    const lastActiveDay = lastActive.getDate();
+    const today = now.getDate();
+    const lastActiveMonth = lastActive.getMonth();
+    const currentMonth = now.getMonth();
+    const lastActiveYear = lastActive.getFullYear();
+    const currentYear = now.getFullYear();
+    
+    // Different year
+    if (lastActiveYear < currentYear) return true;
+    
+    // Same year, different month
+    if (lastActiveYear === currentYear && lastActiveMonth < currentMonth) return true;
+    
+    // Same year, same month, different day
+    if (lastActiveYear === currentYear && 
+        lastActiveMonth === currentMonth && 
+        lastActiveDay < today) return true;
+    
+    return false;
+  };
+  
   return {
-    // Data
-    starPathProgress,
-    currentLevelMilestones,
-    xpHistory,
-    streakInfo,
+    // Queries
+    progress: progressQuery.data,
+    isLoadingProgress: progressQuery.isLoading,
+    milestones: milestonesQuery.data,
+    isLoadingMilestones: milestonesQuery.isLoading,
+    xpHistory: xpHistoryQuery.data,
+    isLoadingXpHistory: xpHistoryQuery.isLoading,
+    streak: streakQuery.data,
+    isLoadingStreak: streakQuery.isLoading,
+    xpRequirements: xpRequirementsQuery.data,
+    isLoadingXpRequirements: xpRequirementsQuery.isLoading,
     
-    // Loading states
-    isLoadingProgress,
-    isLoadingMilestones,
-    isLoadingXpHistory,
-    isLoadingStreakInfo,
-    isLoading: isLoadingProgress || isLoadingMilestones || isLoadingXpHistory || isLoadingStreakInfo,
-    
-    // Error states
-    progressError,
-    milestonesError,
-    xpHistoryError,
-    streakInfoError,
-    
-    // Helper functions
-    calculateProgressStatus,
+    // Computed values
+    progressPercentage: computeProgressPercentage(),
+    starLevelDescription: getStarLevelDescription(),
+    canCheckIn: canCheckIn(),
     
     // Mutations
-    completeMilestone: completeMilestoneMutation.mutate,
-    isCompletingMilestone: completeMilestoneMutation.isPending,
-    
     updateProgress: updateProgressMutation.mutate,
     isUpdatingProgress: updateProgressMutation.isPending,
-    
-    // Refetch functions
-    refetchProgress,
+    checkIn: checkInMutation.mutate,
+    isCheckingIn: checkInMutation.isPending,
+    completeTraining: completeTrainingMutation.mutate,
+    isCompletingTraining: completeTrainingMutation.isPending,
+    claimReward: claimRewardMutation.mutate,
+    isClaimingReward: claimRewardMutation.isPending,
   };
 };
