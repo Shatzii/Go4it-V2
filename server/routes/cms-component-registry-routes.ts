@@ -117,7 +117,7 @@ router.patch('/:identifier', async (req: Request, res: Response) => {
     // Get user ID from session
     const userId = req.user?.id;
 
-    const updatedComponentType = await storage.updateComponentType(componentType.id, {
+    const updatedComponentType = await storage.updateComponentType(identifier, {
       ...req.body,
       lastUpdatedBy: userId
     });
@@ -151,7 +151,7 @@ router.delete('/:identifier', async (req: Request, res: Response) => {
       });
     }
 
-    await storage.deleteComponentType(componentType.id);
+    await storage.deleteComponentType(identifier);
     
     res.json({ success: true, message: "Component type deleted successfully" });
   } catch (error) {
