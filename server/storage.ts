@@ -4292,6 +4292,18 @@ export class DatabaseStorage implements IStorage {
       return undefined;
     }
   }
+
+  // Anthropic AI Coach methods
+  getAnthropicTrainingPlan(id: number): Promise<AnthropicTrainingPlan | undefined>;
+  getAnthropicTrainingPlansByUserId(userId: number): Promise<AnthropicTrainingPlan[]>;
+  createAnthropicTrainingPlan(plan: InsertAnthropicTrainingPlan): Promise<AnthropicTrainingPlan>;
+  updateAnthropicTrainingPlan(id: number, data: Partial<AnthropicTrainingPlan>): Promise<AnthropicTrainingPlan | undefined>;
+  completeAnthropicTrainingPlanDay(id: number, dayNumber: number): Promise<AnthropicTrainingPlan | undefined>;
+  finishAnthropicTrainingPlan(id: number, rating: number, feedback: string): Promise<AnthropicTrainingPlan | undefined>;
+  
+  // Hybrid AI Coach methods (using both Claude and GPT)
+  getHybridCoachingResponse(userId: number, message: string, modelPreference?: 'claude' | 'gpt' | 'both'): Promise<{message: string, source: string}>;
+  getPersonalizedTrainingAdvice(userId: number, sport: string, skillLevel: string, focusArea: string): Promise<{advice: string, drills: any[], source: string}>;
 }
 
 export const storage = new DatabaseStorage();
