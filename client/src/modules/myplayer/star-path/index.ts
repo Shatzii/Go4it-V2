@@ -1,37 +1,56 @@
 /**
  * Star Path Module
  * 
- * This module contains all the components, hooks, and services for the Star Path feature.
- * The Star Path is a progression system that tracks an athlete's development journey
- * through various levels of achievement and skill mastery.
+ * This module provides comprehensive athlete progression tracking through a star-based leveling system.
+ * The Star Path represents an athlete's journey from Rising Prospect to Five-Star status,
+ * with achievements, milestones, and rewards along the way.
  */
 
-// Export all hooks
-export * from './hooks';
-
-// Export all services
-export * from './services';
-
-// Export all components
+// Re-export components
 export * from './components';
 
-// Export types
+// Re-export hooks
+export * from './hooks';
+
+// Re-export services
+export * from './services';
+
+// Re-export types
 export * from './types';
 
-// Define Star Path Levels
+// Star Path specific constants and enums
 export enum StarLevel {
-  RISING_PROSPECT = 1,  // Level 1
-  EMERGING_TALENT = 2,  // Level 2
-  STANDOUT_PERFORMER = 3, // Level 3
-  ELITE_PROSPECT = 4,   // Level 4
-  FIVE_STAR_ATHLETE = 5 // Level 5
+  RISING_PROSPECT = 1,
+  EMERGING_TALENT = 2, 
+  STANDOUT_PERFORMER = 3,
+  ELITE_PROSPECT = 4,
+  FIVE_STAR_ATHLETE = 5
 }
 
-// Map level number to name
-export const starLevelNames = {
-  [StarLevel.RISING_PROSPECT]: 'Rising Prospect',
-  [StarLevel.EMERGING_TALENT]: 'Emerging Talent',
-  [StarLevel.STANDOUT_PERFORMER]: 'Standout Performer',
-  [StarLevel.ELITE_PROSPECT]: 'Elite Prospect',
-  [StarLevel.FIVE_STAR_ATHLETE]: 'Five-Star Athlete'
-};
+// Additional types needed specifically for hooks
+export interface TrainingSessionData {
+  userId: number;
+  duration: number;
+  exercises: string[];
+  metrics?: Record<string, number>;
+}
+
+export interface CompletedTrainingResult {
+  success: boolean;
+  xpEarned: number;
+  newLevel?: StarLevel;
+  message: string;
+}
+
+export interface ClaimMilestoneResult {
+  success: boolean;
+  rewardClaimed: string;
+  message: string;
+}
+
+export interface DailyCheckInResult {
+  success: boolean;
+  streakDays: number;
+  bonusXp?: number;
+  message: string;
+}
