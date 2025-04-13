@@ -6,11 +6,11 @@
  */
 
 import React from 'react';
-import { CmsSectionProps } from '../types';
-import ContentBlock from './ContentBlock';
+import { ContentSectionProps } from '../types';
+import { ContentBlock } from './ContentBlock';
 import { cn } from '@/lib/utils';
 
-const ContentSection: React.FC<CmsSectionProps> = ({ section, className }) => {
+export const ContentSection: React.FC<ContentSectionProps> = ({ section, className }) => {
   if (!section || !section.blocks || section.blocks.length === 0) {
     return null;
   }
@@ -50,12 +50,10 @@ const ContentSection: React.FC<CmsSectionProps> = ({ section, className }) => {
         {section.blocks.map((block) => (
           <ContentBlock 
             key={block.id} 
-            content={block} 
+            identifier={block.identifier} 
           />
         ))}
       </div>
     </section>
   );
 };
-
-export default ContentSection;

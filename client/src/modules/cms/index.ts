@@ -10,19 +10,16 @@ export * from './types';
 
 // Export hooks
 export { 
-  useContentBlocks, 
-  useContentBlocksBySection, 
-  useContentBlockByIdentifier,
-  useContentSection,
-  getBlockFromSection,
-  formatContent
+  useContent, 
+  useContentSection, 
+  useAllContent
 } from './hooks/useContent';
 export { usePage } from './hooks/usePage';
 
 // Export components
-export { default as ContentBlock } from './components/ContentBlock';
-export { default as ContentSection } from './components/ContentSection';
-export { default as Page } from './components/Page';
+export { ContentBlock } from './components/ContentBlock';
+export { ContentSection } from './components/ContentSection';
+export { Page } from './components/Page';
 export { 
   registerContentComponent,
   registerSectionComponent,
@@ -35,8 +32,14 @@ export {
 // Export services
 export {
   getAllContentBlocks,
-  getContentBlocksBySection,
-  getContentBlockByIdentifier,
-  createContentSection,
-  getPageData
+  getContentBlock,
+  getContentSection,
+  createContentBlock,
+  updateContentBlock,
+  deleteContentBlock,
+  getPage,
+  getAllPages,
+  createPage,
+  updatePage,
+  deletePage
 } from './services/contentService';

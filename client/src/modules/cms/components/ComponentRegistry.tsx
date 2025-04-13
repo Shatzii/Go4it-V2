@@ -6,13 +6,13 @@
  */
 
 import React from 'react';
-import { ContentComponentMapping, SectionComponentMapping } from '../types';
+import { ComponentMapping } from '../types';
 
 // Default Content Block Components
-import ContentBlock from './ContentBlock';
+import { ContentBlock } from './ContentBlock';
 
 // Default Section Components
-import ContentSection from './ContentSection';
+import { ContentSection } from './ContentSection';
 
 // Registry of content block components
 const contentComponentRegistry: ContentComponentMapping = {
