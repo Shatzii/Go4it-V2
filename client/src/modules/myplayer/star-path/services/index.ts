@@ -1,2 +1,2 @@
-// Export all services from the star path feature
-export * from './starPathService';
+// Export all services from the Star Path feature
+export { starPathService } from './starPathService';

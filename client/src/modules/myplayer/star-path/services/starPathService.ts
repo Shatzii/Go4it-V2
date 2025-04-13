@@ -1,203 +1,164 @@
-/**
- * Star Path Service
- * 
- * Provides the API interface for Star Path functionality.
- * All API calls related to the Star Path feature should go through this service.
- */
-
-import { queryClient } from '@/lib/queryClient';
-import type { 
+import axios from 'axios';
+import { apiRequest } from '@/lib/queryClient';
+import { 
   StarPathProgress, 
   StarPathMilestone, 
+  StreakInfo, 
+  XpHistoryEntry,
   TrainingSessionData,
   CompletedTrainingResult,
   ClaimMilestoneResult,
-  DailyCheckInResult,
-  StarPathStreak,
-  StarPathXpHistory
-} from '../index';
-
-// API URL constants
-const BASE_URL = '/api/star-path';
-const PROGRESS_URL = `${BASE_URL}/progress`;
-const MILESTONES_URL = `${BASE_URL}/milestones`;
-const XP_REQUIREMENTS_URL = `${BASE_URL}/xp-requirements`;
-const STREAK_URL = `${BASE_URL}/streak`;
-const XP_HISTORY_URL = `${BASE_URL}/xp-history`;
-const TRAINING_SESSION_URL = `${BASE_URL}/training`;
-const CLAIM_MILESTONE_URL = `${BASE_URL}/claim-milestone`;
-const DAILY_CHECK_IN_URL = `${BASE_URL}/daily-check-in`;
+  DailyCheckInResult
+} from '../types';
 
 /**
- * Get star path progress for a user
+ * Service to handle Star Path API interactions
  */
-export async function getStarPathProgress(userId: number): Promise<StarPathProgress> {
-  const response = await fetch(`${PROGRESS_URL}/${userId}`);
-  
-  if (!response.ok) {
-    throw new Error('Failed to fetch star path progress');
+export const starPathService = {
+  /**
+   * Get user's Star Path progress 
+   * @param userId User ID
+   * @returns Star Path progress data
+   */
+  async getStarPathProgress(userId: number): Promise<StarPathProgress> {
+    try {
+      const response = await apiRequest(`/api/star-path/progress?userId=${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching Star Path progress:', error);
+      throw new Error('Failed to fetch Star Path progress');
+    }
+  },
+
+  /**
+   * Get user's Star Path milestones
+   * @param userId User ID
+   * @returns Star Path milestones
+   */
+  async getStarPathMilestones(userId: number): Promise<StarPathMilestone[]> {
+    try {
+      const response = await apiRequest(`/api/star-path/milestones?userId=${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching Star Path milestones:', error);
+      throw new Error('Failed to fetch Star Path milestones');
+    }
+  },
+
+  /**
+   * Get user's streak information
+   * @param userId User ID
+   * @returns Streak data
+   */
+  async getStreakInfo(userId: number): Promise<StreakInfo> {
+    try {
+      const response = await apiRequest(`/api/star-path/streak?userId=${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching streak info:', error);
+      throw new Error('Failed to fetch streak information');
+    }
+  },
+
+  /**
+   * Get user's XP history
+   * @param userId User ID
+   * @returns XP history data
+   */
+  async getXpHistory(userId: number): Promise<XpHistoryEntry[]> {
+    try {
+      const response = await apiRequest(`/api/star-path/xp-history?userId=${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching XP history:', error);
+      throw new Error('Failed to fetch XP history');
+    }
+  },
+
+  /**
+   * Complete a training session
+   * @param userId User ID
+   * @param sessionData Training session data
+   * @returns Results of the training session
+   */
+  async completeTrainingSession(userId: number, sessionData: TrainingSessionData): Promise<CompletedTrainingResult> {
+    try {
+      const response = await apiRequest(`/api/star-path/complete-training`, {
+        method: 'POST',
+        body: {
+          userId,
+          ...sessionData,
+        },
+      });
+      
+      return {
+        success: true,
+        xpEarned: response.data.xpEarned || 0,
+        starXpEarned: response.data.starXpEarned || 0,
+        leveledUp: response.data.leveledUp || false,
+        newLevel: response.data.newLevel,
+        achievementUnlocked: response.data.achievementUnlocked || false,
+        achievementDetails: response.data.achievementDetails,
+      };
+    } catch (error) {
+      console.error('Error completing training session:', error);
+      throw new Error('Failed to record training session');
+    }
+  },
+
+  /**
+   * Claim a milestone reward
+   * @param userId User ID
+   * @param milestoneId Milestone ID
+   * @returns Results of claiming the milestone
+   */
+  async claimMilestoneReward(userId: number, milestoneId: number): Promise<ClaimMilestoneResult> {
+    try {
+      const response = await apiRequest(`/api/star-path/claim-milestone`, {
+        method: 'POST',
+        body: {
+          userId,
+          milestoneId,
+        },
+      });
+      
+      return {
+        success: true,
+        milestoneId: milestoneId,
+        rewardType: response.data.rewardType || 'item',
+        rewardDetails: response.data.rewardDetails || 'You received a reward!'
+      };
+    } catch (error) {
+      console.error('Error claiming milestone reward:', error);
+      throw new Error('Failed to claim milestone reward');
+    }
+  },
+
+  /**
+   * Perform daily check-in
+   * @param userId User ID
+   * @returns Results of daily check-in
+   */
+  async performDailyCheckIn(userId: number): Promise<DailyCheckInResult> {
+    try {
+      const response = await apiRequest(`/api/star-path/daily-check-in`, {
+        method: 'POST',
+        body: {
+          userId,
+        },
+      });
+      
+      return {
+        success: true,
+        message: response.data.message || 'Daily check-in successful!',
+        streakDays: response.data.streakDays || 1,
+        xpEarned: response.data.xpEarned || 10,
+        milestoneReached: response.data.milestoneReached || false,
+        milestoneReward: response.data.milestoneReward || null
+      };
+    } catch (error) {
+      console.error('Error performing daily check-in:', error);
+      throw new Error('Failed to perform daily check-in');
+    }
   }
-  
-  return response.json();
-}
-
-/**
- * Get star path milestones for a user
- */
-export async function getStarPathMilestones(userId: number): Promise<StarPathMilestone[]> {
-  const response = await fetch(`${MILESTONES_URL}/${userId}`);
-  
-  if (!response.ok) {
-    throw new Error('Failed to fetch star path milestones');
-  }
-  
-  return response.json();
-}
-
-/**
- * Get XP requirements for each star level
- */
-export async function getStarLevelXpRequirements(): Promise<Record<string, number>> {
-  const response = await fetch(XP_REQUIREMENTS_URL);
-  
-  if (!response.ok) {
-    throw new Error('Failed to fetch star level XP requirements');
-  }
-  
-  return response.json();
-}
-
-/**
- * Get streak information for a user
- */
-export async function getStreakInfo(userId: number): Promise<StarPathStreak> {
-  const response = await fetch(`${STREAK_URL}/${userId}`);
-  
-  if (!response.ok) {
-    throw new Error('Failed to fetch streak information');
-  }
-  
-  return response.json();
-}
-
-/**
- * Get XP history for a user
- */
-export async function getXpHistory(userId: number): Promise<StarPathXpHistory[]> {
-  const response = await fetch(`${XP_HISTORY_URL}/${userId}`);
-  
-  if (!response.ok) {
-    throw new Error('Failed to fetch XP history');
-  }
-  
-  return response.json();
-}
-
-/**
- * Update star path progress
- */
-export async function updateStarPathProgress(
-  userId: number, 
-  progressData: Partial<StarPathProgress>
-): Promise<StarPathProgress> {
-  const response = await fetch(`${PROGRESS_URL}/${userId}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(progressData),
-  });
-  
-  if (!response.ok) {
-    throw new Error('Failed to update star path progress');
-  }
-  
-  return response.json();
-}
-
-/**
- * Complete a training session and earn XP
- */
-export async function completeTrainingSession(
-  userId: number, 
-  sessionData: TrainingSessionData
-): Promise<CompletedTrainingResult> {
-  const response = await fetch(`${TRAINING_SESSION_URL}/${userId}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      ...sessionData,
-      completionType: sessionData.sessionType === 'drill' ? 'drill' : 'workout'
-    }),
-  });
-  
-  if (!response.ok) {
-    throw new Error('Failed to complete training session');
-  }
-
-  const result = await response.json();
-  
-  return {
-    xpEarned: result.xpAwarded,
-    leveledUp: result.updatedProgress.currentStarLevel > sessionData.currentStarLevel,
-    newLevel: result.updatedProgress.currentStarLevel,
-    updatedProgress: result.updatedProgress
-  };
-}
-
-/**
- * Claim a milestone reward
- */
-export async function claimMilestoneReward(
-  userId: number, 
-  milestoneId: number
-): Promise<ClaimMilestoneResult> {
-  const response = await fetch(`${CLAIM_MILESTONE_URL}/${userId}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ milestoneId }),
-  });
-  
-  if (!response.ok) {
-    throw new Error('Failed to claim milestone reward');
-  }
-
-  const result = await response.json();
-  
-  return {
-    success: result.success,
-    milestone: result.milestone,
-    rewardDetails: result.reward,
-    updatedProgress: result.updatedProgress
-  };
-}
-
-/**
- * Perform daily check-in to maintain streak
- */
-export async function performDailyCheckIn(userId: number): Promise<DailyCheckInResult> {
-  const response = await fetch(`${DAILY_CHECK_IN_URL}/${userId}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  
-  if (!response.ok) {
-    throw new Error('Failed to perform daily check-in');
-  }
-
-  const result = await response.json();
-  
-  return {
-    success: result.success,
-    streakDays: result.currentStreak,
-    xpEarned: result.xpAwarded,
-    streakBonus: result.streakBonus || 0,
-    message: `Daily check-in complete! +${result.xpAwarded} XP. Current streak: ${result.currentStreak} days.`
-  };
-}
+};
