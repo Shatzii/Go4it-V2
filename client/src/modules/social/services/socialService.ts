@@ -33,76 +33,63 @@ export const socialService = {
     if (limit) queryParams.append('limit', limit.toString());
     if (sportFilter) queryParams.append('sport', sportFilter);
     
-    return apiRequest(`/api/social/suggestions?${queryParams.toString()}`);
+    return apiRequest('GET', `/api/social/suggestions?${queryParams.toString()}`);
   },
   
   /**
    * Send a direct message to another athlete
    */
   async sendMessage(messageData: MessageData) {
-    return apiRequest('/api/social/messages', {
-      method: 'POST',
-      body: messageData,
-    });
+    return apiRequest('POST', '/api/social/messages', messageData);
   },
   
   /**
    * Get all messages with a specific user
    */
   async getMessageThread(userId: number) {
-    return apiRequest(`/api/social/messages/${userId}`);
+    return apiRequest('GET', `/api/social/messages/${userId}`);
   },
   
   /**
    * Get latest social feed posts
    */
   async getFeedPosts(page: number = 1, limit: number = 10) {
-    return apiRequest(`/api/social/feed?page=${page}&limit=${limit}`);
+    return apiRequest('GET', `/api/social/feed?page=${page}&limit=${limit}`);
   },
   
   /**
    * Create a new post
    */
   async createPost(postData: CreatePostData) {
-    return apiRequest('/api/social/posts', {
-      method: 'POST',
-      body: postData,
-    });
+    return apiRequest('POST', '/api/social/posts', postData);
   },
   
   /**
    * Like a post
    */
   async likePost(postId: number) {
-    return apiRequest(`/api/social/posts/${postId}/like`, {
-      method: 'POST',
-    });
+    return apiRequest('POST', `/api/social/posts/${postId}/like`);
   },
   
   /**
    * Unlike a post
    */
   async unlikePost(postId: number) {
-    return apiRequest(`/api/social/posts/${postId}/like`, {
-      method: 'DELETE',
-    });
+    return apiRequest('DELETE', `/api/social/posts/${postId}/like`);
   },
   
   /**
    * Get comments for a post
    */
   async getPostComments(postId: number) {
-    return apiRequest(`/api/social/posts/${postId}/comments`);
+    return apiRequest('GET', `/api/social/posts/${postId}/comments`);
   },
   
   /**
    * Add a comment to a post
    */
   async addComment(postId: number, content: string) {
-    return apiRequest(`/api/social/posts/${postId}/comments`, {
-      method: 'POST',
-      body: { content },
-    });
+    return apiRequest('POST', `/api/social/posts/${postId}/comments`, { content });
   },
   
   /**
