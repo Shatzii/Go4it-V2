@@ -1,212 +1,190 @@
-/**
- * Component Registry Service
- * 
- * This service is responsible for registering and managing all components that can be used in the CMS.
- * It allows for both UI components and feature modules to be centrally registered and discovered.
- */
-
 import React from 'react';
-import { 
-  registerContentComponent, 
-  registerSectionComponent 
-} from '@/modules/cms/components/ComponentRegistry';
 
-// Feature module interface
-export interface FeatureModule {
-  id: string;
-  name: string;
-  description: string;
-  version: string;
-  routes?: Array<{
-    path: string;
-    component: React.ComponentType;
-    exact?: boolean;
-  }>;
-  components?: {[key: string]: React.ComponentType<any>};
-  hooks?: {[key: string]: any};
-  services?: {[key: string]: any};
-  adminPages?: Array<{
-    path: string;
-    component: React.ComponentType;
-    title: string;
-    icon?: React.ReactNode;
-    group?: string;
-  }>;
-  initialize?: () => Promise<void>;
-}
-
-// UI component interface
+// Interface for UI Component
 export interface UIComponent {
   id: string;
   name: string;
   description: string;
   component: React.ComponentType<any>;
-  props?: {[key: string]: any};
-  category?: string;
+  category: string;
   tags?: string[];
+  props?: Record<string, any>;
   thumbnail?: string;
-  previewContent?: any;
 }
 
-// Singleton pattern for the registry
-class ComponentRegistryService {
-  private featureModules: Map<string, FeatureModule> = new Map();
-  private uiComponents: Map<string, UIComponent> = new Map();
-  private initialized: boolean = false;
+// Interface for Admin Page
+export interface AdminPage {
+  path: string;
+  component: React.ComponentType<any>;
+  title: string;
+  icon?: React.ReactNode;
+  group?: string;
+}
 
-  /**
-   * Register a UI component with the registry
-   * @param component The UI component definition
-   */
-  registerUIComponent(component: UIComponent): void {
-    if (this.uiComponents.has(component.id)) {
-      console.warn(`UI Component with ID "${component.id}" already registered. Overriding.`);
-    }
-    this.uiComponents.set(component.id, component);
-    
-    // Also register with the CMS ComponentRegistry
-    registerContentComponent(component.id, component.component);
+// Interface for Route
+export interface RouteDefinition {
+  path: string;
+  component: React.ComponentType<any>;
+  exact?: boolean;
+}
+
+// Interface for Feature Module
+export interface FeatureModule {
+  id: string;
+  name: string;
+  description: string;
+  version: string;
+  components: Record<string, React.ComponentType<any>>;
+  adminPages?: AdminPage[];
+  routes?: RouteDefinition[];
+  initialize?: () => Promise<void>;
+}
+
+/**
+ * Component Registry Service
+ * 
+ * Central registry for UI components, feature modules, and routes
+ * Used by the CMS to dynamically load components based on configuration
+ */
+class ComponentRegistry {
+  private components: Map<string, UIComponent>;
+  private modules: Map<string, FeatureModule>;
+  private adminPages: AdminPage[];
+  private routes: RouteDefinition[];
+
+  constructor() {
+    this.components = new Map();
+    this.modules = new Map();
+    this.adminPages = [];
+    this.routes = [];
+    console.log('Component Registry initialized');
   }
 
   /**
-   * Register a feature module with the registry
-   * @param module The feature module definition
+   * Register a UI component
    */
-  registerFeatureModule(module: FeatureModule): void {
-    if (this.featureModules.has(module.id)) {
-      console.warn(`Feature Module with ID "${module.id}" already registered. Overriding.`);
+  registerUIComponent(component: UIComponent): void {
+    if (this.components.has(component.id)) {
+      console.warn(`Component with id ${component.id} already exists. Overwriting.`);
     }
-    this.featureModules.set(module.id, module);
-    
-    // Register all components from the module
-    if (module.components) {
-      Object.entries(module.components).forEach(([key, component]) => {
-        const componentId = `${module.id}.${key}`;
-        registerContentComponent(componentId, component);
-      });
-    }
+    this.components.set(component.id, component);
+    console.log(`Registered UI component: ${component.name} (${component.id})`);
   }
 
   /**
    * Get a UI component by ID
-   * @param id The component ID
-   * @returns The UI component or undefined if not found
    */
-  getUIComponent(id: string): UIComponent | undefined {
-    return this.uiComponents.get(id);
-  }
-
-  /**
-   * Get a feature module by ID
-   * @param id The module ID
-   * @returns The feature module or undefined if not found
-   */
-  getFeatureModule(id: string): FeatureModule | undefined {
-    return this.featureModules.get(id);
+  getComponent(id: string): UIComponent | undefined {
+    return this.components.get(id);
   }
 
   /**
    * Get all registered UI components
-   * @returns Array of all UI components
    */
-  getAllUIComponents(): UIComponent[] {
-    return Array.from(this.uiComponents.values());
+  getRegisteredComponents(): UIComponent[] {
+    return Array.from(this.components.values());
   }
 
   /**
-   * Get all registered feature modules
-   * @returns Array of all feature modules
+   * Get components by category
    */
-  getAllFeatureModules(): FeatureModule[] {
-    return Array.from(this.featureModules.values());
-  }
-
-  /**
-   * Get UI components by category
-   * @param category The category to filter by
-   * @returns Array of UI components in the given category
-   */
-  getUIComponentsByCategory(category: string): UIComponent[] {
-    return this.getAllUIComponents().filter(component => 
-      component.category === category
+  getComponentsByCategory(category: string): UIComponent[] {
+    return Array.from(this.components.values()).filter(
+      (component) => component.category === category
     );
   }
 
   /**
-   * Get UI components by tags
-   * @param tags The tags to filter by
-   * @returns Array of UI components with matching tags
+   * Register a feature module
    */
-  getUIComponentsByTags(tags: string[]): UIComponent[] {
-    return this.getAllUIComponents().filter(component => 
-      component.tags && component.tags.some(tag => tags.includes(tag))
-    );
-  }
-
-  /**
-   * Get admin pages from all feature modules
-   * @returns Array of all admin pages
-   */
-  getAllAdminPages(): Array<{
-    path: string;
-    component: React.ComponentType;
-    title: string;
-    icon?: React.ReactNode;
-    group?: string;
-    moduleId: string;
-  }> {
-    const pages: Array<{
-      path: string;
-      component: React.ComponentType;
-      title: string;
-      icon?: React.ReactNode;
-      group?: string;
-      moduleId: string;
-    }> = [];
-
-    this.featureModules.forEach((module, moduleId) => {
-      if (module.adminPages) {
-        module.adminPages.forEach(page => {
-          pages.push({
-            ...page,
-            moduleId
-          });
-        });
-      }
-    });
-
-    return pages;
-  }
-
-  /**
-   * Initialize all registered feature modules
-   * @returns Promise that resolves when all modules are initialized
-   */
-  async initialize(): Promise<void> {
-    if (this.initialized) {
-      return;
+  registerFeatureModule(module: FeatureModule): void {
+    if (this.modules.has(module.id)) {
+      console.warn(`Module with id ${module.id} already exists. Overwriting.`);
     }
-
-    const initPromises: Promise<void>[] = [];
     
-    this.featureModules.forEach(module => {
-      if (module.initialize) {
-        initPromises.push(module.initialize());
-      }
-    });
+    this.modules.set(module.id, module);
+    
+    // Register admin pages from the module
+    if (module.adminPages && module.adminPages.length > 0) {
+      this.adminPages.push(...module.adminPages);
+    }
+    
+    // Register routes from the module
+    if (module.routes && module.routes.length > 0) {
+      this.routes.push(...module.routes);
+    }
+    
+    console.log(`Registered feature module: ${module.name} (${module.id})`);
+  }
 
-    await Promise.all(initPromises);
-    this.initialized = true;
+  /**
+   * Get a module by ID
+   */
+  getModule(id: string): FeatureModule | undefined {
+    return this.modules.get(id);
+  }
+
+  /**
+   * Get all registered modules
+   */
+  getRegisteredModules(): FeatureModule[] {
+    return Array.from(this.modules.values());
+  }
+
+  /**
+   * Get all admin pages
+   */
+  getAdminPages(): AdminPage[] {
+    return this.adminPages;
+  }
+
+  /**
+   * Get all routes
+   */
+  getRoutes(): RouteDefinition[] {
+    return this.routes;
+  }
+
+  /**
+   * Initialize all modules
+   */
+  async initializeModules(): Promise<void> {
+    console.log('Initializing all registered modules...');
+    const modules = Array.from(this.modules.values());
+    
+    for (const module of modules) {
+      if (module.initialize) {
+        try {
+          await module.initialize();
+          console.log(`Module ${module.name} initialized successfully`);
+        } catch (error) {
+          console.error(`Failed to initialize module ${module.name}:`, error);
+        }
+      }
+    }
+    
+    console.log('All modules initialized');
+  }
+
+  /**
+   * Get admin pages grouped by category
+   */
+  getGroupedAdminPages(): Record<string, AdminPage[]> {
+    const grouped: Record<string, AdminPage[]> = {};
+    
+    this.adminPages.forEach((page) => {
+      const group = page.group || 'Other';
+      if (!grouped[group]) {
+        grouped[group] = [];
+      }
+      grouped[group].push(page);
+    });
+    
+    return grouped;
   }
 }
 
-// Export a singleton instance
-export const componentRegistry = new ComponentRegistryService();
+// Create singleton instance
+export const componentRegistry = new ComponentRegistry();
 
-/**
- * Hook to access the component registry
- * @returns The component registry service
- */
-export function useComponentRegistry() {
-  return componentRegistry;
-}
+export default componentRegistry;
