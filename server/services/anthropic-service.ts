@@ -1,271 +1,222 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { db } from '../db';
-import { apiKeys } from '@shared/schema';
-import { eq, and } from 'drizzle-orm';
+import dotenv from 'dotenv';
 
-/**
- * Service to manage Anthropic API interactions
- * This centralizes all Anthropic functionality to ensure API key validation
- * and consistent error handling
- */
+// Load environment variables
+dotenv.config();
 
-// Get Anthropic client with API key validation
-async function getAnthropicClient(): Promise<Anthropic> {
-  // Check if API key is set in environment variables
-  if (!process.env.ANTHROPIC_API_KEY) {
-    throw new Error('Anthropic API key not configured');
-  }
+// Initialize Anthropic client
+const anthropicClient = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+});
 
-  return new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-  });
+// the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
+const MODEL = 'claude-3-7-sonnet-20250219';
+
+export interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
 }
 
-// Generate a personalized coaching response based on user's profile, message, and history
-export async function generatePersonalizedCoachingResponse(
-  userId: number,
-  userMessage: string,
-  messageHistory: any[],
-  athleteProfile: any
-): Promise<string> {
-  try {
-    // Get Anthropic client
-    const anthropic = await getAnthropicClient();
-    
-    // Create a system prompt that establishes the coaching companion persona
-    // and incorporates the athlete's profile for personalization
-    const systemPrompt = `You are an inspiring and motivational sports coach for Go4It Sports, 
-    specifically designed to support neurodivergent young athletes (ages 12-18). 
-    
-    ATHLETE PROFILE:
-    - Name: ${athleteProfile.name || 'the athlete'}
-    - Age: ${athleteProfile.age || 'teenage'}
-    - Sport Focus: ${athleteProfile.sportFocus || 'multiple sports'}
-    - ADHD Profile: ${athleteProfile.adhdProfile || 'has attention and focus challenges'}
-    - Strengths: ${athleteProfile.strengths ? athleteProfile.strengths.join(', ') : 'developing athletic abilities'}
-    - Areas for Growth: ${athleteProfile.areasForGrowth ? athleteProfile.areasForGrowth.join(', ') : 'technical skills and consistency'}
-    - Current GAR Score: ${athleteProfile.garScore || 'being evaluated'}
-    - Recent Performance: ${athleteProfile.recentPerformance || 'showing progress with room for improvement'}
+export const anthropicService = {
+  /**
+   * Generate a response to a chat message using Claude
+   */
+  async getChatResponse(
+    message: string, 
+    messageHistory: ChatMessage[] = [],
+    systemPrompt?: string
+  ): Promise<string> {
+    try {
+      // Format message history for Anthropic API
+      const messages = [
+        ...messageHistory.map(msg => ({
+          role: msg.role === 'user' ? 'user' : 'assistant',
+          content: msg.content
+        })),
+        { role: 'user' as const, content: message }
+      ];
+      
+      // Default system prompt for athletic coaching
+      const defaultSystemPrompt = `
+        You are a personalized coaching companion for Go4It Sports, a platform for neurodivergent student athletes aged 12-18.
+        Your role is to provide supportive, motivational, and technically sound coaching advice.
+        
+        Key guidelines:
+        - Be encouraging and positive, especially for athletes with ADHD who may struggle with focus and consistency
+        - Provide clear, concise instructions with bullet points and numbered steps
+        - Break down complex movements into simpler parts
+        - Offer specific drills and exercises that address the athlete's questions
+        - Suggest modifications for different skill levels
+        - Incorporate focus strategies that help neurodivergent athletes
+        - Remember these athletes are middle/high school students, so keep advice age-appropriate
+        - Every response should be constructive, even when pointing out improvements
+        
+        You are knowledgeable about the following sports: basketball, football, soccer, baseball, volleyball, track, swimming, tennis, golf, and wrestling.
+      `;
+      
+      const response = await anthropicClient.messages.create({
+        model: MODEL,
+        max_tokens: 2048,
+        system: systemPrompt || defaultSystemPrompt,
+        messages,
+      });
 
-    YOUR COACHING STYLE:
-    - Keep communication clear, concise, and direct - ideal for athletes with ADHD
-    - Use positive reinforcement and celebrate small victories
-    - Break down complex concepts into simple, actionable steps
-    - Adapt your tone to be engaging, energetic, and supportive
-    - Focus on practical advice that can be implemented immediately
-    - Address both athletic performance and mental focus strategies
-    - Provide specific, concrete examples and analogies
-    - Maintain a 3:1 ratio of positive feedback to constructive criticism
-    
-    Respond to the athlete's questions and concerns with personalized guidance,
-    always considering their specific profile, ADHD considerations, and athletic goals.`;
+      return response.content[0].text;
+    } catch (error) {
+      console.error('Error calling Anthropic API:', error);
+      throw new Error('Failed to generate response from AI coach');
+    }
+  },
 
-    // Format the message history for Anthropic
-    const formattedMessages = messageHistory.map(msg => ({
-      role: msg.role,
-      content: msg.content
-    }));
-
-    // Add the user's current message
-    formattedMessages.push({
-      role: 'user',
-      content: userMessage
-    });
-
-    // Make the API call to Anthropic
-    // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
-    const response = await anthropic.messages.create({
-      model: 'claude-3-7-sonnet-20250219',
-      system: systemPrompt,
-      messages: formattedMessages,
-      max_tokens: 1500,
-    });
-
-    // Return the coach's response
-    return response.content[0].text;
-  } catch (error) {
-    console.error('Error generating personalized coaching response:', error);
-    throw new Error('Failed to generate coaching response');
-  }
-}
-
-// Generate a sport-specific training plan based on athlete profile
-export async function generateTrainingPlan(
-  userId: number,
-  sportType: string,
-  athleteProfile: any,
-  focusArea: string
-): Promise<any> {
-  try {
-    // Get Anthropic client
-    const anthropic = await getAnthropicClient();
-    
-    // Create a system prompt for generating a training plan
-    const systemPrompt = `You are an expert sports training planner for Go4It Sports, 
-    specializing in creating personalized training plans for neurodivergent young athletes (ages 12-18).
-    
-    ATHLETE PROFILE:
-    - Sport Focus: ${sportType || 'multiple sports'}
-    - ADHD Profile: ${athleteProfile.adhdProfile || 'has attention and focus challenges'}
-    - Physical Metrics: ${athleteProfile.physicalMetrics || 'standard for age group'}
-    - Skill Level: ${athleteProfile.skillLevel || 'developing'}
-    - Focus Area: ${focusArea || 'overall improvement'}
-    
-    TRAINING PLAN REQUIREMENTS:
-    - Create a structured 7-day training plan
-    - Each day should include specific activities with clear objectives
-    - Include rest/recovery periods appropriate for the athlete's age
-    - Design workouts to be engaging and varied (ideal for ADHD athletes)
-    - Include measurable goals and achievement metrics
-    - Incorporate visualization and mental preparation techniques
-    - Add modifications for different skill levels
-    - Include time estimates for each activity (keep individual activities under 30 minutes for better focus)
-    
-    Format your response as a JSON object with the following structure:
-    {
-      "title": "Training Plan Title",
-      "sportType": "Sport Name",
-      "focusArea": "Specific focus of this plan",
-      "durationDays": 7,
-      "recommendedLevel": "Beginner/Intermediate/Advanced",
-      "overview": "Brief overview of the training plan",
-      "days": [
+  /**
+   * Generate a personalized training plan
+   */
+  async generateTrainingPlan(
+    sportType: string, 
+    focusArea: string, 
+    athleteContext?: string
+  ): Promise<any> {
+    try {
+      const systemPrompt = `
+        You are a specialized sports training plan generator for Go4It Sports, a platform for neurodivergent student athletes aged 12-18.
+        Generate a detailed, structured training plan in JSON format based on the requested sport and focus area.
+        
+        Key guidelines:
+        - Tailor the plan for young neurodivergent athletes (primarily with ADHD)
+        - Include ADHD-specific strategies in each activity (e.g., timer use, visual cues, chunking workouts)
+        - Balance technical development with fun and engagement
+        - Structure activities to have clear start/finish points
+        - Include variety to maintain attention
+        - Incorporate both physical and mental training
+        - Keep sessions appropriately timed for younger athletes (30-45 mins ideal)
+        - Include built-in breaks and transitions between activities
+        
+        The plan should be detailed enough for implementation but not overwhelming.
+      `;
+      
+      const message = `
+        Please create a comprehensive training plan for a student athlete focused on ${sportType} with emphasis on improving ${focusArea}.
+        
+        ${athleteContext ? `Additional athlete context: ${athleteContext}` : ''}
+        
+        Return the training plan in JSON format that conforms exactly to this structure:
         {
-          "day": 1,
-          "title": "Day title",
-          "focus": "Main focus of this day",
-          "activities": [
+          "title": "Plan title",
+          "sportType": "${sportType}",
+          "focusArea": "${focusArea}",
+          "durationDays": 7, // Number of days in plan
+          "recommendedLevel": "Beginner", // or "Intermediate" or "Advanced"
+          "overview": "Brief overview of the plan",
+          "days": [
             {
-              "name": "Activity name",
-              "duration": "Duration in minutes",
-              "description": "Detailed instructions",
-              "intensity": "Low/Medium/High",
-              "adhdConsiderations": "Specific modifications or tips for ADHD athletes"
-            }
+              "day": 1,
+              "title": "Day 1 focus",
+              "focus": "Brief description of day's focus",
+              "activities": [
+                {
+                  "name": "Activity name",
+                  "duration": "15 minutes",
+                  "description": "Detailed description",
+                  "intensity": "Low", // or "Medium" or "High"
+                  "adhdConsiderations": "ADHD-specific modifications"
+                },
+                // More activities...
+              ],
+              "cooldown": "Cooldown description",
+              "mentalTraining": "Mental training exercise"
+            },
+            // More days...
+          ]
+        }
+        
+        Ensure the plan is appropriate for a student athlete (12-18 years old) and includes neurodivergent-friendly activities and considerations.
+      `;
+      
+      const response = await anthropicClient.messages.create({
+        model: MODEL,
+        max_tokens: 4000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: message }],
+        response_format: { type: 'json_object' }
+      });
+      
+      // Parse the JSON response
+      const trainingPlan = JSON.parse(response.content[0].text);
+      return trainingPlan;
+    } catch (error) {
+      console.error('Error generating training plan:', error);
+      throw new Error('Failed to generate training plan');
+    }
+  },
+
+  /**
+   * Generate feedback on a sports performance video
+   */
+  async generateVideoFeedback(
+    sportType: string, 
+    videoDescription: string
+  ): Promise<any> {
+    try {
+      const systemPrompt = `
+        You are a specialized sports performance analyzer for Go4It Sports, a platform for neurodivergent student athletes aged 12-18.
+        Your role is to analyze video performance descriptions and provide constructive, detailed feedback.
+        
+        Key guidelines:
+        - Focus on both strengths and areas for improvement
+        - Provide specific, actionable feedback
+        - Include ADHD-specific considerations and recommendations
+        - Be encouraging and constructive, especially for young athletes
+        - Suggest specific drills or exercises to address improvement areas
+        - Maintain a positive tone even when identifying weaknesses
+        - Format feedback in a clear, structured way for neurodivergent athletes
+        
+        Respond with detailed, structured feedback in JSON format.
+      `;
+      
+      const message = `
+        Please analyze this ${sportType} performance based on the following description:
+        
+        ${videoDescription}
+        
+        Return your analysis in JSON format that conforms exactly to this structure:
+        {
+          "overallImpression": "Brief overall assessment",
+          "strengths": [
+            {
+              "area": "Technical aspect",
+              "observation": "What you observed",
+              "impact": "How this positively affects performance"
+            },
+            // 2-3 more strengths...
           ],
-          "cooldown": "Cooldown activity",
-          "mentalTraining": "Mental training component"
+          "improvementAreas": [
+            {
+              "area": "Technical aspect",
+              "observation": "What you observed",
+              "recommendation": "How to improve",
+              "drill": "Specific exercise to practice"
+            },
+            // 2-3 more improvement areas...
+          ],
+          "adhdConsiderations": "Specific recommendations for athletes with ADHD",
+          "nextStepsFocus": "Recommended primary focus for next practice"
         }
-      ]
-    }`;
-
-    // Make the API call to Anthropic
-    // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
-    const response = await anthropic.messages.create({
-      model: 'claude-3-7-sonnet-20250219',
-      system: systemPrompt,
-      messages: [
-        {
-          role: 'user',
-          content: `Please create a personalized ${sportType} training plan for me focusing on ${focusArea}.`
-        }
-      ],
-      max_tokens: 2000,
-    });
-
-    // Parse the JSON response
-    try {
-      // Extract the JSON from the response text
-      const responseText = response.content[0].text;
-      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      `;
       
-      if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
-      } else {
-        throw new Error('No valid JSON found in response');
-      }
-    } catch (parseError) {
-      console.error('Error parsing training plan JSON:', parseError);
-      throw new Error('Failed to parse training plan');
-    }
-  } catch (error) {
-    console.error('Error generating training plan:', error);
-    throw new Error('Failed to generate training plan');
-  }
-}
-
-// Generate personalized feedback on athlete's performance video
-export async function generateVideoFeedback(
-  userId: number,
-  sportType: string,
-  videoDescription: string,
-  athleteProfile: any
-): Promise<any> {
-  try {
-    // Get Anthropic client
-    const anthropic = await getAnthropicClient();
-    
-    // Create a system prompt for analyzing video performance
-    const systemPrompt = `You are an expert sports coach and video analyst for Go4It Sports, 
-    specializing in providing feedback for neurodivergent young athletes (ages 12-18).
-    
-    ATHLETE PROFILE:
-    - Sport Focus: ${sportType || 'multiple sports'}
-    - ADHD Profile: ${athleteProfile.adhdProfile || 'has attention and focus challenges'}
-    - Skill Level: ${athleteProfile.skillLevel || 'developing'}
-    
-    VIDEO FEEDBACK REQUIREMENTS:
-    - Provide constructive, encouraging feedback on the athlete's performance
-    - Highlight 3 specific strengths demonstrated in the video
-    - Identify 2-3 areas for improvement with specific, actionable tips
-    - Keep feedback concise and direct (ideal for ADHD athletes)
-    - Use positive, motivational language
-    - Include specific drills or exercises to address areas for improvement
-    - Consider the athlete's neurodivergent profile in your recommendations
-    
-    Format your response as a JSON object with the following structure:
-    {
-      "overallImpression": "Brief overall impression",
-      "strengths": [
-        {
-          "area": "Strength area",
-          "observation": "What was observed",
-          "impact": "Why this is important"
-        }
-      ],
-      "improvementAreas": [
-        {
-          "area": "Area for improvement",
-          "observation": "What was observed",
-          "recommendation": "Specific, actionable advice",
-          "drill": "Recommended drill to improve this area"
-        }
-      ],
-      "adhdConsiderations": "Specific ADHD-friendly tips",
-      "nextStepsFocus": "What to focus on next"
-    }`;
-
-    // Make the API call to Anthropic
-    // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
-    const response = await anthropic.messages.create({
-      model: 'claude-3-7-sonnet-20250219',
-      system: systemPrompt,
-      messages: [
-        {
-          role: 'user',
-          content: `Please analyze my ${sportType} performance video and provide feedback. Video description: ${videoDescription}`
-        }
-      ],
-      max_tokens: 1500,
-    });
-
-    // Parse the JSON response
-    try {
-      // Extract the JSON from the response text
-      const responseText = response.content[0].text;
-      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      const response = await anthropicClient.messages.create({
+        model: MODEL,
+        max_tokens: 3000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: message }],
+        response_format: { type: 'json_object' }
+      });
       
-      if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
-      } else {
-        throw new Error('No valid JSON found in response');
-      }
-    } catch (parseError) {
-      console.error('Error parsing video feedback JSON:', parseError);
-      throw new Error('Failed to parse video feedback');
+      // Parse the JSON response
+      const feedback = JSON.parse(response.content[0].text);
+      return feedback;
+    } catch (error) {
+      console.error('Error generating video feedback:', error);
+      throw new Error('Failed to generate video feedback');
     }
-  } catch (error) {
-    console.error('Error generating video feedback:', error);
-    throw new Error('Failed to generate video feedback');
   }
-}
+};

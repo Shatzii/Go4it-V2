@@ -33,7 +33,8 @@ import {
   workoutVerifications, type WorkoutVerification, type InsertWorkoutVerification,
   workoutVerificationCheckpoints, type WorkoutVerificationCheckpoint, type InsertWorkoutVerificationCheckpoint,
   onboardingProgress, type OnboardingProgress, type InsertOnboardingProgress,
-  athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile
+  athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile,
+  anthropicTrainingPlans, type AnthropicTrainingPlan, type InsertAnthropicTrainingPlan
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql, inArray, asc } from "drizzle-orm";

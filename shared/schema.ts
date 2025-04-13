@@ -2825,6 +2825,34 @@ export type NcaaTeamRoster = typeof ncaaTeamRosters.$inferSelect;
 export type InsertNcaaTeamRoster = z.infer<typeof insertNcaaTeamRostersSchema>;
 
 /**
+ * Anthropic AI Coach Training Plans
+ */
+export const anthropicTrainingPlans = pgTable("anthropic_training_plans", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  title: text("title").notNull(),
+  sportType: text("sport_type").notNull(),
+  focusArea: text("focus_area").notNull(),
+  durationDays: integer("duration_days").notNull(),
+  recommendedLevel: text("recommended_level").notNull(),
+  overview: text("overview").notNull(),
+  planData: jsonb("plan_data").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at"),
+  completedDay: integer("completed_day").default(0),
+  isCompleted: boolean("is_completed").default(false),
+  completedAt: timestamp("completed_at"),
+  rating: integer("rating"),
+  feedback: text("feedback"),
+});
+
+export const insertAnthropicTrainingPlanSchema = createInsertSchema(anthropicTrainingPlans)
+  .omit({ id: true, updatedAt: true, completedAt: true });
+
+export type AnthropicTrainingPlan = typeof anthropicTrainingPlans.$inferSelect;
+export type InsertAnthropicTrainingPlan = z.infer<typeof insertAnthropicTrainingPlanSchema>;
+
+/**
  * CMS Types
  */
 
