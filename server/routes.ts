@@ -24,6 +24,7 @@ import combineRoutes from './routes/combine-routes';
 import combinePublicRoutes from './routes/combine-public-routes';
 import academicRoutes from './routes/academic-routes';
 import animationRoutes from './routes/animation-routes';
+import cmsRoutes from './routes/cms-routes';
 
 // Helper function to determine event status
 function getEventStatus(event: any): 'upcoming' | 'filling_fast' | 'sold_out' | 'past' {
@@ -5400,8 +5401,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register animation routes
   app.use('/api/animations', animationRoutes);
+  app.use('/api/cms', cmsRoutes);
 
-  // Content Blocks API Routes
+  // Legacy Content Blocks API Routes (will be deprecated)
   app.get("/api/content-blocks", async (req: Request, res: Response) => {
     try {
       const section = req.query.section as string;
