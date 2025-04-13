@@ -63,7 +63,7 @@ const CombineEventManager = () => {
   // Create event mutation
   const createEventMutation = useMutation({
     mutationFn: async (newEvent: any) => {
-      return await apiRequest('/api/combine-tour/events', 'POST', newEvent);
+      return await apiRequest('POST', '/api/combine-tour/events', newEvent);
     },
     onSuccess: () => {
       toast({
@@ -87,7 +87,7 @@ const CombineEventManager = () => {
   const updateEventMutation = useMutation({
     mutationFn: async (event: any) => {
       const { id, ...eventData } = event;
-      return await apiRequest(`/api/combine-tour/events/${id}`, 'PUT', eventData);
+      return await apiRequest('PUT', `/api/combine-tour/events/${id}`, eventData);
     },
     onSuccess: () => {
       toast({
@@ -110,7 +110,7 @@ const CombineEventManager = () => {
   // Delete event mutation
   const deleteEventMutation = useMutation({
     mutationFn: async (id: number) => {
-      return await apiRequest(`/api/combine-tour/events/${id}`, 'DELETE');
+      return await apiRequest('DELETE', `/api/combine-tour/events/${id}`);
     },
     onSuccess: () => {
       toast({
