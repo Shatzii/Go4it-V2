@@ -1,133 +1,204 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { PlusCircle, LayoutGrid, Layers, FileEdit, Eye } from "lucide-react";
-import { Badge } from '@/components/ui/badge';
-import { Link, useLocation } from 'wouter';
-import PageManager from '@/components/admin/PageManager';
-import ContentBlockManager from '@/components/admin/ContentBlockManager';
-import PageComponentEditor from '@/components/admin/PageComponentEditor';
-import { componentRegistry } from '@/services/component-registry-service';
+import ContentBlockManager from "@/components/admin/ContentBlockManager";
+import PageManager from "@/components/admin/PageManager";
+import PageComponentEditor from "@/components/admin/PageComponentEditor";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { LayoutGrid, FileText, Blocks, Settings, Users, Code, Package, FileCode } from "lucide-react";
 
 export default function CmsManager() {
-  const [location, setLocation] = useLocation();
-  const [activeTab, setActiveTab] = useState<string>("pages");
-  
-  // Get registered components from the registry
-  const registeredComponents = componentRegistry.getRegisteredComponents();
+  const [selectedTab, setSelectedTab] = useState('content-blocks');
+  const [selectedPageId, setSelectedPageId] = useState<number | null>(null);
 
   return (
-    <div className="container max-w-screen-2xl mx-auto p-4 md:p-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
+    <div className="container mx-auto py-6 max-w-7xl">
+      <div className="flex flex-col space-y-6">
         <div>
-          <h1 className="text-3xl font-bold mb-2">CMS Manager</h1>
+          <h1 className="text-3xl font-bold tracking-tight">CMS Manager</h1>
           <p className="text-muted-foreground">
-            Manage pages, content blocks, and components for the Go4It Sports platform
+            Manage your website content, pages, and components
           </p>
         </div>
-        <div className="flex gap-2 mt-4 md:mt-0">
-          <Button variant="outline" asChild>
-            <Link href="/">
-              <Eye className="h-4 w-4 mr-2" />
-              Preview Site
-            </Link>
-          </Button>
-          <Button>
-            <PlusCircle className="h-4 w-4 mr-2" />
-            New Page
-          </Button>
-        </div>
-      </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-6">
-          <TabsTrigger value="pages" className="flex items-center gap-2">
-            <LayoutGrid className="h-4 w-4" />
-            Pages
-          </TabsTrigger>
-          <TabsTrigger value="content-blocks" className="flex items-center gap-2">
-            <Layers className="h-4 w-4" />
-            Content Blocks
-          </TabsTrigger>
-          <TabsTrigger value="components" className="flex items-center gap-2">
-            <FileEdit className="h-4 w-4" />
-            Components
-          </TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="pages">
-          <PageManager />
-        </TabsContent>
-        
-        <TabsContent value="content-blocks">
-          <ContentBlockManager />
-        </TabsContent>
-        
-        <TabsContent value="components">
-          <Card>
-            <CardHeader>
-              <CardTitle>Registered Components</CardTitle>
-              <CardDescription>
-                Manage UI components that can be used in pages and content blocks
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {registeredComponents.map((component) => (
-                  <Card key={component.id} className="overflow-hidden">
-                    <CardHeader className="p-4 pb-3">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <CardTitle className="text-base">{component.name}</CardTitle>
-                          <CardDescription className="text-xs mt-1">
-                            {component.description}
-                          </CardDescription>
-                        </div>
-                        <Badge variant="outline">{component.category}</Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="p-4 pt-0">
-                      <div className="flex flex-wrap gap-1 mb-4">
-                        {component.tags?.map((tag) => (
-                          <Badge key={tag} variant="secondary" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                      <div className="flex justify-end gap-2">
-                        <Button variant="outline" size="sm">
-                          <Eye className="h-3 w-3 mr-1" />
-                          Preview
-                        </Button>
-                        <Button size="sm">
-                          <FileEdit className="h-3 w-3 mr-1" />
-                          Use
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+        <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-4">
+          <div className="flex justify-between items-center">
+            <TabsList className="grid grid-cols-3 w-[400px]">
+              <TabsTrigger value="content-blocks" className="flex items-center">
+                <Blocks className="w-4 h-4 mr-2" />
+                Content Blocks
+              </TabsTrigger>
+              <TabsTrigger value="pages" className="flex items-center">
+                <FileText className="w-4 h-4 mr-2" />
+                Pages
+              </TabsTrigger>
+              <TabsTrigger 
+                value="page-editor" 
+                className="flex items-center"
+                disabled={!selectedPageId}
+              >
+                <LayoutGrid className="w-4 h-4 mr-2" />
+                Page Editor
+              </TabsTrigger>
+            </TabsList>
+            
+            <div className="flex gap-2">
+              <TabsTrigger 
+                value="settings" 
+                className="flex items-center px-3"
+                variant="outline"
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                Settings
+              </TabsTrigger>
+            </div>
+          </div>
 
-              {registeredComponents.length === 0 && (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground mb-4">
-                    No components have been registered yet.
-                  </p>
-                  <p className="text-sm text-muted-foreground mb-6">
-                    Register components with the Component Registry to make them available for use in the CMS.
-                  </p>
-                  <Button>
-                    <PlusCircle className="h-4 w-4 mr-2" />
-                    Register Component
-                  </Button>
+          <TabsContent value="content-blocks" className="space-y-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-2xl">Content Blocks</CardTitle>
+                <CardDescription>
+                  Create and manage reusable content blocks for your website
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ContentBlockManager />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="pages" className="space-y-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-2xl">Page Manager</CardTitle>
+                <CardDescription>
+                  Create and manage pages on your website
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <PageManager 
+                  onSelectPage={(pageId) => {
+                    setSelectedPageId(pageId);
+                    setSelectedTab('page-editor');
+                  }}
+                />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="page-editor" className="space-y-4">
+            {selectedPageId ? (
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <CardTitle className="text-2xl">Page Component Editor</CardTitle>
+                      <CardDescription>
+                        Edit the components and layout of your page
+                      </CardDescription>
+                    </div>
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <button 
+                        className="text-primary hover:underline flex items-center"
+                        onClick={() => setSelectedTab('pages')}
+                      >
+                        <FileText className="w-4 h-4 mr-1" />
+                        Back to Pages
+                      </button>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <PageComponentEditor pageId={selectedPageId} />
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardContent className="flex items-center justify-center p-6">
+                  <div className="text-center">
+                    <FileText className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                    <h3 className="text-lg font-medium mb-2">No Page Selected</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Select a page from the Page Manager to edit its components
+                    </p>
+                    <button
+                      className="text-primary hover:underline flex items-center justify-center mx-auto"
+                      onClick={() => setSelectedTab('pages')}
+                    >
+                      <FileText className="w-4 h-4 mr-1" />
+                      Go to Page Manager
+                    </button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="settings" className="space-y-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-2xl">CMS Settings</CardTitle>
+                <CardDescription>
+                  Configure your CMS settings and permissions
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <SettingsCard 
+                    title="Content Types" 
+                    description="Configure content type schemas and fields"
+                    icon={<FileCode className="w-8 h-8" />}
+                  />
+                  <SettingsCard 
+                    title="Component Library" 
+                    description="Manage your component library and templates"
+                    icon={<Package className="w-8 h-8" />}
+                  />
+                  <SettingsCard 
+                    title="User Permissions" 
+                    description="Configure user roles and permissions"
+                    icon={<Users className="w-8 h-8" />}
+                  />
+                  <SettingsCard 
+                    title="API Access" 
+                    description="Manage API keys and access permissions"
+                    icon={<Code className="w-8 h-8" />}
+                  />
+                  <SettingsCard 
+                    title="Workflows" 
+                    description="Configure content approval workflows"
+                    icon={<Blocks className="w-8 h-8" />}
+                  />
+                  <SettingsCard 
+                    title="Site Settings" 
+                    description="Configure global site settings and metadata"
+                    icon={<Settings className="w-8 h-8" />}
+                  />
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
+  );
+}
+
+function SettingsCard({ title, description, icon }: { title: string; description: string; icon: React.ReactNode }) {
+  return (
+    <Card className="hover:border-primary cursor-pointer transition-colors">
+      <CardContent className="pt-6">
+        <div className="flex gap-4 items-start">
+          <div className="bg-primary/10 p-3 rounded-md text-primary">
+            {icon}
+          </div>
+          <div>
+            <h3 className="font-semibold mb-1">{title}</h3>
+            <p className="text-sm text-muted-foreground">{description}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
