@@ -1,267 +1,512 @@
-import { anthropicService } from './anthropic-service';
-import { openAIService } from './openai-service';
 import OpenAI from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+// Initialize API clients
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+});
+
+// Define interfaces for coach service
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+interface CoachingRequest {
+  message: string;
+  messageHistory?: ChatMessage[];
+  modelPreference?: 'claude' | 'gpt' | 'auto';
+}
+
+interface CoachingResponse {
+  message: string;
+  source: 'claude' | 'gpt';
+  timestamp: string;
+}
+
+interface TrainingAdviceRequest {
+  sport: string;
+  skillLevel: 'beginner' | 'intermediate' | 'advanced' | 'elite';
+  focusArea: string;
+}
+
+interface TrainingDrill {
+  name: string;
+  description: string;
+  duration: string; 
+  difficulty: string;
+  adhdConsiderations: string | null;
+}
+
+interface TrainingAdviceResponse {
+  advice: string;
+  drills: TrainingDrill[];
+  source: 'claude' | 'gpt';
+}
+
+interface VideoFeedbackRequest {
+  sportType: string;
+  videoDescription: string;
+}
+
+interface VideoFeedbackResponse {
+  feedback: {
+    overallAssessment: string;
+    technicalAnalysis: string;
+    strengths: string[];
+    improvementAreas: string[];
+    adhdConsiderations: string;
+    nextSteps: string;
+  };
+  source: 'claude' | 'gpt';
+}
 
 /**
- * Service for managing hybrid AI coaching capabilities 
- * that intelligently routes requests between Claude and GPT models
- * based on the specific task requirements.
+ * Determine the best AI model based on the message content and type of task
+ * 
+ * Claude is preferred for:
+ * - Personalized training plans
+ * - Video analysis and detailed technique feedback
+ * - Mental health and ADHD-specific support 
+ * - Longer, more detailed responses
+ * 
+ * GPT is preferred for:
+ * - Quick tactical advice
+ * - Statistical analysis and comparisons
+ * - Sport-specific technical information
+ * - Performance metrics evaluation
  */
-export class HybridAiCoachService {
-  private openai: OpenAI | null = null;
-  
-  constructor() {
-    console.log('Hybrid AI Coach Service initialized');
-    this.initializeOpenAI();
+function determineOptimalModel(
+  request: CoachingRequest | TrainingAdviceRequest | VideoFeedbackRequest, 
+  requestType: 'chat' | 'training' | 'video'
+): 'claude' | 'gpt' {
+  // If user has a preference, respect it
+  if ('modelPreference' in request && request.modelPreference && request.modelPreference !== 'auto') {
+    return request.modelPreference;
   }
   
+  // For video analysis, Claude typically provides better feedback
+  if (requestType === 'video') {
+    return 'claude';
+  }
+  
+  // For training advice, determine based on sport and focus area
+  if (requestType === 'training') {
+    const req = request as TrainingAdviceRequest;
+    
+    // For elite-level advice, Claude's nuanced understanding may be better
+    if (req.skillLevel === 'elite') {
+      return 'claude';
+    }
+    
+    // For mental aspects, Claude is better
+    if (req.focusArea.toLowerCase().includes('mental') || 
+        req.focusArea.toLowerCase().includes('focus') ||
+        req.focusArea.toLowerCase().includes('confidence')) {
+      return 'claude';
+    }
+    
+    // For technical skills, GPT's knowledge base is strong
+    if (req.focusArea.toLowerCase().includes('technique') ||
+        req.focusArea.toLowerCase().includes('skills') ||
+        req.focusArea.toLowerCase().includes('form')) {
+      return 'gpt';
+    }
+    
+    // Default to Claude for training plans for better structure
+    return 'claude';
+  }
+  
+  // For chat, analyze the content
+  if (requestType === 'chat') {
+    const req = request as CoachingRequest;
+    
+    // Claude for mental health, detailed training plans, and personal topics
+    if (req.message.toLowerCase().includes('mental health') ||
+        req.message.toLowerCase().includes('adhd') ||
+        req.message.toLowerCase().includes('anxiety') ||
+        req.message.toLowerCase().includes('overwhelmed') ||
+        req.message.toLowerCase().includes('focus issues') ||
+        req.message.toLowerCase().includes('training plan') ||
+        req.message.toLowerCase().includes('workout schedule') ||
+        req.message.toLowerCase().includes('personal') ||
+        req.message.toLowerCase().includes('struggling')) {
+      return 'claude';
+    }
+    
+    // GPT for statistics, tactics, technical knowledge
+    if (req.message.toLowerCase().includes('stats') ||
+        req.message.toLowerCase().includes('statistics') ||
+        req.message.toLowerCase().includes('tactics') ||
+        req.message.toLowerCase().includes('strategy') ||
+        req.message.toLowerCase().includes('compare') ||
+        req.message.toLowerCase().includes('metrics') ||
+        req.message.toLowerCase().includes('percentages') ||
+        req.message.toLowerCase().includes('analysis')) {
+      return 'gpt';
+    }
+    
+    // Default to Claude for general conversation
+    return 'claude';
+  }
+  
+  // Default fallback
+  return 'claude';
+}
+
+class HybridAICoachService {
   /**
-   * Initialize OpenAI client
+   * Process a coaching chat request, routing to the optimal model
    */
-  private async initializeOpenAI() {
+  async getChatResponse(request: CoachingRequest): Promise<CoachingResponse> {
     try {
-      this.openai = await openAIService.getClient();
-      console.log('OpenAI client initialized for hybrid coaching');
-    } catch (error) {
-      console.error('Error initializing OpenAI for hybrid coaching:', error);
-    }
-  }
-  
-  /**
-   * Analyzes message content to determine which AI model would be more appropriate
-   * 
-   * @param message The user's message
-   * @returns The recommended model ('claude' or 'gpt')
-   */
-  private analyzeMessageContent(message: string): 'claude' | 'gpt' {
-    // Convert to lowercase for matching
-    const lowerMessage = message.toLowerCase();
-    
-    // Keywords that suggest Claude would be better (more detailed training, nuanced feedback)
-    const claudeKeywords = [
-      'training plan',
-      'workout routine',
-      'technique analysis',
-      'form check',
-      'detailed feedback',
-      'mental approach',
-      'psychology',
-      'neurodivergent',
-      'adhd strategies',
-      'learning style',
-      'focus issues',
-      'attention',
-      'comprehensive',
-      'personalized plan'
-    ];
-    
-    // Keywords that suggest GPT might be better (factual, tactical, statistics)
-    const gptKeywords = [
-      'stats',
-      'statistics',
-      'player comparison',
-      'historical',
-      'rules',
-      'quick tips',
-      'game strategy',
-      'tactical',
-      'record',
-      'schedule',
-      'league',
-      'tournament',
-      'equipment',
-      'nutrition facts',
-      'game plan'
-    ];
-    
-    // Count matches for each model
-    let claudeMatches = 0;
-    let gptMatches = 0;
-    
-    // Check Claude keywords
-    for (const keyword of claudeKeywords) {
-      if (lowerMessage.includes(keyword)) {
-        claudeMatches++;
-      }
-    }
-    
-    // Check GPT keywords
-    for (const keyword of gptKeywords) {
-      if (lowerMessage.includes(keyword)) {
-        gptMatches++;
-      }
-    }
-    
-    // Check for explicit question types - Claude is better at personalized training/technique
-    const askingForTrainingPlan = 
-      lowerMessage.includes('create a training plan') || 
-      lowerMessage.includes('build me a workout') ||
-      lowerMessage.includes('design a program');
+      const model = determineOptimalModel(request, 'chat');
       
-    if (askingForTrainingPlan) {
-      claudeMatches += 3; // Give extra weight to these specific requests
-    }
-    
-    // Check for statistics or fact-checking requests - GPT is better at these
-    const askingForStats = 
-      lowerMessage.includes('what are the stats') || 
-      lowerMessage.includes('player records') ||
-      lowerMessage.includes('tell me about the history');
+      // Format message history for the selected model
+      const messages = request.messageHistory || [];
       
-    if (askingForStats) {
-      gptMatches += 3; // Give extra weight to these specific requests
-    }
-    
-    // Make the decision based on keyword matches
-    return claudeMatches >= gptMatches ? 'claude' : 'gpt';
-  }
-  
-  /**
-   * Generate a coaching response using the appropriate AI model
-   * 
-   * @param userId The user ID
-   * @param message The user's message
-   * @param modelPreference Optional preference for which model to use
-   * @returns The AI response and which model was used
-   */
-  async getCoachingResponse(
-    userId: number, 
-    message: string, 
-    messageHistory: Array<{role: 'user' | 'assistant', content: string}> = [],
-    modelPreference: 'claude' | 'gpt' | 'auto' = 'auto'
-  ): Promise<{message: string, source: string}> {
-    try {
-      console.log(`Getting coaching response for user ${userId}, model preference: ${modelPreference}`);
-      
-      // Determine which model to use
-      let modelToUse: 'claude' | 'gpt';
-      
-      if (modelPreference === 'claude' || modelPreference === 'gpt') {
-        modelToUse = modelPreference;
-      } else {
-        modelToUse = this.analyzeMessageContent(message);
-      }
-      
-      console.log(`Using ${modelToUse} for response`);
-      
-      // Use the appropriate model
-      if (modelToUse === 'claude') {
-        const response = await anthropicService.getChatResponse(message, messageHistory);
-        return { message: response, source: 'claude' };
-      } else {
-        // Ensure OpenAI client is initialized
-        if (!this.openai) {
-          await this.initializeOpenAI();
-          if (!this.openai) {
-            throw new Error('OpenAI client not available');
-          }
-        }
-        
-        // System instruction for coaching context
-        const systemPrompt = `
-          You are an AI sports coach for a platform called Go4It Sports focused on 
-          student athletes aged 12-18 who may have ADHD or other neurodivergent traits.
-          Provide clear, concise coaching advice that's structured and easy to follow.
-          Use bullet points, numbered lists, and short paragraphs to improve readability.
-          Focus on being encouraging, accurate, and providing actionable advice.
-          Adjust your guidance to the athlete's apparent skill level and sport.
-        `;
-        
-        // Format message history for OpenAI
-        const formattedHistory = messageHistory.map(msg => ({
+      if (model === 'claude') {
+        // Call Claude API
+        const claudeMessages = messages.map(msg => ({
           role: msg.role,
           content: msg.content
         }));
         
-        // Call OpenAI API
-        const response = await this.openai.chat.completions.create({
-          model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+        // Add the system message for context
+        const systemPrompt = `You are the Go4It Sports AI Coaching Assistant, focused on helping neurodivergent student athletes aged 12-18. 
+You specialize in personalized training advice, mental preparation strategies, and ADHD-friendly techniques. 
+Keep answers concise, practical, and actionable.
+Always include ADHD considerations in your advice.`;
+        
+        const response = await anthropic.messages.create({
+          model: 'claude-3-7-sonnet-20250219', // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
+          max_tokens: 1000,
+          system: systemPrompt,
           messages: [
-            { role: "system", content: systemPrompt },
-            ...formattedHistory,
-            { role: "user", content: message }
+            ...claudeMessages,
+            { role: 'user', content: request.message }
           ],
-          temperature: 0.7,
-          max_tokens: 800
         });
         
-        return { 
-          message: response.choices[0].message.content || "I'm sorry, I couldn't generate a response.", 
-          source: 'gpt' 
+        return {
+          message: response.content[0].text,
+          source: 'claude',
+          timestamp: new Date().toISOString()
+        };
+        
+      } else {
+        // Call GPT API  
+        const gptMessages = messages.map(msg => ({
+          role: msg.role as 'user' | 'assistant',
+          content: msg.content
+        }));
+        
+        const response = await openai.chat.completions.create({
+          model: 'gpt-4o', // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+          messages: [
+            {
+              role: 'system',
+              content: `You are the Go4It Sports AI Coaching Assistant, focused on helping neurodivergent student athletes aged 12-18. 
+You specialize in personalized training advice, mental preparation strategies, and ADHD-friendly techniques. 
+Keep answers concise, practical, and actionable.
+Always include ADHD considerations in your advice.`
+            },
+            ...gptMessages,
+            { role: 'user', content: request.message }
+          ],
+          max_tokens: 1000,
+        });
+        
+        return {
+          message: response.choices[0].message.content || 'No response generated',
+          source: 'gpt',
+          timestamp: new Date().toISOString()
         };
       }
+      
     } catch (error) {
-      console.error('Error in getCoachingResponse:', error);
+      console.error('Error generating coaching response:', error);
       throw error;
     }
   }
   
   /**
-   * Generate personalized training advice for a specific sport and focus area
-   * 
-   * @param userId The user ID
-   * @param sport The sport type
-   * @param skillLevel The user's skill level
-   * @param focusArea The specific area to focus on
-   * @returns Training advice, drills, and which model was used
+   * Generate personalized training advice for a specific sport
    */
-  async getPersonalizedTrainingAdvice(
-    userId: number, 
-    sport: string, 
-    skillLevel: string, 
-    focusArea: string
-  ): Promise<{advice: string, drills: any[], source: string}> {
+  async getTrainingAdvice(request: TrainingAdviceRequest): Promise<TrainingAdviceResponse> {
     try {
-      console.log(`Getting personalized training advice for user ${userId} in ${sport} with focus on ${focusArea}`);
+      const model = determineOptimalModel(request, 'training');
       
-      // For training plans and skill development, Claude is typically better
-      // Claude provides more detailed explanations for specific drills and techniques
-      const response = await anthropicService.generateTrainingPlan(sport, focusArea);
+      const prompt = `Create a personalized training plan for a ${request.skillLevel} level athlete in ${request.sport} focusing on improving ${request.focusArea}.
+Include:
+1. General advice on how to improve in this area (2-3 paragraphs)
+2. 3-5 specific drills or exercises, each with:
+   - Name
+   - Description
+   - Recommended duration
+   - Difficulty level
+   - ADHD considerations
+
+The athlete is a neurodivergent student (age 12-18) with ADHD, so include appropriate accommodations and strategies.`;
       
-      // Extract the advice and create a drill list from the training plan
-      const advice = response.overview || 
-        `Here's a personalized training plan for ${focusArea} in ${sport} at ${skillLevel} level.`;
+      if (model === 'claude') {
+        // Call Claude API
+        const systemPrompt = `You are a specialized sports coach for neurodivergent teenage athletes, particularly those with ADHD.
+You have expertise across multiple sports and understand how to create training plans that accommodate focus challenges and leverage hyperfocus strengths.
+Provide structured, clear responses that break information into manageable chunks.`;
+        
+        const response = await anthropic.messages.create({
+          model: 'claude-3-7-sonnet-20250219', // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
+          max_tokens: 1500,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: prompt }],
+        });
+        
+        // Parse Claude's response into structured data
+        const responseText = response.content[0].text;
+        
+        // Extract the advice (first 2-3 paragraphs)
+        const advice = responseText.split('\n\n').slice(0, 3).join('\n\n');
+        
+        // Extract the drills
+        const drillsSection = responseText.substring(advice.length);
+        const drillBlocks = drillsSection.split(/\n\s*(?=\d+\.\s+|[A-Z][a-z]+:)/g)
+          .filter(block => block.trim().length > 0);
+        
+        const drills: TrainingDrill[] = [];
+        
+        for (const block of drillBlocks) {
+          if (!block.includes(':')) continue;
+          
+          const nameMatch = block.match(/(?:\d+\.\s+)?([^:]+):/);
+          if (!nameMatch) continue;
+          
+          const name = nameMatch[1].trim();
+          const descriptionMatch = block.match(/Description:([^]*?)(?:Duration:|Difficulty:|ADHD Considerations:|$)/i);
+          const durationMatch = block.match(/Duration:([^]*?)(?:Difficulty:|ADHD Considerations:|$)/i);
+          const difficultyMatch = block.match(/Difficulty:([^]*?)(?:ADHD Considerations:|$)/i);
+          const adhdMatch = block.match(/ADHD Considerations:([^]*?)(?:\n\n\d+\.|$)/i);
+          
+          drills.push({
+            name,
+            description: descriptionMatch ? descriptionMatch[1].trim() : '',
+            duration: durationMatch ? durationMatch[1].trim() : '',
+            difficulty: difficultyMatch ? difficultyMatch[1].trim() : '',
+            adhdConsiderations: adhdMatch ? adhdMatch[1].trim() : null
+          });
+        }
+        
+        return {
+          advice,
+          drills: drills.length > 0 ? drills : [
+            {
+              name: 'Basic Training Exercise',
+              description: 'A foundational exercise for building skills in this area',
+              duration: '15-20 minutes',
+              difficulty: 'Moderate',
+              adhdConsiderations: 'Break into smaller chunks with short breaks'
+            }
+          ],
+          source: 'claude'
+        };
+        
+      } else {
+        // Call GPT API
+        const response = await openai.chat.completions.create({
+          model: 'gpt-4o', // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+          messages: [
+            {
+              role: 'system',
+              content: `You are a specialized sports coach for neurodivergent teenage athletes, particularly those with ADHD.
+You have expertise across multiple sports and understand how to create training plans that accommodate focus challenges and leverage hyperfocus strengths.
+Provide structured, clear responses that break information into manageable chunks.`
+            },
+            { role: 'user', content: prompt }
+          ],
+          max_tokens: 1500,
+          response_format: { type: 'json_object' } 
+        });
+        
+        // Try to parse the JSON response
+        try {
+          const content = response.choices[0].message.content || '{}';
+          const parsedResponse = JSON.parse(content);
+          
+          // Check if the response has the expected structure
+          if (parsedResponse.advice && Array.isArray(parsedResponse.drills)) {
+            return {
+              advice: parsedResponse.advice,
+              drills: parsedResponse.drills.map((drill: any) => ({
+                name: drill.name || '',
+                description: drill.description || '',
+                duration: drill.duration || '',
+                difficulty: drill.difficulty || '',
+                adhdConsiderations: drill.adhdConsiderations || null
+              })),
+              source: 'gpt'
+            };
+          }
+          
+          // Fallback if structure isn't as expected
+          return {
+            advice: parsedResponse.advice || response.choices[0].message.content || 'No advice generated',
+            drills: [{
+              name: 'Basic Training Exercise',
+              description: 'A foundational exercise for building skills in this area',
+              duration: '15-20 minutes',
+              difficulty: 'Moderate',
+              adhdConsiderations: 'Break into smaller chunks with short breaks'
+            }],
+            source: 'gpt'
+          };
+        } catch (error) {
+          console.error('Error parsing GPT response:', error);
+          
+          // Fallback for parsing error
+          const responseText = response.choices[0].message.content || '';
+          return {
+            advice: responseText.split('\n\n').slice(0, 3).join('\n\n'),
+            drills: [{
+              name: 'Basic Training Exercise',
+              description: 'A foundational exercise for building skills in this area',
+              duration: '15-20 minutes',
+              difficulty: 'Moderate',
+              adhdConsiderations: 'Break into smaller chunks with short breaks'
+            }],
+            source: 'gpt'
+          };
+        }
+      }
       
-      // Convert training plan days to drills
-      const drills = response.days.flatMap((day: any) => {
-        return (day.activities || []).map((activity: any) => ({
-          name: activity.name,
-          description: activity.description,
-          duration: activity.duration,
-          difficulty: skillLevel,
-          adhdConsiderations: activity.adhdConsiderations || null
-        }));
-      }).slice(0, 5); // Take up to 5 drills
-      
-      return { 
-        advice,
-        drills,
-        source: 'claude' // Claude is better for training plan generation
-      };
     } catch (error) {
-      console.error('Error in getPersonalizedTrainingAdvice:', error);
+      console.error('Error generating training advice:', error);
       throw error;
     }
   }
   
   /**
-   * Generate feedback on a sports performance video
+   * Generate feedback on a sports performance video based on a text description
    */
-  async generateVideoFeedback(
-    userId: number,
-    sportType: string,
-    videoDescription: string
-  ): Promise<{feedback: any, source: string}> {
+  async getVideoFeedback(request: VideoFeedbackRequest): Promise<VideoFeedbackResponse> {
     try {
-      console.log(`Generating video feedback for user ${userId} in ${sportType}`);
+      const model = determineOptimalModel(request, 'video');
       
-      // Video analysis is better suited to Claude's detailed observation capabilities
-      const feedback = await anthropicService.generateVideoFeedback(sportType, videoDescription);
+      const prompt = `I'm a student athlete with ADHD. Please analyze this ${request.sportType} performance video and provide detailed feedback:
       
-      return {
-        feedback,
-        source: 'claude'
-      };
+${request.videoDescription}
+
+Provide a complete analysis including:
+1. Overall assessment
+2. Technical analysis of form and execution
+3. Key strengths (as bullet points)
+4. Areas for improvement (as bullet points)
+5. ADHD-specific considerations for training
+6. Recommended next steps for development`;
+      
+      if (model === 'claude') {
+        // Call Claude API
+        const systemPrompt = `You are an expert sports performance analyst specializing in helping neurodivergent athletes.
+You have deep expertise in biomechanics, sports psychology, and ADHD-specific training approaches.
+Provide detailed, constructive feedback focused on both technical skills and neurodivergent-friendly learning strategies.`;
+        
+        const response = await anthropic.messages.create({
+          model: 'claude-3-7-sonnet-20250219', // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
+          max_tokens: 1500,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: prompt }],
+        });
+        
+        const responseText = response.content[0].text;
+        
+        // Parse Claude's response
+        const overallMatch = responseText.match(/(?:Overall[^:]*:|1\.)[^]*?(?=(?:Technical|2\.))/i);
+        const technicalMatch = responseText.match(/(?:Technical[^:]*:|2\.)[^]*?(?=(?:Key Strengths|Strengths|3\.))/i);
+        const strengthsMatch = responseText.match(/(?:Key Strengths[^:]*:|Strengths[^:]*:|3\.)[^]*?(?=(?:Areas|Improvements|4\.))/i);
+        const areasMatch = responseText.match(/(?:Areas[^:]*:|Improvements[^:]*:|4\.)[^]*?(?=(?:ADHD|5\.))/i);
+        const adhdMatch = responseText.match(/(?:ADHD[^:]*:|5\.)[^]*?(?=(?:Next Steps|Recommended|6\.))/i);
+        const nextStepsMatch = responseText.match(/(?:Next Steps[^:]*:|Recommended[^:]*:|6\.)[^]*/i);
+        
+        // Extract bullet points
+        const extractBulletPoints = (text: string | null): string[] => {
+          if (!text) return [];
+          
+          // Match lines starting with -, *, •, or numbers
+          const bullets = text.match(/(?:^|\n)\s*(?:-|\*|•|\d+\.)\s*(.+)(?:\n|$)/g) || [];
+          return bullets.map(b => b.trim().replace(/^\s*(?:-|\*|•|\d+\.)\s*/, ''));
+        };
+        
+        const strengths = extractBulletPoints(strengthsMatch ? strengthsMatch[0] : '');
+        const improvements = extractBulletPoints(areasMatch ? areasMatch[0] : '');
+        
+        return {
+          feedback: {
+            overallAssessment: overallMatch ? overallMatch[0].replace(/(?:Overall[^:]*:|1\.)\s*/i, '').trim() : 'Analysis unavailable',
+            technicalAnalysis: technicalMatch ? technicalMatch[0].replace(/(?:Technical[^:]*:|2\.)\s*/i, '').trim() : 'Technical analysis unavailable',
+            strengths: strengths.length > 0 ? strengths : ['Good effort shown in performance'],
+            improvementAreas: improvements.length > 0 ? improvements : ['Continue practicing fundamentals'],
+            adhdConsiderations: adhdMatch ? adhdMatch[0].replace(/(?:ADHD[^:]*:|5\.)\s*/i, '').trim() : 'Break training into shorter segments with clear goals',
+            nextSteps: nextStepsMatch ? nextStepsMatch[0].replace(/(?:Next Steps[^:]*:|Recommended[^:]*:|6\.)\s*/i, '').trim() : 'Focus on fundamentals and gradually increase complexity'
+          },
+          source: 'claude'
+        };
+        
+      } else {
+        // Call GPT API
+        const response = await openai.chat.completions.create({
+          model: 'gpt-4o', // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+          messages: [
+            {
+              role: 'system',
+              content: `You are an expert sports performance analyst specializing in helping neurodivergent athletes.
+You have deep expertise in biomechanics, sports psychology, and ADHD-specific training approaches.
+Provide detailed, constructive feedback focused on both technical skills and neurodivergent-friendly learning strategies.`
+            },
+            { role: 'user', content: prompt }
+          ],
+          max_tokens: 1500,
+          response_format: { type: 'json_object' }
+        });
+        
+        try {
+          const content = response.choices[0].message.content || '{}';
+          const parsedResponse = JSON.parse(content);
+          
+          return {
+            feedback: {
+              overallAssessment: parsedResponse.overallAssessment || 'Analysis unavailable',
+              technicalAnalysis: parsedResponse.technicalAnalysis || 'Technical analysis unavailable',
+              strengths: Array.isArray(parsedResponse.strengths) ? parsedResponse.strengths : ['Good effort shown in performance'],
+              improvementAreas: Array.isArray(parsedResponse.improvementAreas) ? parsedResponse.improvementAreas : ['Continue practicing fundamentals'],
+              adhdConsiderations: parsedResponse.adhdConsiderations || 'Break training into shorter segments with clear goals',
+              nextSteps: parsedResponse.nextSteps || 'Focus on fundamentals and gradually increase complexity'
+            },
+            source: 'gpt'
+          };
+        } catch (error) {
+          console.error('Error parsing GPT response:', error);
+          
+          // Fallback
+          return {
+            feedback: {
+              overallAssessment: 'Analysis unavailable due to processing error',
+              technicalAnalysis: 'Technical analysis unavailable',
+              strengths: ['Good effort shown in performance'],
+              improvementAreas: ['Continue practicing fundamentals'],
+              adhdConsiderations: 'Break training into shorter segments with clear goals',
+              nextSteps: 'Focus on fundamentals and gradually increase complexity'
+            },
+            source: 'gpt'
+          };
+        }
+      }
+      
     } catch (error) {
       console.error('Error generating video feedback:', error);
       throw error;
@@ -269,4 +514,12 @@ export class HybridAiCoachService {
   }
 }
 
-export const hybridAiCoachService = new HybridAiCoachService();
+export {
+  HybridAICoachService,
+  type CoachingRequest,
+  type CoachingResponse,
+  type TrainingAdviceRequest,
+  type TrainingAdviceResponse,
+  type VideoFeedbackRequest,
+  type VideoFeedbackResponse
+};

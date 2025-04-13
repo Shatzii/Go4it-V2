@@ -13,7 +13,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 import { generateTokens } from './services/auth-token-service';
 import { registerAiCoachRoutes } from './routes/ai-coach-routes';
 import { registerAnthropicCoachRoutes } from './routes/anthropic-coach-routes';
-import { registerHybridCoachRoutes } from './routes/hybrid-coach-routes';
+import hybridCoachRoutes, { registerHybridCoachRoutes } from './routes/hybrid-coach-routes';
 import { aiCoachService } from './services/ai-coach-service';
 import { User, insertNcaaEligibilitySchema } from "@shared/schema";
 import { isAdminMiddleware, isAuthenticatedMiddleware } from './middleware/auth-middleware';
