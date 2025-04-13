@@ -1,7 +1,7 @@
 import React from 'react';
 import { useContent } from '../hooks/useContent';
-import { ContentBlock as ContentBlockType } from '../types';
 import { formatContent } from '../utils/contentFormatter';
+import { ContentBlock as ContentBlockType } from '../types';
 
 interface ContentBlockProps {
   identifier?: string;
@@ -16,53 +16,46 @@ interface ContentBlockProps {
  * Can fetch content by identifier or use a provided content block directly.
  */
 export function ContentBlock({ identifier, block, className = '' }: ContentBlockProps) {
-  const { data, isLoading, error } = useContent(undefined, identifier);
-  
+  // If a block is directly provided, use it
+  // Otherwise, fetch the block by its identifier
+  const { data: fetchedBlock, isLoading, error } = useContent(
+    identifier,
+    { enabled: !block && !!identifier }
+  );
+
+  // Determine which block to use
+  const contentBlock = block || fetchedBlock;
+
   if (isLoading) {
+    return <div className={`cms-block-loading ${className}`}>Loading content...</div>;
+  }
+
+  if (error || !contentBlock) {
+    console.error("Error loading content block:", error);
     return (
-      <div className="space-y-2">
-        <div className="animate-pulse bg-muted h-6 w-1/2 rounded-md"></div>
-        <div className="animate-pulse bg-muted h-20 rounded-md"></div>
+      <div className={`cms-block-error ${className}`}>
+        <p>Could not load content{identifier ? ` for "${identifier}"` : ''}.</p>
       </div>
     );
   }
-  
-  if (error) {
-    return (
-      <div className="p-4 border border-destructive text-destructive rounded-md">
-        <p>Error loading content: {error instanceof Error ? error.message : 'Unknown error'}</p>
-      </div>
-    );
-  }
-  
-  // Use provided block or fetched data
-  const contentBlock = block || data;
-  
-  if (!contentBlock) {
-    if (identifier) {
-      return (
-        <div className="p-4 border border-amber-200 bg-amber-50 text-amber-800 rounded-md">
-          <p>Content block not found: {identifier}</p>
-        </div>
-      );
-    }
-    return null;
-  }
-  
-  // When using with an array (possible in some cases)
-  const displayBlock = Array.isArray(contentBlock) ? contentBlock[0] : contentBlock;
-  
+
+  // Apply formatting to the content
+  const formattedContent = formatContent(contentBlock.content, contentBlock.format);
+
   return (
-    <div className={`cms-content-block ${className}`}>
-      {displayBlock.title && (
-        <h3 className="text-xl font-semibold mb-2">{displayBlock.title}</h3>
+    <div 
+      className={`cms-block cms-block-${contentBlock.identifier} ${contentBlock.className || ''} ${className}`}
+      data-block-id={contentBlock.id}
+      data-block-identifier={contentBlock.identifier}
+      data-block-section={contentBlock.section}
+    >
+      {contentBlock.title && (
+        <h2 className="cms-block-title">{contentBlock.title}</h2>
       )}
       
       <div 
-        className="cms-content prose prose-headings:mt-4 prose-headings:mb-2"
-        dangerouslySetInnerHTML={{ 
-          __html: formatContent(displayBlock.content, displayBlock.format) 
-        }}
+        className="cms-block-content"
+        dangerouslySetInnerHTML={{ __html: formattedContent }}
       />
     </div>
   );
