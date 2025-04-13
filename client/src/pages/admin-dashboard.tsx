@@ -35,7 +35,8 @@ import {
   Trash2,
   RefreshCw,
   Clock,
-  MapPin as MapPinIcon
+  MapPin as MapPinIcon,
+  BarChart3
 } from "lucide-react";
 import {
   Table,
