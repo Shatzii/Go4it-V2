@@ -17,19 +17,17 @@ import { ContentSection } from './ContentSection';
 // Registry of content block components
 const contentComponentRegistry: ComponentMapping = {
   'default': ContentBlock,
-  // Add more specialized content block components as needed
-  // 'hero-banner': HeroBanner,
-  // 'feature-card': FeatureCard,
-  // 'testimonial': TestimonialCard,
 };
 
 // Registry of section components
 const sectionComponentRegistry: ComponentMapping = {
   'default': ContentSection,
-  // Add more specialized section components as needed
-  // 'hero-section': HeroSection,
-  // 'feature-grid': FeatureGrid,
-  // 'testimonial-slider': TestimonialSlider,
+  'hero-section': ContentSection,
+  'blog-section': ContentSection,
+  'combines-section': ContentSection,
+  'athletes-section': ContentSection,
+  'scout-section': ContentSection,
+  'gar-section': ContentSection
 };
 
 /**
