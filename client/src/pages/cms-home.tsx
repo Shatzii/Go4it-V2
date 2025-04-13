@@ -13,7 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 
 const CMSHomePage: React.FC = () => {
-  // Fetch the page data from the CMS
+  // Fetch the page data from the CMS using slug
   const { data: pageData, isLoading, error } = usePage('home');
   
   if (isLoading) {
@@ -61,8 +61,8 @@ const CMSHomePage: React.FC = () => {
     );
   }
   
-  // Render the page with the CMS data
-  return <Page pageData={pageData} />;
+  // Render the page with the CMS data - pass slug instead of pageData
+  return <Page slug="home" className="cms-home-page" />;
 };
 
 export default CMSHomePage;

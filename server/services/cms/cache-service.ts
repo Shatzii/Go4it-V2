@@ -1,382 +1,273 @@
 /**
- * CMS Cache Service - Server Implementation
+ * CMS Cache Service
  * 
- * Provides caching capabilities for CMS content to improve performance
- * and reduce database load. Features include:
- * - Automatic cache invalidation
- * - TTL-based expiration
- * - Debug logging for cache operations
- * - Section-aware invalidation
- * - Cache statistics tracking
+ * Provides caching functionality for CMS content to improve performance.
+ * Implements a memory cache with statistics tracking and methods for
+ * invalidating specific parts of the cache.
  */
 
-import { ContentBlock, PageData, CacheStats } from '../../../shared/schema';
+import { CacheStats } from '@shared/types';
+import { db } from '../../db';
+import { contentBlocks } from '@shared/schema';
+import { eq, inArray } from 'drizzle-orm';
+import { performance } from 'perf_hooks';
 
-// Cache TTL in milliseconds
-const CONTENT_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-const PAGE_CACHE_TTL = 10 * 60 * 1000;   // 10 minutes
-
-// Debug mode - set to true to enable verbose cache logging
-const CACHE_DEBUG = process.env.NODE_ENV === 'development';
-
-interface CacheEntry<T> {
+// Cache structure
+interface CacheItem<T> {
   data: T;
   timestamp: number;
-  ttl: number;
-  accessCount?: number; // Track how often this item is accessed
+  ttl: number; // Time to live in milliseconds
 }
 
-class CMSCache {
-  private contentBlockCache: Map<string, CacheEntry<ContentBlock>> = new Map();
-  private contentSectionCache: Map<string, CacheEntry<ContentBlock[]>> = new Map();
-  private pageCache: Map<string, CacheEntry<PageData>> = new Map();
-  private allContentBlocksCache: CacheEntry<ContentBlock[]> | null = null;
-  private allPagesCache: CacheEntry<PageData[]> | null = null;
+class CmsCache {
+  private contentBlockCache: Map<string, CacheItem<any>> = new Map();
+  private contentSectionCache: Map<string, CacheItem<any>> = new Map();
+  private pageCache: Map<string, CacheItem<any>> = new Map();
   
-  // Map to track which sections contain which blocks (for intelligent invalidation)
-  private blockSectionMap: Map<string, Set<string>> = new Map();
+  // Cache statistics
+  private hits: number = 0;
+  private misses: number = 0;
+  private totalRequests: number = 0;
+  private cacheSize: number = 0;
+  private lastPurge: number = Date.now();
+  private averageResponseTime: number = 0;
+  private responseTimeSamples: number = 0;
+
+  // Default TTL of 5 minutes
+  private DEFAULT_TTL: number = 5 * 60 * 1000;
   
-  // Cache statistics for monitoring performance
-  private stats: CacheStats = {
-    hits: 0,
-    misses: 0,
-    invalidations: 0,
-    size: 0,
-    hitRatio: 0
-  };
-
-  /**
-   * Log debug information if cache debugging is enabled
-   */
-  private logDebug(message: string): void {
-    if (CACHE_DEBUG) {
-      console.debug(`[CMS Cache] ${message}`);
-    }
-  }
-
-  /**
-   * Update cache statistics including size and hit ratio
-   */
-  private updateStats(): void {
-    // Update cache size
-    this.stats.size = 
-      this.contentBlockCache.size + 
-      this.contentSectionCache.size + 
-      this.pageCache.size + 
-      (this.allContentBlocksCache ? 1 : 0) + 
-      (this.allPagesCache ? 1 : 0);
-    
-    // Calculate hit ratio (percentage of successful cache hits)
-    const totalRequests = this.stats.hits + this.stats.misses;
-    if (totalRequests > 0) {
-      this.stats.hitRatio = Number((this.stats.hits / totalRequests).toFixed(2));
-    } else {
-      this.stats.hitRatio = 0;
-    }
+  constructor() {
+    // Schedule periodic cleanup
+    setInterval(() => this.purgeExpiredItems(), 60 * 1000); // Run every minute
   }
   
   /**
-   * Track which blocks belong to which sections for intelligent invalidation
+   * Get an item from the content block cache
    */
-  private trackBlockSection(block: ContentBlock): void {
-    const { identifier, section } = block;
-    if (!section) return;
+  getContentBlock(identifier: string): any | null {
+    this.totalRequests++;
+    const startTime = performance.now();
     
-    if (!this.blockSectionMap.has(section)) {
-      this.blockSectionMap.set(section, new Set());
+    const cacheItem = this.contentBlockCache.get(identifier);
+    if (cacheItem && Date.now() < cacheItem.timestamp + cacheItem.ttl) {
+      this.hits++;
+      this.updateResponseTime(performance.now() - startTime);
+      return cacheItem.data;
     }
     
-    this.blockSectionMap.get(section)?.add(identifier);
+    this.misses++;
+    this.updateResponseTime(performance.now() - startTime);
+    return null;
   }
-
-  // Content blocks caching
-  setContentBlock(identifier: string, data: ContentBlock): void {
+  
+  /**
+   * Set an item in the content block cache
+   */
+  setContentBlock(identifier: string, data: any, ttl: number = this.DEFAULT_TTL): void {
     this.contentBlockCache.set(identifier, {
       data,
       timestamp: Date.now(),
-      ttl: CONTENT_CACHE_TTL,
-      accessCount: 0
+      ttl
     });
-    
-    // Track for section-aware invalidation
-    this.trackBlockSection(data);
-    this.updateStats();
-    this.logDebug(`Cache SET: content block "${identifier}"`);
-  }
-
-  getContentBlock(identifier: string): ContentBlock | null {
-    const cached = this.contentBlockCache.get(identifier);
-    if (!cached) {
-      this.stats.misses++;
-      this.updateStats();
-      this.logDebug(`Cache MISS: content block "${identifier}"`);
-      return null;
-    }
-    
-    if (Date.now() - cached.timestamp > cached.ttl) {
-      this.contentBlockCache.delete(identifier);
-      this.stats.misses++;
-      this.updateStats();
-      this.logDebug(`Cache EXPIRED: content block "${identifier}"`);
-      return null;
-    }
-    
-    // Update access stats
-    cached.accessCount = (cached.accessCount || 0) + 1;
-    this.stats.hits++;
-    this.updateStats();
-    this.logDebug(`Cache HIT: content block "${identifier}" (accessed ${cached.accessCount} times)`);
-    
-    return cached.data;
-  }
-
-  // Content sections caching
-  setContentSection(section: string, data: ContentBlock[]): void {
-    this.contentSectionCache.set(section, {
-      data,
-      timestamp: Date.now(),
-      ttl: CONTENT_CACHE_TTL,
-      accessCount: 0
-    });
-    
-    // Track all blocks in this section
-    data.forEach(block => this.trackBlockSection(block));
-    
-    this.updateStats();
-    this.logDebug(`Cache SET: content section "${section}" with ${data.length} blocks`);
-  }
-
-  getContentSection(section: string): ContentBlock[] | null {
-    const cached = this.contentSectionCache.get(section);
-    if (!cached) {
-      this.stats.misses++;
-      this.updateStats();
-      this.logDebug(`Cache MISS: content section "${section}"`);
-      return null;
-    }
-    
-    if (Date.now() - cached.timestamp > cached.ttl) {
-      this.contentSectionCache.delete(section);
-      this.stats.misses++;
-      this.updateStats();
-      this.logDebug(`Cache EXPIRED: content section "${section}"`);
-      return null;
-    }
-    
-    // Update access stats
-    cached.accessCount = (cached.accessCount || 0) + 1;
-    this.stats.hits++;
-    this.updateStats();
-    this.logDebug(`Cache HIT: content section "${section}" (accessed ${cached.accessCount} times)`);
-    
-    return cached.data;
-  }
-
-  // All content blocks caching
-  setAllContentBlocks(data: ContentBlock[]): void {
-    this.allContentBlocksCache = {
-      data,
-      timestamp: Date.now(),
-      ttl: CONTENT_CACHE_TTL,
-      accessCount: 0
-    };
-    
-    // Track all blocks for section-aware invalidation
-    data.forEach(block => this.trackBlockSection(block));
-    
-    this.updateStats();
-    this.logDebug(`Cache SET: all content blocks (count: ${data.length})`);
-  }
-
-  getAllContentBlocks(): ContentBlock[] | null {
-    if (!this.allContentBlocksCache) {
-      this.stats.misses++;
-      this.updateStats();
-      this.logDebug(`Cache MISS: all content blocks`);
-      return null;
-    }
-    
-    if (Date.now() - this.allContentBlocksCache.timestamp > this.allContentBlocksCache.ttl) {
-      this.allContentBlocksCache = null;
-      this.stats.misses++;
-      this.updateStats();
-      this.logDebug(`Cache EXPIRED: all content blocks`);
-      return null;
-    }
-    
-    // Update access stats
-    this.allContentBlocksCache.accessCount = (this.allContentBlocksCache.accessCount || 0) + 1;
-    this.stats.hits++;
-    this.updateStats();
-    this.logDebug(`Cache HIT: all content blocks (accessed ${this.allContentBlocksCache.accessCount} times)`);
-    
-    return this.allContentBlocksCache.data;
-  }
-
-  // Page caching
-  setPage(slug: string, data: PageData): void {
-    this.pageCache.set(slug, {
-      data,
-      timestamp: Date.now(),
-      ttl: PAGE_CACHE_TTL,
-      accessCount: 0
-    });
-    
-    this.updateStats();
-    this.logDebug(`Cache SET: page "${slug}"`);
-  }
-
-  getPage(slug: string): PageData | null {
-    const cached = this.pageCache.get(slug);
-    if (!cached) {
-      this.stats.misses++;
-      this.updateStats();
-      this.logDebug(`Cache MISS: page "${slug}"`);
-      return null;
-    }
-    
-    if (Date.now() - cached.timestamp > cached.ttl) {
-      this.pageCache.delete(slug);
-      this.stats.misses++;
-      this.updateStats();
-      this.logDebug(`Cache EXPIRED: page "${slug}"`);
-      return null;
-    }
-    
-    // Update access stats
-    cached.accessCount = (cached.accessCount || 0) + 1;
-    this.stats.hits++;
-    this.updateStats();
-    this.logDebug(`Cache HIT: page "${slug}" (accessed ${cached.accessCount} times)`);
-    
-    return cached.data;
-  }
-
-  // All pages caching
-  setAllPages(data: PageData[]): void {
-    this.allPagesCache = {
-      data,
-      timestamp: Date.now(),
-      ttl: PAGE_CACHE_TTL,
-      accessCount: 0
-    };
-    
-    this.updateStats();
-    this.logDebug(`Cache SET: all pages (count: ${data.length})`);
-  }
-
-  getAllPages(): PageData[] | null {
-    if (!this.allPagesCache) {
-      this.stats.misses++;
-      this.updateStats();
-      this.logDebug(`Cache MISS: all pages`);
-      return null;
-    }
-    
-    if (Date.now() - this.allPagesCache.timestamp > this.allPagesCache.ttl) {
-      this.allPagesCache = null;
-      this.stats.misses++;
-      this.updateStats();
-      this.logDebug(`Cache EXPIRED: all pages`);
-      return null;
-    }
-    
-    // Update access stats
-    this.allPagesCache.accessCount = (this.allPagesCache.accessCount || 0) + 1;
-    this.stats.hits++;
-    this.updateStats();
-    this.logDebug(`Cache HIT: all pages (accessed ${this.allPagesCache.accessCount} times)`);
-    
-    return this.allPagesCache.data;
-  }
-
-  // Cache statistics and management
-  getCacheStats(): CacheStats {
-    // Calculate current size and hit ratio before returning
-    this.updateStats();
-    return { ...this.stats };
-  }
-
-  // Cache invalidation methods
-  invalidateContentBlock(identifier: string): void {
-    this.contentBlockCache.delete(identifier);
-    this.allContentBlocksCache = null; // Invalidate all content blocks cache
-    
-    // Intelligent section invalidation: 
-    // Find and invalidate any sections containing this block
-    for (const [section, blocks] of this.blockSectionMap.entries()) {
-      if (blocks.has(identifier)) {
-        this.invalidateContentSection(section);
-        this.logDebug(`Intelligently invalidated section "${section}" due to block "${identifier}" change`);
-      }
-    }
-    
-    this.stats.invalidations++;
-    this.updateStats();
-    this.logDebug(`Cache INVALIDATE: content block "${identifier}"`);
-  }
-
-  invalidateContentSection(section: string): void {
-    this.contentSectionCache.delete(section);
-    
-    // Clear the block-section tracking for this section
-    if (this.blockSectionMap.has(section)) {
-      this.blockSectionMap.delete(section);
-    }
-    
-    this.stats.invalidations++;
-    this.updateStats();
-    this.logDebug(`Cache INVALIDATE: content section "${section}"`);
-  }
-
-  invalidatePage(slug: string): void {
-    this.pageCache.delete(slug);
-    this.allPagesCache = null; // Invalidate all pages cache
-    
-    this.stats.invalidations++;
-    this.updateStats();
-    this.logDebug(`Cache INVALIDATE: page "${slug}"`);
-  }
-
-  invalidateAllContent(): void {
-    const totalSize = this.contentBlockCache.size + 
-                      this.contentSectionCache.size + 
-                      this.pageCache.size + 
-                      (this.allContentBlocksCache ? 1 : 0) + 
-                      (this.allPagesCache ? 1 : 0);
-    
-    this.contentBlockCache.clear();
-    this.contentSectionCache.clear();
-    this.pageCache.clear();
-    this.blockSectionMap.clear();
-    this.allContentBlocksCache = null;
-    this.allPagesCache = null;
-    
-    this.stats.invalidations++;
-    this.updateStats();
-    this.logDebug(`Cache INVALIDATE ALL: cleared ${totalSize} cached items`);
+    this.updateCacheSize();
   }
   
   /**
-   * Reset cache statistics counters without clearing the cache
-   * Useful for measuring cache performance over specific time periods
+   * Get items from the section cache
    */
-  resetCacheStats(): void {
-    this.stats = {
-      hits: 0,
-      misses: 0,
-      invalidations: 0,
-      size: this.contentBlockCache.size + 
-            this.contentSectionCache.size + 
-            this.pageCache.size + 
-            (this.allContentBlocksCache ? 1 : 0) + 
-            (this.allPagesCache ? 1 : 0),
-      hitRatio: 0
-    };
+  getContentSection(section: string): any[] | null {
+    this.totalRequests++;
+    const startTime = performance.now();
     
-    this.logDebug('Cache statistics counters reset');
+    const cacheItem = this.contentSectionCache.get(section);
+    if (cacheItem && Date.now() < cacheItem.timestamp + cacheItem.ttl) {
+      this.hits++;
+      this.updateResponseTime(performance.now() - startTime);
+      return cacheItem.data;
+    }
+    
+    this.misses++;
+    this.updateResponseTime(performance.now() - startTime);
+    return null;
+  }
+  
+  /**
+   * Set items in the section cache
+   */
+  setContentSection(section: string, data: any[], ttl: number = this.DEFAULT_TTL): void {
+    this.contentSectionCache.set(section, {
+      data,
+      timestamp: Date.now(),
+      ttl
+    });
+    this.updateCacheSize();
+  }
+  
+  /**
+   * Get a page from the cache
+   */
+  getPage(slug: string): any | null {
+    this.totalRequests++;
+    const startTime = performance.now();
+    
+    const cacheItem = this.pageCache.get(slug);
+    if (cacheItem && Date.now() < cacheItem.timestamp + cacheItem.ttl) {
+      this.hits++;
+      this.updateResponseTime(performance.now() - startTime);
+      return cacheItem.data;
+    }
+    
+    this.misses++;
+    this.updateResponseTime(performance.now() - startTime);
+    return null;
+  }
+  
+  /**
+   * Set a page in the cache
+   */
+  setPage(slug: string, data: any, ttl: number = this.DEFAULT_TTL): void {
+    this.pageCache.set(slug, {
+      data,
+      timestamp: Date.now(),
+      ttl
+    });
+    this.updateCacheSize();
+  }
+  
+  /**
+   * Invalidate specific content block
+   */
+  invalidateContentBlock(identifier: string): boolean {
+    return this.contentBlockCache.delete(identifier);
+  }
+  
+  /**
+   * Invalidate all content blocks in a section
+   */
+  async invalidateContentSection(section: string): Promise<boolean> {
+    // First remove the section cache
+    this.contentSectionCache.delete(section);
+    
+    // Then find all content blocks in this section and invalidate them
+    try {
+      const blocks = await db.select({ identifier: contentBlocks.identifier })
+        .from(contentBlocks)
+        .where(eq(contentBlocks.section, section));
+      
+      blocks.forEach(block => {
+        this.contentBlockCache.delete(block.identifier);
+      });
+      
+      this.updateCacheSize();
+      return true;
+    } catch (error) {
+      console.error('Error invalidating section cache:', error);
+      return false;
+    }
+  }
+  
+  /**
+   * Invalidate a page and its related content
+   */
+  invalidatePage(slug: string): boolean {
+    return this.pageCache.delete(slug);
+  }
+  
+  /**
+   * Invalidate all cached content
+   */
+  invalidateAll(): void {
+    this.contentBlockCache.clear();
+    this.contentSectionCache.clear();
+    this.pageCache.clear();
+    this.updateCacheSize();
+  }
+  
+  /**
+   * Get cache statistics
+   */
+  getStats(): CacheStats {
+    return {
+      hits: this.hits,
+      misses: this.misses,
+      totalRequests: this.totalRequests,
+      hitRatio: this.totalRequests > 0 ? Math.round((this.hits / this.totalRequests) * 100) / 100 : 0,
+      cacheSize: this.cacheSize,
+      itemCount: {
+        blocks: this.contentBlockCache.size,
+        sections: this.contentSectionCache.size,
+        pages: this.pageCache.size,
+        total: this.contentBlockCache.size + this.contentSectionCache.size + this.pageCache.size
+      },
+      lastPurge: new Date(this.lastPurge).toISOString(),
+      averageResponseTime: Math.round(this.averageResponseTime * 100) / 100
+    };
+  }
+  
+  /**
+   * Reset cache statistics
+   */
+  resetStats(): void {
+    this.hits = 0;
+    this.misses = 0;
+    this.totalRequests = 0;
+    this.lastPurge = Date.now();
+    this.averageResponseTime = 0;
+    this.responseTimeSamples = 0;
+  }
+  
+  /**
+   * Remove expired items from the cache
+   */
+  private purgeExpiredItems(): void {
+    const now = Date.now();
+    
+    // Purge content blocks
+    for (const [key, item] of this.contentBlockCache.entries()) {
+      if (now >= item.timestamp + item.ttl) {
+        this.contentBlockCache.delete(key);
+      }
+    }
+    
+    // Purge content sections
+    for (const [key, item] of this.contentSectionCache.entries()) {
+      if (now >= item.timestamp + item.ttl) {
+        this.contentSectionCache.delete(key);
+      }
+    }
+    
+    // Purge pages
+    for (const [key, item] of this.pageCache.entries()) {
+      if (now >= item.timestamp + item.ttl) {
+        this.pageCache.delete(key);
+      }
+    }
+    
+    this.lastPurge = now;
+    this.updateCacheSize();
+  }
+  
+  /**
+   * Update the cache size metric (approximate memory usage)
+   */
+  private updateCacheSize(): void {
+    // Rough estimate of memory usage based on item count and typical size
+    const blockSize = this.contentBlockCache.size * 2048; // ~2KB per item
+    const sectionSize = this.contentSectionCache.size * 10240; // ~10KB per section
+    const pageSize = this.pageCache.size * 20480; // ~20KB per page
+    
+    this.cacheSize = blockSize + sectionSize + pageSize;
+  }
+  
+  /**
+   * Update average response time with a new sample
+   */
+  private updateResponseTime(time: number): void {
+    this.responseTimeSamples++;
+    // Exponential moving average
+    this.averageResponseTime = this.averageResponseTime * 0.9 + time * 0.1;
   }
 }
 
-// Singleton instance
-export const cmsCache = new CMSCache();
+// Create a singleton instance
+export const cmsCache = new CmsCache();

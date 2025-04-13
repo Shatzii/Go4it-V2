@@ -3,6 +3,9 @@ import { usePage } from '../hooks/usePage';
 import { PageData, PageComponent, PageProps } from '../types';
 import { ContentBlock } from './ContentBlock';
 import { formatContent } from '../utils/contentFormatter';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 /**
  * Page Component
@@ -10,32 +13,60 @@ import { formatContent } from '../utils/contentFormatter';
  * Renders a full page from the CMS based on its slug.
  * Displays components of the page in a structured layout.
  */
-export function Page({ slug, fallback, className = '' }: PageProps) {
+export function Page({ slug, className = '' }: PageProps) {
   // Fetch page data by slug
   const { data: page, isLoading, error } = usePage(slug);
   
   // Show loading state
   if (isLoading) {
-    return <div className={`cms-page-loading ${className}`}>Loading page...</div>;
+    return (
+      <div className={`cms-page-loading ${className}`}>
+        <div className="container mx-auto py-12 space-y-8">
+          <Skeleton className="h-12 w-3/4 mx-auto" />
+          <div className="space-y-8">
+            <Skeleton className="h-64 w-full rounded-lg" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Skeleton className="h-48 rounded-lg" />
+              <Skeleton className="h-48 rounded-lg" />
+              <Skeleton className="h-48 rounded-lg" />
+            </div>
+            <Skeleton className="h-64 w-full rounded-lg" />
+          </div>
+        </div>
+      </div>
+    );
   }
   
   // Show error state
   if (error) {
     return (
       <div className={`cms-page-error ${className}`}>
-        <p>Error loading page: {(error as Error).message || 'Unknown error'}</p>
+        <div className="container mx-auto py-12">
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+              Error loading page: {(error as Error).message || 'Unknown error'}
+            </AlertDescription>
+          </Alert>
+        </div>
       </div>
     );
   }
   
   // Show not found state
   if (!page) {
-    if (fallback) {
-      return <>{fallback}</>;
-    }
     return (
       <div className={`cms-page-not-found ${className}`}>
-        <p>Page not found: {slug}</p>
+        <div className="container mx-auto py-12">
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Page Not Found</AlertTitle>
+            <AlertDescription>
+              The requested page content was not found. Our team has been notified.
+            </AlertDescription>
+          </Alert>
+        </div>
       </div>
     );
   }
@@ -44,7 +75,15 @@ export function Page({ slug, fallback, className = '' }: PageProps) {
   if (!page.active) {
     return (
       <div className={`cms-page-inactive ${className}`}>
-        <p>This page is currently inactive.</p>
+        <div className="container mx-auto py-12">
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Page Unavailable</AlertTitle>
+            <AlertDescription>
+              This page is currently inactive.
+            </AlertDescription>
+          </Alert>
+        </div>
       </div>
     );
   }
@@ -53,7 +92,7 @@ export function Page({ slug, fallback, className = '' }: PageProps) {
     <div 
       className={`cms-page ${page.className || ''} ${className}`}
       data-id={page.id}
-      data-slug={page.slug}
+      data-slug={page.slug || ''}
     >
       {/* Page main content */}
       {page.title && <h1 className="cms-page-title">{page.title}</h1>}
@@ -86,7 +125,7 @@ function renderComponent(component: PageComponent, page: PageData, index: number
       // Render a single content block by identifier
       return (
         <div key={key} className={`cms-component-block ${component.className || ''}`}>
-          <ContentBlock identifier={component.identifier} />
+          <ContentBlock identifier={component.identifier || ''} />
         </div>
       );
       
@@ -122,7 +161,7 @@ function renderComponent(component: PageComponent, page: PageData, index: number
           {component.content && (
             <div 
               className="cms-hero-content"
-              dangerouslySetInnerHTML={{ __html: formatContent(component.content, 'html') }}
+              dangerouslySetInnerHTML={{ __html: formatContent(component.content || '', 'html') }}
             />
           )}
         </div>
@@ -140,7 +179,7 @@ function renderComponent(component: PageComponent, page: PageData, index: number
           {component.content && (
             <div 
               className="cms-custom-content"
-              dangerouslySetInnerHTML={{ __html: formatContent(component.content, 'html') }}
+              dangerouslySetInnerHTML={{ __html: formatContent(component.content || '', 'html') }}
             />
           )}
         </div>
