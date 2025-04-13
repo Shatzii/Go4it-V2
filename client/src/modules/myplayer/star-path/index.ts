@@ -13,8 +13,7 @@ export * from './hooks';
 export * from './services';
 
 // Export all components
-// Currently exporting components individually until we create an index file for components
-// export * from './components';
+export * from './components';
 
 // Export types
 export * from './types';
