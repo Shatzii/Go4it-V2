@@ -1,47 +1,56 @@
 import { useQuery } from '@tanstack/react-query';
-import type { ContentBlock } from '../types';
+import { ContentBlock } from '../types';
+import { fetchContentBlock, fetchContentBlocksBySection, fetchAllContentBlocks } from '../services/contentService';
 
 /**
- * Hook to fetch content blocks from the CMS
- * @param section Optional section name to filter content blocks
- * @param identifier Optional unique identifier for a specific content block
+ * Custom hook for fetching a content block by its identifier
+ * 
+ * @param identifier The unique identifier for the content block
+ * @param options Additional react-query options
+ * @returns Query result with the content block data
  */
-export function useContent(section?: string, identifier?: string) {
+export function useContent(
+  identifier?: string, 
+  options: { enabled?: boolean } = {}
+) {
   return useQuery({
-    queryKey: ['/api/cms/content', section, identifier].filter(Boolean),
-    queryFn: async () => {
-      // Build the query URL based on provided filters
-      let url = '/api/cms/content';
-      const params = new URLSearchParams();
-      
-      if (section) {
-        params.append('section', section);
-      }
-      
-      if (identifier) {
-        params.append('identifier', identifier);
-      }
-      
-      const queryString = params.toString();
-      if (queryString) {
-        url += `?${queryString}`;
-      }
-      
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch content: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      
-      // If requesting a specific identifier, return the first item directly
-      if (identifier && Array.isArray(data) && data.length > 0) {
-        return data[0] as ContentBlock;
-      }
-      
-      return data as ContentBlock[];
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    queryKey: identifier ? ['/api/cms/content-blocks', identifier] : [],
+    queryFn: () => identifier ? fetchContentBlock(identifier) : null,
+    enabled: !!identifier && (options.enabled !== false), // Only enabled if identifier is provided and not explicitly disabled
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+/**
+ * Hook to fetch all content blocks for a specific section
+ * 
+ * @param section The section name to fetch content blocks for
+ * @param options Additional react-query options
+ * @returns Query result with an array of content blocks
+ */
+export function useContentSection(
+  section: string,
+  options: { enabled?: boolean } = {}
+) {
+  return useQuery({
+    queryKey: ['/api/cms/content-blocks/section', section],
+    queryFn: () => fetchContentBlocksBySection(section),
+    enabled: !!section && (options.enabled !== false),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+/**
+ * Hook to fetch all content blocks
+ * 
+ * @param options Additional react-query options
+ * @returns Query result with an array of all content blocks
+ */
+export function useAllContent(options: { enabled?: boolean } = {}) {
+  return useQuery({
+    queryKey: ['/api/cms/content-blocks'],
+    queryFn: fetchAllContentBlocks,
+    enabled: options.enabled !== false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }

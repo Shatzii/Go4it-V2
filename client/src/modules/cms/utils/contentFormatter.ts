@@ -1,7 +1,8 @@
+import { ContentBlock } from '../types';
+
 /**
  * Content formatting utilities for the CMS system
  */
-import { ContentBlock } from '../types';
 
 /**
  * Formats content based on the specified format
@@ -12,43 +13,52 @@ import { ContentBlock } from '../types';
 export function formatContent(content: string, format: ContentBlock['format'] = 'html'): string {
   switch (format) {
     case 'markdown':
-      // Simple markdown conversion (this is a basic implementation)
-      // For a full implementation, use a dedicated markdown library
-      return content
-        .replace(/#{1}\s+(.+)/g, '<h1>$1</h1>')
-        .replace(/#{2}\s+(.+)/g, '<h2>$1</h2>')
-        .replace(/#{3}\s+(.+)/g, '<h3>$1</h3>')
-        .replace(/#{4}\s+(.+)/g, '<h4>$1</h4>')
-        .replace(/#{5}\s+(.+)/g, '<h5>$1</h5>')
-        .replace(/#{6}\s+(.+)/g, '<h6>$1</h6>')
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>')
-        .replace(/!\[(.+?)\]\((.+?)\)/g, '<img src="$2" alt="$1">')
-        .replace(/`(.+?)`/g, '<code>$1</code>')
-        .replace(/\n\n/g, '</p><p>')
-        .replace(/\n/g, '<br>')
-        .replace(/^(.+?)$/gm, (m, p1) => p1.startsWith('<') ? p1 : `<p>${p1}</p>`);
-    
+      return markdownToHtml(content);
     case 'json':
       try {
         const parsed = JSON.parse(content);
-        // Return stringified JSON with formatting for display purposes
-        return `<pre>${JSON.stringify(parsed, null, 2)}</pre>`;
+        return `<pre class="cms-json">${JSON.stringify(parsed, null, 2)}</pre>`;
       } catch (e) {
         console.error('Error parsing JSON content:', e);
-        return `<div class="error">Invalid JSON content</div>`;
+        return `<div class="cms-error">Invalid JSON format</div>`;
       }
-      
     case 'text':
-      // For plain text, convert newlines to <br> and wrap in paragraph tags
-      return `<p>${content.replace(/\n/g, '<br>')}</p>`;
-      
+      return content.replace(/\n/g, '<br>');
     case 'html':
     default:
-      // HTML content is returned as-is
       return content;
   }
+}
+
+/**
+ * Very simple Markdown to HTML converter
+ * Note: For a real application, you'd use a proper markdown library
+ */
+function markdownToHtml(markdown: string): string {
+  let html = markdown;
+
+  // Headers
+  html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+  html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+  html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+
+  // Bold
+  html = html.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>');
+  
+  // Italic
+  html = html.replace(/\*(.*?)\*/gim, '<em>$1</em>');
+  
+  // Lists
+  html = html.replace(/^\s*\- (.*$)/gim, '<li>$1</li>');
+  html = html.replace(/(<li>.*<\/li>)/gims, '<ul>$1</ul>');
+  
+  // Links
+  html = html.replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2">$1</a>');
+  
+  // Line breaks
+  html = html.replace(/\n/gim, '<br>');
+
+  return html;
 }
 
 /**
@@ -58,9 +68,18 @@ export function formatContent(content: string, format: ContentBlock['format'] = 
  */
 export function sortContentBlocks(blocks: ContentBlock[]): ContentBlock[] {
   return [...blocks].sort((a, b) => {
-    const orderA = a.sortOrder || 0;
-    const orderB = b.sortOrder || 0;
-    return orderA - orderB;
+    // If there's an explicit sortOrder, use it
+    if (a.sortOrder !== undefined && b.sortOrder !== undefined) {
+      return a.sortOrder - b.sortOrder;
+    }
+    
+    // Otherwise sort by creation date if available
+    if (a.createdAt && b.createdAt) {
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    }
+    
+    // Fallback to sorting by ID
+    return a.id - b.id;
   });
 }
 
@@ -71,7 +90,7 @@ export function sortContentBlocks(blocks: ContentBlock[]): ContentBlock[] {
  */
 export function groupBlocksBySection(blocks: ContentBlock[]): Record<string, ContentBlock[]> {
   return blocks.reduce((acc, block) => {
-    const section = block.section;
+    const section = block.section || 'default';
     if (!acc[section]) {
       acc[section] = [];
     }

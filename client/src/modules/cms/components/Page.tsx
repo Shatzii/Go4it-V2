@@ -1,7 +1,7 @@
 import React from 'react';
 import { usePage } from '../hooks/usePage';
-import { PageData } from '../types';
 import { ContentBlock } from './ContentBlock';
+import { PageData } from '../types';
 
 interface PageProps {
   slug: string;
@@ -19,52 +19,55 @@ export function Page({ slug, fallback, className = '' }: PageProps) {
   const { data: page, isLoading, error } = usePage(slug);
   
   if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <div className="animate-pulse bg-muted h-10 w-3/4 rounded-md mb-8"></div>
-        <div className="animate-pulse bg-muted h-64 rounded-md"></div>
-        <div className="animate-pulse bg-muted h-32 rounded-md"></div>
-      </div>
-    );
+    return <div className={`cms-page-loading ${className}`}>Loading page...</div>;
   }
   
   if (error || !page) {
-    if (fallback) {
-      return <>{fallback}</>;
-    }
-    
-    return (
-      <div className="p-4 border border-destructive text-destructive rounded-md">
-        {error ? (
-          <p>Error loading page: {error instanceof Error ? error.message : 'Unknown error'}</p>
-        ) : (
-          <p>Page not found: {slug}</p>
-        )}
+    console.error(`Error loading page (${slug}):`, error);
+    return fallback ? (
+      <>{fallback}</>
+    ) : (
+      <div className={`cms-page-error ${className}`}>
+        <h2>Page Not Found</h2>
+        <p>The requested page could not be loaded.</p>
       </div>
     );
   }
   
   return (
-    <div className={`cms-page ${className}`}>
+    <div 
+      className={`cms-page cms-page-${slug} ${page.className || ''} ${className}`}
+      data-page-slug={slug}
+    >
       {page.title && (
-        <h1 className="text-4xl font-bold mb-6">{page.title}</h1>
+        <h1 className="cms-page-title">{page.title}</h1>
       )}
       
       {page.description && (
-        <p className="text-xl mb-8 text-muted-foreground">{page.description}</p>
+        <div className="cms-page-description">{page.description}</div>
       )}
       
-      {page.components && page.components.length > 0 ? (
-        <div className="cms-page-components space-y-10">
-          {page.components.map((component) => (
-            <div key={component.id} className="component">
-              {renderComponent(component, page)}
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-muted-foreground">No content available for this page.</p>
-      )}
+      <div className="cms-page-content">
+        {page.components && page.components.length > 0 ? (
+          <div className="cms-page-components">
+            {page.components.map((component, index) => (
+              <div key={index} className="cms-page-component">
+                {renderComponent(component, page)}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="cms-page-blocks">
+            {/* If there are no components, render the content directly */}
+            {page.content && (
+              <div 
+                className="cms-page-content-html"
+                dangerouslySetInnerHTML={{ __html: page.content }}
+              />
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -74,53 +77,52 @@ export function Page({ slug, fallback, className = '' }: PageProps) {
  */
 function renderComponent(component: PageData['components'][0], page: PageData) {
   switch (component.type) {
-    case 'content_block':
+    case 'content-block':
+      return <ContentBlock identifier={component.identifier} />;
+      
+    case 'content-section':
       return (
-        <ContentBlock 
-          identifier={component.data?.identifier} 
-          className={component.data?.className || ''}
-        />
+        <div className={`cms-section cms-section-${component.section} ${component.className || ''}`}>
+          <h2 className="cms-section-title">{component.title}</h2>
+          <div className="cms-section-blocks">
+            {page.blocks
+              ?.filter(block => block.section === component.section)
+              .map((block, idx) => (
+                <ContentBlock key={idx} block={block} />
+              ))}
+          </div>
+        </div>
       );
-    
+      
     case 'hero':
       return (
-        <div className="bg-primary/5 p-8 rounded-lg">
-          <h2 className="text-3xl font-bold mb-3">{component.data?.title}</h2>
-          {component.data?.subtitle && (
-            <p className="text-xl mb-4">{component.data.subtitle}</p>
-          )}
-          {component.data?.content && (
-            <div className="prose" dangerouslySetInnerHTML={{ __html: component.data.content }} />
-          )}
-          {component.data?.ctaUrl && (
-            <div className="mt-6">
-              <a 
-                href={component.data.ctaUrl} 
-                className="inline-flex items-center bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded"
-              >
-                {component.data.ctaText || 'Learn More'}
-              </a>
-            </div>
+        <div className={`cms-hero ${component.className || ''}`} style={{ 
+          backgroundImage: component.backgroundImage ? `url(${component.backgroundImage})` : undefined 
+        }}>
+          {component.title && <h1 className="cms-hero-title">{component.title}</h1>}
+          {component.subtitle && <h2 className="cms-hero-subtitle">{component.subtitle}</h2>}
+          {component.content && (
+            <div 
+              className="cms-hero-content"
+              dangerouslySetInnerHTML={{ __html: component.content }}
+            />
           )}
         </div>
       );
       
-    case 'grid':
+    case 'custom':
+      // Custom components will be handled by a ComponentRegistry
+      // This would be expanded in a more complete implementation
       return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.isArray(component.data?.items) && component.data.items.map((item: any, index: number) => (
-            <div key={index} className="p-4 border rounded-lg">
-              {item.title && <h3 className="text-lg font-semibold mb-2">{item.title}</h3>}
-              {item.content && <div dangerouslySetInnerHTML={{ __html: item.content }} />}
-            </div>
-          ))}
+        <div className="cms-custom-component">
+          <p>Custom component: {component.name}</p>
         </div>
       );
-    
+      
     default:
       return (
-        <div className="p-4 border border-amber-200 bg-amber-50 text-amber-800 rounded-md">
-          <p>Unknown component type: {component.type}</p>
+        <div className="cms-unknown-component">
+          <p>Unknown component type: {(component as any).type}</p>
         </div>
       );
   }
