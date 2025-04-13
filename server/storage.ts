@@ -46,6 +46,9 @@ export interface IStorage {
   // Session store
   sessionStore: any;
   
+  // System stats for admin dashboard
+  getSystemStats(): Promise<any>;
+  
   // Spotlight Profile operations
   getSpotlightProfiles(limit?: number): Promise<SpotlightProfile[]>;
   getSpotlightProfilesByUser(userId: number): Promise<SpotlightProfile[]>;
@@ -426,6 +429,74 @@ export class DatabaseStorage implements IStorage {
     }
   }
   
+  async getSystemStats(): Promise<any> {
+    try {
+      // Get total users count
+      const totalUsers = await db.select({ count: sql`count(*)` }).from(users);
+      const userCount = Number(totalUsers[0]?.count || 0);
+      
+      // Get athletes count
+      const athleteCount = await db.select({ count: sql`count(*)` })
+        .from(users)
+        .where(eq(users.role, 'athlete'));
+      
+      // Get coaches count
+      const coachCount = await db.select({ count: sql`count(*)` })
+        .from(users)
+        .where(eq(users.role, 'coach'));
+        
+      // Get videos count
+      const videosCount = await db.select({ count: sql`count(*)` }).from(videos);
+      
+      // Get highlights count
+      const highlightsCount = await db.select({ count: sql`count(*)` }).from(videoHighlights);
+      
+      // Get blog posts count
+      const blogPostsCount = await db.select({ count: sql`count(*)` }).from(blogPosts);
+      
+      // Get workout verifications count
+      let workoutVerificationsCount = 0;
+      try {
+        const workoutCount = await db.select({ count: sql`count(*)` }).from(workoutVerifications);
+        workoutVerificationsCount = Number(workoutCount[0]?.count || 0);
+      } catch (error) {
+        console.log("Workout verifications table might not exist yet");
+      }
+      
+      // Recent signups - users created in the last 7 days
+      const recentSignups = await db.select()
+        .from(users)
+        .where(sql`${users.createdAt} > NOW() - INTERVAL '7 days'`)
+        .orderBy(desc(users.createdAt));
+      
+      return {
+        totalUsers: userCount,
+        athleteUsers: Number(athleteCount[0]?.count || 0),
+        coachUsers: Number(coachCount[0]?.count || 0),
+        totalVideos: Number(videosCount[0]?.count || 0),
+        totalHighlights: Number(highlightsCount[0]?.count || 0),
+        totalBlogPosts: Number(blogPostsCount[0]?.count || 0),
+        totalWorkoutVerifications: workoutVerificationsCount,
+        recentSignups: recentSignups.length,
+        recentUsers: recentSignups.slice(0, 5) // Only return the 5 most recent
+      };
+    } catch (error) {
+      console.error('Error getting system stats:', error);
+      // Return default stats to prevent dashboard from breaking
+      return {
+        totalUsers: 0,
+        athleteUsers: 0,
+        coachUsers: 0,
+        totalVideos: 0,
+        totalHighlights: 0,
+        totalBlogPosts: 0,
+        totalWorkoutVerifications: 0,
+        recentSignups: 0,
+        recentUsers: []
+      };
+    }
+  }
+
   async getAllAthletes(): Promise<User[]> {
     try {
       const athleteUsers = await db.select()
