@@ -5,7 +5,7 @@ import { ContentBlock, PageData } from '../types';
  * @returns Promise with all content blocks
  */
 export async function getAllContentBlocks(): Promise<ContentBlock[]> {
-  const response = await fetch('/api/cms/content-blocks');
+  const response = await fetch('/api/content-blocks');
   if (!response.ok) {
     throw new Error(`Failed to fetch content blocks: ${response.statusText}`);
   }
@@ -18,7 +18,7 @@ export async function getAllContentBlocks(): Promise<ContentBlock[]> {
  * @returns Promise with the content block
  */
 export async function getContentBlock(identifier: string): Promise<ContentBlock> {
-  const response = await fetch(`/api/cms/content/${identifier}`);
+  const response = await fetch(`/api/content-blocks/${identifier}`);
   if (!response.ok) {
     throw new Error(`Failed to fetch content block ${identifier}: ${response.statusText}`);
   }
@@ -31,7 +31,7 @@ export async function getContentBlock(identifier: string): Promise<ContentBlock>
  * @returns Promise with all content blocks in the section
  */
 export async function getContentSection(section: string): Promise<ContentBlock[]> {
-  const response = await fetch(`/api/cms/content/section/${section}`);
+  const response = await fetch(`/api/content-blocks/section/${section}`);
   if (!response.ok) {
     throw new Error(`Failed to fetch content section ${section}: ${response.statusText}`);
   }
