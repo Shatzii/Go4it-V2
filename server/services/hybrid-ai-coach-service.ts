@@ -4,6 +4,10 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// Set default timeout values in milliseconds
+const DEFAULT_TIMEOUT = 30000; // 30 seconds
+const EXTENDED_TIMEOUT = 45000; // 45 seconds for more complex operations
+
 // Initialize API clients
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -242,6 +246,12 @@ Always include ADHD considerations in your advice.`
    */
   async getTrainingAdvice(request: TrainingAdviceRequest): Promise<TrainingAdviceResponse> {
     try {
+      // Create a timeout functionality
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+      }, EXTENDED_TIMEOUT);
+      
       const model = determineOptimalModel(request, 'training');
       
       const prompt = `Create a personalized training plan for a ${request.skillLevel} level athlete in ${request.sport} focusing on improving ${request.focusArea}.
@@ -396,6 +406,12 @@ Provide structured, clear responses that break information into manageable chunk
    */
   async getVideoFeedback(request: VideoFeedbackRequest): Promise<VideoFeedbackResponse> {
     try {
+      // Create a timeout functionality
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+      }, EXTENDED_TIMEOUT);
+      
       const model = determineOptimalModel(request, 'video');
       
       const prompt = `I'm a student athlete with ADHD. Please analyze this ${request.sportType} performance video and provide detailed feedback:
