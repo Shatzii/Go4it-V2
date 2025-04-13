@@ -1,9 +1,12 @@
 /**
- * Star Path Components
+ * Star Path Components Exports
  * 
- * This file exports all UI components for the Star Path module.
- * These components are used to visualize athlete progression, milestones, and rewards.
+ * This file exports all UI components in the Star Path module
+ * for easier importing throughout the application.
  */
 
-// Export StarPathCard and all other components
 export * from './StarPathCard';
+// Add additional component exports as they are implemented
+// export * from './StarPathMilestones';
+// export * from './StarPathActivities';
+// export * from './StarPathProgress';

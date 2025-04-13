@@ -1,179 +1,161 @@
 /**
  * Star Path Types
  * 
- * This file contains all type definitions used throughout the Star Path module.
- * These types ensure consistency and type safety across components, hooks, and services.
+ * This file defines all types used in the Star Path feature module
  */
-
-/**
- * Star Path Levels Enum
- * Represents the different levels a player can achieve in their Star Path journey
- */
-export const enum StarPathLevel {
-  RISING_PROSPECT = 1,
-  EMERGING_TALENT = 2,
-  STANDOUT_PERFORMER = 3,
-  ELITE_PROSPECT = 4,
-  FIVE_STAR_ATHLETE = 5
-}
-
-/**
- * Star Path Level Names
- * Provides display names for each star level
- */
-export const StarPathLevelNames = {
-  [StarPathLevel.RISING_PROSPECT]: "Rising Prospect",
-  [StarPathLevel.EMERGING_TALENT]: "Emerging Talent",
-  [StarPathLevel.STANDOUT_PERFORMER]: "Standout Performer",
-  [StarPathLevel.ELITE_PROSPECT]: "Elite Prospect",
-  [StarPathLevel.FIVE_STAR_ATHLETE]: "Five-Star Athlete"
-};
-
-/**
- * Milestone Interface
- * Represents achievement milestones that players can reach along their Star Path
- */
-export interface Milestone {
-  id: number;
-  description: string;
-  xpRequired: number;
-  rewards: string[];
-  isCompleted: boolean;
-}
 
 /**
  * Star Path Progress Interface
- * Represents a player's current progress along their Star Path journey
+ * Represents an athlete's progress in the Star Path system
  */
 export interface StarPathProgress {
-  id?: number;
+  id: number;
   userId: number;
-  currentStarLevel: number;
-  targetStarLevel: number;
+  position: string | null;
+  lastUpdated: Date | null;
+  sportType: string | null;
+  currentStarLevel: number | null;
+  targetStarLevel: number | null;
   storylinePhase: string;
   progress: number;
   xpTotal: number;
+  starXp: number;
+  level: number;
   completedDrills: number;
   verifiedWorkouts: number;
   skillTreeProgress: number;
   streakDays: number;
-  lastActive: Date | null;
-  milestones: Milestone[];
-  sportType: string | null;
-  position: string | null;
-  nextMilestone?: string;
-  achievements: Achievement[];
-  levelThresholds: number[];
-}
-
-/**
- * Attribute Category Interface
- * Represents a category of player attributes (physical, mental, technical)
- */
-export interface AttributeCategory {
-  id: string;
-  name: string;
-  description: string;
-  color: string;
-  attributes: Attribute[];
-}
-
-/**
- * Attribute Interface
- * Represents a specific player attribute within a category
- */
-export interface Attribute {
-  id: string;
-  name: string;
-  value: number;
-  maxValue: number;
-  growth: number; // Percentage growth since last update
-  category: string;
-}
-
-/**
- * Achievement Interface
- * Represents an achievement or badge a player can earn
- */
-export interface Achievement {
-  id: number;
-  title: string;
-  description: string;
-  iconPath: string;
-  dateEarned: Date | null;
-  xpValue: number;
-  isEarned: boolean;
-}
-
-/**
- * Training Completion Result Interface
- * Response from completing a training session
- */
-export interface CompletedTrainingResult {
-  success: boolean;
-  xpEarned: number;
-  starXpEarned: number;
-  currentLevel: number;
-  newProgress: number;
-  message: string;
-  leveledUp: boolean;
-}
-
-/**
- * Claim Milestone Result Interface
- * Response from claiming a milestone reward
- */
-export interface ClaimMilestoneResult {
-  success: boolean;
-  milestoneId: number;
-  xpEarned: number;
-  message: string;
-  newProgress: number;
-  rewardDetails: string;
-}
-
-/**
- * Daily Check-In Result Interface
- * Response from performing a daily check-in
- */
-export interface DailyCheckInResult {
-  success: boolean;
-  streakDays: number;
-  milestoneReached: boolean;
-  milestoneReward: string;
-  xpEarned: number;
-  message: string;
-}
-
-/**
- * Star Path API Response Interface
- * Standard format for API responses from Star Path endpoints
- */
-export interface StarPathResponse {
-  success: boolean;
-  message: string;
-  data?: StarPathProgress;
-  error?: string;
-}
-
-/**
- * Attribute Update Interface
- * Parameters for updating a player attribute
- */
-export interface AttributeUpdate {
-  attributeId: string;
-  newValue: number;
-  notes?: string;
+  longestStreak: number;
+  currentGoal: string | null;
+  nextMilestone: string | null;
+  roadmapItems: string[] | null;
+  achievements: string[] | null;
+  levelThresholds: number[] | null;
 }
 
 /**
  * Star Path Create/Update Interface
- * Parameters for creating or updating a Star Path
+ * Used for creating or updating Star Path progress data
  */
 export interface StarPathCreateUpdate {
   userId: number;
-  sportType?: string;
-  position?: string;
-  currentStarLevel?: number;
-  targetStarLevel?: number;
+  position?: string | null;
+  sportType?: string | null;
+  currentStarLevel?: number | null;
+  targetStarLevel?: number | null;
+  storylinePhase?: string;
+  progress?: number;
+  xpTotal?: number;
+  starXp?: number;
+  level?: number;
+  completedDrills?: number;
+  verifiedWorkouts?: number;
+  skillTreeProgress?: number;
+  streakDays?: number;
+  longestStreak?: number;
+  currentGoal?: string | null;
+  nextMilestone?: string | null;
+  roadmapItems?: string[] | null;
+  achievements?: string[] | null;
+  levelThresholds?: number[] | null;
+}
+
+/**
+ * Attribute Category Interface
+ * Represents a group of related attributes
+ */
+export interface AttributeCategory {
+  id: number;
+  name: string;
+  description: string | null;
+  sportType: string | null;
+  attributes: Attribute[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * Attribute Interface
+ * Represents a specific athletic or skill attribute
+ */
+export interface Attribute {
+  id: number;
+  name: string;
+  description: string | null;
+  categoryId: number;
+  baseValue: number | null;
+  currentValue: number | null;
+  potentialValue: number | null;
+  growthRate: number | null;
+  importance: number | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * Attribute Update Interface
+ * Used for updating a specific attribute value
+ */
+export interface AttributeUpdate {
+  attributeId: number;
+  value: number;
+  notes?: string;
+}
+
+/**
+ * Star Level enum
+ * Represents the different levels in the Star Path progression
+ */
+export enum StarLevel {
+  RisingProspect = 1,
+  EmergingTalent = 2,
+  StandoutPerformer = 3,
+  EliteProspect = 4,
+  FiveStarAthlete = 5
+}
+
+/**
+ * Training Activity Interface
+ * Represents a completed training activity
+ */
+export interface TrainingActivity {
+  id: number;
+  userId: number;
+  drillId: number;
+  duration: number;
+  score?: number;
+  skillNodeId?: number;
+  completedAt: Date;
+}
+
+/**
+ * Milestone Interface
+ * Represents an achievement milestone in the Star Path
+ */
+export interface Milestone {
+  id: number;
+  name: string;
+  description: string;
+  xpReward: number;
+  starXpReward: number;
+  unlockCriteria: string;
+  category: string;
+  level: number;
+  isClaimable: boolean;
+}
+
+/**
+ * Daily Check-In Interface
+ * Represents a daily check-in record
+ */
+export interface DailyCheckIn {
+  id: number;
+  userId: number;
+  checkedInAt: Date;
+  streakCount: number;
+  rewards: {
+    xp: number;
+    starXp: number;
+    bonusItems?: string[];
+  };
 }
