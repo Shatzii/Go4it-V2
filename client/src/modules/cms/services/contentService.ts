@@ -1,15 +1,30 @@
 import { ContentBlock, PageData } from '../types';
 
+import { cmsCache } from './cacheService';
+
 /**
  * Fetch all content blocks
  * @returns Promise with all content blocks
  */
 export async function getAllContentBlocks(): Promise<ContentBlock[]> {
+  // Check cache first
+  const cachedBlocks = cmsCache.getAllContentBlocks();
+  if (cachedBlocks) {
+    return cachedBlocks;
+  }
+
+  // Fetch from API if not in cache
   const response = await fetch('/api/content-blocks');
   if (!response.ok) {
     throw new Error(`Failed to fetch content blocks: ${response.statusText}`);
   }
-  return response.json();
+  
+  const blocks = await response.json();
+  
+  // Store in cache
+  cmsCache.setAllContentBlocks(blocks);
+  
+  return blocks;
 }
 
 /**
@@ -18,11 +33,24 @@ export async function getAllContentBlocks(): Promise<ContentBlock[]> {
  * @returns Promise with the content block
  */
 export async function getContentBlock(identifier: string): Promise<ContentBlock> {
+  // Check cache first
+  const cachedBlock = cmsCache.getContentBlock(identifier);
+  if (cachedBlock) {
+    return cachedBlock;
+  }
+
+  // Fetch from API if not in cache
   const response = await fetch(`/api/content-blocks/${identifier}`);
   if (!response.ok) {
     throw new Error(`Failed to fetch content block ${identifier}: ${response.statusText}`);
   }
-  return response.json();
+  
+  const block = await response.json();
+  
+  // Store in cache
+  cmsCache.setContentBlock(identifier, block);
+  
+  return block;
 }
 
 /**
