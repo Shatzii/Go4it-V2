@@ -23,11 +23,11 @@ export const StarPathCard: React.FC<StarPathCardProps> = ({
 
   const formatStarLevel = (level: number): string => {
     switch(level) {
-      case StarLevel.RisingProspect: return "Rising Prospect";
-      case StarLevel.EmergingTalent: return "Emerging Talent";
-      case StarLevel.StandoutPerformer: return "Standout Performer";
-      case StarLevel.EliteProspect: return "Elite Prospect";
-      case StarLevel.FiveStarAthlete: return "Five-Star Athlete";
+      case StarLevel.RISING_PROSPECT: return "Rising Prospect";
+      case StarLevel.EMERGING_TALENT: return "Emerging Talent";
+      case StarLevel.STANDOUT_PERFORMER: return "Standout Performer";
+      case StarLevel.ELITE_PROSPECT: return "Elite Prospect";
+      case StarLevel.FIVE_STAR_ATHLETE: return "Five-Star Athlete";
       default: return "Unknown";
     }
   };
