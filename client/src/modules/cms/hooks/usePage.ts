@@ -1,5 +1,6 @@
-import { useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { PageData } from '../types';
+import { getPage } from '../services/contentService';
 
 /**
  * Hook to fetch a page from the CMS by its slug
@@ -8,25 +9,15 @@ import { PageData } from '../types';
  * @returns Query result with the page data
  */
 export function usePage(
-  slug?: string,
-  options?: Omit<UseQueryOptions<PageData, Error, PageData, string[]>, 'queryKey' | 'queryFn'>
+  slug: string,
+  options: { enabled?: boolean } = {}
 ) {
-  return useQuery({
-    queryKey: ['page', slug || ''],
+  return useQuery<PageData>({
+    queryKey: ['/api/cms/pages', slug],
     queryFn: async () => {
-      if (!slug) return null;
-      
-      const res = await fetch(`/api/pages/${slug}`);
-      if (!res.ok) {
-        if (res.status === 404) {
-          throw new Error(`Page not found: ${slug}`);
-        }
-        throw new Error(`Failed to fetch page data: ${res.status} ${res.statusText}`);
-      }
-      
-      return res.json();
+      const response = await getPage(slug);
+      return response;
     },
-    enabled: !!slug && (options?.enabled !== false),
     ...options,
   });
 }

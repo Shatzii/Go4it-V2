@@ -1,7 +1,7 @@
 import React from 'react';
 import { useContent } from '../hooks/useContent';
-import { formatContent } from '../utils/contentFormatter';
 import { ContentBlock as ContentBlockType } from '../types';
+import { formatContent } from '../utils/contentFormatter';
 
 interface ContentBlockProps {
   identifier?: string;
@@ -16,47 +16,71 @@ interface ContentBlockProps {
  * Can fetch content by identifier or use a provided content block directly.
  */
 export function ContentBlock({ identifier, block, className = '' }: ContentBlockProps) {
-  // If a block is directly provided, use it
-  // Otherwise, fetch the block by its identifier
-  const { data: fetchedBlock, isLoading, error } = useContent(
-    identifier,
-    { enabled: !block && !!identifier }
-  );
-
-  // Determine which block to use
-  const contentBlock = block || fetchedBlock;
-
-  if (isLoading) {
-    return <div className={`cms-block-loading ${className}`}>Loading content...</div>;
+  // Check if we need to fetch content by identifier or use provided block
+  const shouldFetch = !block && !!identifier;
+  
+  // Fetch content when needed
+  const { data, isLoading, error } = useContent(identifier || '', {
+    enabled: shouldFetch,
+  });
+  
+  // Use provided block or fetched content
+  const contentBlock = block || data;
+  
+  // Show loading state
+  if (shouldFetch && isLoading) {
+    return <div className={`cms-content-loading ${className}`}>Loading content...</div>;
   }
-
-  if (error || !contentBlock) {
-    console.error("Error loading content block:", error);
+  
+  // Show error state
+  if (shouldFetch && error) {
     return (
-      <div className={`cms-block-error ${className}`}>
-        <p>Could not load content{identifier ? ` for "${identifier}"` : ''}.</p>
+      <div className={`cms-content-error ${className}`}>
+        <p>Error loading content: {(error as Error).message || 'Unknown error'}</p>
       </div>
     );
   }
-
-  // Apply formatting to the content
-  const formattedContent = formatContent(contentBlock.content, contentBlock.format);
-
-  return (
-    <div 
-      className={`cms-block cms-block-${contentBlock.identifier} ${contentBlock.className || ''} ${className}`}
-      data-block-id={contentBlock.id}
-      data-block-identifier={contentBlock.identifier}
-      data-block-section={contentBlock.section}
-    >
-      {contentBlock.title && (
-        <h2 className="cms-block-title">{contentBlock.title}</h2>
-      )}
-      
+  
+  // Show not found state
+  if (shouldFetch && !contentBlock) {
+    return (
+      <div className={`cms-content-not-found ${className}`}>
+        <p>Content block not found: {identifier}</p>
+      </div>
+    );
+  }
+  
+  // Show inactive content block message
+  if (contentBlock && !contentBlock.active) {
+    return (
+      <div className={`cms-content-inactive ${className}`}>
+        <p>This content is currently inactive.</p>
+      </div>
+    );
+  }
+  
+  // Render content
+  if (contentBlock) {
+    return (
       <div 
-        className="cms-block-content"
-        dangerouslySetInnerHTML={{ __html: formattedContent }}
-      />
-    </div>
-  );
+        className={`cms-content ${className}`}
+        data-id={contentBlock.id}
+        data-identifier={contentBlock.identifier}
+      >
+        {contentBlock.title && (
+          <h3 className="cms-content-title">{contentBlock.title}</h3>
+        )}
+        
+        <div 
+          className="cms-content-body"
+          dangerouslySetInnerHTML={{ 
+            __html: formatContent(contentBlock.content, contentBlock.format) 
+          }}
+        />
+      </div>
+    );
+  }
+  
+  // Fallback for unexpected state
+  return <div className={`cms-content-empty ${className}`}></div>;
 }

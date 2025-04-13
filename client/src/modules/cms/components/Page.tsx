@@ -1,7 +1,8 @@
 import React from 'react';
 import { usePage } from '../hooks/usePage';
+import { PageData, PageComponent } from '../types';
 import { ContentBlock } from './ContentBlock';
-import { PageData } from '../types';
+import { formatContent } from '../utils/contentFormatter';
 
 interface PageProps {
   slug: string;
@@ -16,58 +17,66 @@ interface PageProps {
  * Displays components of the page in a structured layout.
  */
 export function Page({ slug, fallback, className = '' }: PageProps) {
+  // Fetch page data by slug
   const { data: page, isLoading, error } = usePage(slug);
   
+  // Show loading state
   if (isLoading) {
     return <div className={`cms-page-loading ${className}`}>Loading page...</div>;
   }
   
-  if (error || !page) {
-    console.error(`Error loading page (${slug}):`, error);
-    return fallback ? (
-      <>{fallback}</>
-    ) : (
+  // Show error state
+  if (error) {
+    return (
       <div className={`cms-page-error ${className}`}>
-        <h2>Page Not Found</h2>
-        <p>The requested page could not be loaded.</p>
+        <p>Error loading page: {(error as Error).message || 'Unknown error'}</p>
+      </div>
+    );
+  }
+  
+  // Show not found state
+  if (!page) {
+    if (fallback) {
+      return <>{fallback}</>;
+    }
+    return (
+      <div className={`cms-page-not-found ${className}`}>
+        <p>Page not found: {slug}</p>
+      </div>
+    );
+  }
+  
+  // Show inactive page message
+  if (!page.active) {
+    return (
+      <div className={`cms-page-inactive ${className}`}>
+        <p>This page is currently inactive.</p>
       </div>
     );
   }
   
   return (
     <div 
-      className={`cms-page cms-page-${slug} ${page.className || ''} ${className}`}
-      data-page-slug={slug}
+      className={`cms-page ${page.className || ''} ${className}`}
+      data-id={page.id}
+      data-slug={page.slug}
     >
-      {page.title && (
-        <h1 className="cms-page-title">{page.title}</h1>
+      {/* Page main content */}
+      {page.title && <h1 className="cms-page-title">{page.title}</h1>}
+      
+      {page.content && (
+        <div 
+          className="cms-page-content"
+          dangerouslySetInnerHTML={{ __html: page.content }}
+        />
       )}
       
-      {page.description && (
-        <div className="cms-page-description">{page.description}</div>
+      {/* Page components */}
+      {page.components && page.components.length > 0 && (
+        <div className="cms-page-components">
+          {page.components.map((component, index) => renderComponent(component, page, index))}
+        </div>
       )}
-      
-      <div className="cms-page-content">
-        {page.components && page.components.length > 0 ? (
-          <div className="cms-page-components">
-            {page.components.map((component, index) => (
-              <div key={index} className="cms-page-component">
-                {renderComponent(component, page)}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="cms-page-blocks">
-            {/* If there are no components, render the content directly */}
-            {page.content && (
-              <div 
-                className="cms-page-content-html"
-                dangerouslySetInnerHTML={{ __html: page.content }}
-              />
-            )}
-          </div>
-        )}
-      </div>
     </div>
   );
 }
@@ -75,53 +84,77 @@ export function Page({ slug, fallback, className = '' }: PageProps) {
 /**
  * Renders a component based on its type
  */
-function renderComponent(component: PageData['components'][0], page: PageData) {
+function renderComponent(component: PageComponent, page: PageData, index: number) {
+  const key = `component-${index}`;
+  
   switch (component.type) {
     case 'content-block':
-      return <ContentBlock identifier={component.identifier} />;
+      // Render a single content block by identifier
+      return (
+        <div key={key} className={`cms-component-block ${component.className || ''}`}>
+          <ContentBlock identifier={component.identifier} />
+        </div>
+      );
       
     case 'content-section':
+      // Render all content blocks from a section
       return (
-        <div className={`cms-section cms-section-${component.section} ${component.className || ''}`}>
-          <h2 className="cms-section-title">{component.title}</h2>
+        <div key={key} className={`cms-component-section ${component.className || ''}`}>
+          {component.title && <h2 className="cms-section-title">{component.title}</h2>}
+          
           <div className="cms-section-blocks">
-            {page.blocks
-              ?.filter(block => block.section === component.section)
-              .map((block, idx) => (
-                <ContentBlock key={idx} block={block} />
-              ))}
+            {page.blocks && 
+             page.blocks.filter(block => block.section === component.section).map((block, idx) => (
+              <ContentBlock key={`block-${idx}`} block={block} />
+            ))}
           </div>
         </div>
       );
       
     case 'hero':
+      // Render a hero section with optional background image
       return (
-        <div className={`cms-hero ${component.className || ''}`} style={{ 
-          backgroundImage: component.backgroundImage ? `url(${component.backgroundImage})` : undefined 
-        }}>
-          {component.title && <h1 className="cms-hero-title">{component.title}</h1>}
-          {component.subtitle && <h2 className="cms-hero-subtitle">{component.subtitle}</h2>}
+        <div 
+          key={key}
+          className={`cms-component-hero ${component.className || ''}`}
+          style={component.backgroundImage ? {
+            backgroundImage: `url(${component.backgroundImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          } : undefined}
+        >
+          {component.title && <h2 className="cms-hero-title">{component.title}</h2>}
+          {component.subtitle && <p className="cms-hero-subtitle">{component.subtitle}</p>}
           {component.content && (
             <div 
               className="cms-hero-content"
-              dangerouslySetInnerHTML={{ __html: component.content }}
+              dangerouslySetInnerHTML={{ __html: formatContent(component.content, 'html') }}
             />
           )}
         </div>
       );
       
     case 'custom':
-      // Custom components will be handled by a ComponentRegistry
-      // This would be expanded in a more complete implementation
+      // For custom components, just render the raw content
       return (
-        <div className="cms-custom-component">
-          <p>Custom component: {component.name}</p>
+        <div 
+          key={key}
+          className={`cms-component-custom ${component.className || ''}`}
+        >
+          {component.title && <h2 className="cms-custom-title">{component.title}</h2>}
+          {component.subtitle && <p className="cms-custom-subtitle">{component.subtitle}</p>}
+          {component.content && (
+            <div 
+              className="cms-custom-content"
+              dangerouslySetInnerHTML={{ __html: formatContent(component.content, 'html') }}
+            />
+          )}
         </div>
       );
       
     default:
       return (
-        <div className="cms-unknown-component">
+        <div key={key} className="cms-component-unknown">
           <p>Unknown component type: {(component as any).type}</p>
         </div>
       );
