@@ -1,16 +1,16 @@
 /**
- * CMS Cache Service
+ * CMS Cache Service - Server Implementation
  * 
  * Provides caching capabilities for CMS content to improve performance
- * and reduce unnecessary API calls. Features include:
+ * and reduce database load. Features include:
  * - Automatic cache invalidation
  * - TTL-based expiration
  * - Debug logging for cache operations
  * - Section-aware invalidation
- * - Prefetching for frequently accessed content
+ * - Cache statistics tracking
  */
 
-import { ContentBlock, PageData, CacheStats } from '../types';
+import { ContentBlock, PageData, CacheStats } from '../../../shared/schema';
 
 // Cache TTL in milliseconds
 const CONTENT_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
@@ -70,6 +70,8 @@ class CMSCache {
     const totalRequests = this.stats.hits + this.stats.misses;
     if (totalRequests > 0) {
       this.stats.hitRatio = Number((this.stats.hits / totalRequests).toFixed(2));
+    } else {
+      this.stats.hitRatio = 0;
     }
   }
   
@@ -106,6 +108,7 @@ class CMSCache {
     const cached = this.contentBlockCache.get(identifier);
     if (!cached) {
       this.stats.misses++;
+      this.updateStats();
       this.logDebug(`Cache MISS: content block "${identifier}"`);
       return null;
     }
@@ -113,6 +116,7 @@ class CMSCache {
     if (Date.now() - cached.timestamp > cached.ttl) {
       this.contentBlockCache.delete(identifier);
       this.stats.misses++;
+      this.updateStats();
       this.logDebug(`Cache EXPIRED: content block "${identifier}"`);
       return null;
     }
@@ -120,6 +124,7 @@ class CMSCache {
     // Update access stats
     cached.accessCount = (cached.accessCount || 0) + 1;
     this.stats.hits++;
+    this.updateStats();
     this.logDebug(`Cache HIT: content block "${identifier}" (accessed ${cached.accessCount} times)`);
     
     return cached.data;
@@ -145,6 +150,7 @@ class CMSCache {
     const cached = this.contentSectionCache.get(section);
     if (!cached) {
       this.stats.misses++;
+      this.updateStats();
       this.logDebug(`Cache MISS: content section "${section}"`);
       return null;
     }
@@ -152,6 +158,7 @@ class CMSCache {
     if (Date.now() - cached.timestamp > cached.ttl) {
       this.contentSectionCache.delete(section);
       this.stats.misses++;
+      this.updateStats();
       this.logDebug(`Cache EXPIRED: content section "${section}"`);
       return null;
     }
@@ -159,6 +166,7 @@ class CMSCache {
     // Update access stats
     cached.accessCount = (cached.accessCount || 0) + 1;
     this.stats.hits++;
+    this.updateStats();
     this.logDebug(`Cache HIT: content section "${section}" (accessed ${cached.accessCount} times)`);
     
     return cached.data;
@@ -183,6 +191,7 @@ class CMSCache {
   getAllContentBlocks(): ContentBlock[] | null {
     if (!this.allContentBlocksCache) {
       this.stats.misses++;
+      this.updateStats();
       this.logDebug(`Cache MISS: all content blocks`);
       return null;
     }
@@ -190,6 +199,7 @@ class CMSCache {
     if (Date.now() - this.allContentBlocksCache.timestamp > this.allContentBlocksCache.ttl) {
       this.allContentBlocksCache = null;
       this.stats.misses++;
+      this.updateStats();
       this.logDebug(`Cache EXPIRED: all content blocks`);
       return null;
     }
@@ -197,6 +207,7 @@ class CMSCache {
     // Update access stats
     this.allContentBlocksCache.accessCount = (this.allContentBlocksCache.accessCount || 0) + 1;
     this.stats.hits++;
+    this.updateStats();
     this.logDebug(`Cache HIT: all content blocks (accessed ${this.allContentBlocksCache.accessCount} times)`);
     
     return this.allContentBlocksCache.data;
@@ -219,6 +230,7 @@ class CMSCache {
     const cached = this.pageCache.get(slug);
     if (!cached) {
       this.stats.misses++;
+      this.updateStats();
       this.logDebug(`Cache MISS: page "${slug}"`);
       return null;
     }
@@ -226,6 +238,7 @@ class CMSCache {
     if (Date.now() - cached.timestamp > cached.ttl) {
       this.pageCache.delete(slug);
       this.stats.misses++;
+      this.updateStats();
       this.logDebug(`Cache EXPIRED: page "${slug}"`);
       return null;
     }
@@ -233,6 +246,7 @@ class CMSCache {
     // Update access stats
     cached.accessCount = (cached.accessCount || 0) + 1;
     this.stats.hits++;
+    this.updateStats();
     this.logDebug(`Cache HIT: page "${slug}" (accessed ${cached.accessCount} times)`);
     
     return cached.data;
@@ -254,6 +268,7 @@ class CMSCache {
   getAllPages(): PageData[] | null {
     if (!this.allPagesCache) {
       this.stats.misses++;
+      this.updateStats();
       this.logDebug(`Cache MISS: all pages`);
       return null;
     }
@@ -261,6 +276,7 @@ class CMSCache {
     if (Date.now() - this.allPagesCache.timestamp > this.allPagesCache.ttl) {
       this.allPagesCache = null;
       this.stats.misses++;
+      this.updateStats();
       this.logDebug(`Cache EXPIRED: all pages`);
       return null;
     }
@@ -268,6 +284,7 @@ class CMSCache {
     // Update access stats
     this.allPagesCache.accessCount = (this.allPagesCache.accessCount || 0) + 1;
     this.stats.hits++;
+    this.updateStats();
     this.logDebug(`Cache HIT: all pages (accessed ${this.allPagesCache.accessCount} times)`);
     
     return this.allPagesCache.data;
@@ -275,74 +292,9 @@ class CMSCache {
 
   // Cache statistics and management
   getCacheStats(): CacheStats {
-    // Calculate current size and hit ratio
-    const totalSize = this.contentBlockCache.size + 
-                     this.contentSectionCache.size + 
-                     this.pageCache.size + 
-                     (this.allContentBlocksCache ? 1 : 0) + 
-                     (this.allPagesCache ? 1 : 0);
-    
-    const totalRequests = this.stats.hits + this.stats.misses;
-    const hitRatio = totalRequests > 0 
-      ? Number((this.stats.hits / totalRequests).toFixed(2)) 
-      : 0;
-    
-    return {
-      ...this.stats,
-      size: totalSize,
-      hitRatio
-    };
-  }
-  
-  /**
-   * Prefetch content blocks for frequently accessed sections
-   * to improve performance for commonly viewed content
-   */
-  prefetchSection(section: string): Promise<void> {
-    this.logDebug(`Prefetching content for section: ${section}`);
-    
-    return fetch(`/api/content-blocks/section/${section}`)
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data) && data.length > 0) {
-          this.setContentSection(section, data);
-          
-          // Also cache individual blocks
-          data.forEach(block => {
-            this.setContentBlock(block.identifier, block);
-          });
-          
-          this.logDebug(`Prefetched ${data.length} content blocks for section: ${section}`);
-        }
-      })
-      .catch(error => {
-        console.error(`Error prefetching section ${section}:`, error);
-      });
-  }
-  
-  /**
-   * Prefetch a page and all its content for optimal performance
-   */
-  prefetchPage(slug: string): Promise<void> {
-    this.logDebug(`Prefetching page: ${slug}`);
-    
-    return fetch(`/api/pages/${slug}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data) {
-          this.setPage(slug, data);
-          this.logDebug(`Prefetched page: ${slug}`);
-          
-          // Prefetch content sections used by this page
-          if (data.sections && Array.isArray(data.sections)) {
-            const sectionPromises = data.sections.map(section => this.prefetchSection(section));
-            return Promise.all(sectionPromises);
-          }
-        }
-      })
-      .catch(error => {
-        console.error(`Error prefetching page ${slug}:`, error);
-      });
+    // Calculate current size and hit ratio before returning
+    this.updateStats();
+    return { ...this.stats };
   }
 
   // Cache invalidation methods
