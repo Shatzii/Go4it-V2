@@ -321,12 +321,12 @@ export default function MobileNav() {
                   </div>
                 </Link>
                 
-                <Link href="/cms">
+                <Link href="/admin/cms-manager">
                   <div className="flex flex-col items-center" onClick={() => setShowMoreMenu(false)}>
-                    <div className={`rounded-full p-3 ${location === "/cms" ? "bg-cyan-500 text-white" : "bg-gray-700 text-gray-200"}`}>
+                    <div className={`rounded-full p-3 ${location === "/admin/cms-manager" ? "bg-cyan-500 text-white" : "bg-gray-700 text-gray-200"}`}>
                       <ClipboardList className="h-5 w-5" />
                     </div>
-                    <span className="text-xs mt-2 text-center text-white font-medium">CMS</span>
+                    <span className="text-xs mt-2 text-center text-white font-medium">CMS Manager</span>
                   </div>
                 </Link>
               </div>
