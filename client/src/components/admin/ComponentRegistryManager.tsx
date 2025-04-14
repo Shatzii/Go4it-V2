@@ -1,15 +1,35 @@
-import React, { useState } from 'react';
-import { useComponentTypes, useCreateComponentType, useUpdateComponentType, useDeleteComponentType } from '@/modules/cms/hooks/useComponentRegistry';
-import { Button } from '@/components/ui/button';
-import { Loader2, Plus, Pencil, Trash2, Code, Box, Check, X } from 'lucide-react';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Pencil, Trash2, Plus, AlertCircle } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -20,153 +40,234 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert";
-import type { ComponentRegistryItem } from '@shared/schema';
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
 
-// Form schema for component type
+import {
+  useComponentTypes,
+  useComponentCategories,
+  useCreateComponentType,
+  useUpdateComponentType,
+  useDeleteComponentType,
+} from "@/modules/cms/hooks/useComponentRegistry";
+import { ComponentRegistryItem } from "@/services/component-registry-api-service";
+
+// Define schema for form validation
 const componentTypeSchema = z.object({
   identifier: z.string().min(3, {
     message: "Identifier must be at least 3 characters long",
-  }).regex(/^[a-z0-9-]+$/, {
-    message: "Identifier can only contain lowercase letters, numbers, and hyphens",
   }),
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters long",
+  name: z.string().min(3, {
+    message: "Name must be at least 3 characters long",
   }),
   description: z.string().optional(),
-  category: z.string().default("general"),
-  icon: z.string().default("box"),
+  category: z.string().min(1, {
+    message: "Category is required",
+  }),
+  icon: z.string().optional(),
+  props: z.string().optional(),
+  defaultProps: z.string().optional(),
 });
 
 type ComponentTypeFormValues = z.infer<typeof componentTypeSchema>;
 
 export default function ComponentRegistryManager() {
+  const { toast } = useToast();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState<ComponentRegistryItem | null>(null);
 
-  const { data: componentTypes, isLoading, refetch } = useComponentTypes();
-  const createComponentType = useCreateComponentType();
-  const updateComponentType = useUpdateComponentType(selectedComponent?.identifier || '');
-  const deleteComponentType = useDeleteComponentType();
+  // Fetch data using react-query hooks
+  const { data: componentTypes = [], isLoading: isLoadingComponents, isError: isComponentsError } = useComponentTypes();
+  const { data: categories = [], isLoading: isLoadingCategories, isError: isCategoriesError } = useComponentCategories();
+  
+  // Mutations
+  const createMutation = useCreateComponentType();
+  const updateMutation = useUpdateComponentType(selectedComponent?.identifier || '');
+  const deleteMutation = useDeleteComponentType();
 
+  // Initialize React Hook Form for create component form
   const createForm = useForm<ComponentTypeFormValues>({
     resolver: zodResolver(componentTypeSchema),
     defaultValues: {
-      identifier: '',
-      name: '',
-      description: '',
-      category: 'general',
-      icon: 'box',
+      identifier: "",
+      name: "",
+      description: "",
+      category: "",
+      icon: "",
+      props: "{}",
+      defaultProps: "{}",
     },
   });
 
-  const updateForm = useForm<ComponentTypeFormValues>({
+  // Initialize React Hook Form for edit component form
+  const editForm = useForm<ComponentTypeFormValues>({
     resolver: zodResolver(componentTypeSchema),
     defaultValues: {
-      identifier: '',
-      name: '',
-      description: '',
-      category: 'general',
-      icon: 'box',
+      identifier: "",
+      name: "",
+      description: "",
+      category: "",
+      icon: "",
+      props: "{}",
+      defaultProps: "{}",
     },
   });
 
-  // Handle create component type
+  // Handle create form submission
   const onCreateSubmit = (data: ComponentTypeFormValues) => {
-    createComponentType.mutate(data, {
+    try {
+      const formattedData = {
+        ...data,
+        props: JSON.parse(data.props || "{}"),
+        defaultProps: JSON.parse(data.defaultProps || "{}"),
+      };
+
+      createMutation.mutate(formattedData, {
+        onSuccess: () => {
+          setIsCreateDialogOpen(false);
+          createForm.reset();
+        },
+        onError: (error: any) => {
+          toast({
+            title: "Error creating component",
+            description: error.message || "An error occurred while creating the component.",
+            variant: "destructive",
+          });
+        },
+      });
+    } catch (e: any) {
+      toast({
+        title: "Invalid JSON",
+        description: "Please check the props and defaultProps fields for valid JSON.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle edit form submission
+  const onUpdateSubmit = (data: ComponentTypeFormValues) => {
+    if (!selectedComponent) return;
+
+    try {
+      const formattedData = {
+        ...data,
+        props: JSON.parse(data.props || "{}"),
+        defaultProps: JSON.parse(data.defaultProps || "{}"),
+      };
+
+      updateMutation.mutate(formattedData, {
+        onSuccess: () => {
+          setIsEditDialogOpen(false);
+          setSelectedComponent(null);
+          editForm.reset();
+        },
+        onError: (error: any) => {
+          toast({
+            title: "Error updating component",
+            description: error.message || "An error occurred while updating the component.",
+            variant: "destructive",
+          });
+        },
+      });
+    } catch (e: any) {
+      toast({
+        title: "Invalid JSON",
+        description: "Please check the props and defaultProps fields for valid JSON.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle delete
+  const handleDelete = () => {
+    if (!selectedComponent) return;
+
+    deleteMutation.mutate(selectedComponent.identifier, {
       onSuccess: () => {
-        setIsCreateDialogOpen(false);
-        createForm.reset();
-        refetch();
-      }
+        setIsDeleteDialogOpen(false);
+        setSelectedComponent(null);
+      },
+      onError: (error: any) => {
+        toast({
+          title: "Error deleting component",
+          description: error.message || "An error occurred while deleting the component.",
+          variant: "destructive",
+        });
+      },
     });
   };
 
-  // Handle update component type
-  const onUpdateSubmit = (data: ComponentTypeFormValues) => {
-    if (selectedComponent) {
-      updateComponentType.mutate(data, {
-        onSuccess: () => {
-          setIsUpdateDialogOpen(false);
-          updateForm.reset();
-          refetch();
-        }
-      });
-    }
-  };
-
-  // Handle delete component type
-  const onDeleteConfirm = () => {
-    if (selectedComponent) {
-      deleteComponentType.mutate(selectedComponent.identifier, {
-        onSuccess: () => {
-          setIsDeleteDialogOpen(false);
-          setSelectedComponent(null);
-          refetch();
-        }
-      });
-    }
-  };
-
+  // Handle edit button click
   const handleEditClick = (component: ComponentRegistryItem) => {
     setSelectedComponent(component);
-    updateForm.reset({
+    
+    editForm.reset({
       identifier: component.identifier,
       name: component.name,
-      description: component.description || '',
-      category: component.category || 'general',
-      icon: component.icon || 'box',
+      description: component.description,
+      category: component.category,
+      icon: component.icon,
+      props: JSON.stringify(component.props, null, 2),
+      defaultProps: JSON.stringify(component.defaultProps, null, 2),
     });
-    setIsUpdateDialogOpen(true);
+    
+    setIsEditDialogOpen(true);
   };
 
+  // Handle delete button click
   const handleDeleteClick = (component: ComponentRegistryItem) => {
     setSelectedComponent(component);
     setIsDeleteDialogOpen(true);
   };
 
+  // Loading and error states
+  if (isLoadingComponents || isLoadingCategories) {
+    return <div className="py-4 text-center">Loading component registry...</div>;
+  }
+
+  if (isComponentsError || isCategoriesError) {
+    return (
+      <Alert variant="destructive" className="my-4">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>
+          Failed to load component registry data. Please try again.
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Component Registry</h2>
+        <div>
+          <h2 className="text-2xl font-bold">Component Registry</h2>
+          <p className="text-muted-foreground">
+            Manage reusable components that can be used in the CMS.
+          </p>
+        </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button size="sm">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Component Type
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Component
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
-              <DialogTitle>Add Component Type</DialogTitle>
+              <DialogTitle>Add New Component</DialogTitle>
               <DialogDescription>
-                Create a new component type that can be used in the CMS.
+                Register a new component type in the CMS. This component will be available for use in content pages.
               </DialogDescription>
             </DialogHeader>
             <Form {...createForm}>
@@ -178,11 +279,8 @@ export default function ComponentRegistryManager() {
                     <FormItem>
                       <FormLabel>Identifier</FormLabel>
                       <FormControl>
-                        <Input placeholder="my-component-type" {...field} />
+                        <Input placeholder="hero-section" {...field} />
                       </FormControl>
-                      <FormDescription>
-                        A unique identifier for this component type (lowercase, numbers, hyphens only)
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -192,13 +290,10 @@ export default function ComponentRegistryManager() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Name</FormLabel>
+                      <FormLabel>Display Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="My Component Type" {...field} />
+                        <Input placeholder="Hero Section" {...field} />
                       </FormControl>
-                      <FormDescription>
-                        A human-readable name for this component type
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -210,9 +305,10 @@ export default function ComponentRegistryManager() {
                     <FormItem>
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          placeholder="A description of what this component does and when to use it" 
-                          {...field} 
+                        <Textarea
+                          placeholder="A full-width hero section with image and text"
+                          className="resize-none"
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage />
@@ -225,23 +321,22 @@ export default function ComponentRegistryManager() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Category</FormLabel>
-                      <Select 
-                        onValueChange={field.onChange} 
-                        defaultValue={field.value}
-                      >
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select a category" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="general">General</SelectItem>
+                          {categories.map((category) => (
+                            <SelectItem key={category} value={category}>
+                              {category}
+                            </SelectItem>
+                          ))}
                           <SelectItem value="layout">Layout</SelectItem>
-                          <SelectItem value="media">Media</SelectItem>
-                          <SelectItem value="form">Form</SelectItem>
-                          <SelectItem value="athletics">Athletics</SelectItem>
-                          <SelectItem value="coaching">Coaching</SelectItem>
-                          <SelectItem value="academic">Academic</SelectItem>
+                          <SelectItem value="content">Content</SelectItem>
+                          <SelectItem value="feature">Feature</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -253,31 +348,53 @@ export default function ComponentRegistryManager() {
                   name="icon"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Icon</FormLabel>
+                      <FormLabel>Icon (Lucide Icon Name)</FormLabel>
                       <FormControl>
-                        <Input placeholder="box" {...field} />
+                        <Input placeholder="layout" {...field} />
                       </FormControl>
-                      <FormDescription>
-                        The name of a Lucide icon to use for this component
-                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={createForm.control}
+                  name="props"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Props Schema (JSON)</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder='{"title": {"type": "string", "required": true}}'
+                          className="resize-none font-mono"
+                          rows={5}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={createForm.control}
+                  name="defaultProps"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Default Props (JSON)</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder='{"title": "Default Title"}'
+                          className="resize-none font-mono"
+                          rows={5}
+                          {...field}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 <DialogFooter>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => setIsCreateDialogOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    type="submit"
-                    disabled={createComponentType.isPending}
-                  >
-                    {createComponentType.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                    Create
+                  <Button type="submit" disabled={createMutation.isPending}>
+                    {createMutation.isPending ? "Creating..." : "Create Component"}
                   </Button>
                 </DialogFooter>
               </form>
@@ -285,87 +402,93 @@ export default function ComponentRegistryManager() {
           </DialogContent>
         </Dialog>
       </div>
+      <Separator />
 
-      {isLoading ? (
-        <div className="flex justify-center items-center py-8">
-          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-        </div>
-      ) : componentTypes && componentTypes.length > 0 ? (
-        <div className="border rounded-md">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Identifier</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead className="w-[100px]">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {componentTypes.map((component) => (
-                <TableRow key={component.id}>
-                  <TableCell className="font-medium">{component.name}</TableCell>
-                  <TableCell className="font-mono text-sm">{component.identifier}</TableCell>
-                  <TableCell>{component.category}</TableCell>
-                  <TableCell className="max-w-md truncate">
-                    {component.description || "No description"}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex space-x-2">
-                      <Button 
-                        variant="ghost" 
+      {componentTypes.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center p-6">
+            <div className="text-center">
+              <h3 className="mt-2 text-lg font-semibold">No components registered</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Get started by adding your first component to the registry.
+              </p>
+              <Button
+                className="mt-4"
+                onClick={() => setIsCreateDialogOpen(true)}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Add Component
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>Registered Components</CardTitle>
+            <CardDescription>
+              {componentTypes.length} component{componentTypes.length !== 1 ? 's' : ''} available in the registry
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Identifier</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {componentTypes.map((component) => (
+                  <TableRow key={component.id}>
+                    <TableCell className="font-medium">{component.name}</TableCell>
+                    <TableCell className="font-mono text-xs">{component.identifier}</TableCell>
+                    <TableCell>{component.category}</TableCell>
+                    <TableCell className="max-w-xs truncate">
+                      {component.description || "—"}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
                         size="icon"
                         onClick={() => handleEditClick(component)}
                       >
-                        <Pencil className="w-4 h-4" />
+                        <Pencil className="h-4 w-4" />
                         <span className="sr-only">Edit</span>
                       </Button>
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         size="icon"
                         onClick={() => handleDeleteClick(component)}
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="h-4 w-4" />
                         <span className="sr-only">Delete</span>
                       </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center py-8 border rounded-md bg-muted/10">
-          <Code className="w-12 h-12 mb-4 text-muted-foreground" />
-          <h3 className="text-lg font-medium mb-2">No Component Types</h3>
-          <p className="text-muted-foreground text-center max-w-md mb-6">
-            You haven't created any component types yet. Component types define the 
-            building blocks that can be used in your CMS pages.
-          </p>
-          <Button 
-            onClick={() => setIsCreateDialogOpen(true)}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Create First Component Type
-          </Button>
-        </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       )}
 
-      {/* Update Dialog */}
-      <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>Edit Component Type</DialogTitle>
+            <DialogTitle>Edit Component</DialogTitle>
             <DialogDescription>
-              Update the details of this component type.
+              Update the properties of this component.
             </DialogDescription>
           </DialogHeader>
-          <Form {...updateForm}>
-            <form onSubmit={updateForm.handleSubmit(onUpdateSubmit)} className="space-y-4">
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(onUpdateSubmit)} className="space-y-4">
               <FormField
-                control={updateForm.control}
+                control={editForm.control}
                 name="identifier"
                 render={({ field }) => (
                   <FormItem>
@@ -373,19 +496,16 @@ export default function ComponentRegistryManager() {
                     <FormControl>
                       <Input disabled {...field} />
                     </FormControl>
-                    <FormDescription>
-                      Component identifiers cannot be changed after creation
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <FormField
-                control={updateForm.control}
+                control={editForm.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>Display Name</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -394,41 +514,43 @@ export default function ComponentRegistryManager() {
                 )}
               />
               <FormField
-                control={updateForm.control}
+                control={editForm.control}
                 name="description"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea {...field} />
+                      <Textarea
+                        className="resize-none"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <FormField
-                control={updateForm.control}
+                control={editForm.control}
                 name="category"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Category</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a category" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="general">General</SelectItem>
+                        {categories.map((category) => (
+                          <SelectItem key={category} value={category}>
+                            {category}
+                          </SelectItem>
+                        ))}
                         <SelectItem value="layout">Layout</SelectItem>
-                        <SelectItem value="media">Media</SelectItem>
-                        <SelectItem value="form">Form</SelectItem>
-                        <SelectItem value="athletics">Athletics</SelectItem>
-                        <SelectItem value="coaching">Coaching</SelectItem>
-                        <SelectItem value="academic">Academic</SelectItem>
+                        <SelectItem value="content">Content</SelectItem>
+                        <SelectItem value="feature">Feature</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -436,35 +558,55 @@ export default function ComponentRegistryManager() {
                 )}
               />
               <FormField
-                control={updateForm.control}
+                control={editForm.control}
                 name="icon"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Icon</FormLabel>
+                    <FormLabel>Icon (Lucide Icon Name)</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
-                    <FormDescription>
-                      The name of a Lucide icon to use for this component
-                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={editForm.control}
+                name="props"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Props Schema (JSON)</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        className="resize-none font-mono"
+                        rows={5}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={editForm.control}
+                name="defaultProps"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Default Props (JSON)</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        className="resize-none font-mono"
+                        rows={5}
+                        {...field}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <DialogFooter>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => setIsUpdateDialogOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  type="submit"
-                  disabled={updateComponentType.isPending}
-                >
-                  {updateComponentType.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                  Update
+                <Button type="submit" disabled={updateMutation.isPending}>
+                  {updateMutation.isPending ? "Saving..." : "Save Changes"}
                 </Button>
               </DialogFooter>
             </form>
@@ -474,52 +616,26 @@ export default function ComponentRegistryManager() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-[400px]">
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Component Type</DialogTitle>
+            <DialogTitle>Confirm Deletion</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this component type? This action cannot be undone.
+              Are you sure you want to delete the component "{selectedComponent?.name}"? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
-          
-          <Alert variant="destructive">
-            <AlertTitle>Warning</AlertTitle>
-            <AlertDescription>
-              If this component type is used by any pages, they will be affected.
-            </AlertDescription>
-          </Alert>
-          
-          <div className="py-2">
-            <h4 className="font-medium mb-1">Component Type Details:</h4>
-            <p className="text-muted-foreground mb-1">
-              <span className="font-semibold">Name:</span> {selectedComponent?.name}
-            </p>
-            <p className="text-muted-foreground mb-1">
-              <span className="font-semibold">Identifier:</span> {selectedComponent?.identifier}
-            </p>
-          </div>
-          
           <DialogFooter>
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setIsDeleteDialogOpen(false)}
             >
-              <X className="w-4 h-4 mr-2" />
               Cancel
             </Button>
-            <Button 
-              type="button"
+            <Button
               variant="destructive"
-              onClick={onDeleteConfirm}
-              disabled={deleteComponentType.isPending}
+              onClick={handleDelete}
+              disabled={deleteMutation.isPending}
             >
-              {deleteComponentType.isPending ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Trash2 className="w-4 h-4 mr-2" />
-              )}
-              Delete
+              {deleteMutation.isPending ? "Deleting..." : "Delete"}
             </Button>
           </DialogFooter>
         </DialogContent>
