@@ -28,7 +28,7 @@ import AuthPage from "@/pages/auth-page";
 import AnalysisReport from "@/pages/analysis-report";
 import MessagingPage from "@/pages/messaging";
 import HomePage from "@/pages/home-page";
-import CMSPage from "@/pages/cms-page";
+// Removed old CMS page import in favor of CmsManager
 import TestAuth from "@/pages/test-auth";
 import SmsMessagingPage from "@/pages/sms-messaging";
 
@@ -197,9 +197,7 @@ function Router() {
           {() => <ProtectedRoute component={UploadVideo} />}
         </Route>
         
-        <Route path="/cms">
-          {() => <ProtectedRoute component={CMSPage} adminOnly={true} />}
-        </Route>
+        {/* Old CMS page removed in favor of the new CMS Manager */}
         
         {/* Film Comparison Feature Routes */}
         <Route path="/film-comparison">
