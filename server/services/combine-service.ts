@@ -19,12 +19,13 @@ export class CombineService {
    */
   async initialize(): Promise<boolean> {
     try {
-      // Check that tables exist by counting templates
-      const [templateCount] = await db
-        .select({ count: db.fn.count() })
-        .from(combineRatingTemplates);
+      // Just check if the table exists without trying to access count
+      await db
+        .select()
+        .from(combineRatingTemplates)
+        .limit(1);
       
-      console.log(`Combine Service initialized with ${templateCount.count} templates`);
+      console.log(`Combine Service initialized successfully`);
       return true;
     } catch (error) {
       console.error('Failed to initialize Combine Service:', error);
