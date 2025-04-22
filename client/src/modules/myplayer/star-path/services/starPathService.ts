@@ -1,154 +1,70 @@
 /**
  * Star Path Service
  * 
- * Contains all API service functions for the Star Path feature.
- * These functions handle data fetching and state management for the Star Path module.
+ * This service handles API interactions for the Star Path feature.
  */
 
+import { apiRequest } from '@/lib/queryClient';
 import {
   StarPathProgress,
-  StarPathCreateUpdate,
-  StarPathResponse,
   AttributeCategory,
-  AttributeUpdate,
-  CompletedTrainingResult,
-  ClaimMilestoneResult,
-  DailyCheckInResult,
+  StarPathCreateUpdate,
+  AttributeUpdate
 } from '../types';
 
-/**
- * Fetch a user's Star Path progress
- * @param userId The user's ID
- * @returns Star Path progress data
- */
-export const fetchStarPath = async (userId: number): Promise<StarPathProgress | null> => {
+// Fetch the user's star path progress
+export async function fetchStarPath(userId: number): Promise<StarPathProgress | null> {
   try {
-    const response = await fetch(`/api/star-path/${userId}`);
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch Star Path: ${response.status}`);
-    }
-    
-    const data: StarPathResponse = await response.json();
-    
-    if (!data.success) {
-      throw new Error(data.error || 'Unknown error fetching Star Path data');
-    }
-    
-    return data.data || null;
+    const response = await apiRequest('GET', `/api/star-path/${userId}`);
+    return response.data;
   } catch (error) {
-    console.error('Error fetching Star Path:', error);
-    throw error;
+    console.error('Error fetching star path:', error);
+    return null;
   }
-};
+}
 
-/**
- * Create or update a user's Star Path
- * @param starPathData The data to create or update
- * @returns The updated Star Path data
- */
-export const createOrUpdateStarPath = async (
-  starPathData: StarPathCreateUpdate
-): Promise<StarPathProgress | null> => {
+// Create or update star path progress
+export async function createOrUpdateStarPath(
+  data: StarPathCreateUpdate
+): Promise<StarPathProgress | null> {
   try {
-    const response = await fetch('/api/star-path', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(starPathData),
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to create/update Star Path: ${response.status}`);
-    }
-    
-    const data: StarPathResponse = await response.json();
-    
-    if (!data.success) {
-      throw new Error(data.error || 'Unknown error creating/updating Star Path');
-    }
-    
-    return data.data || null;
+    const response = await apiRequest('POST', '/api/star-path', data);
+    return response.data;
   } catch (error) {
-    console.error('Error creating/updating Star Path:', error);
-    throw error;
+    console.error('Error creating/updating star path:', error);
+    return null;
   }
-};
+}
 
-/**
- * Fetch attribute data for a specific category
- * @param userId The user's ID
- * @param category The attribute category (physical, mental, technical)
- * @returns Attribute category data
- */
-export const fetchAttributesByCategory = async (
-  userId: number,
+// Fetch attributes by category
+export async function fetchAttributesByCategory(
   category: string
-): Promise<AttributeCategory | null> => {
+): Promise<AttributeCategory | null> {
   try {
-    const response = await fetch(`/api/star-path/${userId}/attributes/${category}`);
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch attributes: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    if (!data.success) {
-      throw new Error(data.error || 'Unknown error fetching attributes');
-    }
-    
-    return data.data || null;
+    const response = await apiRequest('GET', `/api/attributes/${category}`);
+    return response.data;
   } catch (error) {
     console.error(`Error fetching ${category} attributes:`, error);
-    throw error;
+    return null;
   }
-};
+}
 
-/**
- * Update a specific attribute's value
- * @param userId The user's ID
- * @param attributeUpdate The attribute update data
- * @returns Success status
- */
-export const updateAttribute = async (
+// Update attribute value
+export async function updateAttribute(
   userId: number,
-  attributeUpdate: AttributeUpdate
-): Promise<boolean> => {
+  update: AttributeUpdate
+): Promise<boolean> {
   try {
-    const response = await fetch(`/api/star-path/${userId}/attributes/update`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(attributeUpdate),
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to update attribute: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    if (!data.success) {
-      throw new Error(data.error || 'Unknown error updating attribute');
-    }
-    
+    await apiRequest('PATCH', `/api/attributes/${userId}`, update);
     return true;
   } catch (error) {
     console.error('Error updating attribute:', error);
-    throw error;
+    return false;
   }
-};
+}
 
-/**
- * Record completed training to update Star Path progress
- * @param userId The user's ID
- * @param trainingData The training completion data
- * @returns Training completion results
- */
-export const completeTraining = async (
+// Complete training
+export async function completeTraining(
   userId: number,
   trainingData: {
     drillId: number;
@@ -156,89 +72,47 @@ export const completeTraining = async (
     score?: number;
     skillNodeId?: number;
   }
-): Promise<CompletedTrainingResult> => {
+): Promise<{ xpGained: number; message: string; levelUp?: boolean }> {
   try {
-    const response = await fetch(`/api/star-path/${userId}/training/complete`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(trainingData),
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to record training completion: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    if (!data.success) {
-      throw new Error(data.error || 'Unknown error recording training completion');
-    }
-    
-    return data.data;
+    const response = await apiRequest(
+      'POST',
+      `/api/training/${userId}/complete`,
+      trainingData
+    );
+    return response.data;
   } catch (error) {
     console.error('Error completing training:', error);
     throw error;
   }
-};
+}
 
-/**
- * Claim a milestone reward
- * @param userId The user's ID
- * @param milestoneId The milestone ID to claim
- * @returns Milestone claim results
- */
-export const claimMilestone = async (
+// Claim milestone
+export async function claimMilestone(
   userId: number,
   milestoneId: number
-): Promise<ClaimMilestoneResult> => {
+): Promise<{ success: boolean; message: string; reward?: any }> {
   try {
-    const response = await fetch(`/api/star-path/${userId}/milestones/${milestoneId}/claim`, {
-      method: 'POST',
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to claim milestone: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    if (!data.success) {
-      throw new Error(data.error || 'Unknown error claiming milestone');
-    }
-    
-    return data.data;
+    const response = await apiRequest(
+      'POST',
+      `/api/milestones/${userId}/claim`,
+      { milestoneId }
+    );
+    return response.data;
   } catch (error) {
     console.error('Error claiming milestone:', error);
     throw error;
   }
-};
+}
 
-/**
- * Perform daily check-in to update streak
- * @param userId The user's ID
- * @returns Daily check-in results
- */
-export const dailyCheckIn = async (userId: number): Promise<DailyCheckInResult | null> => {
+// Daily check-in
+export async function dailyCheckIn(
+  userId: number
+): Promise<{ success: boolean; message: string; xpGained: number; milestoneReached?: boolean }> {
   try {
-    const response = await fetch(`/api/star-path/${userId}/check-in`, {
-      method: 'POST',
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to perform daily check-in: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    if (!data.success) {
-      throw new Error(data.error || 'Unknown error performing daily check-in');
-    }
-    
-    return data.data || null;
+    const response = await apiRequest('POST', `/api/star-path/${userId}/check-in`);
+    return response.data;
   } catch (error) {
     console.error('Error performing daily check-in:', error);
     throw error;
   }
-};
+}

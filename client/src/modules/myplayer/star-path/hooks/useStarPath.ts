@@ -12,7 +12,7 @@ import {
   AttributeCategory, 
   StarPathCreateUpdate,
   AttributeUpdate,
-  StarPathLevel
+  StarLevel
 } from '../types';
 import {
   fetchStarPath,
@@ -49,82 +49,77 @@ export interface UseStarPathReturn {
   starLevelToString: (level: number) => string;
 }
 
-export const useStarPath = (userId: number): UseStarPathReturn => {
+export function useStarPath(userId: number | null): UseStarPathReturn {
+  const { toast } = useToast();
   const [starPath, setStarPath] = useState<StarPathProgress | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [attributeCategories, setAttributeCategories] = useState<{
     [key: string]: AttributeCategory | null;
   }>({});
-  
-  const { toast } = useToast();
 
-  // Function to fetch star path data
-  const refreshStarPath = useCallback(async () => {
+  // Fetch star path data initially
+  useEffect(() => {
+    if (userId !== null) {
+      refreshStarPath();
+    } else {
+      setIsLoading(false);
+    }
+  }, [userId]);
+
+  // Refresh star path data
+  const refreshStarPath = async (): Promise<void> => {
+    if (userId === null) return;
+    
+    setIsLoading(true);
+    setError(null);
+    
     try {
-      setIsLoading(true);
-      setError(null);
-      
       const data = await fetchStarPath(userId);
       
       if (data) {
         setStarPath(data);
       } else {
-        setError('Failed to fetch Star Path data');
+        throw new Error('Failed to fetch star path data');
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
       setError(errorMessage);
-      toast({
-        title: 'Error',
-        description: `Could not load Star Path: ${errorMessage}`,
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [userId, toast]);
-
-  // Initial data fetch on mount
-  useEffect(() => {
-    refreshStarPath();
-  }, [refreshStarPath]);
-
-  // Create or update star path
-  const createOrUpdate = async (data: StarPathCreateUpdate): Promise<StarPathProgress | null> => {
-    try {
-      setIsLoading(true);
-      const result = await createOrUpdateStarPath(data);
-      
-      if (result) {
-        setStarPath(result);
-        toast({
-          title: 'Success',
-          description: 'Star Path updated successfully',
-          variant: 'default',
-        });
-        return result;
-      } else {
-        throw new Error('Failed to update Star Path');
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
-      setError(errorMessage);
-      toast({
-        title: 'Error',
-        description: `Could not update Star Path: ${errorMessage}`,
-        variant: 'destructive',
-      });
-      return null;
+      console.error('Star Path error:', errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Fetch attributes by category
+  // Create or update star path
+  const createOrUpdate = async (
+    data: StarPathCreateUpdate
+  ): Promise<StarPathProgress | null> => {
+    try {
+      const result = await createOrUpdateStarPath(data);
+      
+      if (result) {
+        setStarPath(result);
+        return result;
+      } else {
+        throw new Error('Failed to create or update star path');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      setError(errorMessage);
+      toast({
+        title: 'Error',
+        description: errorMessage,
+        variant: 'destructive',
+      });
+      return null;
+    }
+  };
+
+  // Fetch attributes for a specific category
   const fetchAttributes = async (category: string): Promise<AttributeCategory | null> => {
     try {
-      const attributes = await fetchAttributesByCategory(userId, category);
+      const attributes = await fetchAttributesByCategory(category);
       
       if (attributes) {
         setAttributeCategories((prev) => ({
@@ -132,14 +127,15 @@ export const useStarPath = (userId: number): UseStarPathReturn => {
           [category]: attributes,
         }));
         return attributes;
+      } else {
+        throw new Error(`Failed to fetch ${category} attributes`);
       }
-      return null;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
       setError(errorMessage);
       toast({
         title: 'Error',
-        description: `Could not fetch attributes: ${errorMessage}`,
+        description: `Could not load ${category} attributes: ${errorMessage}`,
         variant: 'destructive',
       });
       return null;
@@ -147,20 +143,32 @@ export const useStarPath = (userId: number): UseStarPathReturn => {
   };
 
   // Update an attribute value
-  const updateAttributeValue = async (userId: number, update: AttributeUpdate): Promise<boolean> => {
+  const updateAttributeValue = async (
+    userId: number,
+    update: AttributeUpdate
+  ): Promise<boolean> => {
     try {
       const success = await updateAttribute(userId, update);
       
       if (success) {
-        // Refresh the attribute category
-        const category = update.attributeId.split('.')[0]; // Assuming format like 'physical.speed'
-        await fetchAttributes(category);
+        // Update local state if the attribute category is loaded
+        if (attributeCategories[update.category]) {
+          const updatedCategory = { ...attributeCategories[update.category] } as AttributeCategory;
+          
+          const attributeIndex = updatedCategory.attributes.findIndex(
+            (attr) => attr.id === update.attributeId
+          );
+          
+          if (attributeIndex !== -1) {
+            updatedCategory.attributes[attributeIndex].value = update.newValue;
+            
+            setAttributeCategories((prev) => ({
+              ...prev,
+              [update.category]: updatedCategory,
+            }));
+          }
+        }
         
-        toast({
-          title: 'Success',
-          description: 'Attribute updated successfully',
-          variant: 'default',
-        });
         return true;
       } else {
         throw new Error('Failed to update attribute');
@@ -193,9 +201,9 @@ export const useStarPath = (userId: number): UseStarPathReturn => {
       if (result) {
         await refreshStarPath();
         toast({
-          title: 'Training Completed',
+          title: 'Training Complete',
           description: result.message,
-          variant: result.leveledUp ? 'success' : 'default',
+          variant: result.levelUp ? 'success' : 'default',
         });
       } else {
         throw new Error('Failed to complete training');
@@ -211,20 +219,20 @@ export const useStarPath = (userId: number): UseStarPathReturn => {
     }
   };
 
-  // Claim a milestone reward
+  // Claim a milestone
   const claimPlayerMilestone = async (userId: number, milestoneId: number): Promise<void> => {
     try {
       const result = await claimMilestone(userId, milestoneId);
       
-      if (result) {
+      if (result.success) {
         await refreshStarPath();
         toast({
           title: 'Milestone Claimed',
           description: result.message,
-          variant: 'default',
+          variant: 'success',
         });
       } else {
-        throw new Error('Failed to claim milestone');
+        throw new Error(result.message || 'Failed to claim milestone');
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
@@ -266,15 +274,15 @@ export const useStarPath = (userId: number): UseStarPathReturn => {
   // Helper to convert star level number to string representation
   const starLevelToString = (level: number): string => {
     switch (level) {
-      case StarPathLevel.RISING_PROSPECT:
+      case StarLevel.RisingProspect:
         return 'Rising Prospect';
-      case StarPathLevel.EMERGING_TALENT:
+      case StarLevel.EmergingTalent:
         return 'Emerging Talent';
-      case StarPathLevel.STANDOUT_PERFORMER:
+      case StarLevel.StandoutPerformer:
         return 'Standout Performer';
-      case StarPathLevel.ELITE_PROSPECT:
+      case StarLevel.EliteProspect:
         return 'Elite Prospect';
-      case StarPathLevel.FIVE_STAR_ATHLETE:
+      case StarLevel.FiveStarAthlete:
         return 'Five-Star Athlete';
       default:
         return 'Unknown Level';
@@ -295,4 +303,4 @@ export const useStarPath = (userId: number): UseStarPathReturn => {
     performDailyCheckIn,
     starLevelToString
   };
-};
+}
