@@ -807,6 +807,8 @@ export const usersRelations = relations(users, ({ many, one }) => ({
     fields: [users.id],
     references: [athleteProfiles.userId],
   }),
+  sentMessages: many(directMessages, { relationName: "senderMessages" }),
+  receivedMessages: many(directMessages, { relationName: "recipientMessages" }),
   starProfile: one(athleteStarProfiles, {
     fields: [users.id],
     references: [athleteStarProfiles.userId],
@@ -1816,6 +1818,37 @@ export const playerActiveChallengesRelations = relations(playerActiveChallenges,
     references: [playerChallenges.id],
   }),
 }));
+
+// Direct messaging system for users
+export const directMessages = pgTable("direct_messages", {
+  id: serial("id").primaryKey(),
+  senderId: integer("sender_id").notNull().references(() => users.id),
+  recipientId: integer("recipient_id").notNull().references(() => users.id),
+  content: text("content").notNull(),
+  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  deletedBySender: boolean("deleted_by_sender").default(false),
+  deletedByRecipient: boolean("deleted_by_recipient").default(false),
+});
+
+export const directMessagesRelations = relations(directMessages, ({ one }) => ({
+  sender: one(users, {
+    fields: [directMessages.senderId],
+    references: [users.id],
+    relationName: "senderMessages",
+  }),
+  recipient: one(users, {
+    fields: [directMessages.recipientId],
+    references: [users.id],
+    relationName: "recipientMessages",
+  }),
+}));
+
+export const insertDirectMessageSchema = createInsertSchema(directMessages)
+  .omit({ id: true, createdAt: true });
+
+export type DirectMessage = typeof directMessages.$inferSelect;
+export type InsertDirectMessage = z.infer<typeof insertDirectMessageSchema>;
 
 export const coachMessages = pgTable("coach_messages", {
   id: serial("id").primaryKey(),
