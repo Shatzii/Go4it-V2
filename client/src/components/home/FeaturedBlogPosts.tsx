@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronRight, Clock, ChevronLeft } from "lucide-react";
+import OptimizedImage from "@/components/ui/optimized-image";
 
 interface BlogPost {
   id: number;
@@ -90,10 +91,12 @@ export default function FeaturedBlogPosts() {
     <Card key={post.id} className="flex-shrink-0 w-[250px] sm:w-[280px] md:w-[300px] overflow-hidden border border-gray-800 bg-black shadow-lg transform transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_10px_rgba(34,211,238,0.3)]">
       {post.coverImage && (
         <div className="relative h-40 overflow-hidden">
-          <img
+          <OptimizedImage
             src={post.coverImage}
             alt={post.title}
             className="w-full h-full object-cover"
+            loadingHeight="160px"
+            blurStyle={true}
           />
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-2">
           </div>
