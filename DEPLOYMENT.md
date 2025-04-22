@@ -4,7 +4,7 @@ This document provides instructions for deploying the Go4It Sports platform to a
 
 ## Production Server Requirements
 
-- Server IP: 5.16.1.9
+- Server IP: 5.161.99.81
 - Port: 81
 - Node.js version: 18 or higher
 - PostgreSQL database

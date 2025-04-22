@@ -27,7 +27,7 @@ const isProduction = process.env.NODE_ENV === "production";
 app.use(cors({
   // In production, only allow requests from our own server
   // In development, allow all origins for testing
-  origin: isProduction ? ['http://5.16.1.9:81', 'https://5.16.1.9:81'] : true,
+  origin: isProduction ? ['http://5.161.99.81:81', 'https://5.161.99.81:81'] : true,
   credentials: true, // Allow cookies to be sent
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Base-URL']
@@ -240,7 +240,7 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Production server will use port 81 on IP 5.16.1.9
+  // Production server will use port 81 on IP 5.161.99.81
   // For development, we'll use port 5000
   const isProduction = process.env.NODE_ENV === "production";
   const findAvailablePort = async (startPort: number): Promise<number> => {

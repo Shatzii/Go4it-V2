@@ -57,9 +57,9 @@ class WebSocketService {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     let wsHost = window.location.host;
     
-    // For production server at 5.16.1.9, we need to use port 81
-    if (window.location.hostname === '5.16.1.9') {
-      wsHost = '5.16.1.9:81';
+    // For production server at 5.161.99.81, we need to use port 81
+    if (window.location.hostname === '5.161.99.81') {
+      wsHost = '5.161.99.81:81';
     }
     
     const wsUrl = `${protocol}//${wsHost}/ws`;
