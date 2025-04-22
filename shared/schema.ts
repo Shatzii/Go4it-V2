@@ -152,6 +152,19 @@ export const videoAnalyses = pgTable("video_analyses", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// GAR Analysis Comments for Parent/Coach Collaboration
+export const garComments = pgTable("gar_comments", {
+  id: serial("id").primaryKey(),
+  videoAnalysisId: integer("video_analysis_id").notNull().references(() => videoAnalyses.id),
+  userId: integer("user_id").notNull().references(() => users.id),
+  comment: text("comment").notNull(),
+  timestamp: timestamp("timestamp").defaultNow(),
+  parentComment: integer("parent_comment").references(() => garComments.id),
+  status: text("status").default("active"), // active, deleted, flagged
+  area: text("area"), // specific area of GAR analysis this comment refers to (e.g., "physical.speed", "psychological.focus")
+  timepoint: real("timepoint"), // video timestamp this comment refers to (in seconds)
+});
+
 // Video Highlights
 export const videoHighlights = pgTable("video_highlights", {
   id: serial("id").primaryKey(),
