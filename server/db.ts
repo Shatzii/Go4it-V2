@@ -1,17 +1,14 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import ws from 'ws';
+import { Pool } from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@shared/schema';
 import { log } from "./vite";
-
-neonConfig.webSocketConstructor = ws;
 
 if (!process.env.DATABASE_URL) {
   log("DATABASE_URL is not defined", "db");
   throw new Error("DATABASE_URL must be set. Did you forget to provision a database?");
 }
 
-// Connect to the database with Neon serverless driver with optimized connection pooling
+// Connect to the database with standard pg driver with optimized connection pooling
 log(`Connecting to database: ${process.env.DATABASE_URL}`, "db");
 export const pool = new Pool({ 
   connectionString: process.env.DATABASE_URL,
@@ -27,7 +24,7 @@ pool.on('error', (err) => {
 });
 
 // Export the drizzle instance
-export const db = drizzle({ client: pool, schema });
+export const db = drizzle(pool, { schema });
 
 // Setup graceful shutdown
 process.on("SIGINT", () => {

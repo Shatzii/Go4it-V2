@@ -1,407 +1,258 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { ProfileWizardState } from "../ProfileCompletionWizard";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Info } from "lucide-react";
-
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from "@/components/ui/form";
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { 
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger 
-} from "@/components/ui/tooltip";
-import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 
-// Props type
 interface AccessibilityPreferencesStepProps {
   formState: ProfileWizardState;
   updateFormState: (data: Partial<ProfileWizardState>) => void;
 }
 
-// Form schema
-const accessibilityPreferencesSchema = z.object({
-  adhd: z.boolean().default(false),
-  focusMode: z.boolean().default(false),
-  uiAnimationLevel: z.enum(["low", "medium", "high"]).default("medium"),
-  colorSchemePreference: z.enum(["standard", "high-contrast", "muted"]).default("standard"),
-  textSizePreference: z.enum(["small", "medium", "large"]).default("medium"),
-});
-
-type AccessibilityPreferencesValues = z.infer<typeof accessibilityPreferencesSchema>;
-
-/**
- * Accessibility Preferences Step
- * 
- * Fourth step in the profile completion wizard that collects accessibility preferences.
- * This step is particularly important for neurodivergent users with ADHD.
- */
-export default function AccessibilityPreferencesStep({ 
-  formState, 
-  updateFormState 
+export default function AccessibilityPreferencesStep({
+  formState,
+  updateFormState,
 }: AccessibilityPreferencesStepProps) {
-  
-  const form = useForm<AccessibilityPreferencesValues>({
-    resolver: zodResolver(accessibilityPreferencesSchema),
-    defaultValues: {
-      adhd: formState.adhd || false,
-      focusMode: formState.focusMode || false,
-      uiAnimationLevel: (formState.uiAnimationLevel as "low" | "medium" | "high") || "medium",
-      colorSchemePreference: (formState.colorSchemePreference as "standard" | "high-contrast" | "muted") || "standard",
-      textSizePreference: (formState.textSizePreference as "small" | "medium" | "large") || "medium",
-    },
-  });
-  
-  // Handle form submission
-  const onSubmit = (data: AccessibilityPreferencesValues) => {
-    updateFormState(data);
+  // Handle ADHD toggle
+  const handleAdhdToggle = (checked: boolean) => {
+    updateFormState({ adhd: checked });
+    
+    // If ADHD is enabled, set some recommended defaults
+    if (checked) {
+      updateFormState({
+        focusMode: true,
+        uiAnimationLevel: "low",
+        colorSchemePreference: "high-contrast",
+      });
+    }
   };
-  
-  // Watch form changes and update parent state
-  useEffect(() => {
-    const subscription = form.watch((value) => {
-      updateFormState(value as Partial<ProfileWizardState>);
-    });
-    return () => subscription.unsubscribe();
-  }, [form, updateFormState]);
-  
+
   return (
     <div className="space-y-6">
-      <div>
+      <div className="text-center mb-6">
         <h3 className="text-lg font-medium">Accessibility Preferences</h3>
-        <p className="text-sm text-muted-foreground mt-1">
-          Customize your experience to match your needs. These settings help us provide 
-          a more accessible and comfortable platform for you.
+        <p className="text-muted-foreground">
+          Customize the app to match your needs and preferences
         </p>
       </div>
       
-      <Card className="bg-muted/40 border-muted">
-        <CardContent className="p-4">
-          <p className="text-sm">
-            At Go4It Sports, we're committed to supporting neurodivergent athletes. 
-            These preferences help us tailor your experience for optimal focus, 
-            engagement, and success.
-          </p>
-        </CardContent>
+      {/* ADHD Support */}
+      <Card className="p-5 border-primary/50">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-medium">ADHD Support</h3>
+            <p className="text-sm text-muted-foreground">
+              Enable features designed for athletes with ADHD
+            </p>
+          </div>
+          <Switch
+            checked={formState.adhd}
+            onCheckedChange={handleAdhdToggle}
+            aria-label="Enable ADHD support"
+          />
+        </div>
+        
+        {formState.adhd && (
+          <div className="mt-4 text-sm bg-muted p-3 rounded-md">
+            <p>
+              Our ADHD-friendly features include focus mode, reduced animations, 
+              high-contrast colors, and simplified workflow - all designed to help
+              you stay focused and achieve your best.
+            </p>
+          </div>
+        )}
       </Card>
       
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* ADHD Toggle */}
-          <FormField
-            control={form.control}
-            name="adhd"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                <div className="space-y-0.5">
-                  <div className="flex items-center">
-                    <FormLabel className="font-medium">ADHD Support</FormLabel>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Info className="h-4 w-4 text-muted-foreground ml-2 cursor-help" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="max-w-xs">
-                            Enabling ADHD support customizes the platform with neurodivergent-friendly 
-                            features like task chunking, reward systems, and optimized visual layouts.
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  <FormDescription>
-                    Optimize the platform experience for neurodivergent athletes
-                  </FormDescription>
-                </div>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
+      {/* Focus Mode */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <Label htmlFor="focus-mode" className="flex flex-col">
+            <span>Focus Mode</span>
+            <span className="font-normal text-sm text-muted-foreground">
+              Reduces distractions during important tasks
+            </span>
+          </Label>
+          <Switch
+            id="focus-mode"
+            checked={formState.focusMode}
+            onCheckedChange={(checked) => updateFormState({ focusMode: checked })}
+            aria-label="Enable focus mode"
           />
-          
-          {/* Focus Mode Toggle */}
-          <FormField
-            control={form.control}
-            name="focusMode"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                <div className="space-y-0.5">
-                  <div className="flex items-center">
-                    <FormLabel className="font-medium">Focus Mode</FormLabel>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Info className="h-4 w-4 text-muted-foreground ml-2 cursor-help" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="max-w-xs">
-                            Focus mode reduces visual distractions, simplifies UI elements, 
-                            and uses calm visual cues to help maintain concentration.
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  <FormDescription>
-                    Reduce distractions and help maintain concentration
-                  </FormDescription>
-                </div>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          
-          {/* UI Animation Level */}
-          <FormField
-            control={form.control}
-            name="uiAnimationLevel"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>Animation Level</FormLabel>
-                <FormDescription>
-                  Control the amount of motion and animations in the interface
-                </FormDescription>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    className="grid grid-cols-3 gap-4"
-                  >
-                    <FormItem className="flex flex-col items-center space-y-2">
-                      <FormControl>
-                        <RadioGroupItem value="low" className="sr-only" />
-                      </FormControl>
-                      <div className={`
-                        p-4 w-full rounded-lg border-2 flex flex-col items-center justify-center 
-                        ${field.value === 'low' ? 'border-primary bg-primary/5' : 'border-transparent bg-muted'}
-                      `}>
-                        <Label
-                          htmlFor="low"
-                          className={`font-medium ${field.value === 'low' ? 'text-primary' : ''}`}
-                        >
-                          Low
-                        </Label>
-                        <span className="text-xs text-muted-foreground">Minimal</span>
-                      </div>
-                    </FormItem>
-                    
-                    <FormItem className="flex flex-col items-center space-y-2">
-                      <FormControl>
-                        <RadioGroupItem value="medium" className="sr-only" />
-                      </FormControl>
-                      <div className={`
-                        p-4 w-full rounded-lg border-2 flex flex-col items-center justify-center
-                        ${field.value === 'medium' ? 'border-primary bg-primary/5' : 'border-transparent bg-muted'}
-                      `}>
-                        <Label
-                          htmlFor="medium"
-                          className={`font-medium ${field.value === 'medium' ? 'text-primary' : ''}`}
-                        >
-                          Medium
-                        </Label>
-                        <span className="text-xs text-muted-foreground">Balanced</span>
-                      </div>
-                    </FormItem>
-                    
-                    <FormItem className="flex flex-col items-center space-y-2">
-                      <FormControl>
-                        <RadioGroupItem value="high" className="sr-only" />
-                      </FormControl>
-                      <div className={`
-                        p-4 w-full rounded-lg border-2 flex flex-col items-center justify-center
-                        ${field.value === 'high' ? 'border-primary bg-primary/5' : 'border-transparent bg-muted'}
-                      `}>
-                        <Label
-                          htmlFor="high"
-                          className={`font-medium ${field.value === 'high' ? 'text-primary' : ''}`}
-                        >
-                          High
-                        </Label>
-                        <span className="text-xs text-muted-foreground">Dynamic</span>
-                      </div>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          {/* Color Scheme Preference */}
-          <FormField
-            control={form.control}
-            name="colorSchemePreference"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>Color Scheme</FormLabel>
-                <FormDescription>
-                  Choose a color scheme that works best for your visual preferences
-                </FormDescription>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    className="grid grid-cols-3 gap-4"
-                  >
-                    <FormItem className="flex flex-col items-center space-y-2">
-                      <FormControl>
-                        <RadioGroupItem value="standard" className="sr-only" />
-                      </FormControl>
-                      <div className={`
-                        p-4 w-full rounded-lg border-2 flex flex-col items-center justify-center
-                        ${field.value === 'standard' ? 'border-primary bg-primary/5' : 'border-transparent bg-muted'}
-                      `}>
-                        <Label
-                          htmlFor="standard"
-                          className={`font-medium ${field.value === 'standard' ? 'text-primary' : ''}`}
-                        >
-                          Standard
-                        </Label>
-                        <span className="text-xs text-muted-foreground">Default</span>
-                      </div>
-                    </FormItem>
-                    
-                    <FormItem className="flex flex-col items-center space-y-2">
-                      <FormControl>
-                        <RadioGroupItem value="high-contrast" className="sr-only" />
-                      </FormControl>
-                      <div className={`
-                        p-4 w-full rounded-lg border-2 flex flex-col items-center justify-center
-                        ${field.value === 'high-contrast' ? 'border-primary bg-primary/5' : 'border-transparent bg-muted'}
-                      `}>
-                        <Label
-                          htmlFor="high-contrast"
-                          className={`font-medium ${field.value === 'high-contrast' ? 'text-primary' : ''}`}
-                        >
-                          High Contrast
-                        </Label>
-                        <span className="text-xs text-muted-foreground">Bold</span>
-                      </div>
-                    </FormItem>
-                    
-                    <FormItem className="flex flex-col items-center space-y-2">
-                      <FormControl>
-                        <RadioGroupItem value="muted" className="sr-only" />
-                      </FormControl>
-                      <div className={`
-                        p-4 w-full rounded-lg border-2 flex flex-col items-center justify-center
-                        ${field.value === 'muted' ? 'border-primary bg-primary/5' : 'border-transparent bg-muted'}
-                      `}>
-                        <Label
-                          htmlFor="muted"
-                          className={`font-medium ${field.value === 'muted' ? 'text-primary' : ''}`}
-                        >
-                          Muted
-                        </Label>
-                        <span className="text-xs text-muted-foreground">Softer</span>
-                      </div>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          {/* Text Size Preference */}
-          <FormField
-            control={form.control}
-            name="textSizePreference"
-            render={({ field }) => (
-              <FormItem className="space-y-2">
-                <FormLabel>Text Size</FormLabel>
-                <FormDescription>
-                  Adjust text size for better readability
-                </FormDescription>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    className="grid grid-cols-3 gap-4"
-                  >
-                    <FormItem className="flex flex-col items-center space-y-2">
-                      <FormControl>
-                        <RadioGroupItem value="small" className="sr-only" />
-                      </FormControl>
-                      <div className={`
-                        p-4 w-full rounded-lg border-2 flex flex-col items-center justify-center
-                        ${field.value === 'small' ? 'border-primary bg-primary/5' : 'border-transparent bg-muted'}
-                      `}>
-                        <Label
-                          htmlFor="small"
-                          className={`text-sm ${field.value === 'small' ? 'text-primary' : ''}`}
-                        >
-                          Small
-                        </Label>
-                        <span className="text-xs text-muted-foreground">Compact</span>
-                      </div>
-                    </FormItem>
-                    
-                    <FormItem className="flex flex-col items-center space-y-2">
-                      <FormControl>
-                        <RadioGroupItem value="medium" className="sr-only" />
-                      </FormControl>
-                      <div className={`
-                        p-4 w-full rounded-lg border-2 flex flex-col items-center justify-center
-                        ${field.value === 'medium' ? 'border-primary bg-primary/5' : 'border-transparent bg-muted'}
-                      `}>
-                        <Label
-                          htmlFor="medium"
-                          className={`font-medium ${field.value === 'medium' ? 'text-primary' : ''}`}
-                        >
-                          Medium
-                        </Label>
-                        <span className="text-xs text-muted-foreground">Default</span>
-                      </div>
-                    </FormItem>
-                    
-                    <FormItem className="flex flex-col items-center space-y-2">
-                      <FormControl>
-                        <RadioGroupItem value="large" className="sr-only" />
-                      </FormControl>
-                      <div className={`
-                        p-4 w-full rounded-lg border-2 flex flex-col items-center justify-center
-                        ${field.value === 'large' ? 'border-primary bg-primary/5' : 'border-transparent bg-muted'}
-                      `}>
-                        <Label
-                          htmlFor="large"
-                          className={`text-lg font-medium ${field.value === 'large' ? 'text-primary' : ''}`}
-                        >
-                          Large
-                        </Label>
-                        <span className="text-xs text-muted-foreground">Enhanced</span>
-                      </div>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </form>
-      </Form>
+        </div>
+      </div>
+      
+      {/* UI Animation Level */}
+      <div className="space-y-2">
+        <Label>UI Animation Level</Label>
+        <RadioGroup
+          value={formState.uiAnimationLevel}
+          onValueChange={(value) => updateFormState({ uiAnimationLevel: value })}
+        >
+          <div className="grid grid-cols-3 gap-2">
+            <Label
+              htmlFor="animation-low"
+              className={cn(
+                "flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer",
+                formState.uiAnimationLevel === "low" && "border-primary"
+              )}
+            >
+              <RadioGroupItem
+                value="low"
+                id="animation-low"
+                className="sr-only"
+              />
+              <span className="mt-1 font-medium">Minimal</span>
+              <span className="text-xs text-muted-foreground text-center">
+                Reduced motion and effects
+              </span>
+            </Label>
+            <Label
+              htmlFor="animation-medium"
+              className={cn(
+                "flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer",
+                formState.uiAnimationLevel === "medium" && "border-primary"
+              )}
+            >
+              <RadioGroupItem
+                value="medium"
+                id="animation-medium"
+                className="sr-only"
+              />
+              <span className="mt-1 font-medium">Moderate</span>
+              <span className="text-xs text-muted-foreground text-center">
+                Balanced animations
+              </span>
+            </Label>
+            <Label
+              htmlFor="animation-high"
+              className={cn(
+                "flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer",
+                formState.uiAnimationLevel === "high" && "border-primary"
+              )}
+            >
+              <RadioGroupItem
+                value="high"
+                id="animation-high"
+                className="sr-only"
+              />
+              <span className="mt-1 font-medium">Dynamic</span>
+              <span className="text-xs text-muted-foreground text-center">
+                Full motion and effects
+              </span>
+            </Label>
+          </div>
+        </RadioGroup>
+      </div>
+      
+      {/* Color Scheme Preference */}
+      <div className="space-y-2">
+        <Label>Color Scheme</Label>
+        <Tabs
+          value={formState.colorSchemePreference}
+          onValueChange={(value) => updateFormState({ colorSchemePreference: value })}
+        >
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="standard">Standard</TabsTrigger>
+            <TabsTrigger value="high-contrast">High Contrast</TabsTrigger>
+            <TabsTrigger value="muted">Muted</TabsTrigger>
+          </TabsList>
+          <TabsContent value="standard" className="p-4 border rounded-md mt-2">
+            <div className="h-20 bg-gradient-to-r from-primary to-primary/60 rounded-md flex items-center justify-center">
+              <span className="text-primary-foreground font-medium">Standard Colors</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Our default color scheme with balanced contrast and vibrant accents
+            </p>
+          </TabsContent>
+          <TabsContent value="high-contrast" className="p-4 border rounded-md mt-2">
+            <div className="h-20 bg-gradient-to-r from-black to-primary-foreground rounded-md flex items-center justify-center">
+              <span className="text-white font-medium">High Contrast</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Enhanced contrast for better readability and focus
+            </p>
+          </TabsContent>
+          <TabsContent value="muted" className="p-4 border rounded-md mt-2">
+            <div className="h-20 bg-gradient-to-r from-muted to-muted-foreground/30 rounded-md flex items-center justify-center">
+              <span className="text-foreground font-medium">Muted Colors</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Gentler, softer colors for reduced visual stimulation
+            </p>
+          </TabsContent>
+        </Tabs>
+      </div>
+      
+      {/* Text Size Preference */}
+      <div className="space-y-2">
+        <Label>Text Size</Label>
+        <RadioGroup
+          value={formState.textSizePreference}
+          onValueChange={(value) => updateFormState({ textSizePreference: value })}
+        >
+          <div className="grid grid-cols-3 gap-2">
+            <Label
+              htmlFor="text-small"
+              className={cn(
+                "flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer",
+                formState.textSizePreference === "small" && "border-primary"
+              )}
+            >
+              <RadioGroupItem
+                value="small"
+                id="text-small"
+                className="sr-only"
+              />
+              <span className="text-sm font-medium">Small</span>
+              <span className="text-xs text-muted-foreground">Compact</span>
+            </Label>
+            <Label
+              htmlFor="text-medium"
+              className={cn(
+                "flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer",
+                formState.textSizePreference === "medium" && "border-primary"
+              )}
+            >
+              <RadioGroupItem
+                value="medium"
+                id="text-medium"
+                className="sr-only"
+              />
+              <span className="text-base font-medium">Medium</span>
+              <span className="text-xs text-muted-foreground">Standard</span>
+            </Label>
+            <Label
+              htmlFor="text-large"
+              className={cn(
+                "flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer",
+                formState.textSizePreference === "large" && "border-primary"
+              )}
+            >
+              <RadioGroupItem
+                value="large"
+                id="text-large"
+                className="sr-only"
+              />
+              <span className="text-lg font-medium">Large</span>
+              <span className="text-xs text-muted-foreground">Enhanced</span>
+            </Label>
+          </div>
+        </RadioGroup>
+      </div>
+      
+      {/* Tips Card */}
+      <Card className="p-4 bg-muted/50 border-dashed">
+        <h4 className="font-medium mb-2">Tips for neurodivergent athletes:</h4>
+        <ul className="text-sm space-y-2 text-muted-foreground">
+          <li>• Focus Mode helps reduce distractions during important training sessions</li>
+          <li>• Reduced animations can help if you're sensitive to motion</li>
+          <li>• High contrast colors make important information stand out</li>
+          <li>• These settings can be changed later in your profile settings</li>
+        </ul>
+      </Card>
     </div>
   );
 }
