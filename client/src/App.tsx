@@ -59,6 +59,7 @@ import SimpleLogin from "@/pages/simple-login";
 
 // New feature page imports - Phase 2
 import MyPlayerStarPath from "@/pages/myplayer-star-path";
+import EnhancedStarPath from "@/pages/myplayer/enhanced-star-path";
 import MyPlayerAICoach from "@/pages/myplayer-ai-coach";
 import HybridAICoach from "@/pages/hybrid-ai-coach";
 import MyPlayerInterface from "@/pages/myplayer-interface";
@@ -248,6 +249,10 @@ function Router() {
         
         <Route path="/myplayer-star-path">
           {() => <ProtectedRoute component={MyPlayerStarPath} />}
+        </Route>
+        
+        <Route path="/myplayer/enhanced-star-path">
+          {() => <ProtectedRoute component={EnhancedStarPath} />}
         </Route>
         
         <Route path="/myplayer-ai-coach">

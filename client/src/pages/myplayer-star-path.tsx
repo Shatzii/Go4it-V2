@@ -589,6 +589,18 @@ export default function MyPlayerStarPath() {
           <p className="text-muted-foreground">Track your journey to becoming a five-star athlete</p>
         </div>
         
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline"
+            size="sm"
+            onClick={() => navigate('/myplayer/enhanced-star-path')}
+            className="gap-1"
+          >
+            <Sparkles className="h-4 w-4" />
+            Enhanced View
+          </Button>
+        </div>
+        
         {!isLoading && playerProgress && (
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex items-center gap-2 text-sm">
