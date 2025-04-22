@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/api";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle2, ShieldCheck, ShieldAlert, Shield } from "lucide-react";
 
 import {
   Form,
@@ -18,6 +18,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
 
 // Password validation schema
 export const changePasswordSchema = z.object({
@@ -42,7 +44,11 @@ type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;
  */
 export default function ChangePasswordForm() {
   const { toast } = useToast();
-  
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [strengthLabel, setStrengthLabel] = useState("");
+  const [strengthColor, setStrengthColor] = useState("");
+
   const form = useForm<ChangePasswordFormValues>({
     resolver: zodResolver(changePasswordSchema),
     defaultValues: {
@@ -51,6 +57,48 @@ export default function ChangePasswordForm() {
       confirmPassword: "",
     },
   });
+  
+  // Watch for changes to password field
+  const password = useWatch({
+    control: form.control,
+    name: "newPassword",
+    defaultValue: "",
+  });
+  
+  // Calculate password strength
+  useEffect(() => {
+    if (!password) {
+      setPasswordStrength(0);
+      setStrengthLabel("");
+      setStrengthColor("");
+      return;
+    }
+    
+    let strength = 0;
+    
+    // Length check
+    if (password.length >= 8) strength += 20;
+    
+    // Character type checks
+    if (/[A-Z]/.test(password)) strength += 20;
+    if (/[a-z]/.test(password)) strength += 20;
+    if (/[0-9]/.test(password)) strength += 20;
+    if (/[^A-Za-z0-9]/.test(password)) strength += 20;
+    
+    setPasswordStrength(strength);
+    
+    // Set strength label and color
+    if (strength < 40) {
+      setStrengthLabel("Weak");
+      setStrengthColor("bg-red-500");
+    } else if (strength < 80) {
+      setStrengthLabel("Moderate");
+      setStrengthColor("bg-yellow-500");
+    } else {
+      setStrengthLabel("Strong");
+      setStrengthColor("bg-green-500");
+    }
+  }, [password]);
 
   // Mutation for changing password
   const { mutate, isPending } = useMutation({
@@ -70,6 +118,12 @@ export default function ChangePasswordForm() {
         description: "Your password has been updated successfully.",
       });
       form.reset();
+      setIsSuccess(true);
+      
+      // Reset success state after 5 seconds
+      setTimeout(() => {
+        setIsSuccess(false);
+      }, 5000);
     },
     onError: (error: Error) => {
       toast({
@@ -77,6 +131,7 @@ export default function ChangePasswordForm() {
         description: error.message,
         variant: "destructive",
       });
+      setIsSuccess(false);
     },
   });
 
@@ -88,6 +143,16 @@ export default function ChangePasswordForm() {
   return (
     <Card>
       <CardContent className="pt-6">
+        {isSuccess ? (
+          <Alert className="bg-green-50 border-green-200 mb-4">
+            <CheckCircle2 className="h-4 w-4 text-green-600" />
+            <AlertTitle className="text-green-800">Password Updated</AlertTitle>
+            <AlertDescription className="text-green-700">
+              Your password has been changed successfully. Your account is now secure with your new password.
+            </AlertDescription>
+          </Alert>
+        ) : null}
+        
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -100,6 +165,8 @@ export default function ChangePasswordForm() {
                     <Input
                       type="password"
                       placeholder="Enter your current password"
+                      autoComplete="current-password"
+                      disabled={isPending}
                       {...field}
                     />
                   </FormControl>
@@ -118,10 +185,49 @@ export default function ChangePasswordForm() {
                     <Input
                       type="password"
                       placeholder="Enter your new password"
+                      autoComplete="new-password"
+                      disabled={isPending}
                       {...field}
                     />
                   </FormControl>
                   <FormMessage />
+                  
+                  {password && (
+                    <div className="mt-2 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Progress value={passwordStrength} className={`h-2 ${strengthColor}`} />
+                        <span className="text-xs font-medium">{strengthLabel}</span>
+                      </div>
+                      
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                        <div className={`flex items-center gap-1 ${/[A-Z]/.test(password) ? 'text-green-600' : ''}`}>
+                          {/[A-Z]/.test(password) ? <CheckCircle2 className="h-3 w-3" /> : <Shield className="h-3 w-3" />}
+                          <span>Uppercase</span>
+                        </div>
+                        <div className={`flex items-center gap-1 ${/[a-z]/.test(password) ? 'text-green-600' : ''}`}>
+                          {/[a-z]/.test(password) ? <CheckCircle2 className="h-3 w-3" /> : <Shield className="h-3 w-3" />}
+                          <span>Lowercase</span>
+                        </div>
+                        <div className={`flex items-center gap-1 ${/[0-9]/.test(password) ? 'text-green-600' : ''}`}>
+                          {/[0-9]/.test(password) ? <CheckCircle2 className="h-3 w-3" /> : <Shield className="h-3 w-3" />}
+                          <span>Number</span>
+                        </div>
+                        <div className={`flex items-center gap-1 ${/[^A-Za-z0-9]/.test(password) ? 'text-green-600' : ''}`}>
+                          {/[^A-Za-z0-9]/.test(password) ? <CheckCircle2 className="h-3 w-3" /> : <Shield className="h-3 w-3" />}
+                          <span>Special</span>
+                        </div>
+                        <div className={`flex items-center gap-1 ${password.length >= 8 ? 'text-green-600' : ''}`}>
+                          {password.length >= 8 ? <CheckCircle2 className="h-3 w-3" /> : <Shield className="h-3 w-3" />}
+                          <span>8+ chars</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Password must be at least 8 characters, include uppercase and lowercase letters, 
+                    a number, and a special character.
+                  </p>
                 </FormItem>
               )}
             />
@@ -136,6 +242,8 @@ export default function ChangePasswordForm() {
                     <Input
                       type="password"
                       placeholder="Confirm your new password"
+                      autoComplete="new-password"
+                      disabled={isPending}
                       {...field}
                     />
                   </FormControl>
@@ -152,7 +260,10 @@ export default function ChangePasswordForm() {
                     Updating...
                   </>
                 ) : (
-                  "Change Password"
+                  <>
+                    <ShieldCheck className="mr-2 h-4 w-4" />
+                    Change Password
+                  </>
                 )}
               </Button>
             </div>
