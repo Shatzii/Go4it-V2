@@ -10,7 +10,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, Video, Award } from "lucide-react";
-import { AgreementDialog } from "@/components/agreement-dialog";
 import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
@@ -35,8 +34,6 @@ export default function AuthPage() {
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState<string>("login");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showAgreement, setShowAgreement] = useState(false);
-  const [pendingRegistration, setPendingRegistration] = useState<RegisterFormValues | null>(null);
   const { toast } = useToast();
 
   // Redirect if already logged in and scroll to top on mount
@@ -99,15 +96,29 @@ export default function AuthPage() {
       if (!data.username || !data.password || !data.email || !data.name || !data.role) {
         throw new Error("Please fill in all required fields");
       }
-
-      // Show the NDA agreement dialog
-      setPendingRegistration(data);
-      setShowAgreement(true);
       
-      // Clear any previous form errors
-      registerForm.clearErrors();
-      
+      // Skip agreement dialog and directly register user
       console.log("Attempting registration with data:", data);
+      
+      // Add agreedToTerms field automatically
+      const registrationData = {
+        ...data,
+        agreedToTerms: true
+      };
+      
+      // Register user directly
+      await register(registrationData);
+      
+      // Reset form on success
+      registerForm.reset();
+      
+      toast({
+        title: "Registration Successful",
+        description: "Welcome to Go4It Sports! You can now log in.",
+      });
+      
+      // Switch to login tab
+      setActiveTab("login");
     } catch (error: any) {
       console.error("Registration error:", error);
       toast({
@@ -115,55 +126,10 @@ export default function AuthPage() {
         description: error.message || "There was a problem with registration. Please try again.",
         variant: "destructive"
       });
-      setIsSubmitting(false);
-      setPendingRegistration(null);
-    }
-  };
-  
-  const handleAgreementAccepted = async () => {
-    try {
-      if (pendingRegistration) {
-        console.log("Processing registration after agreement acceptance");
-        
-        // Update the registration data with agreement acceptance
-        const registrationData = {
-          ...pendingRegistration,
-          agreedToTerms: true
-        };
-        
-        // Complete the registration process
-        // register() will throw an error if it fails, so we don't need to check the result
-        await register(registrationData);
-        
-        // Reset state and forms
-        setPendingRegistration(null);
-        setShowAgreement(false);
-        registerForm.reset();
-        
-        toast({
-          title: "Registration Successful",
-          description: "Welcome to Get Verified! You can now log in.",
-          variant: "default"
-        });
-        
-        // Switch to login tab
-        setActiveTab("login");
-      }
-    } catch (error) {
-      console.error("Registration error after agreement:", error);
-      toast({
-        title: "Registration Failed",
-        description: "There was a problem completing your registration. Please try again.",
-        variant: "destructive"
-      });
     } finally {
       setIsSubmitting(false);
+      // Registration process is complete
     }
-  };
-  
-  const handleAgreementClosed = () => {
-    setShowAgreement(false);
-    setIsSubmitting(false);
   };
   
   // Duplicate function removed
@@ -399,14 +365,6 @@ export default function AuthPage() {
           </Card>
         </div>
       </div>
-      
-      {/* Non-Disclosure Agreement Modal */}
-      <AgreementDialog 
-        open={showAgreement} 
-        onClose={handleAgreementClosed}
-        onAccept={handleAgreementAccepted}
-        agreementType="nda"
-      />
     </div>
   );
 }
