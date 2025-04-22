@@ -1,282 +1,419 @@
-import { useState } from "react";
-import { z } from "zod";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft } from "lucide-react";
-import { Link, useLocation } from "wouter";
-import { apiRequest } from "@/lib/queryClient";
+import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 
-// Schema for requesting password reset
+// UI Components
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
+// Password reset form validation schema
+const resetPasswordSchema = z
+  .object({
+    token: z.string().uuid({ message: "Invalid reset token" }).optional(),
+    email: z.string().email({ message: "Please enter a valid email address" }),
+    password: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters" })
+      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).*$/, {
+        message:
+          "Password must include at least one uppercase letter, one lowercase letter, one number, and one special character",
+      }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
+// Request reset form validation schema
 const requestResetSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  email: z.string().email({ message: "Please enter a valid email address" }),
 });
 
-// Schema for setting a new password
-const resetPasswordSchema = z.object({
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number")
-    .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
-
-type RequestResetFormValues = z.infer<typeof requestResetSchema>;
 type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
+type RequestResetFormValues = z.infer<typeof requestResetSchema>;
 
+// States the reset form can be in
+type FormState = "request" | "reset" | "success" | "error";
+
+/**
+ * Password reset page component
+ */
 export default function PasswordReset() {
-  const [location] = useLocation();
+  const [, navigate] = useLocation();
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
-  const [resetSuccess, setResetSuccess] = useState(false);
+  const [formState, setFormState] = useState<FormState>("request");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
-  // Extract token from URL if present
-  const params = new URLSearchParams(location.split("?")[1]);
+  // Get token from URL if present
+  const params = new URLSearchParams(window.location.search);
   const token = params.get("token");
   const email = params.get("email");
 
-  // Form for requesting a password reset
-  const requestResetForm = useForm<RequestResetFormValues>({
+  // Form for password reset request (enter email)
+  const requestForm = useForm<RequestResetFormValues>({
     resolver: zodResolver(requestResetSchema),
     defaultValues: {
       email: email || "",
     },
   });
 
-  // Form for setting a new password
-  const resetPasswordForm = useForm<ResetPasswordFormValues>({
+  // Form for password reset (enter new password)
+  const resetForm = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
+      token: token || "",
+      email: email || "",
       password: "",
       confirmPassword: "",
     },
   });
 
-  // Handle requesting a password reset
-  const onRequestReset = async (values: RequestResetFormValues) => {
-    try {
-      setIsSubmitting(true);
-      
-      // Call API to request password reset
-      await apiRequest("POST", "/api/auth/request-reset", { email: values.email });
-      
-      setEmailSent(true);
-      toast({
-        title: "Reset Email Sent",
-        description: "Check your email for a link to reset your password.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to send reset email. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
+  // Effect to set the proper form state based on URL parameters
+  useEffect(() => {
+    if (token) {
+      setFormState("reset");
+    } else {
+      setFormState("request");
     }
-  };
+  }, [token]);
 
-  // Handle setting a new password
-  const onResetPassword = async (values: ResetPasswordFormValues) => {
+  // Handler for password reset request submission
+  const onRequestSubmit = async (data: RequestResetFormValues) => {
     try {
-      setIsSubmitting(true);
-      
-      if (!token || !email) {
-        throw new Error("Invalid reset link. Please request a new password reset.");
+      setLoading(true);
+      setErrorMessage("");
+
+      const response = await fetch("/api/auth/request-reset", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Password Reset Email Sent",
+          description: "If your email is in our system, you will receive a link to reset your password.",
+          duration: 5000,
+        });
+        
+        setFormState("success");
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.message || "Failed to send password reset email. Please try again.");
+        setFormState("error");
       }
-      
-      // Call API to reset password
-      await apiRequest("POST", "/api/auth/reset-password", {
-        token,
-        email,
-        password: values.password,
-      });
-      
-      setResetSuccess(true);
-      toast({
-        title: "Password Reset Successfully",
-        description: "Your password has been updated. You can now log in with your new password.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to reset password. Please try again.",
-        variant: "destructive",
-      });
+    } catch (error) {
+      setErrorMessage("An unexpected error occurred. Please try again later.");
+      setFormState("error");
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
-  // Render form to request a password reset
-  const renderRequestResetForm = () => (
-    <Form {...requestResetForm}>
-      <form onSubmit={requestResetForm.handleSubmit(onRequestReset)} className="space-y-6">
-        <FormField
-          control={requestResetForm.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter your email" {...field} />
-              </FormControl>
-              <FormDescription>
-                We'll send a password reset link to this email address.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Sending...
-            </>
-          ) : (
-            "Send Reset Link"
-          )}
-        </Button>
-      </form>
-    </Form>
-  );
+  // Handler for password reset form submission
+  const onResetSubmit = async (data: ResetPasswordFormValues) => {
+    try {
+      setLoading(true);
+      setErrorMessage("");
 
-  // Render form to set a new password
-  const renderResetPasswordForm = () => (
-    <Form {...resetPasswordForm}>
-      <form onSubmit={resetPasswordForm.handleSubmit(onResetPassword)} className="space-y-6">
-        <FormField
-          control={resetPasswordForm.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>New Password</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="Enter new password" {...field} />
-              </FormControl>
-              <FormDescription>
-                Password must be at least 8 characters and include uppercase, lowercase, number, and special character.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={resetPasswordForm.control}
-          name="confirmPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Confirm Password</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="Confirm new password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Resetting...
-            </>
-          ) : (
-            "Reset Password"
-          )}
-        </Button>
-      </form>
-    </Form>
-  );
+      const resetData = {
+        token: data.token,
+        email: data.email,
+        password: data.password,
+      };
 
-  // Render success message after email is sent
-  const renderEmailSentMessage = () => (
-    <div className="text-center space-y-4">
-      <div className="bg-green-100 text-green-800 p-4 rounded-md mb-6">
-        <p className="font-medium">Reset link sent!</p>
-        <p className="text-sm mt-1">
-          We've sent an email to <span className="font-medium">{requestResetForm.getValues().email}</span> with instructions to reset your password.
-        </p>
-      </div>
-      <p className="text-sm text-gray-500">
-        Please check your email and click on the link to reset your password. The link will expire in 1 hour.
-      </p>
-      <Button variant="outline" className="mt-4" onClick={() => setEmailSent(false)}>
-        Send Another Link
-      </Button>
-    </div>
-  );
+      const response = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(resetData),
+      });
 
-  // Render success message after password is reset
-  const renderResetSuccessMessage = () => (
-    <div className="text-center space-y-4">
-      <div className="bg-green-100 text-green-800 p-4 rounded-md mb-6">
-        <p className="font-medium">Password reset successful!</p>
-        <p className="text-sm mt-1">
-          Your password has been updated successfully.
-        </p>
-      </div>
-      <p className="text-sm text-gray-500">
-        You can now log in to your account with your new password.
-      </p>
-      <Button className="mt-4 w-full" asChild>
-        <Link href="/login">Go to Login</Link>
-      </Button>
-    </div>
-  );
+      if (response.ok) {
+        toast({
+          title: "Password Reset Successful",
+          description: "Your password has been reset. You can now log in with your new password.",
+          duration: 5000,
+        });
+        
+        // Redirect to login after successful reset
+        setTimeout(() => {
+          navigate("/auth");
+        }, 2000);
+        
+        setFormState("success");
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.message || "Failed to reset password. The link may be invalid or expired.");
+        setFormState("error");
+      }
+    } catch (error) {
+      setErrorMessage("An unexpected error occurred. Please try again later.");
+      setFormState("error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="container flex items-center justify-center min-h-screen py-12">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-md">
-        <Link href="/login" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-800 mb-6">
-          <ArrowLeft className="mr-1 h-4 w-4" />
-          Back to Login
-        </Link>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              {token 
-                ? "Reset Your Password" 
-                : (emailSent 
-                  ? "Check Your Email" 
-                  : "Forgot Your Password?")}
-            </CardTitle>
-            <CardDescription>
-              {token 
-                ? "Enter your new password below" 
-                : (emailSent 
-                  ? "We've sent you instructions to reset your password" 
-                  : "Enter your email and we'll send you a reset link")}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {token ? (
-              resetSuccess ? renderResetSuccessMessage() : renderResetPasswordForm()
-            ) : (
-              emailSent ? renderEmailSentMessage() : renderRequestResetForm()
-            )}
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <div className="text-xs text-gray-500 text-center mt-2">
-              Remember your password?{" "}
-              <Link href="/login" className="text-primary underline hover:text-primary/80">
-                Log in
-              </Link>
-            </div>
-          </CardFooter>
-        </Card>
+        {formState === "request" && (
+          <Card className="shadow-lg">
+            <CardHeader className="space-y-2">
+              <CardTitle className="text-2xl font-bold text-center">
+                Reset Your Password
+              </CardTitle>
+              <CardDescription className="text-center">
+                Enter your email address and we'll send you a link to reset your password.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...requestForm}>
+                <form
+                  onSubmit={requestForm.handleSubmit(onRequestSubmit)}
+                  className="space-y-6"
+                >
+                  <FormField
+                    control={requestForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email Address</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="Enter your email"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                    ) : null}
+                    Send Reset Link
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+            <CardFooter className="flex justify-center pt-2">
+              <Button
+                variant="link"
+                onClick={() => navigate("/auth")}
+                className="text-sm"
+              >
+                Return to Login
+              </Button>
+            </CardFooter>
+          </Card>
+        )}
+
+        {formState === "reset" && (
+          <Card className="shadow-lg">
+            <CardHeader className="space-y-2">
+              <CardTitle className="text-2xl font-bold text-center">
+                Create New Password
+              </CardTitle>
+              <CardDescription className="text-center">
+                Enter your new password below.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...resetForm}>
+                <form
+                  onSubmit={resetForm.handleSubmit(onResetSubmit)}
+                  className="space-y-6"
+                >
+                  <FormField
+                    control={resetForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email Address</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="Enter your email"
+                            {...field}
+                            readOnly={!!email}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={resetForm.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>New Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder="Enter your new password"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={resetForm.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Confirm Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder="Confirm your new password"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                    ) : null}
+                    Reset Password
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+            <CardFooter className="flex justify-center pt-2">
+              <Button
+                variant="link"
+                onClick={() => navigate("/auth")}
+                className="text-sm"
+              >
+                Return to Login
+              </Button>
+            </CardFooter>
+          </Card>
+        )}
+
+        {formState === "success" && (
+          <Card className="shadow-lg">
+            <CardHeader className="space-y-2">
+              <CardTitle className="text-2xl font-bold text-center">
+                Success
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert className="bg-green-50 border-green-200">
+                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                <AlertTitle className="text-green-800">
+                  {token ? "Password Reset Successful" : "Reset Link Sent"}
+                </AlertTitle>
+                <AlertDescription className="text-green-700">
+                  {token
+                    ? "Your password has been reset successfully. You can now log in with your new password."
+                    : "If your email is in our system, you will receive a link to reset your password shortly."}
+                </AlertDescription>
+              </Alert>
+              <div className="flex justify-center">
+                <Button
+                  variant="default"
+                  onClick={() => navigate("/auth")}
+                  className="mt-4"
+                >
+                  Return to Login
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {formState === "error" && (
+          <Card className="shadow-lg">
+            <CardHeader className="space-y-2">
+              <CardTitle className="text-2xl font-bold text-center">
+                Error
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert className="bg-red-50 border-red-200">
+                <AlertCircle className="h-4 w-4 text-red-600" />
+                <AlertTitle className="text-red-800">
+                  Something went wrong
+                </AlertTitle>
+                <AlertDescription className="text-red-700">
+                  {errorMessage || "An error occurred. Please try again."}
+                </AlertDescription>
+              </Alert>
+              <div className="flex justify-center">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    if (token) {
+                      setFormState("reset");
+                    } else {
+                      setFormState("request");
+                    }
+                  }}
+                  className="mt-4 mr-2"
+                >
+                  Try Again
+                </Button>
+                <Button
+                  variant="default"
+                  onClick={() => navigate("/auth")}
+                  className="mt-4"
+                >
+                  Return to Login
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

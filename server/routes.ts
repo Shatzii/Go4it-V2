@@ -32,6 +32,7 @@ import exportRoutes from './routes/export-routes';
 import cmsPagesRoutes from './routes/cms-pages-routes';
 import cmsPageComponentsRoutes from './routes/cms-page-components-routes';
 import cmsComponentRegistryRoutes from './routes/cms-component-registry-routes';
+import authResetRoutes from './routes/auth-reset-routes';
 
 // Helper function to determine event status
 function getEventStatus(event: any): 'upcoming' | 'filling_fast' | 'sold_out' | 'past' {
@@ -5421,6 +5422,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/cms/page-components', cmsPageComponentsRoutes);
   app.use('/api/cms/component-registry', cmsComponentRegistryRoutes);
   app.use('/api', exportRoutes);
+  
+  // Register password reset routes
+  app.use('/api/auth', authResetRoutes);
 
   // Legacy Content Blocks API Routes (will be deprecated)
   app.get("/api/content-blocks", async (req: Request, res: Response) => {
