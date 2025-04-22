@@ -228,7 +228,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         
         // Handle chat messages
-        if (data.type === 'chat_message') {
+        if (data.type === 'chat_message' || data.type === 'message') {
           const { content, recipientId, senderId, timestamp } = data;
           
           // Validate the sender
@@ -252,7 +252,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
           
           const outgoingMessage = {
-            type: 'chat_message',
+            type: 'message',
             senderId,
             senderName: sender.name,
             content,
