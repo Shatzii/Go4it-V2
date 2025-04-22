@@ -55,7 +55,10 @@ export default function ChangePasswordForm() {
   // Mutation for changing password
   const { mutate, isPending } = useMutation({
     mutationFn: async (data: ChangePasswordFormValues) => {
-      const response = await apiRequest("POST", "/api/auth/change-password", data);
+      const response = await apiRequest("/api/auth/change-password", { 
+        method: "POST",
+        data
+      });
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to change password");
