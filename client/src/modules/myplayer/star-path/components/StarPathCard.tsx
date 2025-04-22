@@ -6,7 +6,7 @@ import { StarLevel, StarPathProgress } from '../index';
 import { CalendarCheck, Star, Trophy, Activity, Dumbbell } from 'lucide-react';
 import { format } from 'date-fns';
 
-interface StarPathCardProps {
+export interface StarPathCardProps {
   progress: StarPathProgress;
   onClaimReward?: (milestoneId: number) => void;
   onCheckIn?: () => void;
@@ -21,20 +21,23 @@ export const StarPathCard: React.FC<StarPathCardProps> = ({
     new Date().getTime() - new Date(progress.lastUpdated).getTime() > 24 * 60 * 60 * 1000 : 
     true;
 
-  const formatStarLevel = (level: number): string => {
-    switch(level) {
-      case StarLevel.RISING_PROSPECT: return "Rising Prospect";
-      case StarLevel.EMERGING_TALENT: return "Emerging Talent";
-      case StarLevel.STANDOUT_PERFORMER: return "Standout Performer";
-      case StarLevel.ELITE_PROSPECT: return "Elite Prospect";
-      case StarLevel.FIVE_STAR_ATHLETE: return "Five-Star Athlete";
+  const formatStarLevel = (level: number | null): string => {
+    // Convert null to default level 1
+    const safeLevel = level || 1;
+    
+    switch(safeLevel) {
+      case StarLevel.RisingProspect: return "Rising Prospect";
+      case StarLevel.EmergingTalent: return "Emerging Talent";
+      case StarLevel.StandoutPerformer: return "Standout Performer";
+      case StarLevel.EliteProspect: return "Elite Prospect";
+      case StarLevel.FiveStarAthlete: return "Five-Star Athlete";
       default: return "Unknown";
     }
   };
 
   // Calculate XP progress bar percentage
-  const xpProgressPercentage = progress.xpTotal > 0 && progress.levelThresholds.length > 0 ?
-    Math.min(100, (progress.xpTotal / progress.levelThresholds[progress.level]) * 100) : 0;
+  const xpProgressPercentage = progress.xpTotal > 0 && progress.levelThresholds && progress.levelThresholds.length > 0 ?
+    Math.min(100, (progress.xpTotal / (progress.levelThresholds[progress.level] || 100)) * 100) : 0;
 
   return (
     <Card className="shadow-lg bg-background border-primary/20 overflow-hidden">
@@ -45,7 +48,7 @@ export const StarPathCard: React.FC<StarPathCardProps> = ({
       <CardHeader>
         <div className="flex justify-between items-center">
           <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
-            {formatStarLevel(progress.currentStarLevel)}
+            {formatStarLevel(progress.currentStarLevel || 1)}
           </Badge>
           <Badge variant="outline" className="bg-secondary/10 text-secondary border-secondary/30">
             Level {progress.level}
@@ -63,7 +66,7 @@ export const StarPathCard: React.FC<StarPathCardProps> = ({
         <div className="space-y-1.5">
           <div className="flex justify-between text-sm">
             <span>XP Progress</span>
-            <span className="text-muted-foreground">{progress.xpTotal} / {progress.levelThresholds[progress.level]} XP</span>
+            <span className="text-muted-foreground">{progress.xpTotal} / {progress.levelThresholds && progress.level !== null ? progress.levelThresholds[progress.level] || 100 : 100} XP</span>
           </div>
           <Progress value={xpProgressPercentage} className="h-2" />
         </div>
