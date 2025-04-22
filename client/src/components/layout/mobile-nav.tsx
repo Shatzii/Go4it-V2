@@ -49,11 +49,18 @@ export default function MobileNav() {
 
   return (
     <>
-      {/* Main Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 bg-gray-950 border-t border-gray-800 flex justify-around items-center p-3 z-20">
+      {/* Main Bottom Navigation - Improved with animations and a more polished design */}
+      <nav className="md:hidden fixed bottom-0 inset-x-0 bg-gray-950/95 backdrop-blur-sm border-t border-gray-800 flex justify-around items-center px-2 py-3 z-20 shadow-lg">
         <Link href="/">
-          <div className={`flex flex-col items-center ${location === "/" ? "text-cyan-400" : "text-gray-400"}`}>
-            <Home className="h-5 w-5" />
+          <div className={`flex flex-col items-center transition-colors duration-200 ${location === "/" ? "text-cyan-400" : "text-gray-400"}`}>
+            {location === "/" ? (
+              <div className="relative">
+                <div className="absolute -inset-1 rounded-full bg-cyan-400/20 animate-pulse"></div>
+                <Home className="h-5 w-5 relative" />
+              </div>
+            ) : (
+              <Home className="h-5 w-5" />
+            )}
             <span className="text-xs mt-1 font-medium">Home</span>
           </div>
         </Link>
@@ -61,23 +68,37 @@ export default function MobileNav() {
         {/* Different navigation based on user role */}
         {isAdmin ? (
           <Link href="/admin-dashboard">
-            <div className={`flex flex-col items-center ${location === "/admin-dashboard" ? "text-cyan-400" : "text-gray-400"}`}>
-              <ShieldCheck className="h-5 w-5" />
+            <div className={`flex flex-col items-center transition-colors duration-200 ${location === "/admin-dashboard" ? "text-cyan-400" : "text-gray-400"}`}>
+              {location === "/admin-dashboard" ? (
+                <div className="relative">
+                  <div className="absolute -inset-1 rounded-full bg-cyan-400/20 animate-pulse"></div>
+                  <ShieldCheck className="h-5 w-5 relative" />
+                </div>
+              ) : (
+                <ShieldCheck className="h-5 w-5" />
+              )}
               <span className="text-xs mt-1 font-medium">Admin</span>
             </div>
           </Link>
         ) : (
           <Link href="/myplayer-star-path">
-            <div className={`flex flex-col items-center ${location === "/myplayer-star-path" ? "text-cyan-400" : "text-gray-400"}`}>
-              <Star className="h-5 w-5" />
+            <div className={`flex flex-col items-center transition-colors duration-200 ${location === "/myplayer-star-path" ? "text-cyan-400" : "text-gray-400"}`}>
+              {location === "/myplayer-star-path" ? (
+                <div className="relative">
+                  <div className="absolute -inset-1 rounded-full bg-cyan-400/20 animate-pulse"></div>
+                  <Star className="h-5 w-5 relative" />
+                </div>
+              ) : (
+                <Star className="h-5 w-5" />
+              )}
               <span className="text-xs mt-1 font-medium">Star Path</span>
             </div>
           </Link>
         )}
         
         <Link href="/upload-video">
-          <div className="flex flex-col items-center">
-            <div className="bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full p-3 -mt-6 shadow-lg shadow-cyan-500/20">
+          <div className="flex flex-col items-center relative">
+            <div className="bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full p-3 -mt-8 shadow-lg shadow-cyan-500/30 transition-transform duration-200 hover:scale-110">
               <Plus className="h-5 w-5 text-white" />
             </div>
             <span className="text-xs mt-1 text-gray-400 font-medium">Upload</span>
@@ -86,15 +107,29 @@ export default function MobileNav() {
         
         {isAdmin ? (
           <Link href="/admin/content-manager">
-            <div className={`flex flex-col items-center ${location === "/admin/content-manager" ? "text-cyan-400" : "text-gray-400"}`}>
-              <Layers className="h-5 w-5" />
+            <div className={`flex flex-col items-center transition-colors duration-200 ${location === "/admin/content-manager" ? "text-cyan-400" : "text-gray-400"}`}>
+              {location === "/admin/content-manager" ? (
+                <div className="relative">
+                  <div className="absolute -inset-1 rounded-full bg-cyan-400/20 animate-pulse"></div>
+                  <Layers className="h-5 w-5 relative" />
+                </div>
+              ) : (
+                <Layers className="h-5 w-5" />
+              )}
               <span className="text-xs mt-1 font-medium">Content</span>
             </div>
           </Link>
         ) : (
           <Link href="/weight-room">
-            <div className={`flex flex-col items-center ${location.startsWith("/weight-room") ? "text-cyan-400" : "text-gray-400"}`}>
-              <Dumbbell className="h-5 w-5" />
+            <div className={`flex flex-col items-center transition-colors duration-200 ${location.startsWith("/weight-room") ? "text-cyan-400" : "text-gray-400"}`}>
+              {location.startsWith("/weight-room") ? (
+                <div className="relative">
+                  <div className="absolute -inset-1 rounded-full bg-cyan-400/20 animate-pulse"></div>
+                  <Dumbbell className="h-5 w-5 relative" />
+                </div>
+              ) : (
+                <Dumbbell className="h-5 w-5" />
+              )}
               <span className="text-xs mt-1 font-medium">Train</span>
             </div>
           </Link>
@@ -102,12 +137,15 @@ export default function MobileNav() {
         
         <button 
           onClick={toggleMoreMenu}
-          className="flex flex-col items-center text-gray-400 focus:outline-none"
+          className={`flex flex-col items-center transition-colors duration-200 focus:outline-none ${showMoreMenu ? "text-cyan-400" : "text-gray-400"}`}
           aria-expanded={showMoreMenu}
           aria-label="Toggle more menu"
         >
           {showMoreMenu ? (
-            <X className="h-5 w-5 text-cyan-400" />
+            <div className="relative">
+              <div className="absolute -inset-1 rounded-full bg-cyan-400/20 animate-pulse"></div>
+              <X className="h-5 w-5 relative" />
+            </div>
           ) : (
             <Menu className="h-5 w-5" />
           )}
@@ -117,9 +155,17 @@ export default function MobileNav() {
 
       {/* Expanded More Menu - Redesigned with solid background */}
       {showMoreMenu && (
-        <div className="md:hidden fixed bottom-16 inset-x-0 bg-gray-800 border-t border-gray-700 p-4 z-10 shadow-lg animate-in slide-in-from-bottom duration-200 max-h-[80vh] overflow-y-auto">
-          {/* Accessibility Controls Row */}
-          <div className="flex justify-end mb-4 px-2">
+        <div className="md:hidden fixed bottom-16 inset-x-0 bg-gray-800 border-t border-gray-700 p-4 z-10 shadow-lg animate-in slide-in-from-bottom duration-200 max-h-[70vh] overflow-y-auto">
+          {/* Search and Accessibility Controls Row */}
+          <div className="flex justify-between items-center mb-4 px-2">
+            <div className="flex items-center space-x-2 bg-gray-700 rounded-lg px-3 py-2 w-2/3">
+              <Search className="h-4 w-4 text-gray-400" />
+              <input 
+                type="text" 
+                placeholder="Search Go4It..." 
+                className="bg-transparent border-none text-white text-sm focus:outline-none w-full"
+              />
+            </div>
             <AccessibilityControls />
           </div>
           
@@ -282,6 +328,52 @@ export default function MobileNav() {
                     <CalendarCheck className="h-5 w-5" />
                   </div>
                   <span className="text-xs mt-2 text-center text-white font-medium">Combines</span>
+                </div>
+              </Link>
+            </div>
+          </div>
+          
+          {/* Settings Section for all users */}
+          <div className="mb-4">
+            <h3 className="text-white text-sm font-bold mb-2 px-2">Settings & Help</h3>
+            <div className="grid grid-cols-4 gap-4 mb-6">
+              <Link href="/settings">
+                <div className="flex flex-col items-center" onClick={() => setShowMoreMenu(false)}>
+                  <div className={`rounded-full p-3 ${location === "/settings" ? "bg-cyan-500 text-white" : "bg-gray-700 text-gray-200"}`}>
+                    <Settings className="h-5 w-5" />
+                  </div>
+                  <span className="text-xs mt-2 text-center text-white font-medium">Settings</span>
+                </div>
+              </Link>
+              
+              <Link href="/academic-progress">
+                <div className="flex flex-col items-center" onClick={() => setShowMoreMenu(false)}>
+                  <div className={`rounded-full p-3 ${location === "/academic-progress" ? "bg-cyan-500 text-white" : "bg-gray-700 text-gray-200"}`}>
+                    <BookOpen className="h-5 w-5" />
+                  </div>
+                  <span className="text-xs mt-2 text-center text-white font-medium">Academics</span>
+                </div>
+              </Link>
+              
+              <a href="https://go4itsports.atlassian.net/servicedesk/customer/portal/1" target="_blank" rel="noopener noreferrer">
+                <div className="flex flex-col items-center" onClick={() => setShowMoreMenu(false)}>
+                  <div className="rounded-full p-3 bg-gray-700 text-gray-200">
+                    <MessageSquare className="h-5 w-5" />
+                  </div>
+                  <span className="text-xs mt-2 text-center text-white font-medium">Support</span>
+                </div>
+              </a>
+              
+              <Link href="/server-error">
+                <div className="flex flex-col items-center" onClick={() => setShowMoreMenu(false)}>
+                  <div className="rounded-full p-3 bg-gray-700 text-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="12" y1="8" x2="12" y2="12" />
+                      <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                  </div>
+                  <span className="text-xs mt-2 text-center text-white font-medium">Report</span>
                 </div>
               </Link>
             </div>
