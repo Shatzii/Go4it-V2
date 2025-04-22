@@ -1,219 +1,426 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Loader2, Save, FileDown, FileText } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/auth-context';
-import { useQuery } from '@tanstack/react-query';
-import { generateAthletePDF } from '@/utils/pdf-generator';
-import { toast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+import { formatDate } from '@/utils/date-formatter';
+import { Loader2, Download, FileDown } from 'lucide-react';
 
 /**
- * Component for exporting user profile data in different formats
+ * Component for exporting user profile data in various formats
+ * Allows selection of data categories and export formats
  */
-export function ExportProfileData() {
+const ExportProfileData = () => {
   const { user } = useAuth();
-  const [includeGarScores, setIncludeGarScores] = useState(true);
-  const [includeHighlights, setIncludeHighlights] = useState(true);
-  const [includeRecommendations, setIncludeRecommendations] = useState(true);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   
-  // Fetch profile data
-  const { data: profileData, isLoading: isLoadingProfile } = useQuery({ 
-    queryKey: ['/api/athlete-profiles', user?.id],
-    enabled: !!user
+  const [exportOptions, setExportOptions] = useState({
+    personalInfo: true,
+    garScores: true,
+    highlights: true,
+    recommendations: true
   });
   
-  // Fetch GAR scores
-  const { data: garScores, isLoading: isLoadingGarScores } = useQuery({
-    queryKey: ['/api/gar-scores', user?.id],
-    enabled: !!user && includeGarScores
-  });
+  const [exportFormat, setExportFormat] = useState<'pdf' | 'json'>('pdf');
+  const [isLoading, setIsLoading] = useState(false);
   
-  // Fetch highlights
-  const { data: highlights, isLoading: isLoadingHighlights } = useQuery({
-    queryKey: ['/api/highlights', { userId: user?.id }],
-    enabled: !!user && includeHighlights
-  });
+  if (!user) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Data Export</CardTitle>
+          <CardDescription>Please log in to export your data</CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
   
-  // Fetch recommendations
-  const { data: recommendations, isLoading: isLoadingRecommendations } = useQuery({
-    queryKey: ['/api/recommendations', user?.id],
-    enabled: !!user && includeRecommendations
-  });
-  
-  const isLoading = isLoadingProfile || 
-    (includeGarScores && isLoadingGarScores) || 
-    (includeHighlights && isLoadingHighlights) || 
-    (includeRecommendations && isLoadingRecommendations);
-    
-  // Generate and download PDF report
-  const downloadPDF = async () => {
-    if (!user) {
-      toast({
-        title: "Error",
-        description: "User information not available",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    setIsGenerating(true);
-    try {
-      const pdf = await generateAthletePDF(
-        user,
-        profileData,
-        includeGarScores ? garScores : null,
-        includeHighlights ? highlights : [],
-        includeRecommendations ? recommendations : []
-      );
-      
-      // Create download link
-      const url = URL.createObjectURL(pdf);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `Go4It_Athlete_Report_${user.username}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      
-      toast({
-        title: "Success",
-        description: "Your report has been generated and downloaded",
-      });
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      toast({
-        title: "Error",
-        description: "Failed to generate the PDF report",
-        variant: "destructive",
-      });
-    } finally {
-      setIsGenerating(false);
-    }
+  const handleOptionChange = (option: keyof typeof exportOptions) => {
+    setExportOptions(prev => ({
+      ...prev,
+      [option]: !prev[option]
+    }));
   };
   
-  // Export data as JSON
-  const exportJson = () => {
-    if (!user) {
-      toast({
-        title: "Error",
-        description: "User information not available",
-        variant: "destructive",
-      });
-      return;
+  // Fetch data from API for selected categories
+  const fetchUserData = async () => {
+    const data: Record<string, any> = {};
+    
+    if (exportOptions.personalInfo && user) {
+      // User data is already available in context
+      const basicInfo: Record<string, any> = {
+        id: user.id,
+        name: user.name || '',
+        email: user.email || '',
+        username: user.username || '',
+        role: user.role || ''
+      };
+      
+      // Check if we have any profile data from the API
+      try {
+        const profile = await fetch(`/api/athletes/${user.id}/profile`).then(res => {
+          if (res.ok) return res.json();
+          return null;
+        });
+        
+        if (profile) {
+          basicInfo.height = profile.height;
+          basicInfo.weight = profile.weight;
+          basicInfo.age = profile.age;
+          basicInfo.school = profile.school;
+          basicInfo.graduationYear = profile.graduationYear;
+          basicInfo.sports = profile.sportsInterest;
+        }
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+        // Continue without profile data
+      }
+      
+      data.personalInfo = basicInfo;
     }
     
-    // Compile data based on user selections
-    const exportData = {
-      userInfo: user,
-      profileData: profileData || {},
-      ...(includeGarScores && { garScores: garScores || {} }),
-      ...(includeHighlights && { highlights: highlights || [] }),
-      ...(includeRecommendations && { recommendations: recommendations || [] })
-    };
+    if (exportOptions.garScores) {
+      try {
+        const garScores = await fetch(`/api/gar-scores/${user.id}`).then(res => res.json());
+        data.garScores = garScores;
+      } catch (error) {
+        console.error('Error fetching GAR scores:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch GAR scores',
+          variant: 'destructive'
+        });
+      }
+    }
     
-    // Create download link
-    const dataStr = JSON.stringify(exportData, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `Go4It_Data_${user.username}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    if (exportOptions.highlights) {
+      try {
+        const highlights = await fetch(`/api/highlights?userId=${user.id}`).then(res => res.json());
+        data.highlights = highlights;
+      } catch (error) {
+        console.error('Error fetching highlights:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch highlights',
+          variant: 'destructive'
+        });
+      }
+    }
     
-    toast({
-      title: "Success",
-      description: "Your data has been exported as JSON",
-    });
+    if (exportOptions.recommendations) {
+      try {
+        const recommendations = await fetch(`/api/recommendations/${user.id}`).then(res => res.json());
+        data.recommendations = recommendations;
+      } catch (error) {
+        console.error('Error fetching recommendations:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch recommendations',
+          variant: 'destructive'
+        });
+      }
+    }
+    
+    return data;
+  };
+  
+  const generatePDF = (data: Record<string, any>) => {
+    const doc = new jsPDF();
+    const currentDate = formatDate(new Date());
+    
+    // Add title and header
+    doc.setFontSize(20);
+    doc.text('Go4It Sports - Athlete Data Export', 14, 20);
+    
+    doc.setFontSize(12);
+    doc.text(`Generated on: ${currentDate}`, 14, 28);
+    doc.text(`Athlete: ${user.name}`, 14, 36);
+    
+    let yPosition = 45;
+    
+    // Personal Information
+    if (data.personalInfo) {
+      doc.setFontSize(16);
+      doc.text('Personal Information', 14, yPosition);
+      yPosition += 8;
+      
+      doc.setFontSize(10);
+      const personalInfo = data.personalInfo;
+      
+      const infoTable = [
+        ['ID', personalInfo.id?.toString() || 'N/A'],
+        ['Name', personalInfo.name || 'N/A'],
+        ['Username', personalInfo.username || 'N/A'],
+        ['Email', personalInfo.email || 'N/A'],
+        ['Height', personalInfo.height ? `${personalInfo.height} cm` : 'N/A'],
+        ['Weight', personalInfo.weight ? `${personalInfo.weight} kg` : 'N/A'],
+        ['Age', personalInfo.age?.toString() || 'N/A'],
+        ['School', personalInfo.school || 'N/A'],
+        ['Graduation Year', personalInfo.graduationYear?.toString() || 'N/A'],
+        ['Sports', Array.isArray(personalInfo.sports) ? personalInfo.sports.join(', ') : 'N/A'],
+        ['Member Since', formatDate(new Date(personalInfo.createdAt))]
+      ];
+      
+      (doc as any).autoTable({
+        startY: yPosition,
+        head: [['Attribute', 'Value']],
+        body: infoTable,
+        theme: 'striped',
+        headStyles: { fillColor: [34, 139, 230] }
+      });
+      
+      yPosition = (doc as any).lastAutoTable.finalY + 15;
+    }
+    
+    // GAR Scores
+    if (data.garScores) {
+      doc.setFontSize(16);
+      doc.text('Growth and Ability Rating (GAR) Scores', 14, yPosition);
+      yPosition += 8;
+      
+      doc.setFontSize(10);
+      const garScores = data.garScores;
+      
+      const scoresTable = Object.entries(garScores).map(([category, score]) => 
+        [category, typeof score === 'number' ? score.toString() : 'N/A']
+      );
+      
+      (doc as any).autoTable({
+        startY: yPosition,
+        head: [['Category', 'Score']],
+        body: scoresTable,
+        theme: 'striped',
+        headStyles: { fillColor: [34, 139, 230] }
+      });
+      
+      yPosition = (doc as any).lastAutoTable.finalY + 15;
+      
+      // Check if we need to add a new page
+      if (yPosition > 270) {
+        doc.addPage();
+        yPosition = 20;
+      }
+    }
+    
+    // Highlight information
+    if (data.highlights && data.highlights.length > 0) {
+      doc.setFontSize(16);
+      doc.text('Video Highlights', 14, yPosition);
+      yPosition += 8;
+      
+      doc.setFontSize(10);
+      
+      const highlightsTable = data.highlights.map((highlight: any) => [
+        highlight.title || 'Untitled',
+        highlight.description || 'No description',
+        formatDate(new Date(highlight.createdAt)),
+        highlight.tags ? highlight.tags.join(', ') : 'No tags'
+      ]);
+      
+      (doc as any).autoTable({
+        startY: yPosition,
+        head: [['Title', 'Description', 'Date', 'Tags']],
+        body: highlightsTable,
+        theme: 'striped',
+        headStyles: { fillColor: [34, 139, 230] }
+      });
+      
+      yPosition = (doc as any).lastAutoTable.finalY + 15;
+      
+      // Check if we need to add a new page
+      if (yPosition > 270 && data.recommendations && data.recommendations.length > 0) {
+        doc.addPage();
+        yPosition = 20;
+      }
+    }
+    
+    // Recommendations
+    if (data.recommendations && data.recommendations.length > 0) {
+      doc.setFontSize(16);
+      doc.text('Coach Recommendations', 14, yPosition);
+      yPosition += 8;
+      
+      doc.setFontSize(10);
+      
+      const recommendationsTable = data.recommendations.map((rec: any) => [
+        rec.coachName || 'Unknown Coach',
+        rec.sportType || 'General',
+        rec.recommendationText || 'No recommendation text',
+        formatDate(new Date(rec.createdAt))
+      ]);
+      
+      (doc as any).autoTable({
+        startY: yPosition,
+        head: [['Coach', 'Sport', 'Recommendation', 'Date']],
+        body: recommendationsTable,
+        theme: 'striped',
+        headStyles: { fillColor: [34, 139, 230] }
+      });
+    }
+    
+    // Add footer with page numbers
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(10);
+      doc.text(`Page ${i} of ${pageCount}`, doc.internal.pageSize.getWidth() - 30, doc.internal.pageSize.getHeight() - 10);
+      doc.text('Go4It Sports', 14, doc.internal.pageSize.getHeight() - 10);
+    }
+    
+    return doc;
+  };
+  
+  const generateJSON = (data: Record<string, any>) => {
+    return JSON.stringify(data, null, 2);
+  };
+  
+  const handleExport = async () => {
+    try {
+      setIsLoading(true);
+      
+      const userData = await fetchUserData();
+      
+      if (exportFormat === 'pdf') {
+        const doc = generatePDF(userData);
+        doc.save(`go4it_${user.username}_data_export.pdf`);
+      } else {
+        // Download as JSON
+        const json = generateJSON(userData);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `go4it_${user.username}_data_export.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+      
+      toast({
+        title: 'Export Complete',
+        description: `Your data has been exported as ${exportFormat.toUpperCase()}`,
+      });
+    } catch (error) {
+      console.error('Error exporting data:', error);
+      toast({
+        title: 'Export Failed',
+        description: 'There was an error exporting your data. Please try again later.',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   return (
-    <Card className="w-full">
+    <Card>
       <CardHeader>
-        <CardTitle>Export Your Data</CardTitle>
+        <CardTitle>Data Export</CardTitle>
         <CardDescription>
-          Download your profile information and performance data
+          Select the data you want to export and the preferred format
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="include-gar-scores" className="flex flex-col gap-1">
-              <span>Include GAR Scores</span>
-              <span className="text-sm text-muted-foreground">
-                Performance metrics and analytics
-              </span>
-            </Label>
-            <Switch 
-              id="include-gar-scores" 
-              checked={includeGarScores} 
-              onCheckedChange={setIncludeGarScores} 
-            />
+      <CardContent>
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Data Categories</h3>
+            
+            <div className="flex flex-col space-y-3">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="personalInfo" 
+                  checked={exportOptions.personalInfo} 
+                  onCheckedChange={() => handleOptionChange('personalInfo')} 
+                />
+                <Label htmlFor="personalInfo">Personal Information</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="garScores" 
+                  checked={exportOptions.garScores} 
+                  onCheckedChange={() => handleOptionChange('garScores')} 
+                />
+                <Label htmlFor="garScores">GAR Scores</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="highlights" 
+                  checked={exportOptions.highlights} 
+                  onCheckedChange={() => handleOptionChange('highlights')} 
+                />
+                <Label htmlFor="highlights">Highlights</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="recommendations" 
+                  checked={exportOptions.recommendations} 
+                  onCheckedChange={() => handleOptionChange('recommendations')} 
+                />
+                <Label htmlFor="recommendations">Coach Recommendations</Label>
+              </div>
+            </div>
           </div>
           
-          <div className="flex items-center justify-between">
-            <Label htmlFor="include-highlights" className="flex flex-col gap-1">
-              <span>Include Highlights</span>
-              <span className="text-sm text-muted-foreground">
-                Your recorded performance highlights
-              </span>
-            </Label>
-            <Switch 
-              id="include-highlights" 
-              checked={includeHighlights} 
-              onCheckedChange={setIncludeHighlights} 
-            />
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Export Format</h3>
+            
+            <div className="flex flex-col space-y-3">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="pdf" 
+                  checked={exportFormat === 'pdf'} 
+                  onCheckedChange={() => setExportFormat('pdf')} 
+                />
+                <Label htmlFor="pdf">PDF Document</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="json" 
+                  checked={exportFormat === 'json'} 
+                  onCheckedChange={() => setExportFormat('json')} 
+                />
+                <Label htmlFor="json">JSON Data</Label>
+              </div>
+            </div>
           </div>
           
-          <div className="flex items-center justify-between">
-            <Label htmlFor="include-recommendations" className="flex flex-col gap-1">
-              <span>Include Recommendations</span>
-              <span className="text-sm text-muted-foreground">
-                Training and improvement suggestions
-              </span>
-            </Label>
-            <Switch 
-              id="include-recommendations" 
-              checked={includeRecommendations} 
-              onCheckedChange={setIncludeRecommendations} 
-            />
+          <Button 
+            onClick={handleExport} 
+            disabled={isLoading || !(exportOptions.personalInfo || exportOptions.garScores || exportOptions.highlights || exportOptions.recommendations)}
+            className="w-full mt-4"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Exporting...
+              </>
+            ) : (
+              <>
+                <FileDown className="mr-2 h-4 w-4" />
+                Export Data
+              </>
+            )}
+          </Button>
+          
+          <div className="text-sm text-gray-500 mt-4">
+            <p>Your data will be downloaded directly to your device. We do not store copies of exported files.</p>
+            <p className="mt-2">All data categories may not be available if you haven't uploaded content or received feedback.</p>
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button
-          variant="outline"
-          disabled={isLoading || isGenerating}
-          onClick={exportJson}
-          className="flex gap-2"
-        >
-          {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Save className="h-4 w-4" />
-          )}
-          Export JSON
-        </Button>
-        
-        <Button
-          onClick={downloadPDF}
-          disabled={isLoading || isGenerating}
-          className="flex gap-2"
-        >
-          {isGenerating ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <FileText className="h-4 w-4" />
-          )}
-          Generate PDF Report
-        </Button>
-      </CardFooter>
     </Card>
   );
-}
+};
+
+export default ExportProfileData;
