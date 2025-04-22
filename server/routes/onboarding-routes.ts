@@ -1,283 +1,616 @@
 import { Router, Request, Response } from "express";
 import { storage } from "../storage";
-import { isAuthenticatedMiddleware } from "../auth";
+import { isAuthenticatedMiddleware } from "../middleware/auth-middleware";
+import { db } from "../db";
+import { eq } from "drizzle-orm";
+import { 
+  onboardingProgress, 
+  users,
+  athleteProfiles,
+  insertOnboardingProgressSchema,
+  insertAthleteProfileSchema
+} from "@shared/schema";
 import { z } from "zod";
-import nodemailer from "nodemailer";
 import { randomBytes } from "crypto";
+import nodemailer from "nodemailer";
 
-// Onboarding progress schema
-const onboardingStepSchema = z.object({
-  step: z.number().min(1).max(5)
-});
-
-// Save step data schema
-const saveStepSchema = z.object({
-  step: z.number().min(1).max(5),
-  data: z.record(z.any())
-});
-
-// Parent verification schema
-const parentVerificationSchema = z.object({
-  parentEmail: z.string().email()
-});
-
-// Setup router
 const router = Router();
 
-// Middleware to ensure authentication
+// Default middleware for all routes in this file
 router.use(isAuthenticatedMiddleware);
 
 /**
- * Get onboarding progress
+ * @route GET /api/onboarding/status
+ * @description Get onboarding status for the current user
+ * @access Private
  */
-router.get("/progress", async (req: Request, res: Response) => {
+router.get("/status", async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
-    const progress = await storage.getOnboardingProgress(userId);
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const userId = req.user.id;
     
-    res.json(progress || {
-      isCompleted: false,
-      currentStep: 1,
-      totalSteps: 5,
-      completedSections: [],
-      skippedSections: []
+    // Get onboarding status
+    const status = await storage.getUserOnboardingStatus(userId);
+    
+    if (!status) {
+      // Create initial onboarding progress if not exists
+      const newStatus = await storage.createOnboardingProgress({
+        userId,
+        isCompleted: false,
+        currentStep: 1,
+        totalSteps: 5,
+        lastUpdated: new Date(),
+      });
+      
+      return res.json(newStatus);
+    }
+    
+    return res.json(status);
+  } catch (error) {
+    console.error("Error getting onboarding status:", error);
+    return res.status(500).json({ message: "Error getting onboarding status" });
+  }
+});
+
+/**
+ * @route POST /api/onboarding/complete-step/:stepId
+ * @description Mark a specific onboarding step as completed
+ * @access Private
+ */
+router.post("/complete-step/:stepId", async (req: Request, res: Response) => {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const userId = req.user.id;
+    const stepId = parseInt(req.params.stepId);
+    
+    if (isNaN(stepId) || stepId < 1 || stepId > 5) {
+      return res.status(400).json({ message: "Invalid step ID" });
+    }
+    
+    // Get current onboarding progress
+    const currentProgress = await storage.getOnboardingProgress(userId, stepId);
+    
+    // Complete the step and update progress
+    await storage.completeOnboardingStep(userId, stepId);
+    
+    // If this was the last step in sequence, move to the next step
+    if (currentProgress && stepId === currentProgress.currentStep && stepId < currentProgress.totalSteps) {
+      await storage.updateOnboardingProgress(userId, {
+        currentStep: stepId + 1,
+        lastUpdated: new Date(),
+      });
+    }
+    
+    // Get updated progress
+    const updatedProgress = await storage.getOnboardingProgress(userId, stepId);
+    
+    return res.json(updatedProgress);
+  } catch (error) {
+    console.error("Error completing onboarding step:", error);
+    return res.status(500).json({ message: "Error completing onboarding step" });
+  }
+});
+
+/**
+ * @route POST /api/onboarding/skip-step/:stepId
+ * @description Skip a specific onboarding step
+ * @access Private
+ */
+router.post("/skip-step/:stepId", async (req: Request, res: Response) => {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const userId = req.user.id;
+    const stepId = parseInt(req.params.stepId);
+    
+    if (isNaN(stepId) || stepId < 1 || stepId > 5) {
+      return res.status(400).json({ message: "Invalid step ID" });
+    }
+    
+    // Get current onboarding progress
+    const currentProgress = await storage.getOnboardingProgress(userId, stepId);
+    
+    if (!currentProgress) {
+      return res.status(404).json({ message: "Onboarding progress not found" });
+    }
+    
+    // Skip this step and move to the next one
+    await storage.updateOnboardingProgress(userId, {
+      currentStep: stepId < currentProgress.totalSteps ? stepId + 1 : stepId,
+      lastUpdated: new Date(),
+    });
+    
+    // Get updated progress
+    const updatedProgress = await storage.getOnboardingProgress(userId, stepId);
+    
+    return res.json(updatedProgress);
+  } catch (error) {
+    console.error("Error skipping onboarding step:", error);
+    return res.status(500).json({ message: "Error skipping onboarding step" });
+  }
+});
+
+/**
+ * @route POST /api/onboarding/update-profile
+ * @description Update basic profile information (step 1)
+ * @access Private
+ */
+router.post("/update-profile", async (req: Request, res: Response) => {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const userId = req.user.id;
+    
+    // Schema validation for profile update
+    const profileSchema = z.object({
+      firstName: z.string().min(2).optional(),
+      lastName: z.string().min(2).optional(),
+      username: z.string().min(3).optional(),
+      email: z.string().email().optional(),
+      bio: z.string().max(500).optional(),
+      profileImage: z.string().nullable().optional(),
+      dateOfBirth: z.string().optional().transform(val => val ? new Date(val) : null),
+    });
+    
+    // Validate the request body
+    const result = profileSchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({ message: "Invalid profile data", errors: result.error.format() });
+    }
+    
+    const { firstName, lastName, username, email, bio, profileImage, dateOfBirth } = result.data;
+    
+    // Prepare user data update
+    const userData: any = {};
+    
+    if (firstName && lastName) {
+      userData.name = `${firstName} ${lastName}`;
+    }
+    
+    if (username) userData.username = username;
+    if (email) userData.email = email;
+    if (bio !== undefined) userData.bio = bio;
+    if (profileImage !== undefined) userData.profileImageUrl = profileImage;
+    
+    // Update user data in the database
+    await storage.updateUser(userId, userData);
+    
+    // Create or update athlete profile with additional data
+    let athleteProfile = await storage.getAthleteProfile(userId);
+    
+    if (athleteProfile) {
+      await storage.updateAthleteProfile(athleteProfile.id, {
+        dateOfBirth: dateOfBirth || undefined,
+      });
+    } else {
+      await storage.createAthleteProfile({
+        userId,
+        dateOfBirth: dateOfBirth || undefined,
+      });
+    }
+    
+    return res.json({ 
+      message: "Profile updated successfully",
+      updated: {
+        user: userData,
+        athleteProfile: { dateOfBirth }
+      }
     });
   } catch (error) {
-    console.error("Error fetching onboarding progress:", error);
-    res.status(500).json({ error: "Failed to fetch onboarding progress" });
+    console.error("Error updating profile:", error);
+    return res.status(500).json({ message: "Error updating profile" });
   }
 });
 
 /**
- * Update current step
+ * @route POST /api/onboarding/sports-interest
+ * @description Update sports interests (step 2)
+ * @access Private
  */
-router.post("/update-step", async (req: Request, res: Response) => {
+router.post("/sports-interest", async (req: Request, res: Response) => {
   try {
-    const { step } = onboardingStepSchema.parse(req.body);
-    const userId = req.user!.id;
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const userId = req.user.id;
     
-    await storage.updateOnboardingStep(userId, step);
+    // Schema validation for sports interest
+    const sportsSchema = z.object({
+      sports: z.array(z.string()).min(1),
+      positions: z.array(z.string()).optional(),
+      level: z.string().optional(),
+    });
     
-    res.status(200).json({ success: true });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.errors });
+    // Validate the request body
+    const result = sportsSchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({ message: "Invalid sports data", errors: result.error.format() });
     }
     
-    console.error("Error updating onboarding step:", error);
-    res.status(500).json({ error: "Failed to update onboarding step" });
+    const { sports, positions, level } = result.data;
+    
+    // Update user data with sports interest
+    await storage.updateUser(userId, { 
+      sportsInterest: sports.join(',') 
+    });
+    
+    // Create or update athlete profile with positions and level
+    let athleteProfile = await storage.getAthleteProfile(userId);
+    
+    if (athleteProfile) {
+      await storage.updateAthleteProfile(athleteProfile.id, {
+        positions: positions ? positions.join(',') : undefined,
+        skillLevel: level,
+      });
+    } else {
+      await storage.createAthleteProfile({
+        userId,
+        positions: positions ? positions.join(',') : undefined,
+        skillLevel: level,
+      });
+    }
+    
+    return res.json({ 
+      message: "Sports interests updated successfully",
+      updated: {
+        sports,
+        positions,
+        level
+      }
+    });
+  } catch (error) {
+    console.error("Error updating sports interests:", error);
+    return res.status(500).json({ message: "Error updating sports interests" });
   }
 });
 
 /**
- * Skip a step
+ * @route POST /api/onboarding/physical-attributes
+ * @description Update physical attributes (step 3)
+ * @access Private
  */
-router.post("/skip-step", async (req: Request, res: Response) => {
+router.post("/physical-attributes", async (req: Request, res: Response) => {
   try {
-    const { step } = onboardingStepSchema.parse(req.body);
-    const userId = req.user!.id;
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const userId = req.user.id;
     
-    await storage.skipOnboardingStep(userId, step);
+    // Schema validation for physical attributes
+    const physicalSchema = z.object({
+      height: z.number().nullable().optional(),
+      weight: z.number().nullable().optional(),
+      wingspan: z.number().nullable().optional(),
+      handedness: z.enum(["left", "right", "ambidextrous"]).nullable().optional(),
+      verticalJump: z.number().nullable().optional(),
+    });
     
-    res.status(200).json({ success: true });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.errors });
+    // Validate the request body
+    const result = physicalSchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({ message: "Invalid physical data", errors: result.error.format() });
     }
     
-    console.error("Error skipping onboarding step:", error);
-    res.status(500).json({ error: "Failed to skip onboarding step" });
+    // Update physical attributes in athlete profile
+    await storage.updateUserPhysicalAttributes(userId, result.data);
+    
+    return res.json({ 
+      message: "Physical attributes updated successfully",
+      updated: result.data
+    });
+  } catch (error) {
+    console.error("Error updating physical attributes:", error);
+    return res.status(500).json({ message: "Error updating physical attributes" });
   }
 });
 
 /**
- * Save step data
+ * @route POST /api/onboarding/accessibility-preferences
+ * @description Update accessibility preferences (step 4)
+ * @access Private
  */
-router.post("/save-step", async (req: Request, res: Response) => {
+router.post("/accessibility-preferences", async (req: Request, res: Response) => {
   try {
-    const { step, data } = saveStepSchema.parse(req.body);
-    const userId = req.user!.id;
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const userId = req.user.id;
     
-    // Save step data based on the step number
-    switch (step) {
-      case 1: // Basic Info
-        if (data.name) await storage.updateUserName(userId, data.name);
-        if (data.username) await storage.updateUsername(userId, data.username);
-        if (data.email) await storage.updateUserEmail(userId, data.email);
-        if (data.bio) await storage.updateUserBio(userId, data.bio);
-        if (data.profileImage) await storage.updateUserProfileImage(userId, data.profileImage);
-        break;
-        
-      case 2: // Sports Interest
-        await storage.updateUserSportsInterest(userId, data);
-        break;
-        
-      case 3: // Physical Attributes
-        await storage.updateUserPhysicalAttributes(userId, data);
-        break;
-        
-      case 4: // Accessibility Preferences
-        await storage.updateUserAccessibilityPreferences(userId, data);
-        break;
-        
-      case 5: // Parent Contact
-        if (data.parentEmail) {
-          await storage.updateUserParentContact(userId, data.parentEmail);
-        }
-        break;
+    // Schema validation for accessibility preferences
+    const accessibilitySchema = z.object({
+      adhd: z.boolean().optional(),
+      focusMode: z.boolean().optional(),
+      animationReduction: z.enum(["none", "reduced", "minimal"]).optional(),
+      colorScheme: z.enum(["default", "high-contrast", "dark", "light"]).optional(),
+      textSize: z.enum(["default", "large", "x-large"]).optional(),
+      contrastLevel: z.enum(["default", "high", "very-high"]).optional(),
+      soundEffects: z.boolean().optional(),
+    });
+    
+    // Validate the request body
+    const result = accessibilitySchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({ message: "Invalid accessibility data", errors: result.error.format() });
     }
     
-    // Mark step as completed
-    await storage.completeOnboardingStep(userId, step);
+    // Update accessibility preferences
+    await storage.updateUserAccessibilityPreferences(userId, result.data);
     
-    res.status(200).json({ success: true });
+    return res.json({ 
+      message: "Accessibility preferences updated successfully",
+      updated: result.data
+    });
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.errors });
-    }
-    
-    console.error("Error saving onboarding step data:", error);
-    res.status(500).json({ error: "Failed to save onboarding step data" });
+    console.error("Error updating accessibility preferences:", error);
+    return res.status(500).json({ message: "Error updating accessibility preferences" });
   }
 });
 
 /**
- * Complete onboarding process
+ * @route POST /api/onboarding/complete
+ * @description Mark the onboarding process as completed
+ * @access Private
  */
 router.post("/complete", async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const userId = req.user.id;
     
-    // Mark onboarding as completed
+    // Mark onboarding as complete
     await storage.completeOnboarding(userId);
     
-    res.status(200).json({ success: true });
+    // Update user status
+    await storage.updateUser(userId, {
+      onboardingCompleted: true
+    });
+    
+    return res.json({ 
+      message: "Onboarding completed successfully" 
+    });
   } catch (error) {
     console.error("Error completing onboarding:", error);
-    res.status(500).json({ error: "Failed to complete onboarding" });
+    return res.status(500).json({ message: "Error completing onboarding" });
   }
 });
 
 /**
- * Send parent verification email
+ * @route POST /api/onboarding/parent-verification
+ * @description Send verification email to parent for athletes under 18
+ * @access Private
  */
-router.post("/send-parent-verification", async (req: Request, res: Response) => {
+router.post("/parent-verification", async (req: Request, res: Response) => {
   try {
-    const { parentEmail } = parentVerificationSchema.parse(req.body);
-    const userId = req.user!.id;
-    const userName = req.user!.name;
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const userId = req.user.id;
+    
+    // Schema validation for parent contact
+    const parentSchema = z.object({
+      parentName: z.string().min(2),
+      parentEmail: z.string().email(),
+    });
+    
+    // Validate the request body
+    const result = parentSchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({ message: "Invalid parent data", errors: result.error.format() });
+    }
+    
+    const { parentName, parentEmail } = result.data;
     
     // Generate a verification token
-    const token = randomBytes(32).toString("hex");
+    const token = randomBytes(32).toString('hex');
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 48); // Token valid for 48 hours
     
-    // Store token in database
-    await storage.createParentVerificationToken(userId, parentEmail, token);
+    // Save the token to the database
+    await storage.createParentVerificationToken({
+      userId,
+      token,
+      parentEmail,
+      expiresAt,
+      isVerified: false,
+    });
     
     // Send verification email
-    // Note: In a production environment, this would use a configured email service
-    // This is a placeholder implementation
-    try {
-      // Check if SMTP is configured
-      if (process.env.SMTP_HOST && process.env.SMTP_PORT) {
+    // Note: In a real deployment, you would use a real SMTP service
+    // For development, we'll just log the email content
+    
+    const verificationLink = `${req.protocol}://${req.get('host')}/api/onboarding/verify-parent/${token}`;
+    
+    console.log(`
+    To: ${parentEmail}
+    Subject: Parent Verification for Go4It Sports
+    
+    Hello ${parentName},
+    
+    Your child has registered for Go4It Sports and needs your verification.
+    Please click the link below to verify your child's account:
+    
+    ${verificationLink}
+    
+    This link will expire in 48 hours.
+    
+    Thank you,
+    The Go4It Sports Team
+    `);
+    
+    // For development/testing purposes, you can use nodemailer with Ethereal
+    // to get a preview URL for the email
+    if (process.env.NODE_ENV === 'development') {
+      // Note that we're checking for a dev environment - this would not run in production
+      try {
+        // Generate test SMTP service account
+        const testAccount = await nodemailer.createTestAccount();
+        
+        // Create a transporter for Ethereal
         const transporter = nodemailer.createTransport({
-          host: process.env.SMTP_HOST,
-          port: parseInt(process.env.SMTP_PORT),
-          secure: process.env.SMTP_SECURE === "true",
+          host: "smtp.ethereal.email",
+          port: 587,
+          secure: false,
           auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS
-          }
+            user: testAccount.user,
+            pass: testAccount.pass,
+          },
         });
         
-        const verificationUrl = `${process.env.APP_URL || "https://go4it.replit.app"}/verify-parent?token=${token}`;
-        
-        await transporter.sendMail({
-          from: process.env.SMTP_FROM || "noreply@go4itsports.com",
+        // Send mail with defined transport object
+        const info = await transporter.sendMail({
+          from: '"Go4It Sports" <noreply@go4itsports.com>',
           to: parentEmail,
           subject: "Parent Verification for Go4It Sports",
+          text: `
+          Hello ${parentName},
+          
+          Your child has registered for Go4It Sports and needs your verification.
+          Please click the link below to verify your child's account:
+          
+          ${verificationLink}
+          
+          This link will expire in 48 hours.
+          
+          Thank you,
+          The Go4It Sports Team
+          `,
           html: `
-            <h1>Go4It Sports Parent Verification</h1>
-            <p>Hello,</p>
-            <p>${userName} has listed you as their parent/guardian on Go4It Sports, a platform for student athletes.</p>
-            <p>Please click the link below to verify your email address and confirm your relationship:</p>
-            <p><a href="${verificationUrl}" style="padding: 10px 15px; background-color: #4f46e5; color: white; text-decoration: none; border-radius: 5px;">Verify Email</a></p>
-            <p>Or copy and paste this URL into your browser: ${verificationUrl}</p>
-            <p>If you did not expect this email, please disregard it.</p>
+          <div>
+            <h2>Parent Verification for Go4It Sports</h2>
+            <p>Hello ${parentName},</p>
+            <p>Your child has registered for Go4It Sports and needs your verification.</p>
+            <p>Please click the link below to verify your child's account:</p>
+            <p><a href="${verificationLink}" style="display: inline-block; padding: 10px 20px; background-color: #4a90e2; color: white; text-decoration: none; border-radius: 4px;">Verify Account</a></p>
+            <p>This link will expire in 48 hours.</p>
             <p>Thank you,<br>The Go4It Sports Team</p>
-          `
+          </div>
+          `,
         });
-      } else {
-        // Log the verification request when SMTP is not configured
-        console.log(`PARENT VERIFICATION REQUEST: User ID ${userId} sent verification to ${parentEmail} with token ${token}`);
+        
+        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+      } catch (emailError) {
+        console.error("Error sending test email:", emailError);
       }
-    } catch (emailError) {
-      console.error("Failed to send verification email:", emailError);
-      // Continue without failing the request since this is development/testing
     }
     
-    res.status(200).json({ success: true });
+    // Create or update athlete profile with parent info
+    let athleteProfile = await storage.getAthleteProfile(userId);
+    
+    if (athleteProfile) {
+      await storage.updateAthleteProfile(athleteProfile.id, {
+        parentName,
+        parentEmail,
+        parentVerified: false,
+      });
+    } else {
+      await storage.createAthleteProfile({
+        userId,
+        parentName,
+        parentEmail,
+        parentVerified: false,
+      });
+    }
+    
+    return res.json({ 
+      message: "Parent verification email sent",
+      verified: false,
+      parentEmail
+    });
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.errors });
-    }
-    
     console.error("Error sending parent verification:", error);
-    res.status(500).json({ error: "Failed to send parent verification" });
+    return res.status(500).json({ message: "Error sending parent verification" });
   }
 });
 
 /**
- * Verify parent email
+ * @route GET /api/onboarding/verify-parent/:token
+ * @description Verify parent email using token
+ * @access Public (no authentication required for the link in the email)
  */
 router.get("/verify-parent/:token", async (req: Request, res: Response) => {
   try {
-    const { token } = req.params;
+    const token = req.params.token;
     
-    // Verify token and mark as verified
-    const verificationResult = await storage.verifyParentToken(token);
-    
-    if (verificationResult) {
-      res.status(200).json({ success: true });
-    } else {
-      res.status(400).json({ error: "Invalid or expired verification token" });
+    if (!token) {
+      return res.status(400).json({ message: "Invalid verification token" });
     }
+    
+    // Check if token exists and is valid
+    const verification = await storage.verifyParentToken(token);
+    
+    if (!verification) {
+      return res.status(404).json({ message: "Verification token not found or expired" });
+    }
+    
+    if (verification.isVerified) {
+      return res.send(`
+        <h1>Already Verified</h1>
+        <p>This account has already been verified. No further action is needed.</p>
+      `);
+    }
+    
+    // Update token as verified
+    await storage.updateParentVerification(token, true);
+    
+    // Update athlete profile as parent verified
+    let athleteProfile = await storage.getAthleteProfile(verification.userId);
+    
+    if (athleteProfile) {
+      await storage.updateAthleteProfile(athleteProfile.id, {
+        parentVerified: true,
+      });
+    }
+    
+    // Send a success page
+    return res.send(`
+      <h1>Verification Successful</h1>
+      <p>Thank you for verifying your child's account. They can now fully access Go4It Sports.</p>
+    `);
   } catch (error) {
     console.error("Error verifying parent token:", error);
-    res.status(500).json({ error: "Failed to verify parent token" });
+    return res.status(500).send(`
+      <h1>Verification Error</h1>
+      <p>There was an error processing your verification. Please try again or contact support.</p>
+    `);
   }
 });
 
 /**
- * Get athlete profile
+ * @route GET /api/onboarding/preferences
+ * @description Get user's accessibility preferences
+ * @access Private
  */
-router.get("/athlete-profile", async (req: Request, res: Response) => {
+router.get("/preferences", async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
-    
-    // Get athlete profile data
-    const profile = await storage.getAthleteProfile(userId);
-    
-    res.json(profile || {});
-  } catch (error) {
-    console.error("Error fetching athlete profile:", error);
-    res.status(500).json({ error: "Failed to fetch athlete profile" });
-  }
-});
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
-/**
- * Get user preferences
- */
-router.get("/user/preferences", async (req: Request, res: Response) => {
-  try {
-    const userId = req.user!.id;
+    const userId = req.user.id;
     
     // Get user accessibility preferences
     const preferences = await storage.getUserAccessibilityPreferences(userId);
     
-    res.json(preferences || {});
+    return res.json(preferences);
   } catch (error) {
-    console.error("Error fetching user preferences:", error);
-    res.status(500).json({ error: "Failed to fetch user preferences" });
+    console.error("Error getting accessibility preferences:", error);
+    return res.status(500).json({ message: "Error getting accessibility preferences" });
   }
 });
 
