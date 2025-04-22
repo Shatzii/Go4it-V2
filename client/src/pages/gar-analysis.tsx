@@ -5,6 +5,7 @@ import { Loader2, Info, TrendingUp, BarChart3, Activity, Award, Video } from "lu
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { CustomProgress } from "@/components/ui/custom-progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { 
@@ -148,7 +149,7 @@ export default function GARAnalysis() {
             <CardDescription>Overall GAR Score</CardDescription>
           </CardHeader>
           <CardContent>
-            <Progress value={totalGarScore} className="h-3" />
+            <CustomProgress value={totalGarScore} className="h-3" indicatorClassName="bg-primary" />
             <div className="mt-2 text-sm text-right">
               <span className={
                 totalGarScore > 75 ? "text-green-500" : 
@@ -174,7 +175,7 @@ export default function GARAnalysis() {
                   <span className="text-sm">Physical</span>
                   <span className="text-sm font-medium">{categoryScores.physical}</span>
                 </div>
-                <Progress value={categoryScores.physical} className="h-2 bg-slate-200" indicatorClassName="bg-blue-500" />
+                <CustomProgress value={categoryScores.physical} className="h-2 bg-slate-200" indicatorClassName="bg-blue-500" />
               </div>
               
               <div>
@@ -182,7 +183,7 @@ export default function GARAnalysis() {
                   <span className="text-sm">Technical</span>
                   <span className="text-sm font-medium">{categoryScores.technical}</span>
                 </div>
-                <Progress value={categoryScores.technical} className="h-2 bg-slate-200" indicatorClassName="bg-green-500" />
+                <CustomProgress value={categoryScores.technical} className="h-2 bg-slate-200" indicatorClassName="bg-green-500" />
               </div>
               
               <div>
@@ -190,7 +191,7 @@ export default function GARAnalysis() {
                   <span className="text-sm">Mental</span>
                   <span className="text-sm font-medium">{categoryScores.mental}</span>
                 </div>
-                <Progress value={categoryScores.mental} className="h-2 bg-slate-200" indicatorClassName="bg-purple-500" />
+                <CustomProgress value={categoryScores.mental} className="h-2 bg-slate-200" indicatorClassName="bg-purple-500" />
               </div>
             </div>
           </CardContent>
@@ -360,7 +361,7 @@ export default function GARAnalysis() {
                       </div>
                       <span className="font-bold">{subcategory.score}/100</span>
                     </div>
-                    <Progress 
+                    <CustomProgress 
                       value={subcategory.score} 
                       className="h-3" 
                       indicatorClassName={

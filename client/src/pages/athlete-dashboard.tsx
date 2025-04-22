@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { CustomProgress } from "@/components/ui/custom-progress";
 
 export default function AthleteDashboard() {
   const { user } = useAuth();
@@ -145,7 +146,7 @@ export default function AthleteDashboard() {
                         <span>Physical</span>
                         <span className="font-bold">{categoryScores.physical}/100</span>
                       </div>
-                      <Progress value={categoryScores.physical} className="h-2 bg-slate-200" indicatorClassName="bg-blue-500" />
+                      <CustomProgress value={categoryScores.physical} className="h-2 bg-slate-200" indicatorClassName="bg-blue-500" />
                     </div>
                     
                     <div>
@@ -153,7 +154,7 @@ export default function AthleteDashboard() {
                         <span>Technical</span>
                         <span className="font-bold">{categoryScores.technical}/100</span>
                       </div>
-                      <Progress value={categoryScores.technical} className="h-2 bg-slate-200" indicatorClassName="bg-green-500" />
+                      <CustomProgress value={categoryScores.technical} className="h-2 bg-slate-200" indicatorClassName="bg-green-500" />
                     </div>
                     
                     <div>
@@ -161,7 +162,7 @@ export default function AthleteDashboard() {
                         <span>Mental</span>
                         <span className="font-bold">{categoryScores.mental}/100</span>
                       </div>
-                      <Progress value={categoryScores.mental} className="h-2 bg-slate-200" indicatorClassName="bg-purple-500" />
+                      <CustomProgress value={categoryScores.mental} className="h-2 bg-slate-200" indicatorClassName="bg-purple-500" />
                     </div>
                   </div>
                 </div>
