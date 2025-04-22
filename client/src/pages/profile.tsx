@@ -31,6 +31,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { MeasurementToggle } from "@/components/ui/measurement-toggle";
+import { ExportProfileData } from "@/components/profile/ExportProfileData";
 
 // Extend the athlete profile schema with more validation rules
 const athleteProfileFormSchema = insertAthleteProfileSchema.extend({
@@ -236,7 +237,7 @@ export default function Profile() {
           </div>
           
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="personal">Personal Information</TabsTrigger>
               {user.role === "athlete" && (
                 <TabsTrigger value="athletic">Athletic Information</TabsTrigger>
@@ -244,6 +245,7 @@ export default function Profile() {
               {user.role === "athlete" && (
                 <TabsTrigger value="gar">GAR Score</TabsTrigger>
               )}
+              <TabsTrigger value="export">Export Data</TabsTrigger>
             </TabsList>
             
             <TabsContent value="personal">
@@ -518,6 +520,10 @@ export default function Profile() {
                 </Card>
               </TabsContent>
             )}
+            
+            <TabsContent value="export">
+              <ExportProfileData />
+            </TabsContent>
           </Tabs>
         </div>
       </div>
