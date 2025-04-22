@@ -167,9 +167,12 @@ export default function AthleteDashboard() {
                   </div>
                 </div>
               </CardContent>
-              <CardFooter>
+              <CardFooter className="flex flex-col gap-2">
                 <Button variant="outline" className="w-full" asChild>
-                  <a href="/gar-analysis">View Full GAR Analysis</a>
+                  <a href="/enhanced-gar">View Full GAR Analysis</a>
+                </Button>
+                <Button variant="default" className="w-full">
+                  <a href="/gar-analysis?tab=videos">Record New Video</a>
                 </Button>
               </CardFooter>
             </Card>
@@ -261,17 +264,47 @@ export default function AthleteDashboard() {
         {/* GAR Analysis Tab */}
         <TabsContent value="gar" className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Full GAR Score breakdown component will go here */}
+            {/* Full GAR Score breakdown component */}
             <Card className="lg:col-span-3">
               <CardHeader>
                 <CardTitle>GAR Score Analysis</CardTitle>
                 <CardDescription>Detailed breakdown of your Growth and Ability Rating</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-20 text-muted-foreground">
-                  <BarChart2 className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                  <p>Detailed GAR analysis will be displayed here</p>
-                  <p className="text-sm">Coming soon</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-4">
+                  <div className="bg-card/40 p-6 rounded-lg border border-border/50 flex flex-col items-center text-center">
+                    <BarChart2 className="h-12 w-12 mb-4 text-primary" />
+                    <h3 className="text-xl font-bold mb-2">Enhanced GAR Analytics</h3>
+                    <p className="text-muted-foreground mb-6">View advanced visualizations of your GAR scores including time progression and strengths/weaknesses analysis</p>
+                    <Button asChild className="w-full">
+                      <a href="/enhanced-gar">View Enhanced Analytics</a>
+                    </Button>
+                  </div>
+                  
+                  <div className="bg-card/40 p-6 rounded-lg border border-border/50 flex flex-col items-center text-center">
+                    <Video className="h-12 w-12 mb-4 text-primary" />
+                    <h3 className="text-xl font-bold mb-2">Record Performance Video</h3>
+                    <p className="text-muted-foreground mb-6">Capture your performance using your mobile device for instant GAR analysis and feedback</p>
+                    <Button asChild className="w-full">
+                      <a href="/gar-analysis?tab=videos">Record New Video</a>
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Recent GAR Scores Card */}
+            <Card className="lg:col-span-3">
+              <CardHeader>
+                <CardTitle>Recent GAR Assessments</CardTitle>
+                <CardDescription>Your latest performance evaluations</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>Track your progress through multiple GAR assessments</p>
+                  <Button variant="outline" className="mt-4" asChild>
+                    <a href="/gar-analysis">View All Assessments</a>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -284,14 +317,24 @@ export default function AthleteDashboard() {
             {/* Video collection will go here */}
             <Card className="lg:col-span-3">
               <CardHeader>
-                <CardTitle>Your Videos</CardTitle>
-                <CardDescription>Performance videos and highlights</CardDescription>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div>
+                    <CardTitle>Your Videos</CardTitle>
+                    <CardDescription>Performance videos and highlights</CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="default" className="sm:w-auto w-full" asChild>
+                      <a href="/gar-analysis?tab=videos">Record Now</a>
+                    </Button>
+                    <Button variant="outline" className="sm:w-auto w-full">Upload Video</Button>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-20 text-muted-foreground">
+                <div className="text-center py-16 text-muted-foreground">
                   <Video className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                  <p>Your videos will be displayed here</p>
-                  <Button className="mt-4">Upload New Video</Button>
+                  <p>Your performance videos will be displayed here</p>
+                  <p className="text-sm">Use the "Record Now" button to capture and analyze your performance</p>
                 </div>
               </CardContent>
             </Card>
