@@ -34,6 +34,8 @@ import cmsPageComponentsRoutes from './routes/cms-page-components-routes';
 import cmsComponentRegistryRoutes from './routes/cms-component-registry-routes';
 import authResetRoutes from './routes/auth-reset-routes';
 import authPasswordRoutes from './routes/auth-password-routes';
+import onboardingRoutes from './routes/onboarding-routes';
+import healthRoutes from './routes/health-routes';
 
 // Helper function to determine event status
 function getEventStatus(event: any): 'upcoming' | 'filling_fast' | 'sold_out' | 'past' {
@@ -5427,6 +5429,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register authentication routes
   app.use('/api/auth', authResetRoutes);
   app.use('/api/auth', authPasswordRoutes);
+  
+  // Health check endpoint for monitoring and deployment
+  app.use('/api', healthRoutes);
+  
+  // Onboarding endpoints for profile completion flow
+  app.use('/api/onboarding', isAuthenticatedMiddleware, onboardingRoutes);
 
   // Legacy Content Blocks API Routes (will be deprecated)
   app.get("/api/content-blocks", async (req: Request, res: Response) => {

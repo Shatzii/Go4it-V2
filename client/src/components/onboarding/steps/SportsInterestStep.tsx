@@ -1,216 +1,387 @@
 import React, { useState } from "react";
 import { ProfileWizardState } from "../ProfileCompletionWizard";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
-import { Check } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
+import { 
+  Award,
+  PenTool, 
+  Sparkles,
+  Star,
+  Trophy,
+  X,
+  Plus
+} from "lucide-react";
+
+interface SportOption {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+  positions: string[];
+}
 
 interface SportsInterestStepProps {
   formState: ProfileWizardState;
   updateFormState: (data: Partial<ProfileWizardState>) => void;
 }
 
-// List of sports supported by the platform
-const SUPPORTED_SPORTS = [
-  { id: "basketball", name: "Basketball", positions: ["Guard", "Forward", "Center"] },
-  { id: "football", name: "Football", positions: ["Quarterback", "Running Back", "Wide Receiver", "Tight End", "Offensive Line", "Defensive Line", "Linebacker", "Cornerback", "Safety", "Special Teams"] },
-  { id: "soccer", name: "Soccer", positions: ["Goalkeeper", "Defender", "Midfielder", "Forward"] },
-  { id: "baseball", name: "Baseball", positions: ["Pitcher", "Catcher", "Infielder", "Outfielder"] },
-  { id: "volleyball", name: "Volleyball", positions: ["Setter", "Outside Hitter", "Middle Blocker", "Opposite Hitter", "Libero"] },
-  { id: "track", name: "Track & Field", positions: ["Sprinter", "Distance Runner", "Jumper", "Thrower", "Hurdler"] },
-  { id: "swimming", name: "Swimming", positions: ["Freestyle", "Backstroke", "Breaststroke", "Butterfly", "Individual Medley"] },
-  { id: "tennis", name: "Tennis", positions: ["Singles Player", "Doubles Player"] },
-  { id: "golf", name: "Golf", positions: [""] },
-  { id: "wrestling", name: "Wrestling", positions: [""] },
+// List of available sports
+const SPORTS: SportOption[] = [
+  { 
+    id: "basketball", 
+    name: "Basketball",
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-dribbble"><circle cx="12" cy="12" r="10"/><path d="M19.13 5.09C15.22 9.14 10 10.44 2.25 10.94"/><path d="M21.75 12.84c-6.62-1.41-12.14 1-16.38 6.32"/><path d="M8.56 2.75c4.37 6 6 9.42 8 17.72"/></svg>,
+    positions: ["Point Guard", "Shooting Guard", "Small Forward", "Power Forward", "Center"] 
+  },
+  { 
+    id: "football", 
+    name: "Football",
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shirt"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>,
+    positions: ["Quarterback", "Running Back", "Wide Receiver", "Tight End", "Offensive Line", "Defensive Line", "Linebacker", "Cornerback", "Safety", "Kicker", "Punter"]
+  },
+  { 
+    id: "soccer", 
+    name: "Soccer",
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-circle-dot"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="1"/></svg>,
+    positions: ["Goalkeeper", "Defender", "Midfielder", "Forward", "Striker", "Winger"]
+  },
+  { 
+    id: "baseball", 
+    name: "Baseball",
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-circle-ellipsis"><circle cx="12" cy="12" r="10"/><path d="M17 12h.01"/><path d="M12 12h.01"/><path d="M7 12h.01"/></svg>,
+    positions: ["Pitcher", "Catcher", "First Base", "Second Base", "Third Base", "Shortstop", "Left Field", "Center Field", "Right Field"]
+  },
+  { 
+    id: "volleyball", 
+    name: "Volleyball",
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-dot"><circle cx="12.1" cy="12.1" r="1"/></svg>,
+    positions: ["Setter", "Outside Hitter", "Middle Blocker", "Opposite", "Libero"]
+  },
+  { 
+    id: "track", 
+    name: "Track & Field",
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>,
+    positions: ["Sprinter", "Distance Runner", "Hurdler", "Jumper", "Thrower", "Pole Vaulter"]
+  },
+  { 
+    id: "swimming", 
+    name: "Swimming",
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-wave"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg>,
+    positions: ["Freestyle", "Backstroke", "Breaststroke", "Butterfly", "Individual Medley", "Distance"]
+  },
+  { 
+    id: "tennis", 
+    name: "Tennis",
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8c0 2-2 3-4 4.5-2 1.5-4 2.5-4 4.5 0 1.5 1 3 3 3 1.4 0 2.8-1 3-2"/><path d="M8 9.5c0 1.5 1 3 3 3 1.5 0 3-1 3-3 0-1.5-1-3-3-3s-3 1.25-3 3z"/></svg>,
+    positions: ["Singles Player", "Doubles Player"]
+  },
+  { 
+    id: "golf", 
+    name: "Golf",
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 14c3.31 0 6-1.34 6-3s-2.69-3-6-3-6 1.34-6 3 2.69 3 6 3"/><path d="M12 14v7"/><path d="M10 19h4"/><path d="M12 3v4.5"/><path d="m14 5-4 2.5"/></svg>,
+    positions: ["Golfer"]
+  },
+  { 
+    id: "wrestling", 
+    name: "Wrestling",
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4a2 2 0 1 1 4 0v9.5a5.5 5.5 0 0 1-5.5 5.5H13"/><path d="M12 4a2 2 0 1 0-4 0v9.5a5.5 5.5 0 0 0 5.5 5.5H11"/><path d="M6 10h12"/></svg>, 
+    positions: ["Lightweight", "Middleweight", "Heavyweight"]
+  }
 ];
 
-export default function SportsInterestStep({ formState, updateFormState }: SportsInterestStepProps) {
-  const [newSport, setNewSport] = useState<string>("");
+export default function SportsInterestStep({
+  formState,
+  updateFormState
+}: SportsInterestStepProps) {
+  const [showSelectPosition, setShowSelectPosition] = useState<string | null>(null);
   
-  // Get positions for the primary sport (first in the list)
-  const primarySport = formState.sportsInterest?.[0];
-  const primarySportInfo = SUPPORTED_SPORTS.find(sport => sport.id === primarySport);
-  const positions = primarySportInfo?.positions || [];
+  // Find sport by ID
+  const findSport = (sportId: string): SportOption | undefined => {
+    return SPORTS.find(sport => sport.id === sportId);
+  };
   
-  // Handle adding a new sport
-  const handleAddSport = () => {
-    if (!newSport) return;
-    
-    // Don't add duplicate sports
-    if (formState.sportsInterest?.includes(newSport)) {
-      setNewSport("");
+  // Add sport to selected sports
+  const addSport = (sportId: string) => {
+    // Check if sport is already added
+    if (formState.selectedSports.some(sport => sport.id === sportId)) {
       return;
     }
     
-    const updatedSports = [...(formState.sportsInterest || []), newSport];
-    updateFormState({ sportsInterest: updatedSports });
-    setNewSport("");
+    const sport = findSport(sportId);
+    if (!sport) return;
+    
+    const newSport = {
+      id: sport.id,
+      name: sport.name,
+      position: "",
+      isPrimary: formState.selectedSports.length === 0, // First sport is primary by default
+      skillLevel: "beginner"
+    };
+    
+    updateFormState({
+      selectedSports: [...formState.selectedSports, newSport]
+    });
+    
+    // Show position selector
+    setShowSelectPosition(sportId);
   };
   
-  // Handle removing a sport
-  const handleRemoveSport = (sportToRemove: string) => {
-    const updatedSports = formState.sportsInterest?.filter(
-      sport => sport !== sportToRemove
-    ) || [];
+  // Remove sport from selected sports
+  const removeSport = (sportId: string) => {
+    const updatedSports = formState.selectedSports.filter(
+      sport => sport.id !== sportId
+    );
     
-    // If the primary sport is removed, also reset the position
-    if (sportToRemove === primarySport) {
-      updateFormState({ 
-        sportsInterest: updatedSports,
-        position: "" 
-      });
-    } else {
-      updateFormState({ sportsInterest: updatedSports });
+    // If we removed the primary sport, set the first remaining sport as primary
+    let updatedSportsWithPrimary = [...updatedSports];
+    if (updatedSports.length > 0 && !updatedSports.some(sport => sport.isPrimary)) {
+      updatedSportsWithPrimary = updatedSports.map((sport, index) => 
+        index === 0 ? { ...sport, isPrimary: true } : sport
+      );
+    }
+    
+    updateFormState({
+      selectedSports: updatedSportsWithPrimary
+    });
+    
+    // If position selector is open for this sport, close it
+    if (showSelectPosition === sportId) {
+      setShowSelectPosition(null);
     }
   };
   
-  // Handle sport selection
-  const handleSportSelection = (sportId: string) => {
-    // If sport is already selected, remove it
-    if (formState.sportsInterest?.includes(sportId)) {
-      handleRemoveSport(sportId);
-      return;
-    }
+  // Update sport position
+  const updateSportPosition = (sportId: string, position: string) => {
+    const updatedSports = formState.selectedSports.map(sport => 
+      sport.id === sportId ? { ...sport, position } : sport
+    );
     
-    // Otherwise add it
-    const updatedSports = [...(formState.sportsInterest || []), sportId];
-    updateFormState({ sportsInterest: updatedSports });
-    
-    // If this is the first sport, reset position
-    if (formState.sportsInterest?.length === 0) {
-      updateFormState({ position: "" });
-    }
+    updateFormState({
+      selectedSports: updatedSports
+    });
   };
   
-  // Handle position selection
-  const handlePositionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateFormState({ position: e.target.value });
+  // Update sport skill level
+  const updateSportSkillLevel = (sportId: string, skillLevel: string) => {
+    const updatedSports = formState.selectedSports.map(sport => 
+      sport.id === sportId ? { ...sport, skillLevel } : sport
+    );
+    
+    updateFormState({
+      selectedSports: updatedSports
+    });
   };
-
+  
+  // Set sport as primary
+  const setSportAsPrimary = (sportId: string) => {
+    const updatedSports = formState.selectedSports.map(sport => ({
+      ...sport,
+      isPrimary: sport.id === sportId
+    }));
+    
+    updateFormState({
+      selectedSports: updatedSports
+    });
+  };
+  
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <h3 className="text-lg font-medium">What sports are you interested in?</h3>
+        <h3 className="text-lg font-medium">Sports Interests</h3>
         <p className="text-muted-foreground">
-          Select all the sports you play or want to explore
+          Select the sports you play and your position
         </p>
       </div>
       
-      {/* Sports Selection */}
+      {/* Selected Sports */}
       <div className="space-y-4">
-        <Label htmlFor="sports">Select your sports <span className="text-destructive">*</span></Label>
-        
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
-          {SUPPORTED_SPORTS.map(sport => (
-            <Card 
-              key={sport.id}
-              className={`p-3 cursor-pointer transition-all hover:shadow-md flex flex-col items-center justify-center text-center ${
-                formState.sportsInterest?.includes(sport.id) 
-                  ? "border-primary bg-primary/10" 
-                  : "border-border"
-              }`}
-              onClick={() => handleSportSelection(sport.id)}
-            >
-              <div className="mb-2">
-                {formState.sportsInterest?.includes(sport.id) ? (
-                  <div className="rounded-full bg-primary text-primary-foreground p-1 h-6 w-6 flex items-center justify-center">
-                    <Check className="h-4 w-4" />
+        {formState.selectedSports.length > 0 ? (
+          formState.selectedSports.map(sport => {
+            const sportDetails = findSport(sport.id);
+            return (
+              <Card key={sport.id} className="p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div className="flex items-center">
+                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                      {sportDetails?.icon}
+                    </div>
+                    <div>
+                      <div className="flex items-center">
+                        <h4 className="font-medium">{sport.name}</h4>
+                        {sport.isPrimary && (
+                          <Badge variant="secondary" className="ml-2 px-1.5 py-0">
+                            <Star className="h-3 w-3 mr-1" />
+                            Primary
+                          </Badge>
+                        )}
+                      </div>
+                      {sport.position && (
+                        <p className="text-sm text-muted-foreground">
+                          {sport.position} • {sport.skillLevel.charAt(0).toUpperCase() + sport.skillLevel.slice(1)} level
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    {!sport.isPrimary && (
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setSportAsPrimary(sport.id)}
+                      >
+                        <Star className="h-3.5 w-3.5 mr-1" />
+                        Make Primary
+                      </Button>
+                    )}
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      size="sm"
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => removeSport(sport.id)}
+                    >
+                      <X className="h-3.5 w-3.5 mr-1" />
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+                
+                {/* Position and Skill Level Selection */}
+                {showSelectPosition === sport.id || !sport.position ? (
+                  <div className="mt-4 grid sm:grid-cols-2 gap-4 pt-4 border-t">
+                    <div>
+                      <Label htmlFor={`position-${sport.id}`}>Position</Label>
+                      <Select 
+                        value={sport.position} 
+                        onValueChange={(value) => updateSportPosition(sport.id, value)}
+                      >
+                        <SelectTrigger id={`position-${sport.id}`}>
+                          <SelectValue placeholder="Select your position" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {sportDetails?.positions.map(position => (
+                            <SelectItem key={position} value={position}>
+                              {position}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor={`skill-${sport.id}`}>Skill Level</Label>
+                      <Select 
+                        value={sport.skillLevel} 
+                        onValueChange={(value) => updateSportSkillLevel(sport.id, value)}
+                      >
+                        <SelectTrigger id={`skill-${sport.id}`}>
+                          <SelectValue placeholder="Select your skill level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="beginner">Beginner</SelectItem>
+                          <SelectItem value="intermediate">Intermediate</SelectItem>
+                          <SelectItem value="advanced">Advanced</SelectItem>
+                          <SelectItem value="elite">Elite</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 ) : (
-                  <div className="rounded-full bg-muted p-1 h-6 w-6"></div>
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="sm"
+                    className="mt-2 pl-0"
+                    onClick={() => setShowSelectPosition(sport.id)}
+                  >
+                    <PenTool className="h-3.5 w-3.5 mr-1" />
+                    Edit position or skill level
+                  </Button>
                 )}
-              </div>
-              <span className="text-sm font-medium">{sport.name}</span>
-            </Card>
-          ))}
-        </div>
-        
-        {/* Selected Sports Summary */}
-        <div className="pt-4">
-          <Label>Your selected sports:</Label>
-          <div className="flex flex-wrap gap-2 mt-2">
-            {formState.sportsInterest?.length ? (
-              formState.sportsInterest.map(sportId => {
-                const sport = SUPPORTED_SPORTS.find(s => s.id === sportId);
-                return (
-                  <Badge key={sportId} variant="secondary" className="px-3 py-1">
-                    {sport?.name || sportId}
-                    <button 
-                      type="button" 
-                      className="ml-1 text-muted-foreground hover:text-foreground"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveSport(sportId);
-                      }}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                );
-              })
-            ) : (
-              <p className="text-sm text-muted-foreground">No sports selected yet</p>
-            )}
-          </div>
-        </div>
-        
-        {/* Position Selection - Only show if at least one sport is selected */}
-        {formState.sportsInterest?.length > 0 && (
-          <div className="pt-4">
-            <Label htmlFor="position">What's your primary position?</Label>
-            <select
-              id="position"
-              className="w-full p-2 mt-1 border rounded-md bg-background"
-              value={formState.position}
-              onChange={handlePositionChange}
-            >
-              <option value="">Select your primary position</option>
-              {positions.map(position => (
-                <option key={position} value={position}>
-                  {position}
-                </option>
-              ))}
-            </select>
-            <p className="text-xs text-muted-foreground mt-1">
-              Based on your primary sport: {primarySportInfo?.name || primarySport}
+              </Card>
+            );
+          })
+        ) : (
+          <div className="text-center py-8">
+            <Award className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+            <h4 className="font-medium mb-2">No sports selected yet</h4>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              Select sports from the list below to add them to your profile. Your primary sport 
+              will be featured more prominently on your profile.
             </p>
           </div>
         )}
+      </div>
+      
+      {/* Available Sports to Add */}
+      <div className="mt-8">
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="font-medium">Add Sports</h4>
+          {formState.selectedSports.length > 0 && (
+            <p className="text-sm text-muted-foreground">
+              {formState.selectedSports.length} of {SPORTS.length} selected
+            </p>
+          )}
+        </div>
         
-        {/* Custom Sport Entry */}
-        <div className="pt-4">
-          <Label htmlFor="custom-sport">Don't see your sport? Add it here:</Label>
-          <div className="flex mt-1">
-            <Input
-              id="custom-sport"
-              value={newSport}
-              onChange={(e) => setNewSport(e.target.value)}
-              placeholder="E.g., Lacrosse, Hockey, etc."
-              className="flex-1"
-            />
-            <button
-              type="button"
-              onClick={handleAddSport}
-              disabled={!newSport}
-              className="ml-2 px-4 py-2 bg-primary text-primary-foreground rounded-md disabled:opacity-50"
-            >
-              Add
-            </button>
-          </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {SPORTS.map(sport => {
+            const isSelected = formState.selectedSports.some(s => s.id === sport.id);
+            return (
+              <Button
+                key={sport.id}
+                variant={isSelected ? "secondary" : "outline"}
+                className={`h-20 justify-start flex-col items-center ${
+                  isSelected ? "opacity-60 cursor-default" : ""
+                }`}
+                onClick={() => !isSelected && addSport(sport.id)}
+                disabled={isSelected}
+              >
+                <div className="flex items-center justify-center w-6 h-6 mb-1">
+                  {sport.icon}
+                </div>
+                <span>{sport.name}</span>
+                {!isSelected && <Plus className="absolute bottom-2 right-2 h-3.5 w-3.5 opacity-60" />}
+              </Button>
+            );
+          })}
         </div>
       </div>
       
-      {/* Helpful Tips Card */}
-      <Card className="p-4 bg-muted/50 border-dashed">
-        <h4 className="font-medium mb-2">Tips:</h4>
-        <ul className="text-sm space-y-1 text-muted-foreground">
-          <li>• You can select multiple sports that you're interested in</li>
-          <li>• Your primary sport will be used to match you with suitable coaches</li>
-          <li>• Adding your position helps with personalized training plans</li>
-        </ul>
-      </Card>
+      {/* Important Note */}
+      <div className="flex items-start mt-6">
+        <Sparkles className="h-5 w-5 mr-2 text-amber-500 shrink-0 mt-0.5" />
+        <p className="text-xs text-muted-foreground">
+          Your primary sport will be featured prominently in your profile and used for 
+          sport-specific recommendations. You can change this selection at any time.
+        </p>
+      </div>
+      
+      {/* Looking for College Scholarship */}
+      <div className="flex items-center justify-between pt-6 border-t">
+        <div>
+          <Label htmlFor="scholarship-switch" className="text-base">Looking for College Scholarship</Label>
+          <p className="text-xs text-muted-foreground mt-1">
+            Enable if you're interested in pursuing athletic scholarships
+          </p>
+        </div>
+        <Switch
+          id="scholarship-switch"
+          checked={formState.lookingForScholarship}
+          onCheckedChange={(checked) => updateFormState({ lookingForScholarship: checked })}
+        />
+      </div>
     </div>
   );
 }

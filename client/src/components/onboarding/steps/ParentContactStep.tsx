@@ -1,161 +1,175 @@
 import React, { useState } from "react";
 import { ProfileWizardState } from "../ProfileCompletionWizard";
+import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Mail, CheckCircle2, XCircle } from "lucide-react";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Shield, Mail, AlertTriangle } from "lucide-react";
+import { z } from "zod";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 interface ParentContactStepProps {
   formState: ProfileWizardState;
   updateFormState: (data: Partial<ProfileWizardState>) => void;
 }
 
-export default function ParentContactStep({
-  formState,
-  updateFormState,
+export default function ParentContactStep({ 
+  formState, 
+  updateFormState 
 }: ParentContactStepProps) {
-  const [isSending, setIsSending] = useState(false);
-  const [sendSuccess, setSendSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const { toast } = useToast();
+  const [verificationSent, setVerificationSent] = useState(false);
+  const [sendingVerification, setSendingVerification] = useState(false);
+  const [emailError, setEmailError] = useState("");
   
-  // Validate email format
-  const isValidEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  // Email validation schema
+  const emailSchema = z.string().email("Please enter a valid email address");
+  
+  // Handle email validation and change
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const email = e.target.value;
+    updateFormState({ parentEmail: email });
+    
+    // Clear previous errors when typing
+    if (emailError) setEmailError("");
   };
   
-  // Handle email verification
-  const handleVerifyEmail = async () => {
-    // Reset states
-    setIsSending(true);
-    setSendSuccess(false);
-    setErrorMessage("");
-    
-    // Validate email
-    if (!formState.parentEmail || !isValidEmail(formState.parentEmail)) {
-      setErrorMessage("Please enter a valid email address.");
-      setIsSending(false);
-      return;
+  // Validate email with schema
+  const validateEmail = () => {
+    try {
+      emailSchema.parse(formState.parentEmail);
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setEmailError(error.errors[0].message);
+      }
+      return false;
     }
+  };
+  
+  // Send verification email to parent
+  const sendVerificationEmail = async () => {
+    // Validate email first
+    if (!validateEmail()) return;
+    
+    setSendingVerification(true);
     
     try {
-      // Send verification email (mock for now)
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Send verification email
+      await apiRequest("POST", "/api/onboarding/send-parent-verification", { 
+        parentEmail: formState.parentEmail 
+      });
       
-      // Success
-      setSendSuccess(true);
-      setErrorMessage("");
+      // Update state and show success message
+      setVerificationSent(true);
+      toast({
+        title: "Verification email sent",
+        description: `A verification email has been sent to ${formState.parentEmail}`,
+      });
     } catch (error) {
-      // Handle error
-      setErrorMessage("Failed to send verification email. Please try again.");
-      setSendSuccess(false);
+      toast({
+        title: "Error sending verification",
+        description: "There was an error sending the verification email. Please try again.",
+        variant: "destructive",
+      });
     } finally {
-      setIsSending(false);
+      setSendingVerification(false);
     }
   };
-
+  
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <h3 className="text-lg font-medium">Parent Contact Information</h3>
+        <h3 className="text-lg font-medium">Parent/Guardian Contact</h3>
         <p className="text-muted-foreground">
-          For athletes under 18, we require a parent or guardian's email
+          For athletes under 18, we require parent or guardian contact information
         </p>
       </div>
       
-      {/* Parent Information Section */}
-      <Card className="p-6 border-primary/50">
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="parent-email">
-              Parent/Guardian Email <span className="text-destructive">*</span>
-            </Label>
-            <div className="relative">
-              <Input
-                id="parent-email"
-                type="email"
-                placeholder="parent@example.com"
-                value={formState.parentEmail}
-                onChange={(e) => updateFormState({ parentEmail: e.target.value })}
-                className="pl-10"
-              />
-              <span className="absolute left-3 top-2.5 text-muted-foreground">
-                <Mail className="h-5 w-5" />
-              </span>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              We'll send your parent/guardian information about your account and require their consent
+      {/* Safety Notice */}
+      <Card className="p-4 mb-6 bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
+        <div className="flex items-start space-x-3">
+          <Shield className="h-5 w-5 mt-0.5 text-blue-500" />
+          <div>
+            <h4 className="font-medium text-sm">Safety First:</h4>
+            <p className="text-sm text-muted-foreground mt-1">
+              Go4It Sports is committed to athlete safety. Parent/guardian information helps 
+              us provide a secure environment and keeps them informed about your activities and progress.
+              This is especially important for athletes under 18 years old.
             </p>
           </div>
+        </div>
+      </Card>
+      
+      {/* Parent Email Input */}
+      <div className="space-y-3">
+        <Label htmlFor="parent-email" className="text-base">Parent/Guardian Email</Label>
+        <div className="space-y-2">
+          <Input
+            id="parent-email"
+            type="email"
+            placeholder="Enter parent or guardian email"
+            value={formState.parentEmail}
+            onChange={handleEmailChange}
+            className={emailError ? "border-destructive" : ""}
+          />
           
-          <div className="flex justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleVerifyEmail}
-              disabled={!formState.parentEmail || isSending}
-              className="mt-2"
-            >
-              {isSending ? "Sending..." : sendSuccess ? "Email Sent" : "Send Verification Email"}
-              {sendSuccess && <CheckCircle2 className="ml-2 h-4 w-4 text-green-500" />}
-            </Button>
+          {emailError && (
+            <p className="text-xs text-destructive">{emailError}</p>
+          )}
+          
+          <p className="text-xs text-muted-foreground">
+            We'll send a verification email to this address to confirm parental consent
+          </p>
+        </div>
+        
+        {/* Send Verification Email Button */}
+        <Button
+          type="button"
+          onClick={sendVerificationEmail}
+          disabled={!formState.parentEmail || sendingVerification || verificationSent}
+          className="mt-2"
+        >
+          {sendingVerification ? (
+            <>Sending...</>
+          ) : verificationSent ? (
+            <>Verification Sent <Mail className="ml-2 h-4 w-4" /></>
+          ) : (
+            <>Send Verification Email</>
+          )}
+        </Button>
+        
+        {verificationSent && (
+          <Badge variant="outline" className="bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400 border-green-200 dark:border-green-800 mt-2">
+            Verification email sent
+          </Badge>
+        )}
+      </div>
+      
+      {/* Optional: Verification Status */}
+      <Card className="p-4 mt-4 bg-muted/50 border-dashed">
+        <div className="flex items-start space-x-3">
+          <AlertTriangle className="h-5 w-5 mt-0.5 text-muted-foreground" />
+          <div>
+            <h4 className="font-medium text-sm">Important:</h4>
+            <ul className="text-sm space-y-1 text-muted-foreground mt-1">
+              <li>• Your parent/guardian needs to confirm this email before you can access all features</li>
+              <li>• The verification process usually takes just a few minutes</li>
+              <li>• You can still complete your profile while waiting for verification</li>
+              <li>• Be sure to use a valid email address your parent or guardian can access</li>
+            </ul>
           </div>
-          
-          {/* Error message */}
-          {errorMessage && (
-            <Alert variant="destructive" className="mt-2">
-              <XCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMessage}</AlertDescription>
-            </Alert>
-          )}
-          
-          {/* Success message */}
-          {sendSuccess && (
-            <Alert className="mt-2 bg-green-50 border-green-200 text-green-800">
-              <CheckCircle2 className="h-4 w-4 text-green-500" />
-              <AlertTitle>Verification Email Sent</AlertTitle>
-              <AlertDescription>
-                A verification email has been sent to your parent/guardian. They'll need to confirm 
-                to complete your registration.
-              </AlertDescription>
-            </Alert>
-          )}
         </div>
       </Card>
       
-      {/* Information on Parental Consent */}
-      <Card className="p-6 bg-muted/40">
-        <h4 className="font-medium mb-2">Why do we need parental consent?</h4>
-        <div className="space-y-4 text-sm text-muted-foreground">
-          <p>
-            For athletes under 18, we require parental consent for:
-          </p>
-          <ul className="list-disc pl-5 space-y-2">
-            <li>Account creation and participation on the platform</li>
-            <li>Communication with coaches and other athletes</li>
-            <li>Collection of athletic performance data</li>
-            <li>Sharing your profile with approved scouts or coaches</li>
-          </ul>
-          <p>
-            Your parent/guardian will receive important updates about your account and activities,
-            and can help manage privacy settings.
-          </p>
-        </div>
-      </Card>
-      
-      {/* Helpful Tips */}
-      <Card className="p-4 bg-muted/50 border-dashed">
-        <h4 className="font-medium mb-2">Tips:</h4>
-        <ul className="text-sm space-y-1 text-muted-foreground">
-          <li>• Make sure to use an email address your parent/guardian checks regularly</li>
-          <li>• Let them know to expect the verification email shortly</li>
-          <li>• You can proceed to the next step even if verification isn't complete yet</li>
-        </ul>
-      </Card>
+      {/* Skip Notice */}
+      <div className="text-center mt-6">
+        <p className="text-xs text-muted-foreground">
+          This step can be skipped if you're 18 or older, but is required for all minors.
+        </p>
+      </div>
     </div>
   );
 }
