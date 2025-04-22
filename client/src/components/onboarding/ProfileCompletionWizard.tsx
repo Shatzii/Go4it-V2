@@ -1,304 +1,232 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Steps, Step } from "@/components/ui/steps";
 import { useToast } from "@/hooks/use-toast";
-import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { apiRequest } from "@/lib/queryClient";
-import { ArrowLeft, ArrowRight, CheckCircle, Save } from "lucide-react";
-
-// Step components
+import { useNavigate } from "wouter";
+import { Steps, Step } from "@/components/ui/steps";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 import BasicInfoStep from "./steps/BasicInfoStep";
-import SportsInterestStep from "./steps/SportsInterestStep";
 import PhysicalAttributesStep from "./steps/PhysicalAttributesStep";
+import SportsInterestStep from "./steps/SportsInterestStep";
 import AccessibilityPreferencesStep from "./steps/AccessibilityPreferencesStep";
 import ParentContactStep from "./steps/ParentContactStep";
+import axios from "axios";
 
-// Define the type for a sport
-export interface SportInfo {
-  id: string;
-  name: string;
-  position: string;
-  isPrimary: boolean;
-  skillLevel: string;
-}
+// Define the steps of the onboarding process
+const STEPS = [
+  { id: 1, title: "Basic Info", description: "Your profile details" },
+  { id: 2, title: "Sports Interest", description: "What sports do you play?" },
+  { id: 3, title: "Physical Attributes", description: "Height, weight, etc." },
+  { id: 4, title: "Accessibility", description: "Customize your experience" },
+  { id: 5, title: "Parent Contact", description: "For athletes under 18" },
+];
 
-// Define the form state
-export interface ProfileWizardState {
-  // Step 1: Basic Info
-  name: string;
+interface FormData {
+  // Basic Info
+  firstName: string;
+  lastName: string;
   username: string;
   email: string;
   bio: string;
-  profileImage: string;
+  profileImage: string | null;
+  dateOfBirth: Date | null;
   
-  // Step 2: Sports Interest
-  selectedSports: SportInfo[];
-  lookingForScholarship: boolean;
+  // Sports Interest
+  sports: string[];
+  positions: string[];
+  level: string;
   
-  // Step 3: Physical Attributes
-  age: number | null;
-  height: string;
-  weight: string;
-  measurementSystem: "imperial" | "metric";
-  school: string;
-  graduationYear: number | null;
+  // Physical Attributes
+  height: number | null;
+  weight: number | null;
+  wingspan: number | null;
+  handedness: "left" | "right" | "ambidextrous" | null;
+  verticalJump: number | null;
   
-  // Step 4: Accessibility Preferences
+  // Accessibility Preferences
   adhd: boolean;
   focusMode: boolean;
-  uiAnimationLevel: string;
-  colorSchemePreference: string;
-  textSizePreference: string;
+  animationReduction: "none" | "reduced" | "minimal";
+  colorScheme: "default" | "high-contrast" | "dark" | "light";
+  textSize: "default" | "large" | "x-large";
+  contrastLevel: "default" | "high" | "very-high";
+  soundEffects: boolean;
   
-  // Step 5: Parent Contact
+  // Parent Contact
+  parentName: string;
   parentEmail: string;
   parentVerified: boolean;
 }
 
-// Define step titles
-const STEPS = [
-  { id: 1, title: "Basic Info", description: "Personal information" },
-  { id: 2, title: "Sports", description: "Athletic interests" },
-  { id: 3, title: "Physical", description: "Physical attributes" },
-  { id: 4, title: "Accessibility", description: "Preferences" },
-  { id: 5, title: "Parent Info", description: "Guardian contact" }
-];
-
 export default function ProfileCompletionWizard() {
   const { toast } = useToast();
   const { user } = useAuth();
-  const [, navigate] = useLocation();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [, navigate] = useNavigate();
+  
+  // Current step state
   const [currentStep, setCurrentStep] = useState(1);
-  const [formState, setFormState] = useState<ProfileWizardState>({
-    // Step 1: Basic Info
-    name: user?.name || "",
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Form data state
+  const [formData, setFormData] = useState<FormData>({
+    // Basic Info
+    firstName: user?.name?.split(" ")[0] || "",
+    lastName: user?.name?.split(" ")[1] || "",
     username: user?.username || "",
     email: user?.email || "",
-    bio: "",
-    profileImage: user?.profileImage || "",
+    bio: user?.bio || "",
+    profileImage: user?.profileImage || null,
+    dateOfBirth: null,
     
-    // Step 2: Sports Interest
-    selectedSports: [],
-    lookingForScholarship: false,
+    // Sports Interest
+    sports: [],
+    positions: [],
+    level: "beginner",
     
-    // Step 3: Physical Attributes
-    age: null,
-    height: "",
-    weight: "",
-    measurementSystem: "imperial",
-    school: "",
-    graduationYear: null,
+    // Physical Attributes
+    height: null,
+    weight: null,
+    wingspan: null,
+    handedness: null,
+    verticalJump: null,
     
-    // Step 4: Accessibility Preferences
+    // Accessibility Preferences
     adhd: false,
     focusMode: false,
-    uiAnimationLevel: "medium",
-    colorSchemePreference: "standard",
-    textSizePreference: "medium",
+    animationReduction: "none",
+    colorScheme: "default",
+    textSize: "default",
+    contrastLevel: "default",
+    soundEffects: true,
     
-    // Step 5: Parent Contact
+    // Parent Contact
+    parentName: "",
     parentEmail: "",
-    parentVerified: false
+    parentVerified: false,
   });
   
-  // Update form state
-  const updateFormState = (newState: Partial<ProfileWizardState>) => {
-    setFormState(prevState => ({ ...prevState, ...newState }));
+  // Function to update form data
+  const updateFormData = (stepData: Partial<FormData>) => {
+    setFormData(prev => ({ ...prev, ...stepData }));
   };
   
-  // Go to next step
-  const handleNext = async () => {
-    // Validate current step
-    const isValid = validateStep(currentStep);
-    if (!isValid) return;
-    
+  // Functions to handle step navigation
+  const goToNextStep = async () => {
     try {
-      // Save current step data
-      await apiRequest("POST", "/api/onboarding/save-step", {
-        step: currentStep,
-        data: getStepData(currentStep)
-      });
-      
-      // If this is the last step, submit the form
-      if (currentStep === STEPS.length) {
-        await handleCompleteOnboarding();
-        return;
+      await saveCurrentStep();
+      if (currentStep < STEPS.length) {
+        setCurrentStep(currentStep + 1);
+        window.scrollTo(0, 0);
+      } else {
+        await completeOnboarding();
       }
-      
-      // Otherwise, go to next step
-      setCurrentStep(currentStep + 1);
-      
-      // Update onboarding step
-      await apiRequest("POST", "/api/onboarding/update-step", {
-        step: currentStep + 1
-      });
     } catch (error) {
       console.error("Error saving step data:", error);
       toast({
         title: "Error",
-        description: "There was an error saving your data. Please try again.",
+        description: "There was a problem saving your information. Please try again.",
         variant: "destructive",
       });
     }
   };
   
-  // Go to previous step
-  const handlePrevious = () => {
+  const goToPreviousStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
+      window.scrollTo(0, 0);
     }
   };
   
-  // Jump to a specific step
-  const jumpToStep = (step: number) => {
-    setCurrentStep(step);
+  const goToStep = (step: number) => {
+    if (step <= currentStep) {
+      setCurrentStep(step);
+      window.scrollTo(0, 0);
+    }
   };
   
-  // Get data for current step
-  const getStepData = (step: number) => {
-    switch (step) {
+  // Function to save current step data
+  const saveCurrentStep = async () => {
+    // Extract relevant data based on current step
+    let stepData: any = {};
+    let endpoint = "";
+    
+    switch (currentStep) {
       case 1: // Basic Info
-        return {
-          name: formState.name,
-          username: formState.username,
-          email: formState.email,
-          bio: formState.bio,
-          profileImage: formState.profileImage
+        stepData = {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          username: formData.username,
+          email: formData.email,
+          bio: formData.bio,
+          profileImage: formData.profileImage,
+          dateOfBirth: formData.dateOfBirth,
         };
+        endpoint = "/api/onboarding/update-profile";
+        break;
+      
       case 2: // Sports Interest
-        return {
-          selectedSports: formState.selectedSports,
-          lookingForScholarship: formState.lookingForScholarship
+        stepData = {
+          sports: formData.sports,
+          positions: formData.positions,
+          level: formData.level,
         };
+        endpoint = "/api/onboarding/sports-interest";
+        break;
+      
       case 3: // Physical Attributes
-        return {
-          age: formState.age,
-          height: formState.height,
-          weight: formState.weight,
-          measurementSystem: formState.measurementSystem,
-          school: formState.school,
-          graduationYear: formState.graduationYear
+        stepData = {
+          height: formData.height,
+          weight: formData.weight,
+          wingspan: formData.wingspan,
+          handedness: formData.handedness,
+          verticalJump: formData.verticalJump,
         };
+        endpoint = "/api/onboarding/physical-attributes";
+        break;
+      
       case 4: // Accessibility Preferences
-        return {
-          adhd: formState.adhd,
-          focusMode: formState.focusMode,
-          uiAnimationLevel: formState.uiAnimationLevel,
-          colorSchemePreference: formState.colorSchemePreference,
-          textSizePreference: formState.textSizePreference
+        stepData = {
+          adhd: formData.adhd,
+          focusMode: formData.focusMode,
+          animationReduction: formData.animationReduction,
+          colorScheme: formData.colorScheme,
+          textSize: formData.textSize,
+          contrastLevel: formData.contrastLevel,
+          soundEffects: formData.soundEffects,
         };
+        endpoint = "/api/onboarding/accessibility-preferences";
+        break;
+      
       case 5: // Parent Contact
-        return {
-          parentEmail: formState.parentEmail,
-          parentVerified: formState.parentVerified
+        stepData = {
+          parentName: formData.parentName,
+          parentEmail: formData.parentEmail,
         };
+        endpoint = "/api/onboarding/parent-verification";
+        break;
+      
       default:
-        return {};
+        break;
     }
+    
+    // Save step data to API
+    await axios.post(endpoint, stepData);
+    
+    // Mark step as completed
+    await axios.post(`/api/onboarding/complete-step/${currentStep}`);
   };
   
-  // Validate current step
-  const validateStep = (step: number): boolean => {
-    switch (step) {
-      case 1: // Basic Info
-        if (!formState.name) {
-          toast({
-            title: "Missing Information",
-            description: "Please enter your name",
-            variant: "destructive",
-          });
-          return false;
-        }
-        if (!formState.username) {
-          toast({
-            title: "Missing Information",
-            description: "Please enter a username",
-            variant: "destructive",
-          });
-          return false;
-        }
-        return true;
-        
-      case 2: // Sports Interest
-        if (formState.selectedSports.length === 0) {
-          toast({
-            title: "Missing Information",
-            description: "Please select at least one sport",
-            variant: "destructive",
-          });
-          return false;
-        }
-        
-        // Check if all selected sports have positions
-        const sportsWithoutPosition = formState.selectedSports.filter(
-          sport => !sport.position
-        );
-        if (sportsWithoutPosition.length > 0) {
-          toast({
-            title: "Missing Information",
-            description: `Please select a position for ${sportsWithoutPosition[0].name}`,
-            variant: "destructive",
-          });
-          return false;
-        }
-        
-        return true;
-        
-      case 3: // Physical Attributes
-        // Age is optional but if provided should be between 12 and 18
-        if (formState.age && (formState.age < 12 || formState.age > 18)) {
-          toast({
-            title: "Invalid Information",
-            description: "Age should be between 12 and 18",
-            variant: "destructive",
-          });
-          return false;
-        }
-        return true;
-        
-      case 4: // Accessibility Preferences
-        // All fields have defaults, so no validation needed
-        return true;
-        
-      case 5: // Parent Contact
-        // Parent email is optional for 18+ but should be valid if provided
-        if (formState.parentEmail && !formState.parentEmail.includes("@")) {
-          toast({
-            title: "Invalid Information",
-            description: "Please enter a valid parent email address",
-            variant: "destructive",
-          });
-          return false;
-        }
-        return true;
-        
-      default:
-        return true;
-    }
-  };
-  
-  // Complete onboarding
-  const handleCompleteOnboarding = async () => {
+  // Function to complete the onboarding process
+  const completeOnboarding = async () => {
+    setIsSubmitting(true);
+    
     try {
-      setIsSubmitting(true);
+      await axios.post("/api/onboarding/complete");
       
-      // Save final step data
-      await apiRequest("POST", "/api/onboarding/save-step", {
-        step: currentStep,
-        data: getStepData(currentStep)
-      });
-      
-      // Mark onboarding as complete
-      await apiRequest("POST", "/api/onboarding/complete", {});
-      
-      // Show success toast
       toast({
-        title: "Profile Completed",
-        description: "Your profile has been set up successfully!",
+        title: "Onboarding Complete!",
+        description: "Your profile has been created successfully.",
       });
       
       // Redirect to dashboard
@@ -307,7 +235,7 @@ export default function ProfileCompletionWizard() {
       console.error("Error completing onboarding:", error);
       toast({
         title: "Error",
-        description: "There was an error completing your profile. Please try again.",
+        description: "There was a problem completing your profile. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -315,142 +243,129 @@ export default function ProfileCompletionWizard() {
     }
   };
   
-  // Skip current step
-  const handleSkipStep = async () => {
+  // Function to skip the current step
+  const skipStep = async () => {
     try {
-      // Mark step as skipped
-      await apiRequest("POST", "/api/onboarding/skip-step", {
-        step: currentStep
-      });
+      await axios.post(`/api/onboarding/skip-step/${currentStep}`);
       
-      // If this is the last step, submit the form
-      if (currentStep === STEPS.length) {
-        await handleCompleteOnboarding();
-        return;
+      if (currentStep < STEPS.length) {
+        setCurrentStep(currentStep + 1);
+        window.scrollTo(0, 0);
+      } else {
+        await completeOnboarding();
       }
-      
-      // Otherwise, go to next step
-      setCurrentStep(currentStep + 1);
     } catch (error) {
       console.error("Error skipping step:", error);
       toast({
         title: "Error",
-        description: "There was an error skipping this step. Please try again.",
+        description: "There was a problem skipping this step. Please try again.",
         variant: "destructive",
       });
     }
   };
   
-  // Render current step
-  const renderStep = () => {
-    switch (currentStep) {
-      case 1:
-        return (
-          <BasicInfoStep 
-            formState={formState} 
-            updateFormState={updateFormState} 
-          />
-        );
-      case 2:
-        return (
-          <SportsInterestStep 
-            formState={formState}
-            updateFormState={updateFormState}
-          />
-        );
-      case 3:
-        return (
-          <PhysicalAttributesStep 
-            formState={formState}
-            updateFormState={updateFormState}
-          />
-        );
-      case 4:
-        return (
-          <AccessibilityPreferencesStep 
-            formState={formState}
-            updateFormState={updateFormState}
-          />
-        );
-      case 5:
-        return (
-          <ParentContactStep 
-            formState={formState}
-            updateFormState={updateFormState}
-          />
-        );
-      default:
-        return null;
-    }
+  // Determine if step can be skipped
+  const canSkip = (step: number) => {
+    return step === 3 || step === 4 || step === 5;
   };
   
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="text-xl font-bold">Complete Your Profile</CardTitle>
-      </CardHeader>
+    <div className="container max-w-4xl py-6 space-y-8">
+      <h1 className="text-3xl font-bold text-center">Complete Your Profile</h1>
       
-      <Steps currentStep={currentStep} onStepClick={jumpToStep}>
-        {STEPS.map(step => (
-          <Step 
-            key={step.id}
-            id={step.id} 
-            title={step.title}
-            description={step.description}
-          />
-        ))}
-      </Steps>
+      <div className="mb-8">
+        <Steps currentStep={currentStep} onStepClick={goToStep}>
+          {STEPS.map(step => (
+            <Step 
+              key={step.id} 
+              id={step.id} 
+              title={step.title} 
+              description={step.description}
+            />
+          ))}
+        </Steps>
+      </div>
       
-      <Separator className="my-0" />
-      
-      <CardContent className="pt-6 pb-0">
-        {renderStep()}
-      </CardContent>
-      
-      <CardFooter className="flex justify-between mt-8 pb-6">
-        <div>
-          {currentStep > 1 && (
-            <Button 
-              variant="outline" 
-              onClick={handlePrevious}
-              disabled={isSubmitting}
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-          )}
-        </div>
-        
-        <div className="flex gap-2">
-          {/* Skip button for optional steps */}
-          {(currentStep === 3 || currentStep === 4 || currentStep === 5) && (
-            <Button 
-              variant="ghost" 
-              onClick={handleSkipStep}
-              disabled={isSubmitting}
-            >
-              Skip
-            </Button>
+      <Card>
+        <CardContent className="pt-6">
+          {currentStep === 1 && (
+            <BasicInfoStep 
+              data={formData} 
+              updateData={updateFormData} 
+            />
           )}
           
-          <Button 
-            onClick={handleNext}
-            disabled={isSubmitting}
-          >
-            {currentStep === STEPS.length ? (
-              <>
-                <CheckCircle className="h-4 w-4 mr-2" />
-                Complete
-              </>
+          {currentStep === 2 && (
+            <SportsInterestStep 
+              data={formData} 
+              updateData={updateFormData} 
+            />
+          )}
+          
+          {currentStep === 3 && (
+            <PhysicalAttributesStep 
+              data={formData} 
+              updateData={updateFormData} 
+            />
+          )}
+          
+          {currentStep === 4 && (
+            <AccessibilityPreferencesStep 
+              data={formData} 
+              updateData={updateFormData} 
+            />
+          )}
+          
+          {currentStep === 5 && (
+            <ParentContactStep 
+              data={formData} 
+              updateData={updateFormData} 
+            />
+          )}
+          
+          <div className="flex justify-between mt-8">
+            {currentStep > 1 ? (
+              <Button
+                variant="outline"
+                onClick={goToPreviousStep}
+                disabled={isSubmitting}
+              >
+                Back
+              </Button>
             ) : (
-              <>
-                Next
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </>
+              <div></div>
             )}
-          </Button>
-        </div>
-      </CardFooter>
-    </Card>
+            
+            <div className="space-x-2">
+              {canSkip(currentStep) && (
+                <Button
+                  variant="ghost"
+                  onClick={skipStep}
+                  disabled={isSubmitting}
+                >
+                  Skip
+                </Button>
+              )}
+              
+              <Button
+                onClick={goToNextStep}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : currentStep === STEPS.length ? (
+                  "Complete"
+                ) : (
+                  "Next"
+                )}
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
