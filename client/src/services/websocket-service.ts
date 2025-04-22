@@ -170,7 +170,7 @@ class WebSocketService {
     }
 
     this.socket.send(JSON.stringify({
-      type: 'chat_message',
+      type: 'message',
       content: message,
       recipientId,
       senderId: this.userId,
