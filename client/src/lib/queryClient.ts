@@ -24,6 +24,8 @@ const getBaseURL = () => {
 
 const baseURL = getBaseURL();
 
+import { handleApiError } from "@/utils/error-handler";
+
 export const apiRequest = async (
   method: string,
   url: string,
@@ -73,10 +75,21 @@ export const apiRequest = async (
       responseData: error.response?.data
     });
     
+    // Use our error handler to display appropriate messages and redirect when needed
+    // For Query Client errors, we don't want to immediately redirect on most errors
+    // so we set redirect to false and let the component handle it
+    handleApiError(error, { 
+      showToast: true, 
+      redirect: false, // Don't automatically redirect for most errors in query client
+      message: error?.response?.data?.message || error?.message
+    });
+    
+    // Now handle the error for the caller
     if (!error.response) {
       throw new Error('Network error - Please check your connection');
     } else if (error.response?.status === 401) {
-      // Handle 401 specifically if needed.  Could redirect or show a login prompt.
+      // For 401 errors, we do want to redirect to the unauthorized page
+      window.location.href = '/unauthorized';
       throw new Error('Unauthorized. Please login.')
     }
     else if (error.response?.data?.message) {

@@ -13,6 +13,9 @@ import { useEffect } from "react";
 
 import Layout from "@/components/layout/sidebar";
 import NotFound from "@/pages/not-found";
+import ServerError from "@/pages/server-error";
+import Forbidden from "@/pages/forbidden";
+import Unauthorized from "@/pages/unauthorized";
 import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import AthleteProfile from "@/pages/athlete-profile";
@@ -406,6 +409,11 @@ function Router() {
         <Route path="/skill-development-tracker">
           {() => <ProtectedRoute component={SkillDevelopmentTracker} />}
         </Route>
+
+        {/* Error Pages */}
+        <Route path="/server-error" component={ServerError} />
+        <Route path="/forbidden" component={Forbidden} />
+        <Route path="/unauthorized" component={Unauthorized} />
 
         {/* Fallback to 404 */}
         <Route component={NotFound} />

@@ -108,17 +108,21 @@ export function ErrorPage({
             )}
             
             {showHome && (
-              <Button as={Link} href="/">
-                <Home className="mr-2 h-4 w-4" />
-                Go Home
-              </Button>
+              <Link href="/">
+                <Button>
+                  <Home className="mr-2 h-4 w-4" />
+                  Go Home
+                </Button>
+              </Link>
             )}
             
             {actionButton && (
-              <Button as={Link} href={actionButton.href}>
-                {actionButton.icon && <span className="mr-2">{actionButton.icon}</span>}
-                {actionButton.label}
-              </Button>
+              <Link href={actionButton.href}>
+                <Button>
+                  {actionButton.icon && <span className="mr-2">{actionButton.icon}</span>}
+                  {actionButton.label}
+                </Button>
+              </Link>
             )}
           </div>
         </CardContent>
