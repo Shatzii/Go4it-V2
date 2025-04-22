@@ -1,402 +1,347 @@
-import React, { useState, useEffect } from "react";
-import { useAuth } from "@/hooks/use-auth";
-import { useLocation } from "wouter";
-import { apiRequest } from "@/lib/api";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { useToast } from "@/hooks/use-toast";
-import { Loader2, ChevronRight, ChevronLeft, CheckCircle, Save } from "lucide-react";
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import React, { useState } from "react";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
+import { Steps, Step } from "@/components/ui/steps";
+import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
+import { useAuth } from "@/hooks/use-auth";
+import { apiRequest } from "@/lib/queryClient";
+import { ArrowLeft, ArrowRight, CheckCircle, Save } from "lucide-react";
 
-// Import step components
-import BasicInfoStep from "@/components/onboarding/steps/BasicInfoStep";
-import SportsInterestStep from "@/components/onboarding/steps/SportsInterestStep";
-import PhysicalAttributesStep from "@/components/onboarding/steps/PhysicalAttributesStep";
-import AccessibilityPreferencesStep from "@/components/onboarding/steps/AccessibilityPreferencesStep";
-import ParentContactStep from "@/components/onboarding/steps/ParentContactStep";
+// Step components
+import BasicInfoStep from "./steps/BasicInfoStep";
+import SportsInterestStep from "./steps/SportsInterestStep";
+import PhysicalAttributesStep from "./steps/PhysicalAttributesStep";
+import AccessibilityPreferencesStep from "./steps/AccessibilityPreferencesStep";
+import ParentContactStep from "./steps/ParentContactStep";
 
-// Types for onboarding progress
-interface OnboardingProgress {
-  isCompleted: boolean;
-  currentStep: number;
-  totalSteps: number;
-  completedSections: string[];
-  skippedSections: string[];
+// Define the type for a sport
+export interface SportInfo {
+  id: string;
+  name: string;
+  position: string;
+  isPrimary: boolean;
+  skillLevel: string;
 }
 
-// Types for profile wizard context/state
+// Define the form state
 export interface ProfileWizardState {
-  // Basic Info
+  // Step 1: Basic Info
   name: string;
   username: string;
   email: string;
   bio: string;
-  profileImage?: string | null;
+  profileImage: string;
   
-  // Sports Interest
-  sportsInterest: string[];
-  position: string;
+  // Step 2: Sports Interest
+  selectedSports: SportInfo[];
+  lookingForScholarship: boolean;
   
-  // Physical Attributes
+  // Step 3: Physical Attributes
   age: number | null;
   height: string;
   weight: string;
+  measurementSystem: "imperial" | "metric";
   school: string;
   graduationYear: number | null;
   
-  // Accessibility Preferences
+  // Step 4: Accessibility Preferences
   adhd: boolean;
   focusMode: boolean;
   uiAnimationLevel: string;
   colorSchemePreference: string;
   textSizePreference: string;
   
-  // Parent Contact
+  // Step 5: Parent Contact
   parentEmail: string;
-  
-  // Metadata
-  measurementSystem: string;
+  parentVerified: boolean;
 }
 
-/**
- * Profile Completion Wizard Component
- * 
- * A multi-step form wizard that guides users through completing their profile
- * after registration. The wizard is designed to be accessible and accommodate
- * neurodivergent users with ADHD by breaking down the process into manageable steps.
- */
+// Define step titles
+const STEPS = [
+  { id: 1, title: "Basic Info", description: "Personal information" },
+  { id: 2, title: "Sports", description: "Athletic interests" },
+  { id: 3, title: "Physical", description: "Physical attributes" },
+  { id: 4, title: "Accessibility", description: "Preferences" },
+  { id: 5, title: "Parent Info", description: "Guardian contact" }
+];
+
 export default function ProfileCompletionWizard() {
-  const { user, updateUser } = useAuth();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [, navigate] = useLocation();
-  
-  // State for current step and form data
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [savingStep, setSavingStep] = useState(false);
-  const [completingWizard, setCompletingWizard] = useState(false);
-  
-  // Initialize state with user data when available
   const [formState, setFormState] = useState<ProfileWizardState>({
+    // Step 1: Basic Info
     name: user?.name || "",
     username: user?.username || "",
     email: user?.email || "",
-    bio: user?.bio || "",
-    profileImage: user?.profileImage || null,
+    bio: "",
+    profileImage: user?.profileImage || "",
     
-    sportsInterest: [],
-    position: "",
+    // Step 2: Sports Interest
+    selectedSports: [],
+    lookingForScholarship: false,
     
+    // Step 3: Physical Attributes
     age: null,
     height: "",
     weight: "",
+    measurementSystem: "imperial",
     school: "",
     graduationYear: null,
     
+    // Step 4: Accessibility Preferences
     adhd: false,
     focusMode: false,
     uiAnimationLevel: "medium",
     colorSchemePreference: "standard",
     textSizePreference: "medium",
     
+    // Step 5: Parent Contact
     parentEmail: "",
+    parentVerified: false
+  });
+  
+  // Update form state
+  const updateFormState = (newState: Partial<ProfileWizardState>) => {
+    setFormState(prevState => ({ ...prevState, ...newState }));
+  };
+  
+  // Go to next step
+  const handleNext = async () => {
+    // Validate current step
+    const isValid = validateStep(currentStep);
+    if (!isValid) return;
     
-    measurementSystem: "imperial",
-  });
-  
-  // Fetch onboarding progress data
-  const { data: onboardingData, isLoading: onboardingLoading } = useQuery({
-    queryKey: ["/api/onboarding/progress"],
-    // Only fetch if user is logged in
-    enabled: !!user,
-    onSuccess: (data: OnboardingProgress) => {
-      // Set current step from server data
-      if (data && data.currentStep) {
-        setCurrentStep(data.currentStep);
-      }
-      setLoading(false);
-    },
-    onError: () => {
-      setLoading(false);
-    }
-  });
-  
-  // Fetch existing athlete profile data if available
-  const { data: profileData, isLoading: profileLoading } = useQuery({
-    queryKey: ["/api/athlete/profile"],
-    // Only fetch if user is logged in
-    enabled: !!user,
-    onSuccess: (data) => {
-      if (data) {
-        // Update form state with existing profile data
-        setFormState(prevState => ({
-          ...prevState,
-          // Only update fields that exist in the profile data
-          ...(data.sportsInterest && { sportsInterest: data.sportsInterest }),
-          ...(data.position && { position: data.position }),
-          ...(data.age && { age: data.age }),
-          ...(data.height && { height: data.height }),
-          ...(data.weight && { weight: data.weight }),
-          ...(data.school && { school: data.school }),
-          ...(data.graduationYear && { graduationYear: data.graduationYear }),
-          ...(data.parentEmail && { parentEmail: data.parentEmail }),
-        }));
-      }
-    }
-  });
-  
-  // Fetch accessibility preferences if available
-  const { data: preferencesData, isLoading: preferencesLoading } = useQuery({
-    queryKey: ["/api/user/preferences"],
-    // Only fetch if user is logged in
-    enabled: !!user,
-    onSuccess: (data) => {
-      if (data) {
-        // Update form state with existing preferences
-        setFormState(prevState => ({
-          ...prevState,
-          ...(data.adhd !== undefined && { adhd: data.adhd }),
-          ...(data.focusMode !== undefined && { focusMode: data.focusMode }),
-          ...(data.uiAnimationLevel && { uiAnimationLevel: data.uiAnimationLevel }),
-          ...(data.colorSchemePreference && { colorSchemePreference: data.colorSchemePreference }),
-          ...(data.textSizePreference && { textSizePreference: data.textSizePreference }),
-          ...(data.measurementSystem && { measurementSystem: data.measurementSystem }),
-        }));
-      }
-    }
-  });
-  
-  // Update form state when user data changes
-  useEffect(() => {
-    if (user) {
-      setFormState(prevState => ({
-        ...prevState,
-        name: user.name || prevState.name,
-        username: user.username || prevState.username,
-        email: user.email || prevState.email,
-        bio: user.bio || prevState.bio,
-        profileImage: user.profileImage || prevState.profileImage,
-      }));
-    }
-  }, [user]);
-  
-  // Save step progress mutation
-  const saveStepMutation = useMutation({
-    mutationFn: async ({ step, data }: { step: number, data: Partial<ProfileWizardState> }) => {
-      return await apiRequest("/api/onboarding/save-step", {
-        method: "POST",
-        data: { step, data }
-      });
-    },
-    onSuccess: () => {
-      // Show success toast for save
-      toast({
-        title: "Progress saved",
-        description: "Your information has been saved successfully.",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error saving progress",
-        description: error.message || "There was an error saving your progress. Please try again.",
-        variant: "destructive",
-      });
-    },
-    onSettled: () => {
-      setSavingStep(false);
-    }
-  });
-  
-  // Complete onboarding mutation
-  const completeOnboardingMutation = useMutation({
-    mutationFn: async (data: ProfileWizardState) => {
-      return await apiRequest("/api/onboarding/complete", {
-        method: "POST",
-        data
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: "Profile completed!",
-        description: "Your profile has been set up successfully.",
+    try {
+      // Save current step data
+      await apiRequest("POST", "/api/onboarding/save-step", {
+        step: currentStep,
+        data: getStepData(currentStep)
       });
       
-      // Navigate to dashboard or profile page
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 1500);
-    },
-    onError: (error: Error) => {
+      // If this is the last step, submit the form
+      if (currentStep === STEPS.length) {
+        await handleCompleteOnboarding();
+        return;
+      }
+      
+      // Otherwise, go to next step
+      setCurrentStep(currentStep + 1);
+      
+      // Update onboarding step
+      await apiRequest("POST", "/api/onboarding/update-step", {
+        step: currentStep + 1
+      });
+    } catch (error) {
+      console.error("Error saving step data:", error);
       toast({
-        title: "Error completing profile",
-        description: error.message || "There was an error completing your profile. Please try again.",
+        title: "Error",
+        description: "There was an error saving your data. Please try again.",
         variant: "destructive",
       });
-      setCompletingWizard(false);
     }
-  });
+  };
   
-  // Save current step progress
-  const saveStepProgress = async () => {
-    setSavingStep(true);
-    
-    let stepData: Partial<ProfileWizardState> = {};
-    
-    // Determine which data to save based on current step
-    switch (currentStep) {
+  // Go to previous step
+  const handlePrevious = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+  
+  // Jump to a specific step
+  const jumpToStep = (step: number) => {
+    setCurrentStep(step);
+  };
+  
+  // Get data for current step
+  const getStepData = (step: number) => {
+    switch (step) {
       case 1: // Basic Info
-        stepData = {
+        return {
           name: formState.name,
           username: formState.username,
           email: formState.email,
           bio: formState.bio,
-          profileImage: formState.profileImage,
+          profileImage: formState.profileImage
         };
-        break;
       case 2: // Sports Interest
-        stepData = {
-          sportsInterest: formState.sportsInterest,
-          position: formState.position,
+        return {
+          selectedSports: formState.selectedSports,
+          lookingForScholarship: formState.lookingForScholarship
         };
-        break;
       case 3: // Physical Attributes
-        stepData = {
+        return {
           age: formState.age,
           height: formState.height,
           weight: formState.weight,
-          school: formState.school,
-          graduationYear: formState.graduationYear,
           measurementSystem: formState.measurementSystem,
+          school: formState.school,
+          graduationYear: formState.graduationYear
         };
-        break;
       case 4: // Accessibility Preferences
-        stepData = {
+        return {
           adhd: formState.adhd,
           focusMode: formState.focusMode,
           uiAnimationLevel: formState.uiAnimationLevel,
           colorSchemePreference: formState.colorSchemePreference,
-          textSizePreference: formState.textSizePreference,
+          textSizePreference: formState.textSizePreference
         };
-        break;
       case 5: // Parent Contact
-        stepData = {
+        return {
           parentEmail: formState.parentEmail,
+          parentVerified: formState.parentVerified
         };
-        break;
-    }
-    
-    await saveStepMutation.mutateAsync({ step: currentStep, data: stepData });
-  };
-  
-  // Handle next step
-  const handleNext = async () => {
-    // Save current step first
-    await saveStepProgress();
-    
-    // Move to next step if not on last step
-    if (currentStep < 5) {
-      setCurrentStep(prevStep => prevStep + 1);
-      
-      // Update onboarding progress on server
-      try {
-        await apiRequest("/api/onboarding/update-step", {
-          method: "POST",
-          data: { step: currentStep + 1 }
-        });
-      } catch (error) {
-        console.error("Error updating step:", error);
-      }
+      default:
+        return {};
     }
   };
   
-  // Handle previous step
-  const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep(prevStep => prevStep - 1);
+  // Validate current step
+  const validateStep = (step: number): boolean => {
+    switch (step) {
+      case 1: // Basic Info
+        if (!formState.name) {
+          toast({
+            title: "Missing Information",
+            description: "Please enter your name",
+            variant: "destructive",
+          });
+          return false;
+        }
+        if (!formState.username) {
+          toast({
+            title: "Missing Information",
+            description: "Please enter a username",
+            variant: "destructive",
+          });
+          return false;
+        }
+        return true;
+        
+      case 2: // Sports Interest
+        if (formState.selectedSports.length === 0) {
+          toast({
+            title: "Missing Information",
+            description: "Please select at least one sport",
+            variant: "destructive",
+          });
+          return false;
+        }
+        
+        // Check if all selected sports have positions
+        const sportsWithoutPosition = formState.selectedSports.filter(
+          sport => !sport.position
+        );
+        if (sportsWithoutPosition.length > 0) {
+          toast({
+            title: "Missing Information",
+            description: `Please select a position for ${sportsWithoutPosition[0].name}`,
+            variant: "destructive",
+          });
+          return false;
+        }
+        
+        return true;
+        
+      case 3: // Physical Attributes
+        // Age is optional but if provided should be between 12 and 18
+        if (formState.age && (formState.age < 12 || formState.age > 18)) {
+          toast({
+            title: "Invalid Information",
+            description: "Age should be between 12 and 18",
+            variant: "destructive",
+          });
+          return false;
+        }
+        return true;
+        
+      case 4: // Accessibility Preferences
+        // All fields have defaults, so no validation needed
+        return true;
+        
+      case 5: // Parent Contact
+        // Parent email is optional for 18+ but should be valid if provided
+        if (formState.parentEmail && !formState.parentEmail.includes("@")) {
+          toast({
+            title: "Invalid Information",
+            description: "Please enter a valid parent email address",
+            variant: "destructive",
+          });
+          return false;
+        }
+        return true;
+        
+      default:
+        return true;
     }
   };
   
-  // Handle form completion
-  const handleComplete = async () => {
-    setCompletingWizard(true);
-    
-    // First save the current step
-    await saveStepProgress();
-    
-    // Then complete the onboarding process
-    await completeOnboardingMutation.mutateAsync(formState);
-  };
-  
-  // Handle skip step
-  const handleSkip = async () => {
+  // Complete onboarding
+  const handleCompleteOnboarding = async () => {
     try {
-      // Mark current step as skipped
-      await apiRequest("/api/onboarding/skip-step", {
-        method: "POST",
-        data: { step: currentStep }
+      setIsSubmitting(true);
+      
+      // Save final step data
+      await apiRequest("POST", "/api/onboarding/save-step", {
+        step: currentStep,
+        data: getStepData(currentStep)
       });
       
-      // Move to next step
-      if (currentStep < 5) {
-        setCurrentStep(prevStep => prevStep + 1);
-      } else {
-        // If skipping the last step, complete the wizard
-        await handleComplete();
+      // Mark onboarding as complete
+      await apiRequest("POST", "/api/onboarding/complete", {});
+      
+      // Show success toast
+      toast({
+        title: "Profile Completed",
+        description: "Your profile has been set up successfully!",
+      });
+      
+      // Redirect to dashboard
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error completing onboarding:", error);
+      toast({
+        title: "Error",
+        description: "There was an error completing your profile. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  // Skip current step
+  const handleSkipStep = async () => {
+    try {
+      // Mark step as skipped
+      await apiRequest("POST", "/api/onboarding/skip-step", {
+        step: currentStep
+      });
+      
+      // If this is the last step, submit the form
+      if (currentStep === STEPS.length) {
+        await handleCompleteOnboarding();
+        return;
       }
+      
+      // Otherwise, go to next step
+      setCurrentStep(currentStep + 1);
     } catch (error) {
       console.error("Error skipping step:", error);
       toast({
         title: "Error",
-        description: "Could not skip this step. Please try again.",
+        description: "There was an error skipping this step. Please try again.",
         variant: "destructive",
       });
     }
   };
   
-  // Handle form state updates
-  const updateFormState = (data: Partial<ProfileWizardState>) => {
-    setFormState(prevState => ({
-      ...prevState,
-      ...data
-    }));
-  };
-  
-  // Show loading state while fetching data
-  if (loading || onboardingLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[600px]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-  
-  // If user is not logged in, show error
-  if (!user) {
-    return (
-      <div className="container max-w-2xl mx-auto py-8 px-4">
-        <Alert variant="destructive">
-          <AlertDescription>
-            You must be logged in to complete your profile. Please login or register first.
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
-  }
-  
-  // Calculate progress percentage
-  const progressPercentage = Math.round((currentStep / 5) * 100);
-  
-  // Render current step content
+  // Render current step
   const renderStep = () => {
     switch (currentStep) {
       case 1:
@@ -409,29 +354,29 @@ export default function ProfileCompletionWizard() {
       case 2:
         return (
           <SportsInterestStep 
-            formState={formState} 
-            updateFormState={updateFormState} 
+            formState={formState}
+            updateFormState={updateFormState}
           />
         );
       case 3:
         return (
           <PhysicalAttributesStep 
-            formState={formState} 
-            updateFormState={updateFormState} 
+            formState={formState}
+            updateFormState={updateFormState}
           />
         );
       case 4:
         return (
           <AccessibilityPreferencesStep 
-            formState={formState} 
-            updateFormState={updateFormState} 
+            formState={formState}
+            updateFormState={updateFormState}
           />
         );
       case 5:
         return (
           <ParentContactStep 
-            formState={formState} 
-            updateFormState={updateFormState} 
+            formState={formState}
+            updateFormState={updateFormState}
           />
         );
       default:
@@ -440,104 +385,72 @@ export default function ProfileCompletionWizard() {
   };
   
   return (
-    <div className="container max-w-3xl mx-auto py-8 px-4">
-      <Card className="bg-card">
-        <CardHeader>
-          <CardTitle>Complete Your Profile</CardTitle>
-          <CardDescription>
-            Step {currentStep} of 5: {
-              currentStep === 1 ? "Basic Information" :
-              currentStep === 2 ? "Sports Interests" :
-              currentStep === 3 ? "Physical Attributes" :
-              currentStep === 4 ? "Accessibility Preferences" :
-              "Parent Contact Information"
-            }
-          </CardDescription>
-          <Progress value={progressPercentage} className="h-2 mt-2" />
-        </CardHeader>
-        
-        <CardContent>
-          {/* Render the current step */}
-          {renderStep()}
-        </CardContent>
-        
-        <CardFooter className="flex justify-between pt-4">
-          <div>
-            {currentStep > 1 ? (
-              <Button 
-                onClick={handlePrevious} 
-                variant="outline"
-                disabled={savingStep || completingWizard}
-              >
-                <ChevronLeft className="h-4 w-4 mr-2" />
-                Back
-              </Button>
-            ) : (
-              <span></span>
-            )}
-          </div>
-          
-          <div className="flex gap-3">
-            {/* Only show skip for optional steps (2, 4, and 5) */}
-            {[2, 4, 5].includes(currentStep) && (
-              <Button 
-                onClick={handleSkip}
-                variant="outline"
-                disabled={savingStep || completingWizard}
-              >
-                Skip
-              </Button>
-            )}
-            
-            {/* Save progress button */}
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle className="text-xl font-bold">Complete Your Profile</CardTitle>
+      </CardHeader>
+      
+      <Steps currentStep={currentStep} onStepClick={jumpToStep}>
+        {STEPS.map(step => (
+          <Step 
+            key={step.id}
+            id={step.id} 
+            title={step.title}
+            description={step.description}
+          />
+        ))}
+      </Steps>
+      
+      <Separator className="my-0" />
+      
+      <CardContent className="pt-6 pb-0">
+        {renderStep()}
+      </CardContent>
+      
+      <CardFooter className="flex justify-between mt-8 pb-6">
+        <div>
+          {currentStep > 1 && (
             <Button 
-              onClick={saveStepProgress}
-              variant="outline"
-              disabled={savingStep || completingWizard}
+              variant="outline" 
+              onClick={handlePrevious}
+              disabled={isSubmitting}
             >
-              {savingStep ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="h-4 w-4 mr-2" />
-                  Save
-                </>
-              )}
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
             </Button>
-            
-            {/* Next or Complete button */}
-            {currentStep < 5 ? (
-              <Button 
-                onClick={handleNext}
-                disabled={savingStep || completingWizard}
-              >
-                Next
-                <ChevronRight className="h-4 w-4 ml-2" />
-              </Button>
+          )}
+        </div>
+        
+        <div className="flex gap-2">
+          {/* Skip button for optional steps */}
+          {(currentStep === 3 || currentStep === 4 || currentStep === 5) && (
+            <Button 
+              variant="ghost" 
+              onClick={handleSkipStep}
+              disabled={isSubmitting}
+            >
+              Skip
+            </Button>
+          )}
+          
+          <Button 
+            onClick={handleNext}
+            disabled={isSubmitting}
+          >
+            {currentStep === STEPS.length ? (
+              <>
+                <CheckCircle className="h-4 w-4 mr-2" />
+                Complete
+              </>
             ) : (
-              <Button 
-                onClick={handleComplete}
-                disabled={savingStep || completingWizard}
-              >
-                {completingWizard ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Completing...
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    Complete Profile
-                  </>
-                )}
-              </Button>
+              <>
+                Next
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </>
             )}
-          </div>
-        </CardFooter>
-      </Card>
-    </div>
+          </Button>
+        </div>
+      </CardFooter>
+    </Card>
   );
 }

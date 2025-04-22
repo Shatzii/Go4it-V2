@@ -1,345 +1,364 @@
 import React, { useState, useEffect } from "react";
 import { ProfileWizardState } from "../ProfileCompletionWizard";
+import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Ruler, Weight, GraduationCap, School } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { Info, Ruler } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface PhysicalAttributesStepProps {
   formState: ProfileWizardState;
   updateFormState: (data: Partial<ProfileWizardState>) => void;
 }
 
-export default function PhysicalAttributesStep({ formState, updateFormState }: PhysicalAttributesStepProps) {
-  // Derived state from formState
-  const [feet, setFeet] = useState<string>("");
-  const [inches, setInches] = useState<string>("");
-  const [cm, setCm] = useState<string>("");
-  const [lbs, setLbs] = useState<string>("");
-  const [kg, setKg] = useState<string>("");
-  
-  // Graduation Year options (current year + 6 years)
+// Generate graduation years (current year + 6 years)
+const generateGraduationYears = () => {
   const currentYear = new Date().getFullYear();
-  const graduationYears = Array.from({ length: 7 }, (_, i) => currentYear + i);
+  const years = [];
+  for (let i = 0; i < 7; i++) {
+    years.push(currentYear + i);
+  }
+  return years;
+};
+
+const GRADUATION_YEARS = generateGraduationYears();
+
+export default function PhysicalAttributesStep({ 
+  formState, 
+  updateFormState 
+}: PhysicalAttributesStepProps) {
+  const [heightFeet, setHeightFeet] = useState<string>("");
+  const [heightInches, setHeightInches] = useState<string>("");
+  const [heightCm, setHeightCm] = useState<string>("");
+  const [weightLbs, setWeightLbs] = useState<string>("");
+  const [weightKg, setWeightKg] = useState<string>("");
   
-  // Parse height from formState on initial load
+  // Initialize height and weight fields based on measurement system and existing data
   useEffect(() => {
-    if (formState.measurementSystem === "imperial" && formState.height) {
-      // Parse height in imperial (feet and inches)
-      if (formState.height.includes("'")) {
-        const [feetStr, inchesStr] = formState.height.split("'");
-        setFeet(feetStr.trim());
-        setInches(inchesStr.replace('"', '').trim());
+    if (formState.height) {
+      if (formState.measurementSystem === "imperial") {
+        // Parse imperial height format (e.g., "5'11\"")
+        const match = formState.height.match(/(\d+)'(\d+)"/);
+        if (match) {
+          setHeightFeet(match[1]);
+          setHeightInches(match[2]);
+        }
+      } else {
+        // Parse metric height format (e.g., "180 cm")
+        const match = formState.height.match(/(\d+)\s*cm/);
+        if (match) {
+          setHeightCm(match[1]);
+        }
       }
-    } else if (formState.measurementSystem === "metric" && formState.height) {
-      // Parse height in metric (cm)
-      setCm(formState.height.replace('cm', '').trim());
     }
-  }, [formState.height, formState.measurementSystem]);
-  
-  // Parse weight from formState on initial load
-  useEffect(() => {
-    if (formState.measurementSystem === "imperial" && formState.weight) {
-      // Parse weight in imperial (lbs)
-      setLbs(formState.weight.replace('lbs', '').trim());
-    } else if (formState.measurementSystem === "metric" && formState.weight) {
-      // Parse weight in metric (kg)
-      setKg(formState.weight.replace('kg', '').trim());
-    }
-  }, [formState.weight, formState.measurementSystem]);
-  
-  // Handle measurement system change
-  const handleMeasurementSystemChange = (value: string) => {
-    updateFormState({ measurementSystem: value });
     
-    // Convert height and weight if changing systems
-    if (value === "imperial" && formState.height && formState.height.includes('cm')) {
-      // Convert cm to feet/inches
-      const heightCm = parseFloat(formState.height.replace('cm', '').trim());
-      if (!isNaN(heightCm)) {
-        const heightInches = heightCm / 2.54;
-        const feet = Math.floor(heightInches / 12);
-        const inches = Math.round(heightInches % 12);
-        updateFormState({ height: `${feet}'${inches}"` });
+    if (formState.weight) {
+      if (formState.measurementSystem === "imperial") {
+        // Parse imperial weight format (e.g., "185 lbs")
+        const match = formState.weight.match(/(\d+)\s*lbs/);
+        if (match) {
+          setWeightLbs(match[1]);
+        }
+      } else {
+        // Parse metric weight format (e.g., "84 kg")
+        const match = formState.weight.match(/(\d+)\s*kg/);
+        if (match) {
+          setWeightKg(match[1]);
+        }
       }
-    } else if (value === "metric" && formState.height && formState.height.includes("'")) {
+    }
+  }, [formState.measurementSystem, formState.height, formState.weight]);
+  
+  // Update height when feet or inches change (imperial)
+  useEffect(() => {
+    if (formState.measurementSystem === "imperial" && (heightFeet || heightInches)) {
+      const feet = heightFeet || "0";
+      const inches = heightInches || "0";
+      updateFormState({ height: `${feet}'${inches}"` });
+    }
+  }, [heightFeet, heightInches, formState.measurementSystem, updateFormState]);
+  
+  // Update height when cm changes (metric)
+  useEffect(() => {
+    if (formState.measurementSystem === "metric" && heightCm) {
+      updateFormState({ height: `${heightCm} cm` });
+    }
+  }, [heightCm, formState.measurementSystem, updateFormState]);
+  
+  // Update weight when lbs changes (imperial)
+  useEffect(() => {
+    if (formState.measurementSystem === "imperial" && weightLbs) {
+      updateFormState({ weight: `${weightLbs} lbs` });
+    }
+  }, [weightLbs, formState.measurementSystem, updateFormState]);
+  
+  // Update weight when kg changes (metric)
+  useEffect(() => {
+    if (formState.measurementSystem === "metric" && weightKg) {
+      updateFormState({ weight: `${weightKg} kg` });
+    }
+  }, [weightKg, formState.measurementSystem, updateFormState]);
+  
+  // Toggle measurement system
+  const toggleMeasurementSystem = () => {
+    const newSystem = formState.measurementSystem === "imperial" ? "metric" : "imperial";
+    
+    // Convert values when switching systems
+    if (newSystem === "metric" && heightFeet && heightInches) {
       // Convert feet/inches to cm
-      const [feetStr, inchesStr] = formState.height.split("'");
-      const feet = parseInt(feetStr.trim());
-      const inches = parseInt(inchesStr.replace('"', '').trim());
-      if (!isNaN(feet) && !isNaN(inches)) {
-        const heightCm = Math.round((feet * 12 + inches) * 2.54);
-        updateFormState({ height: `${heightCm}cm` });
-      }
+      const totalInches = parseInt(heightFeet) * 12 + parseInt(heightInches || "0");
+      const cm = Math.round(totalInches * 2.54);
+      setHeightCm(cm.toString());
+    } else if (newSystem === "imperial" && heightCm) {
+      // Convert cm to feet/inches
+      const totalInches = Math.round(parseInt(heightCm) / 2.54);
+      const feet = Math.floor(totalInches / 12);
+      const inches = totalInches % 12;
+      setHeightFeet(feet.toString());
+      setHeightInches(inches.toString());
     }
     
-    // Convert weight
-    if (value === "imperial" && formState.weight && formState.weight.includes('kg')) {
-      // Convert kg to lbs
-      const weightKg = parseFloat(formState.weight.replace('kg', '').trim());
-      if (!isNaN(weightKg)) {
-        const weightLbs = Math.round(weightKg * 2.20462);
-        updateFormState({ weight: `${weightLbs}lbs` });
-      }
-    } else if (value === "metric" && formState.weight && formState.weight.includes('lbs')) {
+    if (newSystem === "metric" && weightLbs) {
       // Convert lbs to kg
-      const weightLbs = parseFloat(formState.weight.replace('lbs', '').trim());
-      if (!isNaN(weightLbs)) {
-        const weightKg = Math.round(weightLbs / 2.20462);
-        updateFormState({ weight: `${weightKg}kg` });
-      }
+      const kg = Math.round(parseInt(weightLbs) * 0.453592);
+      setWeightKg(kg.toString());
+    } else if (newSystem === "imperial" && weightKg) {
+      // Convert kg to lbs
+      const lbs = Math.round(parseInt(weightKg) * 2.20462);
+      setWeightLbs(lbs.toString());
     }
-  };
-  
-  // Update height in imperial
-  const updateImperialHeight = () => {
-    if (feet || inches) {
-      const feetVal = feet ? parseInt(feet) : 0;
-      const inchesVal = inches ? parseInt(inches) : 0;
-      if (!isNaN(feetVal) && !isNaN(inchesVal)) {
-        updateFormState({ height: `${feetVal}'${inchesVal}"` });
-      }
-    }
-  };
-  
-  // Update height in metric
-  const updateMetricHeight = () => {
-    if (cm) {
-      const cmVal = parseInt(cm);
-      if (!isNaN(cmVal)) {
-        updateFormState({ height: `${cmVal}cm` });
-      }
-    }
-  };
-  
-  // Update weight in imperial
-  const updateImperialWeight = () => {
-    if (lbs) {
-      const lbsVal = parseInt(lbs);
-      if (!isNaN(lbsVal)) {
-        updateFormState({ weight: `${lbsVal}lbs` });
-      }
-    }
-  };
-  
-  // Update weight in metric
-  const updateMetricWeight = () => {
-    if (kg) {
-      const kgVal = parseInt(kg);
-      if (!isNaN(kgVal)) {
-        updateFormState({ weight: `${kgVal}kg` });
-      }
-    }
+    
+    updateFormState({ measurementSystem: newSystem });
   };
   
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <h3 className="text-lg font-medium">Your Physical Attributes</h3>
+        <h3 className="text-lg font-medium">Physical Attributes</h3>
         <p className="text-muted-foreground">
-          This helps us tailor training plans to your physical capabilities
+          Tell us about your physical attributes to help personalize your experience
         </p>
       </div>
       
-      {/* Measurement System Selection */}
-      <div className="space-y-2">
-        <Label>Measurement System</Label>
-        <RadioGroup
-          value={formState.measurementSystem}
-          onValueChange={handleMeasurementSystemChange}
-          className="flex space-x-4"
-        >
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="imperial" id="imperial" />
-            <Label htmlFor="imperial">Imperial (ft/in, lbs)</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="metric" id="metric" />
-            <Label htmlFor="metric">Metric (cm, kg)</Label>
-          </div>
-        </RadioGroup>
+      {/* Measurement System Toggle */}
+      <div className="flex items-center justify-end space-x-2 mb-4">
+        <Label htmlFor="measurement-system" className="text-sm">Imperial</Label>
+        <Switch
+          id="measurement-system"
+          checked={formState.measurementSystem === "metric"}
+          onCheckedChange={toggleMeasurementSystem}
+        />
+        <Label htmlFor="measurement-system" className="text-sm">Metric</Label>
       </div>
       
-      {/* Physical Attributes */}
-      <div className="space-y-4">
-        {/* Age */}
-        <div className="space-y-2">
-          <Label htmlFor="age">Age</Label>
-          <div className="relative">
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="space-y-4">
+          {/* Age Input */}
+          <div className="space-y-2">
+            <Label htmlFor="age">Age</Label>
             <Input
               id="age"
               type="number"
+              min="12"
+              max="18"
               placeholder="Your age"
-              min={8}
-              max={22}
               value={formState.age || ""}
-              onChange={(e) => updateFormState({ age: parseInt(e.target.value) || null })}
-              className="pl-10"
+              onChange={(e) => {
+                const value = e.target.value ? parseInt(e.target.value) : null;
+                updateFormState({ age: value });
+              }}
             />
-            <span className="absolute left-3 top-2.5 text-muted-foreground">
-              <GraduationCap className="h-5 w-5" />
-            </span>
           </div>
-          <p className="text-xs text-muted-foreground">
-            We focus on student athletes between 12-18 years old
-          </p>
-        </div>
-        
-        {/* Height */}
-        <div className="space-y-2">
-          <Label htmlFor="height">Height</Label>
-          {formState.measurementSystem === "imperial" ? (
-            <div className="flex space-x-2">
-              <div className="relative flex-1">
-                <Input
-                  id="height-feet"
-                  type="number"
-                  placeholder="Feet"
-                  min={3}
-                  max={8}
-                  value={feet}
-                  onChange={(e) => {
-                    setFeet(e.target.value);
-                    // Update after a short delay
-                    setTimeout(updateImperialHeight, 300);
-                  }}
-                  className="pl-10"
-                />
-                <span className="absolute left-3 top-2.5 text-muted-foreground">
-                  <Ruler className="h-5 w-5" />
-                </span>
+
+          {/* Height Input - Imperial */}
+          {formState.measurementSystem === "imperial" && (
+            <div className="space-y-2">
+              <div className="flex items-center">
+                <Label htmlFor="height-feet">Height</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-6 w-6 ml-1">
+                        <Info className="h-3 w-3" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">Enter your height in feet and inches</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
-              <div className="relative flex-1">
-                <Input
-                  id="height-inches"
-                  type="number"
-                  placeholder="Inches"
-                  min={0}
-                  max={11}
-                  value={inches}
-                  onChange={(e) => {
-                    setInches(e.target.value);
-                    // Update after a short delay
-                    setTimeout(updateImperialHeight, 300);
-                  }}
-                />
+              <div className="flex space-x-2">
+                <div className="flex-1">
+                  <Select 
+                    value={heightFeet} 
+                    onValueChange={setHeightFeet}
+                  >
+                    <SelectTrigger id="height-feet">
+                      <SelectValue placeholder="ft" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 8 }, (_, i) => i + 3).map((num) => (
+                        <SelectItem key={num} value={num.toString()}>
+                          {num} ft
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex-1">
+                  <Select 
+                    value={heightInches} 
+                    onValueChange={setHeightInches}
+                  >
+                    <SelectTrigger id="height-inches">
+                      <SelectValue placeholder="in" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 12 }, (_, i) => i).map((num) => (
+                        <SelectItem key={num} value={num.toString()}>
+                          {num} in
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
-          ) : (
-            <div className="relative">
-              <Input
-                id="height-cm"
-                type="number"
-                placeholder="Centimeters"
-                min={90}
-                max={220}
-                value={cm}
-                onChange={(e) => {
-                  setCm(e.target.value);
-                  // Update after a short delay
-                  setTimeout(updateMetricHeight, 300);
-                }}
-                className="pl-10"
-              />
-              <span className="absolute left-3 top-2.5 text-muted-foreground">
-                <Ruler className="h-5 w-5" />
-              </span>
+          )}
+
+          {/* Height Input - Metric */}
+          {formState.measurementSystem === "metric" && (
+            <div className="space-y-2">
+              <Label htmlFor="height-cm">Height (cm)</Label>
+              <div className="relative">
+                <Input
+                  id="height-cm"
+                  type="number"
+                  min="100"
+                  max="250"
+                  placeholder="Height in centimeters"
+                  value={heightCm}
+                  onChange={(e) => setHeightCm(e.target.value)}
+                  className="pr-10"
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <span className="text-sm text-muted-foreground">cm</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Weight Input - Imperial */}
+          {formState.measurementSystem === "imperial" && (
+            <div className="space-y-2">
+              <Label htmlFor="weight-lbs">Weight (lbs)</Label>
+              <div className="relative">
+                <Input
+                  id="weight-lbs"
+                  type="number"
+                  min="50"
+                  max="350"
+                  placeholder="Weight in pounds"
+                  value={weightLbs}
+                  onChange={(e) => setWeightLbs(e.target.value)}
+                  className="pr-10"
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <span className="text-sm text-muted-foreground">lbs</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Weight Input - Metric */}
+          {formState.measurementSystem === "metric" && (
+            <div className="space-y-2">
+              <Label htmlFor="weight-kg">Weight (kg)</Label>
+              <div className="relative">
+                <Input
+                  id="weight-kg"
+                  type="number"
+                  min="30"
+                  max="160"
+                  placeholder="Weight in kilograms"
+                  value={weightKg}
+                  onChange={(e) => setWeightKg(e.target.value)}
+                  className="pr-10"
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <span className="text-sm text-muted-foreground">kg</span>
+                </div>
+              </div>
             </div>
           )}
         </div>
         
-        {/* Weight */}
-        <div className="space-y-2">
-          <Label htmlFor="weight">Weight</Label>
-          {formState.measurementSystem === "imperial" ? (
-            <div className="relative">
-              <Input
-                id="weight-lbs"
-                type="number"
-                placeholder="Pounds"
-                min={50}
-                max={350}
-                value={lbs}
-                onChange={(e) => {
-                  setLbs(e.target.value);
-                  // Update after a short delay
-                  setTimeout(updateImperialWeight, 300);
-                }}
-                className="pl-10"
-              />
-              <span className="absolute left-3 top-2.5 text-muted-foreground">
-                <Weight className="h-5 w-5" />
-              </span>
-            </div>
-          ) : (
-            <div className="relative">
-              <Input
-                id="weight-kg"
-                type="number"
-                placeholder="Kilograms"
-                min={23}
-                max={160}
-                value={kg}
-                onChange={(e) => {
-                  setKg(e.target.value);
-                  // Update after a short delay
-                  setTimeout(updateMetricWeight, 300);
-                }}
-                className="pl-10"
-              />
-              <span className="absolute left-3 top-2.5 text-muted-foreground">
-                <Weight className="h-5 w-5" />
-              </span>
-            </div>
-          )}
-        </div>
-        
-        {/* School Information */}
-        <div className="space-y-2">
-          <Label htmlFor="school">School</Label>
-          <div className="relative">
+        <div className="space-y-4">
+          {/* School */}
+          <div className="space-y-2">
+            <Label htmlFor="school">School Name</Label>
             <Input
               id="school"
-              placeholder="Your school name"
-              value={formState.school || ""}
+              placeholder="Your current school"
+              value={formState.school}
               onChange={(e) => updateFormState({ school: e.target.value })}
-              className="pl-10"
             />
-            <span className="absolute left-3 top-2.5 text-muted-foreground">
-              <School className="h-5 w-5" />
-            </span>
           </div>
-        </div>
-        
-        {/* Graduation Year */}
-        <div className="space-y-2">
-          <Label htmlFor="graduation-year">Expected Graduation Year</Label>
-          <select
-            id="graduation-year"
-            className="w-full p-2 border rounded-md bg-background"
-            value={formState.graduationYear || ""}
-            onChange={(e) => updateFormState({ 
-              graduationYear: e.target.value ? parseInt(e.target.value) : null 
-            })}
-          >
-            <option value="">Select graduation year</option>
-            {graduationYears.map(year => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
+          
+          {/* Graduation Year */}
+          <div className="space-y-2">
+            <Label htmlFor="graduation-year">Expected Graduation Year</Label>
+            <Select 
+              value={formState.graduationYear?.toString() || ""}
+              onValueChange={(value) => 
+                updateFormState({ graduationYear: parseInt(value) })
+              }
+            >
+              <SelectTrigger id="graduation-year">
+                <SelectValue placeholder="Select graduation year" />
+              </SelectTrigger>
+              <SelectContent>
+                {GRADUATION_YEARS.map((year) => (
+                  <SelectItem key={year} value={year.toString()}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          {/* Measurement Tips */}
+          <Card className="p-4 bg-muted/50 border-dashed mt-6">
+            <div className="flex items-start space-x-3">
+              <Ruler className="h-5 w-5 mt-0.5 text-muted-foreground" />
+              <div>
+                <h4 className="font-medium text-sm">Measurement Tips:</h4>
+                <ul className="text-xs space-y-1 text-muted-foreground mt-1">
+                  <li>• For accurate height, measure without shoes</li>
+                  <li>• For weight, measure in the morning for consistency</li>
+                  <li>• Use recent measurements for best results</li>
+                  <li>• You can switch between imperial and metric systems anytime</li>
+                </ul>
+              </div>
+            </div>
+          </Card>
         </div>
       </div>
-      
-      {/* Helpful Tips Card */}
-      <Card className="p-4 bg-muted/50 border-dashed">
-        <h4 className="font-medium mb-2">Tips:</h4>
-        <ul className="text-sm space-y-1 text-muted-foreground">
-          <li>• Your physical attributes help coaches find athletes that fit their team needs</li>
-          <li>• This information also helps us personalize your training recommendations</li>
-          <li>• All information is kept private and only shared with coaches you approve</li>
-        </ul>
-      </Card>
     </div>
   );
 }
