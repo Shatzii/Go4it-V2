@@ -4639,6 +4639,132 @@ export class DatabaseStorage implements IStorage {
       throw error;
     }
   }
+
+  // Messaging System methods
+  async getMessages(userId: number): Promise<DirectMessage[]> {
+    try {
+      // Retrieve all messages where the user is either the sender or recipient
+      // and the message hasn't been deleted by the respective user
+      const sentMessages = await db.select().from(directMessages)
+        .where(and(
+          eq(directMessages.senderId, userId),
+          eq(directMessages.deletedBySender, false)
+        ))
+        .orderBy(desc(directMessages.createdAt));
+      
+      const receivedMessages = await db.select().from(directMessages)
+        .where(and(
+          eq(directMessages.recipientId, userId),
+          eq(directMessages.deletedByRecipient, false)
+        ))
+        .orderBy(desc(directMessages.createdAt));
+      
+      // Combine and sort all messages by createdAt timestamp
+      const allMessages = [...sentMessages, ...receivedMessages]
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      
+      return allMessages;
+    } catch (error) {
+      console.error('Error retrieving messages:', error);
+      return [];
+    }
+  }
+
+  async getConversation(userId1: number, userId2: number): Promise<DirectMessage[]> {
+    try {
+      // Get all messages between these two users where they haven't been deleted
+      const messages = await db.select().from(directMessages)
+        .where(
+          or(
+            and(
+              eq(directMessages.senderId, userId1),
+              eq(directMessages.recipientId, userId2),
+              eq(directMessages.deletedBySender, false)
+            ),
+            and(
+              eq(directMessages.senderId, userId2),
+              eq(directMessages.recipientId, userId1),
+              eq(directMessages.deletedByRecipient, false)
+            )
+          )
+        )
+        .orderBy(asc(directMessages.createdAt));
+      
+      return messages;
+    } catch (error) {
+      console.error('Error retrieving conversation:', error);
+      return [];
+    }
+  }
+
+  async createMessage(message: InsertDirectMessage): Promise<DirectMessage> {
+    try {
+      const [createdMessage] = await db.insert(directMessages)
+        .values(message)
+        .returning();
+      
+      return createdMessage;
+    } catch (error) {
+      console.error('Error creating message:', error);
+      throw error;
+    }
+  }
+
+  async markMessageAsRead(messageId: number): Promise<DirectMessage | undefined> {
+    try {
+      const [updatedMessage] = await db.update(directMessages)
+        .set({ isRead: true })
+        .where(eq(directMessages.id, messageId))
+        .returning();
+      
+      return updatedMessage;
+    } catch (error) {
+      console.error('Error marking message as read:', error);
+      return undefined;
+    }
+  }
+
+  async deleteMessage(messageId: number, userId: number): Promise<boolean> {
+    try {
+      // Find the message first
+      const [message] = await db.select().from(directMessages)
+        .where(eq(directMessages.id, messageId));
+      
+      if (!message) {
+        return false;
+      }
+      
+      // Determine if the user is the sender or recipient
+      if (message.senderId === userId) {
+        await db.update(directMessages)
+          .set({ deletedBySender: true })
+          .where(eq(directMessages.id, messageId));
+      } else if (message.recipientId === userId) {
+        await db.update(directMessages)
+          .set({ deletedByRecipient: true })
+          .where(eq(directMessages.id, messageId));
+      } else {
+        // User doesn't have permission to delete this message
+        return false;
+      }
+      
+      // If both users have deleted the message, physically remove it from the database
+      if (message.deletedBySender || message.deletedByRecipient) {
+        const [updatedMessage] = await db.select().from(directMessages)
+          .where(eq(directMessages.id, messageId));
+        
+        if (updatedMessage.deletedBySender && updatedMessage.deletedByRecipient) {
+          await db.delete(directMessages)
+            .where(eq(directMessages.id, messageId));
+        }
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      return false;
+    }
+  }
 }
 
 

@@ -256,12 +256,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Store the message in the database if needed
           try {
-            await storage.createMessage({
-              senderId,
-              recipientId: recipientId || null,
-              content,
-              isRead: false
-            });
+            if (recipientId > 0) { // Only store direct messages with valid recipients
+              await storage.createMessage({
+                senderId,
+                recipientId,
+                content,
+                isRead: false,
+                deletedBySender: false,
+                deletedByRecipient: false
+              });
+            }
           } catch (dbError) {
             console.error('Error storing chat message:', dbError);
             // Continue even if storage fails
