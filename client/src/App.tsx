@@ -65,6 +65,7 @@ import MyPlayerInterface from "@/pages/myplayer-interface";
 import ScoutVisionFeed from "@/pages/scoutvision-feed";
 import CoachPortal from "@/pages/coach-portal";
 import Settings from "@/pages/settings";
+import ProfileCompletionPage from "@/pages/profile-completion";
 import BlogPost from "@/pages/blog-post";
 import BlogList from "@/pages/blog-list";
 import GarScorePage from "@/pages/gar-score";
@@ -311,6 +312,11 @@ function Router() {
         {/* Profile Settings Route */}
         <Route path="/profile-settings">
           {() => <ProtectedRoute component={ProfileSettings} />}
+        </Route>
+        
+        {/* Profile Completion Route */}
+        <Route path="/profile-completion">
+          {() => <ProtectedRoute component={ProfileCompletionPage} />}
         </Route>
         
         {/* SMS Messaging Route */}

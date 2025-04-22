@@ -1,176 +1,161 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { ProfileWizardState } from "../ProfileCompletionWizard";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Info, Shield } from "lucide-react";
-
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { 
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger 
-} from "@/components/ui/tooltip";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Mail, CheckCircle2, XCircle } from "lucide-react";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
-// Props type
 interface ParentContactStepProps {
   formState: ProfileWizardState;
   updateFormState: (data: Partial<ProfileWizardState>) => void;
 }
 
-// Form schema
-const parentContactSchema = z.object({
-  parentEmail: z.string().email("Please enter a valid email address").optional().or(z.literal("")),
-  notifyParent: z.boolean().default(false),
-});
-
-type ParentContactValues = z.infer<typeof parentContactSchema>;
-
-/**
- * Parent Contact Step
- * 
- * Fifth and final step in the profile completion wizard that collects parent/guardian contact information.
- * This step is particularly important for minor athletes.
- */
-export default function ParentContactStep({ 
-  formState, 
-  updateFormState 
+export default function ParentContactStep({
+  formState,
+  updateFormState,
 }: ParentContactStepProps) {
-  const form = useForm<ParentContactValues>({
-    resolver: zodResolver(parentContactSchema),
-    defaultValues: {
-      parentEmail: formState.parentEmail || "",
-      notifyParent: false,
-    },
-  });
+  const [isSending, setIsSending] = useState(false);
+  const [sendSuccess, setSendSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   
-  // Handle form submission
-  const onSubmit = (data: ParentContactValues) => {
-    updateFormState({
-      parentEmail: data.parentEmail,
-    });
+  // Validate email format
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
   
-  // Watch form changes and update parent state
-  useEffect(() => {
-    const subscription = form.watch((value) => {
-      if (value.parentEmail !== undefined) {
-        updateFormState({
-          parentEmail: value.parentEmail,
-        });
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [form, updateFormState]);
-  
+  // Handle email verification
+  const handleVerifyEmail = async () => {
+    // Reset states
+    setIsSending(true);
+    setSendSuccess(false);
+    setErrorMessage("");
+    
+    // Validate email
+    if (!formState.parentEmail || !isValidEmail(formState.parentEmail)) {
+      setErrorMessage("Please enter a valid email address.");
+      setIsSending(false);
+      return;
+    }
+    
+    try {
+      // Send verification email (mock for now)
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Success
+      setSendSuccess(true);
+      setErrorMessage("");
+    } catch (error) {
+      // Handle error
+      setErrorMessage("Failed to send verification email. Please try again.");
+      setSendSuccess(false);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium">Parent/Guardian Information</h3>
-        <p className="text-sm text-muted-foreground mt-1">
-          As an athlete under 18, we recommend adding your parent or guardian's contact information 
-          for account safety and verification purposes.
+      <div className="text-center mb-6">
+        <h3 className="text-lg font-medium">Parent Contact Information</h3>
+        <p className="text-muted-foreground">
+          For athletes under 18, we require a parent or guardian's email
         </p>
       </div>
       
-      <Card className="bg-primary/5 border-primary/10">
-        <CardContent className="p-4 flex gap-3 items-start">
-          <Shield className="h-5 w-5 text-primary mt-0.5" />
-          <div className="space-y-1">
-            <p className="text-sm font-medium">Athlete Protection</p>
-            <p className="text-sm text-muted-foreground">
-              Adding a parent or guardian's email enhances your account security and helps meet 
-              safety guidelines for student athletes. This information is optional but recommended.
+      {/* Parent Information Section */}
+      <Card className="p-6 border-primary/50">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="parent-email">
+              Parent/Guardian Email <span className="text-destructive">*</span>
+            </Label>
+            <div className="relative">
+              <Input
+                id="parent-email"
+                type="email"
+                placeholder="parent@example.com"
+                value={formState.parentEmail}
+                onChange={(e) => updateFormState({ parentEmail: e.target.value })}
+                className="pl-10"
+              />
+              <span className="absolute left-3 top-2.5 text-muted-foreground">
+                <Mail className="h-5 w-5" />
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              We'll send your parent/guardian information about your account and require their consent
             </p>
           </div>
-        </CardContent>
+          
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleVerifyEmail}
+              disabled={!formState.parentEmail || isSending}
+              className="mt-2"
+            >
+              {isSending ? "Sending..." : sendSuccess ? "Email Sent" : "Send Verification Email"}
+              {sendSuccess && <CheckCircle2 className="ml-2 h-4 w-4 text-green-500" />}
+            </Button>
+          </div>
+          
+          {/* Error message */}
+          {errorMessage && (
+            <Alert variant="destructive" className="mt-2">
+              <XCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{errorMessage}</AlertDescription>
+            </Alert>
+          )}
+          
+          {/* Success message */}
+          {sendSuccess && (
+            <Alert className="mt-2 bg-green-50 border-green-200 text-green-800">
+              <CheckCircle2 className="h-4 w-4 text-green-500" />
+              <AlertTitle>Verification Email Sent</AlertTitle>
+              <AlertDescription>
+                A verification email has been sent to your parent/guardian. They'll need to confirm 
+                to complete your registration.
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
       </Card>
       
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Parent Email */}
-          <FormField
-            control={form.control}
-            name="parentEmail"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex items-center">
-                  <FormLabel>Parent/Guardian Email</FormLabel>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-4 w-4 text-muted-foreground ml-2 cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="max-w-xs">
-                          Your parent/guardian email is used for account verification, important notifications,
-                          and permission requests. It helps ensure platform safety for student athletes.
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-                <FormControl>
-                  <Input
-                    placeholder="parent@example.com"
-                    type="email"
-                    {...field}
-                    autoComplete="email"
-                  />
-                </FormControl>
-                <FormDescription>
-                  This email will only be used for important notifications and verification purposes.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          {/* Notify Parent Checkbox */}
-          <FormField
-            control={form.control}
-            name="notifyParent"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>
-                    Send parent/guardian a verification email
-                  </FormLabel>
-                  <FormDescription>
-                    Your parent/guardian will receive an email with account verification information
-                    and parental controls for the platform.
-                  </FormDescription>
-                </div>
-              </FormItem>
-            )}
-          />
-        </form>
-      </Form>
+      {/* Information on Parental Consent */}
+      <Card className="p-6 bg-muted/40">
+        <h4 className="font-medium mb-2">Why do we need parental consent?</h4>
+        <div className="space-y-4 text-sm text-muted-foreground">
+          <p>
+            For athletes under 18, we require parental consent for:
+          </p>
+          <ul className="list-disc pl-5 space-y-2">
+            <li>Account creation and participation on the platform</li>
+            <li>Communication with coaches and other athletes</li>
+            <li>Collection of athletic performance data</li>
+            <li>Sharing your profile with approved scouts or coaches</li>
+          </ul>
+          <p>
+            Your parent/guardian will receive important updates about your account and activities,
+            and can help manage privacy settings.
+          </p>
+        </div>
+      </Card>
       
-      <div className="text-sm text-muted-foreground pt-2 border-t">
-        <p>
-          Note: This information is optional but recommended for athletes under 18. 
-          You can update or add parent contact information later in your account settings.
-        </p>
-      </div>
+      {/* Helpful Tips */}
+      <Card className="p-4 bg-muted/50 border-dashed">
+        <h4 className="font-medium mb-2">Tips:</h4>
+        <ul className="text-sm space-y-1 text-muted-foreground">
+          <li>• Make sure to use an email address your parent/guardian checks regularly</li>
+          <li>• Let them know to expect the verification email shortly</li>
+          <li>• You can proceed to the next step even if verification isn't complete yet</li>
+        </ul>
+      </Card>
     </div>
   );
 }

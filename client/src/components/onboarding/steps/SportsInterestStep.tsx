@@ -1,331 +1,216 @@
-import React from "react";
+import React, { useState } from "react";
 import { ProfileWizardState } from "../ProfileCompletionWizard";
-import { z } from "zod";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { X } from "lucide-react";
 import { Check } from "lucide-react";
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-
-// Props type
 interface SportsInterestStepProps {
   formState: ProfileWizardState;
   updateFormState: (data: Partial<ProfileWizardState>) => void;
 }
 
-// Available sports options with appropriate positions
-const SPORTS_OPTIONS = [
-  {
-    id: "basketball",
-    name: "Basketball",
-    positions: [
-      "Point Guard",
-      "Shooting Guard",
-      "Small Forward",
-      "Power Forward",
-      "Center",
-    ],
-  },
-  {
-    id: "football",
-    name: "Football",
-    positions: [
-      "Quarterback",
-      "Wide Receiver",
-      "Running Back",
-      "Tight End",
-      "Offensive Lineman",
-      "Defensive Lineman",
-      "Linebacker",
-      "Cornerback",
-      "Safety",
-      "Kicker",
-      "Punter",
-    ],
-  },
-  {
-    id: "soccer",
-    name: "Soccer",
-    positions: [
-      "Goalkeeper",
-      "Defender",
-      "Midfielder",
-      "Forward",
-      "Striker",
-      "Winger",
-    ],
-  },
-  {
-    id: "baseball",
-    name: "Baseball",
-    positions: [
-      "Pitcher",
-      "Catcher",
-      "First Base",
-      "Second Base",
-      "Third Base",
-      "Shortstop",
-      "Left Field",
-      "Center Field",
-      "Right Field",
-      "Designated Hitter",
-    ],
-  },
-  {
-    id: "volleyball",
-    name: "Volleyball",
-    positions: ["Setter", "Middle Blocker", "Outside Hitter", "Opposite Hitter", "Libero"],
-  },
-  {
-    id: "track",
-    name: "Track & Field",
-    positions: [
-      "Sprinter",
-      "Distance Runner",
-      "Hurdler",
-      "High Jump",
-      "Long Jump",
-      "Triple Jump",
-      "Pole Vault",
-      "Shot Put",
-      "Discus",
-      "Javelin",
-    ],
-  },
-  {
-    id: "swimming",
-    name: "Swimming",
-    positions: [
-      "Freestyle",
-      "Backstroke",
-      "Breaststroke",
-      "Butterfly",
-      "Individual Medley",
-    ],
-  },
-  {
-    id: "tennis",
-    name: "Tennis",
-    positions: ["Singles Player", "Doubles Player"],
-  },
-  {
-    id: "golf",
-    name: "Golf",
-    positions: ["Golfer"],
-  },
-  {
-    id: "wrestling",
-    name: "Wrestling",
-    positions: [
-      "106 lbs",
-      "113 lbs",
-      "120 lbs",
-      "126 lbs",
-      "132 lbs",
-      "138 lbs",
-      "145 lbs",
-      "152 lbs",
-      "160 lbs",
-      "170 lbs",
-      "182 lbs",
-      "195 lbs",
-      "220 lbs",
-      "Heavyweight",
-    ],
-  },
+// List of sports supported by the platform
+const SUPPORTED_SPORTS = [
+  { id: "basketball", name: "Basketball", positions: ["Guard", "Forward", "Center"] },
+  { id: "football", name: "Football", positions: ["Quarterback", "Running Back", "Wide Receiver", "Tight End", "Offensive Line", "Defensive Line", "Linebacker", "Cornerback", "Safety", "Special Teams"] },
+  { id: "soccer", name: "Soccer", positions: ["Goalkeeper", "Defender", "Midfielder", "Forward"] },
+  { id: "baseball", name: "Baseball", positions: ["Pitcher", "Catcher", "Infielder", "Outfielder"] },
+  { id: "volleyball", name: "Volleyball", positions: ["Setter", "Outside Hitter", "Middle Blocker", "Opposite Hitter", "Libero"] },
+  { id: "track", name: "Track & Field", positions: ["Sprinter", "Distance Runner", "Jumper", "Thrower", "Hurdler"] },
+  { id: "swimming", name: "Swimming", positions: ["Freestyle", "Backstroke", "Breaststroke", "Butterfly", "Individual Medley"] },
+  { id: "tennis", name: "Tennis", positions: ["Singles Player", "Doubles Player"] },
+  { id: "golf", name: "Golf", positions: [""] },
+  { id: "wrestling", name: "Wrestling", positions: [""] },
 ];
 
-// Form schema
-const sportsInterestSchema = z.object({
-  sportsInterest: z.array(z.string()).min(1, "Please select at least one sport"),
-  position: z.string().optional(),
-});
-
-type SportsInterestValues = z.infer<typeof sportsInterestSchema>;
-
-/**
- * Sports Interest Step
- * 
- * Second step in the profile completion wizard that collects sports preferences.
- */
 export default function SportsInterestStep({ formState, updateFormState }: SportsInterestStepProps) {
-  // Find positions for primary sport
-  const [primarySport, setPrimarySport] = React.useState(
-    formState.sportsInterest && formState.sportsInterest.length > 0
-      ? formState.sportsInterest[0]
-      : ""
-  );
-
-  const [availablePositions, setAvailablePositions] = React.useState<string[]>([]);
-
-  // Update available positions when primary sport changes
-  React.useEffect(() => {
-    if (primarySport) {
-      const sport = SPORTS_OPTIONS.find((s) => s.id === primarySport);
-      if (sport) {
-        setAvailablePositions(sport.positions);
-      } else {
-        setAvailablePositions([]);
-      }
-    } else {
-      setAvailablePositions([]);
-    }
-  }, [primarySport]);
-
-  const form = useForm<SportsInterestValues>({
-    resolver: zodResolver(sportsInterestSchema),
-    defaultValues: {
-      sportsInterest: formState.sportsInterest || [],
-      position: formState.position || "",
-    },
-  });
-
-  // Handle form submission
-  const onSubmit = (data: SportsInterestValues) => {
-    updateFormState(data);
-  };
-
-  // Watch sports interest changes to determine primary sport
-  React.useEffect(() => {
-    const subscription = form.watch((value, { name }) => {
-      if (name === "sportsInterest" && value.sportsInterest) {
-        // Set primary sport to first selected sport if available
-        if (value.sportsInterest.length > 0 && value.sportsInterest[0] !== primarySport) {
-          setPrimarySport(value.sportsInterest[0]);
-          
-          // Reset position if primary sport changes
-          form.setValue("position", "");
-        } else if (value.sportsInterest.length === 0) {
-          setPrimarySport("");
-          form.setValue("position", "");
-        }
-      }
-      
-      // Update parent state
-      updateFormState(value as Partial<ProfileWizardState>);
-    });
+  const [newSport, setNewSport] = useState<string>("");
+  
+  // Get positions for the primary sport (first in the list)
+  const primarySport = formState.sportsInterest?.[0];
+  const primarySportInfo = SUPPORTED_SPORTS.find(sport => sport.id === primarySport);
+  const positions = primarySportInfo?.positions || [];
+  
+  // Handle adding a new sport
+  const handleAddSport = () => {
+    if (!newSport) return;
     
-    return () => subscription.unsubscribe();
-  }, [form, updateFormState, primarySport]);
+    // Don't add duplicate sports
+    if (formState.sportsInterest?.includes(newSport)) {
+      setNewSport("");
+      return;
+    }
+    
+    const updatedSports = [...(formState.sportsInterest || []), newSport];
+    updateFormState({ sportsInterest: updatedSports });
+    setNewSport("");
+  };
+  
+  // Handle removing a sport
+  const handleRemoveSport = (sportToRemove: string) => {
+    const updatedSports = formState.sportsInterest?.filter(
+      sport => sport !== sportToRemove
+    ) || [];
+    
+    // If the primary sport is removed, also reset the position
+    if (sportToRemove === primarySport) {
+      updateFormState({ 
+        sportsInterest: updatedSports,
+        position: "" 
+      });
+    } else {
+      updateFormState({ sportsInterest: updatedSports });
+    }
+  };
+  
+  // Handle sport selection
+  const handleSportSelection = (sportId: string) => {
+    // If sport is already selected, remove it
+    if (formState.sportsInterest?.includes(sportId)) {
+      handleRemoveSport(sportId);
+      return;
+    }
+    
+    // Otherwise add it
+    const updatedSports = [...(formState.sportsInterest || []), sportId];
+    updateFormState({ sportsInterest: updatedSports });
+    
+    // If this is the first sport, reset position
+    if (formState.sportsInterest?.length === 0) {
+      updateFormState({ position: "" });
+    }
+  };
+  
+  // Handle position selection
+  const handlePositionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    updateFormState({ position: e.target.value });
+  };
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium">Select Sports</h3>
-        <p className="text-sm text-muted-foreground mt-1">
-          Choose sports you're interested in or currently play. Your first selection will be considered your primary sport.
+      <div className="text-center mb-6">
+        <h3 className="text-lg font-medium">What sports are you interested in?</h3>
+        <p className="text-muted-foreground">
+          Select all the sports you play or want to explore
         </p>
       </div>
-
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Sports Selection */}
-          <FormField
-            control={form.control}
-            name="sportsInterest"
-            render={() => (
-              <FormItem>
-                <div className="mb-4">
-                  <FormLabel>Sports</FormLabel>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {SPORTS_OPTIONS.map((sport) => (
-                    <FormField
-                      key={sport.id}
-                      control={form.control}
-                      name="sportsInterest"
-                      render={({ field }) => {
-                        return (
-                          <FormItem
-                            key={sport.id}
-                            className="flex flex-row items-center space-x-2 space-y-0 rounded-md border p-2"
-                          >
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value?.includes(sport.id)}
-                                onCheckedChange={(checked) => {
-                                  const updatedSports = checked
-                                    ? [...field.value, sport.id]
-                                    : field.value?.filter((s) => s !== sport.id);
-                                  field.onChange(updatedSports);
-                                }}
-                              />
-                            </FormControl>
-                            <FormLabel className="text-sm font-normal cursor-pointer">
-                              {sport.name}
-                            </FormLabel>
-                          </FormItem>
-                        );
+      
+      {/* Sports Selection */}
+      <div className="space-y-4">
+        <Label htmlFor="sports">Select your sports <span className="text-destructive">*</span></Label>
+        
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+          {SUPPORTED_SPORTS.map(sport => (
+            <Card 
+              key={sport.id}
+              className={`p-3 cursor-pointer transition-all hover:shadow-md flex flex-col items-center justify-center text-center ${
+                formState.sportsInterest?.includes(sport.id) 
+                  ? "border-primary bg-primary/10" 
+                  : "border-border"
+              }`}
+              onClick={() => handleSportSelection(sport.id)}
+            >
+              <div className="mb-2">
+                {formState.sportsInterest?.includes(sport.id) ? (
+                  <div className="rounded-full bg-primary text-primary-foreground p-1 h-6 w-6 flex items-center justify-center">
+                    <Check className="h-4 w-4" />
+                  </div>
+                ) : (
+                  <div className="rounded-full bg-muted p-1 h-6 w-6"></div>
+                )}
+              </div>
+              <span className="text-sm font-medium">{sport.name}</span>
+            </Card>
+          ))}
+        </div>
+        
+        {/* Selected Sports Summary */}
+        <div className="pt-4">
+          <Label>Your selected sports:</Label>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {formState.sportsInterest?.length ? (
+              formState.sportsInterest.map(sportId => {
+                const sport = SUPPORTED_SPORTS.find(s => s.id === sportId);
+                return (
+                  <Badge key={sportId} variant="secondary" className="px-3 py-1">
+                    {sport?.name || sportId}
+                    <button 
+                      type="button" 
+                      className="ml-1 text-muted-foreground hover:text-foreground"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveSport(sportId);
                       }}
-                    />
-                  ))}
-                </div>
-                <FormMessage />
-              </FormItem>
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                );
+              })
+            ) : (
+              <p className="text-sm text-muted-foreground">No sports selected yet</p>
             )}
-          />
-
-          {/* Primary Sport Badge */}
-          {primarySport && (
-            <div className="flex flex-col space-y-2">
-              <p className="text-sm text-muted-foreground">Your Primary Sport:</p>
-              <Badge variant="outline" className="w-fit px-4 py-1 border-primary/30 bg-primary/5">
-                {SPORTS_OPTIONS.find((s) => s.id === primarySport)?.name || primarySport}
-              </Badge>
-            </div>
-          )}
-
-          {/* Position Selection - Only shown if primary sport is selected */}
-          {primarySport && availablePositions.length > 0 && (
-            <FormField
-              control={form.control}
-              name="position"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Position</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select your position" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {availablePositions.map((position) => (
-                        <SelectItem key={position} value={position}>
-                          {position}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+          </div>
+        </div>
+        
+        {/* Position Selection - Only show if at least one sport is selected */}
+        {formState.sportsInterest?.length > 0 && (
+          <div className="pt-4">
+            <Label htmlFor="position">What's your primary position?</Label>
+            <select
+              id="position"
+              className="w-full p-2 mt-1 border rounded-md bg-background"
+              value={formState.position}
+              onChange={handlePositionChange}
+            >
+              <option value="">Select your primary position</option>
+              {positions.map(position => (
+                <option key={position} value={position}>
+                  {position}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-muted-foreground mt-1">
+              Based on your primary sport: {primarySportInfo?.name || primarySport}
+            </p>
+          </div>
+        )}
+        
+        {/* Custom Sport Entry */}
+        <div className="pt-4">
+          <Label htmlFor="custom-sport">Don't see your sport? Add it here:</Label>
+          <div className="flex mt-1">
+            <Input
+              id="custom-sport"
+              value={newSport}
+              onChange={(e) => setNewSport(e.target.value)}
+              placeholder="E.g., Lacrosse, Hockey, etc."
+              className="flex-1"
             />
-          )}
-        </form>
-      </Form>
+            <button
+              type="button"
+              onClick={handleAddSport}
+              disabled={!newSport}
+              className="ml-2 px-4 py-2 bg-primary text-primary-foreground rounded-md disabled:opacity-50"
+            >
+              Add
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      {/* Helpful Tips Card */}
+      <Card className="p-4 bg-muted/50 border-dashed">
+        <h4 className="font-medium mb-2">Tips:</h4>
+        <ul className="text-sm space-y-1 text-muted-foreground">
+          <li>• You can select multiple sports that you're interested in</li>
+          <li>• Your primary sport will be used to match you with suitable coaches</li>
+          <li>• Adding your position helps with personalized training plans</li>
+        </ul>
+      </Card>
     </div>
   );
 }

@@ -18,12 +18,12 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-// Import individual step components
-import BasicInfoStep from "./steps/BasicInfoStep";
-import SportsInterestStep from "./steps/SportsInterestStep";
-import PhysicalAttributesStep from "./steps/PhysicalAttributesStep";
-import AccessibilityPreferencesStep from "./steps/AccessibilityPreferencesStep";
-import ParentContactStep from "./steps/ParentContactStep";
+// Import step components
+import BasicInfoStep from "@/components/onboarding/steps/BasicInfoStep";
+import SportsInterestStep from "@/components/onboarding/steps/SportsInterestStep";
+import PhysicalAttributesStep from "@/components/onboarding/steps/PhysicalAttributesStep";
+import AccessibilityPreferencesStep from "@/components/onboarding/steps/AccessibilityPreferencesStep";
+import ParentContactStep from "@/components/onboarding/steps/ParentContactStep";
 
 // Types for onboarding progress
 interface OnboardingProgress {
@@ -473,7 +473,7 @@ export default function ProfileCompletionWizard() {
                 Back
               </Button>
             ) : (
-              <div /> {/* Empty div for spacing */}
+              <span></span>
             )}
           </div>
           

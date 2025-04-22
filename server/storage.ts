@@ -38,7 +38,8 @@ import {
   workoutVerificationCheckpoints, type WorkoutVerificationCheckpoint, type InsertWorkoutVerificationCheckpoint,
   onboardingProgress, type OnboardingProgress, type InsertOnboardingProgress,
   athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile,
-  directMessages, type DirectMessage, type InsertDirectMessage
+  directMessages, type DirectMessage, type InsertDirectMessage,
+  athleteProfiles, type AthleteProfile, type InsertAthleteProfile
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql, inArray, asc } from "drizzle-orm";
@@ -411,6 +412,159 @@ export interface IStorage {
 
 // Direct database implementation
 export class DatabaseStorage implements IStorage {
+  // ===================== Onboarding Methods =====================
+  async getOnboardingProgress(userId: number): Promise<OnboardingProgress | undefined> {
+    try {
+      const [progress] = await db.select()
+        .from(onboardingProgress)
+        .where(eq(onboardingProgress.userId, userId));
+      return progress;
+    } catch (error) {
+      console.error(`Error getting onboarding progress for user ${userId}:`, error);
+      return undefined;
+    }
+  }
+
+  async createOnboardingProgress(data: InsertOnboardingProgress): Promise<OnboardingProgress> {
+    try {
+      const [progress] = await db.insert(onboardingProgress)
+        .values(data)
+        .returning();
+      return progress;
+    } catch (error) {
+      console.error('Error creating onboarding progress:', error);
+      throw error;
+    }
+  }
+
+  async updateOnboardingProgress(userId: number, data: Partial<OnboardingProgress>): Promise<OnboardingProgress | undefined> {
+    try {
+      const [updated] = await db.update(onboardingProgress)
+        .set({ ...data, lastUpdated: new Date() })
+        .where(eq(onboardingProgress.userId, userId))
+        .returning();
+      return updated;
+    } catch (error) {
+      console.error(`Error updating onboarding progress for user ${userId}:`, error);
+      return undefined;
+    }
+  }
+
+  async skipOnboardingSection(userId: number, sectionName: string): Promise<OnboardingProgress | undefined> {
+    try {
+      const currentProgress = await this.getOnboardingProgress(userId);
+      
+      if (!currentProgress) {
+        return undefined;
+      }
+      
+      const skippedSections = currentProgress.skippedSections || [];
+      
+      if (!skippedSections.includes(sectionName)) {
+        const [updated] = await db.update(onboardingProgress)
+          .set({
+            skippedSections: [...skippedSections, sectionName],
+            lastUpdated: new Date()
+          })
+          .where(eq(onboardingProgress.userId, userId))
+          .returning();
+        return updated;
+      }
+      
+      return currentProgress;
+    } catch (error) {
+      console.error(`Error skipping onboarding section for user ${userId}:`, error);
+      return undefined;
+    }
+  }
+
+  // ===================== User Profile Methods =====================
+  async updateUserProfile(userId: number, data: Partial<User>): Promise<User | undefined> {
+    try {
+      const [updated] = await db.update(users)
+        .set(data)
+        .where(eq(users.id, userId))
+        .returning();
+      return updated;
+    } catch (error) {
+      console.error(`Error updating user profile for user ${userId}:`, error);
+      return undefined;
+    }
+  }
+
+  // ===================== Athlete Profile Methods =====================
+  async getAthleteProfile(userId: number): Promise<AthleteProfile | undefined> {
+    try {
+      const [profile] = await db.select()
+        .from(athleteProfiles)
+        .where(eq(athleteProfiles.userId, userId));
+      return profile;
+    } catch (error) {
+      console.error(`Error getting athlete profile for user ${userId}:`, error);
+      return undefined;
+    }
+  }
+
+  async createAthleteProfile(data: InsertAthleteProfile): Promise<AthleteProfile> {
+    try {
+      const [profile] = await db.insert(athleteProfiles)
+        .values(data)
+        .returning();
+      return profile;
+    } catch (error) {
+      console.error('Error creating athlete profile:', error);
+      throw error;
+    }
+  }
+
+  async updateAthleteProfile(userId: number, data: Partial<AthleteProfile>): Promise<AthleteProfile | undefined> {
+    try {
+      const [updated] = await db.update(athleteProfiles)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(athleteProfiles.userId, userId))
+        .returning();
+      return updated;
+    } catch (error) {
+      console.error(`Error updating athlete profile for user ${userId}:`, error);
+      return undefined;
+    }
+  }
+
+  // ===================== User Preferences Methods =====================
+  async updateUserPreferences(userId: number, preferences: Partial<OnboardingProgress>): Promise<OnboardingProgress | undefined> {
+    try {
+      // Check if onboarding progress exists
+      const existing = await this.getOnboardingProgress(userId);
+      
+      if (!existing) {
+        // Create new onboarding progress with preferences
+        const newProgress = await this.createOnboardingProgress({
+          userId,
+          isCompleted: false,
+          currentStep: 1,
+          totalSteps: 5,
+          completedSections: [],
+          skippedSections: [],
+          ...preferences
+        });
+        return newProgress;
+      }
+      
+      // Update existing onboarding progress
+      const [updated] = await db.update(onboardingProgress)
+        .set({ 
+          ...preferences,
+          lastUpdated: new Date() 
+        })
+        .where(eq(onboardingProgress.userId, userId))
+        .returning();
+      
+      return updated;
+    } catch (error) {
+      console.error(`Error updating user preferences for user ${userId}:`, error);
+      return undefined;
+    }
+  }
   sessionStore: any;
   _xpTransactions: Record<number, any[]>;
 
