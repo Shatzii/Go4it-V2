@@ -11,7 +11,7 @@ import {
   athleteProfiles
 } from "@shared/schema";
 import { storage } from "../storage";
-import { isAuthenticatedMiddleware } from "../auth";
+import { isAuthenticatedMiddleware } from "../middleware/auth-middleware";
 
 /**
  * Get a user's GAR scores

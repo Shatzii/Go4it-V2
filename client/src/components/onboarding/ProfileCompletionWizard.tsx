@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
-import { useNavigate } from "wouter";
+import { useLocation } from "wouter";
 import { Steps, Step } from "@/components/ui/steps";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -62,7 +62,7 @@ interface FormData {
 export default function ProfileCompletionWizard() {
   const { toast } = useToast();
   const { user } = useAuth();
-  const [, navigate] = useNavigate();
+  const [, setLocation] = useLocation();
   
   // Current step state
   const [currentStep, setCurrentStep] = useState(1);
@@ -230,7 +230,7 @@ export default function ProfileCompletionWizard() {
       });
       
       // Redirect to dashboard
-      navigate("/dashboard");
+      setLocation("/dashboard");
     } catch (error) {
       console.error("Error completing onboarding:", error);
       toast({
