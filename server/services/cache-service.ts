@@ -2,15 +2,21 @@ import { CacheContainer } from 'node-ts-cache';
 import { MemoryStorage } from 'node-ts-cache-storage-memory';
 import { log } from '../vite';
 
+// Extend the CacheContainer type to include the methods we need
+interface ExtendedCacheContainer extends CacheContainer {
+  removeItem(key: string): Promise<void>;
+  getKeys(): Promise<string[]>;
+}
+
 // Create different cache containers with varying TTLs (Time To Live)
 // Short-lived cache (30 seconds) - For frequently changing data
-export const shortCache = new CacheContainer(new MemoryStorage());
+export const shortCache = new CacheContainer(new MemoryStorage()) as ExtendedCacheContainer;
 
 // Medium-lived cache (5 minutes) - For semi-static data
-export const mediumCache = new CacheContainer(new MemoryStorage());
+export const mediumCache = new CacheContainer(new MemoryStorage()) as ExtendedCacheContainer;
 
 // Long-lived cache (1 hour) - For mostly static data
-export const longCache = new CacheContainer(new MemoryStorage());
+export const longCache = new CacheContainer(new MemoryStorage()) as ExtendedCacheContainer;
 
 /**
  * Generic function to cache the result of any async function
@@ -84,9 +90,9 @@ export async function clearAllCaches(): Promise<void> {
 export async function clearCacheByPattern(pattern: string): Promise<void> {
   // Since memory storage doesn't support pattern matching directly,
   // we need to implement this functionality manually
-  const clearByPattern = async (cache: CacheContainer) => {
+  const clearByPattern = async (cache: ExtendedCacheContainer) => {
     const keys = await cache.getKeys();
-    const matchingKeys = keys.filter(key => key.includes(pattern));
+    const matchingKeys = keys.filter((key: string) => key.includes(pattern));
     
     for (const key of matchingKeys) {
       await cache.removeItem(key);

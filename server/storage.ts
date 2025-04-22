@@ -1310,6 +1310,13 @@ export class DatabaseStorage implements IStorage {
       })
       .where(eq(contentBlocks.id, id))
       .returning();
+    
+    // Import cache service to avoid circular dependency
+    const { clearCacheByPattern } = await import('./services/cache-service');
+    
+    // Clear all content block caches to ensure fresh data
+    await clearCacheByPattern('content-blocks');
+    
     return updatedBlock;
   }
 
@@ -1424,6 +1431,14 @@ export class DatabaseStorage implements IStorage {
       .set(data)
       .where(eq(blogPosts.id, id))
       .returning();
+    
+    // Import cache service to avoid circular dependency
+    const { clearCacheByPattern } = await import('./services/cache-service');
+    
+    // Clear all blog post caches to ensure fresh data
+    await clearCacheByPattern('blog-posts');
+    await clearCacheByPattern('featured-blog-posts');
+    
     return updatedPost;
   }
 
@@ -1435,16 +1450,26 @@ export class DatabaseStorage implements IStorage {
 
   // Featured Athletes operations
   async getFeaturedAthletes(limit: number = 6): Promise<FeaturedAthlete[]> {
-    try {
-      return await db.select()
-        .from(featuredAthletes)
-        .where(eq(featuredAthletes.active, true))
-        .orderBy(featuredAthletes.order)
-        .limit(limit);
-    } catch (error) {
-      console.error('Error fetching featured athletes:', error);
-      return [];
-    }
+    // Import cache service to avoid circular dependency
+    const { cachedFetch } = await import('./services/cache-service');
+    
+    return cachedFetch(
+      `featured-athletes-${limit}`,
+      async () => {
+        try {
+          return await db.select()
+            .from(featuredAthletes)
+            .where(eq(featuredAthletes.active, true))
+            .orderBy(featuredAthletes.order)
+            .limit(limit);
+        } catch (error) {
+          console.error('Error fetching featured athletes:', error);
+          return [];
+        }
+      },
+      300, // Cache for 5 minutes
+      'medium'
+    );
   }
 
   async getFeaturedAthleteById(id: number): Promise<FeaturedAthlete | undefined> {
@@ -1473,6 +1498,13 @@ export class DatabaseStorage implements IStorage {
       .set(data)
       .where(eq(featuredAthletes.id, id))
       .returning();
+    
+    // Import cache service to avoid circular dependency
+    const { clearCacheByPattern } = await import('./services/cache-service');
+    
+    // Clear all featured athlete caches to ensure fresh data
+    await clearCacheByPattern('featured-athletes');
+    
     return updatedAthlete;
   }
 
@@ -1670,16 +1702,26 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUpcomingCombineTourEvents(limit: number = 10): Promise<CombineTourEvent[]> {
-    try {
-      return await db.select()
-        .from(combineTourEvents)
-        .where(sql`${combineTourEvents.startDate} >= CURRENT_DATE`)
-        .orderBy(combineTourEvents.startDate)
-        .limit(limit);
-    } catch (error) {
-      console.error('Database error in getUpcomingCombineTourEvents:', error);
-      return [];
-    }
+    // Import cache service to avoid circular dependency
+    const { cachedFetch } = await import('./services/cache-service');
+    
+    return cachedFetch(
+      `upcoming-combine-events-${limit}`,
+      async () => {
+        try {
+          return await db.select()
+            .from(combineTourEvents)
+            .where(sql`${combineTourEvents.startDate} >= CURRENT_DATE`)
+            .orderBy(combineTourEvents.startDate)
+            .limit(limit);
+        } catch (error) {
+          console.error('Database error in getUpcomingCombineTourEvents:', error);
+          return [];
+        }
+      },
+      600, // Cache for 10 minutes
+      'medium'
+    );
   }
 
   async getPastCombineTourEvents(limit: number = 10): Promise<CombineTourEvent[]> {
@@ -1765,6 +1807,12 @@ export class DatabaseStorage implements IStorage {
         })
         .where(eq(combineTourEvents.id, id))
         .returning();
+      
+      // Import cache service to avoid circular dependency
+      const { clearCacheByPattern } = await import('./services/cache-service');
+      
+      // Clear all combine tour event caches to ensure fresh data
+      await clearCacheByPattern('upcoming-combine-events');
       
       return updatedEvent;
     } catch (error) {
