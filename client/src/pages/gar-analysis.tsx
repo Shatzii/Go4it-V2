@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2, Info, TrendingUp, BarChart3, Activity, Award, Video } from "lucide-react";
+import { Loader2, Info, TrendingUp, BarChart3, Activity, Award, Video, Play } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -14,6 +14,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { VideoUploadModal } from "@/components/gar/VideoUploadModal";
+import { VideoAnalysisDialog } from "@/components/gar/VideoAnalysisDialog";
+import { GarTrendAnalysis } from "@/components/gar/GarTrendAnalysis";
+import { GarComparison } from "@/components/gar/GarComparison";
 import {
   Radar,
   RadarChart,
@@ -32,6 +36,10 @@ import {
 export default function GARAnalysis() {
   const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState<string>("physical");
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<number | null>(null);
+  const [showVideoAnalysis, setShowVideoAnalysis] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
 
   const { data: garScores, isLoading: isLoadingGarScores } = useQuery({
     queryKey: ["/api/athlete/gar-scores", user?.id],
@@ -120,10 +128,26 @@ export default function GARAnalysis() {
 
   return (
     <div className="container mx-auto p-4 space-y-8">
-      <h1 className="text-3xl font-bold">GAR Analysis</h1>
-      <p className="text-muted-foreground">
-        Your detailed Growth and Ability Rating analysis and recommendations
-      </p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-3xl font-bold">GAR Analysis</h1>
+          <p className="text-muted-foreground">
+            Your detailed Growth and Ability Rating analysis and recommendations
+          </p>
+        </div>
+        
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full md:w-auto">
+          <TabsList className="grid grid-cols-4 w-full md:w-auto">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="trends">Trends</TabsTrigger>
+            <TabsTrigger value="comparison">Compare</TabsTrigger>
+            <TabsTrigger value="videos">Videos</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+      
+      <TabsContent value="overview" className="mt-0" hidden={activeTab !== "overview"}>
+      
 
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -479,11 +503,125 @@ export default function GARAnalysis() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button variant="outline" className="w-full">Upload New Video</Button>
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => setShowUploadModal(true)}
+              >
+                Upload New Video
+              </Button>
             </CardFooter>
           </Card>
         </div>
       </div>
+      </TabsContent>
+      
+      <TabsContent value="trends" className="mt-0" hidden={activeTab !== "trends"}>
+        <GarTrendAnalysis />
+      </TabsContent>
+      
+      <TabsContent value="comparison" className="mt-0" hidden={activeTab !== "comparison"}>
+        <GarComparison />
+      </TabsContent>
+      
+      <TabsContent value="videos" className="mt-0" hidden={activeTab !== "videos"}>
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold">Performance Videos</h2>
+            <Button 
+              onClick={() => setShowUploadModal(true)}
+              className="flex items-center gap-2"
+            >
+              <Video className="h-4 w-4" />
+              Upload New Video
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Mock videos for now */}
+            {[1, 2, 3, 4, 5, 6].map((video, index) => (
+              <Card key={index} className="overflow-hidden">
+                <div 
+                  className="aspect-video bg-slate-800 relative cursor-pointer group"
+                  onClick={() => {
+                    setSelectedVideo(video);
+                    setShowVideoAnalysis(true);
+                  }}
+                >
+                  <div className="absolute inset-0 flex items-center justify-center group-hover:bg-black/30 transition-colors">
+                    <Play className="h-12 w-12 text-white opacity-70 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="absolute top-2 right-2 bg-primary/90 text-white text-xs px-2 py-1 rounded-md">
+                    Score: {70 + Math.floor(Math.random() * 20)}
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
+                    <p className="text-white text-sm font-medium truncate">Basketball Game {index + 1}</p>
+                    <p className="text-white/70 text-xs">Analyzed {Math.floor(Math.random() * 30) + 1} days ago</p>
+                  </div>
+                </div>
+                <CardContent className="p-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm">Physical</span>
+                      <span className="text-sm font-medium">{70 + Math.floor(Math.random() * 20)}</span>
+                    </div>
+                    <CustomProgress 
+                      value={70 + Math.floor(Math.random() * 20)} 
+                      className="h-2" 
+                      indicatorClassName="bg-blue-500" 
+                    />
+                    
+                    <div className="flex justify-between">
+                      <span className="text-sm">Technical</span>
+                      <span className="text-sm font-medium">{70 + Math.floor(Math.random() * 20)}</span>
+                    </div>
+                    <CustomProgress 
+                      value={70 + Math.floor(Math.random() * 20)} 
+                      className="h-2" 
+                      indicatorClassName="bg-green-500" 
+                    />
+                    
+                    <div className="flex justify-between">
+                      <span className="text-sm">Mental</span>
+                      <span className="text-sm font-medium">{70 + Math.floor(Math.random() * 20)}</span>
+                    </div>
+                    <CustomProgress 
+                      value={70 + Math.floor(Math.random() * 20)} 
+                      className="h-2" 
+                      indicatorClassName="bg-purple-500" 
+                    />
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-end p-4 pt-0">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedVideo(video);
+                      setShowVideoAnalysis(true);
+                    }}
+                  >
+                    View Analysis
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </TabsContent>
+      
+      {/* Upload Modal */}
+      <VideoUploadModal
+        open={showUploadModal}
+        onOpenChange={setShowUploadModal}
+      />
+      
+      {/* Video Analysis Dialog */}
+      <VideoAnalysisDialog
+        open={showVideoAnalysis}
+        onOpenChange={setShowVideoAnalysis}
+        videoId={selectedVideo}
+      />
     </div>
   );
 }
