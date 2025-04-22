@@ -18,6 +18,7 @@ import { VideoUploadModal } from "@/components/gar/VideoUploadModal";
 import { VideoAnalysisDialog } from "@/components/gar/VideoAnalysisDialog";
 import { GarTrendAnalysis } from "@/components/gar/GarTrendAnalysis";
 import { GarComparison } from "@/components/gar/GarComparison";
+import { GarChallenges } from "@/components/gar/GarChallenges";
 import {
   Radar,
   RadarChart,
