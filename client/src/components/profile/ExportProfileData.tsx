@@ -85,45 +85,47 @@ const ExportProfileData = () => {
       data.personalInfo = basicInfo;
     }
     
-    if (exportOptions.garScores) {
+    if (exportOptions.garScores && user) {
       try {
-        const garScores = await fetch(`/api/gar-scores/${user.id}`).then(res => res.json());
+        const garScores = await fetch(`/api/gar-scores/${user.id}`).then(res => {
+          if (res.ok) return res.json();
+          return {};
+        });
         data.garScores = garScores;
       } catch (error) {
         console.error('Error fetching GAR scores:', error);
-        toast({
-          title: 'Error',
-          description: 'Failed to fetch GAR scores',
-          variant: 'destructive'
-        });
+        // Continue without showing error toast to allow export to proceed with available data
+        data.garScores = {
+          note: "GAR scores could not be loaded"
+        };
       }
     }
     
-    if (exportOptions.highlights) {
+    if (exportOptions.highlights && user) {
       try {
-        const highlights = await fetch(`/api/highlights?userId=${user.id}`).then(res => res.json());
+        const highlights = await fetch(`/api/highlights?userId=${user.id}`).then(res => {
+          if (res.ok) return res.json();
+          return [];
+        });
         data.highlights = highlights;
       } catch (error) {
         console.error('Error fetching highlights:', error);
-        toast({
-          title: 'Error',
-          description: 'Failed to fetch highlights',
-          variant: 'destructive'
-        });
+        // Continue without showing error toast to allow export to proceed with available data
+        data.highlights = [];
       }
     }
     
-    if (exportOptions.recommendations) {
+    if (exportOptions.recommendations && user) {
       try {
-        const recommendations = await fetch(`/api/recommendations/${user.id}`).then(res => res.json());
+        const recommendations = await fetch(`/api/recommendations/${user.id}`).then(res => {
+          if (res.ok) return res.json();
+          return [];
+        });
         data.recommendations = recommendations;
       } catch (error) {
         console.error('Error fetching recommendations:', error);
-        toast({
-          title: 'Error',
-          description: 'Failed to fetch recommendations',
-          variant: 'destructive'
-        });
+        // Continue without showing error toast to allow export to proceed with available data
+        data.recommendations = [];
       }
     }
     
@@ -140,7 +142,7 @@ const ExportProfileData = () => {
     
     doc.setFontSize(12);
     doc.text(`Generated on: ${currentDate}`, 14, 28);
-    doc.text(`Athlete: ${user.name}`, 14, 36);
+    doc.text(`Athlete: ${user?.name || 'Athlete'}`, 14, 36);
     
     let yPosition = 45;
     
@@ -286,9 +288,15 @@ const ExportProfileData = () => {
       
       const userData = await fetchUserData();
       
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+      
+      const fileName = `go4it_${user.username || 'athlete'}_data_export`;
+      
       if (exportFormat === 'pdf') {
         const doc = generatePDF(userData);
-        doc.save(`go4it_${user.username}_data_export.pdf`);
+        doc.save(`${fileName}.pdf`);
       } else {
         // Download as JSON
         const json = generateJSON(userData);
@@ -296,7 +304,7 @@ const ExportProfileData = () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `go4it_${user.username}_data_export.json`;
+        a.download = `${fileName}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
