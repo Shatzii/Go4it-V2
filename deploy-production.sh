@@ -25,6 +25,10 @@ npm ci --production
 echo "Building application..."
 npm run build
 
+# Verify essential content exists
+echo "Verifying essential content..."
+npx tsx scripts/verify-essential-content.ts
+
 # Check if an existing server process is running on port 81
 echo "Checking for existing processes on port 81..."
 if lsof -i:81 -t &> /dev/null; then
