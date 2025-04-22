@@ -1971,6 +1971,10 @@ export type PlayerActiveChallenge = typeof playerActiveChallenges.$inferSelect;
 export const insertPlayerActiveChallengeSchema = createInsertSchema(playerActiveChallenges).omit({ id: true });
 export type InsertPlayerActiveChallenge = z.infer<typeof insertPlayerActiveChallengeSchema>;
 
+export type GarImprovementChallenge = typeof garImprovementChallenges.$inferSelect;
+export const insertGarImprovementChallengeSchema = createInsertSchema(garImprovementChallenges).omit({ id: true, createdAt: true });
+export type InsertGarImprovementChallenge = z.infer<typeof insertGarImprovementChallengeSchema>;
+
 export type CoachMessage = typeof coachMessages.$inferSelect;
 export const insertCoachMessageSchema = createInsertSchema(coachMessages).omit({ id: true });
 export type InsertCoachMessage = z.infer<typeof insertCoachMessageSchema>;
