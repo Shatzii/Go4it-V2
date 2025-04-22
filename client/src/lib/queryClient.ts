@@ -4,7 +4,7 @@ import axios from "axios";
 /**
  * API Base URL handling:
  * - In development (localhost): use http://localhost:5000
- * - In production at 5.16.1.9: use port 81
+ * - In production at 5.161.99.81: use port 81
  * - In any other environment: use the same origin
  */
 const getBaseURL = () => {
@@ -12,7 +12,7 @@ const getBaseURL = () => {
   
   if (hostname === "localhost") {
     return "http://localhost:5000";
-  } else if (hostname === "5.16.1.9") {
+  } else if (hostname === "5.161.99.81") {
     // Production server configuration
     const protocol = window.location.protocol;
     return `${protocol}//${hostname}:81`;

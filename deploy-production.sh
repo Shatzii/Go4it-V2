@@ -1,11 +1,11 @@
 #!/bin/bash
-# Deployment script for Go4It Sports platform on production server (5.16.1.9:81)
+# Deployment script for Go4It Sports platform on production server (5.161.99.81:81)
 
 # Stop execution on any error
 set -e
 
 echo "===== Go4It Sports Production Deployment ====="
-echo "Target: 5.16.1.9:81"
+echo "Target: 5.161.99.81:81"
 echo "Beginning deployment process..."
 
 # Set NODE_ENV to production
