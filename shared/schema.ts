@@ -1819,6 +1819,41 @@ export const playerActiveChallengesRelations = relations(playerActiveChallenges,
   }),
 }));
 
+// GAR Improvement Challenges
+export const garImprovementChallenges = pgTable("gar_improvement_challenges", {
+  id: serial("id").primaryKey(),
+  challengeId: integer("challenge_id").notNull().references(() => playerChallenges.id),
+  categoryId: integer("category_id").references(() => garCategories.id),
+  subcategoryId: integer("subcategory_id").references(() => garSubcategories.id),
+  targetScore: real("target_score").notNull(),
+  currentScore: real("current_score"),
+  improvementPercentage: real("improvement_percentage"), // How much improvement is needed
+  recommendedDrills: jsonb("recommended_drills"),
+  resourceLinks: jsonb("resource_links"), // Video tutorials, guides, etc.
+  aiGeneratedTips: text("ai_generated_tips"),
+  difficulty: text("difficulty").notNull(), // easy, medium, hard - matches playerChallenges
+  sportType: text("sport_type").notNull(),
+  position: text("position"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Relations for GAR Improvement Challenges
+export const garImprovementChallengesRelations = relations(garImprovementChallenges, ({ one }) => ({
+  baseChallenge: one(playerChallenges, {
+    fields: [garImprovementChallenges.challengeId],
+    references: [playerChallenges.id],
+  }),
+  category: one(garCategories, {
+    fields: [garImprovementChallenges.categoryId],
+    references: [garCategories.id],
+  }),
+  subcategory: one(garSubcategories, {
+    fields: [garImprovementChallenges.subcategoryId],
+    references: [garSubcategories.id],
+  }),
+}));
+
 // Direct messaging system for users
 export const directMessages = pgTable("direct_messages", {
   id: serial("id").primaryKey(),
