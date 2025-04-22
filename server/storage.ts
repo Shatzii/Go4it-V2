@@ -37,7 +37,8 @@ import {
   workoutVerifications, type WorkoutVerification, type InsertWorkoutVerification,
   workoutVerificationCheckpoints, type WorkoutVerificationCheckpoint, type InsertWorkoutVerificationCheckpoint,
   onboardingProgress, type OnboardingProgress, type InsertOnboardingProgress,
-  athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile
+  athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile,
+  directMessages, type DirectMessage, type InsertDirectMessage
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql, inArray, asc } from "drizzle-orm";
@@ -255,6 +256,14 @@ export interface IStorage {
   finishAnthropicTrainingPlan(id: number, rating: number, feedback: string): Promise<AnthropicTrainingPlan | undefined>;
   
   // Hybrid AI Coach methods (using both Claude and GPT)
+  // Messaging System
+  getMessages(userId: number): Promise<DirectMessage[]>;
+  getConversation(userId1: number, userId2: number): Promise<DirectMessage[]>;
+  createMessage(message: InsertDirectMessage): Promise<DirectMessage>;
+  markMessageAsRead(messageId: number): Promise<DirectMessage | undefined>;
+  deleteMessage(messageId: number, userId: number): Promise<boolean>;
+  
+  // Hybrid AI Coach methods
   getHybridCoachingResponse(userId: number, message: string, modelPreference?: 'claude' | 'gpt' | 'both'): Promise<{message: string, source: string}>;
   getPersonalizedTrainingAdvice(userId: number, sport: string, skillLevel: string, focusArea: string): Promise<{advice: string, drills: any[], source: string}>;
   
@@ -4631,5 +4640,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
 }
+
+
 
 export const storage = new DatabaseStorage();
