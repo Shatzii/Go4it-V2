@@ -14,6 +14,24 @@ import { eq, and } from 'drizzle-orm';
 
 export class CombineService {
   /**
+   * Initialize the Combine Service
+   * Called during application startup
+   */
+  async initialize(): Promise<boolean> {
+    try {
+      // Check that tables exist by counting templates
+      const [templateCount] = await db
+        .select({ count: db.fn.count() })
+        .from(combineRatingTemplates);
+      
+      console.log(`Combine Service initialized with ${templateCount.count} templates`);
+      return true;
+    } catch (error) {
+      console.error('Failed to initialize Combine Service:', error);
+      return false;
+    }
+  }
+  /**
    * Get all templates with optional filtering
    */
   async getAllTemplates(filters: { sport?: string, position?: string, starLevel?: number } = {}): Promise<CombineRatingTemplate[]> {
