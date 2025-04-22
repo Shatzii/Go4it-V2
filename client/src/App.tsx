@@ -19,6 +19,7 @@ import Unauthorized from "@/pages/unauthorized";
 import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import AthleteProfile from "@/pages/athlete-profile";
+import PasswordReset from "@/pages/password-reset";
 import VideoAnalysis from "@/pages/video-analysis";
 import VideoAnalysisDetail from "@/pages/video-analysis-detail";
 import VideoAnalysisGARPage from "@/pages/video-analysis-page";
@@ -134,6 +135,8 @@ function Router() {
         <Route path="/simple-login" component={SimpleLogin} />
         
         <Route path="/test-auth" component={TestAuth} />
+        
+        <Route path="/password-reset" component={PasswordReset} />
         
         <Route path="/" component={HomePage} />
         
@@ -456,6 +459,10 @@ function AppContent() {
   
   if (location === "/test-auth") {
     return <TestAuth />;
+  }
+  
+  if (location === "/password-reset") {
+    return <PasswordReset />;
   }
   
   // Handle root route for homepage
