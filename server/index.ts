@@ -23,8 +23,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Add CORS middleware to allow cross-origin requests
+const isProduction = process.env.NODE_ENV === "production";
 app.use(cors({
-  origin: true, // Allow all origins
+  // In production, only allow requests from our own server
+  // In development, allow all origins for testing
+  origin: isProduction ? ['http://5.16.1.9:81', 'https://5.16.1.9:81'] : true,
   credentials: true, // Allow cookies to be sent
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Base-URL']
@@ -237,10 +240,16 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
+  // Production server will use port 81 on IP 5.16.1.9
+  // For development, we'll use port 5000
+  const isProduction = process.env.NODE_ENV === "production";
   const findAvailablePort = async (startPort: number): Promise<number> => {
+    // In production mode, always use port 81
+    if (isProduction) {
+      return 81;
+    }
+    
+    // In development, find an available port starting from startPort
     return new Promise((resolve) => {
       const netServer = net.createServer();
       netServer.listen(startPort, '0.0.0.0', () => {

@@ -53,9 +53,16 @@ class WebSocketService {
       }
     }
     
-    // Determine the correct protocol based on the current page protocol
+    // Determine the correct protocol and port based on the current environment
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    let wsHost = window.location.host;
+    
+    // For production server at 5.16.1.9, we need to use port 81
+    if (window.location.hostname === '5.16.1.9') {
+      wsHost = '5.16.1.9:81';
+    }
+    
+    const wsUrl = `${protocol}//${wsHost}/ws`;
 
     console.log(`Connecting to WebSocket at ${wsUrl}`);
     
