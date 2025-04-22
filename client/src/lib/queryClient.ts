@@ -1,7 +1,28 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 import axios from "axios";
 
-const baseURL = window.location.hostname === "localhost" ? "http://localhost:5000" : "";
+/**
+ * API Base URL handling:
+ * - In development (localhost): use http://localhost:5000
+ * - In production at 5.16.1.9: use port 81
+ * - In any other environment: use the same origin
+ */
+const getBaseURL = () => {
+  const hostname = window.location.hostname;
+  
+  if (hostname === "localhost") {
+    return "http://localhost:5000";
+  } else if (hostname === "5.16.1.9") {
+    // Production server configuration
+    const protocol = window.location.protocol;
+    return `${protocol}//${hostname}:81`;
+  } else {
+    // For any other hosting environment, use the same origin
+    return "";
+  }
+};
+
+const baseURL = getBaseURL();
 
 export const apiRequest = async (
   method: string,
