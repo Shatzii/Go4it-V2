@@ -1243,22 +1243,42 @@ export class DatabaseStorage implements IStorage {
 
   // Content Blocks operations
   async getContentBlocks(): Promise<ContentBlock[]> {
-    return await db.select()
-      .from(contentBlocks)
-      .where(eq(contentBlocks.active, true))
-      .orderBy(contentBlocks.order);
+    // Import cache service to avoid circular dependency
+    const { cachedFetch } = await import('./services/cache-service');
+    
+    return cachedFetch(
+      'content-blocks-all',
+      async () => {
+        return await db.select()
+          .from(contentBlocks)
+          .where(eq(contentBlocks.active, true))
+          .orderBy(contentBlocks.order);
+      },
+      600, // Cache for 10 minutes
+      'long'
+    );
   }
 
   async getContentBlocksBySection(section: string): Promise<ContentBlock[]> {
-    return await db.select()
-      .from(contentBlocks)
-      .where(
-        and(
-          eq(contentBlocks.active, true),
-          eq(contentBlocks.section, section)
-        )
-      )
-      .orderBy(contentBlocks.order);
+    // Import cache service to avoid circular dependency
+    const { cachedFetch } = await import('./services/cache-service');
+    
+    return cachedFetch(
+      `content-blocks-section-${section}`,
+      async () => {
+        return await db.select()
+          .from(contentBlocks)
+          .where(
+            and(
+              eq(contentBlocks.active, true),
+              eq(contentBlocks.section, section)
+            )
+          )
+          .orderBy(contentBlocks.order);
+      },
+      600, // Cache for 10 minutes
+      'long'
+    );
   }
 
   async getContentBlockById(id: number): Promise<ContentBlock | undefined> {
@@ -1301,20 +1321,40 @@ export class DatabaseStorage implements IStorage {
 
   // Blog Posts operations
   async getBlogPosts(limit: number = 10): Promise<BlogPost[]> {
-    return await db.select()
-      .from(blogPosts)
-      .orderBy(desc(blogPosts.publishDate))
-      .limit(limit);
+    // Import cache service to avoid circular dependency
+    const { cachedFetch } = await import('./services/cache-service');
+    
+    return cachedFetch(
+      `blog-posts-${limit}`,
+      async () => {
+        return await db.select()
+          .from(blogPosts)
+          .orderBy(desc(blogPosts.publishDate))
+          .limit(limit);
+      },
+      300, // Cache for 5 minutes
+      'medium'
+    );
   }
 
   async getFeaturedBlogPosts(limit: number = 5): Promise<BlogPost[]> {
-    return await db.select()
-      .from(blogPosts)
-      .where(
-        eq(blogPosts.featured, true)
-      )
-      .orderBy(desc(blogPosts.publishDate))
-      .limit(limit);
+    // Import cache service to avoid circular dependency
+    const { cachedFetch } = await import('./services/cache-service');
+    
+    return cachedFetch(
+      `featured-blog-posts-${limit}`,
+      async () => {
+        return await db.select()
+          .from(blogPosts)
+          .where(
+            eq(blogPosts.featured, true)
+          )
+          .orderBy(desc(blogPosts.publishDate))
+          .limit(limit);
+      },
+      300, // Cache for 5 minutes
+      'medium'
+    );
   }
 
   async getBlogPostById(id: number): Promise<BlogPost | undefined> {
