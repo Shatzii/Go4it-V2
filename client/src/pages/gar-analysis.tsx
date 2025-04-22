@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2, Info, TrendingUp, BarChart3, Activity, Award, Video, Play } from "lucide-react";
+import { Loader2, Info, TrendingUp, BarChart3, Activity, Award, Video, Play, Camera, UploadCloud } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -19,6 +19,7 @@ import { VideoAnalysisDialog } from "@/components/gar/VideoAnalysisDialog";
 import { GarTrendAnalysis } from "@/components/gar/GarTrendAnalysis";
 import { GarComparison } from "@/components/gar/GarComparison";
 import { GarChallenges } from "@/components/gar/GarChallenges";
+import { MobileVideoCaptureDialog } from "@/components/gar/MobileVideoCaptureDialog";
 import {
   Radar,
   RadarChart,
@@ -38,6 +39,7 @@ export default function GARAnalysis() {
   const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState<string>("physical");
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showMobileCaptureDialog, setShowMobileCaptureDialog] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<number | null>(null);
   const [showVideoAnalysis, setShowVideoAnalysis] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
@@ -527,15 +529,26 @@ export default function GARAnalysis() {
       
       <TabsContent value="videos" className="mt-0" hidden={activeTab !== "videos"}>
         <div className="space-y-6">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h2 className="text-2xl font-bold">Performance Videos</h2>
-            <Button 
-              onClick={() => setShowUploadModal(true)}
-              className="flex items-center gap-2"
-            >
-              <Video className="h-4 w-4" />
-              Upload New Video
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button 
+                onClick={() => setShowMobileCaptureDialog(true)}
+                className="flex items-center gap-2"
+                variant="default"
+              >
+                <Camera className="h-4 w-4" />
+                Record Now
+              </Button>
+              <Button 
+                onClick={() => setShowUploadModal(true)}
+                className="flex items-center gap-2"
+                variant="outline"
+              >
+                <UploadCloud className="h-4 w-4" />
+                Upload Video
+              </Button>
+            </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -622,6 +635,17 @@ export default function GARAnalysis() {
         open={showVideoAnalysis}
         onOpenChange={setShowVideoAnalysis}
         videoId={selectedVideo}
+      />
+      
+      {/* Mobile Video Capture Dialog */}
+      <MobileVideoCaptureDialog
+        open={showMobileCaptureDialog}
+        onOpenChange={setShowMobileCaptureDialog}
+        onCaptureComplete={(videoId) => {
+          setSelectedVideo(videoId);
+          setShowVideoAnalysis(true);
+          setShowMobileCaptureDialog(false);
+        }}
       />
     </div>
   );
