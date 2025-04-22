@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/query-client";
+import { apiRequest } from "@/lib/queryClient";
 import { Loader2 } from "lucide-react";
 
 import {
@@ -55,15 +55,11 @@ export default function ChangePasswordForm() {
   // Mutation for changing password
   const { mutate, isPending } = useMutation({
     mutationFn: async (data: ChangePasswordFormValues) => {
-      const response = await apiRequest("/api/auth/change-password", { 
-        method: "POST",
-        data
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to change password");
+      try {
+        return await apiRequest("POST", "/api/auth/change-password", data);
+      } catch (error: any) {
+        throw new Error(error.message || "Failed to change password");
       }
-      return await response.json();
     },
     onSuccess: () => {
       toast({
