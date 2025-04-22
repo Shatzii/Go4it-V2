@@ -31,7 +31,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { MeasurementToggle } from "@/components/ui/measurement-toggle";
-import { ExportProfileData } from "@/components/profile/ExportProfileData";
+import ExportProfileData from "@/components/profile/ExportProfileData";
 
 // Extend the athlete profile schema with more validation rules
 const athleteProfileFormSchema = insertAthleteProfileSchema.extend({
