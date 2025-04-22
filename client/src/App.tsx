@@ -20,6 +20,7 @@ import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import AthleteProfile from "@/pages/athlete-profile";
 import PasswordReset from "@/pages/password-reset";
+import ProfileSettings from "@/pages/profile-settings";
 import VideoAnalysis from "@/pages/video-analysis";
 import VideoAnalysisDetail from "@/pages/video-analysis-detail";
 import VideoAnalysisGARPage from "@/pages/video-analysis-page";
@@ -305,6 +306,11 @@ function Router() {
         {/* Settings Page Route */}
         <Route path="/settings">
           {() => <ProtectedRoute component={Settings} />}
+        </Route>
+        
+        {/* Profile Settings Route */}
+        <Route path="/profile-settings">
+          {() => <ProtectedRoute component={ProfileSettings} />}
         </Route>
         
         {/* SMS Messaging Route */}

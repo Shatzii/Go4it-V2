@@ -1,56 +1,39 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import React from "react";
 import { z } from "zod";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
+import { apiRequest } from "@/lib/query-client";
+import { Loader2 } from "lucide-react";
 
-// UI Components
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle
-} from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
-// Password change form validation schema
-const changePasswordSchema = z
-  .object({
-    currentPassword: z.string().min(1, { message: "Current password is required" }),
-    newPassword: z
-      .string()
-      .min(8, { message: "Password must be at least 8 characters" })
-      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).*$/, {
-        message:
-          "Password must include at least one uppercase letter, one lowercase letter, one number, and one special character",
-      }),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  })
-  .refine((data) => data.currentPassword !== data.newPassword, {
-    message: "New password must be different from current password",
-    path: ["newPassword"],
-  });
+// Password validation schema
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, "Current password is required"),
+  newPassword: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
+  confirmPassword: z.string().min(1, "Please confirm your password"),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
 
 type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;
 
@@ -59,11 +42,7 @@ type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;
  */
 export default function ChangePasswordForm() {
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Form for password change
+  
   const form = useForm<ChangePasswordFormValues>({
     resolver: zodResolver(changePasswordSchema),
     defaultValues: {
@@ -73,59 +52,42 @@ export default function ChangePasswordForm() {
     },
   });
 
-  // Handler for password change form submission
-  const onSubmit = async (data: ChangePasswordFormValues) => {
-    try {
-      setLoading(true);
-      setError(null);
-      setSuccess(false);
-
-      const response = await fetch("/api/auth/change-password", {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          currentPassword: data.currentPassword,
-          newPassword: data.newPassword,
-        }),
-      });
-
-      if (response.ok) {
-        toast({
-          title: "Password Changed",
-          description: "Your password has been updated successfully.",
-          duration: 5000,
-        });
-        
-        // Reset form
-        form.reset();
-        setSuccess(true);
-      } else {
+  // Mutation for changing password
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (data: ChangePasswordFormValues) => {
+      const response = await apiRequest("POST", "/api/auth/change-password", data);
+      if (!response.ok) {
         const errorData = await response.json();
-        setError(errorData.message || "Failed to change password. Please check your current password and try again.");
+        throw new Error(errorData.message || "Failed to change password");
       }
-    } catch (err) {
-      setError("An unexpected error occurred. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
+      return await response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Password changed",
+        description: "Your password has been updated successfully.",
+      });
+      form.reset();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Form submission handler
+  const onSubmit = async (data: ChangePasswordFormValues) => {
+    mutate(data);
   };
 
   return (
-    <Card className="shadow-sm">
-      <CardHeader>
-        <CardTitle className="text-xl">Change Password</CardTitle>
-        <CardDescription>
-          Update your password to keep your account secure
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <Card>
+      <CardContent className="pt-6">
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="currentPassword"
@@ -180,48 +142,21 @@ export default function ChangePasswordForm() {
               )}
             />
 
-            {success && (
-              <Alert className="bg-green-50 border-green-200">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <AlertTitle className="text-green-800">
-                  Password Updated
-                </AlertTitle>
-                <AlertDescription className="text-green-700">
-                  Your password has been changed successfully.
-                </AlertDescription>
-              </Alert>
-            )}
-
-            {error && (
-              <Alert className="bg-red-50 border-red-200">
-                <AlertCircle className="h-4 w-4 text-red-600" />
-                <AlertTitle className="text-red-800">
-                  Error
-                </AlertTitle>
-                <AlertDescription className="text-red-700">
-                  {error}
-                </AlertDescription>
-              </Alert>
-            )}
-
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading}
-            >
-              {loading ? (
-                <Loader2 className="animate-spin mr-2 h-4 w-4" />
-              ) : null}
-              Update Password
-            </Button>
+            <div className="flex justify-end pt-2">
+              <Button type="submit" disabled={isPending}>
+                {isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  "Change Password"
+                )}
+              </Button>
+            </div>
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="text-xs text-muted-foreground">
-        <p>
-          Make sure your password is strong and not used on other websites.
-        </p>
-      </CardFooter>
     </Card>
   );
 }
