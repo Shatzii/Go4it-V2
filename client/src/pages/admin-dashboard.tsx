@@ -1317,6 +1317,38 @@ export default function AdminDashboard() {
         {/* System Tab */}
         <TabsContent value="system">
           <div className="grid gap-6">
+            {/* System Management Tools */}
+            <Card>
+              <CardHeader>
+                <CardTitle>System Management</CardTitle>
+                <CardDescription>
+                  Advanced system management and deployment tools
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <Link to="/admin/uploader-page">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Upload className="h-4 w-4 mr-2" />
+                      Code Uploader
+                    </Button>
+                  </Link>
+                  <Link to="/admin/status">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Activity className="h-4 w-4 mr-2" />
+                      System Status
+                    </Button>
+                  </Link>
+                  <Link to="/admin/logs">
+                    <Button variant="outline" className="w-full justify-start">
+                      <FileText className="h-4 w-4 mr-2" />
+                      System Logs
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+            
             {/* Animation Features Quick Access */}
             <Card>
               <CardHeader>
