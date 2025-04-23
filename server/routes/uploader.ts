@@ -146,11 +146,12 @@ router.post('/deploy', async (req: Request, res: Response) => {
       success: true,
       message: `File deployed successfully to ${normalizedDestination}`
     });
-  } catch (error) {
-    log(`Error deploying file: ${error.message}`, 'uploader');
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    log(`Error deploying file: ${errorMessage}`, 'uploader');
     return res.status(500).json({
       success: false,
-      message: `Error deploying file: ${error.message}`
+      message: `Error deploying file: ${errorMessage}`
     });
   }
 });
@@ -191,11 +192,12 @@ router.get('/files', (req: Request, res: Response) => {
       .sort((a, b) => b.modified.getTime() - a.modified.getTime()); // Sort by most recent
     
     return res.json({ files });
-  } catch (error) {
-    log(`Error listing files: ${error.message}`, 'uploader');
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    log(`Error listing files: ${errorMessage}`, 'uploader');
     return res.status(500).json({
       success: false,
-      message: `Error listing files: ${error.message}`
+      message: `Error listing files: ${errorMessage}`
     });
   }
 });
