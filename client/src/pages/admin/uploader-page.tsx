@@ -51,7 +51,7 @@ const UploaderPage: React.FC = () => {
     queryKey: ['/api/uploader/files'],
     queryFn: async () => {
       const res = await apiRequest('GET', '/api/uploader/files');
-      return res.json();
+      return res.data;
     },
     enabled: !!user && user.role === 'admin',
   });
@@ -62,18 +62,8 @@ const UploaderPage: React.FC = () => {
       const formData = new FormData();
       formData.append('file', file);
 
-      return fetch('/api/uploader/upload', {
-        method: 'POST',
-        body: formData,
-        credentials: 'include',
-      }).then(res => {
-        if (!res.ok) {
-          return res.json().then(data => {
-            throw new Error(data.message || 'Upload failed');
-          });
-        }
-        return res.json();
-      });
+      const response = await apiRequest('POST', '/api/uploader/upload', formData);
+      return response.data;
     },
     onSuccess: () => {
       setSelectedFile(null);
@@ -96,21 +86,8 @@ const UploaderPage: React.FC = () => {
   // Mutation for file deployment
   const deployMutation = useMutation({
     mutationFn: async (data: DeployForm) => {
-      return fetch('/api/uploader/deploy', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-        credentials: 'include',
-      }).then(res => {
-        if (!res.ok) {
-          return res.json().then(data => {
-            throw new Error(data.message || 'Deployment failed');
-          });
-        }
-        return res.json();
-      });
+      const response = await apiRequest('POST', '/api/uploader/deploy', data);
+      return response.data;
     },
     onSuccess: (data) => {
       toast({
