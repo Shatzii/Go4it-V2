@@ -17,7 +17,7 @@ import {
   invalidateSession,
   verifyAccessToken,
   cleanupExpiredTokens
-} from './services/auth-token-service.js';
+} from './services/auth-token-service';
 import { registerAiCoachRoutes } from './routes/ai-coach-routes';
 import { registerAnthropicCoachRoutes } from './routes/anthropic-coach-routes';
 import hybridCoachRoutes, { registerHybridCoachRoutes } from './routes/hybrid-coach-routes';
