@@ -10,7 +10,14 @@ import { eq } from "drizzle-orm";
 import multer from "multer";
 import path from "path";
 import { WebSocketServer, WebSocket } from 'ws';
-import { generateTokens } from './services/auth-token-service';
+import { 
+  generateTokens, 
+  refreshAccessToken, 
+  invalidateUserTokens, 
+  invalidateSession,
+  verifyAccessToken,
+  cleanupExpiredTokens
+} from './services/auth-token-service.js';
 import { registerAiCoachRoutes } from './routes/ai-coach-routes';
 import { registerAnthropicCoachRoutes } from './routes/anthropic-coach-routes';
 import hybridCoachRoutes, { registerHybridCoachRoutes } from './routes/hybrid-coach-routes';
@@ -424,7 +431,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       try {
         // Generate JWT tokens for the user
-        const { generateTokens } = require('./services/auth-token-service');
+        // Using the imported generateTokens from the top of the file
         const deviceFingerprint = req.body.deviceFingerprint || req.headers["x-device-fingerprint"] || "web-app";
         const tokens = await generateTokens(user.id, user.role, deviceFingerprint);
         
@@ -488,7 +495,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       try {
         // Generate JWT tokens for the user
-        const { generateTokens } = require('./services/auth-token-service');
+        // Using the imported generateTokens from the top of the file
         const deviceFingerprint = req.body.deviceFingerprint || req.headers["x-device-fingerprint"] || "web-app";
         const tokens = await generateTokens(user.id, user.role, deviceFingerprint);
         
