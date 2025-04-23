@@ -112,7 +112,7 @@ export async function refreshAccessToken(refreshToken: string) {
       return null;
     }
     
-    // Token is valid, update last used time
+    // Token is valid, update last used time (using lastUsed field to match DB schema)
     await db
       .update(userTokens)
       .set({ lastUsed: new Date() })
