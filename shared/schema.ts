@@ -791,15 +791,15 @@ export const userDrillProgress = pgTable("user_drill_progress", {
 export const userTokens = pgTable("user_tokens", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
-  token: text("token").unique().notNull(),
-  tokenType: text("token_type").default("access"), // access, refresh, remember, reset
-  description: text("description"),
-  expiresAt: timestamp("expires_at"),
+  tokenHash: text("token_hash").notNull(),
+  sessionId: text("session_id").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
-  lastUsedAt: timestamp("last_used_at"),
+  lastUsed: timestamp("last_used"),
+  isRevoked: boolean("is_revoked").default(false),
   userAgent: text("user_agent"),
   ipAddress: text("ip_address"),
-  isRevoked: boolean("is_revoked").default(false),
+  deviceFingerprint: text("device_fingerprint"),
 });
 
 // User Agreements

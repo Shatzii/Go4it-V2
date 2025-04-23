@@ -37,16 +37,15 @@ export async function generateTokens(userId: number, role: string, deviceFingerp
     const expiresAt = new Date(decoded.exp! * 1000);
     
     // Store refresh token in database
-    // Note: We're storing the token directly in the token field
-    // This matches the user_tokens schema
+    // Note: We're storing the token directly in the token_hash field
+    // This matches the actual database structure
     await db.insert(userTokens).values({
       userId,
-      token: refreshToken, // For production, consider hashing this token instead
-      tokenType: 'refresh',
-      description: `Authentication token for ${deviceFingerprint || 'web-app'}`,
+      tokenHash: refreshToken, // For production, consider hashing this token instead
+      sessionId: decoded.sessionId || 'web-session',
       expiresAt,
-      lastUsedAt: new Date(),
-      userAgent: deviceFingerprint || 'web-app' // Use provided fingerprint as userAgent or default
+      lastUsed: new Date(),
+      deviceFingerprint: deviceFingerprint || 'web-app' // Use provided fingerprint or default
     });
     
     return {
@@ -102,9 +101,9 @@ export async function refreshAccessToken(refreshToken: string) {
       .from(userTokens)
       .where(
         and(
-          eq(userTokens.token, refreshToken),
+          eq(userTokens.tokenHash, refreshToken),
           eq(userTokens.userId, decoded.userId),
-          eq(userTokens.tokenType, 'refresh')
+          eq(userTokens.sessionId, decoded.sessionId || 'web-session')
         )
       );
     
@@ -116,7 +115,7 @@ export async function refreshAccessToken(refreshToken: string) {
     // Token is valid, update last used time
     await db
       .update(userTokens)
-      .set({ lastUsedAt: new Date() })
+      .set({ lastUsed: new Date() })
       .where(eq(userTokens.id, tokenRecord.id));
     
     // Generate new access token
@@ -159,15 +158,14 @@ export async function invalidateUserTokens(userId: number) {
 }
 
 /**
- * Invalidate a specific session based on the token description
+ * Invalidate a specific session
  */
 export async function invalidateSession(sessionId: string) {
   try {
-    // Since we don't have a sessionId column, but we're storing session info in the description,
-    // we'll use a SQL LIKE query to find tokens for this session
+    // We have an actual sessionId column in the database
     await db
       .delete(userTokens)
-      .where(sql`${userTokens.description} LIKE ${`%${sessionId}%`}`);
+      .where(eq(userTokens.sessionId, sessionId));
     
     return true;
   } catch (error) {
