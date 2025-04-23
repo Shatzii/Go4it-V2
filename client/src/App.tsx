@@ -85,6 +85,9 @@ import AthleteSocialHub from "@/pages/athlete-social-hub";
 import SkillDevelopmentTracker from "@/pages/skill-development-tracker";
 import ContentManager from "@/pages/admin/content-manager";
 import CmsManager from "@/pages/admin/cms-manager";
+import UploaderPage from "@/pages/admin/uploader-page";
+import StatusPage from "@/pages/admin/status";
+import LogsPage from "@/pages/admin/logs";
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -200,6 +203,18 @@ function Router() {
         
         <Route path="/admin/analytics-dashboard">
           {() => <ProtectedRoute component={AnalyticsDashboard} adminOnly={true} />}
+        </Route>
+
+        <Route path="/admin/uploader">
+          {() => <ProtectedRoute component={UploaderPage} adminOnly={true} />}
+        </Route>
+
+        <Route path="/admin/status">
+          {() => <ProtectedRoute component={StatusPage} adminOnly={true} />}
+        </Route>
+
+        <Route path="/admin/logs">
+          {() => <ProtectedRoute component={LogsPage} adminOnly={true} />}
         </Route>
         
         <Route path="/upload-video">
