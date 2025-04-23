@@ -571,28 +571,61 @@ export class DatabaseStorage implements IStorage {
   constructor() {
     // Initialize the XP transactions in-memory storage
     this._xpTransactions = {};
+    
+    // We'll start with a memory store by default for improved reliability
+    const MemoryStoreSession = MemoryStore(session);
+    this.sessionStore = new MemoryStoreSession({
+      checkPeriod: 86400000 // prune expired entries every 24h
+    });
+    
+    console.log('Memory session store initialized as default');
+    
+    // Create a delayed attempt to connect to PostgreSQL for session storage
+    this.setupPostgresSessionStore();
+  }
+  
+  /**
+   * Attempts to set up a PostgreSQL session store after a short delay
+   * This helps ensure the database connection is fully established
+   */
+  private async setupPostgresSessionStore() {
     try {
-      // Use PostgreSQL for session storage instead of memory store
-      const PgStore = connectPgSimple(session);
-      
-      this.sessionStore = new PgStore({
-        pool: pool, // Use the pool from db.ts
-        tableName: 'session', // Use the session table
-        createTableIfMissing: true,
-        // Added options for better reliability
-        pruneSessionInterval: 60 * 15, // Prune every 15 minutes (in seconds)
-        errorLog: console.error.bind(console, 'PostgreSQL session store error:')
-      });
-      
-      console.log('PostgreSQL session store initialized successfully');
+      // Wait 2 seconds before attempting to connect to PostgreSQL
+      // This gives the pool time to initialize properly
+      setTimeout(async () => {
+        try {
+          // Create a test client to verify database connection
+          const client = await pool.connect();
+          client.release(); // Release immediately after verification
+          
+          // Now set up the PostgreSQL session store
+          const PgStore = connectPgSimple(session);
+          
+          const pgSessionStore = new PgStore({
+            pool: pool,
+            tableName: 'session',
+            createTableIfMissing: true,
+            // Added options for better reliability
+            pruneSessionInterval: 60 * 60, // Prune every hour (in seconds) - reduced frequency
+            errorLog: console.error.bind(console, 'PostgreSQL session store error:')
+          });
+          
+          // Listen for connection errors
+          pgSessionStore.on('error', (error) => {
+            console.error('PostgreSQL session store error:', error);
+            // The memory store will remain active, so no action needed
+          });
+          
+          // Replace memory store with PostgreSQL store
+          this.sessionStore = pgSessionStore;
+          console.log('PostgreSQL session store initialized successfully');
+        } catch (pgError) {
+          console.error('Failed to initialize PostgreSQL session store, keeping memory store active:', pgError);
+        }
+      }, 2000);
     } catch (error) {
-      console.error('Failed to initialize PostgreSQL session store, falling back to memory store:', error);
-      
-      // Fallback to memory store in case of connection issues
-      const MemoryStoreSession = MemoryStore(session);
-      this.sessionStore = new MemoryStoreSession({
-        checkPeriod: 86400000 // prune expired entries every 24h
-      });
+      console.error('Error during session store setup:', error);
+      // Memory store remains active
     }
   }
 
