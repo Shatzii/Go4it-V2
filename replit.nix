@@ -1,5 +1,6 @@
 {pkgs}: {
   deps = [
+    pkgs.zip
     pkgs.iproute2
     pkgs.lsof
     pkgs.procps
