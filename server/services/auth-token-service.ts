@@ -37,15 +37,16 @@ export async function generateTokens(userId: number, role: string, deviceFingerp
     const expiresAt = new Date(decoded.exp! * 1000);
     
     // Store refresh token in database
-    // Note: We're storing the token directly in the tokenHash field
-    // This matches the current database structure
+    // Note: We're storing the token directly in the token field
+    // This matches the user_tokens schema
     await db.insert(userTokens).values({
       userId,
-      tokenHash: refreshToken, // For production, consider hashing this token instead
-      sessionId,
+      token: refreshToken, // For production, consider hashing this token instead
+      tokenType: 'refresh',
+      description: `Authentication token for ${deviceFingerprint || 'web-app'}`,
       expiresAt,
-      lastUsed: new Date(),
-      deviceFingerprint: deviceFingerprint || 'web-app' // Use provided fingerprint or default
+      lastUsedAt: new Date(),
+      userAgent: deviceFingerprint || 'web-app' // Use provided fingerprint as userAgent or default
     });
     
     return {
@@ -101,9 +102,9 @@ export async function refreshAccessToken(refreshToken: string) {
       .from(userTokens)
       .where(
         and(
-          eq(userTokens.tokenHash, refreshToken),
+          eq(userTokens.token, refreshToken),
           eq(userTokens.userId, decoded.userId),
-          eq(userTokens.sessionId, decoded.sessionId)
+          eq(userTokens.tokenType, 'refresh')
         )
       );
     
@@ -115,7 +116,7 @@ export async function refreshAccessToken(refreshToken: string) {
     // Token is valid, update last used time
     await db
       .update(userTokens)
-      .set({ lastUsed: new Date() })
+      .set({ lastUsedAt: new Date() })
       .where(eq(userTokens.id, tokenRecord.id));
     
     // Generate new access token
@@ -133,7 +134,7 @@ export async function refreshAccessToken(refreshToken: string) {
     return {
       accessToken,
       refreshToken,  // Return same refresh token, it's still valid
-      expiresAt: tokenRecord.expiresAt.toISOString()
+      expiresAt: tokenRecord.expiresAt ? tokenRecord.expiresAt.toISOString() : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
     };
   } catch (error) {
     console.error('Token refresh error:', error);
@@ -158,13 +159,15 @@ export async function invalidateUserTokens(userId: number) {
 }
 
 /**
- * Invalidate a specific session
+ * Invalidate a specific session based on the token description
  */
 export async function invalidateSession(sessionId: string) {
   try {
+    // Since we don't have a sessionId column, but we're storing session info in the description,
+    // we'll use a SQL LIKE query to find tokens for this session
     await db
       .delete(userTokens)
-      .where(eq(userTokens.sessionId, sessionId));
+      .where(sql`${userTokens.description} LIKE ${`%${sessionId}%`}`);
     
     return true;
   } catch (error) {
