@@ -45,6 +45,9 @@ import authPasswordRoutes from './routes/auth-password-routes';
 import onboardingRoutes from './routes/onboarding-routes';
 import healthRoutes from './routes/health-routes';
 import { registerGarRoutes } from './routes/gar-routes';
+import uploaderRouter from './uploader';
+import agentMessageRouter from './agent-message';
+import statusRouter from './status';
 
 // Helper function to determine event status
 function getEventStatus(event: any): 'upcoming' | 'filling_fast' | 'sold_out' | 'past' {
@@ -6914,6 +6917,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register GAR (Growth and Ability Rating) routes
   registerGarRoutes(app);
+  
+  // Register admin uploader routes
+  app.use('/api/admin/upload', uploaderRouter);
+  
+  // Register agent message routes
+  app.use('/api', agentMessageRouter);
+  
+  // Register status routes
+  app.use('/api', statusRouter);
 
   return server;
 }
