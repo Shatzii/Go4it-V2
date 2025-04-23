@@ -28,6 +28,7 @@ import academicRoutes from './routes/academic-routes';
 import animationRoutes from './routes/animation-routes';
 import cmsRoutes from './routes/cms-routes';
 import cmsCacheRoutes from './routes/cms-cache-routes';
+import uploaderRoutes from './routes/uploader';
 import exportRoutes from './routes/export-routes';
 import cmsPagesRoutes from './routes/cms-pages-routes';
 import cmsPageComponentsRoutes from './routes/cms-page-components-routes';
@@ -5426,6 +5427,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/cms/page-components', cmsPageComponentsRoutes);
   app.use('/api/cms/component-registry', cmsComponentRegistryRoutes);
   app.use('/api', exportRoutes);
+  
+  // Register code uploader routes (admin only)
+  app.use('/api/uploader', isAuthenticatedMiddleware, isAdminMiddleware, uploaderRoutes);
   
   // Register authentication routes
   app.use('/api/auth', authResetRoutes);
