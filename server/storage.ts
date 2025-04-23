@@ -4484,7 +4484,7 @@ export class DatabaseStorage implements IStorage {
       await db.update(userTokens)
         .set({
           isRevoked: true,
-          lastUsedAt: new Date() // Using lastUsedAt instead of revokedAt which doesn't exist
+          lastUsed: new Date() // Use lastUsed to match DB schema
         })
         .where(
           and(
@@ -4503,7 +4503,7 @@ export class DatabaseStorage implements IStorage {
     try {
       const [updatedToken] = await db.update(userTokens)
         .set({
-          lastUsedAt: new Date()
+          lastUsed: new Date() // Use lastUsed to match DB schema
         })
         .where(eq(userTokens.id, id))
         .returning();
