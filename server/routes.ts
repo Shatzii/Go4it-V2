@@ -534,7 +534,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     try {
-      const { refreshAccessToken } = require('./services/auth-token-service');
+      // Using the imported refreshAccessToken from the top of the file
       const tokenResult = await refreshAccessToken(refreshToken);
       
       if (!tokenResult) {
@@ -557,7 +557,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Invalidate tokens if we have user info
       if (user && user.id) {
-        const { invalidateUserTokens, invalidateSession } = require('./services/auth-token-service');
+        // Using the imported invalidateUserTokens and invalidateSession from the top of the file
         
         // If a specific session ID is provided, only invalidate that session
         if (sessionId) {
@@ -590,7 +590,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const authHeader = req.headers.authorization;
       if (authHeader && authHeader.startsWith('Bearer ')) {
         const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-        const { verifyAccessToken } = require('./services/auth-token-service');
+        // Using the imported verifyAccessToken from the top of the file
         const payload = verifyAccessToken(token);
         
         if (payload) {
@@ -622,7 +622,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.substring(7); // Remove 'Bearer ' prefix
       try {
-        const { verifyAccessToken } = require('./services/auth-token-service');
+        // Using the imported verifyAccessToken from the top of the file
         const payload = verifyAccessToken(token);
         
         if (payload) {
@@ -2112,7 +2112,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/admin/security/cleanup-expired-tokens", isAdmin, async (req: Request, res: Response) => {
     try {
-      const { cleanupExpiredTokens } = require('./services/auth-token-service');
+      // Using the imported cleanupExpiredTokens from the top of the file
       const success = await cleanupExpiredTokens();
       
       if (!success) {
