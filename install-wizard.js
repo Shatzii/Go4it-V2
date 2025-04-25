@@ -5,16 +5,20 @@
  * Version: 1.0.1
  */
 
-const express = require('express');
-const { exec, execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
-const { promisify } = require('util');
-const open = require('open');
-const dotenv = require('dotenv');
-const crypto = require('crypto');
-const { Pool } = require('pg');
+import express from 'express';
+import { exec, execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import os from 'os';
+import { promisify } from 'util';
+import * as dotenv from 'dotenv';
+import crypto from 'crypto';
+import pg from 'pg';
+
+const { Pool } = pg;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Promisify exec
 const execAsync = promisify(exec);
