@@ -235,6 +235,37 @@ function copyServerFiles() {
       console.error('  Error copying shared directory:', error);
     }
     
+    // Copy health and diagnostic tools
+    console.log('  Adding health check and diagnostic tools...');
+    
+    // Copy our health check script
+    if (fs.existsSync(path.join(__dirname, 'healthcheck.js'))) {
+      fs.copyFileSync(
+        path.join(__dirname, 'healthcheck.js'),
+        path.join(TEMP_DIR, 'healthcheck.js')
+      );
+      console.log('  Copied healthcheck.js');
+    }
+    
+    // Copy our database migration script
+    if (fs.existsSync(path.join(__dirname, 'migrate-database.js'))) {
+      fs.copyFileSync(
+        path.join(__dirname, 'migrate-database.js'),
+        path.join(TEMP_DIR, 'migrate-database.js')
+      );
+      console.log('  Copied migrate-database.js');
+    }
+    
+    // Copy our pre-deployment check script
+    if (fs.existsSync(path.join(__dirname, 'pre-deployment-check.sh'))) {
+      fs.copyFileSync(
+        path.join(__dirname, 'pre-deployment-check.sh'),
+        path.join(TEMP_DIR, 'pre-deployment-check.sh')
+      );
+      fs.chmodSync(path.join(TEMP_DIR, 'pre-deployment-check.sh'), 0o755); // Make executable
+      console.log('  Copied pre-deployment-check.sh');
+    }
+    
     // Create server.js entry point
     const serverEntryPoint = `/**
  * Go4It Sports API Server
@@ -248,17 +279,45 @@ require('dotenv').config();
 // Force production mode
 process.env.NODE_ENV = 'production';
 
+// Handle graceful shutdown
+process.on('SIGINT', () => {
+  console.log('Received SIGINT. Shutting down gracefully...');
+  
+  // Allow 10 seconds for shutdown operations
+  setTimeout(() => {
+    console.error('Graceful shutdown timed out. Forcing exit.');
+    process.exit(1);
+  }, 10000);
+  
+  // Attempt clean shutdown
+  try {
+    // Load the module to perform clean shutdown
+    require('./server/production-server').shutdown()
+      .then(() => {
+        console.log('Graceful shutdown completed.');
+        process.exit(0);
+      })
+      .catch(err => {
+        console.error('Error during shutdown:', err);
+        process.exit(1);
+      });
+  } catch (error) {
+    console.error('Fatal error during shutdown:', error);
+    process.exit(1);
+  }
+});
+
 // Start the server
 console.log('Starting Go4It Sports API Server...');
 console.log('Environment: ' + process.env.NODE_ENV);
 console.log('Version: ${VERSION}');
 
 // Load the production server
-require('./production-server.js');
+require('./server/production-server.js');
 `;
     
     fs.writeFileSync(path.join(TEMP_DIR, 'server.js'), serverEntryPoint);
-    console.log('  Created server.js entry point');
+    console.log('  Created server.js entry point with graceful shutdown');
   } catch (error) {
     console.error('  Error copying server files:', error);
   }
@@ -567,6 +626,7 @@ This package contains a production-ready build of the Go4It Sports platform for 
 ## Documentation
 - \`DEPLOYMENT.md\`: Detailed deployment instructions
 - \`RELEASE_NOTES.md\`: Changes in this version
+- \`FINAL_DEPLOYMENT_CHECKLIST.md\`: Step-by-step deployment verification
 - \`.env.example\`: Environment variable template
 
 ## Support
@@ -628,6 +688,9 @@ unzip go4it-deployment-*.zip -d /var/www/go4itsports.org/
 # Navigate to application directory
 cd /var/www/go4itsports.org
 
+# Run pre-deployment check
+./pre-deployment-check.sh
+
 # Install dependencies
 npm install --production
 
@@ -682,11 +745,18 @@ find "$BACKUP_DIR" -name "go4it_sports_*.sql" -mtime +30 -delete
 
 # Make the script executable
 sudo chmod +x /etc/cron.daily/backup-go4itsports.sh
+
+# Set up health check monitoring
+(crontab -l 2>/dev/null; echo "0 * * * * cd /var/www/go4itsports.org && node healthcheck.js >> /var/www/go4itsports.org/logs/health-checks.log 2>&1") | crontab -
 \`\`\`
+
+## Step 8: Final Verification
+See the \`FINAL_DEPLOYMENT_CHECKLIST.md\` file for a comprehensive deployment verification checklist.
 
 ## Troubleshooting
 - Check application logs: \`tail -f /var/www/go4itsports.org/logs/app.log\`
 - Check Nginx logs: \`sudo tail -f /var/log/nginx/error.log\`
+- Run health check: \`node healthcheck.js\`
 - Restart the application: \`pm2 restart go4it-api\`
 - Verify database connection: \`psql -U go4it -h localhost -d go4it_sports\`
 
@@ -695,6 +765,15 @@ For additional support, contact support@go4itsports.org
   
   fs.writeFileSync(path.join(TEMP_DIR, 'DEPLOYMENT.md'), deployment);
   console.log('  Created DEPLOYMENT.md');
+  
+  // Copy Final Deployment Checklist if it exists
+  if (fs.existsSync(path.join(__dirname, 'FINAL_DEPLOYMENT_CHECKLIST.md'))) {
+    fs.copyFileSync(
+      path.join(__dirname, 'FINAL_DEPLOYMENT_CHECKLIST.md'),
+      path.join(TEMP_DIR, 'FINAL_DEPLOYMENT_CHECKLIST.md')
+    );
+    console.log('  Copied FINAL_DEPLOYMENT_CHECKLIST.md');
+  }
   
   // Create RELEASE_NOTES.md
   const releaseNotes = `# Go4It Sports Platform - Release Notes
@@ -732,6 +811,13 @@ This release focuses on production optimization and deployment readiness for the
 - **Graceful Shutdown**: Added proper shutdown handlers for database and server processes
 - **Resource Limits**: Configured appropriate request limits and timeouts for production traffic
 
+### Deployment Tools
+
+- **Health Check Monitor**: Added comprehensive health monitoring for all system components
+- **Pre-Deployment Verification**: Added environment verification script
+- **Database Migration Tool**: Added safe database migration with automatic backups
+- **Deployment Checklist**: Added comprehensive deployment verification checklist
+
 ### Bug Fixes
 
 - Fixed database statement timeout issues
@@ -763,6 +849,13 @@ For information about previous versions, please refer to our version history doc
 - Static asset optimization with proper cache headers
 - ES Module support for all JavaScript files
 - Comprehensive security headers
+
+## Deployment Tools
+
+- Pre-deployment environment verification script
+- Health check monitoring system
+- Safe database migration with automatic backups
+- Comprehensive deployment checklist
 
 ## Server Requirements
 
