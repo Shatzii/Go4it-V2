@@ -9,85 +9,96 @@ import { MeasurementProvider } from "./contexts/measurement-context";
 import { Loader2 } from "lucide-react";
 import { AccessibilityControls } from "@/components/accessibility/accessibility-controls";
 // REMOVED: import { GlobalAgreementModal } from "@/components/global-agreement-modal";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 
 import Layout from "@/components/layout/sidebar";
 import NotFound from "@/pages/not-found";
 import ServerError from "@/pages/server-error";
 import Forbidden from "@/pages/forbidden";
 import Unauthorized from "@/pages/unauthorized";
-import Dashboard from "@/pages/dashboard";
-import Profile from "@/pages/profile";
-import AthleteProfile from "@/pages/athlete-profile";
-import PasswordReset from "@/pages/password-reset";
-import ProfileSettings from "@/pages/profile-settings";
-import VideoAnalysis from "@/pages/video-analysis";
-import VideoAnalysisDetail from "@/pages/video-analysis-detail";
-import VideoAnalysisGARPage from "@/pages/video-analysis-page";
-import SportRecommendations from "@/pages/sport-recommendations";
-import CoachConnection from "@/pages/coach-connection";
-import NcaaClearinghouse from "@/pages/ncaa-clearinghouse";
-import AdminDashboard from "@/pages/admin-dashboard";
-import UploadVideo from "@/pages/upload-video";
-import AuthPage from "@/pages/auth-page";
-import AnalysisReport from "@/pages/analysis-report";
-import MessagingPage from "@/pages/messaging";
 import HomePage from "@/pages/home-page";
-// Removed old CMS page import in favor of CmsManager
-import TestAuth from "@/pages/test-auth";
-import SmsMessagingPage from "@/pages/sms-messaging";
-
-// Feature page imports
-import FilmComparison from "@/pages/film-comparison";
-import FilmComparisonCreate from "@/pages/film-comparison-create";
-import FilmComparisonDetail from "@/pages/film-comparison-detail";
-import FilmComparisonEdit from "@/pages/film-comparison-edit";
-import NextUpSpotlight from "@/pages/nextup-spotlight";
-import SpotlightProfile from "@/pages/spotlight-profile";
-import SpotlightCreate from "@/pages/spotlight-create";
-import MyPlayerXP from "@/pages/myplayer-xp";
-import MyPlayerXPEnhanced from "@/pages/myplayer-xp-enhanced";
-import WorkoutVerification from "@/pages/workout-verification";
-import VerificationDetail from "@/pages/verification-detail";
-import SubmitVerification from "@/pages/submit-verification";
-import WeightRoom from "@/pages/weight-room";
-import CombineTour from "@/pages/combine-tour";
-import CombineTourDetail from "@/pages/combine-tour-detail";
-import CombinePublic from "@/pages/combine-public";
-import HighlightGenerator from "@/pages/highlight-generator";
+import AuthPage from "@/pages/auth-page";
+import PasswordReset from "@/pages/password-reset";
 import SimpleLogin from "@/pages/simple-login";
+import TestAuth from "@/pages/test-auth";
 
-// New feature page imports - Phase 2
-import MyPlayerStarPath from "@/pages/myplayer-star-path";
-import EnhancedStarPath from "@/pages/myplayer/enhanced-star-path";
-import MyPlayerAICoach from "@/pages/myplayer-ai-coach";
-import HybridAICoach from "@/pages/hybrid-ai-coach";
-import MyPlayerInterface from "@/pages/myplayer-interface";
-import ScoutVisionFeed from "@/pages/scoutvision-feed";
-import CoachPortal from "@/pages/coach-portal";
-import Settings from "@/pages/settings";
-import ProfileCompletionPage from "@/pages/profile-completion";
-import BlogPost from "@/pages/blog-post";
-import BlogList from "@/pages/blog-list";
-import GarScorePage from "@/pages/gar-score";
-import SkillTreePage from "@/pages/skill-tree-page";
-import AthleteStarProfilesPage from "@/pages/athlete-star-profiles";
-import EnhancedGarVisualizationPage from "@/pages/enhanced-gar-visualization";
-import EnhancedGARPage from "@/pages/enhanced-gar";
-import AcademicProgress from "@/pages/academic-progress";
-import VideoHighlightsPage from "@/pages/video-highlights-page";
-import AIVideoPlayerDemo from "@/pages/ai-video-player-demo";
-import EnhancedSkillTreePage from "@/pages/enhanced-skill-tree-page";
-import AnalyticsDashboard from "@/pages/analytics-dashboard";
-import TextToAnimationPage from "@/pages/text-to-animation";
-import AthleticCombineShowcasePage from "@/pages/athletic-combine-showcase";
-import AthleteSocialHub from "@/pages/athlete-social-hub";
-import SkillDevelopmentTracker from "@/pages/skill-development-tracker";
-import ContentManager from "@/pages/admin/content-manager";
-import CmsManager from "@/pages/admin/cms-manager";
-import UploaderPage from "@/pages/admin/uploader-page";
-import StatusPage from "@/pages/admin/status";
-import LogsPage from "@/pages/admin/logs";
+// Lazy-loaded core pages
+const Dashboard = lazy(() => import("@/pages/dashboard"));
+const Profile = lazy(() => import("@/pages/profile"));
+const AthleteProfile = lazy(() => import("@/pages/athlete-profile"));
+const ProfileSettings = lazy(() => import("@/pages/profile-settings"));
+const MessagingPage = lazy(() => import("@/pages/messaging"));
+const SmsMessagingPage = lazy(() => import("@/pages/sms-messaging"));
+
+// Lazy-loaded video analysis pages
+const VideoAnalysis = lazy(() => import("@/pages/video-analysis"));
+const VideoAnalysisDetail = lazy(() => import("@/pages/video-analysis-detail"));
+const VideoAnalysisGARPage = lazy(() => import("@/pages/video-analysis-page"));
+const AnalysisReport = lazy(() => import("@/pages/analysis-report"));
+const UploadVideo = lazy(() => import("@/pages/upload-video"));
+const HighlightGenerator = lazy(() => import("@/pages/highlight-generator"));
+const VideoHighlightsPage = lazy(() => import("@/pages/video-highlights-page"));
+const AIVideoPlayerDemo = lazy(() => import("@/pages/ai-video-player-demo"));
+
+// Lazy-loaded athlete development pages
+const SportRecommendations = lazy(() => import("@/pages/sport-recommendations"));
+const CoachConnection = lazy(() => import("@/pages/coach-connection"));
+const NcaaClearinghouse = lazy(() => import("@/pages/ncaa-clearinghouse"));
+const GarScorePage = lazy(() => import("@/pages/gar-score"));
+const EnhancedGARPage = lazy(() => import("@/pages/enhanced-gar"));
+const EnhancedGarVisualizationPage = lazy(() => import("@/pages/enhanced-gar-visualization"));
+const AcademicProgress = lazy(() => import("@/pages/academic-progress"));
+
+// Lazy-loaded admin pages
+const AdminDashboard = lazy(() => import("@/pages/admin-dashboard"));
+const ContentManager = lazy(() => import("@/pages/admin/content-manager"));
+const CmsManager = lazy(() => import("@/pages/admin/cms-manager"));
+const UploaderPage = lazy(() => import("@/pages/admin/uploader-page"));
+const StatusPage = lazy(() => import("@/pages/admin/status"));
+const LogsPage = lazy(() => import("@/pages/admin/logs"));
+const AnalyticsDashboard = lazy(() => import("@/pages/analytics-dashboard"));
+
+// Lazy-loaded film comparison pages
+const FilmComparison = lazy(() => import("@/pages/film-comparison"));
+const FilmComparisonCreate = lazy(() => import("@/pages/film-comparison-create"));
+const FilmComparisonDetail = lazy(() => import("@/pages/film-comparison-detail"));
+const FilmComparisonEdit = lazy(() => import("@/pages/film-comparison-edit"));
+
+// Lazy-loaded spotlight pages
+const NextUpSpotlight = lazy(() => import("@/pages/nextup-spotlight"));
+const SpotlightProfile = lazy(() => import("@/pages/spotlight-profile"));
+const SpotlightCreate = lazy(() => import("@/pages/spotlight-create"));
+
+// Lazy-loaded MyPlayer pages
+const MyPlayerXP = lazy(() => import("@/pages/myplayer-xp"));
+const MyPlayerXPEnhanced = lazy(() => import("@/pages/myplayer-xp-enhanced"));
+const MyPlayerStarPath = lazy(() => import("@/pages/myplayer-star-path"));
+const EnhancedStarPath = lazy(() => import("@/pages/myplayer/enhanced-star-path"));
+const MyPlayerAICoach = lazy(() => import("@/pages/myplayer-ai-coach"));
+const HybridAICoach = lazy(() => import("@/pages/hybrid-ai-coach"));
+const MyPlayerInterface = lazy(() => import("@/pages/myplayer-interface"));
+const WorkoutVerification = lazy(() => import("@/pages/workout-verification"));
+const VerificationDetail = lazy(() => import("@/pages/verification-detail"));
+const SubmitVerification = lazy(() => import("@/pages/submit-verification"));
+const WeightRoom = lazy(() => import("@/pages/weight-room"));
+
+// Lazy-loaded other feature pages
+const ScoutVisionFeed = lazy(() => import("@/pages/scoutvision-feed"));
+const CoachPortal = lazy(() => import("@/pages/coach-portal"));
+const Settings = lazy(() => import("@/pages/settings"));
+const ProfileCompletionPage = lazy(() => import("@/pages/profile-completion"));
+const BlogPost = lazy(() => import("@/pages/blog-post"));
+const BlogList = lazy(() => import("@/pages/blog-list"));
+const SkillTreePage = lazy(() => import("@/pages/skill-tree-page"));
+const AthleteStarProfilesPage = lazy(() => import("@/pages/athlete-star-profiles"));
+const EnhancedSkillTreePage = lazy(() => import("@/pages/enhanced-skill-tree-page"));
+const TextToAnimationPage = lazy(() => import("@/pages/text-to-animation"));
+const AthleticCombineShowcasePage = lazy(() => import("@/pages/athletic-combine-showcase"));
+const AthleteSocialHub = lazy(() => import("@/pages/athlete-social-hub"));
+const SkillDevelopmentTracker = lazy(() => import("@/pages/skill-development-tracker"));
+const CombineTour = lazy(() => import("@/pages/combine-tour"));
+const CombineTourDetail = lazy(() => import("@/pages/combine-tour-detail"));
+const CombinePublic = lazy(() => import("@/pages/combine-public"));
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -117,7 +128,15 @@ function ProtectedRoute({ component: Component, adminOnly = false }: ProtectedRo
     return null;
   }
 
-  return <Component />;
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="h-8 w-8 animate-spin text-border" />
+      </div>
+    }>
+      <Component />
+    </Suspense>
+  );
 }
 
 // Simple scroll-to-top component that runs on route changes
@@ -346,11 +365,27 @@ function Router() {
         
         {/* Blog Routes */}
         <Route path="/blog">
-          {() => <BlogList />}
+          {() => (
+            <Suspense fallback={
+              <div className="flex items-center justify-center h-full">
+                <Loader2 className="h-8 w-8 animate-spin text-border" />
+              </div>
+            }>
+              <BlogList />
+            </Suspense>
+          )}
         </Route>
         
         <Route path="/blog/:slug">
-          {() => <BlogPost />}
+          {() => (
+            <Suspense fallback={
+              <div className="flex items-center justify-center h-full">
+                <Loader2 className="h-8 w-8 animate-spin text-border" />
+              </div>
+            }>
+              <BlogPost />
+            </Suspense>
+          )}
         </Route>
         
         {/* GAR Score Page Route */}
@@ -384,7 +419,15 @@ function Router() {
         
         {/* Athlete Profile Page Route */}
         <Route path="/profile/:id">
-          {() => <AthleteProfile />}
+          {() => (
+            <Suspense fallback={
+              <div className="flex items-center justify-center h-full">
+                <Loader2 className="h-8 w-8 animate-spin text-border" />
+              </div>
+            }>
+              <AthleteProfile />
+            </Suspense>
+          )}
         </Route>
         
         {/* Athlete Star Profiles Route */}
