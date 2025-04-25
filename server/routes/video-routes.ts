@@ -6,6 +6,7 @@ import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import { insertVideoSchema, videos } from '@shared/schema';
 import { z } from 'zod';
+import { invalidateCache } from '../middleware/cache-middleware';
 
 export const videoRoutes = Router();
 
@@ -69,6 +70,11 @@ videoRoutes.post('/upload', upload.single('video'), async (req: Request, res: Re
       createdAt: new Date(),
       thumbnailPath: null, // To be generated later if thumbnail processing is implemented
     });
+    
+    // Invalidate cache for video listings
+    invalidateCache('/api/videos');
+    invalidateCache(`/api/videos?userId=${userId}`);
+    invalidateCache('/api/videos/recent');
     
     return res.status(201).json({
       success: true,
@@ -175,6 +181,12 @@ videoRoutes.delete('/:id', async (req: Request, res: Response) => {
     
     // Delete from database
     await storage.deleteVideo(videoId);
+    
+    // Invalidate cache for video listings
+    invalidateCache('/api/videos');
+    invalidateCache(`/api/videos?userId=${userId}`);
+    invalidateCache('/api/videos/recent');
+    invalidateCache(`/api/videos/${videoId}`);
     
     return res.json({ 
       success: true,
