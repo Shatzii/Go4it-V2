@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Go4It Sports Installation Wizard</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+  <div class="wizard-container">
+    <div class="wizard-sidebar">
+      <div class="logo-container">
+        <img src="logo.png" alt="Go4It Sports Logo" class="logo">
+        <h2>Go4It Sports</h2>
+        <div class="version">v1.0.1</div>
+      </div>
+      
+      <div class="steps-container">
+        <div class="step" data-step="0">
+          <div class="step-number">1</div>
+          <div class="step-details">
+            <div class="step-title">Welcome</div>
+            <div class="step-description">Installation Overview</div>
+          </div>
+        </div>
+        <div class="step" data-step="1">
+          <div class="step-number">2</div>
+          <div class="step-details">
+            <div class="step-title">System Check</div>
+            <div class="step-description">Verify Requirements</div>
+          </div>
+        </div>
+        <div class="step" data-step="2">
+          <div class="step-number">3</div>
+          <div class="step-details">
+            <div class="step-title">Database Setup</div>
+            <div class="step-description">Configure Connection</div>
+          </div>
+        </div>
+        <div class="step" data-step="3">
+          <div class="step-number">4</div>
+          <div class="step-details">
+            <div class="step-title">Web Server</div>
+            <div class="step-description">Setup Nginx</div>
+          </div>
+        </div>
+        <div class="step" data-step="4">
+          <div class="step-number">5</div>
+          <div class="step-details">
+            <div class="step-title">API Configuration</div>
+            <div class="step-description">Configure API Server</div>
+          </div>
+        </div>
+        <div class="step" data-step="5">
+          <div class="step-number">6</div>
+          <div class="step-details">
+            <div class="step-title">API Keys</div>
+            <div class="step-description">Set Up External Services</div>
+          </div>
+        </div>
+        <div class="step" data-step="6">
+          <div class="step-number">7</div>
+          <div class="step-details">
+            <div class="step-title">Features</div>
+            <div class="step-description">Enable/Disable Features</div>
+          </div>
+        </div>
+        <div class="step" data-step="7">
+          <div class="step-number">8</div>
+          <div class="step-details">
+            <div class="step-title">Installation</div>
+            <div class="step-description">Complete Setup</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="wizard-content">
+      <!-- Welcome Screen -->
+      <div class="wizard-screen" id="screen-0">
+        <h1>Welcome to Go4It Sports</h1>
+        <div class="welcome-container">
+          <div class="welcome-image">
+            <img src="welcome.png" alt="Welcome to Go4It Sports">
+          </div>
+          <div class="welcome-text">
+            <h3>Installation Wizard</h3>
+            <p>This wizard will guide you through setting up the Go4It Sports platform on your server. We'll help you configure:</p>
+            <ul>
+              <li>Database connection</li>
+              <li>Web server settings</li>
+              <li>API integration</li>
+              <li>External services</li>
+              <li>Feature customization</li>
+            </ul>
+            <p>The installation process will take approximately 5-10 minutes to complete.</p>
+            <div class="alert info">
+              <b>Note:</b> This wizard requires administrative access to your server to configure services.
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- System Check Screen -->
+      <div class="wizard-screen" id="screen-1">
+        <h1>System Requirements Check</h1>
+        <div class="system-check-container">
+          <div class="system-info">
+            <h3>System Information</h3>
+            <div class="info-grid" id="system-info-grid">
+              <div class="info-row">
+                <div class="info-label">Hostname:</div>
+                <div class="info-value" id="hostname">Checking...</div>
+              </div>
+              <div class="info-row">
+                <div class="info-label">Operating System:</div>
+                <div class="info-value" id="os-type">Checking...</div>
+              </div>
+              <div class="info-row">
+                <div class="info-label">OS Version:</div>
+                <div class="info-value" id="os-release">Checking...</div>
+              </div>
+              <div class="info-row">
+                <div class="info-label">CPU Cores:</div>
+                <div class="info-value" id="cpu-count">Checking...</div>
+              </div>
+              <div class="info-row">
+                <div class="info-label">Memory:</div>
+                <div class="info-value" id="memory-total">Checking...</div>
+              </div>
+              <div class="info-row">
+                <div class="info-label">Disk Space:</div>
+                <div class="info-value" id="disk-space">Checking...</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="software-check">
+            <h3>Software Requirements</h3>
+            <div class="requirements-table">
+              <div class="requirement-header">
+                <div class="requirement-name">Component</div>
+                <div class="requirement-required">Required</div>
+                <div class="requirement-installed">Installed</div>
+                <div class="requirement-status">Status</div>
+              </div>
+              <div id="requirements-list">
+                <div class="requirement-loading">
+                  Checking system requirements...
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div id="system-check-status" class="system-check-status">
+            <div class="loading-spinner"></div>
+            <p>Checking system requirements...</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Database Setup Screen -->
+      <div class="wizard-screen" id="screen-2">
+        <h1>Database Configuration</h1>
+        <div class="database-setup-container">
+          <div class="database-form">
+            <p>Configure your PostgreSQL database connection for Go4It Sports.</p>
+            
+            <div class="form-group">
+              <label for="db-host">Database Host</label>
+              <input type="text" id="db-host" value="localhost" placeholder="e.g., localhost or 127.0.0.1">
+            </div>
+            
+            <div class="form-group">
+              <label for="db-port">Database Port</label>
+              <input type="number" id="db-port" value="5432" placeholder="Default: 5432">
+            </div>
+            
+            <div class="form-group">
+              <label for="db-name">Database Name</label>
+              <input type="text" id="db-name" value="go4it_sports" placeholder="e.g., go4it_sports">
+            </div>
+            
+            <div class="form-group">
+              <label for="db-user">Database User</label>
+              <input type="text" id="db-user" value="go4it" placeholder="e.g., go4it">
+            </div>
+            
+            <div class="form-group">
+              <label for="db-password">Database Password</label>
+              <input type="password" id="db-password" placeholder="Enter database password">
+            </div>
+            
+            <div class="button-container">
+              <button id="test-connection-btn" class="primary-button">Test Connection</button>
+            </div>
+            
+            <div id="db-connection-status" class="connection-status hidden">
+              <div class="status-icon"></div>
+              <div class="status-message"></div>
+            </div>
+          </div>
+          
+          <div class="database-info">
+            <h3>Database Setup Instructions</h3>
+            <p>If you haven't created a database yet, you can use the following PostgreSQL commands:</p>
+            <div class="code-block">
+CREATE USER go4it WITH PASSWORD 'your_secure_password';
+CREATE DATABASE go4it_sports OWNER go4it;
+GRANT ALL PRIVILEGES ON DATABASE go4it_sports TO go4it;
+            </div>
+            
+            <div class="alert info">
+              <b>Note:</b> The database user needs permission to create tables.
+            </div>
+            
+            <div class="alert warning">
+              <b>Important:</b> Use a secure password and restrict database access from external networks.
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Web Server Setup Screen -->
+      <div class="wizard-screen" id="screen-3">
+        <h1>Web Server Configuration</h1>
+        <div class="webserver-setup-container">
+          <div class="webserver-form">
+            <p>Configure the web server settings for Go4It Sports.</p>
+            
+            <div class="form-group">
+              <label for="server-type">Web Server Type</label>
+              <select id="server-type">
+                <option value="nginx">Nginx (Recommended)</option>
+                <option value="apache">Apache</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="server-domain">Domain Name</label>
+              <input type="text" id="server-domain" value="go4itsports.org" placeholder="e.g., go4itsports.org">
+            </div>
+            
+            <div class="form-group checkbox-group">
+              <input type="checkbox" id="use-ssl" checked>
+              <label for="use-ssl">Enable HTTPS (SSL)</label>
+            </div>
+            
+            <div class="form-group">
+              <label for="http-port">HTTP Port</label>
+              <input type="number" id="http-port" value="80" placeholder="Default: 80">
+            </div>
+            
+            <div class="ssl-settings" id="ssl-settings">
+              <div class="form-group">
+                <label for="https-port">HTTPS Port</label>
+                <input type="number" id="https-port" value="443" placeholder="Default: 443">
+              </div>
+            </div>
+          </div>
+          
+          <div class="webserver-info">
+            <h3>Web Server Information</h3>
+            <p>The installation wizard will generate configuration files appropriate for your web server. For Nginx, the configuration will include:</p>
+            <ul>
+              <li>Server block for your domain</li>
+              <li>SSL configuration (if enabled)</li>
+              <li>HTTP to HTTPS redirect (if enabled)</li>
+              <li>API routing configuration</li>
+              <li>WebSocket support for real-time features</li>
+              <li>Optimized caching directives</li>
+              <li>Security headers</li>
+            </ul>
+            
+            <div class="alert info">
+              <b>Note:</b> For SSL certificates, we recommend using Let's Encrypt with Certbot.
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- API Configuration Screen -->
+      <div class="wizard-screen" id="screen-4">
+        <h1>API Server Configuration</h1>
+        <div class="api-setup-container">
+          <div class="api-form">
+            <p>Configure the API server settings for Go4It Sports.</p>
+            
+            <div class="form-group">
+              <label for="api-port">API Server Port</label>
+              <input type="number" id="api-port" value="5000" placeholder="Default: 5000">
+              <div class="input-hint">This is the port the Node.js server will run on.</div>
+            </div>
+            
+            <div class="form-group">
+              <label for="cors-origins">CORS Origins</label>
+              <input type="text" id="cors-origins" value="*" placeholder="e.g., * or https://go4itsports.org">
+              <div class="input-hint">Comma-separated list of domains allowed to access the API.</div>
+            </div>
+            
+            <div class="form-group">
+              <label for="rate-limit">Rate Limit</label>
+              <input type="number" id="rate-limit" value="100" placeholder="Default: 100">
+              <div class="input-hint">Maximum number of requests per minute per IP.</div>
+            </div>
+          </div>
+          
+          <div class="api-info">
+            <h3>API Server Information</h3>
+            <p>The Go4It Sports API server handles all backend operations including:</p>
+            <ul>
+              <li>Database operations</li>
+              <li>User authentication</li>
+              <li>AI processing</li>
+              <li>Data analytics</li>
+              <li>External API integration</li>
+              <li>WebSocket connections</li>
+            </ul>
+            
+            <div class="alert info">
+              <b>Note:</b> Ensure your firewall allows traffic on the configured API port.
+            </div>
+            
+            <div class="alert warning">
+              <b>Security:</b> It's recommended to limit CORS origins in production.
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- API Keys Screen -->
+      <div class="wizard-screen" id="screen-5">
+        <h1>API Keys Configuration</h1>
+        <div class="api-keys-container">
+          <div class="api-keys-form">
+            <p>Configure the external API keys needed for Go4It Sports features.</p>
+            
+            <div class="form-section">
+              <h3>OpenAI (Required)</h3>
+              <div class="form-group">
+                <label for="openai-key">OpenAI API Key</label>
+                <input type="password" id="openai-key" placeholder="sk-...">
+              </div>
+              <div class="input-hint">
+                Used for AI analysis features and highlight generation.
+                <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">Get API Key</a>
+              </div>
+            </div>
+            
+            <div class="form-section">
+              <h3>Anthropic Claude (Required)</h3>
+              <div class="form-group">
+                <label for="anthropic-key">Anthropic API Key</label>
+                <input type="password" id="anthropic-key" placeholder="sk-ant-...">
+              </div>
+              <div class="input-hint">
+                Used for AI coaching and advanced analytics.
+                <a href="https://console.anthropic.com/keys" target="_blank" rel="noopener">Get API Key</a>
+              </div>
+            </div>
+            
+            <div class="form-section">
+              <h3>Twilio (Optional)</h3>
+              <div class="twilio-toggle-container">
+                <div class="form-group checkbox-group">
+                  <input type="checkbox" id="use-twilio">
+                  <label for="use-twilio">Configure Twilio for SMS Notifications</label>
+                </div>
+              </div>
+              
+              <div id="twilio-settings" class="hidden">
+                <div class="form-group">
+                  <label for="twilio-account-sid">Account SID</label>
+                  <input type="text" id="twilio-account-sid" placeholder="AC...">
+                </div>
+                <div class="form-group">
+                  <label for="twilio-auth-token">Auth Token</label>
+                  <input type="password" id="twilio-auth-token" placeholder="Enter Twilio Auth Token">
+                </div>
+                <div class="form-group">
+                  <label for="twilio-phone">Phone Number</label>
+                  <input type="text" id="twilio-phone" placeholder="+1...">
+                </div>
+                <div class="input-hint">
+                  Used for sending SMS notifications.
+                  <a href="https://www.twilio.com/console" target="_blank" rel="noopener">Get Twilio Credentials</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="api-keys-info">
+            <h3>API Keys Information</h3>
+            <p>Go4It Sports uses these external APIs to provide advanced features:</p>
+            <ul>
+              <li><b>OpenAI:</b> Powers the video analysis, GAR scoring, and highlight generation</li>
+              <li><b>Anthropic Claude:</b> Powers the AI coach and personalized training recommendations</li>
+              <li><b>Twilio:</b> Enables SMS notifications for events, reminders, and alerts</li>
+            </ul>
+            
+            <div class="alert warning">
+              <b>Security:</b> API keys are stored securely in your server's environment variables.
+            </div>
+            
+            <div class="alert info">
+              <b>Note:</b> You can update these API keys later by editing the .env file.
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Features Screen -->
+      <div class="wizard-screen" id="screen-6">
+        <h1>Feature Configuration</h1>
+        <div class="features-container">
+          <div class="features-form">
+            <p>Configure which features to enable in your Go4It Sports installation.</p>
+            
+            <div class="feature-item">
+              <div class="feature-header">
+                <div class="feature-toggle">
+                  <input type="checkbox" id="feature-ai-coach" checked>
+                  <label for="feature-ai-coach"></label>
+                </div>
+                <div class="feature-title">AI Coach</div>
+              </div>
+              <div class="feature-description">
+                <p>Enable the AI coaching system that provides personalized training recommendations, feedback, and development plans.</p>
+                <div class="feature-requirements">
+                  <b>Requirements:</b> OpenAI API key, Anthropic API key
+                </div>
+              </div>
+            </div>
+            
+            <div class="feature-item">
+              <div class="feature-header">
+                <div class="feature-toggle">
+                  <input type="checkbox" id="feature-highlight-generation" checked>
+                  <label for="feature-highlight-generation"></label>
+                </div>
+                <div class="feature-title">Highlight Generation</div>
+              </div>
+              <div class="feature-description">
+                <p>Enable automatic highlight generation from uploaded videos. This feature uses AI to identify key moments and create highlight reels.</p>
+                <div class="feature-requirements">
+                  <b>Requirements:</b> OpenAI API key
+                </div>
+              </div>
+            </div>
+            
+            <div class="feature-item">
+              <div class="feature-header">
+                <div class="feature-toggle">
+                  <input type="checkbox" id="feature-sms-notifications">
+                  <label for="feature-sms-notifications"></label>
+                </div>
+                <div class="feature-title">SMS Notifications</div>
+              </div>
+              <div class="feature-description">
+                <p>Enable SMS notifications for events, reminders, and alerts. This feature allows users to receive time-sensitive information via text message.</p>
+                <div class="feature-requirements">
+                  <b>Requirements:</b> Twilio API credentials
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="features-info">
+            <h3>Features Information</h3>
+            <p>Go4It Sports includes several advanced features that can be enabled or disabled based on your needs:</p>
+            <ul>
+              <li><b>AI Coach:</b> Provides personalized training recommendations and feedback</li>
+              <li><b>Highlight Generation:</b> Automatically creates highlight reels from uploaded videos</li>
+              <li><b>SMS Notifications:</b> Sends text messages for important events and reminders</li>
+            </ul>
+            
+            <div class="alert info">
+              <b>Note:</b> You can change these settings later by editing the .env file.
+            </div>
+            
+            <div class="alert warning">
+              <b>Important:</b> Disabling features may affect some parts of the application UI.
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Installation Screen -->
+      <div class="wizard-screen" id="screen-7">
+        <h1>Installation</h1>
+        <div class="installation-container">
+          <div class="installation-summary">
+            <h3>Installation Summary</h3>
+            <div class="summary-section">
+              <h4>Database</h4>
+              <div class="summary-item">
+                <div class="summary-label">Host:</div>
+                <div class="summary-value" id="summary-db-host">localhost</div>
+              </div>
+              <div class="summary-item">
+                <div class="summary-label">Port:</div>
+                <div class="summary-value" id="summary-db-port">5432</div>
+              </div>
+              <div class="summary-item">
+                <div class="summary-label">Database:</div>
+                <div class="summary-value" id="summary-db-name">go4it_sports</div>
+              </div>
+              <div class="summary-item">
+                <div class="summary-label">User:</div>
+                <div class="summary-value" id="summary-db-user">go4it</div>
+              </div>
+            </div>
+            
+            <div class="summary-section">
+              <h4>Web Server</h4>
+              <div class="summary-item">
+                <div class="summary-label">Type:</div>
+                <div class="summary-value" id="summary-server-type">Nginx</div>
+              </div>
+              <div class="summary-item">
+                <div class="summary-label">Domain:</div>
+                <div class="summary-value" id="summary-domain">go4itsports.org</div>
+              </div>
+              <div class="summary-item">
+                <div class="summary-label">HTTPS:</div>
+                <div class="summary-value" id="summary-ssl">Enabled</div>
+              </div>
+            </div>
+            
+            <div class="summary-section">
+              <h4>API Server</h4>
+              <div class="summary-item">
+                <div class="summary-label">Port:</div>
+                <div class="summary-value" id="summary-api-port">5000</div>
+              </div>
+              <div class="summary-item">
+                <div class="summary-label">CORS:</div>
+                <div class="summary-value" id="summary-cors">*</div>
+              </div>
+            </div>
+            
+            <div class="summary-section">
+              <h4>Enabled Features</h4>
+              <div id="summary-features">
+                <div class="feature-summary-item" id="summary-feature-ai-coach">AI Coach</div>
+                <div class="feature-summary-item" id="summary-feature-highlight">Highlight Generation</div>
+                <div class="feature-summary-item hidden" id="summary-feature-sms">SMS Notifications</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="installation-action">
+            <div class="pre-install-message">
+              <h3>Ready to Install</h3>
+              <p>The wizard is ready to install Go4It Sports with the configurations above. This will:</p>
+              <ul>
+                <li>Create configuration files</li>
+                <li>Generate web server configuration</li>
+                <li>Set up environment variables</li>
+              </ul>
+              
+              <div class="alert warning">
+                <b>Important:</b> Make sure your database is properly set up before continuing.
+              </div>
+            </div>
+            
+            <button id="install-button" class="primary-button">Install Go4It Sports</button>
+            
+            <div id="installation-progress" class="installation-progress hidden">
+              <div class="progress-bar">
+                <div class="progress-bar-inner"></div>
+              </div>
+              <div class="progress-status">
+                <div class="loading-spinner"></div>
+                <div class="progress-message">Installing...</div>
+              </div>
+            </div>
+            
+            <div id="installation-complete" class="installation-complete hidden">
+              <div class="completion-icon">✓</div>
+              <h3>Installation Complete!</h3>
+              <p>Go4It Sports has been successfully installed. Follow these steps to start your server:</p>
+              <div class="code-block">
+cd /var/www/go4itsports.org
+npm install --production
+./start.sh
+              </div>
+              <p>Then, set up your web server using the generated configuration:</p>
+              <div class="code-block">
+# For Nginx
+sudo cp go4itsports.nginx.conf /etc/nginx/sites-available/go4itsports.org
+sudo ln -s /etc/nginx/sites-available/go4itsports.org /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+              </div>
+              <div class="next-steps">
+                <a href="/documentation" class="button">View Documentation</a>
+                <a href="/" class="button primary-button">Exit Wizard</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="wizard-controls">
+      <button id="prev-button" class="control-button hidden">Previous</button>
+      <button id="next-button" class="control-button primary-button">Next</button>
+    </div>
+  </div>
+  
+  <script src="wizard.js"></script>
+</body>
+</html>
