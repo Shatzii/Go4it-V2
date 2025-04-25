@@ -1,11 +1,77 @@
 import { Request, Response, NextFunction } from 'express';
-import NodeCache from 'node-ts-cache-storage-memory';
 
-// Cache with configurable TTL (time to live)
-const apiCache = new NodeCache({ 
-  ttl: 300, // 5 minutes default TTL
-  checkperiod: 60  // Check for expired items every 60 seconds
-});
+// Simple in-memory cache implementation
+interface CacheItem {
+  data: any;
+  expiry: number;
+}
+
+class SimpleCache {
+  private cache: Record<string, CacheItem> = {};
+  private defaultTtl: number;
+
+  constructor(defaultTtl = 300) {
+    this.defaultTtl = defaultTtl;
+    
+    // Set up periodic cleanup of expired items
+    setInterval(() => this.cleanup(), 60000);
+  }
+
+  get(key: string): any {
+    const item = this.cache[key];
+    
+    if (!item) {
+      return null;
+    }
+    
+    // Check if the item has expired
+    if (Date.now() > item.expiry) {
+      delete this.cache[key];
+      return null;
+    }
+    
+    return item.data;
+  }
+
+  set(key: string, data: any, ttl = this.defaultTtl): void {
+    this.cache[key] = {
+      data,
+      expiry: Date.now() + (ttl * 1000)
+    };
+  }
+
+  del(key: string): void {
+    delete this.cache[key];
+  }
+
+  keys(): string[] {
+    return Object.keys(this.cache);
+  }
+
+  clear(): void {
+    this.cache = {};
+  }
+
+  // Remove all expired cache items
+  private cleanup(): void {
+    const now = Date.now();
+    let count = 0;
+    
+    for (const key in this.cache) {
+      if (this.cache[key].expiry < now) {
+        delete this.cache[key];
+        count++;
+      }
+    }
+    
+    if (count > 0) {
+      console.log(`[cache] Cleaned up ${count} expired items`);
+    }
+  }
+}
+
+// Create cache instance
+const apiCache = new SimpleCache(300); // 5 minute default TTL
 
 // Cache paths to skip (never cache these endpoints)
 const SKIP_CACHE_PATHS = [
@@ -32,7 +98,7 @@ export function cacheMiddleware(ttl = 300) {
 
     // Skip cache for authenticated routes that might have user-specific data
     // unless they are explicitly whitelisted
-    if (req.isAuthenticated() && !req.path.includes('/api/content-blocks/')) {
+    if (req.isAuthenticated && req.isAuthenticated() && !req.path.includes('/api/content-blocks/')) {
       return next();
     }
 
@@ -80,7 +146,7 @@ export function cacheMiddleware(ttl = 300) {
 export function invalidateCache(pathPattern: string): void {
   const keys = apiCache.keys();
   
-  keys.forEach(key => {
+  keys.forEach((key: string) => {
     if (key.includes(pathPattern)) {
       apiCache.del(key);
       console.log(`[cache] Invalidated cache for: ${key}`);

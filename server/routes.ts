@@ -24,6 +24,7 @@ import hybridCoachRoutes, { registerHybridCoachRoutes } from './routes/hybrid-co
 import { aiCoachService } from './services/ai-coach-service';
 import { User, insertNcaaEligibilitySchema } from "@shared/schema";
 import { isAdminMiddleware, isAuthenticatedMiddleware } from './middleware/auth-middleware';
+import { cacheMiddleware, invalidateCache } from './middleware/cache-middleware';
 import scoutRoutes from './routes/scout-routes';
 import myplayerRoutes from './routes/myplayer-routes';
 import videoRoutes from './routes/video-routes';
@@ -168,6 +169,9 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Apply cache middleware for all routes
+  app.use(cacheMiddleware(300)); // 5-minute TTL
+  
   // Create HTTP server with WebSocket support
   const server = createServer(app);
   
