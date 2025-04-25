@@ -604,30 +604,7 @@ proxy_cache_path /var/cache/nginx/go4it_api_cache levels=1:2 keys_zone=go4it_api
   return true;
 }
 
-// Helper function to get disk space
-async function getDiskSpace() {
-  try {
-    const { stdout } = await execAsync('df -k / | tail -1');
-    const parts = stdout.trim().split(/\s+/);
-    
-    return {
-      total: parseInt(parts[1], 10) * 1024,
-      available: parseInt(parts[3], 10) * 1024,
-      totalGB: Math.round(parseInt(parts[1], 10) * 1024 / (1024 * 1024 * 1024) * 10) / 10,
-      availableGB: Math.round(parseInt(parts[3], 10) * 1024 / (1024 * 1024 * 1024) * 10) / 10,
-      percentUsed: parts[4],
-    };
-  } catch (error) {
-    log(`Error getting disk space: ${error.message}`, 'ERROR');
-    return {
-      total: 0,
-      available: 0,
-      totalGB: 0,
-      availableGB: 0,
-      percentUsed: 'unknown',
-    };
-  }
-}
+// Use the getDiskSpace function declared earlier
 
 // Start the server
 const server = app.listen(WIZARD_PORT, () => {
