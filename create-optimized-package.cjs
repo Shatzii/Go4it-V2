@@ -266,6 +266,70 @@ function copyServerFiles() {
       console.log('  Copied pre-deployment-check.sh');
     }
     
+    // Copy installation wizard
+    console.log('  Adding installation wizard...');
+    
+    if (fs.existsSync(path.join(__dirname, 'install-wizard.js'))) {
+      fs.copyFileSync(
+        path.join(__dirname, 'install-wizard.js'),
+        path.join(TEMP_DIR, 'install-wizard.js')
+      );
+      console.log('  Copied install-wizard.js');
+      
+      // Create wizard-assets directory
+      const wizardAssetsDir = path.join(TEMP_DIR, 'wizard-assets');
+      fs.mkdirSync(wizardAssetsDir, { recursive: true });
+      
+      // Copy wizard assets
+      const wizardAssets = [
+        'index.html',
+        'styles.css',
+        'wizard.js',
+        'logo.png',
+        'welcome.png',
+        'favicon.png'
+      ];
+      
+      wizardAssets.forEach(asset => {
+        const assetPath = path.join(__dirname, 'wizard-assets', asset);
+        if (fs.existsSync(assetPath)) {
+          fs.copyFileSync(
+            assetPath,
+            path.join(wizardAssetsDir, asset)
+          );
+          console.log(`  Copied wizard asset: ${asset}`);
+        }
+      });
+      
+      // Create wizard startup script
+      const wizardStartScript = `#!/bin/bash
+# Go4It Sports Installation Wizard
+# Version: ${VERSION}
+
+# Ensure we're in the correct directory
+cd "$(dirname "$0")"
+
+# Check if node is installed
+if ! command -v node &> /dev/null; then
+  echo "Error: Node.js is not installed"
+  echo "Please install Node.js before running the installation wizard"
+  exit 1
+fi
+
+# Check if required packages are installed
+echo "Installing required packages..."
+npm install express open dotenv pg
+
+# Start the installation wizard
+echo "Starting Go4It Sports Installation Wizard..."
+node install-wizard.js
+`;
+      
+      fs.writeFileSync(path.join(TEMP_DIR, 'install.sh'), wizardStartScript);
+      fs.chmodSync(path.join(TEMP_DIR, 'install.sh'), 0o755); // Make executable
+      console.log('  Created install.sh');
+    }
+    
     // Create server.js entry point
     const serverEntryPoint = `/**
  * Go4It Sports API Server
@@ -773,6 +837,15 @@ For additional support, contact support@go4itsports.org
       path.join(TEMP_DIR, 'FINAL_DEPLOYMENT_CHECKLIST.md')
     );
     console.log('  Copied FINAL_DEPLOYMENT_CHECKLIST.md');
+  }
+  
+  // Copy Installation Wizard README if it exists
+  if (fs.existsSync(path.join(__dirname, 'INSTALLATION_WIZARD.md'))) {
+    fs.copyFileSync(
+      path.join(__dirname, 'INSTALLATION_WIZARD.md'),
+      path.join(TEMP_DIR, 'INSTALLATION_WIZARD.md')
+    );
+    console.log('  Copied INSTALLATION_WIZARD.md');
   }
   
   // Create RELEASE_NOTES.md
