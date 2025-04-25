@@ -1,151 +1,118 @@
-# Go4It Sports: Final Deployment Checklist
+# Go4It Sports Final Deployment Checklist
 
-This checklist ensures your Go4It Sports platform is properly deployed to production at https://go4itsports.org.
+## Pre-Deployment Verification
 
-## Pre-Deployment
+- [ ] Run environment verification: `./pre-deployment-check.sh`
+- [ ] Verify all required API keys are available
+  - [ ] `OPENAI_API_KEY`
+  - [ ] `ANTHROPIC_API_KEY`
+  - [ ] `TWILIO_ACCOUNT_SID` (optional, for SMS notifications)
+- [ ] Check for any previous installations that need to be cleaned up
+- [ ] Verify domain DNS is correctly configured for `go4itsports.org`
+- [ ] Confirm SSL certificate availability or ability to generate one with Let's Encrypt
+- [ ] Verify database backup mechanisms are in place
 
-- [ ] Database backup (if updating an existing installation)
-- [ ] Environment variables prepared
-- [ ] SSL certificates ready (Let's Encrypt or other provider)
-- [ ] Domain DNS configured to point to your server
-- [ ] Server firewall configured to allow ports 80, 443, and your API port (default: 5000)
-- [ ] Nginx installed and running
-- [ ] Node.js v20+ installed
-- [ ] PM2 or similar process manager installed
+## Installation
 
-## Build Process
+- [ ] Upload deployment package to server
+- [ ] Extract to `/var/www/go4itsports.org`
+- [ ] Copy `.env.example` to `.env` and set all values
+- [ ] Run database migration: `node migrate-database.js`
+- [ ] Configure Nginx
+  - [ ] Copy `nginx.conf` to `/etc/nginx/sites-available/go4itsports.org`
+  - [ ] Create symbolic link: `ln -s /etc/nginx/sites-available/go4itsports.org /etc/nginx/sites-enabled/`
+  - [ ] Test Nginx configuration: `nginx -t`
+  - [ ] Enable Nginx: `systemctl restart nginx`
+- [ ] Set up SSL certificate with Let's Encrypt
+  - [ ] Run: `certbot --nginx -d go4itsports.org -d www.go4itsports.org`
+- [ ] Set up process manager
+  - [ ] Install PM2: `npm install -g pm2`
+  - [ ] Start application: `pm2 start server.js --name go4it-api`
+  - [ ] Save process configuration: `pm2 save`
+  - [ ] Enable startup service: `pm2 startup`
 
-- [ ] Run `./deploy-production.sh` to create the production package
-- [ ] Verify successful build completion
-- [ ] Check the size of the generated zip file (should be approximately 15-20MB)
+## Post-Deployment Tests
 
-## Server Setup
+- [ ] Run health check: `node healthcheck.js`
+- [ ] Verify website loads at `https://go4itsports.org`
+- [ ] Test all core functionality
+  - [ ] User authentication (login/register)
+  - [ ] Profile management
+  - [ ] Video uploads
+  - [ ] GAR analysis
+  - [ ] Athlete dashboard
+  - [ ] Coach collaboration
+  - [ ] AI coach features
+- [ ] Check for JavaScript console errors
+- [ ] Verify WebSocket connectivity
+- [ ] Test on multiple devices (mobile, tablet, desktop)
+- [ ] Verify API key functionality
+  - [ ] OpenAI integration
+  - [ ] Anthropic Claude integration
 
-- [ ] Transfer the deployment zip to your production server
-- [ ] Create directory: `/var/www/go4itsports.org/`
-- [ ] Unzip the package into the directory
-- [ ] Set proper permissions:
-  ```
-  sudo chown -R www-data:www-data /var/www/go4itsports.org/
-  sudo chmod -R 755 /var/www/go4itsports.org/
-  ```
-- [ ] Copy .env.example to .env and configure with production values
-- [ ] Configure Nginx using the provided nginx.conf template
-- [ ] Create symbolic link in sites-enabled
-  ```
-  sudo ln -s /etc/nginx/sites-available/go4itsports.conf /etc/nginx/sites-enabled/
-  ```
-- [ ] Test Nginx configuration
-  ```
-  sudo nginx -t
-  ```
-- [ ] Reload Nginx
-  ```
-  sudo systemctl reload nginx
-  ```
+## Performance Verification
 
-## API Server Setup
+- [ ] Run load test with concurrent users
+- [ ] Check page load times (<2s target)
+- [ ] Verify caching is working properly
+  - [ ] API responses have proper `Cache-Control` headers
+  - [ ] Static assets have long cache times
+  - [ ] Check for `X-Cache-Status` header in API responses
+- [ ] Check database response times (<100ms for common queries)
 
-- [ ] Install PM2 if not already installed
-  ```
-  npm install -g pm2
-  ```
-- [ ] Start the API server with PM2
-  ```
-  cd /var/www/go4itsports.org/
-  pm2 start api/server.js --name go4it-api
-  ```
-- [ ] Configure PM2 startup
-  ```
-  pm2 save
-  pm2 startup
-  ```
-- [ ] Verify API server is running
-  ```
-  pm2 status
-  ```
+## Security Checks
 
-## SSL Setup
+- [ ] Verify HTTPS is enforced
+- [ ] Check security headers are present
+  - [ ] `X-Content-Type-Options`
+  - [ ] `X-Frame-Options`
+  - [ ] `Content-Security-Policy`
+  - [ ] `Strict-Transport-Security`
+- [ ] Verify session cookie security
+  - [ ] `Secure` flag
+  - [ ] `HttpOnly` flag
+  - [ ] `SameSite` attribute
+- [ ] Check file permissions
+  - [ ] `.env` file (600)
+  - [ ] SSL private keys (600)
+  - [ ] Log directory (755)
+  - [ ] Upload directory (755)
 
-- [ ] Install Let's Encrypt client (Certbot)
-  ```
-  sudo apt-get install certbot python3-certbot-nginx
-  ```
-- [ ] Obtain and configure SSL certificates
-  ```
-  sudo certbot --nginx -d go4itsports.org -d www.go4itsports.org
-  ```
+## Monitoring Setup
 
-## Post-Deployment Verification
+- [ ] Configure automated health checks
+  - [ ] `0 * * * * cd /var/www/go4itsports.org && node healthcheck.js`
+- [ ] Set up log rotation
+  - [ ] `/etc/logrotate.d/go4itsports`
+- [ ] Configure database backup
+  - [ ] Daily database dumps
+  - [ ] Weekly offsite backup
+- [ ] Set up monitoring alerts
+  - [ ] Server load
+  - [ ] Disk space
+  - [ ] Error rates
+  - [ ] Response times
 
-- [ ] Check https://go4itsports.org loads without errors
-- [ ] Verify API endpoint https://go4itsports.org/api/health returns status 200
-- [ ] Test user authentication (login/register)
-- [ ] Test video upload functionality
-- [ ] Test athlete profile creation
-- [ ] Test GAR scoring system
-- [ ] Test mobile responsiveness
+## Documentation
 
-## Performance Optimization
-
-- [ ] Enable browser caching for static assets
-- [ ] Configure Nginx caching for API responses
-- [ ] Set up database connection pooling
-- [ ] Optimize PostgreSQL configuration for production load
-
-## Monitoring and Maintenance
-
-- [ ] Set up regular database backups
-  ```
-  # Create backup script
-  sudo nano /etc/cron.daily/go4it-backup.sh
-  
-  # Add this content:
-  #!/bin/bash
-  TIMESTAMP=$(date +%Y%m%d)
-  sudo -u postgres pg_dump go4it_sports > /backups/go4it_sports_$TIMESTAMP.sql
-  ```
-- [ ] Configure log rotation
-  ```
-  sudo nano /etc/logrotate.d/go4itsports
-  
-  # Add this content:
-  /var/www/go4itsports.org/logs/*.log {
-    daily
-    missingok
-    rotate 14
-    compress
-    delaycompress
-    notifempty
-    create 0640 www-data www-data
-  }
-  ```
-- [ ] Set up uptime monitoring service
-- [ ] Configure server resource monitoring
-
-## Security
-
-- [ ] Enable firewall
-  ```
-  sudo ufw allow 22
-  sudo ufw allow 80
-  sudo ufw allow 443
-  sudo ufw enable
-  ```
-- [ ] Install security updates
-  ```
-  sudo apt-get update
-  sudo apt-get upgrade
-  ```
-- [ ] Configure fail2ban for SSH protection
-- [ ] Ensure database is not publicly accessible
-- [ ] Set secure file permissions
-- [ ] Implement rate limiting in Nginx for API endpoints
+- [ ] Update all deployment documentation with actual server details
+- [ ] Document backup and restore procedures
+- [ ] Create emergency contact list
+- [ ] Document common maintenance tasks
+  - [ ] Log rotation
+  - [ ] Database optimization
+  - [ ] Certificate renewal
 
 ## Final Steps
 
-- [ ] Document deployment with date and version information
+- [ ] Perform a final health check
 - [ ] Notify team of successful deployment
-- [ ] Monitor application logs for any issues
+- [ ] Schedule post-deployment review
 
-For support, contact: support@go4itsports.org
+---
+
+**Deployment Completed By:** ____________________________
+
+**Date:** ____________________________
+
+**Version Deployed:** ____________________________
