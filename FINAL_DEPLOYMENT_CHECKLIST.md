@@ -1,195 +1,151 @@
-# Go4It Sports Platform - Final Deployment Checklist
+# Go4It Sports: Final Deployment Checklist
 
-Use this checklist to ensure your Go4It Sports Platform deployment is ready for production use.
+This checklist ensures your Go4It Sports platform is properly deployed to production at https://go4itsports.org.
 
-## Pre-Launch System Configuration
+## Pre-Deployment
 
-- [ ] Server has minimum 4GB RAM, preferably 8GB+ for optimal performance
-- [ ] Server has 20GB+ storage allocated
-- [ ] Database is properly sized with appropriate storage
-- [ ] Database backups are configured and tested
-- [ ] Server firewall is configured to allow only necessary ports
-- [ ] Domain name is configured and DNS records are updated
-- [ ] SSL certificate is installed and configured
+- [ ] Database backup (if updating an existing installation)
+- [ ] Environment variables prepared
+- [ ] SSL certificates ready (Let's Encrypt or other provider)
+- [ ] Domain DNS configured to point to your server
+- [ ] Server firewall configured to allow ports 80, 443, and your API port (default: 5000)
+- [ ] Nginx installed and running
+- [ ] Node.js v20+ installed
+- [ ] PM2 or similar process manager installed
 
-## Core Platform Setup
+## Build Process
 
-- [ ] PostgreSQL database is properly installed and configured
-- [ ] Node.js 20.x or newer is installed
-- [ ] NPM dependencies are installed with `npm install`
-- [ ] Environment variables are properly configured in `.env` file
-- [ ] Database connection is verified with test scripts
-- [ ] Schema is properly initialized with `npm run db:push`
-- [ ] Application builds successfully with `npm run build`
-- [ ] Application starts successfully with `npm start`
+- [ ] Run `./deploy-production.sh` to create the production package
+- [ ] Verify successful build completion
+- [ ] Check the size of the generated zip file (should be approximately 15-20MB)
 
-## System Administration
+## Server Setup
 
-- [ ] Admin user is created with secure password
-- [ ] Admin dashboard is accessible
-- [ ] Database backup routine is tested
-- [ ] Log rotation is configured
-- [ ] Server monitoring is in place
-- [ ] Error reporting is configured
-- [ ] Automated restart is configured (PM2 or similar)
+- [ ] Transfer the deployment zip to your production server
+- [ ] Create directory: `/var/www/go4itsports.org/`
+- [ ] Unzip the package into the directory
+- [ ] Set proper permissions:
+  ```
+  sudo chown -R www-data:www-data /var/www/go4itsports.org/
+  sudo chmod -R 755 /var/www/go4itsports.org/
+  ```
+- [ ] Copy .env.example to .env and configure with production values
+- [ ] Configure Nginx using the provided nginx.conf template
+- [ ] Create symbolic link in sites-enabled
+  ```
+  sudo ln -s /etc/nginx/sites-available/go4itsports.conf /etc/nginx/sites-enabled/
+  ```
+- [ ] Test Nginx configuration
+  ```
+  sudo nginx -t
+  ```
+- [ ] Reload Nginx
+  ```
+  sudo systemctl reload nginx
+  ```
 
-## Security Configuration
+## API Server Setup
 
-- [ ] All API keys are properly secured
-- [ ] Session secret is unique and complex
-- [ ] Password hashing is verified
-- [ ] Rate limiting is enabled
-- [ ] CORS is properly configured
-- [ ] No development credentials in production environment
-- [ ] File upload limits are configured appropriately
-- [ ] User data is properly sanitized and validated
+- [ ] Install PM2 if not already installed
+  ```
+  npm install -g pm2
+  ```
+- [ ] Start the API server with PM2
+  ```
+  cd /var/www/go4itsports.org/
+  pm2 start api/server.js --name go4it-api
+  ```
+- [ ] Configure PM2 startup
+  ```
+  pm2 save
+  pm2 startup
+  ```
+- [ ] Verify API server is running
+  ```
+  pm2 status
+  ```
 
-## External Service Integration
+## SSL Setup
 
-- [ ] OpenAI API key is configured and verified
-- [ ] Anthropic API key is configured and verified (if applicable)
-- [ ] Email service (SendGrid or similar) is configured and tested
-- [ ] SMS service (Twilio or similar) is configured and tested (if applicable)
-- [ ] External authentication providers are configured (if applicable)
-- [ ] Payment gateways are configured and tested (if applicable)
+- [ ] Install Let's Encrypt client (Certbot)
+  ```
+  sudo apt-get install certbot python3-certbot-nginx
+  ```
+- [ ] Obtain and configure SSL certificates
+  ```
+  sudo certbot --nginx -d go4itsports.org -d www.go4itsports.org
+  ```
 
-## Content and Customization
+## Post-Deployment Verification
 
-- [ ] Platform name and branding is customized
-- [ ] Privacy policy is updated and accessible
-- [ ] Terms of service are updated and accessible
-- [ ] Default sports are configured
-- [ ] Sample content is removed or replaced with real content
-- [ ] Welcome emails and notifications are customized
+- [ ] Check https://go4itsports.org loads without errors
+- [ ] Verify API endpoint https://go4itsports.org/api/health returns status 200
+- [ ] Test user authentication (login/register)
+- [ ] Test video upload functionality
+- [ ] Test athlete profile creation
+- [ ] Test GAR scoring system
+- [ ] Test mobile responsiveness
 
 ## Performance Optimization
 
-- [ ] Static assets are properly compressed
-- [ ] Images are optimized
-- [ ] Caching is configured
-- [ ] Database indexes are optimized
-- [ ] Connection pooling is optimized (recommended: 20-50 connections)
-- [ ] Database queries are optimized for production
+- [ ] Enable browser caching for static assets
+- [ ] Configure Nginx caching for API responses
+- [ ] Set up database connection pooling
+- [ ] Optimize PostgreSQL configuration for production load
 
-## User Experience Testing
+## Monitoring and Maintenance
 
-- [ ] Registration and login flow work correctly
-- [ ] Password reset functionality works
-- [ ] Email verification works
-- [ ] User profile editing works
-- [ ] User uploads work (profile images, videos)
-- [ ] Responsive design functions on mobile, tablet, and desktop
-- [ ] Accessibility features function correctly
-- [ ] ADHD support features function correctly
+- [ ] Set up regular database backups
+  ```
+  # Create backup script
+  sudo nano /etc/cron.daily/go4it-backup.sh
+  
+  # Add this content:
+  #!/bin/bash
+  TIMESTAMP=$(date +%Y%m%d)
+  sudo -u postgres pg_dump go4it_sports > /backups/go4it_sports_$TIMESTAMP.sql
+  ```
+- [ ] Configure log rotation
+  ```
+  sudo nano /etc/logrotate.d/go4itsports
+  
+  # Add this content:
+  /var/www/go4itsports.org/logs/*.log {
+    daily
+    missingok
+    rotate 14
+    compress
+    delaycompress
+    notifempty
+    create 0640 www-data www-data
+  }
+  ```
+- [ ] Set up uptime monitoring service
+- [ ] Configure server resource monitoring
 
-## Neurodivergent-Specific Features
+## Security
 
-- [ ] ADHD support toggle works
-- [ ] Focus mode works properly
-- [ ] Animation reduction settings are applied correctly
-- [ ] Visual timers function properly
-- [ ] Reward system is functioning
-- [ ] Contrast adjustments render properly
-- [ ] Text size adjustments work correctly
+- [ ] Enable firewall
+  ```
+  sudo ufw allow 22
+  sudo ufw allow 80
+  sudo ufw allow 443
+  sudo ufw enable
+  ```
+- [ ] Install security updates
+  ```
+  sudo apt-get update
+  sudo apt-get upgrade
+  ```
+- [ ] Configure fail2ban for SSH protection
+- [ ] Ensure database is not publicly accessible
+- [ ] Set secure file permissions
+- [ ] Implement rate limiting in Nginx for API endpoints
 
-## Sport-Specific Features
+## Final Steps
 
-- [ ] Sport recommendations work
-- [ ] GAR scoring system functions
-- [ ] Video analysis works correctly
-- [ ] Highlight generation works
-- [ ] Training plan generation works
-- [ ] Skill tree progression visualization works
-- [ ] AI coaching system responds correctly
+- [ ] Document deployment with date and version information
+- [ ] Notify team of successful deployment
+- [ ] Monitor application logs for any issues
 
-## Critical Paths Testing
-
-- [ ] Onboarding flow completes successfully
-- [ ] Video upload and processing works
-- [ ] Workout tracking functions properly
-- [ ] Progress visualization displays correctly
-- [ ] Communication tools function correctly
-- [ ] Search functionality works
-- [ ] Reports generate correctly
-- [ ] Exports work correctly
-
-## Performance Testing
-
-- [ ] Application loads in < 3 seconds
-- [ ] Video uploads complete successfully
-- [ ] Concurrent users test is successful
-- [ ] Database performance is acceptable under load
-- [ ] API response times are within acceptable range
-- [ ] Memory usage is stable during extended use
-- [ ] No memory leaks are detected
-
-## Backup and Recovery
-
-- [ ] Full system backup is created and verified
-- [ ] Database backup is created and verified
-- [ ] Restore from backup is tested
-- [ ] Disaster recovery plan is documented
-
-## Documentation and Support
-
-- [ ] Administrator documentation is complete
-- [ ] User documentation is complete
-- [ ] Support contact information is available
-- [ ] Troubleshooting guide is available
-- [ ] Known issues are documented
-- [ ] Updates and maintenance procedure is documented
-
-## Final Verification
-
-- [ ] All console errors are resolved
-- [ ] Application works in all supported browsers
-- [ ] Mobile experience is tested and verified
-- [ ] All critical user journeys have been manually tested
-- [ ] Analytics are properly configured
-- [ ] SEO metadata is correctly configured
-- [ ] Favicon and app icons are properly configured
-- [ ] Social sharing metadata is configured
-
-## Post-Launch Monitoring
-
-- [ ] Server monitoring is active
-- [ ] Error reporting is functioning
-- [ ] User analytics are being collected
-- [ ] Database performance is being monitored
-- [ ] Backup schedule is active
-- [ ] Security scanning is active
-- [ ] Uptime monitoring is configured
-
----
-
-## Deployment Sign-Off
-
-**Deployment Approved By:**
-
-Name: ___________________________
-
-Role: ___________________________
-
-Date: ___________________________
-
-Signature: _______________________
-
-**Technical Verification:**
-
-Name: ___________________________
-
-Role: ___________________________
-
-Date: ___________________________
-
-Signature: _______________________
-
-**Security Verification:**
-
-Name: ___________________________
-
-Role: ___________________________
-
-Date: ___________________________
-
-Signature: _______________________
+For support, contact: support@go4itsports.org

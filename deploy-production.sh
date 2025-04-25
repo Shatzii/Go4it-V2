@@ -1,60 +1,71 @@
 #!/bin/bash
-# Deployment script for Go4It Sports platform on production server (5.161.99.81:81)
+# Production deployment script for Go4It Sports
+# This script creates a production-ready build for deployment to go4itsports.org
 
-# Stop execution on any error
-set -e
+set -e  # Exit immediately if a command exits with a non-zero status
 
-echo "===== Go4It Sports Production Deployment ====="
-echo "Target: 5.161.99.81:81"
-echo "Beginning deployment process..."
+echo "=== Go4It Sports Production Deployment ==="
+echo "Target: https://go4itsports.org"
+echo "====================================="
 
-# Set NODE_ENV to production
+# Ensure we're in the project root
+cd "$(dirname "$0")"
+
+# Check if Node.js is installed
+if ! command -v node &> /dev/null; then
+    echo "❌ Node.js is required but not installed."
+    exit 1
+fi
+
+# Check if npm is installed
+if ! command -v npm &> /dev/null; then
+    echo "❌ npm is required but not installed."
+    exit 1
+fi
+
+# Set environment to production
 export NODE_ENV=production
 
-# Create necessary directories if they don't exist
-echo "Creating necessary directories..."
-mkdir -p logs
-mkdir -p uploads
-mkdir -p build
-
-# Install dependencies
-echo "Installing dependencies..."
+# Step 1: Install dependencies
+echo "📦 Installing production dependencies..."
 npm ci --production
 
-# Build the application
-echo "Building application..."
-npm run build
+# Step 2: Run the build process
+echo "🏗️ Building for production..."
+node vite-production-build.js
 
-# Verify essential content exists
-echo "Verifying essential content..."
-npx tsx scripts/verify-essential-content.ts
-
-# Check if an existing server process is running on port 81
-echo "Checking for existing processes on port 81..."
-if lsof -i:81 -t &> /dev/null; then
-  echo "Stopping existing server on port 81..."
-  kill $(lsof -i:81 -t) || true
-  # Give it a moment to shut down
-  sleep 2
+# Step 3: Verify build
+if [ ! -d "dist" ]; then
+    echo "❌ Build failed: dist directory not found"
+    exit 1
 fi
 
-# Start the application in the background
-echo "Starting application on port 81..."
-NODE_ENV=production PORT=81 nohup node server/index.js > logs/server.log 2>&1 &
-
-# Capture the process ID
-SERVER_PID=$!
-echo "Server started with PID: $SERVER_PID"
-
-# Wait a moment and check if process is still running
-sleep 3
-if kill -0 $SERVER_PID 2>/dev/null; then
-  echo "Server is running successfully!"
-  echo "You can view logs with: tail -f logs/server.log"
-  echo "===== Deployment Completed Successfully ====="
-else
-  echo "ERROR: Server failed to start properly."
-  echo "Check logs in logs/server.log for details."
-  echo "===== Deployment Failed ====="
-  exit 1
+if [ ! -f "dist/index.html" ]; then
+    echo "❌ Build failed: index.html not found in dist directory"
+    exit 1
 fi
+
+echo "✅ Build verification passed"
+
+# Step 4: Create a zip archive for easy deployment
+echo "📦 Creating deployment package..."
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+PACKAGE_NAME="go4it-sports-$TIMESTAMP.zip"
+
+(cd dist && zip -r "../$PACKAGE_NAME" .)
+
+echo "✅ Deployment package created: $PACKAGE_NAME"
+
+# Step 5: Display deployment instructions
+echo ""
+echo "=== DEPLOYMENT INSTRUCTIONS ==="
+echo "1. Transfer $PACKAGE_NAME to your production server"
+echo "2. Unzip the contents to /var/www/go4itsports.org/"
+echo "3. Configure Nginx using the included nginx.conf"
+echo "4. Set up environment variables using .env.example"
+echo "5. Start the API server with: node api/server.js"
+echo ""
+echo "For detailed instructions, see dist/DEPLOYMENT.md"
+echo ""
+
+echo "✅ Production build and deployment package complete!"
