@@ -1,0 +1,52 @@
+# Replit Deployment Configuration
+run = "node build/server/index.js"
+build = "npm run build"
+entrypoint = "client/index.html"
+
+# Production environment variables
+[env]
+NODE_ENV = "production"
+PORT = "3000"
+APP_URL = "https://go4it-sports.replit.app"
+
+# Static assets
+[serve]
+directory = "build/client"
+projectType = "nodejs"
+
+# Health check configuration
+[healthcheck]
+enabled = true
+path = "/api/health"
+interval = 10000 # 10 seconds
+timeout = 5000 # 5 seconds
+gracePeriod = 300000 # 5 minutes
+
+# Custom domains (uncomment and modify if needed)
+# [customDomains]
+# domain = "app.go4itsports.com"
+# https = true
+
+# Performance settings
+[scaling]
+minInstances = 1
+maxInstances = 5
+targetMemoryPercent = 75
+targetCpuPercent = 75
+
+# Cache settings
+[cache]
+enabled = true
+patterns = [
+  "build/client/**/*.js",
+  "build/client/**/*.css",
+  "build/client/**/*.jpg",
+  "build/client/**/*.png",
+  "build/client/**/*.svg",
+  "build/client/**/*.webp"
+]
+maxAge = 86400 # 24 hours
+
+# Security headers
+[headers]
+"/*" = { "X-Frame-Options" = "DENY", "X-XSS-Protection" = "1; mode=block", "X-Content-Type-Options" = "nosniff" }
