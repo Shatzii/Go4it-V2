@@ -1,704 +1,624 @@
-/**
- * Go4It Sports Installation Wizard
- * JavaScript functionality
- * Version: 1.0.1
- */
+// State management
+let currentStep = 0;
+let installData = {
+  step: 0,
+  totalSteps: 7,
+  database: {
+    host: 'localhost',
+    port: 5432,
+    name: 'go4it_sports',
+    user: 'go4it',
+    password: '',
+    connectionEstablished: false
+  },
+  webServer: {
+    type: 'nginx',
+    port: 80,
+    sslPort: 443,
+    domain: 'go4itsports.org',
+    useSSL: true,
+    configCreated: false
+  },
+  api: {
+    port: 5000,
+    corsOrigins: '*',
+    rateLimitMax: 100
+  },
+  apiKeys: {
+    openai: '',
+    anthropic: '',
+    twilio: {
+      accountSid: '',
+      authToken: '',
+      phoneNumber: ''
+    }
+  },
+  features: {
+    enableAiCoach: true,
+    enableHighlightGeneration: true,
+    enableSmsNotifications: false
+  }
+};
 
+// DOM Elements
+const stepElements = document.querySelectorAll('.step');
+const stepContents = document.querySelectorAll('.step-content');
+
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
-  // Variables
-  let currentStep = 0;
-  const totalSteps = document.querySelectorAll('.wizard-screen').length;
-  const prevButton = document.getElementById('prev-button');
-  const nextButton = document.getElementById('next-button');
+  // Fetch initial state from server
+  fetchState();
   
-  // Initialize the wizard
-  init();
+  // Set up event listeners
+  document.getElementById('test-db-button').addEventListener('click', testDatabaseConnection);
+  document.getElementById('server-ssl').addEventListener('change', toggleSslSettings);
   
-  // Event listeners
-  prevButton.addEventListener('click', goToPreviousStep);
-  nextButton.addEventListener('click', goToNextStep);
-  
-  // Add click listeners to steps in sidebar
-  document.querySelectorAll('.step').forEach(step => {
-    step.addEventListener('click', () => {
-      const stepIndex = parseInt(step.dataset.step);
-      if (stepIndex <= getMaxReachedStep()) {
-        goToStep(stepIndex);
-      }
-    });
-  });
-  
-  // Add listeners for database connection test
-  const testConnectionBtn = document.getElementById('test-connection-btn');
-  if (testConnectionBtn) {
-    testConnectionBtn.addEventListener('click', testDatabaseConnection);
-  }
-  
-  // Add listeners for the SSL toggle
-  const useSSLCheckbox = document.getElementById('use-ssl');
-  if (useSSLCheckbox) {
-    useSSLCheckbox.addEventListener('change', toggleSSLSettings);
-  }
-  
-  // Add listeners for the Twilio toggle
-  const useTwilioCheckbox = document.getElementById('use-twilio');
-  if (useTwilioCheckbox) {
-    useTwilioCheckbox.addEventListener('change', toggleTwilioSettings);
-  }
-  
-  // Add listener for install button
-  const installButton = document.getElementById('install-button');
-  if (installButton) {
-    installButton.addEventListener('click', installApplication);
-  }
-  
-  // Initialize the UI
-  function init() {
-    // Show the first step
-    goToStep(0);
+  // Initialize current step
+  updateStepUI(currentStep);
+});
+
+// Fetch installation state from server
+async function fetchState() {
+  try {
+    const response = await fetch('/api/state');
+    if (!response.ok) throw new Error('Failed to fetch installation state');
     
-    // Get current installation state from the server
-    fetchInstallationState();
+    const data = await response.json();
+    installData = data;
+    currentStep = data.step;
     
-    // Run system check if we're on that step
+    // Update UI based on fetched state
+    updateStepUI(currentStep);
+    populateFormValues();
+    
+    // If we're on the system check step, run the check
     if (currentStep === 1) {
       runSystemCheck();
     }
-    
-    // Update summary whenever inputs change
-    setupSummaryUpdates();
+  } catch (error) {
+    console.error('Error fetching state:', error);
   }
-  
-  // Fetch the current installation state from the server
-  async function fetchInstallationState() {
-    try {
-      const response = await fetch('/api/state');
-      const state = await response.json();
-      
-      // If the installation is already completed, jump to the final step
-      if (state.status.installed) {
-        goToStep(totalSteps - 1);
-        document.getElementById('installation-progress').classList.add('hidden');
-        document.getElementById('installation-complete').classList.remove('hidden');
-      }
-      
-      // Populate form fields with saved values
-      populateFormFields(state);
-      
-    } catch (error) {
-      console.error('Error fetching installation state:', error);
-    }
-  }
-  
-  // Populate form fields with saved values from state
-  function populateFormFields(state) {
-    // Database fields
-    if (state.database) {
-      const { host, port, name, user, password } = state.database;
-      setInputValue('db-host', host);
-      setInputValue('db-port', port);
-      setInputValue('db-name', name);
-      setInputValue('db-user', user);
-      setInputValue('db-password', password);
-      
-      if (state.status.databaseSetup) {
-        showConnectionStatus(true, 'Database connection successful');
-      }
-    }
+}
+
+// Navigation functions
+function nextStep() {
+  if (currentStep < installData.totalSteps) {
+    currentStep++;
+    updateStepUI(currentStep);
+    updateServerStep(currentStep);
     
-    // Web server fields
-    if (state.webServer) {
-      const { type, port, sslPort, domain, useSSL } = state.webServer;
-      setSelectValue('server-type', type);
-      setInputValue('server-domain', domain);
-      setCheckboxValue('use-ssl', useSSL);
-      setInputValue('http-port', port);
-      setInputValue('https-port', sslPort);
-      
-      // Show/hide SSL settings
-      toggleSSLSettings();
-    }
-    
-    // API configuration fields
-    if (state.api) {
-      const { port, corsOrigins, rateLimitMax } = state.api;
-      setInputValue('api-port', port);
-      setInputValue('cors-origins', corsOrigins);
-      setInputValue('rate-limit', rateLimitMax);
-    }
-    
-    // API keys fields
-    if (state.apiKeys) {
-      const { openai, anthropic, twilio } = state.apiKeys;
-      setInputValue('openai-key', openai);
-      setInputValue('anthropic-key', anthropic);
-      
-      if (twilio && (twilio.accountSid || twilio.authToken || twilio.phoneNumber)) {
-        setCheckboxValue('use-twilio', true);
-        setInputValue('twilio-account-sid', twilio.accountSid);
-        setInputValue('twilio-auth-token', twilio.authToken);
-        setInputValue('twilio-phone', twilio.phoneNumber);
-        toggleTwilioSettings();
-      }
-    }
-    
-    // Features fields
-    if (state.features) {
-      const { enableAiCoach, enableHighlightGeneration, enableSmsNotifications } = state.features;
-      setCheckboxValue('feature-ai-coach', enableAiCoach);
-      setCheckboxValue('feature-highlight-generation', enableHighlightGeneration);
-      setCheckboxValue('feature-sms-notifications', enableSmsNotifications);
-    }
-    
-    // Update summary
-    updateSummary();
-  }
-  
-  // Helper functions for setting form values
-  function setInputValue(id, value) {
-    const element = document.getElementById(id);
-    if (element && value) {
-      element.value = value;
-    }
-  }
-  
-  function setSelectValue(id, value) {
-    const element = document.getElementById(id);
-    if (element && value) {
-      element.value = value;
-    }
-  }
-  
-  function setCheckboxValue(id, value) {
-    const element = document.getElementById(id);
-    if (element) {
-      element.checked = value;
-    }
-  }
-  
-  // Navigation functions
-  function goToStep(step) {
-    if (step < 0 || step >= totalSteps) return;
-    
-    // Hide all screens
-    document.querySelectorAll('.wizard-screen').forEach(screen => {
-      screen.classList.remove('active');
-    });
-    
-    // Show the current screen
-    document.getElementById(`screen-${step}`).classList.add('active');
-    
-    // Update steps in sidebar
-    document.querySelectorAll('.step').forEach(stepEl => {
-      stepEl.classList.remove('active');
-      
-      const stepIndex = parseInt(stepEl.dataset.step);
-      if (stepIndex < step) {
-        stepEl.classList.add('completed');
-      } else if (stepIndex === step) {
-        stepEl.classList.add('active');
-      } else {
-        stepEl.classList.remove('completed');
-      }
-    });
-    
-    // Update buttons
-    prevButton.classList.toggle('hidden', step === 0);
-    
-    // Change Next button to Install on the last step
-    if (step === totalSteps - 1) {
-      nextButton.classList.add('hidden');
-    } else {
-      nextButton.classList.remove('hidden');
-    }
-    
-    // Update the current step
-    currentStep = step;
-    
-    // If we're on the system check step, run it
-    if (step === 1) {
+    // Run step-specific initialization
+    if (currentStep === 1) {
       runSystemCheck();
+    } else if (currentStep === 7) {
+      populateInstallationSummary();
+    }
+  }
+}
+
+function prevStep() {
+  if (currentStep > 0) {
+    currentStep--;
+    updateStepUI(currentStep);
+    updateServerStep(currentStep);
+  }
+}
+
+// Update step UI
+function updateStepUI(stepIndex) {
+  // Hide all step contents
+  stepContents.forEach(content => {
+    content.style.display = 'none';
+  });
+  
+  // Show current step content
+  stepContents[stepIndex].style.display = 'block';
+  
+  // Update step indicators
+  stepElements.forEach((step, index) => {
+    step.classList.remove('active', 'completed');
+    
+    if (index === stepIndex) {
+      step.classList.add('active');
+    } else if (index < stepIndex) {
+      step.classList.add('completed');
+    }
+  });
+}
+
+// Update server step
+async function updateServerStep(stepIndex) {
+  try {
+    const response = await fetch('/api/update-step', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ step: stepIndex })
+    });
+    
+    if (!response.ok) throw new Error('Failed to update step on server');
+  } catch (error) {
+    console.error('Error updating step:', error);
+  }
+}
+
+// System Check
+async function runSystemCheck() {
+  const loadingElement = document.getElementById('system-check-loading');
+  const resultsElement = document.getElementById('system-check-results');
+  const nextButton = document.getElementById('system-check-next');
+  
+  loadingElement.style.display = 'flex';
+  resultsElement.style.display = 'none';
+  nextButton.disabled = true;
+  
+  try {
+    const response = await fetch('/api/system-check');
+    if (!response.ok) throw new Error('Failed to check system requirements');
+    
+    const data = await response.json();
+    
+    // Update UI with results
+    displaySystemInfo(data.systemInfo);
+    displaySystemMetrics(data.systemMetrics);
+    displaySoftwareChecks(data.softwareChecks);
+    displayRequirementsSummary(data.allPassed);
+    
+    // Enable next button if all checks passed
+    nextButton.disabled = !data.allPassed;
+    
+    // Show results, hide loading
+    loadingElement.style.display = 'none';
+    resultsElement.style.display = 'block';
+  } catch (error) {
+    console.error('Error checking system:', error);
+    
+    // Show error message
+    loadingElement.style.display = 'none';
+    resultsElement.innerHTML = `
+      <div class="error-message">
+        <h3>Error Checking System</h3>
+        <p>${error.message}</p>
+        <button onclick="runSystemCheck()" class="secondary-button">Try Again</button>
+      </div>
+    `;
+    resultsElement.style.display = 'block';
+  }
+}
+
+function displaySystemInfo(systemInfo) {
+  const container = document.getElementById('server-info-grid');
+  container.innerHTML = '';
+  
+  // Add info items
+  const infoItems = [
+    { label: 'Hostname', value: systemInfo.hostname },
+    { label: 'Operating System', value: `${systemInfo.osType} ${systemInfo.osRelease}` },
+    { label: 'CPU Cores', value: systemInfo.cpuCount },
+    { label: 'Memory', value: `${systemInfo.memoryTotal} GB` },
+    { label: 'Node.js Version', value: systemInfo.nodeVersion }
+  ];
+  
+  infoItems.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'info-item';
+    div.innerHTML = `
+      <div class="info-label">${item.label}</div>
+      <div class="info-value">${item.value}</div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function displaySystemMetrics(metrics) {
+  const container = document.getElementById('system-metrics-grid');
+  container.innerHTML = '';
+  
+  // Add metrics items
+  const metricItems = [
+    { label: 'CPU Usage', value: `${Math.round(metrics.cpuUsage * 100)}%` },
+    { label: 'Memory Usage', value: `${Math.round(metrics.memoryUsage * 100)}%` },
+    { label: 'Disk Space', value: `${metrics.diskSpace.free} GB free of ${metrics.diskSpace.total} GB` },
+    { label: 'CPU Requirement', value: metrics.requirements.cpu.actual, pass: metrics.requirements.cpu.pass },
+    { label: 'Memory Requirement', value: metrics.requirements.memory.actual, pass: metrics.requirements.memory.pass }
+  ];
+  
+  metricItems.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'info-item';
+    
+    let statusIndicator = '';
+    if (item.hasOwnProperty('pass')) {
+      statusIndicator = item.pass ? 
+        '<span style="color: var(--success)">✓</span>' : 
+        '<span style="color: var(--danger)">✗</span>';
     }
     
-    // If we're on the final step, update summary
-    if (step === totalSteps - 1) {
-      updateSummary();
-    }
+    div.innerHTML = `
+      <div class="info-label">${item.label}</div>
+      <div class="info-value">${item.value} ${statusIndicator}</div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function displaySoftwareChecks(checks) {
+  const container = document.getElementById('software-requirements-list');
+  container.innerHTML = '';
+  
+  // Add requirement items
+  Object.values(checks).forEach(check => {
+    const div = document.createElement('div');
+    div.className = 'requirement-item';
     
-    // Tell the server what step we're on
-    updateServerStep(step);
-  }
-  
-  function goToPreviousStep() {
-    goToStep(currentStep - 1);
-  }
-  
-  function goToNextStep() {
-    // Validate the current step before moving on
-    if (validateCurrentStep()) {
-      goToStep(currentStep + 1);
-    }
-  }
-  
-  // Keep track of the highest step the user has reached
-  let maxReachedStep = 0;
-  
-  function getMaxReachedStep() {
-    return maxReachedStep;
-  }
-  
-  function setMaxReachedStep(step) {
-    maxReachedStep = Math.max(maxReachedStep, step);
-  }
-  
-  // Step validation
-  function validateCurrentStep() {
-    switch (currentStep) {
-      case 0: // Welcome screen
-        return true;
-      
-      case 1: // System check
-        // Only allow proceeding if all checks pass
-        const systemCheckStatus = document.getElementById('system-check-status');
-        return !systemCheckStatus.classList.contains('error');
-      
-      case 2: // Database
-        // Require a successful database connection
-        const dbConnectionStatus = document.getElementById('db-connection-status');
-        if (!dbConnectionStatus || dbConnectionStatus.classList.contains('hidden')) {
-          alert('Please test your database connection first.');
-          return false;
-        }
-        return dbConnectionStatus.classList.contains('success');
-      
-      case 3: // Web server
-        // Validate domain
-        const domain = document.getElementById('server-domain').value;
-        if (!domain) {
-          alert('Please enter a domain name.');
-          return false;
-        }
-        return true;
-      
-      case 4: // API configuration
-        // Validate port
-        const port = document.getElementById('api-port').value;
-        if (!port || isNaN(port) || port < 1 || port > 65535) {
-          alert('Please enter a valid port number (1-65535).');
-          return false;
-        }
-        return true;
-      
-      case 5: // API keys
-        // Validate required API keys
-        const openaiKey = document.getElementById('openai-key').value;
-        const anthropicKey = document.getElementById('anthropic-key').value;
-        
-        if (!openaiKey) {
-          alert('OpenAI API Key is required.');
-          return false;
-        }
-        
-        if (!anthropicKey) {
-          alert('Anthropic API Key is required.');
-          return false;
-        }
-        
-        // If Twilio is enabled, validate those fields
-        const useTwilio = document.getElementById('use-twilio').checked;
-        if (useTwilio) {
-          const twilioAccountSid = document.getElementById('twilio-account-sid').value;
-          const twilioAuthToken = document.getElementById('twilio-auth-token').value;
-          const twilioPhone = document.getElementById('twilio-phone').value;
-          
-          if (!twilioAccountSid || !twilioAuthToken || !twilioPhone) {
-            alert('All Twilio fields are required when SMS notifications are enabled.');
-            return false;
-          }
-        }
-        
-        return true;
-      
-      case 6: // Features
-        // No validation needed
-        return true;
-      
-      default:
-        return true;
-    }
-  }
-  
-  // Run system check
-  async function runSystemCheck() {
-    const systemCheckStatus = document.getElementById('system-check-status');
-    const requirementsList = document.getElementById('requirements-list');
-    
-    // Show loading state
-    systemCheckStatus.innerHTML = `
-      <div class="loading-spinner"></div>
-      <p>Checking system requirements...</p>
+    div.innerHTML = `
+      <div class="requirement-icon ${check.pass ? 'pass' : 'fail'}">
+        ${check.pass ? '✓' : '✗'}
+      </div>
+      <div class="requirement-details">
+        <div class="requirement-name">${check.name}</div>
+        <div class="requirement-version">
+          <span>Required: ${check.required}</span>
+          <span>Installed: ${check.installed}</span>
+        </div>
+      </div>
     `;
     
-    try {
-      const response = await fetch('/api/system-check');
-      const data = await response.json();
-      
-      // Update system info
-      document.getElementById('hostname').textContent = data.systemInfo.hostname;
-      document.getElementById('os-type').textContent = data.systemInfo.osType;
-      document.getElementById('os-release').textContent = data.systemInfo.osRelease;
-      document.getElementById('cpu-count').textContent = `${data.systemInfo.cpuCount} cores`;
-      document.getElementById('memory-total').textContent = `${data.systemInfo.memoryTotal} GB`;
-      document.getElementById('disk-space').textContent = `${data.systemMetrics.diskSpace.availableGB} GB available`;
-      
-      // Update requirements list
-      let requirementsHTML = '';
-      
-      // Software requirements
-      for (const [key, check] of Object.entries(data.softwareChecks)) {
-        requirementsHTML += `
-          <div class="requirement-row">
-            <div class="requirement-name">${check.name}</div>
-            <div class="requirement-required">v${check.required}+</div>
-            <div class="requirement-installed">${check.installed}</div>
-            <div class="requirement-status">
-              <span class="requirement-status-icon ${check.pass ? 'success' : 'error'}"></span>
-              ${check.pass ? 'OK' : 'Not Met'}
-            </div>
-          </div>
-        `;
-      }
-      
-      // System requirements
-      for (const [key, req] of Object.entries(data.systemMetrics.requirements)) {
-        requirementsHTML += `
-          <div class="requirement-row">
-            <div class="requirement-name">${key === 'cpu' ? 'CPU Cores' : 'Memory'}</div>
-            <div class="requirement-required">${req.required}</div>
-            <div class="requirement-installed">${req.actual}</div>
-            <div class="requirement-status">
-              <span class="requirement-status-icon ${req.pass ? 'success' : 'error'}"></span>
-              ${req.pass ? 'OK' : 'Not Met'}
-            </div>
-          </div>
-        `;
-      }
-      
-      requirementsList.innerHTML = requirementsHTML;
-      
-      // Update overall status
-      if (data.allPassed) {
-        systemCheckStatus.innerHTML = `
-          <div style="color: var(--success); font-size: 24px; margin-bottom: 0.5rem;">✓</div>
-          <p>All system requirements are met. You can proceed with the installation.</p>
-        `;
-        systemCheckStatus.classList.remove('error');
-      } else {
-        systemCheckStatus.innerHTML = `
-          <div style="color: var(--error); font-size: 24px; margin-bottom: 0.5rem;">⚠</div>
-          <p>Some system requirements are not met. You may encounter issues during installation.</p>
-        `;
-        systemCheckStatus.classList.add('error');
-      }
-      
-    } catch (error) {
-      console.error('Error running system check:', error);
-      systemCheckStatus.innerHTML = `
-        <div style="color: var(--error); font-size: 24px; margin-bottom: 0.5rem;">✗</div>
-        <p>Failed to check system requirements: ${error.message}</p>
-      `;
-      systemCheckStatus.classList.add('error');
-    }
+    container.appendChild(div);
+  });
+}
+
+function displayRequirementsSummary(allPassed) {
+  const container = document.getElementById('requirements-summary');
+  const textElement = document.getElementById('summary-text');
+  
+  container.classList.remove('pass', 'fail');
+  container.classList.add(allPassed ? 'pass' : 'fail');
+  
+  if (allPassed) {
+    textElement.innerHTML = 'All system requirements are met! You can proceed with the installation.';
+  } else {
+    textElement.innerHTML = 'Some system requirements are not met. You may need to upgrade your system before proceeding.';
+  }
+}
+
+// Database connection test
+async function testDatabaseConnection() {
+  const messageElement = document.getElementById('db-form-message');
+  const nextButton = document.getElementById('database-next');
+  const form = document.getElementById('database-form');
+  
+  // Clear previous message
+  messageElement.className = 'form-message';
+  messageElement.style.display = 'none';
+  
+  // Get form data
+  const formData = {
+    host: document.getElementById('db-host').value,
+    port: document.getElementById('db-port').value,
+    name: document.getElementById('db-name').value,
+    user: document.getElementById('db-user').value,
+    password: document.getElementById('db-password').value
+  };
+  
+  // Validate required fields
+  if (!formData.host || !formData.port || !formData.name || !formData.user || !formData.password) {
+    messageElement.className = 'form-message error';
+    messageElement.textContent = 'All fields are required';
+    messageElement.style.display = 'block';
+    return;
   }
   
-  // Test database connection
-  async function testDatabaseConnection() {
-    const host = document.getElementById('db-host').value;
-    const port = document.getElementById('db-port').value;
-    const name = document.getElementById('db-name').value;
-    const user = document.getElementById('db-user').value;
-    const password = document.getElementById('db-password').value;
-    
-    const connectionStatus = document.getElementById('db-connection-status');
-    const testButton = document.getElementById('test-connection-btn');
-    
-    // Validate inputs
-    if (!host || !port || !name || !user) {
-      alert('Please fill in all required database fields.');
-      return;
-    }
-    
-    // Show loading state
-    testButton.disabled = true;
-    testButton.textContent = 'Testing...';
-    connectionStatus.classList.add('hidden');
-    
-    try {
-      const response = await fetch('/api/test-database', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ host, port, name, user, password }),
-      });
-      
-      const data = await response.json();
-      
-      // Show status message
-      showConnectionStatus(data.success, data.message);
-      
-    } catch (error) {
-      console.error('Error testing database connection:', error);
-      showConnectionStatus(false, 'Failed to test connection: ' + error.message);
-    } finally {
-      // Reset button
-      testButton.disabled = false;
-      testButton.textContent = 'Test Connection';
-    }
-  }
+  // Disable form during test
+  const formElements = form.querySelectorAll('input, button');
+  formElements.forEach(el => el.disabled = true);
   
-  // Show connection status
-  function showConnectionStatus(success, message) {
-    const connectionStatus = document.getElementById('db-connection-status');
+  try {
+    const response = await fetch('/api/test-database', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
     
-    connectionStatus.classList.remove('hidden', 'success', 'error');
-    connectionStatus.classList.add(success ? 'success' : 'error');
+    const data = await response.json();
     
-    connectionStatus.innerHTML = `
-      <div class="status-icon"></div>
-      <div class="status-message">${message}</div>
-    `;
-  }
-  
-  // Toggle SSL settings
-  function toggleSSLSettings() {
-    const useSSL = document.getElementById('use-ssl').checked;
-    const sslSettings = document.getElementById('ssl-settings');
-    
-    if (useSSL) {
-      sslSettings.classList.remove('hidden');
+    if (data.success) {
+      // Success - update UI
+      messageElement.className = 'form-message success';
+      messageElement.textContent = 'Database connection successful! ' + data.version;
+      messageElement.style.display = 'block';
+      nextButton.disabled = false;
+      
+      // Update install data
+      installData.database = {
+        ...formData,
+        connectionEstablished: true
+      };
     } else {
-      sslSettings.classList.add('hidden');
+      // Failed connection
+      messageElement.className = 'form-message error';
+      messageElement.textContent = data.message;
+      messageElement.style.display = 'block';
+      nextButton.disabled = true;
     }
+  } catch (error) {
+    // Request error
+    messageElement.className = 'form-message error';
+    messageElement.textContent = 'Connection test failed: ' + error.message;
+    messageElement.style.display = 'block';
+    nextButton.disabled = true;
+  } finally {
+    // Re-enable form
+    formElements.forEach(el => el.disabled = false);
   }
+}
+
+// Toggle SSL settings
+function toggleSslSettings() {
+  const sslEnabled = document.getElementById('server-ssl').checked;
+  const sslSettings = document.getElementById('ssl-settings');
   
-  // Toggle Twilio settings
-  function toggleTwilioSettings() {
-    const useTwilio = document.getElementById('use-twilio').checked;
-    const twilioSettings = document.getElementById('twilio-settings');
+  sslSettings.style.display = sslEnabled ? 'block' : 'none';
+}
+
+// Save web server config
+async function saveWebServerConfig() {
+  const formData = {
+    type: document.getElementById('server-type').value,
+    domain: document.getElementById('server-domain').value,
+    port: document.getElementById('http-port').value,
+    sslPort: document.getElementById('ssl-port').value,
+    useSSL: document.getElementById('server-ssl').checked
+  };
+  
+  try {
+    const response = await fetch('/api/webserver-config', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
     
-    if (useTwilio) {
-      twilioSettings.classList.remove('hidden');
-    } else {
-      twilioSettings.classList.add('hidden');
+    if (!response.ok) throw new Error('Failed to save web server configuration');
+    
+    // Update install data
+    installData.webServer = {
+      ...formData,
+      configCreated: true
+    };
+    
+    // Go to next step
+    nextStep();
+  } catch (error) {
+    console.error('Error saving web server config:', error);
+    alert('Failed to save web server configuration: ' + error.message);
+  }
+}
+
+// Save API server config
+async function saveApiConfig() {
+  const formData = {
+    port: document.getElementById('api-port').value,
+    corsOrigins: document.getElementById('cors-origins').value,
+    rateLimitMax: document.getElementById('rate-limit').value
+  };
+  
+  try {
+    const response = await fetch('/api/server-config', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
+    
+    if (!response.ok) throw new Error('Failed to save API server configuration');
+    
+    // Update install data
+    installData.api = formData;
+    
+    // Go to next step
+    nextStep();
+  } catch (error) {
+    console.error('Error saving API config:', error);
+    alert('Failed to save API server configuration: ' + error.message);
+  }
+}
+
+// Save API keys
+async function saveApiKeys() {
+  const formData = {
+    openai: document.getElementById('openai-key').value,
+    anthropic: document.getElementById('anthropic-key').value,
+    twilio: {
+      accountSid: document.getElementById('twilio-sid').value,
+      authToken: document.getElementById('twilio-token').value,
+      phoneNumber: document.getElementById('twilio-phone').value
     }
-  }
+  };
   
-  // Install the application
-  async function installApplication() {
-    const installButton = document.getElementById('install-button');
-    const installationProgress = document.getElementById('installation-progress');
-    const installationComplete = document.getElementById('installation-complete');
-    const progressBar = document.querySelector('.progress-bar-inner');
-    const progressMessage = document.querySelector('.progress-message');
+  try {
+    const response = await fetch('/api/api-keys', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
     
-    // Show progress UI
-    installButton.disabled = true;
-    installationProgress.classList.remove('hidden');
-    installationComplete.classList.add('hidden');
+    if (!response.ok) throw new Error('Failed to save API keys');
     
-    // Start the progress bar animation
+    // Update install data
+    installData.apiKeys = formData;
+    
+    // Go to next step
+    nextStep();
+  } catch (error) {
+    console.error('Error saving API keys:', error);
+    alert('Failed to save API keys: ' + error.message);
+  }
+}
+
+// Save features
+async function saveFeatures() {
+  const formData = {
+    enableAiCoach: document.getElementById('ai-coach-toggle').checked,
+    enableHighlightGeneration: document.getElementById('highlight-toggle').checked,
+    enableSmsNotifications: document.getElementById('sms-toggle').checked
+  };
+  
+  try {
+    const response = await fetch('/api/features', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
+    
+    if (!response.ok) throw new Error('Failed to save feature settings');
+    
+    // Update install data
+    installData.features = formData;
+    
+    // Go to next step
+    nextStep();
+  } catch (error) {
+    console.error('Error saving features:', error);
+    alert('Failed to save feature settings: ' + error.message);
+  }
+}
+
+// Populate form values from install data
+function populateFormValues() {
+  // Database form
+  document.getElementById('db-host').value = installData.database.host;
+  document.getElementById('db-port').value = installData.database.port;
+  document.getElementById('db-name').value = installData.database.name;
+  document.getElementById('db-user').value = installData.database.user;
+  document.getElementById('db-password').value = installData.database.password;
+  document.getElementById('database-next').disabled = !installData.database.connectionEstablished;
+  
+  // Web server form
+  document.getElementById('server-type').value = installData.webServer.type;
+  document.getElementById('server-domain').value = installData.webServer.domain;
+  document.getElementById('http-port').value = installData.webServer.port;
+  document.getElementById('ssl-port').value = installData.webServer.sslPort;
+  document.getElementById('server-ssl').checked = installData.webServer.useSSL;
+  toggleSslSettings();
+  
+  // API server form
+  document.getElementById('api-port').value = installData.api.port;
+  document.getElementById('cors-origins').value = installData.api.corsOrigins;
+  document.getElementById('rate-limit').value = installData.api.rateLimitMax;
+  
+  // API keys form
+  document.getElementById('openai-key').value = installData.apiKeys.openai;
+  document.getElementById('anthropic-key').value = installData.apiKeys.anthropic;
+  document.getElementById('twilio-sid').value = installData.apiKeys.twilio.accountSid;
+  document.getElementById('twilio-token').value = installData.apiKeys.twilio.authToken;
+  document.getElementById('twilio-phone').value = installData.apiKeys.twilio.phoneNumber;
+  
+  // Features form
+  document.getElementById('ai-coach-toggle').checked = installData.features.enableAiCoach;
+  document.getElementById('highlight-toggle').checked = installData.features.enableHighlightGeneration;
+  document.getElementById('sms-toggle').checked = installData.features.enableSmsNotifications;
+}
+
+// Populate installation summary
+function populateInstallationSummary() {
+  // Database summary
+  const dbSummary = document.getElementById('db-summary');
+  dbSummary.innerHTML = `
+    <li><strong>Host:</strong> ${installData.database.host}</li>
+    <li><strong>Port:</strong> ${installData.database.port}</li>
+    <li><strong>Database:</strong> ${installData.database.name}</li>
+    <li><strong>User:</strong> ${installData.database.user}</li>
+    <li><strong>Connection:</strong> ${installData.database.connectionEstablished ? 'Verified' : 'Not Verified'}</li>
+  `;
+  
+  // Web server summary
+  const webServerSummary = document.getElementById('webserver-summary');
+  webServerSummary.innerHTML = `
+    <li><strong>Type:</strong> ${installData.webServer.type}</li>
+    <li><strong>Domain:</strong> ${installData.webServer.domain}</li>
+    <li><strong>SSL:</strong> ${installData.webServer.useSSL ? 'Enabled' : 'Disabled'}</li>
+    <li><strong>HTTP Port:</strong> ${installData.webServer.port}</li>
+    ${installData.webServer.useSSL ? `<li><strong>HTTPS Port:</strong> ${installData.webServer.sslPort}</li>` : ''}
+  `;
+  
+  // API server summary
+  const apiSummary = document.getElementById('api-summary');
+  apiSummary.innerHTML = `
+    <li><strong>Port:</strong> ${installData.api.port}</li>
+    <li><strong>CORS Origins:</strong> ${installData.api.corsOrigins}</li>
+    <li><strong>Rate Limit:</strong> ${installData.api.rateLimitMax} requests/minute</li>
+  `;
+  
+  // Features summary
+  const featuresSummary = document.getElementById('features-summary');
+  featuresSummary.innerHTML = `
+    <li><strong>AI Coach:</strong> ${installData.features.enableAiCoach ? 'Enabled' : 'Disabled'}</li>
+    <li><strong>Highlight Generation:</strong> ${installData.features.enableHighlightGeneration ? 'Enabled' : 'Disabled'}</li>
+    <li><strong>SMS Notifications:</strong> ${installData.features.enableSmsNotifications ? 'Enabled' : 'Disabled'}</li>
+  `;
+}
+
+// Start installation
+async function startInstallation() {
+  const progressContainer = document.getElementById('installation-progress');
+  const resultContainer = document.getElementById('installation-result');
+  const progressBar = document.getElementById('installation-progress-bar');
+  const statusText = document.getElementById('installation-status');
+  const installButton = document.getElementById('install-button');
+  
+  // Show progress, hide result
+  progressContainer.style.display = 'block';
+  resultContainer.style.display = 'none';
+  installButton.disabled = true;
+  
+  try {
+    // Simulate progress (since the actual installation is happening on the server)
     let progress = 0;
     const progressInterval = setInterval(() => {
-      progress += 1;
-      progressBar.style.width = `${Math.min(progress, 95)}%`;
+      progress += 5;
+      progressBar.style.width = `${progress}%`;
+      statusText.textContent = `Installing... (${progress}%)`;
       
       if (progress >= 100) {
         clearInterval(progressInterval);
       }
-    }, 100);
+    }, 300);
     
-    try {
-      // Save web server configuration
-      const serverType = document.getElementById('server-type').value;
-      const domain = document.getElementById('server-domain').value;
-      const useSSL = document.getElementById('use-ssl').checked;
-      const httpPort = document.getElementById('http-port').value;
-      const httpsPort = document.getElementById('https-port')?.value || '443';
-      
-      await fetch('/api/webserver-config', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          type: serverType,
-          port: httpPort,
-          sslPort: httpsPort,
-          domain,
-          useSSL,
-        }),
-      });
-      
-      progressMessage.textContent = 'Saved web server configuration...';
-      
-      // Save API configuration
-      const apiPort = document.getElementById('api-port').value;
-      const corsOrigins = document.getElementById('cors-origins').value;
-      const rateLimitMax = document.getElementById('rate-limit').value;
-      
-      await fetch('/api/server-config', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          port: apiPort,
-          corsOrigins,
-          rateLimitMax,
-        }),
-      });
-      
-      progressMessage.textContent = 'Saved API configuration...';
-      
-      // Save API keys
-      const openaiKey = document.getElementById('openai-key').value;
-      const anthropicKey = document.getElementById('anthropic-key').value;
-      const useTwilio = document.getElementById('use-twilio').checked;
-      
-      let twilioData = {};
-      if (useTwilio) {
-        twilioData = {
-          accountSid: document.getElementById('twilio-account-sid').value,
-          authToken: document.getElementById('twilio-auth-token').value,
-          phoneNumber: document.getElementById('twilio-phone').value,
-        };
+    // Start installation on server
+    const response = await fetch('/api/install', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
       }
-      
-      await fetch('/api/api-keys', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          openai: openaiKey,
-          anthropic: anthropicKey,
-          twilio: twilioData,
-        }),
-      });
-      
-      progressMessage.textContent = 'Saved API keys...';
-      
-      // Save feature settings
-      const enableAiCoach = document.getElementById('feature-ai-coach').checked;
-      const enableHighlightGeneration = document.getElementById('feature-highlight-generation').checked;
-      const enableSmsNotifications = document.getElementById('feature-sms-notifications').checked;
-      
-      await fetch('/api/features', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          enableAiCoach,
-          enableHighlightGeneration,
-          enableSmsNotifications,
-        }),
-      });
-      
-      progressMessage.textContent = 'Saved feature settings...';
-      
-      // Perform the installation
-      const installResponse = await fetch('/api/install', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({}),
-      });
-      
-      const installResult = await installResponse.json();
-      
-      if (installResult.success) {
-        // Set progress to 100%
-        clearInterval(progressInterval);
-        progressBar.style.width = '100%';
-        
-        // Show completion UI
-        setTimeout(() => {
-          installationProgress.classList.add('hidden');
-          installationComplete.classList.remove('hidden');
-        }, 500);
-      } else {
-        throw new Error(installResult.message);
-      }
-      
-    } catch (error) {
-      console.error('Installation error:', error);
-      clearInterval(progressInterval);
-      
-      progressMessage.textContent = `Installation failed: ${error.message}`;
-      progressBar.style.backgroundColor = 'var(--error)';
-      
-      // Re-enable the install button
-      installButton.disabled = false;
-    }
-  }
-  
-  // Update the summary in the final step
-  function updateSummary() {
-    // Database summary
-    document.getElementById('summary-db-host').textContent = document.getElementById('db-host')?.value || 'localhost';
-    document.getElementById('summary-db-port').textContent = document.getElementById('db-port')?.value || '5432';
-    document.getElementById('summary-db-name').textContent = document.getElementById('db-name')?.value || 'go4it_sports';
-    document.getElementById('summary-db-user').textContent = document.getElementById('db-user')?.value || 'go4it';
-    
-    // Web server summary
-    const serverTypeSelect = document.getElementById('server-type');
-    const serverTypeValue = serverTypeSelect?.value || 'nginx';
-    const serverTypeText = serverTypeSelect?.options[serverTypeSelect.selectedIndex]?.text || 'Nginx';
-    document.getElementById('summary-server-type').textContent = serverTypeText;
-    
-    document.getElementById('summary-domain').textContent = document.getElementById('server-domain')?.value || 'go4itsports.org';
-    document.getElementById('summary-ssl').textContent = document.getElementById('use-ssl')?.checked ? 'Enabled' : 'Disabled';
-    
-    // API summary
-    document.getElementById('summary-api-port').textContent = document.getElementById('api-port')?.value || '5000';
-    document.getElementById('summary-cors').textContent = document.getElementById('cors-origins')?.value || '*';
-    
-    // Features summary
-    const aiCoach = document.getElementById('feature-ai-coach')?.checked;
-    const highlightGen = document.getElementById('feature-highlight-generation')?.checked;
-    const smsNotifications = document.getElementById('feature-sms-notifications')?.checked;
-    
-    document.getElementById('summary-feature-ai-coach').classList.toggle('hidden', !aiCoach);
-    document.getElementById('summary-feature-highlight').classList.toggle('hidden', !highlightGen);
-    document.getElementById('summary-feature-sms').classList.toggle('hidden', !smsNotifications);
-  }
-  
-  // Set up summary updates when form inputs change
-  function setupSummaryUpdates() {
-    // Watch for changes in input fields
-    document.querySelectorAll('input, select').forEach(input => {
-      input.addEventListener('change', updateSummary);
     });
-  }
-  
-  // Tell the server what step we're on
-  async function updateServerStep(step) {
-    try {
-      await fetch('/api/update-step', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ step }),
-      });
-    } catch (error) {
-      console.error('Error updating step:', error);
-    }
     
-    // Update max reached step
-    setMaxReachedStep(step);
+    if (!response.ok) throw new Error('Installation failed');
+    
+    const data = await response.json();
+    
+    // Ensure progress reaches 100%
+    progress = 100;
+    progressBar.style.width = '100%';
+    statusText.textContent = 'Installation complete!';
+    
+    // Show result after a short delay
+    setTimeout(() => {
+      progressContainer.style.display = 'none';
+      resultContainer.style.display = 'block';
+    }, 1000);
+  } catch (error) {
+    console.error('Installation error:', error);
+    statusText.textContent = `Installation failed: ${error.message}`;
+    installButton.disabled = false;
   }
-});
+}

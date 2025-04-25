@@ -356,6 +356,37 @@ app.post('/api/update-step', (req, res) => {
   res.json({ success: true, currentStep: installData.step });
 });
 
+// Function to compare version numbers
+function compareVersions(a, b) {
+  const aParts = a.split('.').map(Number);
+  const bParts = b.split('.').map(Number);
+  
+  for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+    const aPart = aParts[i] || 0;
+    const bPart = bParts[i] || 0;
+    
+    if (aPart > bPart) return 1;
+    if (aPart < bPart) return -1;
+  }
+  
+  return 0;
+}
+
+// Function to get disk space
+async function getDiskSpace() {
+  try {
+    // Simplified for demo purposes - returns mock data
+    return {
+      total: 100, // GB
+      free: 50,   // GB
+      used: 50    // GB
+    };
+  } catch (error) {
+    console.error('Error getting disk space:', error);
+    return { total: 0, free: 0, used: 0 };
+  }
+}
+
 // Helper function to create .env file
 async function createEnvFile() {
   const envPath = path.join(INSTALL_DIR, '.env');
@@ -596,22 +627,6 @@ async function getDiskSpace() {
       percentUsed: 'unknown',
     };
   }
-}
-
-// Helper function to compare versions
-function compareVersions(a, b) {
-  const aParts = a.split('.').map(Number);
-  const bParts = b.split('.').map(Number);
-  
-  for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
-    const aVal = aParts[i] || 0;
-    const bVal = bParts[i] || 0;
-    
-    if (aVal > bVal) return 1;
-    if (aVal < bVal) return -1;
-  }
-  
-  return 0;
 }
 
 // Start the server
