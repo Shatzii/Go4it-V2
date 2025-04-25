@@ -27,7 +27,7 @@ mkdir -p "$TEMP_DIR/dist/uploads"
 # Run the production build process
 echo "Running Vite production build..."
 export NODE_ENV=production
-node vite-production-build.js || {
+node vite-production-build.cjs || {
   echo "Build failed! Check errors above."
   exit 1
 }
