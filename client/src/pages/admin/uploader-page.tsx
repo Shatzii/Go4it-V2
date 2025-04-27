@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'wouter';
-import { Loader2, Upload, FileUp, Trash2, RefreshCw } from 'lucide-react';
+import { Loader2, Upload, FileUp, Trash2, RefreshCw, Save, Edit, Eye, XCircle, Code } from 'lucide-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
@@ -10,6 +10,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Toggle } from "@/components/ui/toggle";
+import { Editor } from '@monaco-editor/react';
 import { apiRequest } from '@/lib/queryClient';
 
 interface UploadedFile {
@@ -17,6 +22,7 @@ interface UploadedFile {
   size: number;
   created: string;
   modified: string;
+  content?: string;
 }
 
 interface DeployForm {
@@ -34,6 +40,12 @@ const UploaderPage: React.FC = () => {
     filename: '',
     destination: ''
   });
+  const [codeEditorOpen, setCodeEditorOpen] = useState<boolean>(false);
+  const [currentFile, setCurrentFile] = useState<UploadedFile | null>(null);
+  const [editedCode, setEditedCode] = useState<string>('');
+  const [editorLanguage, setEditorLanguage] = useState<string>('javascript');
+  const [editorTheme, setEditorTheme] = useState<string>('vs-dark');
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   // Redirect if not admin
   useEffect(() => {

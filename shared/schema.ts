@@ -820,8 +820,12 @@ export const usersRelations = relations(users, ({ many, one }) => ({
     fields: [users.id],
     references: [athleteProfiles.userId],
   }),
-  sentMessages: many(directMessages, { relationName: "senderMessages" }),
-  receivedMessages: many(directMessages, { relationName: "recipientMessages" }),
+  sentMessages: many(directMessages, { 
+    relationName: "senderMessages" 
+  }),
+  receivedMessages: many(directMessages, { 
+    relationName: "recipientMessages" 
+  }),
   starProfile: one(athleteStarProfiles, {
     fields: [users.id],
     references: [athleteStarProfiles.userId],
