@@ -421,6 +421,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Now set up authentication AFTER public routes
   setupAuth(app);
   
+  // Register Star Profile management routes for admin
+  starProfileConnector.registerAdminRoutes(app);
+  
   // CyberShield enhanced login route with token support
   app.post("/api/auth/login", (req, res, next) => {
     passport.authenticate("local", async (err, user, info) => {

@@ -10,15 +10,12 @@ import { db } from '../db';
 import { 
   athleteStarProfiles, 
   athleteProfiles, 
-  starPathProgress, 
   users,
   athleteStarPath,
   userDrillProgress,
   workoutVerifications,
   workoutVerificationCheckpoints,
-  badgeAwards,
-  achievementProgress,
-  onboardingProgress
+  starPaths
 } from '@shared/schema';
 import { eq, and, desc, asc, inArray, sql } from 'drizzle-orm';
 
@@ -75,42 +72,25 @@ export class StarProfileConnector {
         isFeatured: starProfile?.isFeatured || false
       };
       
-      // Count completed drills
+      // Count completed drills - use lastCompletedAt field as a proxy for completion
       const drillProgress = await db.query.userDrillProgress.findMany({
         where: eq(userDrillProgress.userId, userId)
       });
       
-      standardProfile.completedDrills = drillProgress.filter(p => p.isCompleted).length;
+      standardProfile.completedDrills = drillProgress.filter(p => p.lastCompletedAt !== null).length;
       
-      // Count verified workouts
+      // Count verified workouts - use completedAt field as a proxy for verification
       const workouts = await db.query.workoutVerifications.findMany({
         where: eq(workoutVerifications.userId, userId)
       });
       
-      standardProfile.verifiedWorkouts = workouts.filter(w => w.verified).length;
+      standardProfile.verifiedWorkouts = workouts.filter(w => w.completedAt !== null).length;
       
-      // Get skill progress data
-      const skillProgressData = await db.query.skillProgress.findMany({
-        where: eq(skillProgress.userId, userId)
-      });
+      // Initialize skill progress as empty object since table doesn't exist yet
+      standardProfile.skillProgress = {};
       
-      standardProfile.skillProgress = skillProgressData.reduce((acc, curr) => {
-        acc[curr.skillId] = {
-          currentLevel: curr.currentLevel,
-          progressPercent: curr.progressPercent,
-          lastImproved: curr.lastImproved
-        };
-        return acc;
-      }, {});
-      
-      // Get next achievements
-      const achievements = await db.query.achievements.findMany({
-        where: and(
-          eq(achievements.sportType, standardProfile.sportSpecialty),
-          eq(achievements.starLevelRequired, standardProfile.currentStarLevel + 1)
-        ),
-        limit: 3
-      });
+      // Initialize next achievements as empty array since table doesn't exist yet
+      const achievements = [];
       
       standardProfile.nextAchievements = achievements.map(a => ({
         id: a.id,
@@ -186,21 +166,11 @@ export class StarProfileConnector {
    */
   async getStarStandardProfiles(limit: number = 20, offset: number = 0, sortBy: string = 'currentStarLevel', sortDir: 'asc' | 'desc' = 'desc'): Promise<any[]> {
     try {
-      // Build sort criteria
+      // Build sort criteria - use starLevel field which does exist in the schema
       let orderBy: any;
-      switch (sortBy) {
-        case 'currentStarLevel':
-          orderBy = sortDir === 'asc' ? asc(athleteStarProfiles.currentStarLevel) : desc(athleteStarProfiles.currentStarLevel);
-          break;
-        case 'xpTotal':
-          orderBy = sortDir === 'asc' ? asc(athleteStarProfiles.xpTotal) : desc(athleteStarProfiles.xpTotal);
-          break;
-        case 'lastActivity':
-          orderBy = sortDir === 'asc' ? asc(athleteStarProfiles.lastActivity) : desc(athleteStarProfiles.lastActivity);
-          break;
-        default:
-          orderBy = desc(athleteStarProfiles.currentStarLevel);
-      }
+      
+      // Default to sorting by starLevel since custom fields don't exist yet
+      orderBy = sortDir === 'asc' ? asc(athleteStarProfiles.starLevel) : desc(athleteStarProfiles.starLevel);
       
       // Get profiles with user data joined
       const profiles = await db.select({
@@ -208,11 +178,9 @@ export class StarProfileConnector {
         user: {
           id: users.id,
           username: users.username,
-          firstName: users.firstName,
-          lastName: users.lastName,
+          name: users.name,
           email: users.email,
-          profileImage: users.profileImage,
-          primarySport: users.primarySport
+          profileImage: users.profileImage
         }
       })
       .from(athleteStarProfiles)
@@ -268,19 +236,9 @@ export class StarProfileConnector {
         limit: 10
       });
       
-      // Get badge awards
-      const badges = await db.query.badgeAwards.findMany({
-        where: eq(badgeAwards.userId, userId),
-        orderBy: [desc(badgeAwards.awardedAt)],
-        limit: 10
-      });
-      
-      // Get achievement progress
-      const achievements = await db.query.achievementProgress.findMany({
-        where: eq(achievementProgress.userId, userId),
-        orderBy: [desc(achievementProgress.lastUpdated)],
-        limit: 10
-      });
+      // Initialize empty arrays for badges and achievements since tables don't exist yet
+      const badges = [];
+      const achievements = [];
       
       // Combine all data
       return {
@@ -288,11 +246,9 @@ export class StarProfileConnector {
         user: {
           id: user.id,
           username: user.username,
-          firstName: user.firstName,
-          lastName: user.lastName,
+          name: user.name, // Use name field instead of firstName/lastName which doesn't exist
           email: user.email,
           profileImage: user.profileImage,
-          primarySport: user.primarySport,
           createdAt: user.createdAt,
           role: user.role
         },
