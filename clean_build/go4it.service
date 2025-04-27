@@ -12,7 +12,7 @@ RestartSec=10
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=go4it-sports
-Environment=NODE_ENV=production PORT=81 SERVER_HOST=5.16.1.9
+Environment=NODE_ENV=production PORT=81 SERVER_HOST=localhost DOMAIN=go4itsports.org BASE_URL=https://go4itsports.org
 
 [Install]
 WantedBy=multi-user.target
