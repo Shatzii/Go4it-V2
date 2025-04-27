@@ -5,6 +5,74 @@
  */
 
 /**
+ * Achievement Category Enum
+ * Categories for organizing achievements
+ */
+export enum AchievementCategory {
+  Performance = 'performance',
+  Training = 'training',
+  Academics = 'academics',
+  Community = 'community',
+  Milestone = 'milestone',
+  Special = 'special'
+}
+
+/**
+ * Reward Type Enum
+ * Types of rewards that can be earned
+ */
+export enum RewardType {
+  Badge = 'badge',
+  Avatar = 'avatar',
+  Title = 'title',
+  Equipment = 'equipment',
+  Accessory = 'accessory',
+  Training = 'training',
+  Animation = 'animation',
+  SpecialEffect = 'specialEffect',
+  SocialMedia = 'socialMedia'
+}
+
+/**
+ * Achievement Interface
+ * Represents a specific achievement that can be earned
+ */
+export interface Achievement {
+  id: number;
+  name: string;
+  description: string;
+  category: AchievementCategory;
+  requiredLevel?: number;
+  requiredSport?: string;
+  requiredPosition?: string;
+  iconName: string;
+  xpReward: number;
+  unlockedAt?: Date;
+  progress?: number;
+  maxProgress?: number;
+  isCompleted: boolean;
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+}
+
+/**
+ * Reward Interface
+ * Represents rewards that can be earned through Star Path progression
+ */
+export interface Reward {
+  id: number;
+  name: string;
+  description: string;
+  type: RewardType;
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  iconName: string;
+  requiredStarLevel?: number;
+  sportType?: string;
+  isUnlocked: boolean;
+  unlockedAt?: Date;
+  metadata?: Record<string, any>;
+}
+
+/**
  * Star Path Progress Interface
  * Represents an athlete's progress in the Star Path system
  */
@@ -29,7 +97,8 @@ export interface StarPathProgress {
   currentGoal: string | null;
   nextMilestone: string | null;
   roadmapItems: string[] | null;
-  achievements: string[] | null;
+  achievements: Achievement[] | null;
+  unlockedRewards: Reward[] | null;
   levelThresholds: number[] | null;
 }
 
@@ -56,7 +125,8 @@ export interface StarPathCreateUpdate {
   currentGoal?: string | null;
   nextMilestone?: string | null;
   roadmapItems?: string[] | null;
-  achievements?: string[] | null;
+  achievements?: Achievement[] | null;
+  unlockedRewards?: Reward[] | null;
   levelThresholds?: number[] | null;
 }
 
