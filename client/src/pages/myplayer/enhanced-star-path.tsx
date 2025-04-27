@@ -920,155 +920,234 @@ export default function EnhancedStarPath() {
         </TabsContent>
         
         <TabsContent value="achievements" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Star Path Achievements</CardTitle>
-              <CardDescription>
-                Complete these achievements to progress on your Star Path
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {[
-                  { 
-                    id: 1, 
-                    title: "First Steps", 
-                    description: "Complete your first workout", 
-                    icon: <Dumbbell className="h-5 w-5" />,
-                    isCompleted: (playerProgress.starPath?.verifiedWorkouts || 0) > 0,
-                    starLevel: 1,
-                    xpReward: 100
-                  },
-                  { 
-                    id: 2, 
-                    title: "Video Analysis", 
-                    description: "Upload your first performance video", 
-                    icon: <Video className="h-5 w-5" />,
-                    isCompleted: false,
-                    starLevel: 1,
-                    xpReward: 150
-                  },
-                  { 
-                    id: 3, 
-                    title: "One Week Strong", 
-                    description: "Maintain a 7-day streak", 
-                    icon: <Calendar className="h-5 w-5" />,
-                    isCompleted: (playerProgress.streak || 0) >= 7,
-                    starLevel: 1,
-                    xpReward: 250
-                  },
-                  { 
-                    id: 4, 
-                    title: "Skill Development", 
-                    description: "Complete 10 skill drills", 
-                    icon: <ActivitySquare className="h-5 w-5" />,
-                    isCompleted: (playerProgress.starPath?.completedDrills || 0) >= 10,
-                    starLevel: 2,
-                    xpReward: 300
-                  },
-                  { 
-                    id: 5, 
-                    title: "Team Player", 
-                    description: "Join a team or training group", 
-                    icon: <Users className="h-5 w-5" />,
-                    isCompleted: false,
-                    starLevel: 2,
-                    xpReward: 350
-                  },
-                  { 
-                    id: 6, 
-                    title: "Athletic Assessment", 
-                    description: "Complete your first GAR assessment", 
-                    icon: <BarChart3 className="h-5 w-5" />,
-                    isCompleted: false,
-                    starLevel: 2,
-                    xpReward: 400
-                  },
-                  { 
-                    id: 7, 
-                    title: "Competition Ready", 
-                    description: "Participate in your first competition", 
-                    icon: <Trophy className="h-5 w-5" />,
-                    isCompleted: false,
-                    starLevel: 3,
-                    xpReward: 500
-                  },
-                  { 
-                    id: 8, 
-                    title: "Skill Tree Progress", 
-                    description: "Reach 50% on your skill tree", 
-                    icon: <ListChecks className="h-5 w-5" />,
-                    isCompleted: (playerProgress.starPath?.skillTreeProgress || 0) >= 50,
-                    starLevel: 3,
-                    xpReward: 450
-                  },
-                  { 
-                    id: 9, 
-                    title: "Recruitment Profile", 
-                    description: "Set up your recruitment profile", 
-                    icon: <UserCheck className="h-5 w-5" />,
-                    isCompleted: false,
-                    starLevel: 4,
-                    xpReward: 600
-                  }
-                ].map(achievement => (
-                  <div 
-                    key={achievement.id}
-                    className={`
-                      rounded-lg border p-4 transition-all duration-200
-                      ${achievement.isCompleted 
-                        ? 'bg-gradient-to-br from-primary/20 to-primary/5 border-primary/30' 
-                        : achievement.starLevel <= currentStarLevel
-                          ? 'bg-card border-muted hover:border-muted-foreground/50' 
-                          : 'bg-muted/20 border-muted/30 opacity-60'
+          <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+            <Trophy className="h-6 w-6 text-amber-500" />
+            Achievements & Rewards
+          </h2>
+          
+          <p className="text-muted-foreground mb-6">
+            Track your achievements and unlock rewards as you progress in your athletic journey.
+          </p>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Achievements section */}
+            <AchievementDisplay 
+              achievements={achievements || []} 
+              title="Your Achievements"
+              description="Showcase your athletic journey milestones"
+              onShare={(achievement) => {
+                if (user) {
+                  shareAchievement(user.id, achievement.id)
+                    .then((result) => {
+                      if (result.success) {
+                        toast({
+                          title: "Achievement Shared",
+                          description: result.message || "Your achievement has been shared to your profile!",
+                        });
+                      } else {
+                        throw new Error(result.message);
                       }
-                    `}
-                  >
-                    <div className="flex gap-3">
-                      <div className={`
-                        p-2 rounded-full flex-shrink-0
-                        ${achievement.isCompleted 
-                          ? 'bg-primary/20 text-primary' 
-                          : 'bg-muted text-muted-foreground'
-                        }
-                      `}>
-                        {achievement.icon}
+                    })
+                    .catch((error) => {
+                      toast({
+                        title: "Sharing Failed",
+                        description: error.message || "Unable to share your achievement. Please try again.",
+                        variant: "destructive",
+                      });
+                    });
+                }
+              }}
+              className="h-full"
+            />
+            
+            {/* Rewards section */}
+            <RewardDisplay 
+              rewards={rewards || []} 
+              title="Your Rewards"
+              description="Unlock special rewards and benefits"
+              showUnlockButton={true}
+              onShare={(reward) => {
+                if (user) {
+                  shareReward(user.id, reward.id)
+                    .then((result) => {
+                      if (result.success) {
+                        toast({
+                          title: "Reward Shared",
+                          description: result.message || "Your reward has been shared to your profile!",
+                        });
+                      } else {
+                        throw new Error(result.message);
+                      }
+                    })
+                    .catch((error) => {
+                      toast({
+                        title: "Sharing Failed",
+                        description: error.message || "Unable to share your reward. Please try again.",
+                        variant: "destructive",
+                      });
+                    });
+                }
+              }}
+              className="h-full"
+            />
+          </div>
+          
+          {/* Sport-specific achievements section */}
+          {playerProgress.starPath?.sportType && (
+            <div className="mt-8">
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <Flame className="h-5 w-5 text-orange-500" />
+                {playerProgress.starPath.sportType.charAt(0).toUpperCase() + 
+                 playerProgress.starPath.sportType.slice(1)} Sport Achievements
+              </h3>
+              
+              <p className="text-muted-foreground mb-6">
+                Sport-specific achievements and rewards for {playerProgress.starPath.sportType} players.
+              </p>
+              
+              <div className="grid grid-cols-1 gap-6">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">Upcoming Achievements</CardTitle>
+                    <CardDescription>Keep training to unlock these achievements</CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <ScrollArea className="h-[180px] pr-4">
+                      <div className="space-y-4 py-2">
+                        {/* We'll use hard-coded achievements as fallback when none are loaded yet */}
+                        {!(achievements || []).length ? (
+                          <div className="space-y-3">
+                            {[
+                              { 
+                                id: 1, 
+                                name: "First Steps", 
+                                description: "Complete your first workout", 
+                                category: AchievementCategory.Training,
+                                isCompleted: (playerProgress.starPath?.verifiedWorkouts || 0) > 0,
+                                rarity: 'common',
+                                xpReward: 100
+                              },
+                              { 
+                                id: 2, 
+                                name: "Video Analysis", 
+                                description: "Upload your first performance video", 
+                                category: AchievementCategory.Performance,
+                                isCompleted: false,
+                                rarity: 'uncommon',
+                                xpReward: 150
+                              },
+                              { 
+                                id: 3, 
+                                name: "One Week Strong", 
+                                description: "Maintain a 7-day streak", 
+                                category: AchievementCategory.Milestone,
+                                isCompleted: (playerProgress.streak || 0) >= 7,
+                                rarity: 'uncommon',
+                                xpReward: 250
+                              },
+                              { 
+                                id: 4, 
+                                name: "Skill Development", 
+                                description: "Complete 10 skill drills", 
+                                category: AchievementCategory.Training,
+                                isCompleted: (playerProgress.starPath?.completedDrills || 0) >= 10,
+                                rarity: 'rare',
+                                xpReward: 300,
+                                progress: playerProgress.starPath?.completedDrills || 0,
+                                maxProgress: 10
+                              },
+                              { 
+                                id: 5, 
+                                name: "Team Player", 
+                                description: "Join a team or training group", 
+                                category: AchievementCategory.Community,
+                                isCompleted: false,
+                                rarity: 'rare',
+                                xpReward: 350
+                              }
+                            ].filter(a => !a.isCompleted).map((achievement) => (
+                              <div 
+                                key={achievement.id} 
+                                className="flex items-center gap-3 p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                              >
+                                <div className={`
+                                  h-10 w-10 rounded-full flex items-center justify-center
+                                  ${achievement.isCompleted ? 'bg-primary/20' : 'bg-muted/70'}
+                                `}>
+                                  {getCategoryIcon(achievement.category, achievement.rarity)}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-medium truncate">{achievement.name}</h4>
+                                  <p className="text-xs text-muted-foreground line-clamp-1">
+                                    {achievement.description}
+                                  </p>
+                                  {achievement.progress !== undefined && achievement.maxProgress && (
+                                    <div className="w-full mt-1.5">
+                                      <div className="flex justify-between text-xs mb-0.5">
+                                        <span>Progress</span>
+                                        <span>{achievement.progress}/{achievement.maxProgress}</span>
+                                      </div>
+                                      <Progress 
+                                        value={(achievement.progress / achievement.maxProgress) * 100} 
+                                        className="h-1.5" 
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="text-xs text-primary font-medium">
+                                  +{achievement.xpReward} XP
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            {(achievements || [])
+                              .filter(a => !a.isCompleted && a.requiredSport === playerProgress.starPath?.sportType)
+                              .slice(0, 5)
+                              .map((achievement) => (
+                                <div 
+                                  key={achievement.id} 
+                                  className="flex items-center gap-3 p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                                >
+                                  <div className={`
+                                    h-10 w-10 rounded-full flex items-center justify-center
+                                    ${getRarityBackground(achievement.rarity)}
+                                  `}>
+                                    {getCategoryIcon(achievement.category, achievement.rarity)}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="font-medium truncate">{achievement.name}</h4>
+                                    <p className="text-xs text-muted-foreground line-clamp-1">
+                                      {achievement.description}
+                                    </p>
+                                    {achievement.progress !== undefined && achievement.maxProgress && (
+                                      <div className="w-full mt-1.5">
+                                        <div className="flex justify-between text-xs mb-0.5">
+                                          <span>Progress</span>
+                                          <span>{achievement.progress}/{achievement.maxProgress}</span>
+                                        </div>
+                                        <Progress 
+                                          value={(achievement.progress / achievement.maxProgress) * 100} 
+                                          className="h-1.5" 
+                                        />
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-primary font-medium">
+                                    +{achievement.xpReward} XP
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        )}
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-medium">{achievement.title}</h4>
-                          {achievement.starLevel > currentStarLevel && (
-                            <Badge variant="outline" className="text-xs">
-                              Star {achievement.starLevel}
-                            </Badge>
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {achievement.description}
-                        </p>
-                        <div className="flex items-center justify-between mt-2">
-                          <span className="text-xs font-medium">+{achievement.xpReward} XP</span>
-                          {achievement.isCompleted ? (
-                            <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/30">
-                              Completed
-                            </Badge>
-                          ) : achievement.starLevel <= currentStarLevel ? (
-                            <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/30">
-                              Available
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="bg-muted/50 text-muted-foreground border-muted">
-                              Locked
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                    </ScrollArea>
+                  </CardContent>
+                </Card>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          )}
         </TabsContent>
         
         <TabsContent value="activity" className="mt-6">
