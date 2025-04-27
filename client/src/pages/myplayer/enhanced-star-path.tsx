@@ -35,6 +35,14 @@ import {
   AchievementDisplay, 
   RewardDisplay 
 } from "@/modules/myplayer/star-path/components";
+import { 
+  shareAchievement, 
+  shareReward 
+} from "@/modules/myplayer/star-path/services/starPathService";
+import {
+  AchievementCategory,
+  RewardType
+} from "@/modules/myplayer/star-path/types";
 import {
   Star,
   Trophy,
@@ -63,7 +71,8 @@ import {
   RefreshCw,
   Users,
   Video,
-  UserCheck
+  UserCheck,
+  BookOpen
 } from "lucide-react";
 
 export default function EnhancedStarPath() {
@@ -302,6 +311,67 @@ export default function EnhancedStarPath() {
   // Current star level
   const currentStarLevel = playerProgress.starPath?.currentStarLevel || 1;
   
+  // Helper functions for achievement and reward displays
+  // Icon mapping for different achievement categories
+  const getCategoryIcon = (category: AchievementCategory, rarity: string) => {
+    const iconProps = { 
+      className: `h-6 w-6 ${getRarityColor(rarity)}`,
+      strokeWidth: 1.5
+    };
+
+    switch (category) {
+      case AchievementCategory.Performance:
+        return <Trophy {...iconProps} />;
+      case AchievementCategory.Training:
+        return <Dumbbell {...iconProps} />;
+      case AchievementCategory.Academics:
+        return <BookOpen {...iconProps} />;
+      case AchievementCategory.Community:
+        return <Users {...iconProps} />;
+      case AchievementCategory.Milestone:
+        return <Star {...iconProps} />;
+      case AchievementCategory.Special:
+        return <Award {...iconProps} />;
+      default:
+        return <Medal {...iconProps} />;
+    }
+  };
+
+  // Helper function to get color based on rarity
+  const getRarityColor = (rarity: string) => {
+    switch (rarity) {
+      case 'common':
+        return 'text-gray-400';
+      case 'uncommon':
+        return 'text-green-500';
+      case 'rare':
+        return 'text-blue-500';
+      case 'epic':
+        return 'text-purple-500';
+      case 'legendary':
+        return 'text-yellow-500';
+      default:
+        return 'text-gray-400';
+    }
+  };
+
+  // Helper function to get background based on rarity for UI elements
+  const getRarityBackground = (rarity: string) => {
+    switch (rarity) {
+      case 'common':
+        return 'bg-gray-100 dark:bg-gray-800';
+      case 'uncommon':
+        return 'bg-green-100 dark:bg-green-900/40';
+      case 'rare':
+        return 'bg-blue-100 dark:bg-blue-900/40';
+      case 'epic':
+        return 'bg-purple-100 dark:bg-purple-900/40';
+      case 'legendary':
+        return 'bg-yellow-100 dark:bg-yellow-900/40';
+      default:
+        return 'bg-gray-100 dark:bg-gray-800';
+    }
+  };
   return (
     <div className="container max-w-7xl mx-auto py-6 space-y-6">
       {/* Star Explosion Animation */}
