@@ -29,7 +29,12 @@ import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { motion, AnimatePresence } from "framer-motion";
-import { StarPathCard, StarPathFlow } from "@/modules/myplayer/star-path/components";
+import { 
+  StarPathCard, 
+  StarPathFlow, 
+  AchievementDisplay, 
+  RewardDisplay 
+} from "@/modules/myplayer/star-path/components";
 import {
   Star,
   Trophy,
@@ -126,6 +131,18 @@ export default function EnhancedStarPath() {
   // Fetch XP transactions
   const { data: transactions, isLoading: isTransactionsLoading } = useQuery({
     queryKey: ['/api/player/xp/transactions'],
+    enabled: !!user,
+  });
+  
+  // Fetch achievements
+  const { data: achievements, isLoading: isAchievementsLoading } = useQuery({
+    queryKey: ['/api/achievements', user?.id],
+    enabled: !!user,
+  });
+  
+  // Fetch rewards
+  const { data: rewards, isLoading: isRewardsLoading } = useQuery({
+    queryKey: ['/api/rewards', user?.id],
     enabled: !!user,
   });
   
