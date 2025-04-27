@@ -10,6 +10,7 @@ import { eq } from "drizzle-orm";
 import multer from "multer";
 import path from "path";
 import { WebSocketServer, WebSocket } from 'ws';
+import { starProfileConnector } from "./services/star-profile-connector";
 import { 
   generateTokens, 
   refreshAccessToken, 
