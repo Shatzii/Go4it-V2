@@ -42,34 +42,39 @@ export class StarProfileConnector {
         return false;
       }
       
-      // Create or update the Star profile with proper standards
+      // Create or update the Star profile with proper standards using schema fields
       const standardProfile = {
         userId,
-        currentStarLevel: starProfile?.currentStarLevel || 1,
-        xpTotal: starProfile?.xpTotal || 0,
-        activeStreak: starProfile?.activeStreak || 0,
-        longestStreak: starProfile?.longestStreak || 0,
-        lastActivity: starProfile?.lastActivity || new Date(),
-        goalsCompleted: starProfile?.goalsCompleted || 0,
-        goalsInProgress: starProfile?.goalsInProgress || 0,
-        currentRank: starProfile?.currentRank || 'Rookie',
-        badgesEarned: starProfile?.badgesEarned || 0,
-        achievementsUnlocked: starProfile?.achievementsUnlocked || 0,
-        nextMilestone: starProfile?.nextMilestone || 'Rising Prospect',
-        sportSpecialty: userProfile?.sportType || user?.primarySport || 'basketball',
-        currentFocus: starProfile?.currentFocus || 'Fundamentals',
-        personalizedPathCreated: starProfile?.personalizedPathCreated || false,
-        preferredTrainingTime: starProfile?.preferredTrainingTime || '18:00',
-        weeklyTrainingMinutes: starProfile?.weeklyTrainingMinutes || 180,
-        profilePublic: starProfile?.profilePublic !== undefined ? starProfile.profilePublic : true,
-        starPathActive: starPath ? true : false,
-        completedDrills: 0, // Will be populated from DB
-        verifiedWorkouts: 0, // Will be populated from DB
-        skillProgress: {}, // Will be populated from DB
-        nextAchievements: [], // Will be populated from DB
-        status: 'active',
-        lastUpdated: new Date(),
-        isFeatured: starProfile?.isFeatured || false
+        name: starProfile?.name || `${user.name}'s Star Profile`,
+        starLevel: starProfile?.starLevel || 1,
+        xpLevel: starProfile?.xpLevel || 0,
+        active: starProfile?.active !== undefined ? starProfile.active : true,
+        avatar: starProfile?.avatar || null,
+        // Store additional custom fields in the metrics JSON field
+        metrics: {
+          activeStreak: starProfile?.activeStreak || 0,
+          longestStreak: starProfile?.longestStreak || 0,
+          lastActivity: new Date(),
+          goalsCompleted: 0,
+          goalsInProgress: 0,
+          currentRank: 'Rookie',
+          badgesEarned: 0,
+          achievementsUnlocked: 0,
+          nextMilestone: 'Rising Prospect',
+          sportSpecialty: userProfile?.sportType || 'basketball',
+          currentFocus: 'Fundamentals',
+          personalizedPathCreated: false,
+          preferredTrainingTime: '18:00',
+          weeklyTrainingMinutes: 180,
+          profilePublic: true,
+          starPathActive: starPath ? true : false,
+          completedDrills: 0, // Will be populated from DB
+          verifiedWorkouts: 0, // Will be populated from DB
+          status: 'active',
+          isFeatured: false
+        },
+        // Initialize traits JSON field as empty object
+        traits: {}
       };
       
       // Count completed drills - use lastCompletedAt field as a proxy for completion
@@ -77,27 +82,24 @@ export class StarProfileConnector {
         where: eq(userDrillProgress.userId, userId)
       });
       
-      standardProfile.completedDrills = drillProgress.filter(p => p.lastCompletedAt !== null).length;
+      // Store workout data in metrics
+      const completedDrills = drillProgress.filter(p => p.lastCompletedAt !== null).length;
       
       // Count verified workouts - use completedAt field as a proxy for verification
       const workouts = await db.query.workoutVerifications.findMany({
         where: eq(workoutVerifications.userId, userId)
       });
       
-      standardProfile.verifiedWorkouts = workouts.filter(w => w.completedAt !== null).length;
+      const verifiedWorkouts = workouts.filter(w => w.completedAt !== null).length;
       
-      // Initialize skill progress as empty object since table doesn't exist yet
-      standardProfile.skillProgress = {};
-      
-      // Initialize next achievements as empty array since table doesn't exist yet
-      const achievements = [];
-      
-      standardProfile.nextAchievements = achievements.map(a => ({
-        id: a.id,
-        name: a.name,
-        description: a.description,
-        xpReward: a.xpReward
-      }));
+      // Update metrics with these values
+      standardProfile.metrics = {
+        ...standardProfile.metrics,
+        completedDrills,
+        verifiedWorkouts,
+        skillProgress: {},
+        nextAchievements: []
+      };
       
       // Save the standardized profile
       if (starProfile) {
@@ -192,11 +194,9 @@ export class StarProfileConnector {
       return profiles.map(({ profile, user }) => ({
         ...profile,
         username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
+        name: user.name,
         email: user.email,
-        profileImage: user.profileImage,
-        fullName: `${user.firstName} ${user.lastName}`.trim()
+        profileImage: user.profileImage
       }));
     } catch (error) {
       console.error('Error getting Star standard profiles:', error);
@@ -256,17 +256,17 @@ export class StarProfileConnector {
         drillProgress: drillProgress.map(p => ({
           id: p.id,
           drillId: p.drillId,
-          isCompleted: p.isCompleted,
-          completedAt: p.completedAt,
-          progressPercent: p.progressPercent
+          isCompleted: p.lastCompletedAt !== null, // Use lastCompletedAt as a proxy for completion
+          completionCount: p.completionCount,
+          lastCompletedAt: p.lastCompletedAt
         })),
         workouts: workouts.map(w => ({
           id: w.id,
-          title: w.title,
-          description: w.description,
-          verified: w.verified,
-          verifiedAt: w.verifiedAt,
-          createdAt: w.createdAt
+          exerciseType: w.exerciseType,
+          status: w.status,
+          completedAt: w.completedAt,
+          startedAt: w.startedAt,
+          feedback: w.feedback
         })),
         badges: badges.map(b => ({
           id: b.id,
@@ -297,24 +297,29 @@ export class StarProfileConnector {
         return false;
       }
       
-      // Update the profile
+      // Update the profile with fields that exist in the schema
       await storage.updateAthleteStarProfile(userId, {
-        currentStarLevel: data.currentStarLevel,
-        xpTotal: data.xpTotal,
-        activeStreak: data.activeStreak,
-        longestStreak: data.longestStreak,
-        currentRank: data.currentRank,
-        badgesEarned: data.badgesEarned,
-        achievementsUnlocked: data.achievementsUnlocked,
-        nextMilestone: data.nextMilestone,
-        currentFocus: data.currentFocus,
-        personalizedPathCreated: data.personalizedPathCreated,
-        preferredTrainingTime: data.preferredTrainingTime,
-        weeklyTrainingMinutes: data.weeklyTrainingMinutes,
-        profilePublic: data.profilePublic,
-        isFeatured: data.isFeatured,
-        status: data.status,
-        lastUpdated: new Date()
+        starLevel: data.starLevel || data.currentStarLevel,
+        xpLevel: data.xpLevel || data.xpTotal,
+        active: data.active !== undefined ? data.active : true,
+        traits: data.traits || {},
+        // Store additional fields in the metrics JSON field if they don't exist in the schema
+        metrics: {
+          activeStreak: data.activeStreak,
+          longestStreak: data.longestStreak,
+          currentRank: data.currentRank,
+          badgesEarned: data.badgesEarned,
+          achievementsUnlocked: data.achievementsUnlocked,
+          nextMilestone: data.nextMilestone,
+          currentFocus: data.currentFocus,
+          personalizedPathCreated: data.personalizedPathCreated,
+          preferredTrainingTime: data.preferredTrainingTime,
+          weeklyTrainingMinutes: data.weeklyTrainingMinutes,
+          profilePublic: data.profilePublic,
+          isFeatured: data.isFeatured,
+          status: data.status,
+          ...(data.metrics || {})  // Include any existing metrics from the data object
+        }
       });
       
       return true;
