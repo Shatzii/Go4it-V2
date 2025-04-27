@@ -56,6 +56,8 @@ const CmsManager = lazy(() => import("@/pages/admin/cms-manager"));
 const UploaderPage = lazy(() => import("@/pages/admin/uploader-page"));
 const StatusPage = lazy(() => import("@/pages/admin/status"));
 const LogsPage = lazy(() => import("@/pages/admin/logs"));
+const StarProfilesManager = lazy(() => import("@/pages/admin/star-profiles-manager"));
+const StarProfileDetail = lazy(() => import("@/pages/admin/star-profile-detail"));
 const AnalyticsDashboard = lazy(() => import("@/pages/analytics-dashboard"));
 
 // Lazy-loaded film comparison pages
@@ -234,6 +236,14 @@ function Router() {
 
         <Route path="/admin/logs">
           {() => <ProtectedRoute component={LogsPage} adminOnly={true} />}
+        </Route>
+
+        <Route path="/admin/star-profiles">
+          {() => <ProtectedRoute component={StarProfilesManager} adminOnly={true} />}
+        </Route>
+
+        <Route path="/admin/star-profiles/:userId">
+          {() => <ProtectedRoute component={StarProfileDetail} adminOnly={true} />}
         </Route>
         
         <Route path="/upload-video">
