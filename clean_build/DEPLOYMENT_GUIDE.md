@@ -1,5 +1,5 @@
 # Go4It Sports Platform Deployment Guide
-## For Hetzner VPS (5.16.1.9, Port 81)
+## For Hetzner VPS (188.245.209.124, Port 81)
 
 This guide provides step-by-step instructions for deploying the Go4It Sports platform on a Hetzner VPS.
 
@@ -94,7 +94,7 @@ Edit the `.env` file with your production settings:
 DATABASE_URL=postgresql://go4ituser:your_secure_password@localhost:5432/go4it
 PORT=81
 NODE_ENV=production
-SERVER_HOST=5.16.1.9
+SERVER_HOST=188.245.209.124
 OPENAI_API_KEY=your_openai_api_key
 ANTHROPIC_API_KEY=your_anthropic_api_key
 SESSION_SECRET=generate_a_random_string_here
@@ -126,10 +126,10 @@ Add the following configuration:
 ```nginx
 server {
     listen 80;
-    server_name 5.16.1.9;  # Replace with your domain if you have one
+    server_name 188.245.209.124;  # Replace with your domain if you have one
 
     location / {
-        proxy_pass http://5.16.1.9:81;
+        proxy_pass http://188.245.209.124:81;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';

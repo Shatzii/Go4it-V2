@@ -25,7 +25,7 @@ const cron = require('node-cron');
 require('dotenv').config();
 
 const PORT = process.env.PORT || 81;
-const HOST = process.env.SERVER_HOST || '5.16.1.9';
+const HOST = process.env.SERVER_HOST || '188.245.209.124';
 
 // Set up database connection
 console.log(`Initializing database connection for PRODUCTION`);
