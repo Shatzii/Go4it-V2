@@ -178,6 +178,84 @@ const UploaderPage: React.FC = () => {
     setDeployForm(prev => ({ ...prev, filename }));
   };
 
+  // Query to fetch file content
+  const fileContentMutation = useMutation({
+    mutationFn: async (filename: string) => {
+      const res = await apiRequest('GET', `/api/uploader/file/${encodeURIComponent(filename)}`);
+      return res.data;
+    },
+    onSuccess: (data) => {
+      setEditedCode(data.content || '');
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Error Fetching File',
+        description: error.message || 'Could not load file content',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  // Mutation for saving edited file
+  const saveFileMutation = useMutation({
+    mutationFn: async (data: { filename: string; content: string }) => {
+      return await apiRequest('PUT', `/api/uploader/file/${encodeURIComponent(data.filename)}`, { content: data.content });
+    },
+    onSuccess: () => {
+      toast({
+        title: 'File Saved',
+        description: 'Changes have been saved successfully',
+      });
+      setIsEditing(false);
+      queryClient.invalidateQueries({ queryKey: ['/api/uploader/files'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Save Failed',
+        description: error.message || 'Failed to save changes',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  // Open the code editor for a file
+  const handleOpenCodeEditor = (file: UploadedFile) => {
+    setCurrentFile(file);
+    setEditorLanguage(getLanguageFromFilename(file.name));
+    fileContentMutation.mutate(file.name);
+    setCodeEditorOpen(true);
+  };
+
+  // Handle saving edited file
+  const handleSaveFile = () => {
+    if (!currentFile) return;
+    
+    saveFileMutation.mutate({
+      filename: currentFile.name,
+      content: editedCode
+    });
+  };
+
+  // Detect language for Monaco editor based on file extension
+  const getLanguageFromFilename = (filename: string): string => {
+    const ext = filename.split('.').pop()?.toLowerCase() || '';
+    
+    const languageMap: Record<string, string> = {
+      'js': 'javascript',
+      'jsx': 'javascript',
+      'ts': 'typescript',
+      'tsx': 'typescript',
+      'json': 'json',
+      'html': 'html',
+      'css': 'css',
+      'scss': 'scss',
+      'md': 'markdown',
+      'sql': 'sql',
+    };
+    
+    return languageMap[ext] || 'plaintext';
+  };
+
   // Format file size for display
   const formatFileSize = (bytes: number): string => {
     if (bytes < 1024) return bytes + ' B';
@@ -207,6 +285,100 @@ const UploaderPage: React.FC = () => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">Code Uploader</h1>
+      
+      {/* Monaco Code Editor Dialog */}
+      <Dialog open={codeEditorOpen} onOpenChange={setCodeEditorOpen}>
+        <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex justify-between items-center">
+              <span>
+                {currentFile?.name}
+                {isEditing && <span className="ml-2 text-amber-500 text-sm">(Editing)</span>}
+              </span>
+              <div className="flex gap-2">
+                <Select value={editorTheme} onValueChange={setEditorTheme}>
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue placeholder="Theme" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="vs-dark">Dark</SelectItem>
+                    <SelectItem value="vs-light">Light</SelectItem>
+                    <SelectItem value="hc-black">High Contrast</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Toggle 
+                  pressed={isEditing} 
+                  onPressedChange={setIsEditing}
+                  disabled={fileContentMutation.isPending}
+                  aria-label="Toggle editing mode"
+                >
+                  <Edit className="h-4 w-4" />
+                </Toggle>
+              </div>
+            </DialogTitle>
+            <DialogDescription>
+              {isEditing ? 'Edit the file content and save changes' : 'View file content'}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="flex-1 relative min-h-[400px] overflow-hidden border rounded-md">
+            {fileContentMutation.isPending ? (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : (
+              <Editor
+                height="100%"
+                width="100%"
+                language={editorLanguage}
+                value={editedCode}
+                onChange={(value) => setEditedCode(value || '')}
+                theme={editorTheme}
+                options={{
+                  readOnly: !isEditing,
+                  minimap: { enabled: true },
+                  scrollBeyondLastLine: false,
+                  fontSize: 14,
+                  wordWrap: 'on',
+                  lineNumbers: 'on',
+                  renderLineHighlight: 'all',
+                }}
+              />
+            )}
+          </div>
+          
+          <DialogFooter className="mt-4">
+            <div className="flex gap-2 w-full justify-between">
+              <Button
+                variant="outline" 
+                onClick={() => setCodeEditorOpen(false)}
+              >
+                <XCircle className="h-4 w-4 mr-2" />
+                Close
+              </Button>
+              
+              {isEditing && (
+                <Button 
+                  onClick={handleSaveFile}
+                  disabled={saveFileMutation.isPending}
+                >
+                  {saveFileMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      Save Changes
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       
       <Tabs defaultValue="upload" className="w-full">
         <TabsList className="mb-4">
@@ -307,13 +479,23 @@ const UploaderPage: React.FC = () => {
                           {formatFileSize(file.size)} • {new Date(file.modified).toLocaleString()}
                         </div>
                       </div>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => handleSelectFileForDeploy(file.name)}
-                      >
-                        Select
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleOpenCodeEditor(file)}
+                        >
+                          <Code className="h-4 w-4 mr-1" />
+                          View
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleSelectFileForDeploy(file.name)}
+                        >
+                          Select
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -411,13 +593,23 @@ const UploaderPage: React.FC = () => {
                           {formatFileSize(file.size)} • {new Date(file.modified).toLocaleString()}
                         </div>
                       </div>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => handleSelectFileForDeploy(file.name)}
-                      >
-                        Select for Deploy
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleOpenCodeEditor(file)}
+                        >
+                          <Code className="h-4 w-4 mr-1" />
+                          View
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleSelectFileForDeploy(file.name)}
+                        >
+                          Select
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
