@@ -10,23 +10,22 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
-  Trophy, 
-  Medal, 
-  Award, 
-  Star, 
-  Crown, 
-  ShieldCheck,
-  Sparkles,
-  Zap,
-  Share,
-  Dumbbell,
+import {
+  Gift,
+  ShoppingBag,
   Shirt,
-  MessageSquare
+  Crown,
+  Medal,
+  Gem,
+  Palette,
+  Users,
+  Sparkles,
+  Share2,
+  CheckCircle2,
+  Lock,
+  BadgePlus
 } from 'lucide-react';
 import { Reward, RewardType } from '../types';
 
@@ -47,26 +46,24 @@ const getRewardIcon = (type: RewardType, rarity: string) => {
   };
 
   switch (type) {
+    case RewardType.Gear:
+      return <ShoppingBag {...iconProps} />;
+    case RewardType.Apparel:
+      return <Shirt {...iconProps} />;
     case RewardType.Badge:
-      return <Medal {...iconProps} />;
-    case RewardType.Avatar:
-      return <MessageSquare {...iconProps} />;
+      return <BadgePlus {...iconProps} />;
     case RewardType.Title:
       return <Crown {...iconProps} />;
-    case RewardType.Equipment:
-      return <Dumbbell {...iconProps} />;
-    case RewardType.Accessory:
-      return <Shirt {...iconProps} />;
-    case RewardType.Training:
-      return <Zap {...iconProps} />;
-    case RewardType.Animation:
+    case RewardType.Exclusive:
+      return <Gem {...iconProps} />;
+    case RewardType.Cosmetic:
+      return <Palette {...iconProps} />;
+    case RewardType.Social:
+      return <Users {...iconProps} />;
+    case RewardType.Special:
       return <Sparkles {...iconProps} />;
-    case RewardType.SpecialEffect:
-      return <ShieldCheck {...iconProps} />;
-    case RewardType.SocialMedia:
-      return <Share {...iconProps} />;
     default:
-      return <Award {...iconProps} />;
+      return <Gift {...iconProps} />;
   }
 };
 
@@ -92,24 +89,24 @@ const getRarityColor = (rarity: string) => {
 const getRarityBackground = (rarity: string) => {
   switch (rarity) {
     case 'common':
-      return 'bg-gray-200 dark:bg-gray-800';
+      return 'bg-gray-100 dark:bg-gray-800';
     case 'uncommon':
-      return 'bg-green-100 dark:bg-green-900';
+      return 'bg-green-100 dark:bg-green-900/40';
     case 'rare':
-      return 'bg-blue-100 dark:bg-blue-900';
+      return 'bg-blue-100 dark:bg-blue-900/40';
     case 'epic':
-      return 'bg-purple-100 dark:bg-purple-900';
+      return 'bg-purple-100 dark:bg-purple-900/40';
     case 'legendary':
-      return 'bg-yellow-100 dark:bg-yellow-900';
+      return 'bg-yellow-100 dark:bg-yellow-900/40';
     default:
-      return 'bg-gray-200 dark:bg-gray-800';
+      return 'bg-gray-100 dark:bg-gray-800';
   }
 };
 
 export const RewardDisplay = ({
   rewards,
   title = "Rewards",
-  description = "Unlock special rewards as you progress",
+  description = "Unlock rewards as you progress",
   onShare,
   showUnlockButton = false,
   className = ""
@@ -143,11 +140,30 @@ export const RewardDisplay = ({
     type => groupedRewards[type as RewardType]?.length > 0
   ) as RewardType[];
 
+  // Sort rewards by rarity and locked/unlocked status
+  const sortedGroups = availableTypes.reduce((acc, type) => {
+    const sortedRewards = [...groupedRewards[type]].sort((a, b) => {
+      // First by unlocked status (unlocked first)
+      if (a.isUnlocked !== b.isUnlocked) {
+        return a.isUnlocked ? -1 : 1;
+      }
+      
+      // Then by rarity (legendary first, common last)
+      const rarityOrder = { legendary: 0, epic: 1, rare: 2, uncommon: 3, common: 4 };
+      const rarityA = rarityOrder[a.rarity as keyof typeof rarityOrder] || 5;
+      const rarityB = rarityOrder[b.rarity as keyof typeof rarityOrder] || 5;
+      return rarityA - rarityB;
+    });
+    
+    acc[type] = sortedRewards;
+    return acc;
+  }, {} as Record<RewardType, Reward[]>);
+
   return (
     <Card className={`shadow-md ${className}`}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-xl font-bold">
-          <Trophy className="h-5 w-5 text-yellow-500" />
+          <Gift className="h-5 w-5 text-purple-500" />
           {title}
         </CardTitle>
         <CardDescription>{description}</CardDescription>
@@ -155,63 +171,52 @@ export const RewardDisplay = ({
       <CardContent>
         {rewards.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
-            <Trophy className="h-12 w-12 mx-auto mb-3 opacity-30" />
+            <Gift className="h-12 w-12 mx-auto mb-3 opacity-30" />
             <p>No rewards available yet</p>
-            <p className="text-sm mt-2">Complete achievements to unlock rewards</p>
+            <p className="text-sm mt-2">Keep progressing to unlock rewards</p>
           </div>
         ) : (
-          <Tabs defaultValue={availableTypes[0]} className="w-full">
-            <TabsList className="w-full mb-4 overflow-x-auto flex no-scrollbar">
-              {availableTypes.map((type) => (
-                <TabsTrigger key={type} value={type} className="flex-1 min-w-fit">
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            {availableTypes.map((type) => (
-              <TabsContent key={type} value={type} className="space-y-4">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {groupedRewards[type].map((reward) => (
-                    <motion.div
-                      key={reward.id}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => handleRewardClick(reward)}
-                      className={`
-                        relative rounded-lg p-3 cursor-pointer 
-                        ${getRarityBackground(reward.rarity)}
-                        ${reward.isUnlocked ? 'opacity-100' : 'opacity-60 grayscale'}
-                        hover:shadow-md transition-all duration-200
-                      `}
-                    >
-                      <div className="flex flex-col items-center">
-                        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-background shadow-md mb-2">
-                          {getRewardIcon(reward.type, reward.rarity)}
-                        </div>
-                        <h4 className="text-sm font-medium text-center line-clamp-1">
-                          {reward.name}
-                        </h4>
-                        <Badge 
-                          variant="outline" 
-                          className={`mt-1.5 text-xs capitalize ${getRarityColor(reward.rarity)}`}
-                        >
-                          {reward.rarity}
-                        </Badge>
-                      </div>
-                      {!reward.isUnlocked && (
-                        <div className="absolute inset-0 bg-background/20 backdrop-blur-[1px] rounded-lg flex items-center justify-center">
-                          <div className="bg-background rounded-full p-1.5 shadow-md">
-                            <Star className="h-4 w-4" />
-                          </div>
-                        </div>
-                      )}
-                    </motion.div>
-                  ))}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {rewards.map((reward) => (
+              <motion.div
+                key={reward.id}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleRewardClick(reward)}
+                className={`
+                  relative rounded-lg p-3 cursor-pointer
+                  ${getRarityBackground(reward.rarity)}
+                  ${reward.isUnlocked ? 'opacity-100' : 'opacity-75 hover:opacity-90'}
+                  hover:shadow-md transition-all duration-200
+                `}
+              >
+                <div className="flex flex-col items-center">
+                  <div className="w-12 h-12 flex items-center justify-center rounded-full bg-background shadow-md mb-2">
+                    {getRewardIcon(reward.type, reward.rarity)}
+                  </div>
+                  <h4 className="text-sm font-medium text-center line-clamp-1">
+                    {reward.name}
+                  </h4>
+                  <Badge 
+                    variant="outline" 
+                    className={`mt-1.5 text-xs capitalize ${getRarityColor(reward.rarity)}`}
+                  >
+                    {reward.rarity}
+                  </Badge>
                 </div>
-              </TabsContent>
+                {!reward.isUnlocked && (
+                  <div className="absolute top-1 right-1">
+                    <Lock className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                )}
+                {reward.isUnlocked && (
+                  <div className="absolute top-1 right-1">
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  </div>
+                )}
+              </motion.div>
             ))}
-          </Tabs>
+          </div>
         )}
       </CardContent>
       {selectedReward && (
@@ -227,52 +232,76 @@ export const RewardDisplay = ({
                   ? `Unlocked on ${selectedReward.unlockedAt 
                       ? new Date(selectedReward.unlockedAt).toLocaleDateString() 
                       : 'your journey'}`
-                  : `Requires ${selectedReward.requiredStarLevel 
-                      ? `${selectedReward.requiredStarLevel}-star level` 
-                      : 'special achievement'}`
+                  : 'Locked - Keep progressing to unlock'
                 }
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div className={`
                 p-4 rounded-lg ${getRarityBackground(selectedReward.rarity)}
-                ${selectedReward.isUnlocked ? '' : 'grayscale opacity-80'}
               `}>
                 <div className="flex justify-center mb-4">
                   <div className="w-20 h-20 flex items-center justify-center rounded-full bg-background shadow-md">
                     {getRewardIcon(selectedReward.type, selectedReward.rarity)}
                   </div>
                 </div>
-                <ScrollArea className="h-28">
+                <ScrollArea className="h-24">
                   <p className="text-sm">
                     {selectedReward.description}
                   </p>
                 </ScrollArea>
+                
+                {selectedReward.requirements && (
+                  <div className="mt-3 space-y-1 text-sm">
+                    <p className="font-medium">Requirements:</p>
+                    <p className="text-muted-foreground">{selectedReward.requirements}</p>
+                  </div>
+                )}
               </div>
 
-              <div className="flex justify-between">
+              <DialogFooter className="flex justify-between">
                 {selectedReward.isUnlocked ? (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => handleShareReward(selectedReward)}
-                    className="flex items-center gap-1"
-                  >
-                    <Share className="h-4 w-4" />
-                    Share
-                  </Button>
-                ) : (
-                  showUnlockButton && (
+                  <>
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      disabled={true}
+                      onClick={() => handleShareReward(selectedReward)}
                       className="flex items-center gap-1"
                     >
-                      <Star className="h-4 w-4" />
-                      Progress to unlock
+                      <Share2 className="h-4 w-4" />
+                      Share
                     </Button>
-                  )
+                    {selectedReward.redeemUrl && (
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={() => window.open(selectedReward.redeemUrl, '_blank')}
+                        className="flex items-center gap-1"
+                      >
+                        <Sparkles className="h-4 w-4" />
+                        Redeem
+                      </Button>
+                    )}
+                  </>
+                ) : showUnlockButton ? (
+                  <Button 
+                    variant="default" 
+                    size="sm" 
+                    className="flex items-center gap-1"
+                    onClick={() => setIsDialogOpen(false)}
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    Unlock Requirements
+                  </Button>
+                ) : (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="flex items-center gap-1"
+                    onClick={() => setIsDialogOpen(false)}
+                  >
+                    Keep training
+                  </Button>
                 )}
                 <Button 
                   variant="ghost" 
@@ -281,7 +310,7 @@ export const RewardDisplay = ({
                 >
                   Close
                 </Button>
-              </div>
+              </DialogFooter>
             </div>
           </DialogContent>
         </Dialog>

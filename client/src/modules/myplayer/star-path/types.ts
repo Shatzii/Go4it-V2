@@ -23,14 +23,13 @@ export enum AchievementCategory {
  */
 export enum RewardType {
   Badge = 'badge',
-  Avatar = 'avatar',
+  Gear = 'gear',
+  Apparel = 'apparel',
   Title = 'title',
-  Equipment = 'equipment',
-  Accessory = 'accessory',
-  Training = 'training',
-  Animation = 'animation',
-  SpecialEffect = 'specialEffect',
-  SocialMedia = 'socialMedia'
+  Exclusive = 'exclusive',
+  Cosmetic = 'cosmetic',
+  Social = 'social',
+  Special = 'special'
 }
 
 /**
@@ -64,11 +63,13 @@ export interface Reward {
   description: string;
   type: RewardType;
   rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
-  iconName: string;
+  iconName?: string;
   requiredStarLevel?: number;
   sportType?: string;
   isUnlocked: boolean;
   unlockedAt?: Date;
+  requirements?: string;
+  redeemUrl?: string;
   metadata?: Record<string, any>;
 }
 
