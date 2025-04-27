@@ -143,7 +143,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
           if (!regError.message.includes("already exists")) {
             throw regError;
           }
-          console.log("User already exists, continuing with login");
+          console.log("User already exists, continuing with login without showing error toast");
+          // Skip showing the "Registration failed" toast for test users that already exist
         }
       }
       
@@ -290,11 +291,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
       navigate("/");
     } catch (error: any) {
       console.error("Registration error:", error);
-      toast({
-        title: "Registration failed",
-        description: error.message || "Failed to create account. Please try again.",
-        variant: "destructive",
-      });
+      
+      // Check if this is a test account login attempting registration
+      const isTestAccountLogin = error.message?.includes("already exists") && 
+                                (userData.username === "admin" || 
+                                 userData.username === "alexjohnson" || 
+                                 userData.username === "coachwilliams" || 
+                                 userData.username === "coachmartinez");
+      
+      // Only show the error toast if it's not a test account login
+      if (!isTestAccountLogin) {
+        toast({
+          title: "Registration failed",
+          description: error.message || "Failed to create account. Please try again.",
+          variant: "destructive",
+        });
+      }
+      
       throw error;
     } finally {
       setLoading(false);
