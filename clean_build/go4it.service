@@ -1,0 +1,18 @@
+[Unit]
+Description=Go4It Sports Application
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/go4it
+ExecStart=/usr/bin/node production-server.js
+Restart=on-failure
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=go4it-sports
+Environment=NODE_ENV=production PORT=81 SERVER_HOST=5.16.1.9
+
+[Install]
+WantedBy=multi-user.target
