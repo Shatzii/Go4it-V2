@@ -34,6 +34,22 @@ ufw allow 81
 ufw allow 443
 echo "y" | ufw enable
 
+echo "Do you want to set up SSL with Let's Encrypt for go4itsports.org? (y/n)"
+read setup_ssl
+
+if [ "$setup_ssl" = "y" ]; then
+  echo "Installing Certbot for SSL..."
+  apt install -y certbot python3-certbot-nginx
+  mkdir -p /var/www/letsencrypt
+  
+  echo "Obtaining SSL certificate for go4itsports.org..."
+  certbot --nginx -d go4itsports.org -d www.go4itsports.org
+  
+  echo "Setting up auto-renewal of SSL certificates..."
+  certbot renew --dry-run
+  echo "0 0,12 * * * root python3 -c 'import random; import time; time.sleep(random.random() * 3600)' && certbot renew -q" > /etc/cron.d/certbot-renewal
+fi
+
 echo "Installing Node.js..."
 curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
 apt install -y nodejs
@@ -58,13 +74,17 @@ chown -R www-data:www-data $APP_DIR
 
 echo "Configuring environment variables..."
 cat > $APP_DIR/.env << EOF
+# Go4It Sports Production Configuration
 DATABASE_URL=postgresql://$DB_USER:$DB_PASS@localhost:5432/$DB_NAME
 PORT=81
 NODE_ENV=production
-SERVER_HOST=5.16.1.9
+SERVER_HOST=localhost
+DOMAIN=go4itsports.org
+BASE_URL=https://go4itsports.org
 OPENAI_API_KEY=your_openai_api_key
 ANTHROPIC_API_KEY=your_anthropic_api_key
 SESSION_SECRET=$SESSION_SECRET
+MAX_FILE_UPLOAD_SIZE=524288000
 EOF
 
 echo "Installing application dependencies..."
@@ -106,12 +126,15 @@ echo "  Database Name: $DB_NAME"
 echo "  Database User: $DB_USER"
 echo "  Database Password: $DB_PASS"
 echo ""
-echo "Application URL: http://5.16.1.9:81"
+echo "Application URLs:"
+echo "  - Main domain: https://go4itsports.org"
+echo "  - Direct access: http://5.16.1.9:81"
 echo ""
 echo "Next Steps:"
-echo "1. Update the OPENAI_API_KEY and other API keys in $APP_DIR/.env"
+echo "1. Update the OPENAI_API_KEY and ANTHROPIC_API_KEY in $APP_DIR/.env"
 echo "2. Check application status with: pm2 status"
 echo "3. View logs with: pm2 logs go4it-sports"
+echo "4. Set up domain DNS to point to 5.16.1.9 (if not already done)"
 echo ""
 echo "To manage the application:"
 echo "- Restart: pm2 restart go4it-sports"
