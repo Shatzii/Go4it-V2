@@ -1,6 +1,6 @@
 /**
  * Go4It Sports Production Server
- * Configured for deployment on go4itsports.org (5.16.1.9:81)
+ * Configured for deployment on go4itsports.org (188.245.209.124:81)
  */
 
 const express = require('express');
