@@ -10,6 +10,11 @@ import { eq } from "drizzle-orm";
 import multer from "multer";
 import path from "path";
 import { WebSocketServer, WebSocket } from 'ws';
+
+// Extended WebSocket interface with isAlive flag for connection monitoring
+interface ExtendedWebSocket extends WebSocket {
+  isAlive: boolean;
+}
 import { starProfileConnector } from "./services/star-profile-connector";
 import { 
   generateTokens, 
@@ -176,23 +181,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create HTTP server with WebSocket support
   const server = createServer(app);
   
-  // Set up WebSocket server on a distinct path to avoid conflicts with Vite's HMR
+  // Set up WebSocket server with production optimizations for Hetzner VPS
+  const isProd = process.env.NODE_ENV === 'production';
+  
+  // WebSocket server configuration
   const wss = new WebSocketServer({ 
     server, 
     path: '/ws',
-    perMessageDeflate: false
+    // Enable compression in production for better bandwidth usage
+    perMessageDeflate: isProd ? {
+      zlibDeflateOptions: {
+        chunkSize: 1024,
+        memLevel: 7,
+        level: 3
+      },
+      zlibInflateOptions: {
+        chunkSize: 10 * 1024
+      },
+      serverNoContextTakeover: true,
+      clientNoContextTakeover: true,
+      threshold: 1024 // Only compress messages larger than 1KB
+    } : false,
+    // Production settings to handle higher load
+    clientTracking: true,
+    maxPayload: 5 * 1024 * 1024, // 5MB max payload size
   });
   
-  // Track connected clients with their user info
-  const clients = new Map<WebSocket, { userId: number, username: string, role: string }>();
+  // Track connected clients with their user info with extended monitoring for production
+  const clients = new Map<WebSocket, { 
+    userId: number, 
+    username: string, 
+    role: string,
+    connectedAt: Date,
+    lastActivity: Date,
+    ipAddress: string
+  }>();
   
-  // WebSocket connection handler
-  wss.on('connection', (ws) => {
-    console.log('WebSocket connection established');
+  // Track server stats
+  const wsStats = {
+    totalConnections: 0,
+    peakConnections: 0,
+    activeConnections: 0,
+    messagesSent: 0,
+    messagesReceived: 0,
+    authFailures: 0,
+    errors: 0
+  };
+  
+  // WebSocket connection handler with improved error handling and monitoring
+  wss.on('connection', (ws, req) => {
+    wsStats.totalConnections++;
+    wsStats.activeConnections++;
+    
+    if (wsStats.activeConnections > wsStats.peakConnections) {
+      wsStats.peakConnections = wsStats.activeConnections;
+    }
+    
+    // Log connection only in development mode or at debug level in production
+    if (!isProd) {
+      console.log('WebSocket connection established');
+    }
+    
+    // Set up ping-pong for connection health monitoring
+    ws.isAlive = true;
+    ws.on('pong', () => {
+      ws.isAlive = true;
+      // Update last activity time
+      const client = clients.get(ws);
+      if (client) {
+        client.lastActivity = new Date();
+      }
+    });
+    
+    // Add timeout to require authentication within 10 seconds
+    const authTimeout = setTimeout(() => {
+      if (!clients.has(ws)) {
+        ws.terminate();
+        wsStats.authFailures++;
+        if (!isProd) console.log('WebSocket connection terminated due to authentication timeout');
+      }
+    }, 10000);
     
     // The client needs to authenticate after connection
     ws.on('message', async (message: string) => {
       try {
+        wsStats.messagesReceived++;
         const data = JSON.parse(message.toString());
         
         // Handle client authentication
@@ -201,25 +274,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const user = await storage.getUser(userId);
           
           if (!user) {
-            console.log(`WebSocket authentication failed for user ID: ${userId}`);
+            wsStats.authFailures++;
+            if (!isProd) console.log(`WebSocket authentication failed for user ID: ${userId}`);
             ws.send(JSON.stringify({ type: 'error', message: 'Authentication failed' }));
+            clearTimeout(authTimeout);
+            ws.terminate();
             return;
           }
           
-          // Store client info
+          clearTimeout(authTimeout);
+          
+          // Store client info with additional monitoring data
           clients.set(ws, { 
             userId: user.id, 
             username: user.username, 
-            role: user.role 
+            role: user.role,
+            connectedAt: new Date(),
+            lastActivity: new Date(),
+            ipAddress: req.headers['x-forwarded-for']?.toString() || 
+                       req.socket.remoteAddress || 'unknown'
           });
           
-          console.log(`WebSocket authenticated for user: ${user.username}`);
+          if (!isProd) console.log(`WebSocket authenticated for user: ${user.username}`);
           
           // Send confirmation
           ws.send(JSON.stringify({ 
             type: 'auth_success',
             message: 'Authentication successful' 
           }));
+          wsStats.messagesSent++;
           
           // Load unread messages
           const messages = await storage.getMessages(userId);
