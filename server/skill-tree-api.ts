@@ -1,5 +1,6 @@
 import { Express, Request, Response } from "express";
 import { storage } from "./storage";
+import { invalidateCache } from "./middleware/cache-middleware";
 
 // This module registers the skill tree API endpoints directly
 // so they won't be intercepted by Vite during development
@@ -97,6 +98,16 @@ export function registerSkillTreeApi(app: Express) {
   app.post('/api/skill-tree/nodes', async (req: Request, res: Response) => {
     try {
       const node = await storage.createSkillTreeNode(req.body);
+      
+      // Invalidate caches related to skill tree nodes
+      invalidateCache('/api/skill-tree/nodes');
+      invalidateCache('/api/skill-tree/root-nodes');
+      
+      // Invalidate level-specific cache if level is present
+      if (node.level) {
+        invalidateCache(`/api/skill-tree/nodes/level/${node.level}`);
+      }
+      
       res.status(201).json(node);
     } catch (error) {
       console.error('Error creating skill tree node:', error);
@@ -111,6 +122,22 @@ export function registerSkillTreeApi(app: Express) {
       if (!updatedNode) {
         return res.status(404).json({ error: 'Skill tree node not found' });
       }
+      
+      // Invalidate caches related to skill tree nodes
+      invalidateCache('/api/skill-tree/nodes');
+      invalidateCache(`/api/skill-tree/nodes/${id}`);
+      invalidateCache('/api/skill-tree/root-nodes');
+      
+      // Invalidate level-specific cache if level is present
+      if (updatedNode.level) {
+        invalidateCache(`/api/skill-tree/nodes/level/${updatedNode.level}`);
+      }
+      
+      // Invalidate children and parent relationships
+      invalidateCache(`/api/skill-tree/nodes/${id}/children`);
+      invalidateCache(`/api/skill-tree/nodes/${id}/parents`);
+      invalidateCache(`/api/skill-tree/nodes/${id}/drills`);
+      
       res.json(updatedNode);
     } catch (error) {
       console.error(`Error updating skill tree node with ID ${req.params.id}:`, error);
@@ -153,6 +180,20 @@ export function registerSkillTreeApi(app: Express) {
   app.post('/api/skill-tree/relationships', async (req: Request, res: Response) => {
     try {
       const relationship = await storage.createSkillTreeRelationship(req.body);
+      
+      // Invalidate caches related to skill tree relationships
+      invalidateCache('/api/skill-tree/relationships');
+      invalidateCache('/api/skill-tree/root-nodes');
+      
+      // Invalidate parent and child node relationship caches
+      if (relationship.parent_id) {
+        invalidateCache(`/api/skill-tree/nodes/${relationship.parent_id}/children`);
+      }
+      
+      if (relationship.child_id) {
+        invalidateCache(`/api/skill-tree/nodes/${relationship.child_id}/parents`);
+      }
+      
       res.status(201).json(relationship);
     } catch (error) {
       console.error('Error creating skill tree relationship:', error);
@@ -204,6 +245,28 @@ export function registerSkillTreeApi(app: Express) {
   app.post('/api/training-drills', async (req: Request, res: Response) => {
     try {
       const drill = await storage.createTrainingDrill(req.body);
+      
+      // Invalidate caches related to training drills
+      invalidateCache('/api/training-drills');
+      
+      // Invalidate sport/position/category specific caches if present
+      if (drill.sport) {
+        invalidateCache(`/api/training-drills?sportType=${drill.sport}`);
+      }
+      
+      if (drill.position) {
+        invalidateCache(`/api/training-drills?position=${drill.position}`);
+      }
+      
+      if (drill.category) {
+        invalidateCache(`/api/training-drills?category=${drill.category}`);
+      }
+      
+      // If the drill is associated with a skill node, invalidate that relationship
+      if (drill.skillNodeId) {
+        invalidateCache(`/api/skill-tree/nodes/${drill.skillNodeId}/drills`);
+      }
+      
       res.status(201).json(drill);
     } catch (error) {
       console.error('Error creating training drill:', error);
@@ -218,6 +281,29 @@ export function registerSkillTreeApi(app: Express) {
       if (!updatedDrill) {
         return res.status(404).json({ error: 'Training drill not found' });
       }
+      
+      // Invalidate caches related to training drills
+      invalidateCache('/api/training-drills');
+      invalidateCache(`/api/training-drills/${id}`);
+      
+      // Invalidate sport/position/category specific caches if present
+      if (updatedDrill.sport) {
+        invalidateCache(`/api/training-drills?sportType=${updatedDrill.sport}`);
+      }
+      
+      if (updatedDrill.position) {
+        invalidateCache(`/api/training-drills?position=${updatedDrill.position}`);
+      }
+      
+      if (updatedDrill.category) {
+        invalidateCache(`/api/training-drills?category=${updatedDrill.category}`);
+      }
+      
+      // If the drill is associated with a skill node, invalidate that relationship
+      if (updatedDrill.skillNodeId) {
+        invalidateCache(`/api/skill-tree/nodes/${updatedDrill.skillNodeId}/drills`);
+      }
+      
       res.json(updatedDrill);
     } catch (error) {
       console.error(`Error updating training drill with ID ${req.params.id}:`, error);
@@ -258,6 +344,17 @@ export function registerSkillTreeApi(app: Express) {
         ...req.body,
         userId: parseInt(userId, 10)
       });
+      
+      // Invalidate user skills cache
+      invalidateCache(`/api/users/${userId}/skills`);
+      
+      // Invalidate relevant StarPath system caches if any node ID present
+      if (skill.skillNodeId) {
+        invalidateCache(`/api/users/${userId}/starpath`);
+        invalidateCache(`/api/users/${userId}/progression`);
+        invalidateCache(`/api/skill-tree/nodes/${skill.skillNodeId}/users`);
+      }
+      
       res.status(201).json(skill);
     } catch (error) {
       console.error(`Error creating skill for user ID ${req.params.userId}:`, error);
@@ -272,6 +369,24 @@ export function registerSkillTreeApi(app: Express) {
       if (!updatedSkill) {
         return res.status(404).json({ error: 'Skill not found' });
       }
+      
+      // Invalidate specific skill cache
+      invalidateCache(`/api/skills/${id}`);
+      
+      // Invalidate user skills cache
+      if (updatedSkill.userId) {
+        invalidateCache(`/api/users/${updatedSkill.userId}/skills`);
+        
+        // Invalidate relevant StarPath system caches
+        invalidateCache(`/api/users/${updatedSkill.userId}/starpath`);
+        invalidateCache(`/api/users/${updatedSkill.userId}/progression`);
+      }
+      
+      // Invalidate relevant node users cache if skill node ID present
+      if (updatedSkill.skillNodeId) {
+        invalidateCache(`/api/skill-tree/nodes/${updatedSkill.skillNodeId}/users`);
+      }
+      
       res.json(updatedSkill);
     } catch (error) {
       console.error(`Error updating skill with ID ${req.params.id}:`, error);

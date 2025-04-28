@@ -5590,6 +5590,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Invalidate content blocks cache
       invalidateCache('/api/content-blocks');
+      invalidateCache('content-blocks-all');
+      invalidateCache(`/api/content-blocks/section/${contentBlock.section}`);
       
       res.status(201).json(contentBlock);
     } catch (error) {
@@ -5615,6 +5617,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Invalidate content blocks cache
       invalidateCache('/api/content-blocks');
+      invalidateCache('content-blocks-all');
+      invalidateCache(`/api/content-blocks/section/${contentBlock.section}`);
       
       res.json(contentBlock);
     } catch (error) {
@@ -5626,14 +5630,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/content-blocks/:id", isAdmin, async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
-      const success = await storage.deleteContentBlock(id);
       
+      // Get the content block before deleting it to access its section
+      const contentBlock = await storage.getContentBlock(id);
+      if (!contentBlock) {
+        return res.status(404).json({ message: "Content block not found" });
+      }
+      
+      const success = await storage.deleteContentBlock(id);
       if (!success) {
         return res.status(404).json({ message: "Content block not found" });
       }
       
       // Invalidate content blocks cache
       invalidateCache('/api/content-blocks');
+      invalidateCache('content-blocks-all');
+      invalidateCache(`/api/content-blocks/section/${contentBlock.section}`);
       
       res.json({ success: true });
     } catch (error) {
