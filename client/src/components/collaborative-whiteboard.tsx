@@ -1,59 +1,179 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useAuth } from '@/contexts/auth-context';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Eraser, Pencil, Delete, Undo, Redo, Image as ImageIcon, Save } from 'lucide-react';
-import websocketService from '@/services/websocket-service';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useRef, useEffect, useState } from 'react';
+import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { websocketService } from '@/services/websocket-service';
+import { 
+  Eraser, 
+  PenTool, 
+  Circle, 
+  Square, 
+  Type, 
+  ChevronDown, 
+  Download, 
+  Undo, 
+  Redo, 
+  Trash, 
+  Users,
+  Palette
+} from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-interface DrawEvent {
-  type: 'draw' | 'clear' | 'undo' | 'redo' | 'image';
-  points?: { x: number; y: number }[];
-  color?: string;
-  lineWidth?: number;
-  userId?: number;
-  userName?: string;
-  imageData?: string;
+interface User {
+  id: number;
+  name: string;
+  color: string;
 }
 
-interface WhiteboardProps {
-  sessionId?: string;
-  readOnly?: boolean;
-  initialBackground?: string;
+interface Position {
+  x: number;
+  y: number;
 }
 
-export function CollaborativeWhiteboard({ 
-  sessionId = 'default', 
-  readOnly = false,
-  initialBackground
-}: WhiteboardProps) {
-  const { user } = useAuth();
+type DrawingPath = {
+  path: Position[];
+  color: string;
+  lineWidth: number;
+  tool: string;
+  userId: number;
+};
+
+type TextObject = {
+  text: string;
+  position: Position;
+  color: string;
+  userId: number;
+};
+
+type ShapeObject = {
+  type: 'circle' | 'rectangle';
+  position: Position;
+  size: number;
+  color: string;
+  userId: number;
+};
+
+interface CollaborativeWhiteboardProps {
+  sessionId: string;
+  userId: number;
+  username: string;
+}
+
+const CollaborativeWhiteboard = ({ sessionId, userId, username }: CollaborativeWhiteboardProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [color, setColor] = useState('#0066CC');
+  const [tool, setTool] = useState<'pen' | 'eraser' | 'text' | 'circle' | 'rectangle'>('pen');
+  const [currentPath, setCurrentPath] = useState<Position[]>([]);
+  const [paths, setPaths] = useState<DrawingPath[]>([]);
+  const [textObjects, setTextObjects] = useState<TextObject[]>([]);
+  const [shapeObjects, setShapeObjects] = useState<ShapeObject[]>([]);
+  const [color, setColor] = useState('#FFFFFF');
   const [lineWidth, setLineWidth] = useState(3);
-  const [tool, setTool] = useState<'pencil' | 'eraser'>('pencil');
-  const [isConnected, setIsConnected] = useState(false);
-  const [boardName, setBoardName] = useState(`Strategy Board - ${new Date().toLocaleDateString()}`);
-  const [users, setUsers] = useState<{ id: number, name: string, color: string }[]>([]);
+  const [textInput, setTextInput] = useState('');
+  const [textPosition, setTextPosition] = useState<Position | null>(null);
+  const [isAddingText, setIsAddingText] = useState(false);
+  const [activeUsers, setActiveUsers] = useState<User[]>([]);
+  const { toast } = useToast();
+  const [userColor] = useState(() => getRandomColor());
   
   // Drawing history for undo/redo
-  const [history, setHistory] = useState<ImageData[]>([]);
+  const [history, setHistory] = useState<{
+    paths: DrawingPath[];
+    textObjects: TextObject[];
+    shapeObjects: ShapeObject[];
+  }[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-  
-  // Track current drawing path
-  const currentPath = useRef<{ x: number; y: number }[]>([]);
-  
-  // Setup canvas and WebSocket
+
+  // Generate a random color for each user
+  function getRandomColor() {
+    const colors = [
+      '#FF5733', '#33FF57', '#3357FF', '#FF33F5', 
+      '#33FFF5', '#F5FF33', '#FF5733', '#33FF57'
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
+
+  // Initialize WebSocket connection when the component mounts
+  useEffect(() => {
+    // Connect to WebSocket when component mounts
+    if (!websocketService.socket || websocketService.socket.readyState !== WebSocket.OPEN) {
+      websocketService.connect(userId);
+    }
+
+    // Authenticate with the WebSocket server
+    if (userId) {
+      websocketService.authenticate(userId);
+    }
+
+    // Join the whiteboard session
+    websocketService.sendWhiteboardEvent(sessionId, {
+      type: 'join',
+      userId,
+      username,
+      color: userColor,
+      sessionId
+    });
+
+    // Add message listener for whiteboard events
+    const handleWhiteboardMessage = (message: any) => {
+      if (message.type !== 'whiteboard') return;
+      
+      const data = message.data;
+      
+      switch (data.eventType) {
+        case 'draw':
+          handleRemoteDrawEvent(data);
+          break;
+        case 'text':
+          handleRemoteTextEvent(data);
+          break;
+        case 'shape':
+          handleRemoteShapeEvent(data);
+          break;
+        case 'clear':
+          handleRemoteClearEvent();
+          break;
+        case 'userJoined':
+          handleUserJoined(data);
+          break;
+        case 'userLeft':
+          handleUserLeft(data);
+          break;
+        case 'sessionState':
+          handleSessionState(data);
+          break;
+      }
+    };
+
+    websocketService.addMessageListener(handleWhiteboardMessage);
+
+    // Request the current session state
+    websocketService.sendWhiteboardEvent(sessionId, {
+      type: 'requestState',
+      sessionId
+    });
+
+    // Clean up WebSocket connection when component unmounts
+    return () => {
+      websocketService.sendWhiteboardEvent(sessionId, {
+        type: 'leave',
+        userId,
+        sessionId
+      });
+      websocketService.removeMessageListener(handleWhiteboardMessage);
+    };
+  }, [sessionId, userId, username, userColor]);
+
+  // When paths, textObjects, or shapeObjects change, update the canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -61,222 +181,122 @@ export function CollaborativeWhiteboard({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     
-    // Initial canvas setup
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
+    // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Set canvas width and height to match container
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-    
-    // Clear canvas to white
-    ctx.fillStyle = '#FFFFFF';
+    // Set canvas background color (dark grey)
+    ctx.fillStyle = '#1e1e1e';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Add initial state to history
-    saveCanvasState();
-    
-    // Load background image if provided
-    if (initialBackground) {
-      const img = new Image();
-      img.onload = () => {
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        saveCanvasState();
-      };
-      img.src = initialBackground;
-    }
-    
-    // Handle window resize
-    const handleResize = () => {
-      // Save current canvas
-      const tempCanvas = document.createElement('canvas');
-      const tempCtx = tempCanvas.getContext('2d');
-      tempCanvas.width = canvas.width;
-      tempCanvas.height = canvas.height;
-      if (tempCtx) {
-        tempCtx.drawImage(canvas, 0, 0);
+    // Draw all paths
+    paths.forEach((path) => {
+      if (path.path.length < 2) return;
+      
+      ctx.beginPath();
+      ctx.moveTo(path.path[0].x, path.path[0].y);
+      
+      for (let i = 1; i < path.path.length; i++) {
+        ctx.lineTo(path.path[i].x, path.path[i].y);
       }
       
-      // Resize canvas
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
+      ctx.strokeStyle = path.color;
+      ctx.lineWidth = path.lineWidth;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+    });
+    
+    // Draw all text objects
+    textObjects.forEach((textObj) => {
+      ctx.font = '16px Arial';
+      ctx.fillStyle = textObj.color;
+      ctx.fillText(textObj.text, textObj.position.x, textObj.position.y);
+    });
+    
+    // Draw all shape objects
+    shapeObjects.forEach((shapeObj) => {
+      ctx.fillStyle = shapeObj.color;
       
-      // Restore drawing on resized canvas
-      ctx.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
-    };
-    
-    window.addEventListener('resize', handleResize);
-    
-    return () => window.removeEventListener('resize', handleResize);
-  }, [initialBackground]);
-  
-  // Initialize WebSocket connection
-  useEffect(() => {
-    if (!user) return;
-    
-    // Connect to WebSocket if not already connected
-    if (!websocketService.isConnected()) {
-      websocketService.connect(user.id);
-    }
-    
-    // Add connection listener
-    const connectionListener = () => {
-      setIsConnected(true);
-      
-      // Join this specific whiteboard session
-      if (websocketService.isConnected()) {
-        // Use sendWhiteboardEvent with a custom join event type
-        websocketService.sendWhiteboardEvent(sessionId, {
-          type: 'join',
-          userColor: color
-        });
-      }
-    };
-    
-    // Add message listener
-    const messageListener = (data: any) => {
-      // Handle whiteboard-specific messages
-      if (data.type === 'whiteboard_event' && data.sessionId === sessionId) {
-        handleRemoteDrawEvent(data.event);
-      }
-      else if (data.type === 'whiteboard_user_joined' && data.sessionId === sessionId) {
-        setUsers(prev => [...prev.filter(u => u.id !== data.userId), {
-          id: data.userId,
-          name: data.userName,
-          color: data.userColor
-        }]);
-      }
-      else if (data.type === 'whiteboard_user_left' && data.sessionId === sessionId) {
-        setUsers(prev => prev.filter(u => u.id !== data.userId));
-      }
-      else if (data.type === 'whiteboard_users' && data.sessionId === sessionId) {
-        setUsers(data.users);
-      }
-    };
-    
-    websocketService.addConnectionListener(connectionListener);
-    websocketService.addMessageListener(messageListener);
-    
-    // If already connected, send join message right away
-    if (websocketService.isConnected()) {
-      connectionListener();
-    }
-    
-    // Clean up on unmount
-    return () => {
-      // Leave the whiteboard session
-      if (websocketService.isConnected()) {
-        // Use custom event for leaving whiteboard
-        websocketService.sendWhiteboardEvent(sessionId, {
-          type: 'leave',
-          userId: user.id
-        });
-      }
-      
-      websocketService.removeConnectionListener(connectionListener);
-      websocketService.removeMessageListener(messageListener);
-    };
-  }, [user, sessionId, color]);
-  
-  // Save current canvas state to history
-  const saveCanvasState = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    
-    // Get current canvas state
-    const currentState = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    
-    // If we're not at the end of history, remove forward history
-    if (historyIndex < history.length - 1) {
-      setHistory(history.slice(0, historyIndex + 1));
-    }
-    
-    // Add current state to history
-    setHistory(prev => [...prev, currentState]);
-    setHistoryIndex(prev => prev + 1);
-  };
-  
-  // Apply a canvas state from history
-  const applyCanvasState = (state: ImageData) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    
-    ctx.putImageData(state, 0, 0);
-  };
-  
-  // Handle remote drawing events
-  const handleRemoteDrawEvent = (event: DrawEvent) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    
-    // Handle different event types
-    switch (event.type) {
-      case 'draw':
-        if (!event.points || event.points.length < 2) return;
-        
-        ctx.strokeStyle = event.color || '#000000';
-        ctx.lineWidth = event.lineWidth || 3;
-        
+      if (shapeObj.type === 'circle') {
         ctx.beginPath();
-        ctx.moveTo(event.points[0].x, event.points[0].y);
-        
-        for (let i = 1; i < event.points.length; i++) {
-          ctx.lineTo(event.points[i].x, event.points[i].y);
-        }
-        
-        ctx.stroke();
-        break;
-        
-      case 'clear':
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        saveCanvasState();
-        break;
-        
-      case 'undo':
-        // Remote undo is handled by sending the entire canvas state
-        if (event.imageData) {
-          const img = new Image();
-          img.onload = () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 0, 0);
-          };
-          img.src = event.imageData;
-        }
-        break;
-        
-      case 'image':
-        if (event.imageData) {
-          const img = new Image();
-          img.onload = () => {
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            saveCanvasState();
-          };
-          img.src = event.imageData;
-        }
-        break;
-    }
-  };
-  
-  // Send drawing event to other collaborators
-  const sendDrawEvent = (event: DrawEvent) => {
-    if (!user || !isConnected || readOnly) return;
+        ctx.arc(
+          shapeObj.position.x, 
+          shapeObj.position.y, 
+          shapeObj.size / 2, 
+          0, 
+          Math.PI * 2
+        );
+        ctx.fill();
+      } else if (shapeObj.type === 'rectangle') {
+        ctx.fillRect(
+          shapeObj.position.x - shapeObj.size / 2,
+          shapeObj.position.y - shapeObj.size / 2,
+          shapeObj.size,
+          shapeObj.size
+        );
+      }
+    });
     
-    websocketService.sendWhiteboardEvent(sessionId, event);
-  };
-  
-  // Handle mouse down event
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (readOnly) return;
+    // Draw the current path if drawing
+    if (isDrawing && currentPath.length > 1) {
+      ctx.beginPath();
+      ctx.moveTo(currentPath[0].x, currentPath[0].y);
+      
+      for (let i = 1; i < currentPath.length; i++) {
+        ctx.lineTo(currentPath[i].x, currentPath[i].y);
+      }
+      
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lineWidth;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+    }
+  }, [paths, textObjects, shapeObjects, isDrawing, currentPath, color, lineWidth]);
+
+  // Set canvas dimensions when the component mounts
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const resizeCanvas = () => {
+      const parent = canvas.parentElement;
+      if (!parent) return;
+      
+      canvas.width = parent.clientWidth;
+      canvas.height = parent.clientHeight;
+      
+      // Redraw everything when the canvas is resized
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#1e1e1e';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    };
+    
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+    };
+  }, []);
+
+  // Mouse event handlers
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+    if (tool === 'text') {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      setTextPosition({ x, y });
+      setIsAddingText(true);
+      return;
+    }
     
     setIsDrawing(true);
     
@@ -284,399 +304,565 @@ export function CollaborativeWhiteboard({
     if (!canvas) return;
     
     const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX - rect.left);
-    const y = (e.clientY - rect.top);
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
     
-    // Start new path
-    currentPath.current = [{ x, y }];
-    
-    // Draw a dot if the user just clicks
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.beginPath();
-      ctx.arc(x, y, lineWidth / 2, 0, Math.PI * 2);
-      
-      if (tool === 'pencil') {
-        ctx.fillStyle = color;
-        ctx.fill();
-      } else {
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fill();
-      }
-    }
+    setCurrentPath([{ x, y }]);
   };
-  
-  // Handle mouse move event
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDrawing || readOnly) return;
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
+    if (!isDrawing || tool === 'text') return;
     
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
     
     const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX - rect.left);
-    const y = (e.clientY - rect.top);
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
     
-    // Add point to current path
-    currentPath.current.push({ x, y });
-    
-    // Draw line segment
-    if (currentPath.current.length >= 2) {
-      const current = currentPath.current;
-      const lastIdx = current.length - 1;
-      
-      ctx.beginPath();
-      ctx.moveTo(current[lastIdx - 1].x, current[lastIdx - 1].y);
-      ctx.lineTo(current[lastIdx].x, current[lastIdx].y);
-      
-      if (tool === 'pencil') {
-        ctx.strokeStyle = color;
-      } else {
-        ctx.strokeStyle = '#FFFFFF';  
-      }
-      
-      ctx.lineWidth = lineWidth;
-      ctx.stroke();
-    }
+    setCurrentPath((prev) => [...prev, { x, y }]);
   };
-  
-  // Handle mouse up event
+
   const handleMouseUp = () => {
-    if (!isDrawing || readOnly) return;
-    
-    // Send full path to others
-    if (currentPath.current.length > 0) {
-      sendDrawEvent({
-        type: 'draw',
-        points: currentPath.current,
-        color: tool === 'pencil' ? color : '#FFFFFF',
-        lineWidth
-      });
-      
-      // Save state for undo history
-      saveCanvasState();
-    }
+    if (!isDrawing || tool === 'text') return;
     
     setIsDrawing(false);
-    currentPath.current = [];
-  };
-  
-  // Handle clearing the whiteboard
-  const handleClear = () => {
-    if (readOnly) return;
     
+    if (currentPath.length < 2) {
+      setCurrentPath([]);
+      return;
+    }
+    
+    const newPath: DrawingPath = {
+      path: currentPath,
+      color: tool === 'eraser' ? '#1e1e1e' : color,
+      lineWidth: tool === 'eraser' ? 20 : lineWidth,
+      tool,
+      userId
+    };
+    
+    // Add to history
+    const newPaths = [...paths, newPath];
+    addToHistory(newPaths, textObjects, shapeObjects);
+    
+    setPaths(newPaths);
+    setCurrentPath([]);
+    
+    // Send to other users
+    websocketService.sendWhiteboardEvent(sessionId, {
+      type: 'draw',
+      path: newPath,
+      sessionId
+    });
+  };
+
+  const handleMouseLeave = () => {
+    if (isDrawing) {
+      handleMouseUp();
+    }
+  };
+
+  // Tool selection handlers
+  const handleToolSelect = (selectedTool: 'pen' | 'eraser' | 'text' | 'circle' | 'rectangle') => {
+    setTool(selectedTool);
+    if (isAddingText) {
+      setIsAddingText(false);
+      setTextPosition(null);
+    }
+  };
+
+  // Text input handlers
+  const handleTextSubmit = () => {
+    if (!textPosition || !textInput.trim()) {
+      setIsAddingText(false);
+      setTextPosition(null);
+      setTextInput('');
+      return;
+    }
+    
+    const newText: TextObject = {
+      text: textInput,
+      position: textPosition,
+      color,
+      userId
+    };
+    
+    // Add to history
+    const newTextObjects = [...textObjects, newText];
+    addToHistory(paths, newTextObjects, shapeObjects);
+    
+    setTextObjects(newTextObjects);
+    setIsAddingText(false);
+    setTextPosition(null);
+    setTextInput('');
+    
+    // Send to other users
+    websocketService.sendWhiteboardEvent(sessionId, {
+      type: 'text',
+      textObject: newText,
+      sessionId
+    });
+  };
+
+  // Shape handlers
+  const handleAddShape = (type: 'circle' | 'rectangle') => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const x = canvas.width / 2;
+    const y = canvas.height / 2;
     
-    // Clear to white
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const newShape: ShapeObject = {
+      type,
+      position: { x, y },
+      size: 50,
+      color,
+      userId
+    };
     
-    // Send clear event
-    sendDrawEvent({ type: 'clear' });
+    // Add to history
+    const newShapeObjects = [...shapeObjects, newShape];
+    addToHistory(paths, textObjects, newShapeObjects);
     
-    // Save cleared state
-    saveCanvasState();
+    setShapeObjects(newShapeObjects);
+    
+    // Send to other users
+    websocketService.sendWhiteboardEvent(sessionId, {
+      type: 'shape',
+      shapeObject: newShape,
+      sessionId
+    });
   };
-  
-  // Handle undo
+
+  // Clear canvas handler
+  const handleClearCanvas = () => {
+    // Add to history
+    addToHistory(paths, textObjects, shapeObjects);
+    
+    setPaths([]);
+    setTextObjects([]);
+    setShapeObjects([]);
+    
+    // Send to other users
+    websocketService.sendWhiteboardEvent(sessionId, {
+      type: 'clear',
+      sessionId
+    });
+
+    toast({
+      title: "Canvas cleared",
+      description: "The whiteboard has been cleared"
+    });
+  };
+
+  // Undo/Redo handlers
+  const addToHistory = (
+    currentPaths: DrawingPath[],
+    currentTextObjects: TextObject[],
+    currentShapeObjects: ShapeObject[]
+  ) => {
+    const newHistoryState = {
+      paths: [...currentPaths],
+      textObjects: [...currentTextObjects],
+      shapeObjects: [...currentShapeObjects]
+    };
+    
+    // If we're not at the end of the history, remove everything after the current index
+    const newHistory = history.slice(0, historyIndex + 1);
+    
+    setHistory([...newHistory, newHistoryState]);
+    setHistoryIndex(newHistory.length);
+  };
+
   const handleUndo = () => {
-    if (readOnly || historyIndex <= 0) return;
+    if (historyIndex <= 0) return;
     
     const newIndex = historyIndex - 1;
     setHistoryIndex(newIndex);
     
-    // Apply previous state
-    if (history[newIndex]) {
-      applyCanvasState(history[newIndex]);
-      
-      // Send canvas image to others
-      const canvas = canvasRef.current;
-      if (canvas) {
-        sendDrawEvent({
-          type: 'undo',
-          imageData: canvas.toDataURL()
-        });
-      }
+    if (newIndex >= 0) {
+      const previousState = history[newIndex];
+      setPaths([...previousState.paths]);
+      setTextObjects([...previousState.textObjects]);
+      setShapeObjects([...previousState.shapeObjects]);
+    } else {
+      setPaths([]);
+      setTextObjects([]);
+      setShapeObjects([]);
     }
   };
-  
-  // Handle redo
+
   const handleRedo = () => {
-    if (readOnly || historyIndex >= history.length - 1) return;
+    if (historyIndex >= history.length - 1) return;
     
     const newIndex = historyIndex + 1;
     setHistoryIndex(newIndex);
     
-    // Apply next state
-    if (history[newIndex]) {
-      applyCanvasState(history[newIndex]);
-      
-      // Send canvas image to others
-      const canvas = canvasRef.current;
-      if (canvas) {
-        sendDrawEvent({
-          type: 'undo',
-          imageData: canvas.toDataURL()
-        });
-      }
-    }
+    const nextState = history[newIndex];
+    setPaths([...nextState.paths]);
+    setTextObjects([...nextState.textObjects]);
+    setShapeObjects([...nextState.shapeObjects]);
   };
-  
-  // Handle saving the whiteboard
-  const handleSave = () => {
+
+  // Export canvas handler
+  const handleExportCanvas = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     
-    // Create temporary link and click it to download
+    const dataUrl = canvas.toDataURL('image/png');
     const link = document.createElement('a');
-    link.download = `${boardName.replace(/\s+/g, '-').toLowerCase()}.png`;
-    link.href = canvas.toDataURL('image/png');
+    link.download = `strategy-board-${sessionId}.png`;
+    link.href = dataUrl;
     link.click();
+
+    toast({
+      title: "Whiteboard exported",
+      description: "The whiteboard has been exported as a PNG image"
+    });
   };
-  
-  // Add image to whiteboard
-  const handleAddImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (readOnly) return;
-    
-    const file = e.target.files?.[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-        
-        // Draw image centered on canvas
-        const aspectRatio = img.width / img.height;
-        const canvasRatio = canvas.width / canvas.height;
-        
-        let drawWidth, drawHeight, drawX, drawY;
-        
-        if (aspectRatio > canvasRatio) {
-          // Image is wider than canvas
-          drawWidth = canvas.width;
-          drawHeight = canvas.width / aspectRatio;
-          drawX = 0;
-          drawY = (canvas.height - drawHeight) / 2;
-        } else {
-          // Image is taller than canvas
-          drawHeight = canvas.height;
-          drawWidth = canvas.height * aspectRatio;
-          drawX = (canvas.width - drawWidth) / 2;
-          drawY = 0;
-        }
-        
-        ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
-        
-        // Send image to others
-        sendDrawEvent({
-          type: 'image',
-          imageData: canvas.toDataURL()
-        });
-        
-        // Save state for history
-        saveCanvasState();
-      };
-      
-      if (event.target?.result) {
-        img.src = event.target.result as string;
-      }
+
+  // Remote event handlers
+  const handleRemoteDrawEvent = (data: any) => {
+    const remotePath = data.path;
+    setPaths((prev) => [...prev, remotePath]);
+  };
+
+  const handleRemoteTextEvent = (data: any) => {
+    const remoteText = data.textObject;
+    setTextObjects((prev) => [...prev, remoteText]);
+  };
+
+  const handleRemoteShapeEvent = (data: any) => {
+    const remoteShape = data.shapeObject;
+    setShapeObjects((prev) => [...prev, remoteShape]);
+  };
+
+  const handleRemoteClearEvent = () => {
+    setPaths([]);
+    setTextObjects([]);
+    setShapeObjects([]);
+  };
+
+  const handleUserJoined = (data: any) => {
+    const newUser = {
+      id: data.userId,
+      name: data.username,
+      color: data.color
     };
     
-    reader.readAsDataURL(file);
-    
-    // Reset input value so the same file can be selected again
-    e.target.value = '';
+    setActiveUsers((prev) => {
+      if (prev.some(user => user.id === newUser.id)) {
+        return prev;
+      }
+      return [...prev, newUser];
+    });
+
+    toast({
+      title: "User joined",
+      description: `${data.username} joined the whiteboard session`
+    });
   };
-  
-  // Predefined color options
-  const colorOptions = [
-    '#0066CC', // Go4It Blue
-    '#000000', // Black
-    '#FF0000', // Red
-    '#00CC00', // Green
-    '#FF6600', // Orange
-    '#9900CC', // Purple
-    '#FFCC00', // Yellow
-    '#FF66CC', // Pink
-  ];
-  
+
+  const handleUserLeft = (data: any) => {
+    setActiveUsers((prev) => 
+      prev.filter(user => user.id !== data.userId)
+    );
+
+    toast({
+      title: "User left",
+      description: `${data.username} left the whiteboard session`
+    });
+  };
+
+  const handleSessionState = (data: any) => {
+    if (data.paths) setPaths(data.paths);
+    if (data.textObjects) setTextObjects(data.textObjects);
+    if (data.shapeObjects) setShapeObjects(data.shapeObjects);
+    if (data.activeUsers) setActiveUsers(data.activeUsers);
+  };
+
   return (
-    <Card className="w-full max-w-4xl mx-auto flex flex-col h-[600px]">
-      <CardHeader className="bg-blue-950 text-white flex flex-row items-center justify-between py-3">
-        <CardTitle className="flex items-center gap-2">
-          <Pencil className="h-5 w-5" />
-          <Input 
-            value={boardName}
-            onChange={(e) => setBoardName(e.target.value)}
-            className="bg-transparent border-none text-white focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-7 text-lg"
-            disabled={readOnly}
-          />
-        </CardTitle>
-        
-        {/* User list */}
-        <div className="flex items-center space-x-1">
-          {users.map(user => (
-            <div 
-              key={user.id} 
-              title={user.name}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
-              style={{ backgroundColor: user.color || '#666' }}
-            >
-              {user.name.charAt(0).toUpperCase()}
-            </div>
-          ))}
-        </div>
-      </CardHeader>
-      
-      <CardContent className="flex-1 p-0 relative overflow-hidden bg-gray-50">
-        <canvas
-          ref={canvasRef}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-          className="w-full h-full cursor-crosshair touch-none"
-        />
-      </CardContent>
-      
-      {!readOnly && (
-        <CardFooter className="border-t p-2 bg-gray-100">
-          <div className="w-full flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center space-x-1">
-              {/* Tool selector */}
-              <div className="flex border rounded overflow-hidden">
-                <Button
-                  variant={tool === 'pencil' ? 'default' : 'outline'}
-                  size="icon"
-                  onClick={() => setTool('pencil')}
-                  className="rounded-none h-9 w-9"
+    <div className="flex flex-col h-full">
+      <div className="flex items-center justify-between p-2 border-b border-gray-700">
+        <div className="flex space-x-2">
+          {/* Drawing Tools */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant={tool === 'pen' ? "default" : "outline"} 
+                  size="icon" 
+                  onClick={() => handleToolSelect('pen')}
                 >
-                  <Pencil className="h-4 w-4" />
+                  <PenTool className="h-4 w-4" />
                 </Button>
-                <Button
-                  variant={tool === 'eraser' ? 'default' : 'outline'}
-                  size="icon"
-                  onClick={() => setTool('eraser')}
-                  className="rounded-none h-9 w-9"
+              </TooltipTrigger>
+              <TooltipContent>Pen Tool</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant={tool === 'eraser' ? "default" : "outline"} 
+                  size="icon" 
+                  onClick={() => handleToolSelect('eraser')}
                 >
                   <Eraser className="h-4 w-4" />
                 </Button>
-              </div>
-              
-              {/* Color picker */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="h-9 w-9 p-0">
-                    <div 
-                      className="w-6 h-6 rounded-full" 
-                      style={{ backgroundColor: color }}
-                    />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  <div className="grid grid-cols-4 gap-1 p-1">
-                    {colorOptions.map((c) => (
-                      <button
-                        key={c}
-                        onClick={() => setColor(c)}
-                        className={`w-8 h-8 rounded-full ${color === c ? 'ring-2 ring-offset-2 ring-blue-600' : ''}`}
-                        style={{ backgroundColor: c }}
-                      />
-                    ))}
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              {/* Line width */}
-              <div className="w-32 flex items-center space-x-2">
-                <div className="w-8 text-center text-xs">{lineWidth}px</div>
-                <Slider
-                  value={[lineWidth]}
-                  min={1}
-                  max={20}
-                  step={1}
-                  onValueChange={(values) => setLineWidth(values[0])}
-                  className="w-20"
-                />
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-1">
-              {/* History controls */}
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={handleUndo}
-                disabled={historyIndex <= 0}
-                className="h-9 w-9"
-              >
-                <Undo className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={handleRedo}
-                disabled={historyIndex >= history.length - 1}
-                className="h-9 w-9"
-              >
-                <Redo className="h-4 w-4" />
-              </Button>
-              
-              {/* Add image & save buttons */}
-              <div className="relative">
-                <Button
-                  variant="outline" 
-                  size="icon"
-                  className="h-9 w-9"
+              </TooltipTrigger>
+              <TooltipContent>Eraser</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant={tool === 'text' ? "default" : "outline"} 
+                  size="icon" 
+                  onClick={() => handleToolSelect('text')}
                 >
-                  <ImageIcon className="h-4 w-4" />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAddImage}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  />
+                  <Type className="h-4 w-4" />
                 </Button>
-              </div>
-              
-              <Button 
-                variant="outline" 
-                size="icon" 
-                onClick={handleSave}
-                className="h-9 w-9"
-              >
-                <Save className="h-4 w-4" />
+              </TooltipTrigger>
+              <TooltipContent>Text Tool</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {/* Shape Dropdown */}
+          <DropdownMenu>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant={tool === 'circle' || tool === 'rectangle' ? "default" : "outline"} 
+                      size="icon"
+                    >
+                      {tool === 'circle' ? <Circle className="h-4 w-4" /> : 
+                       tool === 'rectangle' ? <Square className="h-4 w-4" /> : 
+                       <Circle className="h-4 w-4" />}
+                    </Button>
+                  </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent>Shapes</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
+            <DropdownMenuContent>
+              <DropdownMenuLabel>Shapes</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => {
+                handleToolSelect('circle');
+                handleAddShape('circle');
+              }}>
+                <Circle className="h-4 w-4 mr-2" />
+                Circle
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                handleToolSelect('rectangle');
+                handleAddShape('rectangle');
+              }}>
+                <Square className="h-4 w-4 mr-2" />
+                Rectangle
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Color Selector */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="relative">
+                  <Button 
+                    variant="outline" 
+                    size="icon"
+                    className="relative"
+                  >
+                    <Palette className="h-4 w-4" />
+                  </Button>
+                  <input 
+                    type="color" 
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)} 
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                  <div 
+                    className="absolute bottom-0 right-0 w-2 h-2 rounded-full border border-gray-300" 
+                    style={{backgroundColor: color}}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>Select Color</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {/* Line Width Slider */}
+          <div className="flex items-center space-x-2 ml-2">
+            <span className="text-xs text-gray-400">Width:</span>
+            <Slider
+              min={1}
+              max={20}
+              step={1}
+              value={[lineWidth]}
+              onValueChange={(value) => setLineWidth(value[0])}
+              className="w-24"
+            />
+            <span className="text-xs text-gray-400">{lineWidth}px</span>
+          </div>
+        </div>
+
+        <div className="flex space-x-2">
+          {/* Undo/Redo */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleUndo}
+                  disabled={historyIndex <= 0}
+                >
+                  <Undo className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Undo</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleRedo}
+                  disabled={historyIndex >= history.length - 1}
+                >
+                  <Redo className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Redo</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {/* Clear Canvas */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleClearCanvas}
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Clear Canvas</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {/* Export Canvas */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleExportCanvas}
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Export as PNG</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {/* Active Users */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                <span className="hidden sm:inline">Users</span>
+                <Badge variant="secondary" className="ml-1">{activeUsers.length}</Badge>
               </Button>
-              
-              {/* Clear board button */}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>Active Users</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {activeUsers.map((user) => (
+                <DropdownMenuItem key={user.id} className="flex items-center gap-2">
+                  <div 
+                    className="w-3 h-3 rounded-full" 
+                    style={{ backgroundColor: user.color }}
+                  />
+                  <span>{user.name}</span>
+                  {user.id === userId && <span className="text-xs text-gray-400">(You)</span>}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+
+      <div className="relative flex-1">
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 cursor-crosshair"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+        />
+        
+        {isAddingText && textPosition && (
+          <div
+            className="absolute z-10 flex flex-col"
+            style={{
+              left: textPosition.x,
+              top: textPosition.y
+            }}
+          >
+            <textarea
+              autoFocus
+              className="bg-gray-800 text-white border border-gray-600 rounded p-2 w-48 h-20"
+              value={textInput}
+              onChange={(e) => setTextInput(e.target.value)}
+              placeholder="Enter text..."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleTextSubmit();
+                }
+              }}
+            />
+            <div className="flex justify-end space-x-2 mt-2">
               <Button 
-                variant="destructive" 
+                variant="ghost" 
                 size="sm" 
-                onClick={handleClear}
-                className="h-9"
+                onClick={() => {
+                  setIsAddingText(false);
+                  setTextPosition(null);
+                  setTextInput('');
+                }}
               >
-                <Delete className="h-4 w-4 mr-1" />
-                Clear
+                Cancel
+              </Button>
+              <Button 
+                variant="default" 
+                size="sm" 
+                onClick={handleTextSubmit}
+              >
+                Add Text
               </Button>
             </div>
           </div>
-        </CardFooter>
-      )}
-    </Card>
+        )}
+      </div>
+    </div>
   );
-}
+};
 
 export default CollaborativeWhiteboard;
