@@ -13,10 +13,18 @@ const RETRY_DELAY_MS = 2000;
 let isHealthy = false;
 let lastSuccessfulConnection: Date | null = null;
 let failedConnectionAttempts = 0;
+let totalActiveConnections = 0;
+let peakConnections = 0;
+let connectionStats = {
+  created: 0,
+  acquired: 0,
+  released: 0,
+  destroyed: 0
+};
 
 /**
  * Creates a database connection pool with enterprise-grade error handling and retry logic
- * Optimized for production environment with high availability requirements
+ * Optimized for Hetzner VPS environment (4 vCPU/16GB RAM)
  */
 function createPool(): Pool {
   if (!process.env.DATABASE_URL) {
@@ -25,25 +33,34 @@ function createPool(): Pool {
   }
 
   // Read connection pool settings from environment or use defaults
-  const maxConnections = parseInt(process.env.PG_MAX_CONNECTIONS || '20', 10);
-  const idleTimeout = parseInt(process.env.PG_IDLE_TIMEOUT || '30000', 10);
-  const connectionTimeout = parseInt(process.env.PG_CONNECTION_TIMEOUT || '5000', 10);
-  
+  // Optimized defaults for Hetzner VPS (4 vCPU/16GB RAM)
   const isProd = process.env.NODE_ENV === 'production';
   
+  // Conservative pool size for production to avoid overwhelming the VPS
+  // Formula: (num_cpu_cores * 2) + effective_spindle_count
+  // For a 4 vCPU server with SSD, we use 4*2+2 = 10 as default
+  const defaultMaxConnections = isProd ? 10 : 20;
+  
+  const maxConnections = parseInt(process.env.PG_MAX_CONNECTIONS || String(defaultMaxConnections), 10);
+  const minConnections = parseInt(process.env.PG_MIN_CONNECTIONS || '2', 10);
+  const idleTimeout = parseInt(process.env.PG_IDLE_TIMEOUT || (isProd ? '60000' : '30000'), 10);
+  const connectionTimeout = parseInt(process.env.PG_CONNECTION_TIMEOUT || '5000', 10);
+  const statementTimeout = parseInt(process.env.PG_STATEMENT_TIMEOUT || '30000', 10);
+  const queryTimeout = parseInt(process.env.PG_QUERY_TIMEOUT || '20000', 10);
+  
   log(`Initializing database connection pool (${isProd ? 'PRODUCTION' : 'DEVELOPMENT'}): ${process.env.DATABASE_URL.split('@')[1]}`, "db");
+  log(`Pool config: max=${maxConnections}, min=${minConnections}, idleTimeout=${idleTimeout}ms`, "db");
   
   // Create pool with production-optimized settings
   const newPool = new Pool({ 
     connectionString: process.env.DATABASE_URL,
-    max: maxConnections, 
+    max: maxConnections,
+    min: minConnections,
     idleTimeoutMillis: idleTimeout,
     connectionTimeoutMillis: connectionTimeout,
     allowExitOnIdle: false,
-    // Add statement timeout to prevent long-running queries
-    statement_timeout: 30000, // 30 seconds
-    // Add query timeout to prevent blocking connections
-    query_timeout: 20000 // 20 seconds
+    statement_timeout: statementTimeout,
+    query_timeout: queryTimeout
   });
 
   // Handle pool errors
@@ -56,7 +73,8 @@ function createPool(): Pool {
     if ((err.message.includes('Connection terminated') || 
          err.message.includes('Connection timed out') ||
          err.message.includes('Connection refused') ||
-         err.message.includes('Cannot use a pool after calling end')) && 
+         err.message.includes('Cannot use a pool after calling end') ||
+         err.message.includes('Connection terminated unexpectedly')) && 
         connectionRetryCount < MAX_RETRIES) {
       
       connectionRetryCount++;
@@ -65,7 +83,7 @@ function createPool(): Pool {
       // Clean up the old pool
       try {
         newPool.end();
-      } catch (endError) {
+      } catch (endError: any) {
         log(`Error ending pool: ${endError.message}`, "db");
       }
       
@@ -80,7 +98,12 @@ function createPool(): Pool {
 
   // Setup connection monitoring
   newPool.on('connect', (client) => {
-    log(`New client connected to database`, "db");
+    connectionStats.created++;
+    log(`New client connected to database (active: ${++totalActiveConnections})`, "db");
+    
+    if (totalActiveConnections > peakConnections) {
+      peakConnections = totalActiveConnections;
+    }
     
     // Reset retry count and update health status on successful connection
     connectionRetryCount = 0;
@@ -92,17 +115,36 @@ function createPool(): Pool {
       log(`Client connection error: ${err.message}`, "db");
     });
     
+    // Track when a client is removed
+    client.on('end', () => {
+      connectionStats.destroyed++;
+      totalActiveConnections = Math.max(0, totalActiveConnections - 1);
+    });
+    
     // Set session parameters for this connection
     if (isProd) {
       // In production, set parameters for optimal performance
       client.query("SET application_name = 'go4it_sports_prod';");
       client.query("SET statement_timeout = '30s';");
+      // Setting work_mem appropriately for 16GB RAM server
+      client.query("SET work_mem = '8MB';");
     }
   });
   
-  // Set up keep-alive mechanism for production
+  // Additional detailed monitoring for production
   if (isProd) {
+    // Instead of monkey-patching the connect method, use events for monitoring
+    // This avoids TypeScript errors and is more reliable
+    newPool.on('acquire', () => {
+      connectionStats.acquired++;
+    });
+    
+    newPool.on('release', () => {
+      connectionStats.released++;
+    });
+    
     // Every 5 minutes, ping the database to keep the connection alive
+    // and log connection stats for monitoring
     setInterval(async () => {
       try {
         const client = await newPool.connect();
@@ -110,10 +152,16 @@ function createPool(): Pool {
           await client.query('SELECT 1');
           isHealthy = true;
           lastSuccessfulConnection = new Date();
+          
+          // Log connection stats every 5 minutes in production
+          log(`DB Connection Stats: active=${totalActiveConnections}, peak=${peakConnections}, created=${connectionStats.created}, acquired=${connectionStats.acquired}, released=${connectionStats.released}, destroyed=${connectionStats.destroyed}`, "db");
+          
+          // Reset peak connections counter periodically
+          peakConnections = totalActiveConnections;
         } finally {
           client.release();
         }
-      } catch (error) {
+      } catch (error: any) {
         log(`Keep-alive query failed: ${error.message}`, "db");
         isHealthy = false;
         failedConnectionAttempts++;
@@ -156,13 +204,17 @@ export async function executeWithRetry<T>(
     try {
       // Try to execute the database function
       return await dbFunction();
-    } catch (error) {
-      lastError = error;
+    } catch (error: any) {
+      // Convert to standard Error type for consistent handling
+      lastError = error instanceof Error ? error : new Error(error?.message || String(error));
       
       // If this is a connection error and not the last attempt, wait and retry
-      if ((error.message.includes('Connection terminated') || 
+      if ((typeof error.message === 'string' &&
+           (error.message.includes('Connection terminated') || 
            error.message.includes('Connection timed out') ||
-           error.message.includes('Cannot use a pool after calling end')) && 
+           error.message.includes('Cannot use a pool after calling end') ||
+           error.message.includes('Connection terminated unexpectedly') ||
+           error.message.includes('database connection not established'))) && 
           attempt < maxRetries) {
         
         log(`Database operation failed, retrying (${attempt}/${maxRetries}) after ${delay}ms: ${error.message}`, "db");
@@ -182,15 +234,68 @@ export async function executeWithRetry<T>(
   throw lastError!;
 }
 
-// Single handler for graceful shutdown
-function handleShutdown() {
+/**
+ * Get current database connection health status
+ * Used for health check endpoints and monitoring
+ */
+export function getDatabaseHealth(): {
+  isHealthy: boolean;
+  lastSuccessfulConnection: Date | null;
+  failedConnectionAttempts: number;
+  activeConnections: number;
+  peakConnections: number;
+  connectionStats: typeof connectionStats;
+} {
+  return {
+    isHealthy,
+    lastSuccessfulConnection,
+    failedConnectionAttempts,
+    activeConnections: totalActiveConnections,
+    peakConnections,
+    connectionStats: { ...connectionStats }
+  };
+}
+
+/**
+ * Gracefully shut down the database pool
+ * This ensures all queries are completed before shutting down
+ */
+export async function shutdownDatabasePool(): Promise<void> {
   if (poolInstance) {
     log(`Closing database pool gracefully`, "db");
-    poolInstance.end(() => {
-      log(`Database pool has ended`, "db");
+    try {
+      // Give active connections time to finish (30 seconds max)
+      const shutdownTimeout = setTimeout(() => {
+        log(`Force closing database pool after timeout`, "db");
+        if (poolInstance) poolInstance.end();
+      }, 30000);
+      
+      await poolInstance.end();
+      clearTimeout(shutdownTimeout);
+      
+      log(`Database pool has ended gracefully`, "db");
       poolInstance = null;
-    });
+    } catch (error) {
+      log(`Error during database pool shutdown: ${error.message}`, "db");
+      // Force end the pool if graceful shutdown fails
+      if (poolInstance) {
+        try {
+          poolInstance.end();
+        } catch (e) {
+          // Ignore errors during forced shutdown
+        }
+        poolInstance = null;
+      }
+    }
   }
+}
+
+// Single handler for graceful shutdown
+function handleShutdown() {
+  log(`Application shutdown initiated, closing database connections...`, "db");
+  shutdownDatabasePool().catch(err => {
+    log(`Error during database shutdown: ${err.message}`, "db");
+  });
 }
 
 // Setup graceful shutdown - only register the handlers once
