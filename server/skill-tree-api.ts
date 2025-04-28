@@ -430,6 +430,20 @@ export function registerSkillTreeApi(app: Express) {
         ...req.body,
         userId: parseInt(userId, 10)
       });
+      
+      // Invalidate user drill progress caches
+      invalidateCache(`/api/users/${userId}/drill-progress`);
+      
+      // Invalidate specific drill progress if drillId is present
+      if (progress.drillId) {
+        invalidateCache(`/api/users/${userId}/drills/${progress.drillId}/progress`);
+        invalidateCache(`/api/training-drills/${progress.drillId}/user-progress`);
+      }
+      
+      // Invalidate StarPath user progression caches
+      invalidateCache(`/api/users/${userId}/starpath`);
+      invalidateCache(`/api/users/${userId}/progression`);
+      
       res.status(201).json(progress);
     } catch (error) {
       console.error(`Error creating drill progress for user ID ${req.params.userId}:`, error);
@@ -444,6 +458,25 @@ export function registerSkillTreeApi(app: Express) {
       if (!updatedProgress) {
         return res.status(404).json({ error: 'Drill progress not found' });
       }
+      
+      // Invalidate specific drill progress cache
+      invalidateCache(`/api/drill-progress/${id}`);
+      
+      // Invalidate user drill progress caches
+      if (updatedProgress.userId) {
+        invalidateCache(`/api/users/${updatedProgress.userId}/drill-progress`);
+        
+        // Invalidate specific drill progress by user and drill if drillId is present
+        if (updatedProgress.drillId) {
+          invalidateCache(`/api/users/${updatedProgress.userId}/drills/${updatedProgress.drillId}/progress`);
+          invalidateCache(`/api/training-drills/${updatedProgress.drillId}/user-progress`);
+        }
+        
+        // Invalidate StarPath user progression caches
+        invalidateCache(`/api/users/${updatedProgress.userId}/starpath`);
+        invalidateCache(`/api/users/${updatedProgress.userId}/progression`);
+      }
+      
       res.json(updatedProgress);
     } catch (error) {
       console.error(`Error updating drill progress with ID ${req.params.id}:`, error);
