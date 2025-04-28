@@ -1,7 +1,7 @@
 // Script to directly check our health endpoints
 // Run with: node check-health-endpoints.js
 
-const http = require('http');
+import http from 'http';
 
 // Function to make an HTTP GET request
 function httpGet(path) {

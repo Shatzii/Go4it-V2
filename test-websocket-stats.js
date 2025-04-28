@@ -1,7 +1,7 @@
 // Script to test WebSocket stats functionality directly
 // Run with: node test-websocket-stats.js
 
-const WebSocket = require('ws');
+import WebSocket from 'ws';
 
 // WebSocket server URL (update port if needed)
 const WS_URL = 'ws://localhost:5000/ws';
