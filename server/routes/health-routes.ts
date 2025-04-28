@@ -68,6 +68,16 @@ router.get("/ping", (req: Request, res: Response) => {
 });
 
 /**
+ * @route GET /api/health/ws-stats
+ * @description Special endpoint that only returns WebSocket stats
+ * @access Public
+ */
+router.get("/ws-stats", (req: Request, res: Response) => {
+  const wsStats = getWebSocketStats();
+  res.status(200).json(wsStats);
+});
+
+/**
  * @route GET /api/health/db
  * @description Check if the database is connected
  * @access Public
