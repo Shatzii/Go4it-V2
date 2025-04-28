@@ -34,6 +34,10 @@ const server = http.createServer(app);
 // Configure WebSocket server
 const wss = new WebSocketServer({ server, path: '/ws' });
 
+// Import cache middleware
+import { cache, clearCache, bypassCache } from './middleware/cache-middleware';
+import { cacheManager } from './cache-manager';
+
 // Configure middleware
 app.use(helmet());
 app.use(cors({
@@ -43,6 +47,15 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Initialize cache connection
+cacheManager.on('connect', () => {
+  console.log('Connected to Redis cache server');
+});
+
+cacheManager.on('error', (error) => {
+  console.warn(`Redis cache connection error: ${error.message}. Continuing without caching.`);
+});
 
 // Configure file uploads
 const storage = multer.diskStorage({
@@ -336,7 +349,7 @@ app.post('/api/media/process', authenticateJWT, validateSubscription, upload.sin
 });
 
 // Academic endpoints
-app.get('/api/academics/:userId', authenticateJWT, async (req, res) => {
+app.get('/api/academics/:userId', authenticateJWT, cache({ ttl: 3600 }), async (req, res) => {
   try {
     const { userId } = req.params;
     
@@ -393,7 +406,7 @@ app.get('/api/academics/:userId', authenticateJWT, async (req, res) => {
 });
 
 // Recommendations endpoints
-app.get('/api/recommendations/:userId', authenticateJWT, validateSubscription, async (req, res) => {
+app.get('/api/recommendations/:userId', authenticateJWT, validateSubscription, cache({ ttl: 1800 }), async (req, res) => {
   try {
     const { userId } = req.params;
     const context = req.query;
