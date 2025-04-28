@@ -124,13 +124,13 @@ export function CollaborativeWhiteboard({
       setIsConnected(true);
       
       // Join this specific whiteboard session
-      websocketService.socket?.send(JSON.stringify({
-        type: 'whiteboard_join',
-        sessionId,
-        userId: user.id,
-        userName: user.name || user.username,
-        userColor: color
-      }));
+      if (websocketService.isConnected()) {
+        // Use sendWhiteboardEvent with a custom join event type
+        websocketService.sendWhiteboardEvent(sessionId, {
+          type: 'join',
+          userColor: color
+        });
+      }
     };
     
     // Add message listener
@@ -166,11 +166,11 @@ export function CollaborativeWhiteboard({
     return () => {
       // Leave the whiteboard session
       if (websocketService.isConnected()) {
-        websocketService.socket?.send(JSON.stringify({
-          type: 'whiteboard_leave',
-          sessionId,
+        // Use custom event for leaving whiteboard
+        websocketService.sendWhiteboardEvent(sessionId, {
+          type: 'leave',
           userId: user.id
-        }));
+        });
       }
       
       websocketService.removeConnectionListener(connectionListener);
@@ -271,15 +271,7 @@ export function CollaborativeWhiteboard({
   const sendDrawEvent = (event: DrawEvent) => {
     if (!user || !isConnected || readOnly) return;
     
-    websocketService.socket?.send(JSON.stringify({
-      type: 'whiteboard_event',
-      sessionId,
-      event: {
-        ...event,
-        userId: user.id,
-        userName: user.name || user.username
-      }
-    }));
+    websocketService.sendWhiteboardEvent(sessionId, event);
   };
   
   // Handle mouse down event
