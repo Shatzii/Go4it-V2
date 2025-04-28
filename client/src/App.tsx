@@ -101,6 +101,7 @@ const SkillDevelopmentTracker = lazy(() => import("@/pages/skill-development-tra
 const CombineTour = lazy(() => import("@/pages/combine-tour"));
 const CombineTourDetail = lazy(() => import("@/pages/combine-tour-detail"));
 const CombinePublic = lazy(() => import("@/pages/combine-public"));
+const WhiteboardPage = lazy(() => import("@/pages/whiteboard-page"));
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -503,6 +504,15 @@ function Router() {
         <Route path="/forbidden" component={Forbidden} />
         <Route path="/unauthorized" component={Unauthorized} />
 
+        {/* Collaborative Whiteboard Routes */}
+        <Route path="/whiteboard">
+          {() => <ProtectedRoute component={WhiteboardPage} />}
+        </Route>
+        
+        <Route path="/whiteboard/:id">
+          {() => <ProtectedRoute component={WhiteboardPage} />}
+        </Route>
+        
         {/* Fallback to 404 */}
         <Route component={NotFound} />
       </Switch>
