@@ -20,6 +20,11 @@ declare global {
   namespace Express {
     interface Request {
       bypassCache?: boolean;
+      subscriptionTier?: string;
+      user?: {
+        userId: number;
+        role?: string;
+      };
     }
   }
 }
@@ -32,7 +37,7 @@ const defaultKeyGenerator = (req: Request): string => {
   const queryParams = new URLSearchParams(req.query as any).toString();
   
   // Include user ID in key if authenticated to avoid serving wrong data
-  const userId = req.user?.id || 'anonymous';
+  const userId = req.user?.userId || 'anonymous';
   
   return `${path}${queryParams ? '?' + queryParams : ''}:user:${userId}`;
 };
