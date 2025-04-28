@@ -177,6 +177,33 @@ class WebSocketService {
       timestamp: new Date().toISOString()
     }));
   }
+  
+  /**
+   * Send a whiteboard event through the WebSocket
+   * @param sessionId The whiteboard session ID
+   * @param event The whiteboard event data
+   */
+  sendWhiteboardEvent(sessionId: string, event: any): void {
+    if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+      console.warn('Cannot send whiteboard event: WebSocket not connected');
+      return;
+    }
+
+    if (!this.userId) {
+      console.warn('Cannot send whiteboard event: Not authenticated');
+      return;
+    }
+
+    this.socket.send(JSON.stringify({
+      type: 'whiteboard_event',
+      sessionId,
+      event: {
+        ...event,
+        userId: this.userId,
+        timestamp: new Date().toISOString()
+      }
+    }));
+  }
 
   /**
    * Add a listener for WebSocket messages
