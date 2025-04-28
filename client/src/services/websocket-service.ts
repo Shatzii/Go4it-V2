@@ -4,7 +4,7 @@ type MessageListener = (message: any) => void;
 type ConnectionListener = () => void;
 
 class WebSocketService {
-  private socket: WebSocket | null = null;
+  socket: WebSocket | null = null; // Changed from private to allow access in components
   private messageListeners: MessageListener[] = [];
   private connectionListeners: ConnectionListener[] = [];
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;

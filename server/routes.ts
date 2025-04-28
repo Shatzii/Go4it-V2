@@ -321,6 +321,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return;
         }
         
+        // Handle whiteboard events
+        if (data.type === 'whiteboard_event') {
+          const { sessionId, event } = data;
+          
+          // Add user info to the event
+          const clientInfo = clients.get(ws);
+          if (!clientInfo) {
+            console.warn('Received whiteboard event from unauthenticated client');
+            return;
+          }
+          
+          // Broadcast to all users in the same whiteboard session
+          for (const [client, info] of clients.entries()) {
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
+              client.send(JSON.stringify({
+                type: 'whiteboard_event',
+                sessionId,
+                event: {
+                  ...event,
+                  userId: clientInfo.userId,
+                  userName: clientInfo.username
+                }
+              }));
+            }
+          }
+          
+          // Handle specific events like join/leave for user presence
+          if (event.type === 'join') {
+            // Notify all clients about the new user
+            for (const [client, info] of clients.entries()) {
+              if (client.readyState === WebSocket.OPEN) {
+                client.send(JSON.stringify({
+                  type: 'whiteboard_user_joined',
+                  sessionId,
+                  userId: clientInfo.userId,
+                  userName: clientInfo.username,
+                  userColor: event.userColor || '#0066CC'
+                }));
+              }
+            }
+            
+            // Send the current user list to the new user
+            const sessionUsers = Array.from(clients.entries())
+              .filter(([_, info]) => info.userId !== clientInfo.userId) // Exclude self
+              .map(([_, info]) => ({
+                id: info.userId,
+                name: info.username,
+                color: '#0066CC' // Default color if not specified
+              }));
+              
+            ws.send(JSON.stringify({
+              type: 'whiteboard_users',
+              sessionId,
+              users: sessionUsers
+            }));
+          }
+          else if (event.type === 'leave') {
+            // Notify all clients about the user leaving
+            for (const [client, info] of clients.entries()) {
+              if (client !== ws && client.readyState === WebSocket.OPEN) {
+                client.send(JSON.stringify({
+                  type: 'whiteboard_user_left',
+                  sessionId,
+                  userId: clientInfo.userId
+                }));
+              }
+            }
+          }
+          
+          return;
+        }
+          
         // Handle other message types as needed
       } catch (error) {
         console.error('Error processing WebSocket message:', error);
