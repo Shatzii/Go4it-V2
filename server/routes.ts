@@ -11,6 +11,7 @@ import multer from "multer";
 import path from "path";
 import { WebSocketServer, WebSocket } from 'ws';
 import { setWebSocketStats, WebSocketStats } from './websocket-stats';
+import { pool } from "./db";
 
 // Extended WebSocket interface with isAlive flag for connection monitoring
 interface ExtendedWebSocket extends WebSocket {
@@ -7309,6 +7310,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register status routes
   app.use('/api', statusRouter);
+
+  // Set up graceful shutdown handling for WebSocket connections
+  // This ensures all connections are properly closed when the server shuts down
+  const handleGracefulShutdown = async () => {
+    console.log('Server shutting down, closing all WebSocket connections...');
+    
+    // Clear heartbeat interval
+    if (heartbeatInterval) {
+      clearInterval(heartbeatInterval);
+    }
+    
+    // Send close message to all clients and terminate connections
+    let closedConnections = 0;
+    wss.clients.forEach((ws: ExtendedWebSocket) => {
+      try {
+        // Try to send a clean close message first if the connection is open
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({
+            type: 'server_shutdown',
+            message: 'Server is shutting down for maintenance. Please reconnect in a few minutes.'
+          }));
+          wsStats.messagesSent++;
+          closedConnections++;
+        }
+        
+        // Then terminate the connection
+        ws.terminate();
+      } catch (err) {
+        console.error('Error closing WebSocket connection:', err);
+        wsStats.errors++;
+      }
+    });
+    
+    console.log(`Closed ${closedConnections} WebSocket connections`);
+    
+    // Give a brief delay for close frames to be sent before continuing shutdown
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Close database connections
+    try {
+      await pool.end();
+      console.log('Database connections closed');
+    } catch (err) {
+      console.error('Error closing database connections:', err);
+    }
+  };
+  
+  // Register shutdown signal handlers
+  process.on('SIGTERM', async () => {
+    console.log('SIGTERM signal received');
+    await handleGracefulShutdown();
+    process.exit(0);
+  });
+  
+  process.on('SIGINT', async () => {
+    console.log('SIGINT signal received');
+    await handleGracefulShutdown();
+    process.exit(0);
+  });
 
   return server;
 }
