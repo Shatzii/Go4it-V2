@@ -28,6 +28,7 @@ import {
   UserCog,
   Dumbbell,
   Sparkles,
+  Clipboard,
   Bot,
   RefreshCw,
   UserCircle2,
@@ -329,6 +330,13 @@ export default function Layout({ children }: LayoutProps) {
                 </motion.li>
                 
                 <motion.li variants={menuItemVariants}>
+                  <Link href="/strategy-board" className={`flex items-center p-2 rounded-lg sidebar-link ${location.startsWith("/strategy-board") ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
+                    <Clipboard className="h-5 w-5 mr-3" />
+                    Strategy Board
+                  </Link>
+                </motion.li>
+                
+                <motion.li variants={menuItemVariants}>
                   <Link href="/combine-tour" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/combine-tour" ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
                     <CalendarCheck className="h-5 w-5 mr-3" />
                     Combine Tour
@@ -381,16 +389,7 @@ export default function Layout({ children }: LayoutProps) {
                   </Link>
                 </motion.li>
                 
-                <motion.li variants={menuItemVariants}>
-                  <Link href="/whiteboard" className={`flex items-center p-2 rounded-lg sidebar-link ${location === "/whiteboard" || location.startsWith("/whiteboard/") ? "active bg-primary text-white" : "hover:bg-primary hover:bg-opacity-30 text-white"}`}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                      <path d="M3 9h18" />
-                      <path d="M9 21V9" />
-                    </svg>
-                    Strategy Board
-                  </Link>
-                </motion.li>
+
 
                 {/* Admin section - only visible for admin users */}
                 {user && user.role === "admin" && (

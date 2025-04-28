@@ -98,10 +98,10 @@ const TextToAnimationPage = lazy(() => import("@/pages/text-to-animation"));
 const AthleticCombineShowcasePage = lazy(() => import("@/pages/athletic-combine-showcase"));
 const AthleteSocialHub = lazy(() => import("@/pages/athlete-social-hub"));
 const SkillDevelopmentTracker = lazy(() => import("@/pages/skill-development-tracker"));
+const StrategyBoardPage = lazy(() => import("@/pages/strategy-board-page"));
 const CombineTour = lazy(() => import("@/pages/combine-tour"));
 const CombineTourDetail = lazy(() => import("@/pages/combine-tour-detail"));
 const CombinePublic = lazy(() => import("@/pages/combine-public"));
-const WhiteboardPage = lazy(() => import("@/pages/whiteboard-page"));
 
 interface ProtectedRouteProps {
   component: React.ComponentType;
@@ -504,13 +504,13 @@ function Router() {
         <Route path="/forbidden" component={Forbidden} />
         <Route path="/unauthorized" component={Unauthorized} />
 
-        {/* Collaborative Whiteboard Routes */}
-        <Route path="/whiteboard">
-          {() => <ProtectedRoute component={WhiteboardPage} />}
+        {/* Strategy Board Routes */}
+        <Route path="/strategy-board">
+          {() => <ProtectedRoute component={StrategyBoardPage} />}
         </Route>
         
-        <Route path="/whiteboard/:id">
-          {() => <ProtectedRoute component={WhiteboardPage} />}
+        <Route path="/strategy-board/:sessionId">
+          {() => <ProtectedRoute component={StrategyBoardPage} />}
         </Route>
         
         {/* Fallback to 404 */}

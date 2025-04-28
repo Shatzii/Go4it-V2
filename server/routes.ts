@@ -332,61 +332,142 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return;
           }
           
+          // Store session data for each whiteboard session
+          if (!global.whiteboardSessions) {
+            global.whiteboardSessions = new Map();
+          }
+          
+          // Initialize session data if it doesn't exist
+          if (!global.whiteboardSessions.has(sessionId)) {
+            global.whiteboardSessions.set(sessionId, {
+              paths: [],
+              textObjects: [],
+              shapeObjects: [],
+              activeUsers: []
+            });
+          }
+          
+          const sessionData = global.whiteboardSessions.get(sessionId);
+          
+          // Process different event types
+          switch (event.type) {
+            case 'draw':
+              if (event.path) {
+                sessionData.paths.push(event.path);
+              }
+              break;
+            
+            case 'text':
+              if (event.textObject) {
+                sessionData.textObjects.push(event.textObject);
+              }
+              break;
+            
+            case 'shape':
+              if (event.shapeObject) {
+                sessionData.shapeObjects.push(event.shapeObject);
+              }
+              break;
+            
+            case 'clear':
+              // Clear all drawing data
+              sessionData.paths = [];
+              sessionData.textObjects = [];
+              sessionData.shapeObjects = [];
+              break;
+            
+            case 'requestState':
+              // Send the current state to the requesting user
+              ws.send(JSON.stringify({
+                type: 'whiteboard',
+                data: {
+                  eventType: 'sessionState',
+                  sessionId,
+                  paths: sessionData.paths,
+                  textObjects: sessionData.textObjects,
+                  shapeObjects: sessionData.shapeObjects,
+                  activeUsers: sessionData.activeUsers
+                }
+              }));
+              return;
+          }
+          
           // Broadcast to all users in the same whiteboard session
           for (const [client, info] of clients.entries()) {
             if (client !== ws && client.readyState === WebSocket.OPEN) {
               client.send(JSON.stringify({
-                type: 'whiteboard_event',
-                sessionId,
-                event: {
-                  ...event,
+                type: 'whiteboard',
+                data: {
+                  eventType: event.type,
+                  sessionId,
+                  path: event.path,
+                  textObject: event.textObject,
+                  shapeObject: event.shapeObject,
                   userId: clientInfo.userId,
-                  userName: clientInfo.username
+                  username: clientInfo.username
                 }
               }));
             }
           }
           
-          // Handle specific events like join/leave for user presence
+          // Handle join/leave events for user presence
           if (event.type === 'join') {
+            // Add user to active users list if not already present
+            if (!sessionData.activeUsers.some(user => user.id === clientInfo.userId)) {
+              sessionData.activeUsers.push({
+                id: clientInfo.userId,
+                name: clientInfo.username,
+                color: event.color || '#0066CC'
+              });
+            }
+            
             // Notify all clients about the new user
             for (const [client, info] of clients.entries()) {
-              if (client.readyState === WebSocket.OPEN) {
+              if (client !== ws && client.readyState === WebSocket.OPEN) {
                 client.send(JSON.stringify({
-                  type: 'whiteboard_user_joined',
-                  sessionId,
-                  userId: clientInfo.userId,
-                  userName: clientInfo.username,
-                  userColor: event.userColor || '#0066CC'
+                  type: 'whiteboard',
+                  data: {
+                    eventType: 'userJoined',
+                    sessionId,
+                    userId: clientInfo.userId,
+                    username: clientInfo.username,
+                    color: event.color || '#0066CC'
+                  }
                 }));
               }
             }
-            
-            // Send the current user list to the new user
-            const sessionUsers = Array.from(clients.entries())
-              .filter(([_, info]) => info.userId !== clientInfo.userId) // Exclude self
-              .map(([_, info]) => ({
-                id: info.userId,
-                name: info.username,
-                color: '#0066CC' // Default color if not specified
-              }));
-              
-            ws.send(JSON.stringify({
-              type: 'whiteboard_users',
-              sessionId,
-              users: sessionUsers
-            }));
           }
           else if (event.type === 'leave') {
+            // Remove user from active users list
+            sessionData.activeUsers = sessionData.activeUsers.filter(
+              user => user.id !== clientInfo.userId
+            );
+            
             // Notify all clients about the user leaving
             for (const [client, info] of clients.entries()) {
               if (client !== ws && client.readyState === WebSocket.OPEN) {
                 client.send(JSON.stringify({
-                  type: 'whiteboard_user_left',
-                  sessionId,
-                  userId: clientInfo.userId
+                  type: 'whiteboard',
+                  data: {
+                    eventType: 'userLeft',
+                    sessionId,
+                    userId: clientInfo.userId,
+                    username: clientInfo.username
+                  }
                 }));
               }
+            }
+            
+            // Clean up session data if no users left
+            if (sessionData.activeUsers.length === 0) {
+              // Keep session data for a while in case someone reconnects
+              setTimeout(() => {
+                if (global.whiteboardSessions.has(sessionId) && 
+                    global.whiteboardSessions.get(sessionId).activeUsers.length === 0) {
+                  global.whiteboardSessions.delete(sessionId);
+                  console.log(`Cleaned up whiteboard session: ${sessionId}`);
+                }
+              }, 3600000); // 1 hour
             }
           }
           
