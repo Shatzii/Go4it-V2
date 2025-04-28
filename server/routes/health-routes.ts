@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { pool } from "../db";
 import os from "os";
+import { getWebSocketStats } from "../websocket-stats";
 
 const router = Router();
 
@@ -29,12 +30,16 @@ router.get("/", async (req: Request, res: Response) => {
     const hrtime = process.hrtime(startTime);
     const responseTimeMs = hrtime[0] * 1000 + hrtime[1] / 1000000;
     
+    // Get WebSocket stats
+    const wsStats = getWebSocketStats();
+    
     res.json({
       status: "healthy",
       timestamp: new Date().toISOString(),
       version: process.env.npm_package_version || "1.0.0",
       database: dbStatus,
       system: systemInfo,
+      websocket: wsStats,
       responseTime: `${responseTimeMs.toFixed(2)}ms`,
     });
   } catch (error) {

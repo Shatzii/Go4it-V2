@@ -10,6 +10,7 @@ import { eq } from "drizzle-orm";
 import multer from "multer";
 import path from "path";
 import { WebSocketServer, WebSocket } from 'ws';
+import { setWebSocketStats, WebSocketStats } from './websocket-stats';
 
 // Extended WebSocket interface with isAlive flag for connection monitoring
 interface ExtendedWebSocket extends WebSocket {
@@ -228,8 +229,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
     errors: 0
   };
   
+  // Share the WebSocket stats with the rest of the application
+  setWebSocketStats(wsStats);
+  
+  // Set up heartbeat interval for detecting and cleaning up broken connections
+  // This is essential for production to avoid resource leaks
+  let heartbeatInterval: NodeJS.Timeout;
+  
+  const startHeartbeat = () => {
+    // Clear any existing interval first
+    if (heartbeatInterval) {
+      clearInterval(heartbeatInterval);
+    }
+    
+    // Create new heartbeat interval
+    heartbeatInterval = setInterval(() => {
+      let deadConnections = 0;
+      
+      wss.clients.forEach((ws: ExtendedWebSocket) => {
+        // If connection hasn't responded to ping, terminate it
+        if (ws.isAlive === false) {
+          // Update stats before removing client
+          const client = clients.get(ws);
+          if (client) {
+            const connectedTimeMinutes = Math.round(
+              (Date.now() - client.connectedAt.getTime()) / 60000
+            );
+            if (!isProd) {
+              console.log(`Terminating inactive connection for user ${client.username} after ${connectedTimeMinutes} minutes`);
+            }
+          }
+          
+          clients.delete(ws);
+          wsStats.activeConnections--;
+          deadConnections++;
+          return ws.terminate();
+        }
+        
+        // Mark as not alive until we get a pong response
+        ws.isAlive = false;
+        // Send ping (client should respond with pong)
+        ws.ping(null, undefined, (err) => {
+          if (err) {
+            if (!isProd) console.log('Ping error:', err.message);
+          }
+        });
+      });
+      
+      if (deadConnections > 0 && !isProd) {
+        console.log(`Cleaned up ${deadConnections} dead WebSocket connections`);
+      }
+      
+      // Log connection stats periodically in production for monitoring
+      if (isProd && wss.clients.size > 0 && wsStats.totalConnections % 100 === 0) {
+        console.log(`WebSocket stats: ${wss.clients.size} active / ${wsStats.totalConnections} total / ${wsStats.peakConnections} peak`);
+      }
+    }, 30000); // Check every 30 seconds
+  };
+  
+  // Start the heartbeat monitoring
+  startHeartbeat();
+  
   // WebSocket connection handler with improved error handling and monitoring
-  wss.on('connection', (ws, req) => {
+  wss.on('connection', (ws: ExtendedWebSocket, req) => {
     wsStats.totalConnections++;
     wsStats.activeConnections++;
     
