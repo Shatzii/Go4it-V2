@@ -4616,6 +4616,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const athleteData = insertFeaturedAthleteSchema.parse(req.body);
       const athlete = await storage.createFeaturedAthlete(athleteData);
+      
+      // Invalidate featured athletes cache
+      invalidateCache('/api/featured-athletes');
+      
       res.status(201).json(athlete);
     } catch (error) {
       console.error("Error creating featured athlete:", error);
@@ -4633,6 +4637,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Featured athlete not found" });
       }
       
+      // Invalidate featured athletes cache
+      invalidateCache('/api/featured-athletes');
+      
       res.json(updatedAthlete);
     } catch (error) {
       console.error("Error updating featured athlete:", error);
@@ -4648,6 +4655,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!success) {
         return res.status(404).json({ message: "Featured athlete not found" });
       }
+      
+      // Invalidate featured athletes cache
+      invalidateCache('/api/featured-athletes');
       
       res.json({ message: "Featured athlete deactivated successfully" });
     } catch (error) {
@@ -5558,6 +5568,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Content block not found" });
       }
       
+      // Invalidate content blocks cache
+      invalidateCache('/api/content-blocks');
+      
       res.json(contentBlock);
     } catch (error) {
       console.error("Error updating content block:", error);
@@ -5573,6 +5586,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!success) {
         return res.status(404).json({ message: "Content block not found" });
       }
+      
+      // Invalidate content blocks cache
+      invalidateCache('/api/content-blocks');
       
       res.json({ success: true });
     } catch (error) {
