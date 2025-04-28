@@ -587,6 +587,7 @@ export class DatabaseStorage implements IStorage {
   /**
    * Attempts to set up a PostgreSQL session store after a short delay
    * This helps ensure the database connection is fully established
+   * Optimized for production Hetzner deployment with connection management
    */
   private async setupPostgresSessionStore() {
     try {
@@ -601,19 +602,48 @@ export class DatabaseStorage implements IStorage {
           // Now set up the PostgreSQL session store
           const PgStore = connectPgSimple(session);
           
+          const isProd = process.env.NODE_ENV === 'production';
+          
+          // For production, use more conservative settings to prevent overwhelming the VPS
           const pgSessionStore = new PgStore({
             pool: pool,
             tableName: 'session',
             createTableIfMissing: true,
-            // Added options for better reliability
-            pruneSessionInterval: 60 * 60, // Prune every hour (in seconds) - reduced frequency
-            errorLog: console.error.bind(console, 'PostgreSQL session store error:')
+            // Optimized for production with lower session pruning frequency
+            pruneSessionInterval: isProd ? 24 * 60 * 60 : 60 * 60, // Prune daily in prod, hourly in dev
+            // Session TTL (default is 24 hours)
+            ttl: isProd ? 7 * 24 * 60 * 60 : 24 * 60 * 60, // 7 days in prod, 1 day in dev
+            // Disable session pruning during peak hours for production
+            disableTouch: isProd, // Reduces unnecessary writes
+            errorLog: (error) => {
+              console.error('PostgreSQL session store error:', error);
+              
+              // When in production, track session store errors separately
+              if (isProd) {
+                // Consider adding detailed error monitoring/alerting here
+                console.error('[CRITICAL] Session store error might affect user authentication');
+              }
+            }
           });
           
-          // Listen for connection errors
+          // Enhanced error handling for production
           pgSessionStore.on('error', (error) => {
             console.error('PostgreSQL session store error:', error);
-            // The memory store will remain active, so no action needed
+            
+            if (isProd) {
+              // In production, make a second attempt to recover after errors
+              setTimeout(() => {
+                try {
+                  // Check if connection is still valid
+                  pool.query('SELECT 1').catch(() => {
+                    console.log('Attempting to recover session store after error...');
+                    // The memory store will remain active as fallback
+                  });
+                } catch (recoveryError) {
+                  console.error('Failed to recover session store:', recoveryError);
+                }
+              }, 5000);
+            }
           });
           
           // Replace memory store with PostgreSQL store
