@@ -149,7 +149,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // GAR Analysis endpoints
-app.post('/api/analysis/gar', authenticateJWT, validateSubscription, async (req, res) => {
+app.post('/api/analysis/gar', authenticateJWT, validateSubscription, clearCache(`/api/recommendations/*`), async (req, res) => {
   try {
     const { data, options } = req.body;
     const { athleteId, videoId } = data;
@@ -210,7 +210,7 @@ app.post('/api/analysis/gar', authenticateJWT, validateSubscription, async (req,
 });
 
 // StarPath endpoints
-app.post('/api/progression/starpath/:userId', authenticateJWT, validateSubscription, async (req, res) => {
+app.post('/api/progression/starpath/:userId', authenticateJWT, validateSubscription, clearCache(`/api/academics/*`), async (req, res) => {
   try {
     const { userId } = req.params;
     const progressData = req.body;
@@ -268,7 +268,7 @@ app.post('/api/progression/starpath/:userId', authenticateJWT, validateSubscript
 });
 
 // Media processing endpoints
-app.post('/api/media/process', authenticateJWT, validateSubscription, upload.single('file'), async (req, res) => {
+app.post('/api/media/process', authenticateJWT, validateSubscription, clearCache(`/api/recommendations/*`), upload.single('file'), async (req, res) => {
   try {
     const { subscriptionTier } = req;
     
@@ -473,7 +473,7 @@ app.get('/api/recommendations/:userId', authenticateJWT, validateSubscription, c
 });
 
 // AI Coaching endpoints
-app.post('/api/coaching/:userId/feedback', authenticateJWT, validateSubscription, async (req, res) => {
+app.post('/api/coaching/:userId/feedback', authenticateJWT, validateSubscription, clearCache(`/api/recommendations/*`), async (req, res) => {
   try {
     const { userId } = req.params;
     const performanceData = req.body;
@@ -554,7 +554,7 @@ app.post('/api/webhooks/register', authenticateJWT, async (req, res) => {
 });
 
 // Access validation endpoint
-app.post('/api/access/validate', authenticateJWT, async (req, res) => {
+app.post('/api/access/validate', authenticateJWT, cache({ ttl: 3600 }), async (req, res) => {
   try {
     const { userId, feature } = req.body;
     
