@@ -83,6 +83,15 @@ const SKIP_CACHE_PATHS = [
   '/api/upload'
 ];
 
+// Cache paths to always include, even for authenticated users
+const WHITELIST_CACHE_PATHS = [
+  '/api/content-blocks/',
+  '/api/featured-athletes',
+  '/api/combine-tour/',
+  '/api/scout-vision',
+  '/api/blog-posts'
+];
+
 // Cache middleware
 export function cacheMiddleware(ttl = 300) {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -98,7 +107,8 @@ export function cacheMiddleware(ttl = 300) {
 
     // Skip cache for authenticated routes that might have user-specific data
     // unless they are explicitly whitelisted
-    if (req.isAuthenticated && req.isAuthenticated() && !req.path.includes('/api/content-blocks/')) {
+    if (req.isAuthenticated && req.isAuthenticated() && 
+        !WHITELIST_CACHE_PATHS.some(path => req.path.includes(path))) {
       return next();
     }
 
