@@ -5532,6 +5532,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       blockData.lastUpdatedBy = user.id;
       
       const contentBlock = await storage.createContentBlock(blockData);
+      
+      // Invalidate content blocks cache
+      invalidateCache('/api/content-blocks');
+      
       res.status(201).json(contentBlock);
     } catch (error) {
       console.error("Error creating content block:", error);
