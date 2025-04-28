@@ -4143,6 +4143,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         slug: eventData.name.toLowerCase().replace(/\s+/g, '-')
       });
       
+      // Invalidate combine tour events cache
+      invalidateCache('/api/combine-tour/events');
+      
       return res.status(201).json(event);
     } catch (error) {
       console.error("Error creating combine tour event:", error);
@@ -4165,6 +4168,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Update event in our database
       const updatedEvent = await storage.updateCombineTourEvent(eventId, eventData);
+      
+      // Invalidate combine tour events cache
+      invalidateCache('/api/combine-tour/events');
       
       return res.json(updatedEvent);
     } catch (error) {
@@ -4251,6 +4257,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.updateCombineTourEvent(eventId, {
           registeredCount: (event.registeredCount || 0) + 1
         });
+        
+        // Invalidate combine tour events cache since registration count changed
+        invalidateCache('/api/combine-tour/events');
       }
       
       return res.status(200).json({
@@ -4270,6 +4279,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Process the webhook data from Active Network
       const result = await activeNetworkService.processWebhook(req.body);
+      
+      // Invalidate combine tour events cache since this webhook might update event details
+      invalidateCache('/api/combine-tour/events');
       
       return res.json(result);
     } catch (error) {
@@ -4360,6 +4372,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
             content
           });
           
+          // Invalidate unread messages count cache for the recipient
+          invalidateCache(`/api/messages/unread-count/${recipientId}`);
+          
           // Find recipient if they're connected
           for (const [clientWs, info] of Array.from(clients.entries())) {
             if (info.userId === recipientId && clientWs.readyState === WebSocket.OPEN) {
@@ -4407,6 +4422,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
             ws.send(JSON.stringify({ type: 'error', message: 'Message not found' }));
             return;
           }
+          
+          // Invalidate unread messages count cache for the recipient
+          invalidateCache(`/api/messages/unread-count/${updatedMessage.recipientId}`);
           
           // Notify sender if connected
           for (const [clientWs, info] of Array.from(clients.entries())) {
@@ -4495,6 +4513,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const postData = insertBlogPostSchema.parse(req.body);
       const post = await storage.createBlogPost(postData);
+      
+      // Invalidate blog posts cache
+      invalidateCache('/api/blog-posts');
+      invalidateCache('/api/blog-posts/featured');
+      
       res.status(201).json(post);
     } catch (error) {
       console.error("Error creating blog post:", error);
@@ -4512,6 +4535,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Blog post not found" });
       }
       
+      // Invalidate blog posts cache
+      invalidateCache('/api/blog-posts');
+      invalidateCache('/api/blog-posts/featured');
+      invalidateCache(`/api/blog-posts/category/${updatedPost.category}`);
+      invalidateCache(`/api/blog-posts/${updatedPost.slug}`);
+      
       res.json(updatedPost);
     } catch (error) {
       console.error("Error updating blog post:", error);
@@ -4522,11 +4551,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/blog-posts/:id", isAdmin, async (req: Request, res: Response) => {
     try {
       const postId = parseInt(req.params.id);
-      const success = await storage.deleteBlogPost(postId);
       
+      // Get the post before deletion to have access to its category and slug for cache invalidation
+      const post = await storage.getBlogPost(postId);
+      if (!post) {
+        return res.status(404).json({ message: "Blog post not found" });
+      }
+      
+      const success = await storage.deleteBlogPost(postId);
       if (!success) {
         return res.status(404).json({ message: "Blog post not found" });
       }
+      
+      // Invalidate blog posts cache
+      invalidateCache('/api/blog-posts');
+      invalidateCache('/api/blog-posts/featured');
+      invalidateCache(`/api/blog-posts/category/${post.category}`);
+      invalidateCache(`/api/blog-posts/${post.slug}`);
       
       res.json({ message: "Blog post deleted successfully" });
     } catch (error) {
@@ -4544,6 +4585,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const success = await createAIBlogPost(adminUserId);
       
       if (success) {
+        // Invalidate blog posts cache since a new post was created
+        invalidateCache('/api/blog-posts');
+        invalidateCache('/api/blog-posts/featured');
+        
         res.status(201).json({ 
           success: true, 
           message: "New AI blog post generated successfully" 
