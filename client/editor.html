@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Go4It Sports Code Editor</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .editor-container {
+      display: flex;
+      height: calc(100vh - 56px);
+    }
+    
+    .file-explorer {
+      width: 250px;
+      height: 100%;
+      overflow: auto;
+      padding: 10px;
+      background-color: #0f172a;
+      color: #e2e8f0;
+      border-right: 1px solid #1e293b;
+    }
+    
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    .editor-area {
+      flex: 1;
+      position: relative;
+      height: 70%;
+    }
+    
+    #monaco-editor {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .output-panel {
+      height: 30%;
+      overflow: auto;
+      padding: 15px;
+      background-color: #0f172a;
+      color: #e2e8f0;
+      border-top: 1px solid #1e293b;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+    
+    .navbar {
+      background-color: #0f172a;
+      color: white;
+      border-bottom: 1px solid #1e293b;
+    }
+    
+    .file-item {
+      padding: 6px 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      border-radius: 4px;
+      margin-bottom: 2px;
+      color: #e2e8f0;
+    }
+    
+    .file-item:hover {
+      background-color: #1e293b;
+    }
+    
+    .folder {
+      font-weight: 600;
+    }
+    
+    .file-selected {
+      background-color: #2563eb;
+      color: white;
+    }
+    
+    .file-icon {
+      margin-right: 8px;
+      width: 16px;
+      text-align: center;
+    }
+    
+    .btn-editor {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 4px;
+      margin-left: 5px;
+    }
+    
+    .btn-editor:hover {
+      background-color: #1e40af;
+      color: white;
+    }
+    
+    .tabs-container {
+      background-color: #1e293b;
+      padding: 0 10px;
+      overflow-x: auto;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      height: 40px;
+    }
+    
+    .tab {
+      display: inline-block;
+      padding: 8px 15px;
+      margin-right: 2px;
+      cursor: pointer;
+      border-radius: 4px 4px 0 0;
+      position: relative;
+      font-size: 13px;
+    }
+    
+    .tab.active {
+      background-color: #2563eb;
+      color: white;
+    }
+    
+    .tab:not(.active) {
+      background-color: #334155;
+      color: #e2e8f0;
+    }
+    
+    .tab:hover:not(.active) {
+      background-color: #475569;
+    }
+    
+    .tab-close {
+      margin-left: 8px;
+      opacity: 0.6;
+    }
+    
+    .tab-close:hover {
+      opacity: 1;
+    }
+    
+    .diagnostics-badge {
+      position: absolute;
+      top: 2px;
+      right: 5px;
+      background-color: #ef4444;
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .path-breadcrumb {
+      background-color: #1e293b;
+      padding: 8px 15px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    
+    .path-segment {
+      cursor: pointer;
+      color: #e2e8f0;
+    }
+    
+    .path-segment:hover {
+      text-decoration: underline;
+    }
+    
+    .path-separator {
+      margin: 0 5px;
+      color: #64748b;
+    }
+    
+    .error-line {
+      background-color: rgba(239, 68, 68, 0.2);
+      position: absolute;
+    }
+    
+    .warning-line {
+      background-color: rgba(245, 158, 11, 0.2);
+      position: absolute;
+    }
+    
+    .info-line {
+      background-color: rgba(59, 130, 246, 0.1);
+      position: absolute;
+    }
+    
+    .diagnostic-item {
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .diagnostic-error {
+      background-color: rgba(239, 68, 68, 0.1);
+      border-left: 3px solid #ef4444;
+    }
+    
+    .diagnostic-warning {
+      background-color: rgba(245, 158, 11, 0.1);
+      border-left: 3px solid #f59e0b;
+    }
+    
+    .diagnostic-info {
+      background-color: rgba(59, 130, 246, 0.1);
+      border-left: 3px solid #3b82f6;
+    }
+    
+    .ai-prompt-container {
+      display: flex;
+      padding: 10px;
+      background-color: #1e293b;
+      border-top: 1px solid #334155;
+    }
+    
+    .ai-prompt-input {
+      flex: 1;
+      background-color: #0f172a;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      border-radius: 4px;
+      padding: 8px 12px;
+      margin-right: 10px;
+    }
+    
+    .ai-response {
+      white-space: pre-wrap;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 14px;
+      padding: 15px;
+      background-color: #1e293b;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+    
+    .action-buttons {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 100;
+    }
+    
+    .loader {
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 3px solid #3b82f6;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Star Coder specific styles */
+    .star-coder-panel {
+      background-color: #1e1e2e;
+      border-top: 1px solid #313244;
+      padding: 15px;
+    }
+
+    .star-coder-response {
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 14px;
+      color: #cdd6f4;
+      white-space: pre-wrap;
+    }
+
+    .suggestion-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      margin-right: 5px;
+      margin-bottom: 5px;
+      border-radius: 12px;
+      font-size: 12px;
+      background: #1e40af;
+      color: white;
+      cursor: pointer;
+    }
+
+    .suggestion-badge:hover {
+      background: #2563eb;
+    }
+
+    .loading-bar {
+      height: 3px;
+      background-color: #2563eb;
+      position: absolute;
+      top: 0;
+      left: 0;
+      animation: loading 2s infinite ease-in-out;
+    }
+
+    @keyframes loading {
+      0% { width: 0%; }
+      50% { width: 50%; }
+      100% { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <i class="fas fa-code"></i> Go4It Sports Code Editor
+      </a>
+      <div class="d-flex">
+        <button id="analyzeBtn" class="btn btn-editor">
+          <i class="fas fa-search"></i> Analyze
+        </button>
+        <button id="fixBtn" class="btn btn-editor">
+          <i class="fas fa-wand-magic-sparkles"></i> Auto Fix
+        </button>
+        <button id="saveBtn" class="btn btn-editor">
+          <i class="fas fa-save"></i> Save
+        </button>
+        <button id="settingsBtn" class="btn btn-editor">
+          <i class="fas fa-cog"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+  
+  <div class="editor-container">
+    <div class="file-explorer">
+      <div class="mb-3">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <h6 class="m-0">Explorer</h6>
+          <button id="refreshFiles" class="btn btn-sm p-1 text-light">
+            <i class="fas fa-sync-alt"></i>
+          </button>
+        </div>
+        <input type="text" id="pathInput" class="form-control form-control-sm bg-dark text-light border-secondary mb-2" 
+               placeholder="Path" value="/var/www/go4itsports">
+      </div>
+      <div id="fileTree"></div>
+    </div>
+    
+    <div class="main-content">
+      <div class="path-breadcrumb" id="pathBreadcrumb">
+        <span class="path-segment">root</span>
+      </div>
+      
+      <div class="tabs-container" id="tabsContainer"></div>
+      
+      <div class="editor-area">
+        <div id="monaco-editor"></div>
+        <div class="action-buttons" id="actionButtons" style="display: none;">
+          <button id="runBtn" class="btn btn-editor">
+            <i class="fas fa-play"></i> Run
+          </button>
+        </div>
+      </div>
+      
+      <div class="output-panel">
+        <div class="d-flex justify-content-between mb-2">
+          <ul class="nav nav-tabs" id="outputTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active bg-transparent text-light border-0" 
+                      id="diagnostics-tab" data-bs-toggle="tab" 
+                      data-bs-target="#diagnostics" type="button">Diagnostics</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link bg-transparent text-light border-0" 
+                      id="starcoder-tab" data-bs-toggle="tab" 
+                      data-bs-target="#starcoder" type="button">StarCoder</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link bg-transparent text-light border-0" 
+                      id="console-tab" data-bs-toggle="tab" 
+                      data-bs-target="#console" type="button">Console</button>
+            </li>
+          </ul>
+          <button id="clearOutputBtn" class="btn btn-sm text-light">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+        
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="diagnostics" role="tabpanel">
+            <div id="diagnosticsOutput"></div>
+          </div>
+          <div class="tab-pane fade" id="starcoder" role="tabpanel">
+            <div class="ai-prompt-container">
+              <input type="text" id="aiPromptInput" class="ai-prompt-input" 
+                     placeholder="Ask Star Coder for help...">
+              <button id="aiPromptBtn" class="btn btn-editor">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+            <div id="starCoderOutput" class="star-coder-panel">
+              <div class="star-coder-response">
+                Welcome to Star Coder! Ask me questions about your code or request suggestions.
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="console" role="tabpanel">
+            <div id="consoleOutput">
+              <div class="text-muted">Console output will appear here...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal for Settings -->
+  <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-dark text-light">
+        <div class="modal-header">
+          <h5 class="modal-title">Editor Settings</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="themeSelect" class="form-label">Theme</label>
+            <select id="themeSelect" class="form-select bg-dark text-light border-secondary">
+              <option value="vs-dark">Dark (Default)</option>
+              <option value="vs">Light</option>
+              <option value="hc-black">High Contrast Dark</option>
+              <option value="hc-light">High Contrast Light</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="fontSizeSelect" class="form-label">Font Size</label>
+            <select id="fontSizeSelect" class="form-select bg-dark text-light border-secondary">
+              <option value="12">12px</option>
+              <option value="14" selected>14px</option>
+              <option value="16">16px</option>
+              <option value="18">18px</option>
+              <option value="20">20px</option>
+            </select>
+          </div>
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="wordWrapCheck" checked>
+            <label class="form-check-label" for="wordWrapCheck">Word Wrap</label>
+          </div>
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="miniMapCheck" checked>
+            <label class="form-check-label" for="miniMapCheck">Show Minimap</label>
+          </div>
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="lineNumbersCheck" checked>
+            <label class="form-check-label" for="lineNumbersCheck">Show Line Numbers</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="saveSettingsBtn">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs/loader.min.js"></script>
+  <script>
+    // Configuration
+    const API_URL = 'http://localhost:8090/api';
+    
+    // State variables
+    let editor;
+    let currentFile = null;
+    let openTabs = [];
+    let fileCache = {};
+    let decorations = {};
+    let currentDiagnostics = [];
+    let isEditorReady = false;
+
+    // Setup Monaco Editor
+    require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs' } });
+    require(['vs/editor/editor.main'], function() {
+      // Create editor
+      editor = monaco.editor.create(document.getElementById('monaco-editor'), {
+        value: '',
+        language: 'javascript',
+        theme: 'vs-dark',
+        automaticLayout: true,
+        minimap: { enabled: true },
+        scrollBeyondLastLine: false,
+        wordWrap: 'on',
+        fontSize: 14,
+        rulers: [80],
+        renderLineHighlight: 'all',
+        bracketPairColorization: { enabled: true },
+        formatOnPaste: true,
+        formatOnType: true,
+        suggestOnTriggerCharacters: true,
+        tabSize: 2
+      });
+      
+      // Editor is ready
+      isEditorReady = true;
+      
+      // Setup completion providers
+      setupCompletionProviders();
+      
+      // Load files
+      loadFiles();
+    });
+
+    // DOM Elements
+    const fileTree = document.getElementById('fileTree');
+    const pathInput = document.getElementById('pathInput');
+    const refreshFilesBtn = document.getElementById('refreshFiles');
+    const tabsContainer = document.getElementById('tabsContainer');
+    const pathBreadcrumb = document.getElementById('pathBreadcrumb');
+    const aiPromptInput = document.getElementById('aiPromptInput');
+    const aiPromptBtn = document.getElementById('aiPromptBtn');
+    const starCoderOutput = document.getElementById('starCoderOutput');
+    const diagnosticsOutput = document.getElementById('diagnosticsOutput');
+    const consoleOutput = document.getElementById('consoleOutput');
+    const clearOutputBtn = document.getElementById('clearOutputBtn');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const fixBtn = document.getElementById('fixBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const runBtn = document.getElementById('runBtn');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+    
+    // Event Listeners
+    refreshFilesBtn.addEventListener('click', loadFiles);
+    pathInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') loadFiles();
+    });
+    clearOutputBtn.addEventListener('click', clearOutput);
+    analyzeBtn.addEventListener('click', analyzeCurrentFile);
+    fixBtn.addEventListener('click', fixCurrentFile);
+    saveBtn.addEventListener('click', saveCurrentFile);
+    runBtn.addEventListener('click', runCurrentFile);
+    settingsBtn.addEventListener('click', openSettings);
+    saveSettingsBtn.addEventListener('click', saveSettings);
+    aiPromptBtn.addEventListener('click', submitAiPrompt);
+    aiPromptInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') submitAiPrompt();
+    });
+    
+    // Functions
+    
+    // Load files from given path
+    async function loadFiles() {
+      const path = pathInput.value;
+      
+      try {
+        showLoader();
+        const response = await fetch(`${API_URL}/files?path=${encodeURIComponent(path)}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          renderFileTree(data.files);
+          updatePathBreadcrumb(path);
+        } else {
+          showError(`Error loading files: ${data.error}`);
+        }
+      } catch (error) {
+        showError(`Error loading files: ${error.message}`);
+      } finally {
+        hideLoader();
+      }
+    }
+    
+    // Render file tree
+    function renderFileTree(files) {
+      fileTree.innerHTML = '';
+      
+      files.forEach(file => {
+        const fileItem = document.createElement('div');
+        fileItem.className = file.type === 'directory' ? 'file-item folder' : 'file-item';
+        
+        const icon = document.createElement('span');
+        icon.className = 'file-icon';
+        
+        if (file.type === 'directory') {
+          icon.innerHTML = '<i class="fas fa-folder"></i>';
+        } else {
+          icon.innerHTML = getFileIcon(file.name);
+        }
+        
+        fileItem.appendChild(icon);
+        fileItem.appendChild(document.createTextNode(file.name));
+        
+        if (file.type === 'directory') {
+          fileItem.addEventListener('click', () => {
+            pathInput.value = file.path;
+            loadFiles();
+          });
+        } else {
+          fileItem.addEventListener('click', () => {
+            openFile(file.path);
+          });
+        }
+        
+        fileTree.appendChild(fileItem);
+      });
+    }
+    
+    // Get appropriate icon for file
+    function getFileIcon(fileName) {
+      const ext = fileName.split('.').pop().toLowerCase();
+      
+      const iconMap = {
+        'js': '<i class="fab fa-js text-warning"></i>',
+        'jsx': '<i class="fab fa-react text-info"></i>',
+        'ts': '<i class="fab fa-js text-primary"></i>',
+        'tsx': '<i class="fab fa-react text-info"></i>',
+        'html': '<i class="fab fa-html5 text-danger"></i>',
+        'css': '<i class="fab fa-css3-alt text-primary"></i>',
+        'json': '<i class="fas fa-brackets-curly text-success"></i>',
+        'md': '<i class="fab fa-markdown text-light"></i>',
+        'py': '<i class="fab fa-python text-primary"></i>',
+        'php': '<i class="fab fa-php text-purple"></i>',
+        'sql': '<i class="fas fa-database text-info"></i>',
+        'sh': '<i class="fas fa-terminal text-light"></i>',
+        'jpg': '<i class="far fa-image text-warning"></i>',
+        'png': '<i class="far fa-image text-warning"></i>',
+        'svg': '<i class="far fa-image text-warning"></i>',
+        'pdf': '<i class="far fa-file-pdf text-danger"></i>',
+        'zip': '<i class="far fa-file-archive text-warning"></i>',
+      };
+      
+      return iconMap[ext] || '<i class="far fa-file text-light"></i>';
+    }
+    
+    // Update path breadcrumb
+    function updatePathBreadcrumb(path) {
+      pathBreadcrumb.innerHTML = '';
+      
+      const segments = path.split('/').filter(Boolean);
+      const segmentPaths = [];
+      
+      // Add root segment
+      const rootSegment = document.createElement('span');
+      rootSegment.className = 'path-segment';
+      rootSegment.textContent = 'root';
+      rootSegment.addEventListener('click', () => {
+        pathInput.value = '/';
+        loadFiles();
+      });
+      pathBreadcrumb.appendChild(rootSegment);
+      
+      // Add remaining segments
+      for (let i = 0; i < segments.length; i++) {
+        const segment = segments[i];
+        segmentPaths.push(segment);
+        
+        // Add separator
+        const separator = document.createElement('span');
+        separator.className = 'path-separator';
+        separator.textContent = ' / ';
+        pathBreadcrumb.appendChild(separator);
+        
+        // Add segment
+        const segmentEl = document.createElement('span');
+        segmentEl.className = 'path-segment';
+        segmentEl.textContent = segment;
+        
+        const segmentPath = '/' + segmentPaths.join('/');
+        segmentEl.addEventListener('click', () => {
+          pathInput.value = segmentPath;
+          loadFiles();
+        });
+        
+        pathBreadcrumb.appendChild(segmentEl);
+      }
+    }
+    
+    // Open file in editor
+    async function openFile(filePath) {
+      try {
+        if (fileCache[filePath]) {
+          openFileFromCache(filePath);
+          return;
+        }
+        
+        showLoader();
+        const response = await fetch(`${API_URL}/file?path=${encodeURIComponent(filePath)}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          openFileFromApi(filePath, data.content);
+        } else {
+          showError(`Error opening file: ${data.error}`);
+        }
+      } catch (error) {
+        showError(`Error opening file: ${error.message}`);
+      } finally {
+        hideLoader();
+      }
+    }
+    
+    // Open file from cache
+    function openFileFromCache(filePath) {
+      const fileData = fileCache[filePath];
+      
+      if (!openTabs.includes(filePath)) {
+        addTab(filePath);
+      }
+      
+      selectTab(filePath);
+      setEditorLanguage(filePath);
+      setEditorContent(fileData.content);
+      currentFile = filePath;
+      
+      // Show run button for certain file types
+      updateRunButton(filePath);
+    }
+    
+    // Open file from API response
+    function openFileFromApi(filePath, content) {
+      // Cache file content
+      fileCache[filePath] = {
+        content,
+        diagnostics: [],
+      };
+      
+      if (!openTabs.includes(filePath)) {
+        addTab(filePath);
+      }
+      
+      selectTab(filePath);
+      setEditorLanguage(filePath);
+      setEditorContent(content);
+      currentFile = filePath;
+      
+      // Show run button for certain file types
+      updateRunButton(filePath);
+    }
+    
+    // Add new tab
+    function addTab(filePath) {
+      openTabs.push(filePath);
+      
+      const tab = document.createElement('div');
+      tab.className = 'tab';
+      tab.setAttribute('data-path', filePath);
+      
+      const fileName = filePath.split('/').pop();
+      const fileIcon = getFileIcon(fileName);
+      
+      tab.innerHTML = `
+        <span class="tab-icon">${fileIcon}</span>
+        <span class="tab-name">${fileName}</span>
+        <span class="tab-close"><i class="fas fa-times"></i></span>
+      `;
+      
+      tab.querySelector('.tab-close').addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeTab(filePath);
+      });
+      
+      tab.addEventListener('click', () => {
+        selectTab(filePath);
+      });
+      
+      tabsContainer.appendChild(tab);
+    }
+    
+    // Select a tab
+    function selectTab(filePath) {
+      const tabs = tabsContainer.querySelectorAll('.tab');
+      tabs.forEach(tab => {
+        if (tab.getAttribute('data-path') === filePath) {
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
+      });
+      
+      currentFile = filePath;
+      setEditorContent(fileCache[filePath].content);
+      setEditorLanguage(filePath);
+      
+      // Apply diagnostics decorations if available
+      if (fileCache[filePath].diagnostics && fileCache[filePath].diagnostics.length > 0) {
+        applyDiagnostics(fileCache[filePath].diagnostics);
+      } else {
+        clearDecorations();
+      }
+      
+      // Update diagnostics panel
+      displayDiagnostics(fileCache[filePath].diagnostics || []);
+      
+      // Update run button
+      updateRunButton(filePath);
+    }
+    
+    // Close a tab
+    function closeTab(filePath) {
+      const index = openTabs.indexOf(filePath);
+      
+      if (index > -1) {
+        openTabs.splice(index, 1);
+        
+        const tabs = tabsContainer.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+          if (tab.getAttribute('data-path') === filePath) {
+            tab.remove();
+          }
+        });
+        
+        if (currentFile === filePath) {
+          if (openTabs.length > 0) {
+            selectTab(openTabs[openTabs.length - 1]);
+          } else {
+            currentFile = null;
+            setEditorContent('');
+          }
+        }
+      }
+    }
+    
+    // Set editor content
+    function setEditorContent(content) {
+      if (isEditorReady && editor) {
+        const model = editor.getModel();
+        if (model && model.getValue() !== content) {
+          editor.setValue(content);
+        }
+      }
+    }
+    
+    // Set editor language
+    function setEditorLanguage(filePath) {
+      if (!isEditorReady || !editor) return;
+      
+      const ext = filePath.split('.').pop().toLowerCase();
+      let language = 'plaintext';
+      
+      const languageMap = {
+        'js': 'javascript',
+        'jsx': 'javascript',
+        'ts': 'typescript',
+        'tsx': 'typescript',
+        'html': 'html',
+        'css': 'css',
+        'json': 'json',
+        'md': 'markdown',
+        'py': 'python',
+        'php': 'php',
+        'rb': 'ruby',
+        'sh': 'shell',
+        'sql': 'sql',
+        'yml': 'yaml',
+        'yaml': 'yaml',
+      };
+      
+      if (languageMap[ext]) {
+        language = languageMap[ext];
+      }
+      
+      const model = editor.getModel();
+      monaco.editor.setModelLanguage(model, language);
+    }
+    
+    // Update the Run button visibility based on file type
+    function updateRunButton(filePath) {
+      const ext = filePath.split('.').pop().toLowerCase();
+      const runnableExtensions = ['js', 'jsx', 'ts', 'tsx', 'py', 'php', 'sh'];
+      
+      if (runnableExtensions.includes(ext)) {
+        document.getElementById('actionButtons').style.display = 'block';
+      } else {
+        document.getElementById('actionButtons').style.display = 'none';
+      }
+    }
+    
+    // Save the current file
+    async function saveCurrentFile() {
+      if (!currentFile || !isEditorReady) return;
+      
+      try {
+        showLoader();
+        const content = editor.getValue();
+        
+        const response = await fetch(`${API_URL}/file`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: currentFile, content }),
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Update cache
+          fileCache[currentFile].content = content;
+          
+          // Update diagnostics if available
+          if (data.diagnostics) {
+            fileCache[currentFile].diagnostics = data.diagnostics;
+            applyDiagnostics(data.diagnostics);
+            displayDiagnostics(data.diagnostics);
+            updateTabDiagnosticsBadge(currentFile, data.diagnostics);
+          }
+          
+          logToConsole('File saved successfully.');
+        } else {
+          showError(`Error saving file: ${data.error}`);
+        }
+      } catch (error) {
+        showError(`Error saving file: ${error.message}`);
+      } finally {
+        hideLoader();
+      }
+    }
+    
+    // Run the current file
+    function runCurrentFile() {
+      if (!currentFile) return;
+      
+      const ext = currentFile.split('.').pop().toLowerCase();
+      let command = '';
+      
+      switch (ext) {
+        case 'js':
+        case 'jsx':
+          command = `node ${currentFile}`;
+          break;
+        case 'ts':
+        case 'tsx':
+          command = `ts-node ${currentFile}`;
+          break;
+        case 'py':
+          command = `python ${currentFile}`;
+          break;
+        case 'php':
+          command = `php ${currentFile}`;
+          break;
+        case 'sh':
+          command = `bash ${currentFile}`;
+          break;
+        default:
+          logToConsole('Cannot run this file type.');
+          return;
+      }
+      
+      logToConsole(`Running: ${command}...`);
+      
+      // In a real implementation, you would send a request to the server to run the command
+      // and stream back the results.
+      logToConsole('Note: Running files is not fully implemented in this demo.');
+    }
+    
+    // Analyze the current file
+    async function analyzeCurrentFile() {
+      if (!currentFile || !isEditorReady) return;
+      
+      try {
+        showLoader();
+        const content = editor.getValue();
+        
+        const response = await fetch(`${API_URL}/analyze`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: currentFile, content }),
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          const analysis = data.analysis;
+          
+          // Update diagnostics
+          fileCache[currentFile].diagnostics = analysis.issues;
+          applyDiagnostics(analysis.issues);
+          displayDiagnostics(analysis.issues);
+          updateTabDiagnosticsBadge(currentFile, analysis.issues);
+          
+          // Display summary
+          logToConsole(`Analysis complete: ${analysis.summary}`);
+          
+          // Show suggestions
+          displaySuggestions(analysis.suggestions);
+        } else {
+          showError(`Error analyzing file: ${data.error}`);
+        }
+      } catch (error) {
+        showError(`Error analyzing file: ${error.message}`);
+      } finally {
+        hideLoader();
+      }
+    }
+    
+    // Fix the current file
+    async function fixCurrentFile() {
+      if (!currentFile || !isEditorReady) return;
+      
+      try {
+        showLoader();
+        const content = editor.getValue();
+        const diagnostics = fileCache[currentFile].diagnostics || [];
+        
+        const response = await fetch(`${API_URL}/fix`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: currentFile, content, errors: diagnostics }),
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          const originalContent = editor.getValue();
+          
+          // Confirm with user
+          if (confirm('Apply AI suggested fixes to this file?')) {
+            setEditorContent(data.fixed);
+            fileCache[currentFile].content = data.fixed;
+            logToConsole('Applied automated fixes.');
+          }
+        } else {
+          showError(`Error fixing file: ${data.error}`);
+        }
+      } catch (error) {
+        showError(`Error fixing file: ${error.message}`);
+      } finally {
+        hideLoader();
+      }
+    }
+    
+    // Submit AI prompt
+    async function submitAiPrompt() {
+      const prompt = aiPromptInput.value.trim();
+      if (!prompt) return;
+      
+      try {
+        showLoader();
+        
+        // Display user prompt
+        const userMessageDiv = document.createElement('div');
+        userMessageDiv.className = 'ai-prompt-container';
+        userMessageDiv.innerHTML = `
+          <div class="ai-prompt-input">
+            <strong>You:</strong> ${prompt}
+          </div>
+        `;
+        starCoderOutput.appendChild(userMessageDiv);
+        
+        // Create response container
+        const responseDiv = document.createElement('div');
+        responseDiv.className = 'star-coder-response';
+        responseDiv.innerHTML = `<div class="loading-bar"></div><p>Generating response...</p>`;
+        starCoderOutput.appendChild(responseDiv);
+        
+        // Scroll to bottom
+        starCoderOutput.scrollTop = starCoderOutput.scrollHeight;
+        
+        // Clear input
+        aiPromptInput.value = '';
+        
+        // Send request to Star Coder
+        // This would normally be a real API call, but we'll simulate it for the demo
+        
+        // Prepare context
+        const context = currentFile ? {
+          path: currentFile,
+          content: editor.getValue(),
+          language: monaco.editor.getModel().getLanguageId()
+        } : null;
+        
+        // Simulate a delay
+        setTimeout(() => {
+          const response = simulateStarCoderResponse(prompt, context);
+          
+          // Update response
+          responseDiv.innerHTML = `<pre>${response}</pre>`;
+          
+          // Scroll to bottom
+          starCoderOutput.scrollTop = starCoderOutput.scrollHeight;
+          
+          hideLoader();
+        }, 1500);
+      } catch (error) {
+        showError(`Error communicating with Star Coder: ${error.message}`);
+        hideLoader();
+      }
+    }
+    
+    // Simulate a response from Star Coder
+    function simulateStarCoderResponse(prompt, context) {
+      // This is a placeholder for an actual API call to Star Coder
+      let response = '';
+      
+      if (prompt.toLowerCase().includes('hello') || prompt.toLowerCase().includes('hi')) {
+        response = 'Hello! I\'m Star Coder, your AI programming assistant. How can I help you with your code today?';
+      } else if (prompt.toLowerCase().includes('help') && context) {
+        if (context.language === 'javascript' || context.language === 'typescript') {
+          response = `I can see you're working with ${context.language}. Here are some suggestions:
+
+1. Try using modern ES6+ features like arrow functions and destructuring.
+2. Consider using async/await for asynchronous operations.
+3. Add type annotations if using TypeScript for better code quality.
+
+Would you like me to help with a specific part of your code?`;
+        } else {
+          response = `I can help you with your ${context.language} code. Is there a specific issue you'd like assistance with?`;
+        }
+      } else if (prompt.toLowerCase().includes('explain') && context) {
+        response = `Here's an explanation of what this code does:
+
+This appears to be ${context.language} code that [simulated explanation of the code functionality]. 
+
+The main purpose seems to be [simulated purpose]. 
+
+Key components include:
+- [simulated component 1]
+- [simulated component 2]
+- [simulated component 3]
+
+Is there a specific part you'd like me to explain in more detail?`;
+      } else {
+        response = `I understand you're asking about "${prompt}". 
+
+As an AI code assistant, I can help with:
+- Code explanations
+- Debugging assistance
+- Best practices
+- Performance optimizations
+- Refactoring suggestions
+
+Could you provide more details about what you're trying to accomplish?`;
+      }
+      
+      return response;
+    }
+    
+    // Apply diagnostics to editor
+    function applyDiagnostics(diagnostics) {
+      if (!isEditorReady || !editor) return;
+      
+      // Clear existing decorations
+      clearDecorations();
+      
+      if (!diagnostics || diagnostics.length === 0) return;
+      
+      // Create new decorations
+      const errorDecorations = [];
+      const warningDecorations = [];
+      const infoDecorations = [];
+      
+      diagnostics.forEach(diagnostic => {
+        const line = diagnostic.line;
+        const severity = diagnostic.severity;
+        
+        const lineDecoration = {
+          range: new monaco.Range(line, 1, line, 1),
+          options: {
+            isWholeLine: true,
+            linesDecorationsClassName: severity === 'error' ? 'error-line' :
+                                       severity === 'warning' ? 'warning-line' : 'info-line',
+            overviewRuler: {
+              color: severity === 'error' ? '#ef4444' :
+                    severity === 'warning' ? '#f59e0b' : '#3b82f6',
+              position: monaco.editor.OverviewRulerLane.Right
+            },
+            minimap: {
+              color: severity === 'error' ? '#ef4444' :
+                    severity === 'warning' ? '#f59e0b' : '#3b82f6',
+              position: monaco.editor.MinimapPosition.Inline
+            }
+          }
+        };
+        
+        if (severity === 'error') {
+          errorDecorations.push(lineDecoration);
+        } else if (severity === 'warning') {
+          warningDecorations.push(lineDecoration);
+        } else {
+          infoDecorations.push(lineDecoration);
+        }
+      });
+      
+      decorations.errors = editor.deltaDecorations(decorations.errors || [], errorDecorations);
+      decorations.warnings = editor.deltaDecorations(decorations.warnings || [], warningDecorations);
+      decorations.infos = editor.deltaDecorations(decorations.infos || [], infoDecorations);
+      
+      currentDiagnostics = diagnostics;
+    }
+    
+    // Clear editor decorations
+    function clearDecorations() {
+      if (!isEditorReady || !editor) return;
+      
+      if (decorations.errors) {
+        editor.deltaDecorations(decorations.errors, []);
+      }
+      
+      if (decorations.warnings) {
+        editor.deltaDecorations(decorations.warnings, []);
+      }
+      
+      if (decorations.infos) {
+        editor.deltaDecorations(decorations.infos, []);
+      }
+      
+      decorations = {};
+    }
+    
+    // Display diagnostics in the panel
+    function displayDiagnostics(diagnostics) {
+      diagnosticsOutput.innerHTML = '';
+      
+      if (!diagnostics || diagnostics.length === 0) {
+        diagnosticsOutput.innerHTML = '<div class="text-muted">No issues found.</div>';
+        return;
+      }
+      
+      diagnostics.forEach(diagnostic => {
+        const diagnosticItem = document.createElement('div');
+        diagnosticItem.className = `diagnostic-item diagnostic-${diagnostic.severity}`;
+        
+        const icon = diagnostic.severity === 'error' ? '<i class="fas fa-times-circle text-danger"></i>' :
+                    diagnostic.severity === 'warning' ? '<i class="fas fa-exclamation-triangle text-warning"></i>' :
+                    '<i class="fas fa-info-circle text-info"></i>';
+        
+        diagnosticItem.innerHTML = `
+          <div class="d-flex align-items-center mb-1">
+            <span class="me-2">${icon}</span>
+            <span class="me-2">Line ${diagnostic.line}:</span>
+            <strong>${diagnostic.message}</strong>
+          </div>
+        `;
+        
+        // Add click handler to jump to the line
+        diagnosticItem.addEventListener('click', () => {
+          editor.revealLineInCenter(diagnostic.line);
+          editor.setPosition({ lineNumber: diagnostic.line, column: 1 });
+          editor.focus();
+        });
+        
+        diagnosticsOutput.appendChild(diagnosticItem);
+      });
+    }
+    
+    // Display suggestions
+    function displaySuggestions(suggestions) {
+      if (!suggestions || suggestions.length === 0) return;
+      
+      const suggestionsSection = document.createElement('div');
+      suggestionsSection.className = 'mt-3';
+      suggestionsSection.innerHTML = '<h6>Suggestions:</h6>';
+      
+      const suggestionsBadges = document.createElement('div');
+      suggestionsBadges.className = 'mt-2';
+      
+      suggestions.forEach(suggestion => {
+        const badge = document.createElement('span');
+        badge.className = 'suggestion-badge';
+        badge.textContent = suggestion.description;
+        badge.title = `Click to apply this suggestion (lines ${suggestion.lineStart}-${suggestion.lineEnd})`;
+        
+        badge.addEventListener('click', () => {
+          if (suggestion.replacement) {
+            // Apply suggestion
+            if (confirm(`Apply this suggestion: ${suggestion.description}?`)) {
+              const range = new monaco.Range(
+                suggestion.lineStart,
+                1,
+                suggestion.lineEnd,
+                1
+              );
+              
+              const edit = {
+                range: range,
+                text: suggestion.replacement,
+                forceMoveMarkers: true
+              };
+              
+              editor.executeEdits('suggestion', [edit]);
+            }
+          } else {
+            // Just reveal the lines
+            editor.revealLinesInCenter(suggestion.lineStart, suggestion.lineEnd);
+          }
+        });
+        
+        suggestionsBadges.appendChild(badge);
+      });
+      
+      suggestionsSection.appendChild(suggestionsBadges);
+      diagnosticsOutput.appendChild(suggestionsSection);
+    }
+    
+    // Update tab diagnostics badge
+    function updateTabDiagnosticsBadge(filePath, diagnostics) {
+      const tabs = tabsContainer.querySelectorAll('.tab');
+      
+      tabs.forEach(tab => {
+        if (tab.getAttribute('data-path') === filePath) {
+          // Remove existing badge
+          const existingBadge = tab.querySelector('.diagnostics-badge');
+          if (existingBadge) {
+            existingBadge.remove();
+          }
+          
+          // Count errors and warnings
+          const errorCount = diagnostics.filter(d => d.severity === 'error').length;
+          const warningCount = diagnostics.filter(d => d.severity === 'warning').length;
+          
+          // Add badge if there are issues
+          if (errorCount > 0 || warningCount > 0) {
+            const badge = document.createElement('span');
+            badge.className = 'diagnostics-badge';
+            badge.textContent = errorCount > 0 ? errorCount : warningCount;
+            tab.appendChild(badge);
+          }
+        }
+      });
+    }
+    
+    // Set up auto-completion providers
+    function setupCompletionProviders() {
+      // This would normally connect to Star Coder, but we'll simulate it for the demo
+      monaco.languages.registerCompletionItemProvider('javascript', {
+        provideCompletionItems: function(model, position) {
+          const word = model.getWordUntilPosition(position);
+          const range = {
+            startLineNumber: position.lineNumber,
+            endLineNumber: position.lineNumber,
+            startColumn: word.startColumn,
+            endColumn: word.endColumn
+          };
+          
+          // Simulated completions
+          const suggestions = [
+            {
+              label: 'console.log',
+              kind: monaco.languages.CompletionItemKind.Method,
+              documentation: 'Log a message to the console',
+              insertText: 'console.log($0)',
+              insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+              range: range
+            },
+            {
+              label: 'setTimeout',
+              kind: monaco.languages.CompletionItemKind.Function,
+              documentation: 'Call a function after a specified delay',
+              insertText: 'setTimeout(() => {\n\t$0\n}, ${1:1000});',
+              insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+              range: range
+            },
+            {
+              label: 'function',
+              kind: monaco.languages.CompletionItemKind.Keyword,
+              documentation: 'Define a new function',
+              insertText: 'function ${1:name}(${2:params}) {\n\t$0\n}',
+              insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+              range: range
+            },
+            {
+              label: 'async function',
+              kind: monaco.languages.CompletionItemKind.Keyword,
+              documentation: 'Define an async function',
+              insertText: 'async function ${1:name}(${2:params}) {\n\t$0\n}',
+              insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+              range: range
+            },
+            {
+              label: 'if statement',
+              kind: monaco.languages.CompletionItemKind.Snippet,
+              documentation: 'Create an if statement',
+              insertText: 'if (${1:condition}) {\n\t$0\n}',
+              insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+              range: range
+            },
+            {
+              label: 'try/catch',
+              kind: monaco.languages.CompletionItemKind.Snippet,
+              documentation: 'Create a try/catch block',
+              insertText: 'try {\n\t$0\n} catch (error) {\n\tconsole.error(error);\n}',
+              insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+              range: range
+            }
+          ];
+          
+          return { suggestions };
+        }
+      });
+    }
+    
+    // Open settings modal
+    function openSettings() {
+      const themeSelect = document.getElementById('themeSelect');
+      const fontSizeSelect = document.getElementById('fontSizeSelect');
+      const wordWrapCheck = document.getElementById('wordWrapCheck');
+      const miniMapCheck = document.getElementById('miniMapCheck');
+      const lineNumbersCheck = document.getElementById('lineNumbersCheck');
+      
+      // Get current settings
+      themeSelect.value = editor.getOption(monaco.editor.EditorOption.theme);
+      fontSizeSelect.value = editor.getOption(monaco.editor.EditorOption.fontSize).toString();
+      wordWrapCheck.checked = editor.getOption(monaco.editor.EditorOption.wordWrap) === 'on';
+      miniMapCheck.checked = editor.getOption(monaco.editor.EditorOption.minimap).enabled;
+      lineNumbersCheck.checked = editor.getOption(monaco.editor.EditorOption.lineNumbers) !== 'off';
+      
+      // Show modal
+      const settingsModal = new bootstrap.Modal(document.getElementById('settingsModal'));
+      settingsModal.show();
+    }
+    
+    // Save settings
+    function saveSettings() {
+      const theme = document.getElementById('themeSelect').value;
+      const fontSize = parseInt(document.getElementById('fontSizeSelect').value);
+      const wordWrap = document.getElementById('wordWrapCheck').checked ? 'on' : 'off';
+      const minimap = document.getElementById('miniMapCheck').checked;
+      const lineNumbers = document.getElementById('lineNumbersCheck').checked ? 'on' : 'off';
+      
+      // Update editor options
+      editor.updateOptions({
+        theme,
+        fontSize,
+        wordWrap,
+        minimap: { enabled: minimap },
+        lineNumbers
+      });
+      
+      // Close modal
+      const settingsModal = bootstrap.Modal.getInstance(document.getElementById('settingsModal'));
+      settingsModal.hide();
+    }
+    
+    // Log a message to the console output
+    function logToConsole(message) {
+      const logItem = document.createElement('div');
+      logItem.innerHTML = `<div class="mb-1">${message}</div>`;
+      consoleOutput.appendChild(logItem);
+      
+      // Scroll to bottom
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    }
+    
+    // Show an error message in the console
+    function showError(message) {
+      const errorItem = document.createElement('div');
+      errorItem.innerHTML = `<div class="text-danger mb-1"><i class="fas fa-times-circle me-1"></i>${message}</div>`;
+      consoleOutput.appendChild(errorItem);
+      
+      // Scroll to bottom
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+      
+      // Switch to console tab
+      document.getElementById('console-tab').click();
+    }
+    
+    // Clear the output panel
+    function clearOutput() {
+      diagnosticsOutput.innerHTML = '';
+      consoleOutput.innerHTML = '';
+      starCoderOutput.innerHTML = '<div class="star-coder-response">Welcome to Star Coder! Ask me questions about your code or request suggestions.</div>';
+    }
+    
+    // Show loader
+    function showLoader() {
+      const loader = document.createElement('div');
+      loader.id = 'appLoader';
+      loader.className = 'loader';
+      loader.style.position = 'fixed';
+      loader.style.top = '50%';
+      loader.style.left = '50%';
+      loader.style.transform = 'translate(-50%, -50%)';
+      loader.style.zIndex = '9999';
+      document.body.appendChild(loader);
+    }
+    
+    // Hide loader
+    function hideLoader() {
+      const loader = document.getElementById('appLoader');
+      if (loader) {
+        loader.remove();
+      }
+    }
+  </script>
+</body>
+</html>
