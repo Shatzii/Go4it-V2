@@ -1,575 +1,603 @@
 /**
- * Direct Integration between Monaco Editor and Star Coder
+ * Go4It Sports Star Coder Integration
  * 
- * This script connects your existing Monaco Editor with your Star Coder instance.
- * Add this to /var/www/html/pharaoh/js/ and include it in monaco-setup.js
+ * This script integrates your existing Star Coder instance with Monaco Editor
+ * and adds visual diagnostics, error handling, and code correction features.
  */
 
-// Configuration - Already set for your environment
-const config = {
-  starCoderApiUrl: 'http://localhost:11434/v1', // Your existing Star Coder endpoint
-  projectRoot: '/var/www/go4itsports',          // Your project root directory
-  modelName: 'codellama:13b'                    // Your Star Coder model
+// Configuration
+const STAR_CODER_API_URL = "http://localhost:11434/v1"; // Change this if your API is at a different URL
+
+// Star Coder API endpoints
+const API_ENDPOINTS = {
+  COMPLETIONS: `${STAR_CODER_API_URL}/chat/completions`,
+  MODELS: `${STAR_CODER_API_URL}/models`
 };
 
-// Function to analyze code with Star Coder
+// Keyboard shortcuts config
+const SHORTCUTS = {
+  ANALYZE: "ctrl+shift+a",
+  FIX: "ctrl+shift+f",
+  QUERY: "ctrl+shift+q"
+};
+
+/**
+ * Analyzes code with Star Coder
+ */
 async function analyzeWithStarCoder(code, language) {
   try {
-    const prompt = `Analyze the following ${language} code and provide feedback on:
-1. Potential bugs or issues
-2. Performance improvements
-3. Code structure and organization
-4. Best practices
+    const prompt = `
+You are an expert code analyzer. Please analyze the following ${language} code and provide:
+1. A brief summary of what the code does
+2. Any potential bugs or issues
+3. Performance optimizations
+4. Security concerns (if any)
+5. Suggestions for improvements
 
-CODE:
+Format your response as JSON with these fields: 
+{
+  "summary": "Brief description",
+  "bugs": ["Issue 1", "Issue 2"],
+  "optimizations": ["Optimization 1", "Optimization 2"],
+  "security": ["Concern 1", "Concern 2"],
+  "improvements": ["Suggestion 1", "Suggestion 2"]
+}
+
+Here's the code:
 \`\`\`${language}
 ${code}
 \`\`\`
+`;
 
-FORMAT RESPONSE AS JSON WITH THE FOLLOWING PROPERTIES:
-- issues: array of objects with line, message, severity (error, warning, info)
-- suggestions: array of objects with description, lineStart, lineEnd, replacement (optional)
-- summary: overall code quality assessment`;
-
-    const response = await fetch(`${config.starCoderApiUrl}/chat/completions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch(API_ENDPOINTS.COMPLETIONS, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
-        model: 'codellama:13b',
+        model: "llama3",
         messages: [
-          { 
-            role: 'system', 
-            content: 'You are an expert code analyzer focusing on detecting issues and suggesting improvements. Provide detailed, actionable feedback in JSON format.' 
-          },
-          { role: 'user', content: prompt }
+          { role: "system", content: "You are a helpful programming assistant that provides code analysis in JSON format." },
+          { role: "user", content: prompt }
         ],
         temperature: 0.2,
-        response_format: { type: 'json_object' }
+        response_format: { type: "json_object" }
       })
     });
 
     const data = await response.json();
-    if (data.choices && data.choices[0].message.content) {
-      try {
-        return JSON.parse(data.choices[0].message.content);
-      } catch (parseError) {
-        console.error('Error parsing analysis response:', parseError);
-        return {
-          issues: [],
-          suggestions: [],
-          summary: "Error parsing analysis results"
-        };
-      }
-    } else {
-      throw new Error('Invalid response from Star Coder');
+    try {
+      const content = data.choices[0].message.content;
+      return JSON.parse(content);
+    } catch (e) {
+      console.error("Failed to parse Star Coder response:", e);
+      return {
+        summary: "Failed to analyze code",
+        bugs: ["Error parsing Star Coder response"],
+        optimizations: [],
+        security: [],
+        improvements: []
+      };
     }
   } catch (error) {
-    console.error('Error analyzing code with Star Coder:', error);
+    console.error("Star Coder analysis error:", error);
     return {
-      issues: [],
-      suggestions: [],
-      summary: `Error: ${error.message}`
+      summary: "Error connecting to Star Coder",
+      bugs: ["Connection to Star Coder failed"],
+      optimizations: [],
+      security: [],
+      improvements: []
     };
   }
 }
 
-// Function to get code completions from Star Coder
+/**
+ * Get completions from Star Coder
+ */
 async function getCompletionsFromStarCoder(code, position, language) {
   try {
-    // Extract the code context before the cursor position
-    const codeBeforeCursor = code.substring(0, position);
-    
-    const prompt = `Complete the following ${language} code. Only return the completion, nothing else.
+    // Get the current line up to the cursor
+    const lines = code.split('\n');
+    let lineIndex = 0;
+    let charIndex = 0;
+    let totalChars = 0;
 
-CODE CONTEXT:
+    for (let i = 0; i < lines.length; i++) {
+      if (totalChars + lines[i].length + 1 > position) {
+        lineIndex = i;
+        charIndex = position - totalChars;
+        break;
+      }
+      totalChars += lines[i].length + 1; // +1 for newline
+    }
+
+    const currentLine = lines[lineIndex].substring(0, charIndex);
+    
+    // Get a few lines before for context (up to 10)
+    const startLine = Math.max(0, lineIndex - 10);
+    const context = lines.slice(startLine, lineIndex + 1).join('\n');
+
+    const prompt = `
+I'm writing ${language} code and need completion suggestions. Here's my current code context:
+
 \`\`\`${language}
-${codeBeforeCursor}
+${context}
 \`\`\`
 
-COMPLETION:`;
+I'm currently at this position (cursor is at the end of this line):
+\`\`\`
+${currentLine}█
+\`\`\`
 
-    const response = await fetch(`${config.starCoderApiUrl}/completions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+Please suggest 3-5 possible completions for what might come next in the code.
+Format your response as a JSON array of string completions like this:
+["completion1", "completion2", "completion3"]
+Completions should be code snippets that would logically follow what I've written.
+`;
+
+    const response = await fetch(API_ENDPOINTS.COMPLETIONS, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
-        model: 'codellama:13b',
-        prompt,
-        max_tokens: 250,
-        temperature: 0.1,
-        stop: ["\n\n", "```"]
+        model: "llama3",
+        messages: [
+          { role: "system", content: "You are a helpful programming assistant that offers code completions." },
+          { role: "user", content: prompt }
+        ],
+        temperature: 0.2,
+        response_format: { type: "json_object" }
       })
     });
 
     const data = await response.json();
-    if (data.choices && data.choices[0].text) {
-      return {
-        completions: [data.choices[0].text]
-      };
-    } else {
-      throw new Error('Invalid completion response from Star Coder');
+    try {
+      const content = data.choices[0].message.content;
+      const completions = JSON.parse(content);
+      return Array.isArray(completions) ? completions : [];
+    } catch (e) {
+      console.error("Failed to parse Star Coder completions:", e);
+      return [];
     }
   } catch (error) {
-    console.error('Error getting completions from Star Coder:', error);
-    return {
-      completions: []
-    };
+    console.error("Star Coder completions error:", error);
+    return [];
   }
 }
 
-// Function to fix code with Star Coder
+/**
+ * Fix code with Star Coder
+ */
 async function fixCodeWithStarCoder(code, errors, language) {
   try {
-    const errorText = errors.map(e => `Line ${e.line}: ${e.message}`).join('\n');
-    
-    const prompt = `Fix the following ${language} code that has these errors:
-${errorText}
+    const errorList = errors.map(err => `Line ${err.lineNumber}: ${err.message}`).join('\n');
 
-CODE:
+    const prompt = `
+I have ${language} code with the following issues:
+${errorList}
+
+Here's the original code:
 \`\`\`${language}
 ${code}
 \`\`\`
 
-Please provide the complete fixed code. Only return the fixed code, no explanations.`;
+Please fix the issues and provide the corrected code. Return ONLY the fixed code, with no explanations or markdown formatting.
+`;
 
-    const response = await fetch(`${config.starCoderApiUrl}/chat/completions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch(API_ENDPOINTS.COMPLETIONS, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
-        model: 'codellama:13b',
+        model: "llama3",
         messages: [
-          { 
-            role: 'system', 
-            content: 'You are a code fixing assistant. Fix code errors precisely without changing functionality. Only return the complete fixed code with no explanations.' 
-          },
-          { role: 'user', content: prompt }
+          { role: "system", content: "You are a helpful programming assistant that fixes code issues." },
+          { role: "user", content: prompt }
         ],
         temperature: 0.2
       })
     });
 
     const data = await response.json();
-    if (data.choices && data.choices[0].message.content) {
-      const content = data.choices[0].message.content;
-      const codeBlockRegex = /```(?:\w+)?\s*\n([\s\S]*?)```/;
-      const match = content.match(codeBlockRegex);
-      
-      if (match && match[1]) {
-        return match[1].trim();
-      } else {
-        return content.trim();
-      }
-    } else {
-      throw new Error('Invalid fix response from Star Coder');
-    }
+    const content = data.choices[0].message.content;
+    
+    // Extract code from markdown code blocks if present
+    const codeBlockMatch = content.match(/```(?:\w+)?\s*([\s\S]+?)```/);
+    return codeBlockMatch ? codeBlockMatch[1].trim() : content.trim();
   } catch (error) {
-    console.error('Error fixing code with Star Coder:', error);
+    console.error("Star Coder fix error:", error);
     return null;
   }
 }
 
-// Function to get AI assistance with a prompt
+/**
+ * Ask Star Coder a question about code
+ */
 async function getAIAssistance(prompt, context) {
   try {
-    let fullPrompt = prompt;
-    
-    if (context) {
-      fullPrompt = `I'm working with this ${context.language} code:
-\`\`\`${context.language}
-${context.code}
-\`\`\`
+    const fullPrompt = context ? 
+      `Code context:\n\`\`\`\n${context}\n\`\`\`\n\nQuestion: ${prompt}` : 
+      prompt;
 
-${prompt}`;
-    }
-    
-    const response = await fetch(`${config.starCoderApiUrl}/chat/completions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch(API_ENDPOINTS.COMPLETIONS, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
-        model: 'codellama:13b',
+        model: "llama3",
         messages: [
           { 
-            role: 'system', 
-            content: 'You are a helpful coding assistant. Provide clear, concise responses with code examples when appropriate.' 
+            role: "system", 
+            content: "You are a helpful programming assistant. Provide clear, concise responses to questions about code."
           },
-          { role: 'user', content: fullPrompt }
+          { role: "user", content: fullPrompt }
         ],
-        temperature: 0.7,
+        temperature: 0.3
       })
     });
 
     const data = await response.json();
-    if (data.choices && data.choices[0].message.content) {
-      return data.choices[0].message.content;
-    } else {
-      throw new Error('Invalid assistance response from Star Coder');
-    }
+    return data.choices[0].message.content;
   } catch (error) {
-    console.error('Error getting AI assistance:', error);
-    return `Error: ${error.message}`;
+    console.error("Star Coder assistance error:", error);
+    return "Error connecting to Star Coder. Please try again.";
   }
 }
 
-// Main integration function to add Star Coder to Monaco Editor
+/**
+ * Integrate Star Coder with Monaco Editor
+ */
 function integrateStarCoderWithMonaco(monaco, editor) {
-  // Add command to analyze current code
-  editor.addAction({
-    id: 'analyze-with-starcoder',
-    label: 'Analyze with Star Coder',
-    keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyA],
-    contextMenuGroupId: 'navigation',
-    run: async (editor) => {
-      const code = editor.getValue();
-      const model = editor.getModel();
-      const language = model.getLanguageId();
-      
-      // Show loading indicator (you can customize this)
-      const loadingDiv = document.createElement('div');
-      loadingDiv.id = 'starcoder-loading';
-      loadingDiv.style.position = 'absolute';
-      loadingDiv.style.top = '10px';
-      loadingDiv.style.right = '10px';
-      loadingDiv.style.padding = '5px 10px';
-      loadingDiv.style.background = '#1e1e1e';
-      loadingDiv.style.color = 'white';
-      loadingDiv.style.borderRadius = '3px';
-      loadingDiv.style.zIndex = '1000';
-      loadingDiv.textContent = 'Analyzing with Star Coder...';
-      document.body.appendChild(loadingDiv);
-      
-      // Run analysis
-      const analysis = await analyzeWithStarCoder(code, language);
-      
-      // Remove loading indicator
-      document.getElementById('starcoder-loading').remove();
-      
-      // Apply diagnostics
-      applyDiagnostics(monaco, editor, analysis.issues);
-      
-      // Show results in a modal or panel (you'll need to implement this)
-      showAnalysisResults(analysis);
-    }
-  });
+  // Create diagnostic collection for editor
+  const diagnosticCollection = monaco.editor.createModelMarkerData;
+  let starCoderStatusElement;
+  let starCoderOutputElement;
   
-  // Add command to fix current code
-  editor.addAction({
-    id: 'fix-with-starcoder',
-    label: 'Fix with Star Coder',
-    keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyF],
-    contextMenuGroupId: 'navigation',
-    run: async (editor) => {
-      const code = editor.getValue();
-      const model = editor.getModel();
-      const language = model.getLanguageId();
-      
-      // Show loading indicator
-      const loadingDiv = document.createElement('div');
-      loadingDiv.id = 'starcoder-loading';
-      loadingDiv.style.position = 'absolute';
-      loadingDiv.style.top = '10px';
-      loadingDiv.style.right = '10px';
-      loadingDiv.style.padding = '5px 10px';
-      loadingDiv.style.background = '#1e1e1e';
-      loadingDiv.style.color = 'white';
-      loadingDiv.style.borderRadius = '3px';
-      loadingDiv.style.zIndex = '1000';
-      loadingDiv.textContent = 'Fixing with Star Coder...';
-      document.body.appendChild(loadingDiv);
-      
-      // Run analysis first to get issues
-      const analysis = await analyzeWithStarCoder(code, language);
-      
-      // Fix code
-      const fixedCode = await fixCodeWithStarCoder(code, analysis.issues, language);
-      
-      // Remove loading indicator
-      document.getElementById('starcoder-loading').remove();
-      
-      // Apply fixed code if available
-      if (fixedCode) {
-        // Ask user before applying
-        if (confirm('Apply Star Coder fixes? This will replace your current code.')) {
-          editor.setValue(fixedCode);
-        }
-      } else {
-        alert('Unable to fix code with Star Coder.');
-      }
+  // Initialize UI elements
+  function initUI() {
+    // Create status bar element if it doesn't exist
+    if (!starCoderStatusElement) {
+      starCoderStatusElement = document.createElement('div');
+      starCoderStatusElement.id = 'star-coder-status';
+      starCoderStatusElement.className = 'monaco-status-bar-item';
+      starCoderStatusElement.style.cssText = 'position: absolute; bottom: 0; right: 5px; padding: 2px 5px; font-size: 12px; background: #007acc; color: white; border-radius: 3px;';
+      starCoderStatusElement.textContent = 'Star Coder: Ready';
+      document.querySelector('.monaco-editor').appendChild(starCoderStatusElement);
     }
-  });
-  
-  // Add command to get AI assistance
-  editor.addAction({
-    id: 'ask-starcoder',
-    label: 'Ask Star Coder',
-    keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyQ],
-    contextMenuGroupId: 'navigation',
-    run: async (editor) => {
-      const code = editor.getValue();
-      const model = editor.getModel();
-      const language = model.getLanguageId();
+    
+    // Create output panel if it doesn't exist
+    if (!starCoderOutputElement) {
+      starCoderOutputElement = document.createElement('div');
+      starCoderOutputElement.id = 'star-coder-output';
+      starCoderOutputElement.className = 'monaco-editor-panel';
+      starCoderOutputElement.style.cssText = 'position: absolute; bottom: 20px; left: 0; right: 0; height: 200px; background: #1e1e1e; color: #d4d4d4; overflow: auto; display: none; z-index: 10; border-top: 1px solid #454545; padding: 10px; font-family: monospace;';
       
-      // Create prompt input dialog
-      const prompt = prompt('Ask Star Coder about your code:');
-      if (!prompt) return;
+      // Add close button
+      const closeButton = document.createElement('button');
+      closeButton.textContent = '×';
+      closeButton.style.cssText = 'position: absolute; top: 5px; right: 5px; background: none; border: none; color: #d4d4d4; font-size: 16px; cursor: pointer;';
+      closeButton.onclick = () => { starCoderOutputElement.style.display = 'none'; };
       
-      // Show loading indicator
-      const loadingDiv = document.createElement('div');
-      loadingDiv.id = 'starcoder-loading';
-      loadingDiv.style.position = 'absolute';
-      loadingDiv.style.top = '10px';
-      loadingDiv.style.right = '10px';
-      loadingDiv.style.padding = '5px 10px';
-      loadingDiv.style.background = '#1e1e1e';
-      loadingDiv.style.color = 'white';
-      loadingDiv.style.borderRadius = '3px';
-      loadingDiv.style.zIndex = '1000';
-      loadingDiv.textContent = 'Getting response from Star Coder...';
-      document.body.appendChild(loadingDiv);
-      
-      // Get assistance
-      const response = await getAIAssistance(prompt, { code, language });
-      
-      // Remove loading indicator
-      document.getElementById('starcoder-loading').remove();
-      
-      // Show response in a modal or panel (you'll need to implement this)
-      showAIResponse(response);
+      starCoderOutputElement.appendChild(closeButton);
+      document.querySelector('.monaco-editor').appendChild(starCoderOutputElement);
     }
-  });
+  }
   
-  // Add completion provider for the editor
-  const disposable = monaco.languages.registerCompletionItemProvider('*', {
-    triggerCharacters: ['.', '(', '{', '[', ',', ' '],
-    provideCompletionItems: async (model, position) => {
-      const code = model.getValue();
-      const cursorOffset = model.getOffsetAt(position);
-      const language = model.getLanguageId();
+  // Show output panel with content
+  function showOutput(content, title = 'Star Coder Analysis') {
+    initUI();
+    
+    starCoderOutputElement.innerHTML = '';
+    
+    // Create header
+    const header = document.createElement('div');
+    header.style.cssText = 'font-weight: bold; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #454545;';
+    header.textContent = title;
+    starCoderOutputElement.appendChild(header);
+    
+    // Create close button
+    const closeButton = document.createElement('button');
+    closeButton.textContent = '×';
+    closeButton.style.cssText = 'position: absolute; top: 5px; right: 5px; background: none; border: none; color: #d4d4d4; font-size: 16px; cursor: pointer;';
+    closeButton.onclick = () => { starCoderOutputElement.style.display = 'none'; };
+    starCoderOutputElement.appendChild(closeButton);
+    
+    // Create content
+    const contentElement = document.createElement('div');
+    contentElement.innerHTML = typeof content === 'string' ? content : JSON.stringify(content, null, 2);
+    starCoderOutputElement.appendChild(contentElement);
+    
+    // Show panel
+    starCoderOutputElement.style.display = 'block';
+  }
+  
+  // Display analysis results
+  function showAnalysisResults(analysis) {
+    const html = `
+      <div style="padding: 10px;">
+        <h3 style="margin-top: 0;">Code Analysis</h3>
+        <div>
+          <h4>Summary</h4>
+          <p>${analysis.summary}</p>
+        </div>
+        ${analysis.bugs.length ? `
+          <div>
+            <h4>Potential Issues</h4>
+            <ul>
+              ${analysis.bugs.map(bug => `<li>${bug}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+        ${analysis.optimizations.length ? `
+          <div>
+            <h4>Optimization Opportunities</h4>
+            <ul>
+              ${analysis.optimizations.map(opt => `<li>${opt}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+        ${analysis.security.length ? `
+          <div>
+            <h4>Security Considerations</h4>
+            <ul>
+              ${analysis.security.map(sec => `<li>${sec}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+        ${analysis.improvements.length ? `
+          <div>
+            <h4>Suggested Improvements</h4>
+            <ul>
+              ${analysis.improvements.map(imp => `<li>${imp}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+      </div>
+    `;
+    
+    showOutput(html, 'Code Analysis Results');
+  }
+  
+  // Apply diagnostics to editor
+  function applyDiagnostics(issues) {
+    // Clear previous diagnostics
+    monaco.editor.setModelMarkers(editor.getModel(), 'star-coder', []);
+    
+    if (!issues || !issues.length) return;
+    
+    // Convert issues to Monaco markers
+    const markers = issues.map(issue => ({
+      severity: monaco.MarkerSeverity.Warning,
+      startLineNumber: issue.lineNumber,
+      startColumn: 1,
+      endLineNumber: issue.lineNumber,
+      endColumn: issue.column || 1000,
+      message: issue.message
+    }));
+    
+    // Set markers
+    monaco.editor.setModelMarkers(editor.getModel(), 'star-coder', markers);
+  }
+  
+  // Format AI response as HTML
+  function formatAIResponse(text) {
+    // Convert markdown-like syntax to HTML
+    let html = text
+      .replace(/```(\w*)\n([\s\S]+?)```/g, '<pre class="code-block"><code>$2</code></pre>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+      .replace(/\n\n/g, '<br/><br/>')
+      .replace(/\n- /g, '<br/>• ');
       
-      // Get completions from Star Coder
-      const completionResponse = await getCompletionsFromStarCoder(
-        code, 
-        cursorOffset,
-        language
-      );
-      
-      if (!completionResponse.completions || completionResponse.completions.length === 0) {
-        return { suggestions: [] };
-      }
-      
-      // Create completion items
-      const suggestions = completionResponse.completions.map(completion => {
+    return html;
+  }
+  
+  // Register keyboard shortcuts
+  
+  // Analyze code
+  editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyA, async () => {
+    const code = editor.getValue();
+    const model = editor.getModel();
+    const uri = model.uri.toString();
+    const language = model.getLanguageId();
+    
+    starCoderStatusElement.textContent = 'Star Coder: Analyzing...';
+    
+    const analysis = await analyzeWithStarCoder(code, language);
+    showAnalysisResults(analysis);
+    
+    // Extract potential issues for diagnostics
+    if (analysis.bugs && analysis.bugs.length) {
+      // Simple extraction of line numbers from issue descriptions
+      const issues = analysis.bugs.map(bug => {
+        const lineMatch = bug.match(/line (\d+)/i);
         return {
-          label: completion.substring(0, 50) + (completion.length > 50 ? '...' : ''),
-          kind: monaco.languages.CompletionItemKind.Snippet,
-          documentation: 'Star Coder suggestion',
-          insertText: completion,
-          range: {
-            startLineNumber: position.lineNumber,
-            startColumn: position.column,
-            endLineNumber: position.lineNumber,
-            endColumn: position.column
-          }
+          lineNumber: lineMatch ? parseInt(lineMatch[1]) : 1,
+          message: bug
         };
       });
       
-      return { suggestions };
+      applyDiagnostics(issues);
     }
+    
+    starCoderStatusElement.textContent = 'Star Coder: Ready';
   });
   
-  // Return dispose function for cleanup
-  return {
-    dispose: () => {
-      disposable.dispose();
+  // Fix code issues
+  editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyF, async () => {
+    const code = editor.getValue();
+    const model = editor.getModel();
+    const uri = model.uri.toString();
+    const language = model.getLanguageId();
+    
+    // Get current markers/errors
+    const markers = monaco.editor.getModelMarkers({
+      resource: model.uri
+    });
+    
+    if (!markers || markers.length === 0) {
+      showOutput("No issues detected in the code. Nothing to fix.", "Star Coder Fix");
+      return;
     }
-  };
-}
-
-// Apply diagnostics to the editor
-function applyDiagnostics(monaco, editor, issues) {
-  // Create markers for Monaco editor
-  const markers = issues.map(issue => {
-    return {
-      severity: issue.severity === 'error' ? monaco.MarkerSeverity.Error :
-                issue.severity === 'warning' ? monaco.MarkerSeverity.Warning :
-                monaco.MarkerSeverity.Info,
-      message: issue.message,
-      startLineNumber: issue.line,
-      startColumn: 1,
-      endLineNumber: issue.line,
-      endColumn: 1000 // End of line
-    };
-  });
-  
-  // Set markers on the model
-  const model = editor.getModel();
-  monaco.editor.setModelMarkers(model, 'starcoder', markers);
-}
-
-// Function to show analysis results (implement this based on your UI)
-function showAnalysisResults(analysis) {
-  // Create a modal or panel to show results
-  const resultsContainer = document.createElement('div');
-  resultsContainer.id = 'starcoder-results';
-  resultsContainer.style.position = 'fixed';
-  resultsContainer.style.bottom = '20px';
-  resultsContainer.style.right = '20px';
-  resultsContainer.style.width = '400px';
-  resultsContainer.style.maxHeight = '300px';
-  resultsContainer.style.overflow = 'auto';
-  resultsContainer.style.background = '#1e1e1e';
-  resultsContainer.style.color = 'white';
-  resultsContainer.style.borderRadius = '5px';
-  resultsContainer.style.padding = '15px';
-  resultsContainer.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
-  resultsContainer.style.zIndex = '1000';
-  
-  // Create header
-  const header = document.createElement('div');
-  header.style.display = 'flex';
-  header.style.justifyContent = 'space-between';
-  header.style.marginBottom = '10px';
-  header.innerHTML = `
-    <h3 style="margin: 0; font-size: 16px;">Star Coder Analysis</h3>
-    <button style="background: none; border: none; color: white; cursor: pointer;">✕</button>
-  `;
-  resultsContainer.appendChild(header);
-  
-  // Close button event
-  header.querySelector('button').addEventListener('click', () => {
-    document.getElementById('starcoder-results').remove();
-  });
-  
-  // Add summary
-  const summary = document.createElement('div');
-  summary.style.marginBottom = '10px';
-  summary.style.padding = '8px';
-  summary.style.background = '#2d2d2d';
-  summary.style.borderRadius = '3px';
-  summary.textContent = analysis.summary;
-  resultsContainer.appendChild(summary);
-  
-  // Add issues
-  if (analysis.issues && analysis.issues.length > 0) {
-    const issuesHeader = document.createElement('h4');
-    issuesHeader.style.margin = '10px 0';
-    issuesHeader.style.fontSize = '14px';
-    issuesHeader.textContent = 'Issues';
-    resultsContainer.appendChild(issuesHeader);
     
-    const issuesList = document.createElement('ul');
-    issuesList.style.padding = '0 0 0 20px';
-    issuesList.style.margin = '0';
+    starCoderStatusElement.textContent = 'Star Coder: Fixing...';
     
-    analysis.issues.forEach(issue => {
-      const issueItem = document.createElement('li');
-      issueItem.style.marginBottom = '5px';
+    const fixedCode = await fixCodeWithStarCoder(code, markers, language);
+    
+    if (fixedCode) {
+      // Create diff to show changes
+      const originalLines = code.split('\n');
+      const fixedLines = fixedCode.split('\n');
       
-      const severityColor = issue.severity === 'error' ? '#ff5555' :
-                           issue.severity === 'warning' ? '#ffaa33' : '#5599ff';
-      
-      issueItem.innerHTML = `
-        <span style="color: ${severityColor};">${issue.severity}: </span>
-        Line ${issue.line} - ${issue.message}
+      const diffHtml = `
+        <div>
+          <h3>Proposed Fixes</h3>
+          <p>Star Coder suggests the following changes:</p>
+          <div style="display: flex;">
+            <div style="flex: 1; margin-right: 10px;">
+              <h4>Original Code</h4>
+              <pre style="max-height: 300px; overflow: auto;">${code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
+            </div>
+            <div style="flex: 1;">
+              <h4>Fixed Code</h4>
+              <pre style="max-height: 300px; overflow: auto;">${fixedCode.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
+            </div>
+          </div>
+          <button id="apply-fixes" style="margin-top: 10px; padding: 5px 10px; background: #0e639c; color: white; border: none; border-radius: 2px; cursor: pointer;">Apply Fixes</button>
+        </div>
       `;
-      issuesList.appendChild(issueItem);
-    });
+      
+      showOutput(diffHtml, "Code Fix Suggestions");
+      
+      // Handle apply fixes button click
+      setTimeout(() => {
+        const applyBtn = document.getElementById('apply-fixes');
+        if (applyBtn) {
+          applyBtn.onclick = () => {
+            editor.setValue(fixedCode);
+            starCoderOutputElement.style.display = 'none';
+          };
+        }
+      }, 100);
+    } else {
+      showOutput("Unable to fix the issues. Please try manually correcting the code.", "Star Coder Fix");
+    }
     
-    resultsContainer.appendChild(issuesList);
-  }
-  
-  // Add suggestions
-  if (analysis.suggestions && analysis.suggestions.length > 0) {
-    const suggestionsHeader = document.createElement('h4');
-    suggestionsHeader.style.margin = '10px 0';
-    suggestionsHeader.style.fontSize = '14px';
-    suggestionsHeader.textContent = 'Suggestions';
-    resultsContainer.appendChild(suggestionsHeader);
-    
-    const suggestionsList = document.createElement('ul');
-    suggestionsList.style.padding = '0 0 0 20px';
-    suggestionsList.style.margin = '0';
-    
-    analysis.suggestions.forEach(suggestion => {
-      const suggestionItem = document.createElement('li');
-      suggestionItem.style.marginBottom = '5px';
-      suggestionItem.textContent = suggestion.description;
-      suggestionsList.appendChild(suggestionItem);
-    });
-    
-    resultsContainer.appendChild(suggestionsList);
-  }
-  
-  document.body.appendChild(resultsContainer);
-}
-
-// Function to show AI response (implement this based on your UI)
-function showAIResponse(response) {
-  // Create a modal or panel to show response
-  const responseContainer = document.createElement('div');
-  responseContainer.id = 'starcoder-response';
-  responseContainer.style.position = 'fixed';
-  responseContainer.style.bottom = '20px';
-  responseContainer.style.right = '20px';
-  responseContainer.style.width = '500px';
-  responseContainer.style.maxHeight = '400px';
-  responseContainer.style.overflow = 'auto';
-  responseContainer.style.background = '#1e1e1e';
-  responseContainer.style.color = 'white';
-  responseContainer.style.borderRadius = '5px';
-  responseContainer.style.padding = '15px';
-  responseContainer.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
-  responseContainer.style.zIndex = '1000';
-  
-  // Create header
-  const header = document.createElement('div');
-  header.style.display = 'flex';
-  header.style.justifyContent = 'space-between';
-  header.style.marginBottom = '10px';
-  header.innerHTML = `
-    <h3 style="margin: 0; font-size: 16px;">Star Coder Response</h3>
-    <button style="background: none; border: none; color: white; cursor: pointer;">✕</button>
-  `;
-  responseContainer.appendChild(header);
-  
-  // Close button event
-  header.querySelector('button').addEventListener('click', () => {
-    document.getElementById('starcoder-response').remove();
+    starCoderStatusElement.textContent = 'Star Coder: Ready';
   });
   
-  // Format the response with syntax highlighting
-  const formattedResponse = response.replace(/```(\w*)([\s\S]*?)```/g, (match, lang, code) => {
-    return `<div style="background: #2d2d2d; padding: 10px; border-radius: 3px; margin: 10px 0; overflow-x: auto;">
-      <pre style="margin: 0;"><code>${code}</code></pre>
-    </div>`;
+  // Ask AI a question about the code
+  editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyQ, async () => {
+    // Create a simple dialog to get the question
+    const dialogHtml = `
+      <div style="padding: 10px;">
+        <h3 style="margin-top: 0;">Ask About Your Code</h3>
+        <p>What would you like to know about this code?</p>
+        <input id="ai-question-input" type="text" style="width: 100%; padding: 5px; margin-bottom: 10px;" placeholder="e.g., How can I improve error handling?">
+        <div style="display: flex; justify-content: flex-end;">
+          <button id="ai-question-cancel" style="margin-right: 10px; padding: 5px 10px; background: #3c3c3c; color: white; border: none; border-radius: 2px; cursor: pointer;">Cancel</button>
+          <button id="ai-question-ask" style="padding: 5px 10px; background: #0e639c; color: white; border: none; border-radius: 2px; cursor: pointer;">Ask</button>
+        </div>
+      </div>
+    `;
+    
+    showOutput(dialogHtml, "Ask Star Coder");
+    
+    // Handle dialog buttons
+    setTimeout(() => {
+      const input = document.getElementById('ai-question-input');
+      const askBtn = document.getElementById('ai-question-ask');
+      const cancelBtn = document.getElementById('ai-question-cancel');
+      
+      if (input) input.focus();
+      
+      if (cancelBtn) {
+        cancelBtn.onclick = () => {
+          starCoderOutputElement.style.display = 'none';
+        };
+      }
+      
+      if (askBtn && input) {
+        // Handle Enter key in input
+        input.onkeydown = (e) => {
+          if (e.key === 'Enter') {
+            askBtn.click();
+          }
+        };
+        
+        askBtn.onclick = async () => {
+          const question = input.value.trim();
+          if (!question) return;
+          
+          starCoderStatusElement.textContent = 'Star Coder: Thinking...';
+          
+          const code = editor.getValue();
+          const response = await getAIAssistance(question, code);
+          
+          const responseHtml = `
+            <div style="padding: 10px;">
+              <h3 style="margin-top: 0;">Response</h3>
+              <div style="background: #252525; padding: 10px; border-radius: 3px;">
+                <p><strong>Q: ${question}</strong></p>
+                <div>${formatAIResponse(response)}</div>
+              </div>
+              <button id="ask-another" style="margin-top: 10px; padding: 5px 10px; background: #0e639c; color: white; border: none; border-radius: 2px; cursor: pointer;">Ask Another Question</button>
+            </div>
+          `;
+          
+          showOutput(responseHtml, "Star Coder Answer");
+          
+          setTimeout(() => {
+            const askAnotherBtn = document.getElementById('ask-another');
+            if (askAnotherBtn) {
+              askAnotherBtn.onclick = () => {
+                editor.trigger('keyboard', 'star-coder-question', null);
+              };
+            }
+          }, 100);
+          
+          starCoderStatusElement.textContent = 'Star Coder: Ready';
+        };
+      }
+    }, 100);
   });
   
-  // Add response content
-  const content = document.createElement('div');
-  content.style.lineHeight = '1.5';
-  content.style.whiteSpace = 'pre-wrap';
-  content.innerHTML = formattedResponse;
-  responseContainer.appendChild(content);
+  // Initialize UI
+  initUI();
   
-  document.body.appendChild(responseContainer);
-}
-
-// Export the integration function
-if (typeof window !== 'undefined') {
-  window.integrateStarCoderWithMonaco = integrateStarCoderWithMonaco;
-}
-
-// Usage example:
-/*
-// Add this to your Monaco Editor initialization
-require(['vs/editor/editor.main'], function() {
-  const editor = monaco.editor.create(document.getElementById('container'), {
-    value: '',
-    language: 'javascript'
+  // Register completions provider
+  monaco.languages.registerCompletionItemProvider('*', {
+    triggerCharacters: ['.', '(', ',', ' '],
+    provideCompletionItems: async (model, position) => {
+      // Only provide completions for typing pauses
+      if (!editor.getModel()) return { suggestions: [] };
+      
+      const code = model.getValue();
+      const offset = model.getOffsetAt(position);
+      
+      // Get completions from Star Coder
+      const suggestions = await getCompletionsFromStarCoder(
+        code,
+        offset,
+        model.getLanguageId()
+      );
+      
+      // Convert to Monaco completion items
+      return {
+        suggestions: suggestions.map((suggestion, index) => ({
+          label: suggestion,
+          kind: monaco.languages.CompletionItemKind.Snippet,
+          insertText: suggestion,
+          sortText: String.fromCharCode(index + 65), // A, B, C, ...
+          detail: 'Star Coder'
+        }))
+      };
+    }
   });
   
-  // Integrate Star Coder
-  const integration = integrateStarCoderWithMonaco(monaco, editor);
-  
-  // To dispose later if needed
-  // integration.dispose();
-});
-*/
+  console.log('Star Coder integration loaded');
+}
