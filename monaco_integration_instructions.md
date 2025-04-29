@@ -1,16 +1,32 @@
-# Connecting Star Coder to Monaco Editor
+# Monaco Editor + Star Coder Integration Instructions
 
-## Integration Steps
+This guide explains how to integrate Star Coder with Monaco Editor for enhanced development capabilities.
 
-1. **Upload the integration file**
-   - Upload `direct_integration.js` to `/var/www/html/pharaoh/js/`
+## Overview
 
-2. **Update monaco-setup.js**
-   - Open `/var/www/html/pharaoh/js/monaco-setup.js`
-   - Add this code at the end of the file (after the editor is initialized):
+The integration provides:
+- AI-powered code analysis
+- Automated error fixing suggestions
+- Code completions as you type
+- In-editor AI assistance for questions about your code
+
+## Prerequisites
+
+1. Star Coder API must be running (typically via Ollama)
+2. Monaco Editor must be already set up in your application
+
+## Setup Instructions
+
+### Step 1: Add the Integration Script
+
+Upload `direct_integration.js` to `/var/www/html/pharaoh/js/`. This script contains all the necessary functions to connect Monaco Editor with Star Coder.
+
+### Step 2: Update Monaco Editor Setup
+
+Locate your Monaco Editor initialization code (typically in `monaco-setup.js`) and add the following code after the editor is initialized:
 
 ```javascript
-// Integrate Star Coder
+// Integrate Star Coder with Monaco Editor
 if (typeof integrateStarCoderWithMonaco === 'function') {
   integrateStarCoderWithMonaco(monaco, editor);
   console.log('Star Coder integration initialized');
@@ -19,61 +35,72 @@ if (typeof integrateStarCoderWithMonaco === 'function') {
 }
 ```
 
-3. **Update your HTML file**
-   - Open the HTML file that includes Monaco Editor (likely `command_panel.html`)
-   - Add this script tag before the Monaco Editor initialization:
+### Step 3: Import the Integration Script
+
+In your HTML file where Monaco Editor is used, add the following script tag:
 
 ```html
 <script src="/pharaoh/js/direct_integration.js"></script>
 ```
 
-## Testing the Integration
+Make sure to add this script tag before Monaco Editor is initialized.
 
-After implementing these changes, you can test the integration with these keyboard shortcuts:
+## Configuration
 
-- `Ctrl+Shift+A` - Analyze code with Star Coder
-- `Ctrl+Shift+F` - Fix code with Star Coder
-- `Ctrl+Shift+Q` - Ask Star Coder a question about your code
+You can customize the integration by modifying the configuration variables at the top of `direct_integration.js`:
 
-You'll also get intelligent code completions as you type.
+```javascript
+// Configuration
+const STAR_CODER_API_URL = "http://localhost:11434/v1"; // Change this if your API is at a different URL
 
-## Integration Components
+// Keyboard shortcuts config
+const SHORTCUTS = {
+  ANALYZE: "ctrl+shift+a",
+  FIX: "ctrl+shift+f",
+  QUERY: "ctrl+shift+q"
+};
+```
 
-The integration adds several components to your Monaco Editor:
+## Usage
 
-1. **Code Analysis**
-   - Scans your code for bugs and improvement opportunities
-   - Displays detailed diagnostic information
-   - Highlights issues directly in the editor
+After integration, these features are available:
 
-2. **Code Fixing**
-   - Automatically generates fixes for identified issues
-   - Lets you review and apply the fixes with a confirmation
+### Code Analysis
+- Press `Ctrl+Shift+A` to analyze the current code
+- A panel will appear with:
+  - Summary of the code
+  - Potential issues
+  - Performance optimization suggestions
+  - Security considerations
+  - Improvement recommendations
 
-3. **AI Assistance**
-   - Ask questions about your code
-   - Get detailed explanations and suggestions
+### Code Fixing
+- Press `Ctrl+Shift+F` to fix issues in the current code
+- The editor will show suggestions for fixing detected problems
 
-4. **Code Completion**
-   - Smart suggestions as you type
-   - Context-aware completions based on your code
+### AI Assistance
+- Press `Ctrl+Shift+Q` to ask a question about your code
+- Type your question and get an immediate response
+
+### Code Completions
+- As you type, the system will suggest code completions
+- These suggestions are context-aware and based on your current code
 
 ## Troubleshooting
 
 If you encounter issues:
 
-1. Check browser console (F12) for any JavaScript errors
-2. Verify Star Coder API is running (`curl http://localhost:11434/v1/models` should return a list of models)
-3. Make sure the paths in `direct_integration.js` match your actual setup
+1. Check browser console for errors (F12 > Console tab)
+2. Verify Star Coder API is running (`curl http://localhost:11434/v1/models`)
+3. Make sure `direct_integration.js` is loaded (should see "Star Coder integration loaded" in the console)
+4. Check that you've added the integration code after Monaco Editor is initialized
 
-## Advanced Configuration
+## Common Errors
 
-If needed, you can adjust settings in the `config` object at the top of `direct_integration.js`:
+- **"Star Coder integration function not found"**: Make sure `direct_integration.js` is loaded before calling `integrateStarCoderWithMonaco`
+- **"Failed to fetch"**: Check if Star Coder API is running at the configured URL
+- **"Cannot read property 'appendChild' of null"**: Check if Monaco Editor is fully initialized before integration
 
-```javascript
-const config = {
-  starCoderApiUrl: 'http://localhost:11434/v1', // Your Star Coder API endpoint
-  projectRoot: '/var/www/go4itsports',          // Your project root directory
-  modelName: 'codellama:13b'                    // Your Star Coder model
-};
-```
+## Customizing the UI
+
+You can customize the appearance of the Star Coder integration panels by modifying the CSS in the `initUI()` function in `direct_integration.js`.
