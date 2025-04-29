@@ -2,13 +2,14 @@
  * Direct Integration between Monaco Editor and Star Coder
  * 
  * This script connects your existing Monaco Editor with your Star Coder instance.
- * Simply add this to your current Monaco Editor setup.
+ * Add this to /var/www/html/pharaoh/js/ and include it in monaco-setup.js
  */
 
-// Configuration - Change these to match your setup
+// Configuration - Already set for your environment
 const config = {
   starCoderApiUrl: 'http://localhost:11434/v1', // Your existing Star Coder endpoint
-  projectRoot: '/var/www/go4itsports'           // Your project root directory
+  projectRoot: '/var/www/go4itsports',          // Your project root directory
+  modelName: 'codellama:13b'                    // Your Star Coder model
 };
 
 // Function to analyze code with Star Coder
