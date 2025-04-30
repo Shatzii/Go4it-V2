@@ -1,48 +1,112 @@
-# Go4It Sports Platform
+# Go4It Sports Clean Deployment Kit
 
-A comprehensive sports performance platform for student athletes aged 12-18, focusing on comprehensive development and personalized insights for neurodivergent individuals.
+This package contains a minimal deployment configuration to get your Go4It Sports platform running on your Hetzner server.
 
-## Setup Instructions
+## What's Included
 
-1. Install dependencies:
-   ```bash
-   npm install
+1. **nginx.conf** - A clean, optimized Nginx configuration for serving the Go4It Sports platform
+2. **deploy.sh** - An automated deployment script that handles setup and configuration
+3. **This README** - Instructions and troubleshooting guidance
+
+## Deployment Instructions
+
+1. **Upload this folder to your server:**
+   ```
+   scp -r clean_build/* root@188.245.209.124:/root/clean_deployment/
    ```
 
-2. Create a `.env` file based on the `.env.template` provided
-
-3. Start the development server:
-   ```bash
-   npm run dev
+2. **SSH into your server:**
+   ```
+   ssh root@188.245.209.124
    ```
 
-## Key Features
-
-- GAR (Growth and Ability Rating) scoring system
-- Personalized Star Path progression system
-- Video analysis and performance tracking
-- Skill Tree progression
-- Achievement and reward system
-- Coach-athlete connection platform
-
-## Project Structure
-
-- `/client` - React.js with TypeScript frontend
-- `/server` - Node.js backend with Express
-- `/shared` - Shared types and utilities
-
-## Database Setup
-
-1. Ensure PostgreSQL is installed and running
-2. Run database migrations:
-   ```bash
-   npm run db:push
+3. **Navigate to the deployment directory:**
+   ```
+   cd /root/clean_deployment/
    ```
 
-## Required API Keys
+4. **Make the deployment script executable:**
+   ```
+   chmod +x deploy.sh
+   ```
 
-- OpenAI API key for AI analysis features
-- Anthropic API key for AI coach features (optional)
-- Twilio API key for SMS notifications (optional)
+5. **Run the deployment script:**
+   ```
+   ./deploy.sh
+   ```
 
-For more detailed documentation, see the complete USER_GUIDE.md in the original repository.
+6. **Verify the site is working:**
+   Visit http://go4itsports.org or http://188.245.209.124 in your browser.
+
+## Troubleshooting
+
+### If Nginx won't start:
+
+1. Check Nginx logs:
+   ```
+   tail -f /var/log/nginx/error.log
+   ```
+
+2. Verify Nginx syntax:
+   ```
+   nginx -t
+   ```
+
+3. Try restarting Nginx manually:
+   ```
+   killall -9 nginx
+   nginx
+   ```
+
+### If "Connection refused" persists:
+
+1. Check if Nginx is running:
+   ```
+   ps aux | grep nginx
+   ```
+
+2. Check if port 80 is open and listening:
+   ```
+   netstat -tulpn | grep :80
+   ```
+
+3. Temporarily disable any firewall to test connectivity:
+   ```
+   ufw disable   # (if using UFW)
+   ```
+   or
+   ```
+   iptables -F  # (if using iptables directly)
+   ```
+
+4. Verify the server can connect to itself:
+   ```
+   curl -v http://localhost
+   ```
+
+## Step 2: Full Deployment
+
+Once the basic setup is working, you can deploy your complete application:
+
+1. Create a zip file of your full application
+2. Upload it to the server
+3. Extract it to the proper directories:
+   - Client files: `/var/www/go4itsports/client/`
+   - Server files: `/var/www/go4itsports/server/`
+4. Install server dependencies:
+   ```
+   cd /var/www/go4itsports/server
+   npm install --production
+   ```
+5. Start the server:
+   ```
+   npm start
+   ```
+   or if using PM2:
+   ```
+   pm2 start index.js --name go4it-api
+   ```
+
+## Support
+
+If you encounter any issues during deployment, please check the logs and make any necessary adjustments to the configuration files.
