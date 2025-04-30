@@ -1,179 +1,199 @@
 #!/bin/bash
 
-# Go4It Sports Deployment Script
-# For deploying to Hetzner server (188.245.209.124)
-# Domain: go4itsports.org
+# Go4It Sports - Complete Deployment Script
+# Usage: ./deploy.sh [package_path]
 
-# Exit on any error
-set -e
+# Set color codes for output
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
-echo "=== Go4It Sports Deployment Script ==="
-echo "Starting deployment process..."
+echo -e "${GREEN}============================================================${NC}"
+echo -e "${GREEN}      Go4It Sports - Complete Deployment Script           ${NC}"
+echo -e "${GREEN}============================================================${NC}"
+echo
 
-# 1. Update system packages
-echo "Updating system packages..."
-apt update && apt upgrade -y
+# Configuration variables
+SERVER_URL="188.245.209.124"
+CLIENT_PATH="/var/www/go4itsports/client"
+SERVER_PATH="/var/www/go4itsports/server"
+SHARED_PATH="/var/www/go4itsports/shared"
+BACKUP_PATH="/var/www/go4itsports/backups"
+TEMP_PATH="/var/www/go4itsports/uploads/temp"
+LOG_FILE="/var/www/go4itsports/deploy.log"
 
-# 2. Install required dependencies
-echo "Installing system dependencies..."
-apt install -y git curl wget build-essential nginx certbot python3-certbot-nginx
+# Get package path from argument or use default
+PACKAGE_PATH=${1:-"${TEMP_PATH}/Go4It_Package.zip"}
 
-# 3. Install Node.js
-echo "Installing Node.js 20.x..."
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-apt install -y nodejs
-npm install -g pm2
+# Ensure log file exists
+touch "${LOG_FILE}"
 
-# 4. Install PostgreSQL
-echo "Installing PostgreSQL..."
-apt install -y postgresql postgresql-contrib
-systemctl start postgresql
-systemctl enable postgresql
-
-# 5. Create PostgreSQL database and user
-echo "Setting up database..."
-DB_USER=${DATABASE_USER:-go4it_user}
-DB_PASSWORD=${DATABASE_PASSWORD:-$(openssl rand -base64 16)}
-
-echo "Using database credentials:"
-echo "Username: $DB_USER"
-echo "Password: $DB_PASSWORD (save this securely!)"
-
-sudo -i -u postgres psql -c "CREATE DATABASE go4it_production;"
-sudo -i -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';"
-sudo -i -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE go4it_production TO $DB_USER;"
-sudo -i -u postgres psql -c "ALTER USER $DB_USER WITH SUPERUSER;"
-
-# 6. Application setup
-echo "Setting up application files..."
-mkdir -p /var/www/go4itsports
-# If this script is run from the deployment package directory
-cp -r . /var/www/go4itsports/ || echo "Error copying files, please manually copy files to /var/www/go4itsports/"
-cd /var/www/go4itsports
-
-# 7. Environment configuration
-echo "Creating environment file..."
-OPENAI_KEY=${OPENAI_API_KEY:-"your_openai_api_key_here"}
-ANTHROPIC_KEY=${ANTHROPIC_API_KEY:-"your_anthropic_api_key_here"}
-
-cat > .env << EOL
-NODE_ENV=production
-PORT=3000
-DATABASE_URL=postgresql://$DB_USER:$DB_PASSWORD@localhost:5432/go4it_production
-OPENAI_API_KEY=$OPENAI_KEY
-ANTHROPIC_API_KEY=$ANTHROPIC_KEY
-EOL
-
-# 8. Install dependencies and build
-echo "Installing dependencies..."
-npm ci --production
-
-# 9. PM2 Configuration
-echo "Configuring PM2..."
-cat > ecosystem.config.js << EOL
-module.exports = {
-  apps: [{
-    name: "go4it",
-    script: "npm",
-    args: "start",
-    env: {
-      NODE_ENV: "production",
-      PORT: "3000"
-    },
-    instances: "max", 
-    exec_mode: "cluster",
-    max_memory_restart: "1G",
-    log_date_format: "YYYY-MM-DD HH:mm:ss"
-  }]
-};
-EOL
-
-# 10. Start application with PM2
-echo "Starting application..."
-pm2 start ecosystem.config.js
-pm2 startup
-pm2 save
-
-# 11. Configure Nginx
-echo "Configuring Nginx..."
-cat > /etc/nginx/sites-available/go4itsports << EOL
-server {
-    listen 80;
-    server_name go4itsports.org www.go4itsports.org;
-
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_cache_bypass \$http_upgrade;
-    }
-
-    # WebSocket support
-    location /ws {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-    }
+# Function to log messages
+log() {
+    local message="$1"
+    local type="${2:-INFO}"
+    local timestamp=$(date +"%Y-%m-%d %H:%M:%S")
+    echo -e "[${timestamp}] [${type}] ${message}" >> "${LOG_FILE}"
+    echo -e "[${timestamp}] [${type}] ${message}"
 }
-EOL
 
-ln -s /etc/nginx/sites-available/go4itsports /etc/nginx/sites-enabled/
-nginx -t && systemctl reload nginx
+# Check if package exists
+if [ ! -f "${PACKAGE_PATH}" ]; then
+    log "Package not found at ${PACKAGE_PATH}" "ERROR"
+    exit 1
+fi
 
-# 12. Set up SSL with Let's Encrypt
-echo "Setting up SSL..."
-certbot --nginx -d go4itsports.org -d www.go4itsports.org --non-interactive --agree-tos --email a.barrett@go4itsports.org
+# Create directories if they don't exist
+log "Creating directories if they don't exist" "INFO"
+mkdir -p "${CLIENT_PATH}"
+mkdir -p "${SERVER_PATH}"
+mkdir -p "${SHARED_PATH}"
+mkdir -p "${BACKUP_PATH}"
+mkdir -p "${TEMP_PATH}"
 
-# 13. Configure firewall
-echo "Configuring firewall..."
-ufw allow ssh
-ufw allow http
-ufw allow https
-ufw --force enable
+# Create backup of current state
+BACKUP_DATE=$(date +"%Y%m%d_%H%M%S")
+BACKUP_FILE="${BACKUP_PATH}/backup_${BACKUP_DATE}.zip"
+log "Creating backup of current state to ${BACKUP_FILE}" "INFO"
 
-# 14. Set up database backups
-echo "Setting up database backups..."
-mkdir -p /var/backups/go4itsports
-cat > /usr/local/bin/backup-go4it.sh << EOL
+# Use zip to create backup
+zip -r "${BACKUP_FILE}" "${CLIENT_PATH}" "${SERVER_PATH}" "${SHARED_PATH}" > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+    log "Backup created successfully" "SUCCESS"
+else
+    log "Failed to create backup" "ERROR"
+    exit 1
+fi
+
+# Create temp extraction directory
+EXTRACT_DIR="${TEMP_PATH}/extract_${BACKUP_DATE}"
+mkdir -p "${EXTRACT_DIR}"
+
+# Extract package
+log "Extracting package to ${EXTRACT_DIR}" "INFO"
+unzip -q "${PACKAGE_PATH}" -d "${EXTRACT_DIR}"
+if [ $? -eq 0 ]; then
+    log "Package extracted successfully" "SUCCESS"
+else
+    log "Failed to extract package" "ERROR"
+    exit 1
+fi
+
+# Find the actual content directory (might be nested)
+CONTENT_DIR="${EXTRACT_DIR}"
+if [ -d "${EXTRACT_DIR}/client" ] && [ -d "${EXTRACT_DIR}/server" ]; then
+    log "Found client and server directories in the root of the package" "INFO"
+else
+    # Look for subdirectories that might contain the actual content
+    for dir in $(find "${EXTRACT_DIR}" -maxdepth 2 -type d); do
+        if [ -d "${dir}/client" ] && [ -d "${dir}/server" ]; then
+            CONTENT_DIR="${dir}"
+            log "Found client and server directories in ${dir}" "INFO"
+            break
+        fi
+    done
+fi
+
+# Check if content directories were found
+if [ ! -d "${CONTENT_DIR}/client" ] || [ ! -d "${CONTENT_DIR}/server" ]; then
+    log "Could not find client and server directories in the package" "ERROR"
+    exit 1
+fi
+
+# Deploy client files
+log "Deploying client files to ${CLIENT_PATH}" "INFO"
+rm -rf "${CLIENT_PATH:?}/"*  # Clean target directory
+cp -r "${CONTENT_DIR}/client/"* "${CLIENT_PATH}/"
+if [ $? -eq 0 ]; then
+    log "Client files deployed successfully" "SUCCESS"
+else
+    log "Failed to deploy client files" "ERROR"
+    # Don't exit, try to deploy other components
+fi
+
+# Deploy server files
+log "Deploying server files to ${SERVER_PATH}" "INFO"
+rm -rf "${SERVER_PATH:?}/"*  # Clean target directory
+cp -r "${CONTENT_DIR}/server/"* "${SERVER_PATH}/"
+if [ $? -eq 0 ]; then
+    log "Server files deployed successfully" "SUCCESS"
+else
+    log "Failed to deploy server files" "ERROR"
+    # Don't exit, try to deploy other components
+fi
+
+# Deploy shared files if they exist
+if [ -d "${CONTENT_DIR}/shared" ]; then
+    log "Deploying shared files to ${SHARED_PATH}" "INFO"
+    rm -rf "${SHARED_PATH:?}/"*  # Clean target directory
+    cp -r "${CONTENT_DIR}/shared/"* "${SHARED_PATH}/"
+    if [ $? -eq 0 ]; then
+        log "Shared files deployed successfully" "SUCCESS"
+    else
+        log "Failed to deploy shared files" "ERROR"
+        # Don't exit, continue with deployment
+    fi
+else
+    log "No shared directory found in the package" "WARNING"
+fi
+
+# Set permissions
+log "Setting file permissions" "INFO"
+find "${CLIENT_PATH}" -type d -exec chmod 755 {} \; 2>/dev/null
+find "${CLIENT_PATH}" -type f -exec chmod 644 {} \; 2>/dev/null
+find "${SERVER_PATH}" -type d -exec chmod 755 {} \; 2>/dev/null
+find "${SERVER_PATH}" -type f -exec chmod 644 {} \; 2>/dev/null
+find "${SERVER_PATH}" -name "*.sh" -exec chmod 755 {} \; 2>/dev/null
+find "${SHARED_PATH}" -type d -exec chmod 755 {} \; 2>/dev/null
+find "${SHARED_PATH}" -type f -exec chmod 644 {} \; 2>/dev/null
+
+# Run verify_structure.sh if it exists in the server directory
+if [ -f "${SERVER_PATH}/verify_structure.sh" ]; then
+    log "Running structure verification script" "INFO"
+    chmod +x "${SERVER_PATH}/verify_structure.sh"
+    "${SERVER_PATH}/verify_structure.sh"
+    if [ $? -eq 0 ]; then
+        log "Structure verification completed successfully" "SUCCESS"
+    else
+        log "Structure verification had issues, check logs for details" "WARNING"
+    fi
+else
+    log "No structure verification script found" "INFO"
+fi
+
+# Clean up
+log "Cleaning up temporary files" "INFO"
+rm -rf "${EXTRACT_DIR}"
+
+# Create a restore script that can revert to this backup
+cat > "${BACKUP_PATH}/restore_${BACKUP_DATE}.sh" << EOF
 #!/bin/bash
-DATE=\$(date +%Y-%m-%d_%H-%M-%S)
-BACKUP_DIR="/var/backups/go4itsports"
-PGPASSWORD="$DB_PASSWORD" pg_dump -U $DB_USER -h localhost go4it_production > \$BACKUP_DIR/go4it_\$DATE.sql
-find \$BACKUP_DIR -type f -name "go4it_*.sql" -mtime +7 -delete
-EOL
+# Restore script for backup created on ${BACKUP_DATE}
+echo "Restoring from backup ${BACKUP_FILE}..."
+unzip -o "${BACKUP_FILE}" -d /
+echo "Restoration complete!"
+EOF
+chmod +x "${BACKUP_PATH}/restore_${BACKUP_DATE}.sh"
 
-chmod +x /usr/local/bin/backup-go4it.sh
-(crontab -l 2>/dev/null; echo "0 2 * * * /usr/local/bin/backup-go4it.sh") | crontab -
+# Create/Update the restore_last.sh script to point to the latest backup
+cat > "/var/www/go4itsports/restore_last.sh" << EOF
+#!/bin/bash
+# This script restores the most recent backup
+"${BACKUP_PATH}/restore_${BACKUP_DATE}.sh"
+EOF
+chmod +x "/var/www/go4itsports/restore_last.sh"
 
-# 15. Create API key locker
-echo "Creating API key locker..."
-mkdir -p /var/www/go4itsports/api_locker
-chmod 700 /var/www/go4itsports/api_locker
-
-cat > /var/www/go4itsports/api_locker/api_keys.json << EOL
-{
-  "openai": "$OPENAI_KEY",
-  "anthropic": "$ANTHROPIC_KEY",
-  "database": {
-    "user": "$DB_USER",
-    "password": "$DB_PASSWORD"
-  }
-}
-EOL
-
-chmod 600 /var/www/go4itsports/api_locker/api_keys.json
-
-echo "===================================="
-echo "Deployment complete!"
-echo "Visit https://go4itsports.org to verify."
-echo "Database credentials are saved in /var/www/go4itsports/api_locker/api_keys.json"
-echo "===================================="
+echo -e "${GREEN}============================================================${NC}"
+echo -e "${GREEN}      Go4It Sports Deployment Completed Successfully!      ${NC}"
+echo -e "${GREEN}============================================================${NC}"
+echo
+echo -e "${YELLOW}Backup created:${NC} ${BACKUP_FILE}"
+echo -e "${YELLOW}To restore this backup:${NC} ${BACKUP_PATH}/restore_${BACKUP_DATE}.sh"
+echo -e "${YELLOW}To restore the latest backup:${NC} /var/www/go4itsports/restore_last.sh"
+echo
+echo -e "${BLUE}You can now access the Go4It Sports platform at:${NC}"
+echo -e "${GREEN}http://${SERVER_URL}/${NC}"
+echo
+log "Deployment completed successfully" "SUCCESS"
