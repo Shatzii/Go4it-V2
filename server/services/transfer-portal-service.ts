@@ -1,10 +1,10 @@
 import { db } from "../db";
 import { eq, and, desc, sql } from "drizzle-orm";
-import OpenAI from "openai";
 import * as schema from "@shared/schema";
+import { TransferPortalAIService } from "../engine/services/transfer-portal-ai-service";
 
-// Ensure we have an OpenAI API key
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Initialize the AI service
+const transferPortalAIService = new TransferPortalAIService();
 
 interface TransferPortalMonitorOptions {
   sport?: string;
@@ -324,7 +324,7 @@ class TransferPortalService {
   }
 
   /**
-   * Use OpenAI to generate the best fit schools for a player in the portal
+   * Use AI Engine to generate the best fit schools for a player in the portal
    */
   private async generateBestFitSchools(playerId: number) {
     try {
@@ -345,6 +345,7 @@ class TransferPortalService {
 
       // Prepare data for AI analysis
       const playerData = {
+        id: player.id,
         name: player.playerName,
         previousSchool: player.previousSchool,
         position: player.position,
@@ -352,6 +353,9 @@ class TransferPortalService {
         weight: player.weight,
         starRating: player.starRating,
         eligibilityRemaining: player.eligibilityRemaining,
+        hometown: player.hometown,
+        highSchool: player.highSchool,
+        sport: player.sport
       };
 
       const schoolData = schoolRosters.map(s => ({
@@ -362,36 +366,13 @@ class TransferPortalService {
         positionNeeds: s.positionNeeds,
       }));
 
-      // Call OpenAI to analyze the best fit
-      // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: `You are an expert NCAA recruiting analyst. Based on the player data and school rosters provided, determine the top 5 best fitting schools for this transfer portal player. Focus on position needs, playing time opportunity, scheme fit, and geographic considerations. Return your analysis in JSON format with the following structure:
-            {
-              "bestFitSchools": ["School1", "School2", "School3", "School4", "School5"],
-              "fitReasons": {
-                "School1": "Detailed explanation of why this school is a good fit",
-                "School2": "Detailed explanation of why this school is a good fit",
-                ...
-              },
-              "transferRating": 85 // A number from 1-100 indicating the impact this player could have on their new team
-            }`
-          },
-          {
-            role: "user",
-            content: JSON.stringify({
-              player: playerData,
-              schools: schoolData,
-            })
-          }
-        ],
-        response_format: { type: "json_object" }
-      });
-
-      const result = JSON.parse(response.choices[0].message.content);
+      // Use the AI Engine service to generate best fit schools
+      const result = await transferPortalAIService.generateBestFitSchools(playerData, schoolData);
+      
+      if (!result) {
+        console.warn(`No results generated for player ${playerId}`);
+        return null;
+      }
 
       // Update the player entry with the AI recommendations
       await db
