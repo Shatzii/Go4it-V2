@@ -9,6 +9,11 @@ import { withRetry, logAIEngineActivity, aiEngineClient } from '../utils';
 import { AI_ENGINE_CONFIG } from '../config';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Get directory path in ESM context
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Example GAR score structure
 export interface GARScoreArea {

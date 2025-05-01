@@ -1,4 +1,5 @@
 import type { Express, Request, Response } from "express";
+import { Router } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { fileUpload, imageUpload, videoUpload, getUploadedImages, deleteImage, moveUploadedFile } from "./file-upload";
@@ -54,6 +55,7 @@ import authPasswordRoutes from './routes/auth-password-routes';
 import onboardingRoutes from './routes/onboarding-routes';
 import healthRoutes from './routes/health-routes';
 import { registerGarRoutes } from './routes/gar-routes';
+import { registerAIEngineRoutes } from './routes/ai-engine-routes';
 import uploaderRouter from './uploader';
 import agentMessageRouter from './agent-message';
 import statusRouter from './status';
@@ -7301,6 +7303,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register GAR (Growth and Ability Rating) routes
   registerGarRoutes(app);
+  
+  // Register AI Engine routes
+  const aiEngineRouter = Router();
+  registerAIEngineRoutes(aiEngineRouter);
+  app.use('/api/ai-engine', isAuthenticatedMiddleware, aiEngineRouter);
   
   // Register admin uploader routes
   app.use('/api/admin/upload', uploaderRouter);
