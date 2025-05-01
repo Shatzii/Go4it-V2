@@ -22,6 +22,7 @@ import { HighlightService } from './services/highlight-service';
 import { RankingService } from './services/ranking-service';
 import { StarPathService } from './services/starpath-service';
 import { TransferPortalAIService } from './services/transfer-portal-ai-service';
+import { BlogContentService } from './services/blog-content-service';
 
 // Export the main engine services
 export {
@@ -30,7 +31,8 @@ export {
   HighlightService,
   RankingService,
   StarPathService,
-  TransferPortalAIService
+  TransferPortalAIService,
+  BlogContentService
 };
 
 // Export configuration and common utilities

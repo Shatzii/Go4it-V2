@@ -1,4 +1,3 @@
-import { OpenAI } from 'openai';
 import { db } from './db';
 import { blogPosts, insertBlogPostSchema, users } from '@shared/schema';
 import { z } from 'zod';
@@ -6,21 +5,11 @@ import { eq } from 'drizzle-orm';
 import { generateSlug } from './utils';
 import cron from 'node-cron';
 import axios from 'axios';
-import { openAIService } from './services/openai-service';
 import { imageSearchService } from './services/image-search-service';
+import { BlogContentService } from './engine/services/blog-content-service';
 
-// Function to get OpenAI client
-async function getOpenAIClient(): Promise<OpenAI> {
-  try {
-    return await openAIService.getClient();
-  } catch (error) {
-    console.error("Error getting OpenAI client:", error);
-    // Fallback to environment variable
-    return new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY || '',
-    });
-  }
-}
+// Initialize the Blog Content AI Service
+const blogContentService = new BlogContentService();
 
 // Social media and sports news API configuration
 // These will be set from the apiKeys table or environment variables
@@ -369,7 +358,7 @@ async function getTrendingSportsTopics(): Promise<string[]> {
 }
 
 /**
- * Generate a blog post using OpenAI
+ * Generate a blog post using AI Engine
  */
 export async function generateBlogPost(): Promise<GeneratedBlogContent | null> {
   try {
@@ -388,69 +377,9 @@ export async function generateBlogPost(): Promise<GeneratedBlogContent | null> {
       trendingTopics: trendingTopics.length > 0 ? trendingTopics : undefined
     };
 
-    // Define the base prompt
-    let userPrompt = `Write a blog post about "${blogRequest.title}" for the category "${blogRequest.category}".`;
-    
-    // Add trending topics if available
-    if (blogRequest.trendingTopics && blogRequest.trendingTopics.length > 0) {
-      userPrompt += `\n\nIncorporate some of these current trending topics if relevant:
-      ${blogRequest.trendingTopics.slice(0, 5).map(topic => `- ${topic}`).join('\n')}`;
-    }
-    
-    // Complete the prompt with formatting instructions
-    userPrompt += `\n\nFormat your response as a JSON object with the following structure:
-                    {
-                      "title": "An engaging title for the blog post",
-                      "content": "Full blog post content with proper formatting (at least 500 words)",
-                      "summary": "A brief summary (about 50 words)",
-                      "tags": ["tag1", "tag2", "tag3"]
-                    }
-                    Make the content informative, engaging, and professional.`;
-    
-    // Get the OpenAI client from our service
-    const openai = await getOpenAIClient();
-    
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "system",
-          content: `You are an expert sports journalist specializing in youth and collegiate athletics. 
-                    Write high-quality, informative content for young athletes, coaches, and parents.
-                    Focus on providing actionable advice, insights, and analysis.
-                    Stay current with the latest trends and developments in sports.
-                    Your articles should feel relevant and timely.`
-        },
-        {
-          role: "user",
-          content: userPrompt
-        }
-      ],
-      temperature: 0.7,
-      max_tokens: 2000,
-    });
-
-    const responseContent = completion.choices[0]?.message?.content || '';
-    
-    try {
-      // Extract the JSON object from the response
-      const jsonMatch = responseContent.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const jsonContent = JSON.parse(jsonMatch[0]);
-        return {
-          title: jsonContent.title,
-          content: jsonContent.content,
-          summary: jsonContent.summary,
-          category: blogRequest.category,
-          tags: jsonContent.tags
-        };
-      }
-    } catch (error) {
-      console.error('Error parsing AI response:', error);
-      console.log('Raw response:', responseContent);
-    }
-
-    return null;
+    // Use the blog content service to generate the blog post
+    const blogContent = await blogContentService.generateBlogPost(blogRequest);
+    return blogContent;
   } catch (error) {
     console.error('Error generating blog post:', error);
     return null;
@@ -462,15 +391,7 @@ export async function generateBlogPost(): Promise<GeneratedBlogContent | null> {
  */
 export async function createAIBlogPost(authorId: number): Promise<boolean> {
   try {
-    // Check if OpenAI API key is available
-    try {
-      await openAIService.hasValidApiKey();
-    } catch (error) {
-      console.error('OpenAI API key not available:', error);
-      return false;
-    }
-
-    // Generate blog content
+    // Generate blog content using AI Engine
     const blogContent = await generateBlogPost();
     if (!blogContent) {
       console.error('Failed to generate blog content');
