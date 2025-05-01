@@ -20,6 +20,7 @@ const AI_ENGINE_ENDPOINTS = {
   highlights: '/api/highlights',
   rankings: '/api/rankings',
   starPath: '/api/starpath',
+  transferPortal: '/api/transfer-portal',
 };
 
 // Model versions for each service
@@ -29,6 +30,7 @@ const AI_ENGINE_MODELS = {
   highlights: process.env.AI_ENGINE_HIGHLIGHTS_MODEL || 'v1.0.0',
   rankings: process.env.AI_ENGINE_RANKINGS_MODEL || 'v1.0.0',
   starPath: process.env.AI_ENGINE_STARPATH_MODEL || 'v1.0.0',
+  transferPortal: process.env.AI_ENGINE_TRANSFER_PORTAL_MODEL || 'v1.0.0',
 };
 
 // Configuration for AI Engine API

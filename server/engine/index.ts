@@ -9,6 +9,8 @@
  * - GAR (Growth and Ability Rating) scoring
  * - Highlight reel generation
  * - Player comparisons
+ * - Transfer portal analysis
+ * - StarPath progression
  * 
  * This integration is designed to work with models hosted on HuggingFace
  * and served via a FastAPI server on Hetzner.
@@ -19,6 +21,7 @@ import { GARScoreService } from './services/gar-score-service';
 import { HighlightService } from './services/highlight-service';
 import { RankingService } from './services/ranking-service';
 import { StarPathService } from './services/starpath-service';
+import { TransferPortalAIService } from './services/transfer-portal-ai-service';
 
 // Export the main engine services
 export {
@@ -26,7 +29,8 @@ export {
   GARScoreService,
   HighlightService,
   RankingService,
-  StarPathService
+  StarPathService,
+  TransferPortalAIService
 };
 
 // Export configuration and common utilities
