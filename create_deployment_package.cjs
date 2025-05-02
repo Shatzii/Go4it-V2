@@ -149,6 +149,7 @@ async function createDeploymentPackage() {
       'PRODUCTION_OPTIMIZATIONS.md',
       'DEPLOYMENT_README.md',
       'server.js',
+      'server.cjs',
       'start-production.js',
       'verify-deployment.js'
     ];
