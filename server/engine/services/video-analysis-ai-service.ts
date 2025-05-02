@@ -307,17 +307,22 @@ export class VideoAnalysisAIService {
       // ADHD-specific analysis for key techniques
       let adhd;
       if (index < 3) {
+        // Create arrays with a single string to match the interface
+        const impactOptions = [
+          'Hyperfocus may enhance execution during critical moments',
+          'Attention fluctuations affect consistency in extended sequences',
+          'Processing speed creates advantages in rapid decision scenarios'
+        ];
+        
+        const strategyOptions = [
+          'Use visual cues to maintain technique awareness',
+          'Implement pre-execution routine to establish focus',
+          'Break down complex movements into practiced segments'
+        ];
+        
         adhd = {
-          impacts: [
-            'Hyperfocus may enhance execution during critical moments',
-            'Attention fluctuations affect consistency in extended sequences',
-            'Processing speed creates advantages in rapid decision scenarios'
-          ][(seed + index) % 3],
-          strategies: [
-            'Use visual cues to maintain technique awareness',
-            'Implement pre-execution routine to establish focus',
-            'Break down complex movements into practiced segments'
-          ][(seed + index + 1) % 3]
+          impacts: [impactOptions[(seed + index) % 3]],
+          strategies: [strategyOptions[(seed + index + 1) % 3]]
         };
       }
       
