@@ -358,15 +358,25 @@ export class VideoAnalysisAIService {
     };
     
     // Generate summary based on overall performance
-    const overallRating = performanceMetrics.reduce((sum, metric) => sum + metric.percentile, 0) / performanceMetrics.length;
+    // Calculate overall rating with safe handling of undefined percentiles
+    const overallRating = performanceMetrics.reduce((sum, metric) => sum + (metric.percentile || 50), 0) / performanceMetrics.length;
     let summary;
     
+    // Handle the case where techniques could be an array of strings
+    const firstTechniqueName = typeof techniques[0] === 'string' 
+      ? techniques[0] 
+      : (techniques[0] as any).name || 'technique execution';
+      
+    const lastTechniqueName = typeof techniques[techniques.length-1] === 'string'
+      ? techniques[techniques.length-1]
+      : (techniques[techniques.length-1] as any).name || 'technical skills';
+      
     if (overallRating > 80) {
-      summary = `Exceptional overall performance showing elite-level execution across multiple aspects of ${sportType}. Particularly strong in ${performanceMetrics[0].name} and ${techniques[0].name}. ADHD traits appear well-channeled into performance advantages, especially during high-intensity sequences. Shows potential well above age group expectations.`;
+      summary = `Exceptional overall performance showing elite-level execution across multiple aspects of ${sportType}. Particularly strong in ${performanceMetrics[0].name} and ${firstTechniqueName}. ADHD traits appear well-channeled into performance advantages, especially during high-intensity sequences. Shows potential well above age group expectations.`;
     } else if (overallRating > 65) {
-      summary = `Strong performance with above-average execution for age group. Notable strengths in ${performanceMetrics[0].name} with room for improvement in ${techniques[techniques.length-1].name}. ADHD characteristics show both advantages in processing speed and challenges in sustained attention that could be better leveraged with targeted strategies.`;
+      summary = `Strong performance with above-average execution for age group. Notable strengths in ${performanceMetrics[0].name} with room for improvement in ${lastTechniqueName}. ADHD characteristics show both advantages in processing speed and challenges in sustained attention that could be better leveraged with targeted strategies.`;
     } else {
-      summary = `Developing performance with foundational skills present but requiring refinement. Shows potential in ${performanceMetrics[0].name} but needs focused work on ${techniques[techniques.length-1].name}. ADHD-related focus patterns significantly impact consistency, suggesting specific interventions could yield substantial improvements.`;
+      summary = `Developing performance with foundational skills present but requiring refinement. Shows potential in ${performanceMetrics[0].name} but needs focused work on ${lastTechniqueName}. ADHD-related focus patterns significantly impact consistency, suggesting specific interventions could yield substantial improvements.`;
     }
     
     return {
