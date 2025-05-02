@@ -12,15 +12,15 @@ import { AI_ENGINE_CONFIG, EXTERNAL_MODEL_CONFIG } from '../config';
 export interface PlayerData {
   id: number;
   name: string;
-  previousSchool?: string;
-  position?: string;
-  height?: string;
-  weight?: string;
-  starRating?: number;
-  eligibilityRemaining?: string;
-  hometown?: string;
-  highSchool?: string;
-  sport?: string;
+  previousSchool?: string | null;
+  position?: string | null;
+  height?: string | null;
+  weight?: string | null;
+  starRating?: number | null;
+  eligibilityRemaining?: string | null;
+  hometown?: string | null;
+  highSchool?: string | null;
+  sport?: string | null;
 }
 
 export interface SchoolData {
@@ -273,3 +273,6 @@ export class TransferPortalAIService {
     };
   }
 }
+
+// Create and export a singleton instance
+export const transferPortalAIService = new TransferPortalAIService();

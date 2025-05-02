@@ -17,7 +17,9 @@ const AI_ENGINE_BASE_URL = process.env.AI_ENGINE_URL || 'http://localhost:5000';
 const AI_ENGINE_ENDPOINTS = {
   videoAnalysis: '/api/video-analysis',
   garScore: '/api/gar-score',
+  garScoring: '/api/gar-scoring', // New updated endpoint for the GARScoringAIService
   highlights: '/api/highlights',
+  highlightGenerator: '/api/highlight-generator', // New updated endpoint for the HighlightGeneratorAIService
   rankings: '/api/rankings',
   starPath: '/api/starpath',
   transferPortal: '/api/transfer-portal',
@@ -28,7 +30,9 @@ const AI_ENGINE_ENDPOINTS = {
 const AI_ENGINE_MODELS = {
   videoAnalysis: process.env.AI_ENGINE_VIDEO_MODEL || 'v1.0.0',
   garScore: process.env.AI_ENGINE_GAR_MODEL || 'v1.0.0',
+  garScoring: process.env.AI_ENGINE_GAR_SCORING_MODEL || 'v1.0.0',
   highlights: process.env.AI_ENGINE_HIGHLIGHTS_MODEL || 'v1.0.0',
+  highlightGenerator: process.env.AI_ENGINE_HIGHLIGHT_GEN_MODEL || 'v1.0.0',
   rankings: process.env.AI_ENGINE_RANKINGS_MODEL || 'v1.0.0',
   starPath: process.env.AI_ENGINE_STARPATH_MODEL || 'v1.0.0',
   transferPortal: process.env.AI_ENGINE_TRANSFER_PORTAL_MODEL || 'v1.0.0',
