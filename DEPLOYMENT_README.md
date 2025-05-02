@@ -67,6 +67,11 @@ The Go4It Sports platform centers around video analysis with the proprietary GAR
    ```
    node start-production.js
    ```
+   
+   Alternatively, if you encounter ES Module compatibility issues, you can use the CommonJS version:
+   ```
+   node server.cjs
+   ```
 
 ### Production Setup with PM2
 
@@ -80,6 +85,11 @@ For running in production with process management:
 2. Start the application with PM2:
    ```
    pm2 start start-production.js --name "go4it"
+   ```
+   
+   Or using the CommonJS version:
+   ```
+   pm2 start server.cjs --name "go4it"
    ```
 
 3. Configure PM2 to start on system boot:
