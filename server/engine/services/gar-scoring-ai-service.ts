@@ -205,8 +205,11 @@ export class GARScoringAIService {
    * Helper method to generate attribute comments based on score
    */
   private getAttributeComment(attribute: string, score: number, sportType: string): string {
+    // Define range types for type safety
+    type RangeType = 'low' | 'medium' | 'high';
+    
     // Attribute-specific comments based on score ranges
-    const comments: Record<string, Record<string, string[]>> = {
+    const comments: Record<string, Record<RangeType, string[]>> = {
       "Speed": {
         low: ["Shows hesitation when accelerating", "Needs improvement in first-step explosiveness", "Struggles to maintain top speed"],
         medium: ["Average acceleration with room for improvement", "Shows good burst in open space", "Speed is adequate for position"],
@@ -225,19 +228,21 @@ export class GARScoringAIService {
     };
     
     // Default comments if specific attribute not found
-    const defaultComments = {
+    const defaultComments: Record<RangeType, string[]> = {
       low: ["Shows potential but needs significant development", "Basic foundations present but consistency lacking", "Requires focused training to improve"],
       medium: ["Solid performance at age-appropriate level", "Demonstrates good fundamentals", "Consistent execution with room for refinement"],
       high: ["Exceptional skill execution", "Advanced technical proficiency", "Elite performance well above age level"]
     };
     
     // Determine score range
-    let range = "medium";
+    let range: RangeType = "medium";
     if (score <= 4) range = "low";
     if (score >= 8) range = "high";
     
     // Get attribute-specific comments or default to general comments
-    const commentOptions = comments[attribute]?.[range] || defaultComments[range];
+    // Fix type issue by checking if the attribute exists as a key
+    const hasComments = Object.prototype.hasOwnProperty.call(comments, attribute);
+    const commentOptions = hasComments ? comments[attribute][range] : defaultComments[range];
     
     // Select a comment based on a deterministic calculation
     const commentIndex = (score + attribute.length + sportType.length) % commentOptions.length;
