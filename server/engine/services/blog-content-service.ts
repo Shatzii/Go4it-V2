@@ -204,3 +204,6 @@ export class BlogContentService {
     return Math.abs(hash);
   }
 }
+
+// Create and export a singleton instance
+export const blogContentService = new BlogContentService();

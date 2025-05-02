@@ -93,9 +93,11 @@ class TransferPortalService {
     }
 
     // Set the interval for updates
+    // Use a default frequency of 60 seconds if null
+    const frequency = monitor.updateFrequency || 60;
     this.updateIntervals[monitor.id] = setInterval(
       () => this.runMonitorUpdate(monitor.id),
-      monitor.updateFrequency * 1000 // Convert seconds to milliseconds
+      frequency * 1000 // Convert seconds to milliseconds
     );
 
     // Run immediately on startup

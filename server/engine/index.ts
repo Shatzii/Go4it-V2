@@ -16,23 +16,41 @@
  * and served via a FastAPI server on Hetzner.
  */
 
+// Core service interfaces
 import { VideoAnalysisService } from './services/video-analysis-service';
 import { GARScoreService } from './services/gar-score-service';
 import { HighlightService } from './services/highlight-service';
 import { RankingService } from './services/ranking-service';
 import { StarPathService } from './services/starpath-service';
-import { TransferPortalAIService } from './services/transfer-portal-ai-service';
-import { BlogContentService } from './services/blog-content-service';
 
-// Export the main engine services
+// AI Engine service implementations
+import { TransferPortalAIService, transferPortalAIService } from './services/transfer-portal-ai-service';
+import { BlogContentService, blogContentService } from './services/blog-content-service';
+import { GARScoringAIService, garScoringAIService } from './services/gar-scoring-ai-service';
+import { VideoAnalysisAIService, videoAnalysisAIService } from './services/video-analysis-ai-service';
+import { HighlightGeneratorAIService, highlightGeneratorAIService } from './services/highlight-generator-ai-service';
+
+// Export the main engine services (interfaces)
 export {
   VideoAnalysisService,
   GARScoreService,
   HighlightService,
   RankingService,
-  StarPathService,
+  StarPathService
+};
+
+// Export AI engine service interfaces and implementations
+export {
   TransferPortalAIService,
-  BlogContentService
+  transferPortalAIService,
+  BlogContentService,
+  blogContentService,
+  GARScoringAIService,
+  garScoringAIService,
+  VideoAnalysisAIService,
+  videoAnalysisAIService,
+  HighlightGeneratorAIService,
+  highlightGeneratorAIService
 };
 
 // Export configuration and common utilities
