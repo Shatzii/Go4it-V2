@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Go4It Sports - Offline</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    .offline-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
+    p {
+      margin-bottom: 30px;
+      font-size: 16px;
+      opacity: 0.8;
+    }
+    .btn {
+      background: #0070f3;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover {
+      background: #0051b3;
+    }
+    .cached-content {
+      margin-top: 40px;
+      width: 100%;
+      max-width: 500px;
+    }
+    .cached-item {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <svg class="offline-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M1 1l22 22M16.72 16.72A5 5 0 0 1 9.27 9.27m5.66 5.66A7.92 7.92 0 0 0 12 14a7.92 7.92 0 0 0-3.28.68"></path>
+    <path d="M5 12.55a11 11 0 0 1 14.08-1.54"></path>
+    <path d="M8.53 16.11a6 6 0 0 1 6.95-6.95"></path>
+    <circle cx="12" cy="12" r="1"></circle>
+  </svg>
+  <h1>You're currently offline</h1>
+  <p>Please check your internet connection and try again.</p>
+  <button class="btn" onclick="window.location.reload()">Try Again</button>
+  
+  <div class="cached-content" id="cachedContent"></div>
+  
+  <script>
+    // Display cached content if available
+    if ('caches' in window) {
+      caches.open('go4it-sports-cache-v1').then(cache => {
+        cache.keys().then(keys => {
+          const cachedContentEl = document.getElementById('cachedContent');
+          
+          if (keys.length > 0) {
+            const heading = document.createElement('h2');
+            heading.textContent = 'Available offline content:';
+            cachedContentEl.appendChild(heading);
+            
+            // Display up to 5 cached pages
+            const pageKeys = keys.filter(key => 
+              key.url.endsWith('.html') || 
+              key.url.endsWith('/') || 
+              !key.url.includes('.')
+            ).slice(0, 5);
+            
+            pageKeys.forEach(key => {
+              const item = document.createElement('div');
+              item.className = 'cached-item';
+              
+              const link = document.createElement('a');
+              link.href = key.url;
+              link.textContent = key.url.split('/').pop() || 'Home';
+              
+              item.appendChild(link);
+              cachedContentEl.appendChild(item);
+            });
+          }
+        });
+      });
+    }
+  </script>
+</body>
+</html>
