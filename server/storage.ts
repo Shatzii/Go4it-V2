@@ -53,6 +53,10 @@ export interface IStorage {
   // Session store
   sessionStore: any;
   
+  // Auth token operations
+  refreshToken(refreshToken: string): Promise<{ accessToken: string; refreshToken: string; expiresAt: string } | null>;
+  invalidateSession(sessionId: string): Promise<boolean>;
+  
   // System stats for admin dashboard
   getSystemStats(): Promise<any>;
   
