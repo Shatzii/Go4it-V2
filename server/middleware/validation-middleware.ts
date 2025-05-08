@@ -1,39 +1,60 @@
-import { Request, Response, NextFunction } from 'express';
-import { ZodSchema } from 'zod';
-import { fromZodError } from 'zod-validation-error';
+import { Request, Response, NextFunction } from "express";
+import { ZodSchema } from "zod";
 
 /**
  * Middleware for validating request body against a Zod schema
- * 
- * @param schema - Zod schema to validate against
- * @returns Express middleware function
+ * @param schema The Zod schema to validate against
  */
-export function validateRequest(schema: ZodSchema) {
+export const validateRequest = (schema: ZodSchema) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
-      // Parse and validate the request body
-      const result = schema.safeParse(req.body);
+      // Validate request body against schema
+      const validationResult = schema.safeParse(req.body);
       
-      if (!result.success) {
-        // If validation fails, format the error message
-        const validationError = fromZodError(result.error);
-        return res.status(400).json({
-          message: 'Validation error',
-          errors: validationError.details.map(detail => ({
-            path: detail.path,
-            message: detail.message
-          }))
+      if (!validationResult.success) {
+        // Format error messages
+        const errors = validationResult.error.format();
+        return res.status(400).json({ 
+          message: "Validation failed",
+          errors 
         });
       }
       
-      // If validation succeeds, replace the req.body with the validated data
-      req.body = result.data;
-      
-      // Continue to the next middleware or route handler
+      // Replace request body with validated data
+      req.body = validationResult.data;
       next();
     } catch (error) {
-      console.error('Validation middleware error:', error);
-      return res.status(500).json({ message: 'Error processing request' });
+      console.error("Validation error:", error);
+      return res.status(500).json({ message: "Validation error" });
     }
   };
-}
+};
+
+/**
+ * Middleware for validating query parameters against a Zod schema
+ * @param schema The Zod schema to validate against
+ */
+export const validateQuery = (schema: ZodSchema) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // Validate query params against schema
+      const validationResult = schema.safeParse(req.query);
+      
+      if (!validationResult.success) {
+        // Format error messages
+        const errors = validationResult.error.format();
+        return res.status(400).json({ 
+          message: "Query validation failed",
+          errors 
+        });
+      }
+      
+      // Replace query with validated data
+      req.query = validationResult.data;
+      next();
+    } catch (error) {
+      console.error("Query validation error:", error);
+      return res.status(500).json({ message: "Query validation error" });
+    }
+  };
+};

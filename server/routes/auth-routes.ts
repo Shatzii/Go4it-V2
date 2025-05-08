@@ -96,7 +96,7 @@ router.post("/register",
 
       // Generate authentication tokens
       const deviceFingerprint = req.body.deviceFingerprint || `web-${Math.random().toString(36).substring(2)}`;
-      const tokens = await generateTokens(newUser.id, newUser.userType, deviceFingerprint);
+      const tokens = generateTokens(newUser.id, newUser.role || 'user', deviceFingerprint);
 
       // Return user info and token
       return res.status(201).json({
@@ -112,7 +112,7 @@ router.post("/register",
           measurementSystem: newUser.measurementSystem,
           phoneNumber: newUser.phoneNumber
         },
-        token: "jwt-token-placeholder" // Will be replaced with actual JWT implementation
+        ...tokens
       });
     } catch (error) {
       console.error("Error registering user:", error);
@@ -148,6 +148,10 @@ router.post("/login",
         return res.status(401).json({ message: "Invalid username or password" });
       }
 
+      // Generate authentication tokens
+      const device = deviceFingerprint || `web-${Math.random().toString(36).substring(2)}`;
+      const tokens = generateTokens(user.id, user.role || 'user', device);
+      
       // Return user info and token
       return res.status(200).json({
         user: {
@@ -162,7 +166,7 @@ router.post("/login",
           measurementSystem: user.measurementSystem,
           phoneNumber: user.phoneNumber
         },
-        token: "jwt-token-placeholder" // Will be replaced with actual JWT implementation
+        ...tokens
       });
     } catch (error) {
       console.error("Error logging in:", error);
