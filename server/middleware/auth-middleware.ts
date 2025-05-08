@@ -1,98 +1,96 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from "express";
+import { verifyAccessToken } from "../services/auth-token-service";
+import { storage } from "../storage";
 
-// Middleware to check if user is authenticated
-export function isAuthenticatedMiddleware(req: Request, res: Response, next: NextFunction) {
-  if (req.isAuthenticated && req.isAuthenticated()) {
-    return next();
-  }
-  
-  // Check for Bearer token authentication
-  const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-    
-    try {
-      // Verify token using the service
-      const { verifyAccessToken } = require('../services/auth-token-service');
-      const payload = verifyAccessToken(token);
-      
-      if (payload) {
-        // Set user info from token payload
-        req.user = {
-          id: payload.userId,
-          role: payload.role
-        };
-        return next();
-      }
-    } catch (error) {
-      console.error('Token verification error:', error);
+// Extend Express Request type to include user property
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: number;
+        username: string;
+        role: string;
+      };
     }
   }
-  
-  return res.status(401).json({ message: 'Unauthorized' });
 }
 
-// Middleware to check if user is admin
-export function isAdminMiddleware(req: Request, res: Response, next: NextFunction) {
-  if (req.isAuthenticated && req.isAuthenticated() && req.user && (req.user as any).role === 'admin') {
-    return next();
-  }
-  
-  // Check for Bearer token authentication
+/**
+ * Middleware to verify if user is authenticated
+ */
+export const isAuthenticatedMiddleware = async (
+  req: Request, 
+  res: Response, 
+  next: NextFunction
+) => {
+  // Check for authorization header
   const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-    
-    try {
-      // Verify token using the service
-      const { verifyAccessToken } = require('../services/auth-token-service');
-      const payload = verifyAccessToken(token);
-      
-      if (payload && payload.role === 'admin') {
-        // Set user info from token payload
-        req.user = {
-          id: payload.userId,
-          role: payload.role
-        };
-        return next();
-      }
-    } catch (error) {
-      console.error('Token verification error:', error);
-    }
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: "Not authenticated" });
   }
-  
-  return res.status(403).json({ message: 'Forbidden - Admin access required' });
-}
 
-// Middleware to check if user is coach
-export function isCoachMiddleware(req: Request, res: Response, next: NextFunction) {
-  if (req.isAuthenticated && req.isAuthenticated() && req.user && 
-      ((req.user as any).role === 'coach' || (req.user as any).role === 'admin')) {
-    return next();
-  }
+  // Extract and verify the token
+  const token = authHeader.substring(7);
+  const payload = verifyAccessToken(token);
   
-  // Check for Bearer token authentication
-  const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+  if (!payload) {
+    return res.status(401).json({ message: "Not authenticated" });
+  }
+
+  try {
+    // Get user from database
+    const user = await storage.getUser(payload.userId);
     
-    try {
-      // Verify token using the service
-      const { verifyAccessToken } = require('../services/auth-token-service');
-      const payload = verifyAccessToken(token);
-      
-      if (payload && (payload.role === 'coach' || payload.role === 'admin')) {
-        // Set user info from token payload
-        req.user = {
-          id: payload.userId,
-          role: payload.role
-        };
-        return next();
-      }
-    } catch (error) {
-      console.error('Token verification error:', error);
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
     }
+
+    // Attach user to request
+    req.user = {
+      id: user.id,
+      username: user.username,
+      role: user.role || 'user'
+    };
+
+    next();
+  } catch (error) {
+    console.error("Authentication error:", error);
+    return res.status(500).json({ message: "Authentication error" });
   }
-  
-  return res.status(403).json({ message: 'Forbidden - Coach access required' });
-}
+};
+
+/**
+ * Middleware to check if user has required role
+ */
+export const hasRoleMiddleware = (roles: string[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    // First check if authenticated
+    if (!req.user) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    // Check role
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ message: "Permission denied" });
+    }
+
+    next();
+  };
+};
+
+/**
+ * Admin-only middleware
+ */
+export const isAdminMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  // First check if authenticated
+  if (!req.user) {
+    return res.status(401).json({ message: "Not authenticated" });
+  }
+
+  // Check role
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ message: "Admin access required" });
+  }
+
+  next();
+};
