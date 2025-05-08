@@ -23,11 +23,9 @@ const registerSchema = z.object({
     .regex(/[a-z]/, "Password must contain at least one lowercase letter")
     .regex(/[0-9]/, "Password must contain at least one number")
     .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  dateOfBirth: z.string().optional(),
-  userType: z.enum(["athlete", "coach", "parent", "admin"], {
-    errorMap: () => ({ message: "Invalid user type" }),
+  name: z.string().min(1, "Full name is required"),
+  role: z.enum(["athlete", "coach", "parent", "admin"], {
+    errorMap: () => ({ message: "Invalid role" }),
   }),
 });
 
@@ -66,17 +64,18 @@ router.post("/register",
   validateRequest(registerSchema),
   async (req: Request, res: Response) => {
     try {
-      const { username, email, password, firstName, lastName, dateOfBirth, userType } = req.body;
+      const { username, email, password, name, role } = req.body;
 
-      // Check if username or email already exists
-      const existingUser = await storage.getUserByUsernameOrEmail(username, email);
+      // Check if username already exists
+      const existingUserByUsername = await storage.getUserByUsername(username);
+      if (existingUserByUsername) {
+        return res.status(400).json({ message: "Username already taken" });
+      }
       
-      if (existingUser) {
-        return res.status(400).json({ 
-          message: existingUser.username === username 
-            ? "Username already taken" 
-            : "Email already in use" 
-        });
+      // Check if email already exists
+      const existingUserByEmail = await storage.getUserByEmail(email);
+      if (existingUserByEmail) {
+        return res.status(400).json({ message: "Email already in use" });
       }
 
       // Hash password
@@ -87,12 +86,8 @@ router.post("/register",
         username,
         email,
         password: hashedPassword,
-        firstName,
-        lastName,
-        dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
-        userType,
-        status: "active",
-        createdAt: new Date()
+        name,
+        role
       });
 
       if (!newUser) {
@@ -109,14 +104,15 @@ router.post("/register",
           id: newUser.id,
           username: newUser.username,
           email: newUser.email,
-          firstName: newUser.firstName,
-          lastName: newUser.lastName,
-          userType: newUser.userType,
-          status: newUser.status,
-          dateOfBirth: newUser.dateOfBirth,
+          name: newUser.name,
+          role: newUser.role,
           createdAt: newUser.createdAt,
+          profileImage: newUser.profileImage,
+          bio: newUser.bio,
+          measurementSystem: newUser.measurementSystem,
+          phoneNumber: newUser.phoneNumber
         },
-        ...tokens
+        token: "jwt-token-placeholder" // Will be replaced with actual JWT implementation
       });
     } catch (error) {
       console.error("Error registering user:", error);
@@ -145,11 +141,6 @@ router.post("/login",
         return res.status(401).json({ message: "Invalid username or password" });
       }
 
-      // Check if user is active
-      if (user.status !== "active") {
-        return res.status(401).json({ message: "Your account is not active" });
-      }
-
       // Verify password
       const isPasswordValid = await comparePasswords(password, user.password);
       
@@ -157,28 +148,21 @@ router.post("/login",
         return res.status(401).json({ message: "Invalid username or password" });
       }
 
-      // Generate authentication tokens
-      const device = deviceFingerprint || `web-${Math.random().toString(36).substring(2)}`;
-      const tokens = await generateTokens(user.id, user.userType, device);
-
-      // Update last login time
-      await storage.updateUserLastLogin(user.id);
-
       // Return user info and token
       return res.status(200).json({
         user: {
           id: user.id,
           username: user.username,
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          userType: user.userType,
-          status: user.status,
-          dateOfBirth: user.dateOfBirth,
+          name: user.name,
+          role: user.role,
           createdAt: user.createdAt,
-          lastLogin: new Date(),
+          profileImage: user.profileImage,
+          bio: user.bio,
+          measurementSystem: user.measurementSystem,
+          phoneNumber: user.phoneNumber
         },
-        ...tokens
+        token: "jwt-token-placeholder" // Will be replaced with actual JWT implementation
       });
     } catch (error) {
       console.error("Error logging in:", error);
@@ -208,13 +192,13 @@ router.get("/me", isAuthenticatedMiddleware, async (req: Request, res: Response)
       id: user.id,
       username: user.username,
       email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      userType: user.userType,
-      status: user.status,
-      dateOfBirth: user.dateOfBirth,
+      name: user.name,
+      role: user.role,
       createdAt: user.createdAt,
-      lastLogin: user.lastLogin,
+      profileImage: user.profileImage,
+      bio: user.bio,
+      measurementSystem: user.measurementSystem,
+      phoneNumber: user.phoneNumber
     });
   } catch (error) {
     console.error("Error fetching user:", error);

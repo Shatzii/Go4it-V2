@@ -59,6 +59,7 @@ import { registerAIEngineRoutes } from './routes/ai-engine-routes';
 import uploaderRouter from './uploader';
 import agentMessageRouter from './agent-message';
 import statusRouter from './status';
+import authRoutes from './routes/auth-routes';
 
 // Helper function to determine event status
 function getEventStatus(event: any): 'upcoming' | 'filling_fast' | 'sold_out' | 'past' {
@@ -7317,6 +7318,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register status routes
   app.use('/api', statusRouter);
+  
+  // Register authentication routes
+  app.use('/api/auth', authRoutes);
+  app.use('/api/auth', authResetRoutes);
+  app.use('/api/auth', authPasswordRoutes);
 
   // Set up graceful shutdown handling for WebSocket connections
   // This ensures all connections are properly closed when the server shuts down
