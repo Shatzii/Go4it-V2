@@ -18,6 +18,8 @@ import ServerError from "@/pages/server-error";
 import Forbidden from "@/pages/forbidden";
 import Unauthorized from "@/pages/unauthorized";
 import HomePage from "@/pages/home-page";
+import SimpleHome from "@/pages/simple-home";
+import SimpleAuth from "@/pages/simple-auth";
 import AuthPage from "@/pages/auth-page";
 import PasswordReset from "@/pages/password-reset";
 import SimpleLogin from "@/pages/simple-login";
@@ -159,7 +161,8 @@ function Router() {
     <>
       <ScrollToTop />
       <Switch>
-        <Route path="/auth" component={AuthPage} />
+        <Route path="/auth" component={SimpleAuth} />
+        <Route path="/full-auth" component={AuthPage} />
         
         <Route path="/simple-login" component={SimpleLogin} />
         
@@ -167,10 +170,13 @@ function Router() {
         
         <Route path="/password-reset" component={PasswordReset} />
         
-        <Route path="/" component={HomePage} />
+        <Route path="/" component={SimpleHome} />
+        
+        {/* Original HomePage now accessible via /full-home */}
+        <Route path="/full-home" component={HomePage} />
         
         {/* Add /app route to handle NDA redirection */}
-        <Route path="/app" component={HomePage} />
+        <Route path="/app" component={SimpleHome} />
         
         <Route path="/dashboard">
           {() => <ProtectedRoute component={Dashboard} />}
@@ -546,6 +552,11 @@ function AppContent() {
 
   // Don't render the layout for the auth page, simple-login, test-auth, or home page
   if (location === "/auth") {
+    return <SimpleAuth />;
+  }
+  
+  // Original auth page still available at /full-auth
+  if (location === "/full-auth") {
     return <AuthPage />;
   }
   
@@ -562,13 +573,17 @@ function AppContent() {
   }
   
   // Handle root route for homepage
-  if (location === "/" && !user) {
-    return <HomePage />;
+  if (location === "/") {
+    return <SimpleHome />;
   }
   
-  // Updated: Don't redirect /app route anymore - instead render the home page directly
-  // This ensures the NDA will be shown on every login and prevents redirect loops
+  // Use simplified home page for /app path to avoid potential issues
   if (location === "/app") {
+    return <SimpleHome />;
+  }
+  
+  // Original complex home page now at /full-home
+  if (location === "/full-home") {
     return <HomePage />;
   }
 
