@@ -504,25 +504,19 @@ export const checkCoachAthleteRelationship = async (req: Request, res: Response,
     
     // Coaches need to check coach-athlete relationship
     if (req.user.role === ROLES.COACH) {
-      // Since getCoachConnections is not implemented yet,
-      // we'll allow coach access for now and log that this needs to be implemented
-      console.log("TODO: Implement getCoachConnections for coach-athlete relationship checks");
-      return next();
+      const connections = await storage.getCoachConnections(req.user.id);
+      const isCoachOf = connections.some(conn => 
+        conn.connectionStatus === 'active' && conn.athleteId === athleteId
+      );
       
-      // Future implementation:
-      // const connections = await storage.getCoachConnections(req.user.id);
-      // const isCoachOf = connections.some(conn => 
-      //   conn.status === 'active' && conn.athleteId === athleteId
-      // );
-      // 
-      // if (isCoachOf) {
-      //   return next();
-      // } else {
-      //   return res.status(403).json({
-      //     success: false,
-      //     message: 'Access denied: you are not this athlete\'s coach'
-      //   });
-      // }
+      if (isCoachOf) {
+        return next();
+      } else {
+        return res.status(403).json({
+          success: false,
+          message: 'Access denied: you are not this athlete\'s coach'
+        });
+      }
     }
     
     // Default deny access
