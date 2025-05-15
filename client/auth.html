@@ -146,8 +146,8 @@
     </div>
     
     <script>
-      // Actual API login handling
-      document.getElementById('login-form').addEventListener('submit', async function(e) {
+      // Simple login handling with hardcoded credentials for now
+      document.getElementById('login-form').addEventListener('submit', function(e) {
         e.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
@@ -161,33 +161,28 @@
         submitButton.textContent = 'Signing in...';
         submitButton.disabled = true;
         
-        try {
-          // Attempt login via API
-          const response = await fetch('/api/login', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ username, password }),
-            credentials: 'include'
-          });
+        // Simple check for demo credentials (will be replaced with API call later)
+        if ((username === 'alexjohnson' && password === 'password123') || 
+            (username === 'admin' && password === 'admin123') ||
+            (username === 'coach' && password === 'coach123')) {
           
-          if (response.ok) {
-            console.log('Login successful!');
-            // Redirect to dashboard after successful login
-            window.location.href = '/dashboard';
-          } else {
-            // Handle error response
-            const data = await response.json().catch(() => ({}));
-            errorElement.style.display = 'block';
-            errorElement.textContent = data.message || 'Invalid username or password.';
-          }
-        } catch (error) {
-          console.error('Login error:', error);
+          console.log('Login successful!');
+          
+          // Store user data in localStorage for session persistence
+          localStorage.setItem('go4it_user', JSON.stringify({
+            username: username,
+            name: username === 'alexjohnson' ? 'Alex Johnson' : 
+                  username === 'admin' ? 'Admin User' : 'Coach Smith',
+            role: username === 'alexjohnson' ? 'athlete' : 
+                  username === 'admin' ? 'admin' : 'coach'
+          }));
+          
+          // Redirect to dashboard after successful login
+          window.location.href = '/dashboard';
+        } else {
+          // Handle invalid credentials
           errorElement.style.display = 'block';
-          errorElement.textContent = 'Connection error. Please try again.';
-        } finally {
-          // Restore button state
+          errorElement.textContent = 'Invalid username or password.';
           submitButton.textContent = originalButtonText;
           submitButton.disabled = false;
         }
