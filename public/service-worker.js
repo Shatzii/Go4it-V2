@@ -4,6 +4,20 @@ const OFFLINE_URL = '/offline.html';
 const OFFLINE_IMAGE = '/assets/images/offline-placeholder.svg';
 const OFFLINE_CSS = '/assets/styles/offline.css';
 
+// Simple in-memory storage for offline actions if localforage isn't available
+const offlineStorage = {
+  actions: [],
+  add: function(action) {
+    this.actions.push(action);
+  },
+  getAll: function() {
+    return this.actions;
+  },
+  clear: function() {
+    this.actions = [];
+  }
+};
+
 // Assets to cache immediately on service worker install
 const CACHE_ASSETS = [
   OFFLINE_URL,
@@ -99,25 +113,41 @@ self.addEventListener('fetch', (event) => {
 
 // Handle offline form submission
 async function syncOfflineActions() {
-  const offlineActions = await localforage.getItem('offlineActions');
+  let offlineActions = [];
   
-  if (offlineActions && offlineActions.length > 0) {
-    for (const action of offlineActions) {
-      try {
-        await fetch(action.url, {
-          method: action.method,
-          headers: action.headers,
-          body: action.body
-        });
-      } catch (error) {
-        console.error('Failed to sync offline action:', error);
-        return false;
-      }
+  try {
+    // Try to use localforage if available
+    if (typeof localforage !== 'undefined') {
+      offlineActions = await localforage.getItem('offlineActions') || [];
+    } else {
+      // Fall back to our simple storage
+      offlineActions = offlineStorage.getAll();
     }
     
-    // Clear synced actions
-    await localforage.setItem('offlineActions', []);
-    return true;
+    if (offlineActions && offlineActions.length > 0) {
+      for (const action of offlineActions) {
+        try {
+          await fetch(action.url, {
+            method: action.method,
+            headers: action.headers,
+            body: action.body
+          });
+        } catch (error) {
+          console.error('Failed to sync offline action:', error);
+          return false;
+        }
+      }
+      
+      // Clear synced actions
+      if (typeof localforage !== 'undefined') {
+        await localforage.setItem('offlineActions', []);
+      } else {
+        offlineStorage.clear();
+      }
+      return true;
+    }
+  } catch (error) {
+    console.error('Error syncing offline actions:', error);
   }
   
   return true;
