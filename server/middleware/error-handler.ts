@@ -1,306 +1,498 @@
 /**
  * Go4It Sports - Error Handling Middleware
  * 
- * Provides consistent error handling across the application with:
- * - User-friendly error messages
- * - Detailed server-side logging
- * - Proper status codes
+ * Provides standardized error handling for the entire application:
+ * - Structured error responses
+ * - Error logging with variable detail levels
  * - Error categorization
+ * - Request context preservation
+ * - User-friendly messages
  */
 
 import { Request, Response, NextFunction } from 'express';
-import { ZodError } from 'zod';
-// pg doesn't directly export PostgresError, but we can reference it through error codes
+import fs from 'fs';
+import path from 'path';
 
-// Standard error response structure
-export interface ErrorResponse {
-  error: {
-    message: string;
-    code?: string;
-    status: number;
-    details?: any;
-  };
-}
-
-// Error types for different scenarios
+// Different types of errors for better categorization
 export enum ErrorTypes {
-  VALIDATION = 'VALIDATION_ERROR',
-  AUTHENTICATION = 'AUTHENTICATION_ERROR',
-  AUTHORIZATION = 'AUTHORIZATION_ERROR',
-  NOT_FOUND = 'NOT_FOUND_ERROR',
-  DATABASE = 'DATABASE_ERROR',
-  EXTERNAL_SERVICE = 'EXTERNAL_SERVICE_ERROR',
-  SERVER = 'SERVER_ERROR',
-  RATE_LIMIT = 'RATE_LIMIT_ERROR',
-  DUPLICATE = 'DUPLICATE_RECORD_ERROR',
-  FILE_UPLOAD = 'FILE_UPLOAD_ERROR'
+  VALIDATION = 'validation_error',
+  AUTHENTICATION = 'authentication_error',
+  AUTHORIZATION = 'authorization_error',
+  NOT_FOUND = 'not_found_error',
+  DATABASE = 'database_error',
+  EXTERNAL_SERVICE = 'external_service_error',
+  MEDIA_PROCESSING = 'media_processing_error',
+  RATE_LIMIT = 'rate_limit_error',
+  SERVER = 'server_error',
+  NETWORK = 'network_error',
+  UNKNOWN = 'unknown_error',
 }
 
-// Custom error class for application errors
-export class AppError extends Error {
-  public readonly code: string;
-  public readonly status: number;
-  public readonly details?: any;
-  public readonly isOperational: boolean;
+// Status code mappings for error types
+const ERROR_STATUS_CODES: Record<ErrorTypes, number> = {
+  [ErrorTypes.VALIDATION]: 400,
+  [ErrorTypes.AUTHENTICATION]: 401,
+  [ErrorTypes.AUTHORIZATION]: 403,
+  [ErrorTypes.NOT_FOUND]: 404,
+  [ErrorTypes.DATABASE]: 500,
+  [ErrorTypes.EXTERNAL_SERVICE]: 503,
+  [ErrorTypes.MEDIA_PROCESSING]: 500,
+  [ErrorTypes.RATE_LIMIT]: 429,
+  [ErrorTypes.SERVER]: 500,
+  [ErrorTypes.NETWORK]: 500,
+  [ErrorTypes.UNKNOWN]: 500,
+};
 
+// User-friendly error messages (visible to end users)
+const ERROR_USER_MESSAGES: Record<ErrorTypes, string> = {
+  [ErrorTypes.VALIDATION]: 'The provided information is invalid or incomplete.',
+  [ErrorTypes.AUTHENTICATION]: 'You must be logged in to access this resource.',
+  [ErrorTypes.AUTHORIZATION]: 'You do not have permission to access this resource.',
+  [ErrorTypes.NOT_FOUND]: 'The requested resource was not found.',
+  [ErrorTypes.DATABASE]: 'A database error occurred. Please try again later.',
+  [ErrorTypes.EXTERNAL_SERVICE]: 'A service is temporarily unavailable. Please try again later.',
+  [ErrorTypes.MEDIA_PROCESSING]: 'There was an error processing your media. Please try a different file.',
+  [ErrorTypes.RATE_LIMIT]: 'Too many requests. Please try again later.',
+  [ErrorTypes.SERVER]: 'An internal server error occurred. Please try again later.',
+  [ErrorTypes.NETWORK]: 'A network error occurred. Please check your connection and try again.',
+  [ErrorTypes.UNKNOWN]: 'An unexpected error occurred. Please try again later.',
+};
+
+// Custom application error class
+export class AppError extends Error {
+  public readonly type: ErrorTypes;
+  public readonly statusCode: number;
+  public readonly details: any;
+  public readonly timestamp: Date;
+  public readonly isOperational: boolean;
+  
   constructor(
     message: string,
-    code: string = ErrorTypes.SERVER,
-    status: number = 500,
+    type: ErrorTypes = ErrorTypes.UNKNOWN,
+    statusCode?: number,
     details?: any,
     isOperational: boolean = true
   ) {
     super(message);
-    this.code = code;
-    this.status = status;
+    
+    // Error metadata
+    this.name = this.constructor.name;
+    this.type = type;
+    this.statusCode = statusCode || ERROR_STATUS_CODES[type];
     this.details = details;
+    this.timestamp = new Date();
     this.isOperational = isOperational;
+    
+    // Capture stack trace
     Error.captureStackTrace(this, this.constructor);
+  }
+  
+  // Get user-friendly message for this error type
+  public getUserMessage(): string {
+    return ERROR_USER_MESSAGES[this.type];
+  }
+  
+  // Convert to a clean object for logging
+  public toJSON(): Record<string, any> {
+    return {
+      name: this.name,
+      message: this.message,
+      type: this.type,
+      statusCode: this.statusCode,
+      timestamp: this.timestamp.toISOString(),
+      isOperational: this.isOperational,
+      stack: this.stack,
+      details: this.details,
+    };
   }
 }
 
-// Helper function to determine if we're in development mode
-const isDev = (): boolean => {
-  return process.env.NODE_ENV !== 'production';
-};
+// Basic client-friendly error response
+interface ErrorResponse {
+  error: {
+    type: string;
+    message: string;
+    code?: string;
+    timestamp: string;
+  };
+}
 
-// Utility to safely stringify objects for logging
-const safeStringify = (obj: any): string => {
+// Log levels for error logging
+type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+
+// Get current environment
+const isProduction = process.env.NODE_ENV === 'production';
+const isDevelopment = process.env.NODE_ENV === 'development';
+const isTest = process.env.NODE_ENV === 'test';
+
+// Configure log paths based on environment
+const LOG_DIR = process.env.LOG_DIR || path.join(process.cwd(), 'logs');
+const ERROR_LOG_PATH = path.join(LOG_DIR, 'error.log');
+const DEBUG_LOG_PATH = path.join(LOG_DIR, 'debug.log');
+
+// Create log directory if it doesn't exist
+try {
+  if (!fs.existsSync(LOG_DIR)) {
+    fs.mkdirSync(LOG_DIR, { recursive: true });
+  }
+} catch (err) {
+  console.error('Failed to create log directory:', err);
+}
+
+/**
+ * Log an error to the appropriate channels
+ */
+export function logError(
+  error: unknown,
+  request?: Request,
+  logLevel: LogLevel = 'error'
+): void {
+  // Format the error for logging
+  const errorObject = formatErrorForLogging(error, request);
+  
+  // Log different levels to console based on environment
+  const logToConsole = !isProduction || isDevelopment;
+  
+  // Always log to file in production, optionally in development
+  const logToFile = isProduction || process.env.LOG_TO_FILE === 'true';
+  
   try {
-    return JSON.stringify(obj, (key, value) => {
-      // Remove sensitive fields
-      if (['password', 'token', 'secret', 'apiKey', 'api_key'].includes(key.toLowerCase())) {
-        return '[REDACTED]';
+    // Console logging with appropriate level
+    if (logToConsole) {
+      switch (logLevel) {
+        case 'debug':
+          console.debug(JSON.stringify(errorObject, null, 2));
+          break;
+        case 'info':
+          console.info(JSON.stringify(errorObject, null, 2));
+          break;
+        case 'warn':
+          console.warn(JSON.stringify(errorObject, null, 2));
+          break;
+        case 'error':
+        default:
+          console.error(JSON.stringify(errorObject, null, 2));
+          break;
       }
-      return value;
-    }, 2);
-  } catch (error) {
-    return '[Object cannot be stringified]';
+    }
+    
+    // File logging based on level
+    if (logToFile && !isTest) {
+      const logEntry = `[${new Date().toISOString()}] [${logLevel.toUpperCase()}] ${JSON.stringify(errorObject)}\n`;
+      
+      // Choose log file based on level
+      if (logLevel === 'error') {
+        fs.appendFileSync(ERROR_LOG_PATH, logEntry);
+      } else {
+        fs.appendFileSync(DEBUG_LOG_PATH, logEntry);
+      }
+    }
+  } catch (loggingError) {
+    // Last resort fallback if logging itself fails
+    console.error('Error logging failed:', loggingError);
+    console.error('Original error:', error);
   }
-};
+}
 
-// Detailed error logging function
-export const logError = (err: any, req?: Request): void => {
-  const timestamp = new Date().toISOString();
-  const errorType = err.code || 'UNKNOWN_ERROR';
+/**
+ * Format error for logging
+ */
+function formatErrorForLogging(
+  error: unknown,
+  request?: Request
+): Record<string, any> {
+  // Base error object
+  let errorObject: Record<string, any> = {
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+  };
   
-  let requestInfo = '';
-  if (req) {
-    const userId = req.user?.id || 'anonymous';
-    requestInfo = ` [${req.method} ${req.originalUrl}] [User: ${userId}]`;
+  // If this is our AppError, use its built-in JSON representation
+  if (error instanceof AppError) {
+    errorObject = { ...errorObject, ...error.toJSON() };
+  } else if (error instanceof Error) {
+    // Standard Error object
+    errorObject = {
+      ...errorObject,
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+      type: ErrorTypes.UNKNOWN,
+    };
+  } else {
+    // Unknown error type
+    errorObject = {
+      ...errorObject,
+      name: 'UnknownError',
+      message: String(error),
+      type: ErrorTypes.UNKNOWN,
+    };
   }
   
-  console.error(`[${timestamp}] [ERROR:${errorType}]${requestInfo} ${err.message}`);
-  
-  // Log stack trace in development or for non-operational errors
-  if (isDev() || (err.isOperational === false)) {
-    console.error(err.stack);
+  // Add request details if available
+  if (request) {
+    errorObject.request = {
+      method: request.method,
+      url: request.originalUrl || request.url,
+      ip: request.ip,
+      userAgent: request.get('User-Agent'),
+      userId: (request.user as any)?.id || 'anonymous',
+      query: request.query,
+      // Don't log sensitive body data in production
+      body: !isProduction ? sanitizeRequestBody(request.body) : undefined,
+    };
   }
   
-  // Log error details if available
-  if (err.details) {
-    console.error('Error details:', safeStringify(err.details));
-  }
-};
+  return errorObject;
+}
 
-// Handle database-specific errors
-const handleDatabaseError = (err: any): AppError => {
-  // PostgreSQL error codes: https://www.postgresql.org/docs/current/errcodes-appendix.html
-  if (err.code === '23505') { // Unique violation
-    return new AppError(
-      'A record with this information already exists.',
-      ErrorTypes.DUPLICATE,
-      409,
-      { constraint: err.constraint }
-    );
+/**
+ * Remove sensitive information from request body before logging
+ */
+function sanitizeRequestBody(body: any): any {
+  if (!body) return {};
+  
+  // Make a copy so we don't modify the original
+  const sanitized = { ...body };
+  
+  // Fields to redact
+  const sensitiveFields = [
+    'password', 'newPassword', 'currentPassword', 'passwordConfirmation',
+    'token', 'refreshToken', 'accessToken', 'apiKey', 'secret',
+    'creditCard', 'cardNumber', 'cvv', 'ssn', 'socialSecurity',
+    'apiKey', 'secretKey', 'x-api-key', 'authorization',
+  ];
+  
+  // Recursively sanitize object
+  function sanitizeObject(obj: any): any {
+    if (!obj || typeof obj !== 'object') return obj;
+    
+    Object.keys(obj).forEach(key => {
+      // Check if this is a sensitive field
+      const lowercaseKey = key.toLowerCase();
+      const isSensitive = sensitiveFields.some(field => 
+        lowercaseKey.includes(field.toLowerCase())
+      );
+      
+      if (isSensitive) {
+        // Redact sensitive values
+        obj[key] = typeof obj[key] === 'string' ? '[REDACTED]' : { redacted: true };
+      } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+        // Recursively sanitize nested objects
+        obj[key] = sanitizeObject(obj[key]);
+      }
+    });
+    
+    return obj;
   }
   
-  if (err.code === '23503') { // Foreign key violation
-    return new AppError(
-      'This operation references data that does not exist or has been deleted.',
-      ErrorTypes.DATABASE,
-      400,
-      { constraint: err.constraint }
-    );
-  }
-  
-  if (err.code === '23502') { // Not null violation
-    return new AppError(
-      'Required information is missing.',
-      ErrorTypes.VALIDATION,
-      400,
-      { column: err.column }
-    );
-  }
-  
-  if (err.code?.startsWith('42')) { // Syntax error or access rule violation
-    return new AppError(
-      'The database query contains an error.',
-      ErrorTypes.DATABASE,
-      500,
-      isDev() ? { sqlState: err.code, message: err.message } : undefined
-    );
-  }
-  
-  if (err.code?.startsWith('08')) { // Connection exception
-    return new AppError(
-      'Unable to connect to the database. Please try again later.',
-      ErrorTypes.DATABASE,
-      503,
-      isDev() ? { sqlState: err.code, message: err.message } : undefined
-    );
-  }
-  
-  if (err.code?.startsWith('57')) { // Operator intervention (e.g., server shutdown)
-    return new AppError(
-      'Database service temporarily unavailable. Please try again later.',
-      ErrorTypes.DATABASE,
-      503,
-      isDev() ? { sqlState: err.code, message: err.message } : undefined
-    );
-  }
-  
-  // Default database error
-  return new AppError(
-    'A database error occurred. Please try again later.',
-    ErrorTypes.DATABASE,
-    500,
-    isDev() ? { originalError: err.message } : undefined
-  );
-};
+  return sanitizeObject(sanitized);
+}
 
-// Handle validation errors from Zod
-const handleZodError = (err: ZodError): AppError => {
-  const formattedErrors = err.errors.map(error => ({
-    path: error.path.join('.'),
-    message: error.message
-  }));
+/**
+ * Format error for client response
+ */
+function formatErrorForResponse(
+  error: unknown,
+  request: Request,
+  showDetails: boolean = false
+): ErrorResponse {
+  // Base error response
+  const errorResponse: ErrorResponse = {
+    error: {
+      type: ErrorTypes.UNKNOWN,
+      message: ERROR_USER_MESSAGES[ErrorTypes.UNKNOWN],
+      timestamp: new Date().toISOString(),
+    },
+  };
   
-  return new AppError(
-    'Validation failed. Please check your input.',
-    ErrorTypes.VALIDATION,
-    400,
-    { validationErrors: formattedErrors }
-  );
-};
+  // Customize based on error type
+  if (error instanceof AppError) {
+    errorResponse.error.type = error.type;
+    errorResponse.error.message = showDetails ? error.message : error.getUserMessage();
+    errorResponse.error.code = error.details?.code;
+    
+    // Add more details in development
+    if (showDetails && error.details) {
+      (errorResponse.error as any).details = error.details;
+    }
+  } else if (error instanceof Error) {
+    // Standard Error
+    errorResponse.error.message = showDetails 
+      ? error.message 
+      : ERROR_USER_MESSAGES[ErrorTypes.UNKNOWN];
+      
+    // Add stack in development
+    if (showDetails) {
+      (errorResponse.error as any).stack = error.stack;
+    }
+  }
+  
+  // Add request ID if available
+  if ((request as any).id) {
+    errorResponse.error.code = (request as any).id;
+  }
+  
+  return errorResponse;
+}
 
-// Main error handling middleware
-export const errorHandler = (
-  err: any,
+/**
+ * Get HTTP status code from error
+ */
+function getStatusCode(error: unknown): number {
+  if (error instanceof AppError) {
+    return error.statusCode;
+  }
+  
+  // Default for unknown errors
+  return 500;
+}
+
+/**
+ * Main error handling middleware
+ */
+export function errorHandler(
+  error: unknown,
   req: Request,
   res: Response,
   next: NextFunction
-): void => {
-  // Always log the error
-  logError(err, req);
+): void {
+  // Log all errors
+  logError(error, req);
   
-  // Convert to AppError if it's not already
-  let appError: AppError;
+  // Format error for client response
+  const showDetails = !isProduction;
+  const errorResponse = formatErrorForResponse(error, req, showDetails);
   
-  // Handle known error types
-  if (err instanceof AppError) {
-    appError = err;
-  } else if (err instanceof ZodError) {
-    appError = handleZodError(err);
-  } else if (err.code && typeof err.code === 'string') {
-    // Likely a database error
-    appError = handleDatabaseError(err);
-  } else if (err.name === 'ValidationError') {
-    // Handle other validation frameworks
-    appError = new AppError(
-      'Validation failed. Please check your input.',
-      ErrorTypes.VALIDATION,
-      400,
-      isDev() ? { details: err.details || err.errors } : undefined
-    );
-  } else if (err.name === 'UnauthorizedError' || err.message?.includes('unauthorized')) {
-    appError = new AppError(
-      'You are not authorized to access this resource.',
-      ErrorTypes.AUTHENTICATION,
-      401
-    );
-  } else if (err.message?.includes('timeout') || err.message?.includes('timed out')) {
-    appError = new AppError(
-      'The operation timed out. Please try again later.',
-      ErrorTypes.EXTERNAL_SERVICE,
-      503
-    );
-  } else {
-    // Unknown error
-    appError = new AppError(
-      isDev() ? err.message : 'An unexpected error occurred. Please try again later.',
-      ErrorTypes.SERVER,
-      500,
-      isDev() ? { originalError: err.message } : undefined
-    );
-  }
+  // Get appropriate status code
+  const statusCode = getStatusCode(error);
   
-  // Send the error response
-  const errorResponse: ErrorResponse = {
-    error: {
-      message: appError.message,
-      code: appError.code,
-      status: appError.status,
-    }
-  };
-  
-  // Include error details in development mode
-  if (isDev() && appError.details) {
-    errorResponse.error.details = appError.details;
-  }
-  
-  res.status(appError.status).json(errorResponse);
-};
+  // Send error response
+  res.status(statusCode).json(errorResponse);
+}
 
-// Catch-all for unhandled routes (404)
-export const notFoundHandler = (req: Request, res: Response, next: NextFunction): void => {
-  const appError = new AppError(
-    `Cannot ${req.method} ${req.originalUrl}`,
+/**
+ * 404 not found handler
+ */
+export function notFoundHandler(req: Request, res: Response, next: NextFunction): void {
+  // Create not found error
+  const error = new AppError(
+    `Cannot ${req.method} ${req.originalUrl || req.url}`,
     ErrorTypes.NOT_FOUND,
     404
   );
   
-  next(appError);
-};
+  // Pass to main error handler
+  next(error);
+}
 
-// Async error wrapper to avoid try/catch blocks everywhere
-export const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<any>) => {
+/**
+ * Async route handler wrapper to catch unhandled promise rejections
+ */
+export function asyncHandler(fn: (req: Request, res: Response, next: NextFunction) => Promise<any>) {
   return (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };
-};
+}
 
-// Middleware to track database connection errors
-export const databaseErrorTracker = (req: Request, res: Response, next: NextFunction) => {
-  const originalEnd = res.end;
+/**
+ * Rate limiting error handler
+ */
+export function rateLimitErrorHandler(req: Request, res: Response): void {
+  const error = new AppError(
+    'Too many requests, please try again later.',
+    ErrorTypes.RATE_LIMIT,
+    429
+  );
   
-  // Override end method to track successful responses
-  res.end = function (...args) {
-    // Reset connection error count on successful DB operations
-    if (res.statusCode >= 200 && res.statusCode < 300 && 
-        req.originalUrl.includes('/api/') && 
-        global.dbConnectionErrorCount > 0) {
-      console.log('[DB] Successful database operation, resetting error counter');
-      global.dbConnectionErrorCount = 0;
-    }
+  // Log the rate limiting event
+  logError(error, req, 'warn');
+  
+  // Respond with rate limit error
+  res.status(429).json({
+    error: {
+      type: error.type,
+      message: error.getUserMessage(),
+      timestamp: new Date().toISOString(),
+    },
+  });
+}
+
+/**
+ * Validation error handler (for request validation)
+ */
+export function validationErrorHandler(error: any, req: Request, res: Response, next: NextFunction): void {
+  // Check if this is a validation error (e.g., from express-validator)
+  if (error.array && typeof error.array === 'function') {
+    const validationErrors = error.array();
     
-    return originalEnd.apply(this, args);
-  };
+    // Create a validation error
+    const appError = new AppError(
+      'Validation failed',
+      ErrorTypes.VALIDATION,
+      400,
+      { validationErrors }
+    );
+    
+    // Pass to main error handler
+    return errorHandler(appError, req, res, next);
+  }
   
-  next();
-};
+  // Not a validation error, continue to next error handler
+  next(error);
+}
 
-// Initialize the global database connection error counter
-if (typeof global.dbConnectionErrorCount === 'undefined') {
-  global.dbConnectionErrorCount = 0;
+/**
+ * Unhandled error handler for global use
+ */
+export function setupGlobalErrorHandlers(): void {
+  // Handle uncaught exceptions
+  process.on('uncaughtException', (error) => {
+    console.error('[FATAL] Uncaught exception:', error);
+    logError(error);
+    
+    // Exit with error in production (for auto-restart by process manager)
+    if (isProduction) {
+      process.exit(1);
+    }
+  });
+  
+  // Handle unhandled promise rejections
+  process.on('unhandledRejection', (reason) => {
+    console.error('[FATAL] Unhandled rejection:', reason);
+    logError(reason);
+    
+    // Exit with error in production (for auto-restart by process manager)
+    if (isProduction) {
+      process.exit(1);
+    }
+  });
+}
+
+/**
+ * Apply all error handling middleware to an Express app
+ */
+export function applyErrorHandlers(app: any): void {
+  // Validation error handler (should come first)
+  app.use(validationErrorHandler);
+  
+  // 404 handler for unmatched routes
+  app.use(notFoundHandler);
+  
+  // Main error handler (should be last)
+  app.use(errorHandler);
+  
+  // Set up global error handlers
+  setupGlobalErrorHandlers();
 }
 
 export default {
-  errorHandler,
-  notFoundHandler,
-  databaseErrorTracker,
-  asyncHandler,
   AppError,
   ErrorTypes,
-  logError
+  logError,
+  errorHandler,
+  notFoundHandler,
+  asyncHandler,
+  validationErrorHandler,
+  applyErrorHandlers,
 };

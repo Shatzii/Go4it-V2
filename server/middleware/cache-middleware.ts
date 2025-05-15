@@ -1,171 +1,187 @@
+/**
+ * Go4It Sports - Cache Middleware
+ * 
+ * This middleware provides easy caching for API routes with:
+ * - Route-based caching
+ * - Conditional caching (query params, auth state)
+ * - Cache invalidation
+ * - Bypass options for specific requests
+ */
+
 import { Request, Response, NextFunction } from 'express';
+import cacheService from '../services/cache-service';
 
-// Simple in-memory cache implementation
-interface CacheItem {
-  data: any;
-  expiry: number;
+// Keys that should be skipped for cache key generation
+const SKIP_KEYS = ['token', 'signature', 'timestamp', 'apiKey'];
+
+// Options for the cache middleware
+interface CacheOptions {
+  ttl?: number;
+  namespace?: string;
+  condition?: (req: Request) => boolean;
+  keyGenerator?: (req: Request) => string;
+  bypassHeader?: string;
+  ignoreQueryParams?: boolean;
+  ignoreAuthState?: boolean;
+  cacheMethods?: string[];
 }
 
-class SimpleCache {
-  private cache: Record<string, CacheItem> = {};
-  private defaultTtl: number;
-
-  constructor(defaultTtl = 300) {
-    this.defaultTtl = defaultTtl;
-    
-    // Set up periodic cleanup of expired items
-    setInterval(() => this.cleanup(), 60000);
+/**
+ * Extract a cache key from the request
+ */
+function generateCacheKey(req: Request, options: CacheOptions): string {
+  // Use custom key generator if provided
+  if (options.keyGenerator) {
+    return options.keyGenerator(req);
   }
-
-  get(key: string): any {
-    const item = this.cache[key];
+  
+  // Start with the path
+  let key = req.originalUrl || req.url;
+  
+  // If query params should be considered
+  if (!options.ignoreQueryParams && Object.keys(req.query).length > 0) {
+    // Filter out skipped keys
+    const filteredQuery = { ...req.query };
+    SKIP_KEYS.forEach(k => delete filteredQuery[k]);
     
-    if (!item) {
-      return null;
+    // Sort keys for consistency
+    const sortedQuery = Object.keys(filteredQuery)
+      .sort()
+      .reduce<Record<string, any>>((obj, key) => {
+        obj[key] = filteredQuery[key];
+        return obj;
+      }, {});
+    
+    // Append query string if any params remain
+    if (Object.keys(sortedQuery).length > 0) {
+      key = `${key}?${new URLSearchParams(sortedQuery as Record<string, string>).toString()}`;
+    }
+  }
+  
+  // If auth state should be considered
+  if (!options.ignoreAuthState && req.user) {
+    // Include user ID in key (but not other user info for privacy)
+    key = `${key}:user_${(req.user as any).id || 'anon'}`;
+  }
+  
+  return key;
+}
+
+/**
+ * Check if a request should be cached
+ */
+function shouldCache(req: Request, options: CacheOptions): boolean {
+  // Skip if disabled via header (e.g. for debugging)
+  if (options.bypassHeader && req.get(options.bypassHeader)) {
+    return false;
+  }
+  
+  // Skip if method is not in cacheMethods
+  if (options.cacheMethods && !options.cacheMethods.includes(req.method)) {
+    return false;
+  }
+  
+  // Skip if condition function returns false
+  if (options.condition && !options.condition(req)) {
+    return false;
+  }
+  
+  return true;
+}
+
+/**
+ * Cache middleware factory
+ */
+export function cacheMiddleware(ttl: number = 300, options: Partial<CacheOptions> = {}) {
+  // Default options
+  const defaultOptions: CacheOptions = {
+    ttl: ttl,
+    namespace: 'api',
+    bypassHeader: 'X-Skip-Cache',
+    ignoreQueryParams: false,
+    ignoreAuthState: false,
+    cacheMethods: ['GET'],
+  };
+  
+  // Merge with provided options
+  const cacheOptions: CacheOptions = { ...defaultOptions, ...options };
+  
+  return async (req: Request, res: Response, next: NextFunction) => {
+    // Skip caching for non-GET methods by default
+    if (!shouldCache(req, cacheOptions)) {
+      return next();
     }
     
-    // Check if the item has expired
-    if (Date.now() > item.expiry) {
-      delete this.cache[key];
-      return null;
-    }
+    // Generate cache key
+    const cacheKey = generateCacheKey(req, cacheOptions);
     
-    return item.data;
-  }
-
-  set(key: string, data: any, ttl = this.defaultTtl): void {
-    this.cache[key] = {
-      data,
-      expiry: Date.now() + (ttl * 1000)
-    };
-  }
-
-  del(key: string): void {
-    delete this.cache[key];
-  }
-
-  keys(): string[] {
-    return Object.keys(this.cache);
-  }
-
-  clear(): void {
-    this.cache = {};
-  }
-
-  // Remove all expired cache items
-  private cleanup(): void {
-    const now = Date.now();
-    let count = 0;
-    
-    for (const key in this.cache) {
-      if (this.cache[key].expiry < now) {
-        delete this.cache[key];
-        count++;
+    try {
+      // Try to get from cache
+      const cachedData = await cacheService.get(cacheOptions.namespace!, cacheKey);
+      
+      if (cachedData) {
+        // Set headers to indicate cache hit
+        res.set('X-Cache', 'HIT');
+        return res.json(cachedData);
       }
-    }
-    
-    if (count > 0) {
-      console.log(`[cache] Cleaned up ${count} expired items`);
-    }
-  }
-}
-
-// Create cache instance
-const apiCache = new SimpleCache(300); // 5 minute default TTL
-
-// Cache paths to skip (never cache these endpoints)
-const SKIP_CACHE_PATHS = [
-  '/api/login', 
-  '/api/logout', 
-  '/api/register', 
-  '/api/admin/',
-  '/api/user',
-  '/api/upload'
-];
-
-// Cache paths to always include, even for authenticated users
-const WHITELIST_CACHE_PATHS = [
-  '/api/content-blocks/',
-  '/api/featured-athletes',
-  '/api/combine-tour/',
-  '/api/scout-vision',
-  '/api/blog-posts'
-];
-
-// Cache middleware
-export function cacheMiddleware(ttl = 300) {
-  return (req: Request, res: Response, next: NextFunction) => {
-    // Skip cache for non-GET methods
-    if (req.method !== 'GET') {
-      return next();
-    }
-
-    // Skip cache for specified paths
-    if (SKIP_CACHE_PATHS.some(path => req.path.includes(path))) {
-      return next();
-    }
-
-    // Skip cache for authenticated routes that might have user-specific data
-    // unless they are explicitly whitelisted
-    if (req.isAuthenticated && req.isAuthenticated() && 
-        !WHITELIST_CACHE_PATHS.some(path => req.path.includes(path))) {
-      return next();
-    }
-
-    // Get cache key from URL path
-    const key = req.originalUrl || req.url;
-    
-    // Check if we have a cache hit
-    const cachedResponse = apiCache.get(key);
-    
-    if (cachedResponse) {
-      // Log cache hit
-      console.log(`[cache] Cache hit for key: ${key}`);
       
-      // Set Cache-Control header for browsers
-      res.set('Cache-Control', `public, max-age=${ttl}`);
+      // Set headers to indicate cache miss
+      res.set('X-Cache', 'MISS');
       
-      // Return the cached response
-      return res.send(cachedResponse);
-    }
-
-    // Store the original send method
-    const originalSend = res.send;
-    
-    // Override the send method to cache the response
-    res.send = function(body): Response {
-      // Only cache successful responses
-      if (res.statusCode >= 200 && res.statusCode < 300) {
-        try {
-          apiCache.set(key, body, ttl);
-          console.log(`[cache] Cache miss for key: ${key}`);
-        } catch (error) {
-          console.error('[cache] Error setting cache:', error);
+      // Save original JSON method
+      const originalJson = res.json;
+      
+      // Override res.json to intercept the response
+      res.json = function(body: any) {
+        // Restore original method to avoid multiple interceptions
+        res.json = originalJson;
+        
+        // Don't cache error responses
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          // Save response to cache
+          cacheService.set(
+            cacheOptions.namespace!,
+            cacheKey,
+            body,
+            cacheOptions.ttl
+          ).catch(err => console.error('[Cache] Error caching response:', err));
         }
-      }
+        
+        // Call the original method
+        return originalJson.call(this, body);
+      };
       
-      // Call the original send method
-      return originalSend.call(this, body);
-    };
-    
-    next();
+      next();
+    } catch (error) {
+      // If there's any error with caching, just proceed with the request
+      console.error('[Cache] Error in cache middleware:', error);
+      next();
+    }
   };
 }
 
-// Cache invalidation function for specific paths
-export function invalidateCache(pathPattern: string): void {
-  const keys = apiCache.keys();
-  
-  keys.forEach((key: string) => {
-    if (key.includes(pathPattern)) {
-      apiCache.del(key);
-      console.log(`[cache] Invalidated cache for: ${key}`);
-    }
-  });
+/**
+ * Invalidate cache for a specific key or pattern
+ */
+export async function invalidateCache(key: string, namespace: string = 'api'): Promise<boolean> {
+  if (key.includes('*')) {
+    // Wildcard invalidation
+    return cacheService.invalidateNamespace(namespace);
+  } else {
+    return cacheService.delete(namespace, key);
+  }
 }
 
-// Function to clear entire cache
-export function clearCache(): void {
-  apiCache.clear();
-  console.log('[cache] Entire cache cleared');
+/**
+ * Middleware to manually skip cache for a specific request
+ */
+export function skipCache(req: Request, _res: Response, next: NextFunction) {
+  req.headers['x-skip-cache'] = '1';
+  next();
 }
+
+export default {
+  cacheMiddleware,
+  invalidateCache,
+  skipCache
+};

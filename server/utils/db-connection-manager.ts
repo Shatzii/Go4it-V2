@@ -1,321 +1,515 @@
 /**
  * Go4It Sports - Database Connection Manager
  * 
- * This utility provides resilient database connection handling with:
- * - Connection pooling optimizations
- * - Automatic reconnection strategies
- * - Circuit breaker pattern for error handling
- * - Health monitoring
+ * This utility manages connections to the PostgreSQL database:
+ * - Connection pooling with health checks
+ * - Connection timeouts and retries
+ * - Automatic reconnection
+ * - Query logging for debugging
+ * - Metrics for monitoring
  */
 
 import { Pool, PoolClient } from 'pg';
-import { drizzle } from 'drizzle-orm/node-postgres';
-import * as schema from '@shared/schema';
-import { AppError, ErrorTypes } from '../middleware/error-handler';
+import { AppError, ErrorTypes, logError } from '../middleware/error-handler';
+import { EventEmitter } from 'events';
 
-// Maximum connection attempts before invoking circuit breaker
-const MAX_CONNECTION_FAILURES = 3;
-// Time in milliseconds to wait between reconnection attempts
-const RECONNECTION_DELAY = 1000;
-// Circuit breaker timeout in milliseconds (how long to wait before allowing new connection attempts)
-const CIRCUIT_BREAKER_TIMEOUT = 30000;
-
-// State of the connection manager
-interface ConnectionManagerState {
-  failureCount: number;
-  lastFailureTime: number | null;
-  circuitOpen: boolean;
-  lastReconnectAttempt: number | null;
-  isConnected: boolean;
-  currentConnections: number;
+// Connection stats tracking
+interface ConnectionStats {
+  totalQueries: number;
+  activeConnections: number;
   maxConnections: number;
-  totalErrors: number;
-  lastErrorMessage: string | null;
+  errors: number;
+  lastError: Error | null;
+  lastErrorTime: Date | null;
+  slowQueries: number;
+  avgQueryTime: number;
+  totalQueryTime: number;
+  queriesPerSecond: number[];
+  queriesPerEndpoint: Record<string, number>;
 }
 
-// Default connection manager state
-const initialState: ConnectionManagerState = {
-  failureCount: 0,
-  lastFailureTime: null,
-  circuitOpen: false,
-  lastReconnectAttempt: null,
-  isConnected: false,
-  currentConnections: 0,
-  maxConnections: 0,
-  totalErrors: 0,
-  lastErrorMessage: null
+// Configuration options
+interface ConnectionManagerConfig {
+  connectionString?: string;
+  maxConnections?: number;
+  idleTimeout?: number;
+  connectionTimeout?: number;
+  acquireTimeout?: number;
+  maxRetries?: number;
+  retryDelay?: number;
+  logQueries?: boolean;
+  logSlowQueries?: boolean;
+  slowQueryThreshold?: number;
+  poolIdleCheckInterval?: number;
+  metricsInterval?: number;
+}
+
+// Default configuration
+const DEFAULT_CONFIG: ConnectionManagerConfig = {
+  connectionString: process.env.DATABASE_URL,
+  maxConnections: 20,
+  idleTimeout: 10000,
+  connectionTimeout: 30000,
+  acquireTimeout: 60000,
+  maxRetries: 3,
+  retryDelay: 1000,
+  logQueries: process.env.NODE_ENV === 'development',
+  logSlowQueries: true,
+  slowQueryThreshold: 1000, // 1 second
+  poolIdleCheckInterval: 30000, // 30 seconds
+  metricsInterval: 60000, // 1 minute
 };
 
 /**
- * Database Connection Manager class
+ * Database Connection Manager
+ * 
+ * Handles database connections, pooling, retries, and monitoring
  */
-class DbConnectionManager {
+export class ConnectionManager extends EventEmitter {
   private pool: Pool;
-  private state: ConnectionManagerState;
-  private static instance: DbConnectionManager;
+  private config: ConnectionManagerConfig;
+  private active: boolean = false;
+  private metricsTimer: NodeJS.Timeout | null = null;
+  private idleCheckTimer: NodeJS.Timeout | null = null;
+  private queryTimeTracking: Map<string, number> = new Map();
+  private lastMetricsTimestamp: number = Date.now();
+  private queryCounter: number = 0;
+  private stats: ConnectionStats = {
+    totalQueries: 0,
+    activeConnections: 0,
+    maxConnections: 0,
+    errors: 0,
+    lastError: null,
+    lastErrorTime: null,
+    slowQueries: 0,
+    avgQueryTime: 0,
+    totalQueryTime: 0,
+    queriesPerSecond: new Array(60).fill(0),
+    queriesPerEndpoint: {},
+  };
   
   /**
-   * Private constructor (use getInstance for singleton)
+   * Create a database connection manager
    */
-  private constructor(connectionString?: string) {
-    // Initialize connection state
-    this.state = { ...initialState };
+  constructor(config: ConnectionManagerConfig = {}) {
+    super();
+    this.config = { ...DEFAULT_CONFIG, ...config };
     
-    // Create the connection pool
+    // Make sure we have a connection string
+    if (!this.config.connectionString) {
+      throw new Error('No database connection string provided. Check DATABASE_URL environment variable.');
+    }
+    
+    // Configure the connection pool
     this.pool = new Pool({
-      connectionString: connectionString || process.env.DATABASE_URL,
-      max: 20, // Maximum number of clients
-      idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
-      connectionTimeoutMillis: 5000, // Return an error after 5 seconds if connection cannot be established
+      connectionString: this.config.connectionString,
+      max: this.config.maxConnections,
+      idleTimeoutMillis: this.config.idleTimeout,
+      connectionTimeoutMillis: this.config.connectionTimeout,
     });
     
-    // Set up event handlers
-    this.pool.on('connect', (client: PoolClient) => {
-      this.handleConnect(client);
+    // Set up event listeners
+    this.configurePoolEvents();
+    
+    // Start metrics collection
+    this.startMetricsCollection();
+    
+    // Start idle connection checking
+    this.startIdleConnectionChecking();
+    
+    this.active = true;
+    console.log('[db] Database connection manager initialized');
+  }
+  
+  /**
+   * Configure the event listeners for the pool
+   */
+  private configurePoolEvents(): void {
+    // When a new client is created
+    this.pool.on('connect', (client) => {
+      this.stats.activeConnections++;
+      this.stats.maxConnections = Math.max(this.stats.maxConnections, this.stats.activeConnections);
+      console.log(`[db] New client connected to database (active: ${this.stats.activeConnections})`);
     });
     
-    this.pool.on('error', (err: Error, client: PoolClient) => {
-      this.handleError(err, client);
+    // When a client is closed
+    this.pool.on('remove', (client) => {
+      this.stats.activeConnections--;
+      console.log(`[db] Client removed from pool (active: ${this.stats.activeConnections})`);
     });
     
-    this.pool.on('acquire', () => {
-      this.state.currentConnections++;
-      this.state.maxConnections = Math.max(this.state.maxConnections, this.state.currentConnections);
-    });
-    
-    this.pool.on('remove', () => {
-      this.state.currentConnections--;
+    // Handle pool errors
+    this.pool.on('error', (err) => {
+      this.trackError(err);
+      console.error('[db] Pool error:', err.message);
     });
   }
   
   /**
-   * Get the singleton instance
+   * Start collecting metrics on query performance
    */
-  public static getInstance(connectionString?: string): DbConnectionManager {
-    if (!DbConnectionManager.instance) {
-      DbConnectionManager.instance = new DbConnectionManager(connectionString);
-    }
-    return DbConnectionManager.instance;
-  }
-  
-  /**
-   * Handle successful connections
-   */
-  private handleConnect(client: PoolClient): void {
-    // Reset failure count on successful connection
-    if (this.state.failureCount > 0) {
-      console.log(`[DB] Connection successful after ${this.state.failureCount} failures`);
-      this.state.failureCount = 0;
-    }
-    
-    this.state.isConnected = true;
-    this.state.circuitOpen = false;
-    
-    // Track client disconnections
-    client.on('end', () => {
-      console.log('[DB] Client disconnected');
-    });
-  }
-  
-  /**
-   * Handle connection errors
-   */
-  private handleError(err: Error, client: PoolClient): void {
-    console.error(`[DB] Pool error: ${err.message}`);
-    this.state.totalErrors++;
-    this.state.lastErrorMessage = err.message;
-    
-    // Increment failure count
-    this.state.failureCount++;
-    this.state.lastFailureTime = Date.now();
-    
-    // Remove the errored client
-    client.release(err);
-    
-    // Check if we need to open the circuit breaker
-    if (this.state.failureCount >= MAX_CONNECTION_FAILURES) {
-      this.openCircuitBreaker();
+  private startMetricsCollection(): void {
+    if (this.config.metricsInterval && this.config.metricsInterval > 0) {
+      this.metricsTimer = setInterval(() => {
+        this.calculateMetrics();
+      }, this.config.metricsInterval);
     }
   }
   
   /**
-   * Open the circuit breaker to prevent further connection attempts
+   * Start checking for idle connections
    */
-  private openCircuitBreaker(): void {
-    if (!this.state.circuitOpen) {
-      console.warn(`[DB] Circuit breaker activated after ${this.state.failureCount} failures`);
-      this.state.circuitOpen = true;
+  private startIdleConnectionChecking(): void {
+    if (this.config.poolIdleCheckInterval && this.config.poolIdleCheckInterval > 0) {
+      this.idleCheckTimer = setInterval(() => {
+        this.checkPoolHealth();
+      }, this.config.poolIdleCheckInterval);
+    }
+  }
+  
+  /**
+   * Track when a query starts for performance monitoring
+   */
+  private trackQueryStart(id: string): void {
+    this.queryTimeTracking.set(id, Date.now());
+    this.stats.totalQueries++;
+    this.queryCounter++;
+  }
+  
+  /**
+   * Track when a query ends for performance monitoring
+   */
+  private trackQueryEnd(id: string, endpoint: string = 'unknown'): void {
+    const startTime = this.queryTimeTracking.get(id);
+    
+    if (startTime) {
+      const endTime = Date.now();
+      const duration = endTime - startTime;
       
-      // Schedule circuit reset
-      setTimeout(() => {
-        console.log('[DB] Circuit breaker timeout elapsed, allowing new connection attempts');
-        this.state.circuitOpen = false;
-      }, CIRCUIT_BREAKER_TIMEOUT);
+      // Update tracking stats
+      this.stats.totalQueryTime += duration;
+      this.stats.avgQueryTime = this.stats.totalQueryTime / this.stats.totalQueries;
+      
+      // Update per-endpoint stats
+      if (!this.stats.queriesPerEndpoint[endpoint]) {
+        this.stats.queriesPerEndpoint[endpoint] = 0;
+      }
+      this.stats.queriesPerEndpoint[endpoint]++;
+      
+      // Check for slow queries
+      if (duration > (this.config.slowQueryThreshold || 1000)) {
+        this.stats.slowQueries++;
+        if (this.config.logSlowQueries) {
+          console.warn(`[db] Slow query detected (${duration}ms) for endpoint ${endpoint}`);
+        }
+      }
+      
+      // Clean up
+      this.queryTimeTracking.delete(id);
     }
   }
   
   /**
-   * Get a client from the pool with circuit breaker protection
+   * Track database errors
+   */
+  private trackError(error: Error): void {
+    this.stats.errors++;
+    this.stats.lastError = error;
+    this.stats.lastErrorTime = new Date();
+    
+    // Emit error event for external handling
+    this.emit('error', error);
+  }
+  
+  /**
+   * Calculate performance metrics
+   */
+  private calculateMetrics(): void {
+    const now = Date.now();
+    const elapsed = (now - this.lastMetricsTimestamp) / 1000; // in seconds
+    
+    if (elapsed > 0) {
+      // Calculate queries per second
+      const qps = this.queryCounter / elapsed;
+      
+      // Update the queries per second array (rolling 60 seconds)
+      this.stats.queriesPerSecond.shift();
+      this.stats.queriesPerSecond.push(qps);
+      
+      // Reset counters
+      this.queryCounter = 0;
+      this.lastMetricsTimestamp = now;
+      
+      // Emit metrics event for external monitoring
+      this.emit('metrics', {
+        timestamp: new Date(),
+        ...this.stats
+      });
+    }
+  }
+  
+  /**
+   * Check pool health by pinging the database
+   */
+  private async checkPoolHealth(): Promise<void> {
+    try {
+      // Run a simple query to check connection
+      await this.query('SELECT 1 AS health_check', [], 'health_check');
+      
+      // If successful, emit healthy event
+      this.emit('healthy');
+    } catch (error) {
+      console.error('[db] Pool health check failed:', error);
+      this.trackError(error instanceof Error ? error : new Error(String(error)));
+      
+      // If failed, try to recover
+      this.attemptRecovery();
+      
+      // Emit unhealthy event
+      this.emit('unhealthy', error);
+    }
+  }
+  
+  /**
+   * Attempt to recover from connection issues
+   */
+  private async attemptRecovery(): Promise<void> {
+    try {
+      console.log('[db] Attempting to recover pool...');
+      
+      // Drain the pool and create a new one
+      await this.pool.end();
+      
+      // Create a new pool
+      this.pool = new Pool({
+        connectionString: this.config.connectionString,
+        max: this.config.maxConnections,
+        idleTimeoutMillis: this.config.idleTimeout,
+        connectionTimeoutMillis: this.config.connectionTimeout,
+      });
+      
+      // Reconfigure events
+      this.configurePoolEvents();
+      
+      console.log('[db] Pool recovery successful');
+    } catch (error) {
+      console.error('[db] Pool recovery failed:', error);
+    }
+  }
+  
+  /**
+   * Get a client from the pool
    */
   public async getClient(): Promise<PoolClient> {
-    // Check circuit breaker
-    if (this.state.circuitOpen) {
-      // Check if enough time has passed since the last failure
-      const now = Date.now();
-      if (!this.state.lastFailureTime || (now - this.state.lastFailureTime) < CIRCUIT_BREAKER_TIMEOUT) {
-        throw new AppError(
-          'Database connection temporarily unavailable. Please try again shortly.',
-          ErrorTypes.DATABASE,
-          503
-        );
-      }
-      
-      // If enough time has passed, reset the circuit breaker
-      this.state.circuitOpen = false;
-      this.state.failureCount = 0;
-    }
-    
-    try {
-      // Get a client from the pool
-      const client = await this.pool.connect();
-      console.log('[DB] New client connected to database (active:', this.state.currentConnections, ')');
-      return client;
-    } catch (error) {
-      // Increment failure count
-      this.state.failureCount++;
-      this.state.lastFailureTime = Date.now();
-      this.state.totalErrors++;
-      this.state.lastErrorMessage = error.message;
-      
-      console.error(`[DB] Error getting client: ${error.message}`);
-      
-      // Check if we need to open the circuit breaker
-      if (this.state.failureCount >= MAX_CONNECTION_FAILURES) {
-        this.openCircuitBreaker();
-      }
-      
+    if (!this.active) {
       throw new AppError(
-        'Unable to connect to the database. Please try again later.',
+        'Database connection manager is not active',
         ErrorTypes.DATABASE,
-        503,
-        { originalError: error.message }
-      );
-    }
-  }
-  
-  /**
-   * Execute a database query with automatic retries
-   */
-  public async executeQuery<T>(
-    queryFn: (client: PoolClient) => Promise<T>, 
-    maxRetries: number = 2
-  ): Promise<T> {
-    // Don't attempt if circuit is open
-    if (this.state.circuitOpen) {
-      throw new AppError(
-        'Database service temporarily unavailable. Please try again shortly.',
-        ErrorTypes.DATABASE,
-        503
+        500
       );
     }
     
+    let retries = 0;
     let lastError: Error | null = null;
-    let retryCount = 0;
     
-    while (retryCount <= maxRetries) {
-      let client: PoolClient | null = null;
-      
+    // Try to get a client, with retries
+    while (retries <= (this.config.maxRetries || 3)) {
       try {
-        client = await this.getClient();
-        const result = await queryFn(client);
-        
-        // If we succeeded after retries, log it
-        if (retryCount > 0) {
-          console.log(`[DB] Query succeeded after ${retryCount} retries`);
-        }
-        
-        return result;
+        const client = await this.pool.connect();
+        return client;
       } catch (error) {
-        lastError = error;
-        this.state.totalErrors++;
-        this.state.lastErrorMessage = error.message;
+        lastError = error instanceof Error ? error : new Error(String(error));
+        this.trackError(lastError);
         
-        // Check if this is a connection error that should be retried
-        const isConnectionError = error.message.includes('timeout') || 
-                                error.message.includes('connection') ||
-                                error.message.includes('network');
+        // Increment retry counter
+        retries++;
         
-        if (isConnectionError && retryCount < maxRetries) {
-          retryCount++;
-          console.log(`[DB] Connection error, retrying (${retryCount}/${maxRetries}): ${error.message}`);
-          
-          // Wait before retrying
-          await new Promise(resolve => setTimeout(resolve, RECONNECTION_DELAY * retryCount));
-        } else {
-          // Not a retriable error or max retries reached
-          break;
-        }
-      } finally {
-        // Always release the client back to the pool
-        if (client) {
-          client.release();
+        // If we have more retries, wait and try again
+        if (retries <= (this.config.maxRetries || 3)) {
+          console.warn(`[db] Failed to get client, retrying (${retries}/${this.config.maxRetries})...`);
+          await new Promise(resolve => setTimeout(resolve, this.config.retryDelay));
         }
       }
     }
     
-    // If we got here, all retries failed
-    throw lastError || new AppError(
-      'Database query failed after multiple attempts.',
+    // If we get here, all retries have failed
+    throw new AppError(
+      'Failed to acquire database connection after maximum retries',
       ErrorTypes.DATABASE,
-      503
+      503,
+      { originalError: lastError?.message }
     );
   }
   
   /**
-   * Get a Drizzle ORM instance connected to the pool
+   * Execute a query with automatic retries
    */
-  public getDrizzle() {
-    return drizzle(this.pool, { schema });
+  public async query(text: string, params: any[] = [], endpoint: string = 'unknown') {
+    if (!this.active) {
+      throw new AppError(
+        'Database connection manager is not active',
+        ErrorTypes.DATABASE,
+        500
+      );
+    }
+    
+    const queryId = `query_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    this.trackQueryStart(queryId);
+    
+    // Log the query if enabled
+    if (this.config.logQueries) {
+      console.log(`[db] Executing query for ${endpoint}:`, {
+        text,
+        params: params.length > 0 ? params : undefined
+      });
+    }
+    
+    let retries = 0;
+    let lastError: Error | null = null;
+    
+    // Try to execute the query, with retries for certain errors
+    while (retries <= (this.config.maxRetries || 3)) {
+      try {
+        const result = await this.pool.query(text, params);
+        this.trackQueryEnd(queryId, endpoint);
+        return result;
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error(String(error));
+        this.trackError(lastError);
+        
+        // Check if the error is retriable (connection-related)
+        const isRetriable = this.isRetriableError(lastError);
+        
+        // Increment retry counter
+        retries++;
+        
+        // If the error is retriable and we have more retries, wait and try again
+        if (isRetriable && retries <= (this.config.maxRetries || 3)) {
+          console.warn(`[db] Query failed, retrying (${retries}/${this.config.maxRetries})...`);
+          await new Promise(resolve => setTimeout(resolve, this.config.retryDelay));
+        } else {
+          // Non-retriable error or out of retries
+          break;
+        }
+      }
+    }
+    
+    // If we get here with an error, all retries have failed
+    // or we had a non-retriable error
+    if (lastError) {
+      // Format the error for better debugging
+      const queryDetails = {
+        text,
+        params: params.length > 0 ? params : [],
+        endpoint
+      };
+      
+      // Create an app error with details
+      throw new AppError(
+        'Database query failed',
+        ErrorTypes.DATABASE,
+        500,
+        {
+          originalError: lastError.message,
+          query: queryDetails,
+          retries
+        }
+      );
+    }
+    
+    // This should never happen (we either return a result or throw an error)
+    throw new Error('Unexpected error in database query execution');
   }
   
   /**
-   * Get the raw connection pool
+   * Determine if an error is retriable
    */
-  public getPool(): Pool {
-    return this.pool;
+  private isRetriableError(error: Error): boolean {
+    // Connection-related errors that can be retried
+    const retriableMessages = [
+      'connection terminated',
+      'connection reset',
+      'Connection terminated',
+      'Connection reset',
+      'timeout',
+      'Timeout',
+      'Connection timed out',
+      'connection timed out',
+      'no connection',
+      'No connection',
+      'too many clients',
+      'Too many clients',
+      'ECONNREFUSED',
+      'ENOTFOUND',
+      'ETIMEDOUT'
+    ];
+    
+    // Check if the error message contains any of the retriable phrases
+    return retriableMessages.some(msg => error.message.includes(msg));
   }
   
   /**
-   * Get the current state of the connection manager
+   * Execute a transaction with automatic rollback on error
    */
-  public getState(): ConnectionManagerState {
-    return { ...this.state };
+  public async transaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
+    const client = await this.getClient();
+    
+    try {
+      await client.query('BEGIN');
+      const result = await callback(client);
+      await client.query('COMMIT');
+      return result;
+    } catch (error) {
+      // Attempt to roll back the transaction
+      try {
+        await client.query('ROLLBACK');
+      } catch (rollbackError) {
+        console.error('[db] Error rolling back transaction:', rollbackError);
+      }
+      
+      // Re-throw the original error
+      throw error;
+    } finally {
+      // Always release the client
+      client.release();
+    }
   }
   
   /**
-   * Close the connection pool
+   * Get database statistics
+   */
+  public getStats(): ConnectionStats {
+    return { ...this.stats };
+  }
+  
+  /**
+   * Shut down the connection manager
    */
   public async close(): Promise<void> {
+    this.active = false;
+    
+    // Clear timers
+    if (this.metricsTimer) {
+      clearInterval(this.metricsTimer);
+      this.metricsTimer = null;
+    }
+    
+    if (this.idleCheckTimer) {
+      clearInterval(this.idleCheckTimer);
+      this.idleCheckTimer = null;
+    }
+    
+    // Drain the pool
     try {
       await this.pool.end();
-      console.log('[DB] Connection pool closed');
+      console.log('[db] Database connection pool closed');
     } catch (error) {
-      console.error(`[DB] Error closing pool: ${error.message}`);
-      throw error;
+      console.error('[db] Error closing database connection pool:', error);
     }
   }
 }
 
-// Export the singleton instance
-export const dbConnectionManager = DbConnectionManager.getInstance();
+// Create a singleton instance of the connection manager
+const connectionManager = new ConnectionManager();
 
-// Export a Drizzle ORM instance connected to the pool
-export const db = dbConnectionManager.getDrizzle();
-
-// Export the raw pool for direct queries if needed
-export const pool = dbConnectionManager.getPool();
-
-// Helper function to simplify working with the connection manager
-export async function withDbClient<T>(queryFn: (client: PoolClient) => Promise<T>): Promise<T> {
-  return dbConnectionManager.executeQuery(queryFn);
-}
+export default connectionManager;
