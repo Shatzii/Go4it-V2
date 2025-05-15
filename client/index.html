@@ -4,135 +4,138 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
     <meta name="description" content="Go4It Sports - Advanced sports analytics platform for neurodivergent student athletes" />
-    <meta name="theme-color" content="#0e1628" />
-    
-    <!-- PWA Support -->
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" type="image/svg+xml" href="/assets/images/logo.svg" />
-    <link rel="apple-touch-icon" href="/assets/images/logo.svg" />
-    
-    <!-- Title -->
     <title>Go4It Sports | Development Platform for Athletes</title>
     
     <style>
-      /* Fallback styles */
-      .loading-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         background-color: #0e1628;
         color: white;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        margin: 0;
+        padding: 0;
       }
-      .spinner {
-        width: 50px;
-        height: 50px;
-        border: 5px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        border-top-color: #fff;
-        animation: spin 1s ease-in-out infinite;
-        margin-bottom: 20px;
-      }
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
-      .error-container {
-        background-color: #0e1628;
-        color: white;
-        padding: 20px;
-        border-radius: 8px;
-        max-width: 600px;
+      
+      .container {
+        max-width: 800px;
         margin: 0 auto;
+        padding: 40px 20px;
         text-align: center;
       }
-      .error-container pre {
-        background: rgba(0,0,0,0.2);
-        padding: 15px;
-        overflow: auto;
-        border-radius: 4px;
+      
+      .title {
+        font-size: 36px;
+        margin-bottom: 20px;
+        background: linear-gradient(to right, #3b82f6, #22d3ee);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      
+      .subtitle {
+        font-size: 18px;
+        margin-bottom: 30px;
+        color: #94a3b8;
+      }
+      
+      .button {
+        display: inline-block;
+        background: linear-gradient(to right, #2563eb, #0891b2);
+        padding: 12px 30px;
+        border-radius: 8px;
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        margin: 10px;
+      }
+      
+      .button:hover {
+        opacity: 0.9;
+      }
+      
+      .button-outline {
+        display: inline-block;
+        background: transparent;
+        padding: 12px 30px;
+        border-radius: 8px;
+        color: #38bdf8;
+        text-decoration: none;
+        font-weight: bold;
+        border: 1px solid #38bdf8;
+        margin: 10px;
+      }
+      
+      .button-outline:hover {
+        background-color: rgba(56, 189, 248, 0.1);
+      }
+      
+      .features {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 40px;
+      }
+      
+      .feature {
+        width: 300px;
+        margin: 20px;
+        padding: 20px;
+        background-color: rgba(15, 23, 42, 0.6);
+        border-radius: 10px;
         text-align: left;
-        margin-top: 15px;
+      }
+      
+      .feature-title {
+        font-size: 20px;
+        margin-bottom: 10px;
+        color: #38bdf8;
+      }
+      
+      footer {
+        margin-top: 60px;
+        padding-top: 20px;
+        border-top: 1px solid #1e293b;
+        color: #64748b;
       }
     </style>
   </head>
   <body>
-    <div id="root">
-      <!-- Initial loading state that will be replaced by React -->
-      <div class="loading-container">
-        <div class="spinner"></div>
-        <h2>Go4It Sports</h2>
-        <p>Loading your sports development platform...</p>
+    <div class="container">
+      <h1 class="title">Go4It Sports Platform</h1>
+      <p class="subtitle">Advanced sports analytics for neurodivergent student athletes</p>
+      
+      <div>
+        <a href="/auth" class="button">Get Started</a>
+        <a href="#features" class="button-outline">Learn More</a>
       </div>
+      
+      <div class="features" id="features">
+        <div class="feature">
+          <h2 class="feature-title">Video Analysis</h2>
+          <p>Upload your game footage and get professional analysis with our proprietary GAR scoring system.</p>
+        </div>
+        
+        <div class="feature">
+          <h2 class="feature-title">StarPath</h2>
+          <p>Track your athletic development with interactive tools designed for all learning styles.</p>
+        </div>
+        
+        <div class="feature">
+          <h2 class="feature-title">Scout Connections</h2>
+          <p>Connect directly with coaches and scouts to showcase your athletic abilities.</p>
+        </div>
+      </div>
+      
+      <footer>
+        <p>&copy; 2025 Go4It Sports. All rights reserved.</p>
+      </footer>
     </div>
     
-    <!-- Debug error handler, logs errors to console and displays them -->
+    <!-- Simple script to verify JavaScript works -->
     <script>
-      window.appErrors = [];
-      window.addEventListener('error', function(event) {
-        const error = {
-          message: event.message,
-          source: event.filename,
-          lineno: event.lineno,
-          colno: event.colno,
-          stack: event.error ? event.error.stack : 'No stack trace available',
-          timestamp: new Date().toISOString()
-        };
-        
-        console.error('Application error:', error);
-        window.appErrors.push(error);
-        
-        // Show error on page if it persists and there's no content
-        setTimeout(() => {
-          const root = document.getElementById('root');
-          if (root && (!root.children.length || root.innerHTML.includes('loading-container'))) {
-            const errorHTML = `
-              <div class="error-container">
-                <h2>There was a problem loading Go4It Sports</h2>
-                <p>Please try refreshing the page. If the problem persists, contact support.</p>
-                <details>
-                  <summary>Technical Details (click to expand)</summary>
-                  <pre>${JSON.stringify(window.appErrors, null, 2)}</pre>
-                </details>
-              </div>
-            `;
-            root.innerHTML = errorHTML;
-          }
-        }, 3000);
-      }, true);
-    </script>
-    
-    <!-- Main application script -->
-    <script type="module" src="/src/main.tsx" onerror="console.error('Failed to load main.tsx module')"></script>
-    
-    <!-- Fallback for production/offline -->
-    <script>
-      // Check if main module failed to load
-      window.addEventListener('error', function(e) {
-        if (e.target.src && e.target.src.includes('main.tsx')) {
-          console.warn('Main module failed to load. Checking for service worker...');
-          // If service worker is active, show offline message
-          if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            document.getElementById('root').innerHTML = '<div style="text-align:center;padding:2rem;"><h2>Go4It Sports</h2><p>Working offline. Some features may be limited.</p></div>';
-          }
-        }
-      }, true);
-    </script>
-    
-    <!-- Service Worker Registration -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/service-worker.js')
-            .then(function(registration) {
-              console.log('Service Worker registered with scope:', registration.scope);
-            })
-            .catch(function(error) {
-              console.error('Service Worker registration failed:', error);
-            });
-        });
-      }
+      console.log('Basic HTML page loaded successfully');
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM fully loaded');
+      });
     </script>
   </body>
 </html>
