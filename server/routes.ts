@@ -6,13 +6,13 @@ import { fileUpload, imageUpload, videoUpload, getUploadedImages, deleteImage, m
 import fs from "fs";
 import { analyzeVideo, generateSportRecommendations, analyzePlayStrategy } from "./openai";
 import activeNetworkService from "./active-network";
-import { db, pool } from "./utils/db-connection-manager";
+import { db, pool, getDatabaseHealth } from "./db";
 import { eq } from "drizzle-orm";
 import multer from "multer";
 import path from "path";
 import { WebSocketServer, WebSocket } from 'ws';
 import { setWebSocketStats, WebSocketStats } from './websocket-stats';
-import { errorHandler, notFoundHandler, databaseErrorTracker, asyncHandler } from './middleware/error-handler';
+import { errorHandler, notFoundHandler, asyncHandler } from './middleware/error-handler';
 
 // Extended WebSocket interface with isAlive flag for connection monitoring
 interface ExtendedWebSocket extends WebSocket {
@@ -188,11 +188,34 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Apply database error tracking middleware
-  app.use(databaseErrorTracker);
+  // Apply database error handling setup
+  // Error tracking will be handled through error-handler middleware
   
   // Apply cache middleware for all routes
   app.use(cacheMiddleware(300)); // 5-minute TTL
+  
+  // Add health check routes
+  app.get('/api/health', asyncHandler(async (req: Request, res: Response) => {
+    const dbHealth = getDatabaseHealth();
+    res.json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      services: {
+        database: {
+          status: dbHealth.isHealthy ? 'healthy' : 'unhealthy',
+          details: dbHealth
+        },
+        redis: {
+          status: global.redis?.status === 'ready' ? 'healthy' : 'unavailable',
+          fallbackActive: true
+        },
+        api: {
+          status: 'healthy',
+          version: process.env.API_VERSION || '1.0.0'
+        }
+      }
+    });
+  }));
   
   // Create HTTP server with WebSocket support
   const server = createServer(app);

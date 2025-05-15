@@ -2,6 +2,7 @@ import { Pool } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from '@shared/schema';
 import { log } from "./vite";
+import { AppError, ErrorTypes } from './middleware/error-handler';
 
 // Database connection singleton
 let poolInstance: Pool | null = null;
@@ -254,6 +255,28 @@ export function getDatabaseHealth(): {
     peakConnections,
     connectionStats: { ...connectionStats }
   };
+}
+
+/**
+ * Execute a database query with proper error handling and logging
+ * This is a wrapper around the standard db.query() for better error handling
+ */
+export async function executeQuery(query: string, params: any[] = [], context: string = 'unknown') {
+  try {
+    return await executeWithRetry(() => pool.query(query, params));
+  } catch (error) {
+    // Convert the database error to an AppError for consistent handling
+    throw new AppError(
+      `Database query failed: ${(error as Error).message}`, 
+      ErrorTypes.DATABASE,
+      500,
+      { 
+        query: query.substring(0, 200) + (query.length > 200 ? '...' : ''),
+        context,
+        params: params.length > 0 ? params : undefined
+      }
+    );
+  }
 }
 
 /**
