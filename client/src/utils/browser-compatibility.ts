@@ -106,50 +106,82 @@ export function getDeviceType(): 'mobile' | 'tablet' | 'desktop' {
  * These can be used for CSS targeting specific browsers/features
  */
 export function applyBrowserCompatibilityClasses(): void {
-  const html = document.documentElement;
-  
-  // WebP support
-  if (supportsWebP()) {
-    html.classList.add('webp-support');
-  } else {
-    html.classList.add('no-webp-support');
-  }
-  
-  // Grid support
-  if (supportsGrid()) {
-    html.classList.add('grid-support');
-  } else {
-    html.classList.add('no-grid-support');
-  }
-  
-  // Flex gap support
-  if (supportsFlexGap()) {
-    html.classList.add('flex-gap-support');
-  } else {
-    html.classList.add('no-flex-gap-support');
-  }
-  
-  // Touch device
-  if (isTouchDevice()) {
-    html.classList.add('touch-device');
-  } else {
-    html.classList.add('no-touch-device');
-  }
-  
-  // Device type
-  html.classList.add(`device-${getDeviceType()}`);
-  
-  // Low memory detection (experimental)
-  if ('deviceMemory' in navigator) {
-    const memory = (navigator as any).deviceMemory;
-    if (memory && memory < 4) {
-      html.classList.add('low-memory-device');
+  try {
+    const html = document.documentElement;
+    
+    // WebP support
+    try {
+      if (supportsWebP()) {
+        html.classList.add('webp-support');
+      } else {
+        html.classList.add('no-webp-support');
+      }
+    } catch (e) {
+      console.warn('Error detecting WebP support:', e);
     }
-  }
-  
-  // Reduced motion preference
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    html.classList.add('prefers-reduced-motion');
+    
+    // Grid support
+    try {
+      if (supportsGrid()) {
+        html.classList.add('grid-support');
+      } else {
+        html.classList.add('no-grid-support');
+      }
+    } catch (e) {
+      console.warn('Error detecting Grid support:', e);
+    }
+    
+    // Flex gap support
+    try {
+      if (supportsFlexGap()) {
+        html.classList.add('flex-gap-support');
+      } else {
+        html.classList.add('no-flex-gap-support');
+      }
+    } catch (e) {
+      console.warn('Error detecting Flex Gap support:', e);
+    }
+    
+    // Touch device
+    try {
+      if (isTouchDevice()) {
+        html.classList.add('touch-device');
+      } else {
+        html.classList.add('no-touch-device');
+      }
+    } catch (e) {
+      console.warn('Error detecting Touch support:', e);
+    }
+    
+    // Device type
+    try {
+      html.classList.add(`device-${getDeviceType()}`);
+    } catch (e) {
+      console.warn('Error setting device type class:', e);
+    }
+    
+    // Low memory detection (experimental)
+    try {
+      if ('deviceMemory' in navigator) {
+        const memory = (navigator as any).deviceMemory;
+        if (memory && memory < 4) {
+          html.classList.add('low-memory-device');
+        }
+      }
+    } catch (e) {
+      console.warn('Error detecting device memory:', e);
+    }
+    
+    // Reduced motion preference
+    try {
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        html.classList.add('prefers-reduced-motion');
+      }
+    } catch (e) {
+      console.warn('Error detecting motion preference:', e);
+    }
+  } catch (e) {
+    console.error('Failed to apply browser compatibility classes:', e);
   }
 }
 
@@ -158,32 +190,41 @@ export function applyBrowserCompatibilityClasses(): void {
  * Call this function once at app initialization
  */
 export function initBrowserCompatibility(): void {
-  // Apply compatibility classes
-  applyBrowserCompatibilityClasses();
-  
-  // Add event listener for viewport resize to update device type
-  let resizeTimeout: NodeJS.Timeout;
-  window.addEventListener('resize', () => {
-    // Debounce resize events
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-      const html = document.documentElement;
-      // Remove old device type classes
-      html.classList.remove('device-mobile', 'device-tablet', 'device-desktop');
-      // Add current device type class
-      html.classList.add(`device-${getDeviceType()}`);
-    }, 250);
-  }, supportsPassiveEvents() ? { passive: true } : false);
-  
-  // Log detected features for debugging
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Browser compatibility features detected:', {
-      webp: supportsWebP(),
-      grid: supportsGrid(),
-      flexGap: supportsFlexGap(),
-      touchDevice: isTouchDevice(),
-      passiveEvents: supportsPassiveEvents(),
-      deviceType: getDeviceType(),
-    });
+  try {
+    // Apply compatibility classes
+    applyBrowserCompatibilityClasses();
+    
+    // Add event listener for viewport resize to update device type
+    let resizeTimeout: any; // Changed from NodeJS.Timeout to avoid errors
+    window.addEventListener('resize', () => {
+      // Debounce resize events
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        try {
+          const html = document.documentElement;
+          // Remove old device type classes
+          html.classList.remove('device-mobile', 'device-tablet', 'device-desktop');
+          // Add current device type class
+          html.classList.add(`device-${getDeviceType()}`);
+        } catch (error) {
+          console.error('Error updating device type classes:', error);
+        }
+      }, 250);
+    }, supportsPassiveEvents() ? { passive: true } : false);
+    
+    // Log detected features for debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Browser compatibility features detected:', {
+        webp: supportsWebP(),
+        grid: supportsGrid(),
+        flexGap: supportsFlexGap(),
+        touchDevice: isTouchDevice(),
+        passiveEvents: supportsPassiveEvents(),
+        deviceType: getDeviceType(),
+      });
+    }
+  } catch (error) {
+    console.error('Failed to initialize browser compatibility features:', error);
+    // Continue app loading even if compatibility detection fails
   }
 }
