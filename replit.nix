@@ -1,5 +1,6 @@
 {pkgs}: {
   deps = [
+    pkgs.redis
     pkgs.openssh
     pkgs.giflib
     pkgs.libjpeg
