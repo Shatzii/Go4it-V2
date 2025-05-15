@@ -3,7 +3,7 @@ import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { SimplifiedAuthProvider } from "./contexts/simplified-auth-context";
+import { SimplifiedAuthProvider, useSimplifiedAuth } from "./contexts/simplified-auth-context";
 import { MessagingProvider } from "./contexts/messaging-context";
 import { LayoutProvider } from "./contexts/layout-context";
 import { MeasurementProvider } from "./contexts/measurement-context";
@@ -156,18 +156,8 @@ function Router() {
       <ScrollToTop />
       <Switch>
         <Route path="/auth" component={SimpleAuth} />
-        <Route path="/full-auth" component={AuthPage} />
-        
-        <Route path="/simple-login" component={SimpleLogin} />
-        
-        <Route path="/test-auth" component={TestAuth} />
-        
-        <Route path="/password-reset" component={PasswordReset} />
         
         <Route path="/" component={SimpleHome} />
-        
-        {/* Original HomePage now accessible via /full-home */}
-        <Route path="/full-home" component={HomePage} />
         
         {/* Add /app route to handle NDA redirection */}
         <Route path="/app" component={SimpleHome} />
@@ -522,7 +512,7 @@ function Router() {
 }
 
 function AppContent() {
-  const { user, loading } = useAuth();
+  const { user, loading } = useSimplifiedAuth();
   const [location, setLocation] = useLocation();
 
   // Safety check for unexpected or empty routes
@@ -550,21 +540,7 @@ function AppContent() {
   }
   
   // Original auth page still available at /full-auth
-  if (location === "/full-auth") {
-    return <AuthPage />;
-  }
-  
-  if (location === "/simple-login") {
-    return <SimpleLogin />;
-  }
-  
-  if (location === "/test-auth") {
-    return <TestAuth />;
-  }
-  
-  if (location === "/password-reset") {
-    return <PasswordReset />;
-  }
+  // Remove auth page references
   
   // Handle root route for homepage
   if (location === "/") {
@@ -574,11 +550,6 @@ function AppContent() {
   // Use simplified home page for /app path to avoid potential issues
   if (location === "/app") {
     return <SimpleHome />;
-  }
-  
-  // Original complex home page now at /full-home
-  if (location === "/full-home") {
-    return <HomePage />;
   }
 
   return (
