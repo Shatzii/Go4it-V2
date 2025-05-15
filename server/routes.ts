@@ -726,7 +726,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register Star Profile management routes for admin
   starProfileConnector.registerAdminRoutes(app);
   
-  // CyberShield enhanced login route with token support
+  // CyberShield enhanced login route with token support - both JWT and session-based authentication
   app.post("/api/auth/login", (req, res, next) => {
     passport.authenticate("local", async (err, user, info) => {
       if (err) {
@@ -744,23 +744,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       try {
         // Generate JWT tokens for the user
-        // Using the imported generateTokens from the top of the file
         const deviceFingerprint = req.body.deviceFingerprint || req.headers["x-device-fingerprint"] || "web-app";
         const tokens = await generateTokens(user.id, user.role, deviceFingerprint);
         
-        // Also create session for backward compatibility
+        // Create session for dual auth support (both JWT and session)
         req.login(user, (loginErr) => {
           if (loginErr) {
             console.error("Session login error:", loginErr);
-            // Continue anyway - we have JWT tokens
+            // Continue anyway with JWT tokens
           } else {
-            // Log session details (still using session as fallback)
             console.log("Session created:", req.sessionID);
           }
           
-          // Return both the user object and the tokens
+          // Return sanitized user object (without password) and tokens
+          const userResponse = {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            profileImage: user.profileImage,
+            bio: user.bio,
+            measurementSystem: user.measurementSystem,
+            phoneNumber: user.phoneNumber,
+            createdAt: user.createdAt
+          };
+          
           return res.status(200).json({ 
-            user,
+            user: userResponse,
             ...tokens  // Include accessToken, refreshToken, expiresAt
           });
         });
@@ -772,7 +783,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.error("Session login error:", loginErr);
             return next(loginErr);
           }
-          return res.status(200).json({ user });
+          
+          // Return sanitized user without tokens
+          const userResponse = {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            profileImage: user.profileImage,
+            bio: user.bio,
+            measurementSystem: user.measurementSystem,
+            phoneNumber: user.phoneNumber,
+            createdAt: user.createdAt
+          };
+          
+          return res.status(200).json({ user: userResponse });
         });
       }
     })(req, res, next);
@@ -819,9 +845,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
             // Continue anyway - we have JWT tokens
           }
           
-          // Return both the user object and the tokens
+          // Sanitize user data before returning
+          const sanitizedUser = {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            profileImage: user.profileImage,
+            bio: user.bio,
+            measurementSystem: user.measurementSystem,
+            phoneNumber: user.phoneNumber,
+            createdAt: user.createdAt
+          };
+          
+          // Return both the sanitized user object and the tokens
           return res.status(201).json({ 
-            user,
+            user: sanitizedUser,
             ...tokens  // Include accessToken, refreshToken, expiresAt
           });
         });
@@ -830,7 +870,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Fall back to session-only auth if token generation fails
         req.login(user, (err) => {
           if (err) return next(err);
-          res.status(201).json({ user });
+          
+          // Sanitize user data before returning
+          const sanitizedUser = {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            profileImage: user.profileImage,
+            bio: user.bio,
+            measurementSystem: user.measurementSystem,
+            phoneNumber: user.phoneNumber,
+            createdAt: user.createdAt
+          };
+          
+          res.status(201).json({ user: sanitizedUser });
         });
       }
     } catch (error) {
@@ -899,6 +954,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Enhanced /me endpoint to support both token and session auth
   app.get("/api/auth/me", async (req, res) => {
     try {
+      let user = null;
+      
       // First check for token-based authentication
       const authHeader = req.headers.authorization;
       if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -908,16 +965,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (payload) {
           // Token is valid, get user info
-          const user = await storage.getUser(payload.userId);
-          if (user) {
-            return res.json({ user });
-          }
+          user = await storage.getUser(payload.userId);
         }
       }
       
-      // Fall back to session-based authentication
-      if (req.isAuthenticated()) {
-        return res.json({ user: req.user });
+      // Fall back to session-based authentication if no user found via token
+      if (!user && req.isAuthenticated()) {
+        user = req.user;
+      }
+      
+      // If we have a user, return sanitized user data
+      if (user) {
+        // Sanitize user data (remove password and sensitive fields)
+        const sanitizedUser = {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          profileImage: user.profileImage,
+          bio: user.bio,
+          measurementSystem: user.measurementSystem,
+          phoneNumber: user.phoneNumber,
+          createdAt: user.createdAt
+        };
+        
+        return res.json({ user: sanitizedUser });
       }
       
       // Neither token nor session authentication succeeded
