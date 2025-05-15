@@ -1,17 +1,31 @@
-import { Router, Request } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { storage } from "../storage";
 import { isAuthenticatedMiddleware, isAdminMiddleware } from '../middleware/auth-middleware';
 import * as accessControl from '../middleware/access-control';
 import { z } from "zod";
 import { insertCoachConnectionSchema } from "@shared/schema";
 
-// Extended request type to ensure authenticated user
-interface AuthenticatedRequest extends Request {
-  user: {
-    id: number;
-    username: string;
-    role: string;
-    [key: string]: any;
+/**
+ * Helper function to create type-safe route handlers
+ * This ensures req.user is defined in route handlers without TypeScript errors
+ */
+// TypeScript User type for authenticated requests
+type AuthUser = {
+  id: number;
+  username: string;
+  role: string;
+  [key: string]: any;
+};
+
+// Type-safe handler creator that ensures req.user is properly typed
+function createHandler(handler: (req: Request & { user: AuthUser }, res: Response) => Promise<any>) {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    // isAuthenticated middleware guarantees req.user exists
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized - User not authenticated" });
+    }
+    
+    return handler(req as Request & { user: AuthUser }, res);
   };
 }
 
@@ -38,7 +52,7 @@ router.get(
   "/connections",
   isAuthenticated,
   requireRole([COACH, ADMIN]),
-  async (req, res) => {
+  createHandler(async (req, res) => {
     try {
       const connections = await storage.getCoachConnections(req.user.id);
       
@@ -68,7 +82,7 @@ router.get(
         message: "Failed to fetch coach connections" 
       });
     }
-  }
+  })
 );
 
 /**
@@ -81,6 +95,7 @@ router.get(
   isAuthenticated,
   requireRole([COACH, ADMIN]),
   async (req, res) => {
+    // The middleware already ensures req.user exists
     try {
       const athleteId = parseInt(req.params.athleteId);
       if (isNaN(athleteId)) {
