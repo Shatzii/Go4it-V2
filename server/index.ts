@@ -127,6 +127,24 @@ app.use('/offline.html', (req, res) => {
 // Serve static assets 
 app.use('/assets', express.static(path.join(process.cwd(), 'public', 'assets')));
 
+// Fix for main.tsx file access
+app.use('/src/main.tsx', (req, res) => {
+  const mainTsxPath = path.join(process.cwd(), 'client', 'src', 'main.tsx');
+  if (fs.existsSync(mainTsxPath)) {
+    // Set appropriate headers
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(mainTsxPath);
+  } else {
+    res.status(404).send('File not found');
+  }
+});
+
+// Serve the client/src directory for modules imported by main.tsx
+app.use('/src', express.static(path.join(process.cwd(), 'client', 'src')));
+
+// Also serve node_modules for dependencies
+app.use('/node_modules', express.static(path.join(process.cwd(), 'node_modules')));
+
 // Custom handler for the root path to ensure index.html is served
 app.get('/', (req, res, next) => {
   // In development mode, let Vite handle it by passing to next middleware
