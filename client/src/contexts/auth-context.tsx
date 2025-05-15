@@ -114,13 +114,54 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Set loading state when starting login
       setLoading(true);
       
-      // Special case handling for test accounts
+      // Special case handling for our hardcoded accounts
       if ((username === "alexjohnson" && password === "password123") ||
-          (username === "coachwilliams" && password === "coachpass123") ||
-          (username === "coachmartinez" && password === "coachpass456") ||
-          (username === "admin" && password === "MyTime$$")) {
+          (username === "admin" && password === "admin123") ||
+          (username === "coach" && password === "coach123")) {
+          
+        console.log("Logging in with simplified authentication");
         
-        console.log("Attempting to register test account:", username);
+        // Create the user data
+        const userData = {
+          username,
+          name: username === "alexjohnson" ? "Alex Johnson" : 
+                username === "admin" ? "Admin User" : "Coach Smith",
+          role: username === "alexjohnson" ? "athlete" : 
+                username === "admin" ? "admin" : "coach",
+        };
+        
+        // Save to localStorage
+        localStorage.setItem('go4it_user', JSON.stringify(userData));
+        
+        // Set user data
+        const user: User = {
+          id: 1,
+          username: userData.username,
+          name: userData.name,
+          email: `${userData.username}@example.com`,
+          role: userData.role,
+        };
+        
+        setUser(user);
+        setActualRole(userData.role);
+        setLoading(false);
+        
+        // Show success toast
+        toast({
+          title: "Login successful",
+          description: `Welcome back, ${user.name}!`,
+        });
+        
+        // Connect to WebSocket for real-time updates (disabled for now)
+        // websocketService.connect();
+        
+        loginSuccess = true;
+        loginCompleted = true;
+        return;
+      }
+      
+      // If not a special test account, try normal API login
+      console.log("Attempting to login account:", username);
         
         // Try to register the test account first
         try {
@@ -355,8 +396,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       logoutCompleted = true;
       clearTimeout(logoutTimeout);
       
-      // Clear authentication token from localStorage
+      // Clear authentication data from localStorage
       localStorage.removeItem('accessToken');
+      localStorage.removeItem('go4it_user');
       
       // Always clear user state
       setUser(null);
