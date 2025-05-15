@@ -111,10 +111,18 @@ if (!fs.existsSync(uploadsDir)) {
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
-// REMOVED NDA: No longer showing NDA page on first load
-// Instead, pass through to let the client-side routing handle the home page
+// Custom handler for the root path to ensure index.html is served
 app.get('/', (req, res, next) => {
-  next(); // Always proceed to the next middleware/route handler
+  // In development mode, let Vite handle it by passing to next middleware
+  if (app.get("env") === "development" || !process.env.NODE_ENV) {
+    // We'll explicitly serve index.html for the root path
+    const clientIndexPath = path.join(process.cwd(), 'client', 'index.html');
+    if (fs.existsSync(clientIndexPath)) {
+      return res.sendFile(clientIndexPath);
+    }
+  }
+  // Otherwise proceed to the next middleware
+  next();
 });
 
 // Route for the main application after NDA acceptance
