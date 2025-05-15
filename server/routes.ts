@@ -6,13 +6,13 @@ import { fileUpload, imageUpload, videoUpload, getUploadedImages, deleteImage, m
 import fs from "fs";
 import { analyzeVideo, generateSportRecommendations, analyzePlayStrategy } from "./openai";
 import activeNetworkService from "./active-network";
-import { db } from "./db";
+import { db, pool } from "./utils/db-connection-manager";
 import { eq } from "drizzle-orm";
 import multer from "multer";
 import path from "path";
 import { WebSocketServer, WebSocket } from 'ws';
 import { setWebSocketStats, WebSocketStats } from './websocket-stats';
-import { pool } from "./db";
+import { errorHandler, notFoundHandler, databaseErrorTracker, asyncHandler } from './middleware/error-handler';
 
 // Extended WebSocket interface with isAlive flag for connection monitoring
 interface ExtendedWebSocket extends WebSocket {
@@ -188,6 +188,9 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Apply database error tracking middleware
+  app.use(databaseErrorTracker);
+  
   // Apply cache middleware for all routes
   app.use(cacheMiddleware(300)); // 5-minute TTL
   
@@ -7536,6 +7539,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     await handleGracefulShutdown();
     process.exit(0);
   });
+
+  // Register error handling middleware - these must be the last middleware registered
+  app.use(notFoundHandler); // Handle 404 errors for routes that don't exist
+  app.use(errorHandler);    // Handle all other errors
 
   return server;
 }
