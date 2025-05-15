@@ -111,6 +111,22 @@ if (!fs.existsSync(uploadsDir)) {
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
+// Serve PWA files directly
+app.use('/manifest.json', (req, res) => {
+  res.sendFile(path.join(process.cwd(), 'public', 'manifest.json'));
+});
+
+app.use('/service-worker.js', (req, res) => {
+  res.sendFile(path.join(process.cwd(), 'public', 'service-worker.js'));
+});
+
+app.use('/offline.html', (req, res) => {
+  res.sendFile(path.join(process.cwd(), 'public', 'offline.html'));
+});
+
+// Serve static assets 
+app.use('/assets', express.static(path.join(process.cwd(), 'public', 'assets')));
+
 // Custom handler for the root path to ensure index.html is served
 app.get('/', (req, res, next) => {
   // In development mode, let Vite handle it by passing to next middleware
