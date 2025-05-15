@@ -1,126 +1,140 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
+import { useSimplifiedAuth } from "@/contexts/simplified-auth-context";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
-const SimpleAuth = () => {
+export default function SimpleAuth() {
+  const { user, login, loading } = useSimplifiedAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [, navigate] = useLocation();
+  const { toast } = useToast();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setIsLoading(true);
-
-    // Hard-coded credentials for now to bypass API issues
-    if (
-      (username === "alexjohnson" && password === "password123") ||
-      (username === "admin" && password === "admin123") ||
-      (username === "coach" && password === "coach123")
-    ) {
-      // Store user data for session persistence
-      localStorage.setItem(
-        "go4it_user",
-        JSON.stringify({
-          username,
-          name:
-            username === "alexjohnson"
-              ? "Alex Johnson"
-              : username === "admin"
-              ? "Admin User"
-              : "Coach Smith",
-          role:
-            username === "alexjohnson"
-              ? "athlete"
-              : username === "admin"
-              ? "admin"
-              : "coach",
-        })
-      );
-      
-      // Redirect to the main app
-      navigate("/app");
-    } else {
-      setError("Invalid username or password.");
+    
+    if (!username || !password) {
+      toast({
+        title: "Please enter your credentials",
+        description: "Both username and password are required",
+        variant: "destructive",
+      });
+      return;
     }
     
-    setIsLoading(false);
+    setIsSubmitting(true);
+    
+    try {
+      await login(username, password);
+    } catch (error) {
+      console.error("Login error:", error);
+      // Toast is already shown in the login function
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
+  // If still checking authentication status
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-900">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0e1628] p-4">
-      <div className="w-full max-w-md">
-        <div className="rounded-lg bg-[rgba(15,23,42,0.6)] p-8 shadow-lg">
-          <h1 className="mb-6 text-center text-2xl font-bold text-white">
-            Sign In to Go4It Sports
-          </h1>
-          
-          {error && (
-            <div className="mb-4 rounded border border-red-300 bg-[rgba(220,38,38,0.2)] p-3 text-red-200">
-              {error}
-            </div>
-          )}
-          
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label
-                htmlFor="username"
-                className="mb-2 block text-sm text-gray-400"
+    <div className="flex min-h-screen flex-col md:flex-row">
+      {/* Left side - Auth Form */}
+      <div className="flex flex-1 items-center justify-center bg-gray-900 p-4">
+        <Card className="w-full max-w-md bg-gray-800 text-white">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold text-center">Go4It Sports</CardTitle>
+            <CardDescription className="text-gray-400 text-center">
+              Login to access your performance dashboard
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="username" className="text-gray-300">Username</Label>
+                <Input
+                  id="username"
+                  placeholder="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="bg-gray-700 border-gray-600 text-white"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-gray-300">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="bg-gray-700 border-gray-600 text-white"
+                />
+              </div>
+              <Button
+                type="submit"
+                className="w-full bg-blue-600 hover:bg-blue-700"
+                disabled={isSubmitting}
               >
-                Username
-              </label>
-              <input
-                type="text"
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full rounded bg-[#1e293b] p-3 text-white"
-                required
-              />
+                {isSubmitting ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                {isSubmitting ? "Logging in..." : "Login"}
+              </Button>
+            </form>
+          </CardContent>
+          <CardFooter className="flex justify-center border-t border-gray-700 pt-4">
+            <p className="text-gray-400 text-sm text-center">
+              For testing, use: alexjohnson/password123, admin/admin123, or coach/coach123
+            </p>
+          </CardFooter>
+        </Card>
+      </div>
+
+      {/* Right side - Hero Section */}
+      <div className="hidden md:flex md:flex-1 flex-col items-center justify-center bg-blue-900 p-8 text-white">
+        <div className="max-w-md text-center">
+          <h1 className="text-4xl font-bold mb-4">Welcome to Go4It Sports</h1>
+          <h2 className="text-2xl font-medium mb-2">For Neurodivergent Athletes</h2>
+          <p className="text-lg mb-6">
+            The ultimate platform designed specifically for neurodivergent student athletes.
+            Track your performance, connect with coaches, and unlock your potential.
+          </p>
+          <div className="flex justify-center space-x-4">
+            <div className="text-center">
+              <div className="text-3xl font-bold">StarPath™</div>
+              <p className="text-sm">Interactive player development</p>
             </div>
-            
-            <div className="mb-6">
-              <label
-                htmlFor="password"
-                className="mb-2 block text-sm text-gray-400"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded bg-[#1e293b] p-3 text-white"
-                required
-              />
+            <div className="text-center">
+              <div className="text-3xl font-bold">GAR™</div>
+              <p className="text-sm">Advanced performance scoring</p>
             </div>
-            
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full rounded bg-gradient-to-r from-blue-600 to-cyan-600 p-3 font-bold text-white hover:opacity-90 disabled:opacity-70"
-            >
-              {isLoading ? "Signing In..." : "Sign In"}
-            </button>
-          </form>
-          
-          <div className="mt-6 text-center text-sm text-gray-400">
-            <p>Demo credentials:</p>
-            <p>Username: alexjohnson</p>
-            <p>Password: password123</p>
+            <div className="text-center">
+              <div className="text-3xl font-bold">AI Coach</div>
+              <p className="text-sm">Personalized training</p>
+            </div>
           </div>
-        </div>
-        
-        <div className="mt-4 text-center">
-          <a href="/" className="text-cyan-400 hover:underline">
-            ← Back to Homepage
-          </a>
         </div>
       </div>
     </div>
   );
-};
-
-export default SimpleAuth;
+}

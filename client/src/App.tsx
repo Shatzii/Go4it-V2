@@ -3,13 +3,12 @@ import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider, useAuth } from "./contexts/auth-context";
+import { SimplifiedAuthProvider } from "./contexts/simplified-auth-context";
 import { MessagingProvider } from "./contexts/messaging-context";
 import { LayoutProvider } from "./contexts/layout-context";
 import { MeasurementProvider } from "./contexts/measurement-context";
 import { Loader2 } from "lucide-react";
 import { AccessibilityControls } from "@/components/accessibility/accessibility-controls";
-// REMOVED: import { GlobalAgreementModal } from "@/components/global-agreement-modal";
 import { lazy, Suspense, useEffect } from "react";
 
 import Layout from "@/components/layout/sidebar";
@@ -17,13 +16,8 @@ import NotFound from "@/pages/not-found";
 import ServerError from "@/pages/server-error";
 import Forbidden from "@/pages/forbidden";
 import Unauthorized from "@/pages/unauthorized";
-import HomePage from "@/pages/home-page";
 import SimpleHome from "@/pages/simple-home";
 import SimpleAuth from "@/pages/simple-auth";
-import AuthPage from "@/pages/auth-page";
-import PasswordReset from "@/pages/password-reset";
-import SimpleLogin from "@/pages/simple-login";
-import TestAuth from "@/pages/test-auth";
 
 // Lazy-loaded core pages
 const Dashboard = lazy(() => import("@/pages/dashboard"));
@@ -112,7 +106,7 @@ interface ProtectedRouteProps {
 }
 
 function ProtectedRoute({ component: Component, adminOnly = false }: ProtectedRouteProps) {
-  const { user, loading } = useAuth();
+  const { user, loading } = useSimplifiedAuth();
   const [, navigate] = useLocation();
 
   if (loading) {
@@ -639,18 +633,17 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
+        <SimplifiedAuthProvider>
           <MessagingProvider>
             <LayoutProvider>
               <MeasurementProvider>
-                {/* REMOVED: <GlobalAgreementModal /> */}
                 <AppContent />
                 <AccessibilityControls />
                 <Toaster />
               </MeasurementProvider>
             </LayoutProvider>
           </MessagingProvider>
-        </AuthProvider>
+        </SimplifiedAuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );
