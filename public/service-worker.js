@@ -1,178 +1,146 @@
-// Go4It Sports Service Worker for offline support
-const CACHE_NAME = 'go4it-sports-cache-v1';
+// Go4It Sports Service Worker
+const CACHE_NAME = 'go4it-cache-v1';
+const OFFLINE_URL = '/offline.html';
+const OFFLINE_IMAGE = '/assets/images/offline-placeholder.svg';
+const OFFLINE_CSS = '/assets/styles/offline.css';
 
-// Resources to pre-cache
-const PRECACHE_URLS = [
-  '/',
-  '/index.html',
-  '/offline.html',
-  '/assets/styles/main.css',
-  '/assets/js/main.js',
-  '/assets/fonts/Inter-Regular.woff2',
-  '/assets/fonts/Inter-Bold.woff2',
+// Assets to cache immediately on service worker install
+const CACHE_ASSETS = [
+  OFFLINE_URL,
+  OFFLINE_IMAGE,
+  OFFLINE_CSS,
+  '/manifest.json',
   '/assets/images/logo.svg',
-  '/assets/images/offline-placeholder.svg'
+  // Add other essential assets here
 ];
 
-// Install event - precache assets
-self.addEventListener('install', event => {
+// Service worker installation
+self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(PRECACHE_URLS))
+      .then((cache) => {
+        console.log('Service worker caching assets');
+        return cache.addAll(CACHE_ASSETS);
+      })
       .then(() => self.skipWaiting())
   );
 });
 
-// Activate event - clean up old caches
-self.addEventListener('activate', event => {
-  const currentCaches = [CACHE_NAME];
-  
+// Service worker activation and cache cleanup
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys()
-      .then(cacheNames => {
-        return cacheNames.filter(cacheName => !currentCaches.includes(cacheName));
-      })
-      .then(cachesToDelete => {
-        return Promise.all(cachesToDelete.map(cacheToDelete => {
-          return caches.delete(cacheToDelete);
-        }));
-      })
-      .then(() => self.clients.claim())
-  );
-});
-
-// Fetch event - serve from cache, update cache from network
-self.addEventListener('fetch', event => {
-  // Skip cross-origin requests
-  if (!event.request.url.startsWith(self.location.origin)) {
-    return;
-  }
-  
-  // For API requests, use network first, with cache as fallback
-  if (event.request.url.includes('/api/')) {
-    event.respondWith(
-      fetch(event.request)
-        .then(response => {
-          // Cache successful API responses for offline use
-          if (response.ok) {
-            const responseClone = response.clone();
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, responseClone);
-            });
-          }
-          return response;
-        })
-        .catch(() => {
-          // If network request fails, try to serve from cache
-          return caches.match(event.request)
-            .then(cachedResponse => {
-              if (cachedResponse) {
-                return cachedResponse;
-              }
-              // If no cached version, return offline JSON
-              if (event.request.headers.get('accept').includes('application/json')) {
-                return new Response(JSON.stringify({ 
-                  error: 'You are offline',
-                  offline: true,
-                  timestamp: new Date().toISOString()
-                }), {
-                  headers: { 'Content-Type': 'application/json' }
-                });
-              }
-            });
-        })
-    );
-    return;
-  }
-  
-  // For page navigations, use cache first with network update
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      caches.match('/index.html')
-        .then(cachedResponse => {
-          const networkFetch = fetch(event.request)
-            .then(response => {
-              // Update the cache
-              if (response.ok) {
-                caches.open(CACHE_NAME).then(cache => {
-                  cache.put(event.request, response.clone());
-                });
-              }
-              return response;
-            })
-            .catch(error => {
-              if (cachedResponse) {
-                return cachedResponse;
-              }
-              return caches.match('/offline.html');
-            });
-          
-          // Return cached response immediately, then update cache from network
-          return cachedResponse || networkFetch;
-        })
-    );
-    return;
-  }
-  
-  // For other requests (assets), use cache first strategy
-  event.respondWith(
-    caches.match(event.request)
-      .then(cachedResponse => {
-        if (cachedResponse) {
-          // Update cache in background
-          fetch(event.request).then(response => {
-            if (response.ok) {
-              caches.open(CACHE_NAME).then(cache => {
-                cache.put(event.request, response);
-              });
-            }
-          }).catch(() => {/* Ignore */});
-          
-          return cachedResponse;
+    caches.keys().then((keyList) => {
+      return Promise.all(keyList.map((key) => {
+        if (key !== CACHE_NAME) {
+          console.log('Service worker removing old cache', key);
+          return caches.delete(key);
         }
-        
-        // Not in cache, get from network
-        return fetch(event.request)
-          .then(response => {
-            // Cache the response
-            if (response.ok) {
-              const responseClone = response.clone();
-              caches.open(CACHE_NAME).then(cache => {
-                cache.put(event.request, responseClone);
-              });
-            }
-            return response;
-          })
-          .catch(error => {
-            // For image requests, return fallback image
-            if (event.request.url.match(/\.(jpg|jpeg|png|gif|webp|svg)$/)) {
-              return caches.match('/assets/images/offline-placeholder.svg');
-            }
-            
-            throw error;
-          });
-      })
+      }));
+    })
+    .then(() => self.clients.claim())
   );
 });
 
-// Background sync for offline actions
-self.addEventListener('sync', event => {
+// Network-first strategy with fallback to cache
+async function networkFirstWithFallback(request) {
+  try {
+    // Try to fetch from network first
+    const networkResponse = await fetch(request);
+    
+    // If successful, clone and cache the response
+    if (networkResponse.ok) {
+      const responseToCache = networkResponse.clone();
+      caches.open(CACHE_NAME).then(cache => {
+        // Only cache successful responses from same origin or specific CDNs
+        if (request.url.startsWith(self.location.origin) || 
+            request.url.includes('unpkg.com') || 
+            request.url.includes('images.unsplash.com')) {
+          cache.put(request, responseToCache);
+        }
+      });
+    }
+    return networkResponse;
+  } catch (error) {
+    // Network failed, try cache
+    console.log('Network request failed, trying cache', request.url);
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    
+    // If it's a navigation request (HTML page), return offline page
+    if (request.mode === 'navigate') {
+      return caches.match(OFFLINE_URL);
+    }
+    
+    // If it's an image, return offline image
+    if (request.destination === 'image') {
+      return caches.match(OFFLINE_IMAGE);
+    }
+    
+    // For other resources, return a simple error response
+    return new Response('Network error happened', {
+      status: 408,
+      headers: { 'Content-Type': 'text/plain' }
+    });
+  }
+}
+
+// Handle fetch events using network-first strategy with fallback
+self.addEventListener('fetch', (event) => {
+  // Skip cross-origin POST requests and browser extension requests
+  if (event.request.method !== 'GET' || 
+      event.request.url.startsWith('chrome-extension://')) {
+    return;
+  }
+  
+  event.respondWith(networkFirstWithFallback(event.request));
+});
+
+// Handle offline form submission
+async function syncOfflineActions() {
+  const offlineActions = await localforage.getItem('offlineActions');
+  
+  if (offlineActions && offlineActions.length > 0) {
+    for (const action of offlineActions) {
+      try {
+        await fetch(action.url, {
+          method: action.method,
+          headers: action.headers,
+          body: action.body
+        });
+      } catch (error) {
+        console.error('Failed to sync offline action:', error);
+        return false;
+      }
+    }
+    
+    // Clear synced actions
+    await localforage.setItem('offlineActions', []);
+    return true;
+  }
+  
+  return true;
+}
+
+// Sync event for when the device comes back online
+self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-offline-actions') {
     event.waitUntil(syncOfflineActions());
   }
 });
 
-// Push notification handler
-self.addEventListener('push', event => {
-  const data = event.data.json();
+// Push notification support
+self.addEventListener('push', (event) => {
+  if (!event.data) return;
   
+  const data = event.data.json();
   const options = {
     body: data.body,
-    icon: '/assets/images/logo.png',
-    badge: '/assets/images/badge.png',
-    data: {
-      url: data.url
-    }
+    icon: '/assets/images/logo.svg',
+    badge: '/assets/images/logo.svg',
+    vibrate: [100, 50, 100],
+    data: data.data
   };
   
   event.waitUntil(
@@ -180,18 +148,16 @@ self.addEventListener('push', event => {
   );
 });
 
-// Notification click handler
-self.addEventListener('notificationclick', event => {
+// Handle notification click
+self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   
   if (event.notification.data && event.notification.data.url) {
-    clients.openWindow(event.notification.data.url);
+    event.waitUntil(
+      clients.openWindow(event.notification.data.url)
+    );
   }
 });
 
-// Sync offline actions with server
-async function syncOfflineActions() {
-  // Implementation would connect to IndexedDB
-  // and sync offline data when back online
-  console.log('Syncing offline actions');
-}
+// Log service worker startup
+console.log('Go4It Sports Service Worker Initialized');

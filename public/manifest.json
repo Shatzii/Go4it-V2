@@ -1,42 +1,62 @@
 {
-  "name": "Go4It Sports - Athlete Development Platform",
-  "short_name": "Go4It Sports",
-  "description": "Advanced sports analytics platform for neurodivergent student athletes with personalized performance tracking",
+  "name": "Go4It Sports",
+  "short_name": "Go4It",
+  "description": "Sports analytics platform for neurodivergent student athletes",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0e1628",
-  "theme_color": "#0e1628",
+  "background_color": "#0E1628",
+  "theme_color": "#00B4D8",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/images/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/images/icon-512x512.png",
+      "src": "/assets/images/logo.svg",
+      "type": "image/svg+xml",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ],
   "shortcuts": [
     {
-      "name": "My Videos",
-      "short_name": "Videos",
-      "description": "View your uploaded videos",
-      "url": "/videos",
-      "icons": [{ "src": "/images/video-icon.png", "sizes": "192x192" }]
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Go to your Dashboard",
+      "url": "/dashboard"
     },
     {
-      "name": "Star Path",
-      "short_name": "Star Path",
-      "description": "Access your Star Path progress",
-      "url": "/star-path",
-      "icons": [{ "src": "/images/star-icon.png", "sizes": "192x192" }]
+      "name": "Upload Video",
+      "short_name": "Upload",
+      "description": "Upload a new video for analysis",
+      "url": "/upload-video"
+    },
+    {
+      "name": "StarPath",
+      "short_name": "StarPath",
+      "description": "View your StarPath progress",
+      "url": "/myplayer-star-path"
     }
   ],
+  "categories": ["sports", "education", "health"],
+  "prefer_related_applications": false,
+  "screenshots": [],
   "related_applications": [],
-  "prefer_related_applications": false
+  "scope": "/",
+  "lang": "en-US",
+  "dir": "ltr",
+  "iarc_rating_id": "",
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "file",
+          "accept": ["image/*", "video/*"]
+        }
+      ]
+    }
+  }
 }
