@@ -94,8 +94,7 @@ router.get(
   "/connections/:athleteId",
   isAuthenticated,
   requireRole([COACH, ADMIN]),
-  async (req, res) => {
-    // The middleware already ensures req.user exists
+  createHandler(async (req, res) => {
     try {
       const athleteId = parseInt(req.params.athleteId);
       if (isNaN(athleteId)) {
@@ -132,7 +131,7 @@ router.get(
         message: "Failed to check coach-athlete connection" 
       });
     }
-  }
+  })
 );
 
 /**
@@ -144,7 +143,7 @@ router.post(
   "/connections",
   isAuthenticated,
   requireRole([COACH, ADMIN]),
-  async (req, res) => {
+  createHandler(async (req, res) => {
     try {
       // Validate request body using Zod schema
       const validationResult = insertCoachConnectionSchema.safeParse(req.body);
@@ -196,7 +195,7 @@ router.post(
         message: "Failed to create coach-athlete connection" 
       });
     }
-  }
+  })
 );
 
 /**
@@ -208,7 +207,7 @@ router.put(
   "/connections/:id",
   isAuthenticated,
   requireRole([COACH, ADMIN]),
-  async (req, res) => {
+  createHandler(async (req, res) => {
     try {
       const connectionId = parseInt(req.params.id);
       if (isNaN(connectionId)) {
@@ -242,7 +241,7 @@ router.put(
         message: "Failed to update coach-athlete connection" 
       });
     }
-  }
+  })
 );
 
 /**
@@ -254,7 +253,7 @@ router.delete(
   "/connections/:id",
   isAuthenticated,
   requireRole([COACH, ADMIN]),
-  async (req, res) => {
+  createHandler(async (req, res) => {
     try {
       const connectionId = parseInt(req.params.id);
       if (isNaN(connectionId)) {
@@ -285,7 +284,7 @@ router.delete(
         message: "Failed to delete coach-athlete connection" 
       });
     }
-  }
+  })
 );
 
 export default router;
