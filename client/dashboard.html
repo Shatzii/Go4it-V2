@@ -328,50 +328,58 @@
     </div>
     
     <script>
-      // Get user info
-      async function fetchUserInfo() {
+      // Get user info from localStorage
+      function loadUserInfo() {
+        const userDataString = localStorage.getItem('go4it_user');
+        
+        if (!userDataString) {
+          // If no user data found, redirect to login
+          window.location.href = '/auth';
+          return;
+        }
+        
         try {
-          const response = await fetch('/api/user', {
-            credentials: 'include'
-          });
+          const userData = JSON.parse(userDataString);
           
-          if (response.ok) {
-            const userData = await response.json();
-            document.getElementById('user-name').textContent = userData.username || 'User';
-            if (userData.username) {
-              const initials = userData.username.split(' ')
-                .map(name => name[0])
-                .join('')
-                .toUpperCase();
-              document.querySelector('.avatar').textContent = initials;
-            }
-          } else {
-            // If not authenticated, redirect to login
-            window.location.href = '/auth';
+          // Set user name in the header
+          document.getElementById('user-name').textContent = userData.name || userData.username || 'User';
+          
+          // Set user initials in avatar
+          if (userData.name) {
+            const initials = userData.name.split(' ')
+              .map(name => name[0])
+              .join('')
+              .toUpperCase();
+            document.querySelector('.avatar').textContent = initials;
+          } else if (userData.username) {
+            document.querySelector('.avatar').textContent = userData.username.substring(0, 2).toUpperCase();
+          }
+          
+          // Customize UI based on user role if needed
+          if (userData.role === 'admin') {
+            // Add admin-specific UI elements if needed
+            console.log('Admin user logged in');
+          } else if (userData.role === 'coach') {
+            console.log('Coach user logged in');
           }
         } catch (error) {
-          console.error('Error fetching user data:', error);
+          console.error('Error parsing user data:', error);
+          // In case of corrupted data, clear it and redirect to login
+          localStorage.removeItem('go4it_user');
+          window.location.href = '/auth';
         }
       }
       
       // Handle logout
-      document.getElementById('logout-button').addEventListener('click', async () => {
-        try {
-          const response = await fetch('/api/logout', {
-            method: 'POST',
-            credentials: 'include'
-          });
-          
-          if (response.ok) {
-            window.location.href = '/auth';
-          }
-        } catch (error) {
-          console.error('Logout error:', error);
-        }
+      document.getElementById('logout-button').addEventListener('click', () => {
+        // Clear user data from localStorage
+        localStorage.removeItem('go4it_user');
+        // Redirect to login page
+        window.location.href = '/auth';
       });
       
       // Initialize
-      fetchUserInfo();
+      loadUserInfo();
       
       // Menu handling
       document.querySelectorAll('.menu-item').forEach(item => {
