@@ -39,10 +39,11 @@ import {
   onboardingProgress, type OnboardingProgress, type InsertOnboardingProgress,
   athleteStarProfiles, type AthleteStarProfile, type InsertAthleteStarProfile,
   directMessages, type DirectMessage, type InsertDirectMessage,
-  athleteProfiles, type AthleteProfile, type InsertAthleteProfile
+  athleteProfiles, type AthleteProfile, type InsertAthleteProfile,
+  coachConnections, type CoachConnection, type InsertCoachConnection
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, sql, inArray, asc } from "drizzle-orm";
+import { eq, desc, and, or, sql, inArray, asc } from "drizzle-orm";
 import session from "express-session";
 import MemoryStore from "memorystore";
 import connectPgSimple from "connect-pg-simple";
@@ -115,6 +116,13 @@ export interface IStorage {
   updateUserPassword(id: number, hashedPassword: string): Promise<User | undefined>;
   getAllUsers(): Promise<User[]>;
   getAllAthletes(): Promise<User[]>;
+  
+  // Coach-Athlete Relationship operations
+  getCoachConnections(userId: number): Promise<CoachConnection[]>;
+  getCoachConnectionByIds(coachId: number, athleteId: number): Promise<CoachConnection | undefined>;
+  createCoachConnection(data: InsertCoachConnection): Promise<CoachConnection>;
+  updateCoachConnection(id: number, data: Partial<CoachConnection>): Promise<CoachConnection | undefined>;
+  deleteCoachConnection(id: number): Promise<boolean>;
   
   // Onboarding operations
   getOnboardingProgress(userId: number): Promise<OnboardingProgress | undefined>;
@@ -5085,6 +5093,82 @@ export class DatabaseStorage implements IStorage {
       return true;
     } catch (error) {
       console.error('Error deleting message:', error);
+      return false;
+    }
+  }
+
+  // ===================== Coach-Athlete Relationship Methods =====================
+  
+  async getCoachConnections(userId: number): Promise<CoachConnection[]> {
+    try {
+      // Find connections where userId is either the coach or the athlete
+      return await db.select()
+        .from(coachConnections)
+        .where(
+          or(
+            eq(coachConnections.coachId, userId),
+            eq(coachConnections.athleteId, userId)
+          )
+        )
+        .orderBy(desc(coachConnections.connectionDate));
+    } catch (error) {
+      console.error(`Error getting coach connections for user ${userId}:`, error);
+      return [];
+    }
+  }
+  
+  async getCoachConnectionByIds(coachId: number, athleteId: number): Promise<CoachConnection | undefined> {
+    try {
+      const [connection] = await db.select()
+        .from(coachConnections)
+        .where(
+          and(
+            eq(coachConnections.coachId, coachId),
+            eq(coachConnections.athleteId, athleteId)
+          )
+        );
+      return connection;
+    } catch (error) {
+      console.error(`Error getting coach connection for coach ${coachId} and athlete ${athleteId}:`, error);
+      return undefined;
+    }
+  }
+  
+  async createCoachConnection(data: InsertCoachConnection): Promise<CoachConnection> {
+    try {
+      const [connection] = await db.insert(coachConnections)
+        .values(data)
+        .returning();
+      return connection;
+    } catch (error) {
+      console.error('Error creating coach connection:', error);
+      throw error;
+    }
+  }
+  
+  async updateCoachConnection(id: number, data: Partial<CoachConnection>): Promise<CoachConnection | undefined> {
+    try {
+      const [updated] = await db.update(coachConnections)
+        .set({
+          ...data,
+          lastContact: data.lastContact || new Date()
+        })
+        .where(eq(coachConnections.id, id))
+        .returning();
+      return updated;
+    } catch (error) {
+      console.error(`Error updating coach connection ${id}:`, error);
+      return undefined;
+    }
+  }
+  
+  async deleteCoachConnection(id: number): Promise<boolean> {
+    try {
+      await db.delete(coachConnections)
+        .where(eq(coachConnections.id, id));
+      return true;
+    } catch (error) {
+      console.error(`Error deleting coach connection ${id}:`, error);
       return false;
     }
   }
