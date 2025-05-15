@@ -34,6 +34,14 @@ import { aiCoachService } from './services/ai-coach-service';
 import { User, insertNcaaEligibilitySchema } from "@shared/schema";
 import { isAdminMiddleware, isAuthenticatedMiddleware } from './middleware/auth-middleware';
 import { cacheMiddleware, invalidateCache } from './middleware/cache-middleware';
+import * as accessControl from './middleware/access-control';
+
+// Create middleware namespace for consistent access patterns
+const middleware = {
+  auth: { isAuthenticated: isAuthenticatedMiddleware, isAdmin: isAdminMiddleware },
+  cache: { cache: cacheMiddleware, invalidate: invalidateCache },
+  accessControl
+};
 import scoutRoutes from './routes/scout-routes';
 import myplayerRoutes from './routes/myplayer-routes';
 import videoRoutes from './routes/video-routes';
@@ -1401,35 +1409,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Video analysis routes
-  app.get("/api/videos/:id/analysis", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const videoId = parseInt(req.params.id);
-      const video = await storage.getVideo(videoId);
-      
-      if (!video) {
-        return res.status(404).json({ message: "Video not found" });
+  // Video analysis routes with enhanced access control
+  app.get(
+    "/api/videos/:id/analysis", 
+    middleware.accessControl.enhancedAuth, 
+    (req, res, next) => middleware.accessControl.checkResourceOwnership(
+      middleware.accessControl.RESOURCES.VIDEO, 
+      'id'
+    )(req, res, next),
+    middleware.accessControl.requireViewPermission,
+    async (req: Request, res: Response) => {
+      try {
+        const videoId = parseInt(req.params.id);
+        const video = await storage.getVideo(videoId);
+        
+        if (!video) {
+          return res.status(404).json({ 
+            success: false,
+            message: "Video not found" 
+          });
+        }
+        
+        const analysis = await storage.getVideoAnalysisByVideoId(videoId);
+        
+        if (!analysis) {
+          return res.status(404).json({ 
+            success: false,
+            message: "Analysis not found for this video" 
+          });
+        }
+        
+        return res.json({
+          success: true,
+          data: analysis
+        });
+      } catch (error) {
+        console.error("Error fetching video analysis:", error);
+        return res.status(500).json({ 
+          success: false,
+          message: "Error fetching video analysis" 
+        });
       }
-      
-      const user = req.user as any;
-      
-      // Only allow access to own videos or admin access
-      if (video.userId !== user.id && user.role !== "admin") {
-        return res.status(403).json({ message: "Not authorized to view this analysis" });
-      }
-      
-      const analysis = await storage.getVideoAnalysisByVideoId(videoId);
-      
-      if (!analysis) {
-        return res.status(404).json({ message: "Analysis not found for this video" });
-      }
-      
-      return res.json(analysis);
-    } catch (error) {
-      console.error("Error fetching video analysis:", error);
-      return res.status(500).json({ message: "Error fetching video analysis" });
     }
-  });
+  );
 
   // Generate GAR scores for a video
   app.post("/api/videos/:id/generate-gar", isAuthenticated, async (req: Request, res: Response) => {
@@ -1512,61 +1534,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Play strategy analysis endpoint
-  app.post("/api/videos/:id/analyze-play", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const videoId = parseInt(req.params.id);
-      const video = await storage.getVideo(videoId);
-      
-      if (!video) {
-        return res.status(404).json({ message: "Video not found" });
+  // Play strategy analysis endpoint with enhanced access control
+  app.post(
+    "/api/videos/:id/analyze-play", 
+    middleware.accessControl.enhancedAuth, 
+    (req, res, next) => middleware.accessControl.checkResourceOwnership(
+      middleware.accessControl.RESOURCES.VIDEO, 
+      'id'
+    )(req, res, next),
+    middleware.accessControl.requireEditPermission, // Need edit permission to analyze
+    async (req: Request, res: Response) => {
+      try {
+        const videoId = parseInt(req.params.id);
+        const video = await storage.getVideo(videoId);
+        
+        if (!video) {
+          return res.status(404).json({ 
+            success: false,
+            message: "Video not found" 
+          });
+        }
+        
+        // Get sport type from video or request body
+        const sportType = req.body.sportType || video.sportType || "basketball";
+        
+        // Get context from request body (offense, defense, etc.)
+        const context = req.body.context || "general";
+        
+        // Analyze the play strategy
+        const playAnalysis = await analyzePlayStrategy(videoId, sportType, context);
+        
+        return res.json({
+          success: true,
+          data: playAnalysis
+        });
+      } catch (error) {
+        console.error("Error analyzing play strategy:", error);
+        return res.status(500).json({ 
+          success: false,
+          message: "Error analyzing play strategy" 
+        });
       }
-      
-      const user = req.user as any;
-      
-      // Only allow access to own videos or admin/coach access
-      if (video.userId !== user.id && user.role !== "admin" && user.role !== "coach") {
-        return res.status(403).json({ message: "Not authorized to analyze this video" });
-      }
-      
-      // Get sport type from video or request body
-      const sportType = req.body.sportType || video.sportType || "basketball";
-      
-      // Get context from request body (offense, defense, etc.)
-      const context = req.body.context || "general";
-      
-      // Analyze the play strategy
-      const playAnalysis = await analyzePlayStrategy(videoId, sportType, context);
-      
-      return res.json(playAnalysis);
-    } catch (error) {
-      console.error("Error analyzing play strategy:", error);
-      return res.status(500).json({ message: "Error analyzing play strategy" });
     }
-  });
+  );
 
-  // Generate football game plan from opponent film
-  app.post("/api/videos/:id/game-plan", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const videoId = parseInt(req.params.id);
-      const video = await storage.getVideo(videoId);
-      
-      if (!video) {
-        return res.status(404).json({ message: "Video not found" });
-      }
-      
-      const user = req.user as any;
-      
-      // Only allow access for coaches and admins
-      if (user.role !== "admin" && user.role !== "coach") {
-        return res.status(403).json({ message: "Not authorized to generate game plans. Coach access required." });
-      }
-      
-      const { teamName, opponentName, gameDate } = req.body;
-      
-      if (!teamName || !opponentName) {
-        return res.status(400).json({ message: "Team name and opponent name are required" });
-      }
+  // Generate football game plan from opponent film with enhanced access control
+  app.post(
+    "/api/videos/:id/game-plan", 
+    middleware.accessControl.enhancedAuth, 
+    middleware.accessControl.requireRole(['coach', 'admin']), // Only coaches and admins can generate game plans
+    (req, res, next) => middleware.accessControl.checkResourceOwnership(
+      middleware.accessControl.RESOURCES.VIDEO, 
+      'id'
+    )(req, res, next),
+    middleware.accessControl.requireViewPermission, // Only need view permission for the video
+    async (req: Request, res: Response) => {
+      try {
+        const videoId = parseInt(req.params.id);
+        const video = await storage.getVideo(videoId);
+        
+        if (!video) {
+          return res.status(404).json({ 
+            success: false,
+            message: "Video not found" 
+          });
+        }
+        
+        const { teamName, opponentName, gameDate } = req.body;
+        
+        if (!teamName || !opponentName) {
+          return res.status(400).json({ 
+            success: false,
+            message: "Team name and opponent name are required" 
+          });
+        }
       
       // Call the AI video analysis service to generate the game plan
       const result = await aiVideoAnalysisService.generateFootballGamePlan(
@@ -1576,10 +1617,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         gameDate
       );
       
-      return res.json(result);
+      return res.json({
+        success: true,
+        data: result
+      });
     } catch (error) {
       console.error("Error generating football game plan:", error);
-      return res.status(500).json({ message: error.message || "Error generating football game plan" });
+      return res.status(500).json({ 
+        success: false,
+        message: error.message || "Error generating football game plan" 
+      });
     }
   });
 
