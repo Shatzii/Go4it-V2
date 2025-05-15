@@ -18,6 +18,20 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     
+    <!-- Fallback for production/offline -->
+    <script>
+      // Check if main module failed to load
+      window.addEventListener('error', function(e) {
+        if (e.target.src && e.target.src.includes('main.tsx')) {
+          console.warn('Main module failed to load. Checking for service worker...');
+          // If service worker is active, show offline message
+          if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            document.getElementById('root').innerHTML = '<div style="text-align:center;padding:2rem;"><h2>Go4It Sports</h2><p>Working offline. Some features may be limited.</p></div>';
+          }
+        }
+      }, true);
+    </script>
+    
     <!-- Service Worker Registration -->
     <script>
       if ('serviceWorker' in navigator) {
