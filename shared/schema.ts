@@ -2316,6 +2316,36 @@ export const academicAthleticAnalytics = pgTable("academic_athletic_analytics", 
 });
 
 // 6. AI Coach Effectiveness Analytics
+// Coach-Athlete Relationship
+export const coachConnections = pgTable("coach_connections", {
+  id: serial("id").primaryKey(),
+  coachId: integer("coach_id").notNull().references(() => users.id),
+  athleteId: integer("athlete_id").notNull().references(() => users.id),
+  connectionStatus: text("connection_status").notNull().default("pending"),
+  connectionDate: timestamp("connection_date").defaultNow(),
+  notes: text("notes"),
+  lastContact: timestamp("last_contact"),
+});
+
+export const coachConnectionsRelations = relations(coachConnections, ({ one }) => ({
+  coach: one(users, {
+    fields: [coachConnections.coachId],
+    references: [users.id],
+  }),
+  athlete: one(users, {
+    fields: [coachConnections.athleteId],
+    references: [users.id],
+  }),
+}));
+
+export const insertCoachConnectionSchema = createInsertSchema(coachConnections).omit({
+  id: true,
+  connectionDate: true,
+});
+
+export type CoachConnection = typeof coachConnections.$inferSelect;
+export type InsertCoachConnection = z.infer<typeof insertCoachConnectionSchema>;
+
 export const aiCoachAnalytics = pgTable("ai_coach_analytics", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
