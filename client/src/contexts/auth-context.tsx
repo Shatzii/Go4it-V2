@@ -59,10 +59,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
           setUser(data.user);
           setActualRole(data.user.role); // Store the actual role
           
-          // Initialize WebSocket connection if user is logged in
+          // Temporarily disable WebSocket connection initialization
           if (data.user && data.user.id) {
-            console.log('Initializing WebSocket connection for user:', data.user.id);
-            websocketService.connect(data.user.id);
+            console.log('WebSocket initialization temporarily disabled for debugging');
+            // websocketService.connect(data.user.id);
           }
         }
       } catch (error) {
