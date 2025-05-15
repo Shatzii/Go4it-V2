@@ -1,197 +1,111 @@
-// Standalone Express Server for database API
-// This avoids any issues with Vite or TypeScript configuration problems
+// Go4It Sports Standalone Server
+// This simplified server avoids database issues by serving static HTML files
+// with client-side authentication handling through localStorage
 
-const express = require('express');
-const cors = require('cors');
-const { Pool } = require('pg');
-const fs = require('fs');
-const path = require('path');
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+
+// Setup basic server infrastructure
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+const PORT = 5000;
 
-// Add CORS middleware
-app.use(cors({
-  origin: true,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// Configure middleware
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-// Ensure uploads directory exists
-const uploadsDir = path.join(process.cwd(), "uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
+// Debug request logging
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  next();
+});
 
-// Serve static files from uploads directory
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+// Serve static files from client directory
+app.use(express.static(path.join(__dirname, 'client')));
 
-// Connection to PostgreSQL
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-    require: true
+// Route handlers for specific HTML pages
+app.get('/auth', (req, res) => {
+  console.log("Serving auth.html");
+  res.sendFile(path.join(__dirname, 'client', 'auth.html'));
+});
+
+app.get('/dashboard', (req, res) => {
+  console.log("Serving dashboard.html");
+  res.sendFile(path.join(__dirname, 'client', 'dashboard.html'));
+});
+
+// Basic API endpoints for authentication (for demo purposes)
+app.post('/api/auth/login', (req, res) => {
+  const { username, password } = req.body;
+  console.log(`Login attempt: ${username}`);
+  
+  // Simple hardcoded auth for the demo
+  if ((username === 'alexjohnson' && password === 'password123') ||
+      (username === 'admin' && password === 'admin123') ||
+      (username === 'coach' && password === 'coach123')) {
+    
+    const userData = {
+      id: 1,
+      username,
+      name: username === 'alexjohnson' ? 'Alex Johnson' : 
+            username === 'admin' ? 'Admin User' : 'Coach Smith',
+      email: `${username}@example.com`,
+      role: username === 'alexjohnson' ? 'athlete' : 
+            username === 'admin' ? 'admin' : 'coach',
+    };
+    
+    res.json({ success: true, user: userData });
+  } else {
+    res.status(401).json({ success: false, message: 'Invalid credentials' });
   }
+});
+
+app.post('/api/auth/register', (req, res) => {
+  console.log(`Registration attempt: ${req.body.username}`);
+  
+  // Just return success for the demo
+  const userData = {
+    id: Math.floor(Math.random() * 1000) + 1,
+    ...req.body,
+    email: req.body.email || `${req.body.username}@example.com`
+  };
+  
+  res.status(201).json({ success: true, user: userData });
+});
+
+app.get('/api/user', (req, res) => {
+  // Demo user data
+  console.log("User data requested");
+  res.json({
+    id: 1,
+    username: 'alexjohnson',
+    name: 'Alex Johnson',
+    email: 'alex@example.com',
+    role: 'athlete',
+    profileImage: null
+  });
 });
 
 // Health check endpoint
-app.get('/api/health', async (req, res) => {
-  try {
-    // Test database connection
-    const client = await pool.connect();
-    const result = await client.query('SELECT NOW()');
-    const currentTime = result.rows[0].now;
-    client.release();
-    
-    res.json({
-      status: 'ok',
-      message: 'API server is running',
-      databaseConnected: true,
-      timestamp: currentTime
-    });
-  } catch (error) {
-    console.error('Database connection error:', error);
-    res.json({
-      status: 'warning',
-      message: 'API server is running but database connection failed',
-      databaseConnected: false,
-      error: error.message
-    });
-  }
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', uptime: process.uptime() });
 });
 
-// Get videos for user
-app.get('/api/videos', async (req, res) => {
-  try {
-    const userId = req.query.userId;
-    
-    if (!userId) {
-      return res.status(400).json({ error: 'Missing userId parameter' });
-    }
-    
-    const client = await pool.connect();
-    const result = await client.query(
-      'SELECT * FROM videos WHERE "userId" = $1',
-      [userId]
-    );
-    client.release();
-    
-    res.json(result.rows);
-  } catch (error) {
-    console.error('Error fetching videos:', error);
-    res.status(500).json({ error: 'Database error', details: error.message });
-  }
+// Catch-all route for the main index
+app.get('*', (req, res) => {
+  console.log(`Serving index.html for path: ${req.path}`);
+  res.sendFile(path.join(__dirname, 'client', 'index.html'));
 });
 
-// Get video by ID
-app.get('/api/videos/:id', async (req, res) => {
-  try {
-    const videoId = req.params.id;
-    
-    const client = await pool.connect();
-    const result = await client.query(
-      'SELECT * FROM videos WHERE id = $1',
-      [videoId]
-    );
-    client.release();
-    
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Video not found' });
-    }
-    
-    res.json(result.rows[0]);
-  } catch (error) {
-    console.error('Error fetching video:', error);
-    res.status(500).json({ error: 'Database error', details: error.message });
-  }
-});
-
-// Get highlights
-app.get('/api/highlights', async (req, res) => {
-  try {
-    const featured = req.query.featured === 'true';
-    const videoId = req.query.videoId;
-    const limit = req.query.limit || 10;
-    
-    let query;
-    let params = [];
-    
-    if (videoId) {
-      query = 'SELECT * FROM video_highlights WHERE "videoId" = $1';
-      params = [videoId];
-    } else if (featured) {
-      query = 'SELECT * FROM video_highlights WHERE featured = true ORDER BY id DESC LIMIT $1';
-      params = [limit];
-    } else {
-      // Get homepage highlights
-      query = 'SELECT * FROM video_highlights ORDER BY id DESC LIMIT $1';
-      params = [limit];
-    }
-    
-    const client = await pool.connect();
-    const result = await client.query(query, params);
-    client.release();
-    
-    res.json(result.rows);
-  } catch (error) {
-    console.error('Error fetching highlights:', error);
-    res.status(500).json({ error: 'Database error', details: error.message });
-  }
-});
-
-// Get tables and schema
-app.get('/api/system/schema', async (req, res) => {
-  try {
-    const client = await pool.connect();
-    
-    // Get list of tables
-    const tablesResult = await client.query(`
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = 'public'
-      ORDER BY table_name
-    `);
-    
-    const tables = tablesResult.rows.map(row => row.table_name);
-    
-    // Get schema for each table
-    const schemaByTable = {};
-    
-    for (const table of tables) {
-      const columnsResult = await client.query(`
-        SELECT column_name, data_type, is_nullable, column_default
-        FROM information_schema.columns
-        WHERE table_schema = 'public' AND table_name = $1
-        ORDER BY ordinal_position
-      `, [table]);
-      
-      schemaByTable[table] = columnsResult.rows;
-    }
-    
-    client.release();
-    
-    res.json({
-      tables,
-      schema: schemaByTable
-    });
-  } catch (error) {
-    console.error('Error fetching schema:', error);
-    res.status(500).json({ error: 'Database error', details: error.message });
-  }
-});
-
-// Start the server
-const PORT = process.env.PORT || 3000;
+// Start server
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Standalone API server running on http://0.0.0.0:${PORT}`);
-  console.log('Available endpoints:');
-  console.log('  GET /api/health');
-  console.log('  GET /api/videos?userId=<id>');
-  console.log('  GET /api/videos/:id');
-  console.log('  GET /api/highlights?videoId=<id>');
-  console.log('  GET /api/highlights?featured=true&limit=10');
-  console.log('  GET /api/system/schema');
+  console.log(`[${new Date().toISOString()}] Go4It Sports standalone server running on port ${PORT}`);
+  console.log(`[${new Date().toISOString()}] Available pages: /, /auth, /dashboard`);
+  console.log(`[${new Date().toISOString()}] API endpoints: /api/auth/login, /api/auth/register, /api/user`);
 });

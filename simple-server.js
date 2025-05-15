@@ -1,4 +1,4 @@
-// Go4It Sports Simple Server (CommonJS Version)
+// Go4It Sports Simple Server (Extra-Simplified Version)
 // This version is optimized to start quickly within Replit's constraints
 const express = require('express');
 const path = require('path');
@@ -19,7 +19,6 @@ app.use((req, res, next) => {
 
 // Serve static files from the client directory
 app.use(express.static(path.join(__dirname, 'client')));
-app.use(express.json());
 
 // Simple API endpoint for testing
 app.get('/api/status', (req, res) => {
@@ -31,7 +30,7 @@ app.get('/api/status', (req, res) => {
 });
 
 // Login API endpoint with mock authentication
-app.post('/api/auth/login', (req, res) => {
+app.post('/api/auth/login', express.json(), (req, res) => {
   const { username, password } = req.body;
   
   // Pre-defined test accounts
@@ -62,7 +61,7 @@ app.get('*', (req, res) => {
 });
 
 // Start server quickly
-const server = app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, '0.0.0.0', () => {
   const bootTime = Date.now() - startTime;
   console.log(`╔════════════════════════════════════════════╗`);
   console.log(`║  Go4It Sports Static Server                ║`);
