@@ -1630,90 +1630,124 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Video highlights routes
-  app.get("/api/videos/:id/highlights", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const videoId = parseInt(req.params.id);
-      const video = await storage.getVideo(videoId);
-      
-      if (!video) {
-        return res.status(404).json({ message: "Video not found" });
+  // Video highlights routes with enhanced access control
+  app.get(
+    "/api/videos/:id/highlights", 
+    middleware.accessControl.enhancedAuth, 
+    (req, res, next) => middleware.accessControl.checkResourceOwnership(
+      middleware.accessControl.RESOURCES.VIDEO, 
+      'id'
+    )(req, res, next),
+    middleware.accessControl.requireViewPermission, // Only need view permission to see highlights
+    async (req: Request, res: Response) => {
+      try {
+        const videoId = parseInt(req.params.id);
+        const video = await storage.getVideo(videoId);
+        
+        if (!video) {
+          return res.status(404).json({ 
+            success: false,
+            message: "Video not found" 
+          });
+        }
+        
+        // Use the database function matching our actual schema
+        const highlights = await storage.getAllVideoHighlights(videoId);
+        
+        return res.json({
+          success: true,
+          data: highlights
+        });
+      } catch (error) {
+        console.error("Error fetching video highlights:", error);
+        return res.status(500).json({ 
+          success: false,
+          message: "Error fetching video highlights" 
+        });
       }
-      
-      const user = req.user as any;
-      
-      // Only allow access to own videos or admin access
-      if (video.userId !== user.id && user.role !== "admin") {
-        return res.status(403).json({ message: "Not authorized to view these highlights" });
-      }
-      
-      const highlights = await storage.getVideoHighlights(videoId);
-      return res.json(highlights);
-    } catch (error) {
-      console.error("Error fetching video highlights:", error);
-      return res.status(500).json({ message: "Error fetching video highlights" });
     }
-  });
+  );
 
-  app.get("/api/highlights/:id", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const highlightId = parseInt(req.params.id);
-      const highlight = await storage.getVideoHighlight(highlightId);
-      
-      if (!highlight) {
-        return res.status(404).json({ message: "Highlight not found" });
+  // Single highlight route with enhanced access control
+  app.get(
+    "/api/highlights/:id", 
+    middleware.accessControl.enhancedAuth,
+    (req, res, next) => middleware.accessControl.checkResourceOwnership(
+      middleware.accessControl.RESOURCES.HIGHLIGHT, 
+      'id'
+    )(req, res, next),
+    middleware.accessControl.requireViewPermission,
+    async (req: Request, res: Response) => {
+      try {
+        const highlightId = parseInt(req.params.id);
+        // Use the function matching our actual schema
+        const highlight = await storage.getVideoHighlight(highlightId);
+        
+        if (!highlight) {
+          return res.status(404).json({ 
+            success: false,
+            message: "Highlight not found" 
+          });
+        }
+        
+        return res.json({
+          success: true,
+          data: highlight
+        });
+      } catch (error) {
+        console.error("Error fetching highlight:", error);
+        return res.status(500).json({ 
+          success: false,
+          message: "Error fetching highlight" 
+        });
       }
-      
-      // Fetch the related video to check permission
-      const video = await storage.getVideo(highlight.videoId);
-      
-      if (!video) {
-        return res.status(404).json({ message: "Original video not found" });
-      }
-      
-      const user = req.user as any;
-      
-      // Only allow access to own video highlights or admin access
-      if (video.userId !== user.id && user.role !== "admin") {
-        return res.status(403).json({ message: "Not authorized to view this highlight" });
-      }
-      
-      return res.json(highlight);
-    } catch (error) {
-      console.error("Error fetching highlight:", error);
-      return res.status(500).json({ message: "Error fetching highlight" });
     }
-  });
+  );
 
-  app.post("/api/videos/:id/highlights", isAuthenticated, async (req: Request, res: Response) => {
-    try {
-      const videoId = parseInt(req.params.id);
-      const video = await storage.getVideo(videoId);
-      
-      if (!video) {
-        return res.status(404).json({ message: "Video not found" });
+  // Create highlight endpoint with enhanced access control
+  app.post(
+    "/api/videos/:id/highlights", 
+    middleware.accessControl.enhancedAuth,
+    (req, res, next) => middleware.accessControl.checkResourceOwnership(
+      middleware.accessControl.RESOURCES.VIDEO,
+      'id'
+    )(req, res, next),
+    middleware.accessControl.requireEditPermission, // Need edit permission to create highlights
+    async (req: Request, res: Response) => {
+      try {
+        const videoId = parseInt(req.params.id);
+        const video = await storage.getVideo(videoId);
+        
+        if (!video) {
+          return res.status(404).json({ 
+            success: false,
+            message: "Video not found" 
+          });
+        }
+        
+        const user = req.user as any;
+        
+        const highlightData = insertVideoHighlightSchema.parse({
+          ...req.body,
+          videoId,
+          userId: user.id
+        });
+        
+        const highlight = await storage.createVideoHighlight(highlightData);
+        
+        return res.status(201).json({
+          success: true,
+          data: highlight
+        });
+      } catch (error) {
+        console.error("Error creating video highlight:", error);
+        return res.status(400).json({ 
+          success: false,
+          message: error.message || "Error creating video highlight"
+        });
       }
-      
-      const user = req.user as any;
-      
-      // Only allow creating highlights for own videos or admin access
-      if (video.userId !== user.id && user.role !== "admin") {
-        return res.status(403).json({ message: "Not authorized to create highlights for this video" });
-      }
-      
-      const highlightData = insertVideoHighlightSchema.parse({
-        ...req.body,
-        videoId,
-        userId: user.id
-      });
-      
-      const highlight = await storage.createVideoHighlight(highlightData);
-      return res.status(201).json(highlight);
-    } catch (error) {
-      console.error("Error creating video highlight:", error);
-      return res.status(400).json({ message: error.message });
     }
-  });
+  );
 
   app.put("/api/highlights/:id", isAuthenticated, async (req: Request, res: Response) => {
     try {
