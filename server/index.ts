@@ -17,6 +17,7 @@ import { registerSkillTreeApi } from './skill-tree-api';
 import skillTreeRoutes from './routes/skill-tree-routes';
 import { seedSkillTree } from './seed-skill-tree';
 import net from 'net';
+import authRoutes from './auth-routes';
 
 const app = express();
 app.use(express.json());
@@ -180,6 +181,9 @@ app.get('/dashboard', (req, res, next) => {
   }
   next();
 });
+
+// Register authentication API routes
+app.use('/api', authRoutes);
 
 // Route for the main application after NDA acceptance
 // Let Vite handle this route in development mode
