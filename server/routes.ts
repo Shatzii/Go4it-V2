@@ -6,13 +6,13 @@ import { fileUpload, imageUpload, videoUpload, getUploadedImages, deleteImage, m
 import fs from "fs";
 import { analyzeVideo, generateSportRecommendations, analyzePlayStrategy } from "./openai";
 import activeNetworkService from "./active-network";
-import { db, pool, getDatabaseHealth } from "./db";
+import { db, pool, getDatabaseHealth, executeQuery } from "./db";
 import { eq } from "drizzle-orm";
 import multer from "multer";
 import path from "path";
 import { WebSocketServer, WebSocket } from 'ws';
 import { setWebSocketStats, WebSocketStats } from './websocket-stats';
-import { errorHandler, notFoundHandler, asyncHandler } from './middleware/error-handler';
+import { errorHandler, notFoundHandler, asyncHandler, AppError, ErrorTypes } from './middleware/error-handler';
 
 // Extended WebSocket interface with isAlive flag for connection monitoring
 interface ExtendedWebSocket extends WebSocket {
@@ -215,6 +215,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
     });
+  }));
+  
+  // Test route for error handling
+  app.get('/api/test-error', asyncHandler(async (_req: Request, _res: Response) => {
+    // This will trigger our error handling middleware with an AppError
+    throw new AppError(
+      'This is a test error to verify error handling middleware', 
+      ErrorTypes.SERVER, 
+      500, 
+      { test: true, timestamp: new Date().toISOString() }
+    );
+  }));
+  
+  // Test route for database query with structured error handling
+  app.get('/api/db-test', asyncHandler(async (_req: Request, res: Response) => {
+    try {
+      // Use the executeQuery function which has built-in error handling
+      const result = await executeQuery(
+        'SELECT NOW() as current_time, $1 as test_param', 
+        ['Go4It Sports Platform'], 
+        'db-test-endpoint'
+      );
+      
+      // Return the query result
+      res.json({
+        status: 'success',
+        timestamp: new Date().toISOString(),
+        data: result.rows[0],
+        dbConnections: {
+          active: getDatabaseHealth().activeConnections,
+          peak: getDatabaseHealth().peakConnections
+        }
+      });
+    } catch (error) {
+      // The executeQuery function will already convert the error to an AppError,
+      // so we can just let the error middleware handle it
+      throw error;
+    }
+  }));
+  
+  // Test route to intentionally trigger a database error
+  app.get('/api/db-error-test', asyncHandler(async (_req: Request, _res: Response) => {
+    // This query will fail because nonexistent_table doesn't exist
+    await executeQuery(
+      'SELECT * FROM nonexistent_table', 
+      [], 
+      'db-error-test-endpoint'
+    );
   }));
   
   // Create HTTP server with WebSocket support
