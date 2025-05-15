@@ -146,21 +146,50 @@
     </div>
     
     <script>
-      // Simple form handling
-      document.getElementById('login-form').addEventListener('submit', function(e) {
+      // Actual API login handling
+      document.getElementById('login-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         
         const errorElement = document.getElementById('error-message');
+        errorElement.style.display = 'none';
         
-        if (username === 'alexjohnson' && password === 'password123') {
-          // In a real app, this would send credentials to the server
-          console.log('Login successful!');
-          window.location.href = '/';
-        } else {
+        // Show loading state
+        const submitButton = this.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.textContent;
+        submitButton.textContent = 'Signing in...';
+        submitButton.disabled = true;
+        
+        try {
+          // Attempt login via API
+          const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password }),
+            credentials: 'include'
+          });
+          
+          if (response.ok) {
+            console.log('Login successful!');
+            // Redirect to dashboard after successful login
+            window.location.href = '/dashboard';
+          } else {
+            // Handle error response
+            const data = await response.json().catch(() => ({}));
+            errorElement.style.display = 'block';
+            errorElement.textContent = data.message || 'Invalid username or password.';
+          }
+        } catch (error) {
+          console.error('Login error:', error);
           errorElement.style.display = 'block';
-          errorElement.textContent = 'Invalid username or password.';
+          errorElement.textContent = 'Connection error. Please try again.';
+        } finally {
+          // Restore button state
+          submitButton.textContent = originalButtonText;
+          submitButton.disabled = false;
         }
       });
     </script>

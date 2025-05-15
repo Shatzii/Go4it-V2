@@ -169,6 +169,18 @@ app.get('/auth', (req, res, next) => {
   next();
 });
 
+// Serve dashboard.html directly
+app.get('/dashboard', (req, res, next) => {
+  console.log('Serving dashboard path');
+  // Here we could check authentication if needed
+  const dashboardPath = path.join(process.cwd(), 'client', 'dashboard.html');
+  if (fs.existsSync(dashboardPath)) {
+    console.log('Serving dashboard.html from:', dashboardPath);
+    return res.sendFile(dashboardPath);
+  }
+  next();
+});
+
 // Route for the main application after NDA acceptance
 // Let Vite handle this route in development mode
 // Only explicitly handle it in production mode
