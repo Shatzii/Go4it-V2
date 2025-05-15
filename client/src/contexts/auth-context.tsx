@@ -48,6 +48,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Check if user is already logged in
   useEffect(() => {
+    // First try localStorage for our simplified auth
+    const userDataString = localStorage.getItem('go4it_user');
+    if (userDataString) {
+      try {
+        const userData = JSON.parse(userDataString);
+        // Convert to User type format
+        const convertedUser: User = {
+          id: 1, // Default ID
+          username: userData.username,
+          name: userData.name,
+          email: `${userData.username}@example.com`, // Mock email
+          role: userData.role,
+        };
+        setUser(convertedUser);
+        setActualRole(userData.role);
+        setLoading(false);
+        return; // Skip API call if we have local storage data
+      } catch (error) {
+        console.error('Error parsing user data from localStorage:', error);
+        localStorage.removeItem('go4it_user');
+      }
+    }
+    
+    // Fall back to API call if no localStorage data
     const checkAuthStatus = async () => {
       try {
         const response = await fetch("/api/auth/me", {
