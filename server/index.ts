@@ -147,15 +147,25 @@ app.use('/node_modules', express.static(path.join(process.cwd(), 'node_modules')
 
 // Custom handler for the root path to ensure index.html is served
 app.get('/', (req, res, next) => {
-  // In development mode, let Vite handle it by passing to next middleware
-  if (app.get("env") === "development" || !process.env.NODE_ENV) {
-    // We'll explicitly serve index.html for the root path
-    const clientIndexPath = path.join(process.cwd(), 'client', 'index.html');
-    if (fs.existsSync(clientIndexPath)) {
-      return res.sendFile(clientIndexPath);
-    }
+  console.log('Serving root path');
+  // Directly serve index.html for the root path
+  const clientIndexPath = path.join(process.cwd(), 'client', 'index.html');
+  if (fs.existsSync(clientIndexPath)) {
+    console.log('Serving index.html from:', clientIndexPath);
+    return res.sendFile(clientIndexPath);
   }
   // Otherwise proceed to the next middleware
+  next();
+});
+
+// Serve auth.html directly for simplified authentication
+app.get('/auth', (req, res, next) => {
+  console.log('Serving auth path');
+  const authPath = path.join(process.cwd(), 'client', 'auth.html');
+  if (fs.existsSync(authPath)) {
+    console.log('Serving auth.html from:', authPath);
+    return res.sendFile(authPath);
+  }
   next();
 });
 
