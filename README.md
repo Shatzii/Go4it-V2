@@ -1,51 +1,62 @@
-# Star Coder + Monaco Editor Integration
+# Go4It Sports Platform
 
-This integration directly connects your existing Star Coder AI with your Monaco Editor for powerful code assistance capabilities.
+An advanced sports analytics platform with StarPath™ interactive experience tailored for neurodivergent student athletes aged 12-18.
 
-## What This Integration Does
+## Features
 
-- **Adds AI Code Analysis**: Analyze your code for bugs, performance issues, and best practices
-- **Provides AI Code Completion**: Get intelligent code completions as you type
-- **Offers Code Fixing**: Automatically fix detected problems in your code
-- **Enables AI Assistance**: Ask questions about your code and get detailed responses
+### StarPath™ Interactive Experience
+- PlayStation 5-quality 3D visualization of skill trees
+- Personalized development paths for athletes
+- Achievement tracking and rewards
+- Interactive skill progression system
+- Adaptive for neurodivergent athletes (particularly those with ADHD)
 
-## What You Need
+### Video Analysis with GAR Scoring
+- Upload and analyze game footage
+- Proprietary Growth and Ability Rating (GAR) scoring
+- Personalized insights and recommendations
+- Performance tracking over time
 
-1. **Access to your existing Star Coder installation**
-2. **Your Monaco Editor implementation**
-3. **Permission to add JavaScript to your site**
+### Academic Integration
+- NCAA eligibility tracking
+- Core course monitoring
+- GPA and test score tracking
 
-## Quick Setup Guide
+### Mobile-First Design
+- Optimized for all economic backgrounds
+- Black/blue theme with white toggle option
+- Responsive across all devices
 
-1. **Download the integration file**:
-   - `direct_integration.js` - The main integration file
+## Technology Stack
 
-2. **Configure the settings**:
-   - Edit the config section at the top of `direct_integration.js`
-   - Set the correct URL for your Star Coder API
-   - Set the correct project root path
+- Frontend: React with TypeScript
+- Backend: Node.js with Express
+- Database: PostgreSQL via Supabase
+- Security: Sentinel cybersecurity integration
+- Hosting: Hetzner server configuration
 
-3. **Add to your Monaco Editor**:
-   - Import the script in your editor code
-   - Call `integrateStarCoderWithMonaco(monaco, editor)` with your editor instance
+## Getting Started
 
-4. **Start using the features**:
-   - `Ctrl+Shift+A` - Analyze your code
-   - `Ctrl+Shift+F` - Fix problems in your code
-   - `Ctrl+Shift+Q` - Ask AI about your code
-   - Auto-completions appear as you type
+See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for comprehensive instructions on deploying the platform to go4itsports.org.
 
-## Detailed Implementation Steps
+## For Developers
 
-See `integration_checklist.md` for detailed steps and information required for a smooth integration.
+### Prerequisites
+- Node.js v18 or higher
+- PostgreSQL database (or Supabase)
 
-## Key Benefits
+### Installation
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Set up environment variables (see .env.example)
+4. Start the development server: `npm run dev`
 
-- **Uses Your Existing Components**: Works with your existing Star Coder and Monaco Editor
-- **No Duplicate Services**: No new instances or duplicated services
-- **Lightweight Integration**: Simple JavaScript file that connects your existing components
-- **No Server Changes**: Works entirely in the browser with your existing setup
+### Key Directories
+- `/client`: React frontend application
+- `/server`: Node.js backend API
+- `/shared`: Shared types and utilities
+- `/components/starpath`: StarPath™ interactive components
 
 ## Support
 
-If you need additional help or have questions, check the troubleshooting section in the integration checklist.
+For support, contact support@go4itsports.org
