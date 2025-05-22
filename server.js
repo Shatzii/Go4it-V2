@@ -1,137 +1,260 @@
-/**
- * Go4It Sports Production Server
- * 
- * This file is the main entry point for running the Go4It Sports platform in production mode.
- * It handles both the API server and serves the built client files.
- */
+// Go4It Sports Production Server
+// This server is designed for deployment to go4itsports.org
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
+const cors = require('cors');
 
-// Set environment to production
-process.env.NODE_ENV = 'production';
-
-// Load environment variables
-import 'dotenv/config';
-
-// Load dependencies
-import express from 'express';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-import { registerRoutes } from './server/routes.js';
-import { setupAuth } from './server/auth.js';
-import { pool } from './server/db.js';
-import { registerAIEngineRoutes } from './server/routes/ai-engine-routes.js';
-
-// Get current directory
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Create Express app
+// Initialize app
 const app = express();
+const PORT = process.env.PORT || 5000;
 
-// Add production middlewares
+// Start timing for metrics
+const startTime = Date.now();
+
+// Middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Set up security headers
+// Logger middleware
 app.use((req, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
   next();
 });
 
-// Set up auth
-setupAuth(app);
+// Serve static files from the client/dist directory (for production builds)
+app.use(express.static(path.join(__dirname, 'client/dist')));
 
-// Register API routes
-const router = express.Router();
-registerAIEngineRoutes(router);
-app.use('/api', router);
+// ==== API ROUTES ====
 
-// Create and start the HTTP server
-const startServer = async () => {
-  try {
-    // Register routes and get the HTTP server
-    const httpServer = await registerRoutes(app);
-    
-    // Check for client build
-    const clientBuildPath = path.join(__dirname, 'client/dist');
-    const clientBuildExists = fs.existsSync(clientBuildPath);
-    
-    if (clientBuildExists) {
-      console.log('📦 Client build found, serving static files');
-      
-      // Serve static files
-      app.use(express.static(clientBuildPath));
-      
-      // Serve index.html for any other routes (SPA support)
-      app.get('*', (req, res) => {
-        res.sendFile(path.join(clientBuildPath, 'index.html'));
-      });
-    } else {
-      console.warn('⚠️ Warning: Client build not found at', clientBuildPath);
-      console.warn('⚠️ Run "npm run build" to create the client build');
-      
-      // Add a simple fallback page
-      app.get('*', (req, res) => {
-        if (req.path.startsWith('/api')) return next();
-        res.send(`
-          <html>
-            <head><title>Go4It Sports - API Only Mode</title></head>
-            <body style="font-family: sans-serif; padding: 2rem; max-width: 800px; margin: 0 auto;">
-              <h1>Go4It Sports - API Only Mode</h1>
-              <p>The server is running in API-only mode. Client build not found.</p>
-              <p>Please run "npm run build" to create the client build.</p>
-            </body>
-          </html>
-        `);
-      });
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'healthy',
+    uptime: Math.floor((Date.now() - startTime) / 1000) + ' seconds',
+    version: '1.0.0'
+  });
+});
+
+// Mock user authentication API
+app.post('/api/auth/login', (req, res) => {
+  const { username, password } = req.body;
+  
+  // Sample users for testing
+  const users = [
+    { 
+      id: 1, 
+      username: 'alexjohnson', 
+      password: 'password123', 
+      name: 'Alex Johnson', 
+      email: 'alex@example.com',
+      role: 'athlete',
+      profileImage: 'https://randomuser.me/api/portraits/men/32.jpg' 
+    },
+    { 
+      id: 2, 
+      username: 'coach', 
+      password: 'coach123', 
+      name: 'Coach Smith', 
+      email: 'coach@example.com',
+      role: 'coach',
+      profileImage: 'https://randomuser.me/api/portraits/men/64.jpg' 
+    },
+    { 
+      id: 3, 
+      username: 'admin', 
+      password: 'admin123', 
+      name: 'Admin User', 
+      email: 'admin@example.com',
+      role: 'admin',
+      profileImage: 'https://randomuser.me/api/portraits/women/58.jpg' 
     }
-    
-    // Start the server
-    const PORT = process.env.PORT || 5000;
-    httpServer.listen(PORT, '0.0.0.0', () => {
-      console.log(`✅ Go4It Sports server started in ${process.env.NODE_ENV} mode`);
-      console.log(`🌐 Server listening on port ${PORT}`);
-      console.log(`📅 Server started at ${new Date().toISOString()}`);
+  ];
+  
+  const user = users.find(u => u.username === username && u.password === password);
+  
+  if (user) {
+    // Don't send the password back
+    const { password, ...userWithoutPassword } = user;
+    res.json({ 
+      success: true, 
+      user: userWithoutPassword,
+      token: 'fake-jwt-token-' + Math.random().toString(36).substring(2)
     });
-    
-    // Handle graceful shutdown
-    const shutdown = async () => {
-      console.log('🛑 Shutting down server...');
-      
-      // Close HTTP server
-      httpServer.close(async () => {
-        console.log('✅ HTTP server closed');
-        
-        // Close database connections
-        try {
-          await pool.end();
-          console.log('✅ Database connections closed');
-        } catch (err) {
-          console.error('❌ Error closing database connections:', err);
-        }
-        
-        console.log('👋 Server shutdown complete');
-        process.exit(0);
-      });
-      
-      // Force exit after 10 seconds if graceful shutdown fails
-      setTimeout(() => {
-        console.error('⚠️ Forced shutdown after timeout');
-        process.exit(1);
-      }, 10000);
-    };
-    
-    // Listen for shutdown signals
-    process.on('SIGTERM', shutdown);
-    process.on('SIGINT', shutdown);
-    
-  } catch (err) {
-    console.error('❌ Failed to start server:', err);
-    process.exit(1);
+  } else {
+    res.status(401).json({ success: false, message: 'Invalid username or password' });
   }
-};
+});
+
+// Mock registration API
+app.post('/api/auth/register', (req, res) => {
+  const { username, password, name, email, role } = req.body;
+  
+  // In a real app, we would save this user to a database
+  // For this demo, we just return a success response
+  
+  res.status(201).json({
+    success: true,
+    user: {
+      id: Math.floor(Math.random() * 1000) + 10,
+      username,
+      name,
+      email,
+      role,
+      profileImage: `https://randomuser.me/api/portraits/${role === 'athlete' ? 'men' : 'women'}/${Math.floor(Math.random() * 70)}.jpg`
+    }
+  });
+});
+
+// Mock user profile API
+app.get('/api/user/:id', (req, res) => {
+  // In a real app, we would fetch the user from a database
+  res.json({
+    id: req.params.id,
+    username: 'alexjohnson',
+    name: 'Alex Johnson',
+    email: 'alex@example.com',
+    role: 'athlete',
+    profileImage: 'https://randomuser.me/api/portraits/men/32.jpg',
+    joinDate: '2025-01-15',
+    school: 'Lincoln High School',
+    gradYear: 2027,
+    sports: ['Basketball', 'Track'],
+    stats: {
+      gamesPlayed: 28,
+      averageGarScore: 76,
+      improvementRate: 12,
+      videosAnalyzed: 15
+    }
+  });
+});
+
+// Mock video upload API
+app.post('/api/videos/upload', (req, res) => {
+  // In a real app, we would handle file upload and storage
+  setTimeout(() => {
+    res.status(201).json({
+      success: true,
+      videoId: Math.floor(Math.random() * 1000) + 1,
+      url: 'https://example.com/video/sample.mp4',
+      message: 'Video uploaded successfully'
+    });
+  }, 2000); // Simulate upload time
+});
+
+// Mock video analysis API
+app.post('/api/videos/analyze/:id', (req, res) => {
+  // In a real app, we would process the video and generate analysis
+  const videoId = req.params.id;
+  
+  // Simulate processing time
+  setTimeout(() => {
+    res.json({
+      videoId,
+      overallScore: Math.floor(Math.random() * 21) + 70, // 70-90
+      physical: Math.floor(Math.random() * 21) + 70,
+      technical: Math.floor(Math.random() * 21) + 65,
+      tactical: Math.floor(Math.random() * 21) + 60,
+      mental: Math.floor(Math.random() * 21) + 75,
+      academicStatus: 'On Track',
+      strengths: [
+        "Excellent shooting form",
+        "Good court awareness",
+        "Strong defensive positioning",
+        "Effective communication with teammates"
+      ],
+      improvements: [
+        "Work on lateral movement speed",
+        "Improve left-hand dribbling control",
+        "Increase shooting consistency from mid-range",
+        "Develop more explosive first step"
+      ],
+      insights: "Your shooting mechanics are solid, but there's room for improvement in your off-hand ball handling. Your defensive positioning is above average for your age group. The video shows good teamwork and communication skills. Focus on developing more explosiveness in your first step to create separation from defenders."
+    });
+  }, 5000); // Simulate analysis time
+});
+
+// Get user's videos
+app.get('/api/videos/user/:userId', (req, res) => {
+  // In a real app, we would fetch videos from a database
+  res.json([
+    {
+      id: 1,
+      title: "Game Highlights vs. Central High",
+      date: "May 18, 2025",
+      thumbnail: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=500",
+      duration: "4:25",
+      views: 76,
+      garScore: 83,
+      sport: "Basketball"
+    },
+    {
+      id: 2,
+      title: "Practice Shooting Drills",
+      date: "May 15, 2025",
+      thumbnail: "https://images.unsplash.com/photo-1627627256672-027a4613d028?w=500",
+      duration: "2:18",
+      views: 42,
+      garScore: 77,
+      sport: "Basketball"
+    },
+    {
+      id: 3,
+      title: "Speed Training Session",
+      date: "May 10, 2025",
+      thumbnail: "https://images.unsplash.com/photo-1574680178050-55c6a6a96e0a?w=500",
+      duration: "3:45",
+      views: 31,
+      garScore: 79,
+      sport: "Track"
+    }
+  ]);
+});
+
+// Get NCAA eligibility status
+app.get('/api/academics/:userId', (req, res) => {
+  // In a real app, we would fetch academic data from a database
+  res.json({
+    gpa: 3.2,
+    eligibilityStatus: "On Track",
+    coreCoursesCompleted: 10,
+    coreCoursesRequired: 16,
+    satScore: 1120,
+    actScore: 24,
+    recentGrades: [
+      { course: "English 2", grade: "B+", credits: 1.0, completed: true },
+      { course: "Algebra II", grade: "B", credits: 1.0, completed: true },
+      { course: "Biology", grade: "A-", credits: 1.0, completed: true },
+      { course: "U.S. History", grade: "B+", credits: 1.0, completed: true },
+      { course: "Spanish II", grade: "B", credits: 1.0, completed: true }
+    ]
+  });
+});
+
+// ==== CATCH-ALL ROUTE ====
+
+// Always return index.html for any routes not matched by API routes
+// This enables client-side routing
+app.get('*', (req, res) => {
+  const indexPath = path.join(__dirname, 'client/dist/index.html');
+  
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).send('Application is being built. Please try again in a few minutes.');
+  }
+});
 
 // Start the server
-startServer();
+const server = app.listen(PORT, '0.0.0.0', () => {
+  const bootTime = Date.now() - startTime;
+  console.log(`┌──────────────────────────────────────────┐`);
+  console.log(`│  Go4It Sports Server                     │`);
+  console.log(`├──────────────────────────────────────────┤`);
+  console.log(`│  Server running on port: ${PORT}            │`);
+  console.log(`│  Started in: ${bootTime}ms                   │`);
+  console.log(`│  Environment: ${process.env.NODE_ENV || 'development'}               │`);
+  console.log(`│  URL: http://localhost:${PORT}                 │`);
+  console.log(`└──────────────────────────────────────────┘`);
+});

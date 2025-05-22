@@ -1,16 +1,18 @@
 import React from "react";
 import { Switch, Route, useLocation } from "wouter";
-import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
-import { SimplifiedAuthProvider } from "./contexts/simplified-auth-context";
+import { SimplifiedAuthProvider, useAuth } from "./contexts/simplified-auth-context";
 import { Loader2 } from "lucide-react";
 
+// Pages
+import AuthPage from "@/pages/AuthPage";
+import Dashboard from "@/pages/Dashboard";
+import VideoUploadPage from "@/pages/VideoUploadPage";
 import NotFound from "@/pages/not-found";
-import SimpleHome from "@/pages/simple-home";
-import SimpleAuth from "@/pages/simple-auth";
 
-// Simple scroll-to-top component that runs on route changes
+// Scroll to top on route changes
 function ScrollToTop() {
   const [location] = useLocation();
   
@@ -21,35 +23,18 @@ function ScrollToTop() {
   return null;
 }
 
-function Router() {
-  return (
-    <>
-      <ScrollToTop />
-      <Switch>
-        <Route path="/auth" component={SimpleAuth} />
-        <Route path="/" component={SimpleHome} />
-        <Route path="/app" component={SimpleHome} />
-        <Route path="/dashboard" component={SimpleHome} />
-        
-        {/* Fallback to 404 */}
-        <Route component={NotFound} />
-      </Switch>
-    </>
-  );
-}
+// Protected route component
+function ProtectedRoute({ component: Component, ...rest }: { component: React.FC, path: string }) {
+  const { isAuthenticated, loading } = useAuth();
+  const [, navigate] = useLocation();
 
-function AppContent() {
-  const [location, setLocation] = useLocation();
+  React.useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      navigate("/auth");
+    }
+  }, [isAuthenticated, loading, navigate]);
 
-  // Safety check for unexpected or empty routes
-  if (!location || location === '' || location === undefined) {
-    console.log('Empty route detected, redirecting to auth page');
-    // Force redirect to auth on next tick
-    setTimeout(() => {
-      setLocation("/auth");
-    }, 10);
-    
-    // Show loader while redirecting
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-screen w-screen" style={{ backgroundColor: "#0e1628" }}>
         <div className="text-center">
@@ -60,8 +45,22 @@ function AppContent() {
     );
   }
 
-  // Render the simplified router directly
-  return <Router />;
+  return isAuthenticated ? <Component /> : null;
+}
+
+function Router() {
+  return (
+    <>
+      <ScrollToTop />
+      <Switch>
+        <Route path="/auth" component={AuthPage} />
+        <ProtectedRoute path="/" component={Dashboard} />
+        <ProtectedRoute path="/dashboard" component={Dashboard} />
+        <ProtectedRoute path="/videos/upload" component={VideoUploadPage} />
+        <Route component={NotFound} />
+      </Switch>
+    </>
+  );
 }
 
 // ErrorBoundary component to catch rendering errors
@@ -124,7 +123,7 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <SimplifiedAuthProvider>
-          <AppContent />
+          <Router />
           <Toaster />
         </SimplifiedAuthProvider>
       </QueryClientProvider>
