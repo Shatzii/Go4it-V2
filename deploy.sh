@@ -1,56 +1,64 @@
 #!/bin/bash
 
-# Go4It Sports Deployment Script
-# This script prepares and deploys the Go4It Sports platform to go4itsports.org
+# Go4It Sports Platform - Direct Deployment Script
+# This script builds and deploys the Go4It Sports platform directly to go4itsports.org
 
 echo "==============================================="
-echo "   Go4It Sports Deployment - $(date)"
+echo "   Go4It Sports Platform Deployment"
+echo "   $(date)"
 echo "==============================================="
 
-# Ensure script fails on any command error
-set -e
+# Configuration - CUSTOMIZE THESE VALUES
+SERVER_USER="deploy"
+SERVER_HOST="go4itsports.org"
+SERVER_PATH="/var/www/go4itsports.org"
+SSH_KEY_PATH="~/.ssh/id_rsa"  # Path to your SSH key for the server
 
-# Configuration
-DEPLOY_DIR="go4it_deployment_$(date +%Y%m%d_%H%M%S)"
-SERVER_URL="go4itsports.org"
-SSH_USER="deploy"
+# Temporary build directory
+BUILD_DIR="go4it_deployment_$(date +%Y%m%d_%H%M%S)"
 
-# Create deployment directory
-echo "Creating deployment directory..."
-mkdir -p $DEPLOY_DIR
+# Create build directory
+echo "Creating temporary build directory..."
+mkdir -p $BUILD_DIR
 
-# Copy server files
+# Copy essential server files
 echo "Copying server files..."
-cp server.js $DEPLOY_DIR/
-cp deployment-config.js $DEPLOY_DIR/
+cp server.js $BUILD_DIR/
+cp -r server $BUILD_DIR/
+cp -r shared $BUILD_DIR/ 2>/dev/null || :
 
-# Create client build
+# Install dependencies and build the client
 echo "Building client application..."
-mkdir -p $DEPLOY_DIR/client
-cp -r client/src $DEPLOY_DIR/client/
-cp -r client/public $DEPLOY_DIR/client/
-mkdir -p $DEPLOY_DIR/client/dist
+(cd client && npm run build) || {
+  echo "Error: Client build failed!"
+  exit 1
+}
 
-# Copy essential files
-echo "Copying essential files..."
-cp -r client/index.html $DEPLOY_DIR/client/
-cp -r client/dashboard.html $DEPLOY_DIR/client/
-cp -r client/auth.html $DEPLOY_DIR/client/
+# Copy client build to deployment directory
+echo "Copying client build..."
+mkdir -p $BUILD_DIR/client
+cp -r client/dist $BUILD_DIR/client/
 
-# Install dependencies
-echo "Preparing package configuration..."
-cat > $DEPLOY_DIR/package.json << EOF
+# Create package.json for production
+echo "Creating production package.json..."
+cat > $BUILD_DIR/package.json << EOF
 {
   "name": "go4it-sports",
   "version": "1.0.0",
-  "description": "Sports analytics platform for neurodivergent student athletes",
+  "description": "Advanced sports analytics platform for neurodivergent student athletes",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "NODE_ENV=production node server.js"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^0.7.2",
     "cors": "^2.8.5",
-    "express": "^4.18.2"
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.11.3",
+    "drizzle-orm": "^0.29.0"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -58,62 +66,129 @@ cat > $DEPLOY_DIR/package.json << EOF
 }
 EOF
 
-# Create README
-echo "Creating deployment documentation..."
-cat > $DEPLOY_DIR/README.md << EOF
-# Go4It Sports Platform
+# Create .env file with placeholders
+echo "Creating .env file..."
+cat > $BUILD_DIR/.env << EOF
+# Go4It Sports Platform Environment Variables
+NODE_ENV=production
+PORT=5000
 
-This is the deployment package for the Go4It Sports platform.
+# Database Configuration (Supabase)
+DATABASE_URL=your_database_url_here
 
-## Setup Instructions
-
-1. Install dependencies:
-   \`\`\`
-   npm install
-   \`\`\`
-
-2. Configure environment variables:
-   - Create a .env file with the following variables:
-     \`\`\`
-     PORT=5000
-     DATABASE_URL=your_supabase_database_url
-     SENTINEL_API_KEY=your_sentinel_security_key
-     JWT_SECRET=your_jwt_secret
-     \`\`\`
-
-3. Start the server:
-   \`\`\`
-   npm start
-   \`\`\`
-
-## Features
-- Mobile-first design for athletes of all economic backgrounds
-- Video analysis with GAR scoring
-- Academic integration with NCAA tracking
-- Black and blue theme with white toggle option
-- Sentinel cybersecurity integration
-- Supabase database integration
-
-## Support
-For support, contact support@go4itsports.org
+# Security Settings
+JWT_SECRET=your_jwt_secret_here
+SENTINEL_API_KEY=your_sentinel_key_here
 EOF
 
-# Create deployment package
+# Create systemd service file
+echo "Creating systemd service file..."
+cat > $BUILD_DIR/go4itsports.service << EOF
+[Unit]
+Description=Go4It Sports Platform
+After=network.target
+
+[Service]
+WorkingDirectory=$SERVER_PATH
+ExecStart=/usr/bin/node server.js
+Restart=always
+User=www-data
+Group=www-data
+Environment=NODE_ENV=production
+Environment=PORT=5000
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Create Nginx configuration
+echo "Creating nginx configuration..."
+cat > $BUILD_DIR/go4itsports.nginx.conf << EOF
+server {
+    listen 80;
+    server_name go4itsports.org www.go4itsports.org;
+
+    location / {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_cache_bypass \$http_upgrade;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+}
+EOF
+
+# Package the build for deployment
 echo "Creating deployment package..."
-zip -r "${DEPLOY_DIR}.zip" $DEPLOY_DIR
+tar -czf "${BUILD_DIR}.tar.gz" $BUILD_DIR
+
+echo "Deployment package created: ${BUILD_DIR}.tar.gz"
+echo ""
+
+# Ask the user if they want to deploy now
+read -p "Deploy to go4itsports.org now? (y/n): " deploy_now
+
+if [[ $deploy_now =~ ^[Yy]$ ]]; then
+  echo "Starting deployment to go4itsports.org..."
+  
+  # Copy deployment package to server
+  echo "Copying deployment package to server..."
+  scp -i $SSH_KEY_PATH "${BUILD_DIR}.tar.gz" $SERVER_USER@$SERVER_HOST:/tmp/
+  
+  # Execute deployment commands on server
+  echo "Executing deployment commands on server..."
+  ssh -i $SSH_KEY_PATH $SERVER_USER@$SERVER_HOST << EOF
+    # Create deployment directory if it doesn't exist
+    sudo mkdir -p $SERVER_PATH
+    
+    # Extract deployment package
+    sudo tar -xzf /tmp/${BUILD_DIR}.tar.gz -C /tmp
+    sudo cp -r /tmp/$BUILD_DIR/* $SERVER_PATH/
+    
+    # Set proper permissions
+    sudo chown -R www-data:www-data $SERVER_PATH
+    
+    # Install production dependencies
+    cd $SERVER_PATH
+    sudo npm install --production
+    
+    # Configure Nginx
+    sudo cp go4itsports.nginx.conf /etc/nginx/sites-available/go4itsports
+    sudo ln -sf /etc/nginx/sites-available/go4itsports /etc/nginx/sites-enabled/
+    sudo nginx -t && sudo systemctl reload nginx
+    
+    # Set up systemd service
+    sudo cp go4itsports.service /etc/systemd/system/
+    sudo systemctl daemon-reload
+    sudo systemctl enable go4itsports
+    sudo systemctl restart go4itsports
+    
+    # Clean up
+    rm -rf /tmp/$BUILD_DIR
+    rm /tmp/${BUILD_DIR}.tar.gz
+    
+    echo "Checking service status..."
+    sudo systemctl status go4itsports --no-pager
+EOF
+  
+  echo "Deployment completed successfully!"
+  echo "Your Go4It Sports platform is now running at: https://go4itsports.org"
+else
+  echo "Deployment skipped. To deploy manually later:"
+  echo "1. Copy the package: scp ${BUILD_DIR}.tar.gz $SERVER_USER@$SERVER_HOST:/tmp/"
+  echo "2. SSH to your server: ssh $SERVER_USER@$SERVER_HOST"
+  echo "3. Extract and set up: tar -xzf /tmp/${BUILD_DIR}.tar.gz && cd $BUILD_DIR"
+  echo "4. Follow the instructions in DEPLOY.md"
+fi
+
+# Clean up
+echo "Cleaning up local build directory..."
+rm -rf $BUILD_DIR
 
 echo "==============================================="
-echo " Deployment package created: ${DEPLOY_DIR}.zip"
+echo "  Deployment process complete!"
 echo "==============================================="
-echo ""
-echo "To deploy to go4itsports.org:"
-echo "1. Upload the package to your server"
-echo "2. Extract the package: unzip ${DEPLOY_DIR}.zip"
-echo "3. Navigate to the directory: cd $DEPLOY_DIR"
-echo "4. Install dependencies: npm install"
-echo "5. Start the server: npm start (or use PM2/systemd for production)"
-echo ""
-echo "For automated deployment:"
-echo "scp ${DEPLOY_DIR}.zip $SSH_USER@$SERVER_URL:/var/www/"
-echo "ssh $SSH_USER@$SERVER_URL 'cd /var/www/ && unzip ${DEPLOY_DIR}.zip && cd $DEPLOY_DIR && npm install && pm2 restart go4it-sports'"
-echo ""
