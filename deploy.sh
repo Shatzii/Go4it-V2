@@ -145,6 +145,10 @@ if [[ $deploy_now =~ ^[Yy]$ ]]; then
     # Create deployment directory if it doesn't exist
     sudo mkdir -p $SERVER_PATH
     
+    # CLEAR OUT ALL EXISTING FILES - Important for clean deployment
+    echo "Clearing out all existing files from $SERVER_PATH..."
+    sudo rm -rf $SERVER_PATH/*
+    
     # Extract deployment package
     sudo tar -xzf /tmp/${BUILD_DIR}.tar.gz -C /tmp
     sudo cp -r /tmp/$BUILD_DIR/* $SERVER_PATH/
