@@ -1,134 +1,97 @@
-import { QueryClient, QueryFunction } from "@tanstack/react-query";
-import axios from "axios";
+import { QueryClient } from "@tanstack/react-query";
 
-/**
- * API Base URL handling:
- * - In development (localhost): use http://localhost:5000
- * - In production at 5.161.99.81: use port 81
- * - In any other environment: use the same origin
- */
-const getBaseURL = () => {
-  const hostname = window.location.hostname;
-  
-  if (hostname === "localhost") {
-    return "http://localhost:5000";
-  } else if (hostname === "5.161.99.81") {
-    // Production server configuration
-    const protocol = window.location.protocol;
-    return `${protocol}//${hostname}:81`;
-  } else {
-    // For any other hosting environment, use the same origin
-    return "";
-  }
+// Options for handling different HTTP error codes
+type ErrorHandlingOptions = {
+  on401?: "throw" | "returnNull";
 };
 
-const baseURL = getBaseURL();
+// Default fetcher function for React Query
+export const getQueryFn =
+  (options: ErrorHandlingOptions = {}) =>
+  async ({ queryKey }: { queryKey: string[] }) => {
+    const [url] = queryKey;
+    
+    try {
+      // Add auth token if it exists
+      const token = localStorage.getItem("go4it_token");
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+      
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
+      const response = await fetch(url, { headers });
+      
+      // Handle unauthorized based on options
+      if (response.status === 401) {
+        if (options.on401 === "returnNull") {
+          return null;
+        }
+        throw new Error("Unauthorized");
+      }
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || `Request failed with status ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error(`Error fetching ${url}:`, error);
+      throw error;
+    }
+  };
 
-import { handleApiError } from "@/utils/error-handler";
-
+// Function for API requests (used in mutations)
 export const apiRequest = async (
   method: string,
   url: string,
-  data?: any,
-  options?: any
-) => {
-  try {
-    console.log(`Making ${method} request to ${url}`, 
-      data instanceof FormData ? 'FormData' : data);
-    
-    // Default headers
-    const headers: Record<string, string> = {};
-    
-    // Only set Content-Type to application/json if data is not FormData
-    if (!(data instanceof FormData)) {
-      headers['Content-Type'] = 'application/json';
-    }
-    
-    // For FormData, make sure we don't set any Content-Type ourselves
-    // The browser needs to set it with the correct multipart boundary
-    
-    // Get the authentication token from localStorage if it exists
-    const accessToken = localStorage.getItem('accessToken');
-    if (accessToken) {
-      headers['Authorization'] = `Bearer ${accessToken}`;
-    }
-    
-    const response = await axios({
-      method,
-      url: `${baseURL}${url}`,
-      data,
-      withCredentials: true,
-      headers,
-      timeout: 30000, // Increased timeout for video uploads
-      ...options,
-    });
-    
-    console.log(`Request to ${url} successful`, response.status);
-    return response;
-  } catch (error: any) {
-    console.error("API request error details:", {
-      url,
-      method,
-      errorName: error.name,
-      errorMessage: error.message,
-      responseStatus: error.response?.status,
-      responseData: error.response?.data
-    });
-    
-    // Use our error handler to display appropriate messages and redirect when needed
-    // For Query Client errors, we don't want to immediately redirect on most errors
-    // so we set redirect to false and let the component handle it
-    handleApiError(error, { 
-      showToast: true, 
-      redirect: false, // Don't automatically redirect for most errors in query client
-      message: error?.response?.data?.message || error?.message
-    });
-    
-    // Now handle the error for the caller
-    if (!error.response) {
-      throw new Error('Network error - Please check your connection');
-    } else if (error.response?.status === 401) {
-      // For 401 errors, we do want to redirect to the unauthorized page
-      window.location.href = '/unauthorized';
-      throw new Error('Unauthorized. Please login.')
-    }
-    else if (error.response?.data?.message) {
-      throw new Error(error.response.data.message);
-    }
-    throw new Error(`API request failed with status ${error.response?.status} and data: ${error.response?.data}`);
+  data?: any
+): Promise<Response> => {
+  const token = localStorage.getItem("go4it_token");
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+  };
+  
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
   }
+  
+  const options: RequestInit = {
+    method,
+    headers,
+    credentials: "include",
+  };
+  
+  if (data) {
+    options.body = JSON.stringify(data);
+  }
+  
+  const response = await fetch(url, options);
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    try {
+      const errorJson = JSON.parse(errorText);
+      throw new Error(errorJson.message || `Request failed with status ${response.status}`);
+    } catch (e) {
+      throw new Error(errorText || `Request failed with status ${response.status}`);
+    }
+  }
+  
+  return response;
 };
 
-type UnauthorizedBehavior = "returnNull" | "throw";
-export const getQueryFn: <T>(options: {
-  on401: UnauthorizedBehavior;
-}) => QueryFunction<T> =
-  ({ on401: unauthorizedBehavior }) =>
-    async ({ queryKey }) => {
-      const res = await apiRequest("GET", queryKey[0] as string);
-
-      if (unauthorizedBehavior === "returnNull" && res.status === 401) {
-        return null;
-      }
-
-      if (!res.data) {
-        throw new Error(`API request failed with status ${res.status}`)
-      }
-
-      return res.data;
-    };
-
+// Create and export the query client
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      queryFn: getQueryFn({ on401: "throw" }),
-      refetchInterval: false,
+      queryFn: getQueryFn(),
+      retry: 1,
       refetchOnWindowFocus: false,
-      staleTime: Infinity,
-      retry: false,
-    },
-    mutations: {
-      retry: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
     },
   },
 });
