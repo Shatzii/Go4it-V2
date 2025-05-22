@@ -1,414 +1,274 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/contexts/simplified-auth-context";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
-export default function AuthPage() {
-  const [activeTab, setActiveTab] = useState<"login" | "register">("login");
-  const { login, register, loading, isAuthenticated } = useAuth();
+const AuthPage: React.FC = () => {
+  const [isLogin, setIsLogin] = useState(true);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState<"athlete" | "coach" | "admin">("athlete");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const { user, isAuthenticated, login, register } = useAuth();
+  const { toast } = useToast();
   const [, navigate] = useLocation();
-
-  // Redirect if already logged in
-  React.useEffect(() => {
+  
+  useEffect(() => {
+    // If user is already logged in, redirect to dashboard
     if (isAuthenticated) {
-      navigate("/dashboard");
+      navigate("/");
     }
   }, [isAuthenticated, navigate]);
 
-  // Login form state
-  const [loginData, setLoginData] = useState({
-    username: "",
-    password: "",
-  });
-
-  // Register form state
-  const [registerData, setRegisterData] = useState({
-    username: "",
-    password: "",
-    confirmPassword: "",
-    name: "",
-    email: "",
-    role: "athlete" as const,
-  });
-
-  // Form validation state
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setLoginData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleRegisterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setRegisterData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRegisterData((prev) => ({ ...prev, role: e.target.value as any }));
-  };
-
-  const validateLogin = () => {
-    const newErrors: Record<string, string> = {};
-    if (!loginData.username) newErrors.username = "Username is required";
-    if (!loginData.password) newErrors.password = "Password is required";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const validateRegister = () => {
-    const newErrors: Record<string, string> = {};
-    if (!registerData.username) newErrors.username = "Username is required";
-    if (!registerData.password) newErrors.password = "Password is required";
-    if (registerData.password.length < 8) 
-      newErrors.password = "Password must be at least 8 characters";
-    if (registerData.password !== registerData.confirmPassword)
-      newErrors.confirmPassword = "Passwords do not match";
-    if (!registerData.name) newErrors.name = "Name is required";
-    if (!registerData.email) newErrors.email = "Email is required";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(registerData.email))
-      newErrors.email = "Invalid email format";
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleLoginSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateLogin()) return;
+    setIsSubmitting(true);
     
-    const success = await login(loginData.username, loginData.password);
-    if (success) {
-      navigate("/dashboard");
-    }
-  };
-
-  const handleRegisterSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateRegister()) return;
-    
-    const success = await register({
-      username: registerData.username,
-      password: registerData.password,
-      name: registerData.name,
-      email: registerData.email,
-      role: registerData.role,
-    });
-    
-    if (success) {
-      navigate("/dashboard");
+    try {
+      if (isLogin) {
+        await login(username, password);
+      } else {
+        if (!name || !email) {
+          toast({
+            title: "Error",
+            description: "All fields are required",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        await register(username, password, name, email, role);
+      }
+    } catch (error) {
+      console.error("Auth error:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-[#0e1628]">
-      {/* Left column - forms */}
-      <div className="md:w-1/2 flex items-center justify-center p-4 md:p-8 lg:p-12">
-        <div className="w-full max-w-md">
+    <div className="min-h-screen flex flex-col md:flex-row" style={{ backgroundColor: "#0e1628" }}>
+      {/* Auth Form Section */}
+      <div className="w-full md:w-1/2 flex flex-col justify-center px-5 py-12 md:p-16">
+        <div className="max-w-md mx-auto w-full">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold">Go4It <span className="text-blue-400">Sports</span></h1>
-            <p className="text-gray-400 mt-2">Elevate your athletic potential</p>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-2">
+              Go4It Sports
+            </h1>
+            <p className="text-slate-400">
+              {isLogin 
+                ? "Sign in to your account to continue" 
+                : "Create an account to get started"}
+            </p>
           </div>
           
-          <Tabs 
-            value={activeTab} 
-            onValueChange={(v) => setActiveTab(v as "login" | "register")}
-            className="w-full"
-          >
-            <TabsList className="grid grid-cols-2 w-full mb-6">
-              <TabsTrigger value="login">Log In</TabsTrigger>
-              <TabsTrigger value="register">Register</TabsTrigger>
-            </TabsList>
+          <div className="bg-slate-900 rounded-xl p-6 md:p-8 shadow-xl">
+            {/* Form Tabs */}
+            <div className="flex mb-6 border-b border-slate-800">
+              <button
+                className={`pb-3 px-4 font-medium text-sm ${
+                  isLogin 
+                    ? "text-blue-400 border-b-2 border-blue-400" 
+                    : "text-slate-400 hover:text-slate-300"
+                }`}
+                onClick={() => setIsLogin(true)}
+              >
+                Login
+              </button>
+              <button
+                className={`pb-3 px-4 font-medium text-sm ${
+                  !isLogin 
+                    ? "text-blue-400 border-b-2 border-blue-400" 
+                    : "text-slate-400 hover:text-slate-300"
+                }`}
+                onClick={() => setIsLogin(false)}
+              >
+                Register
+              </button>
+            </div>
             
-            <TabsContent value="login">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Welcome Back</CardTitle>
-                  <CardDescription>Enter your credentials to access your account</CardDescription>
-                </CardHeader>
-                <form onSubmit={handleLoginSubmit}>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="username">Username</Label>
-                      <Input
-                        id="username"
-                        name="username"
-                        value={loginData.username}
-                        onChange={handleLoginChange}
-                        placeholder="yourusername"
-                      />
-                      {errors.username && (
-                        <p className="text-sm text-red-500">{errors.username}</p>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="password">Password</Label>
-                        <a href="#" className="text-xs text-blue-400 hover:underline">
-                          Forgot password?
-                        </a>
-                      </div>
-                      <Input
-                        id="password"
-                        name="password"
-                        type="password"
-                        value={loginData.password}
-                        onChange={handleLoginChange}
-                        placeholder="••••••••"
-                      />
-                      {errors.password && (
-                        <p className="text-sm text-red-500">{errors.password}</p>
-                      )}
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-gradient-to-r from-blue-600 to-blue-500"
-                      disabled={loading}
-                    >
-                      {loading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Logging in...
-                        </>
-                      ) : (
-                        "Log In"
-                      )}
-                    </Button>
-                  </CardFooter>
-                </form>
-              </Card>
-              
-              <div className="mt-6 text-center text-sm">
-                <p className="text-gray-400">
-                  Don't have an account?{" "}
-                  <button
-                    onClick={() => setActiveTab("register")}
-                    className="text-blue-400 hover:underline"
-                  >
-                    Register
-                  </button>
-                </p>
-                <p className="mt-2 text-gray-500">
-                  Demo accounts: alexjohnson/password123, coach/coach123, admin/admin123
-                </p>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="register">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Create an Account</CardTitle>
-                  <CardDescription>Join Go4It Sports and start your athletic journey</CardDescription>
-                </CardHeader>
-                <form onSubmit={handleRegisterSubmit}>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="reg-username">Username</Label>
-                        <Input
-                          id="reg-username"
-                          name="username"
-                          value={registerData.username}
-                          onChange={handleRegisterChange}
-                          placeholder="yourusername"
-                        />
-                        {errors.username && (
-                          <p className="text-sm text-red-500">{errors.username}</p>
-                        )}
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Full Name</Label>
-                        <Input
-                          id="name"
-                          name="name"
-                          value={registerData.name}
-                          onChange={handleRegisterChange}
-                          placeholder="John Doe"
-                        />
-                        {errors.name && (
-                          <p className="text-sm text-red-500">{errors.name}</p>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        value={registerData.email}
-                        onChange={handleRegisterChange}
-                        placeholder="you@example.com"
-                      />
-                      {errors.email && (
-                        <p className="text-sm text-red-500">{errors.email}</p>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="role">I am a</Label>
-                      <select
-                        id="role"
-                        name="role"
-                        value={registerData.role}
-                        onChange={handleRoleChange}
-                        className="w-full p-2 rounded-md bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value="athlete">Student Athlete</option>
-                        <option value="coach">Coach</option>
-                        <option value="parent">Parent</option>
-                        <option value="scout">Scout</option>
-                      </select>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="reg-password">Password</Label>
-                        <Input
-                          id="reg-password"
-                          name="password"
-                          type="password"
-                          value={registerData.password}
-                          onChange={handleRegisterChange}
-                          placeholder="••••••••"
-                        />
-                        {errors.password && (
-                          <p className="text-sm text-red-500">{errors.password}</p>
-                        )}
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="confirmPassword">Confirm Password</Label>
-                        <Input
-                          id="confirmPassword"
-                          name="confirmPassword"
-                          type="password"
-                          value={registerData.confirmPassword}
-                          onChange={handleRegisterChange}
-                          placeholder="••••••••"
-                        />
-                        {errors.confirmPassword && (
-                          <p className="text-sm text-red-500">{errors.confirmPassword}</p>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
+            {/* Auth Form */}
+            <form onSubmit={handleSubmit}>
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="username" className="block text-sm font-medium text-slate-300 mb-1">
+                    Username
+                  </label>
+                  <input
+                    id="username"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-1">
+                    Password
+                  </label>
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+                
+                {!isLogin && (
+                  <>
+                    <div>
+                      <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-1">
+                        Full Name
+                      </label>
                       <input
-                        type="checkbox"
-                        id="terms"
-                        className="rounded bg-gray-800 border-gray-700 text-blue-500 focus:ring-blue-500"
+                        id="name"
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         required
                       />
-                      <Label htmlFor="terms" className="text-xs">
-                        I agree to the{" "}
-                        <a href="#" className="text-blue-400 hover:underline">
-                          Terms of Service
-                        </a>{" "}
-                        and{" "}
-                        <a href="#" className="text-blue-400 hover:underline">
-                          Privacy Policy
-                        </a>
-                      </Label>
                     </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-gradient-to-r from-blue-600 to-blue-500"
-                      disabled={loading}
-                    >
-                      {loading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Creating account...
-                        </>
-                      ) : (
-                        "Create Account"
-                      )}
-                    </Button>
-                  </CardFooter>
-                </form>
-              </Card>
-              
-              <div className="mt-6 text-center text-sm">
-                <p className="text-gray-400">
-                  Already have an account?{" "}
+                    
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-1">
+                        Email
+                      </label>
+                      <input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="role" className="block text-sm font-medium text-slate-300 mb-1">
+                        I am a:
+                      </label>
+                      <select
+                        id="role"
+                        value={role}
+                        onChange={(e) => setRole(e.target.value as "athlete" | "coach" | "admin")}
+                        className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="athlete">Athlete</option>
+                        <option value="coach">Coach</option>
+                      </select>
+                    </div>
+                  </>
+                )}
+                
+                <div>
                   <button
-                    onClick={() => setActiveTab("login")}
-                    className="text-blue-400 hover:underline"
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex justify-center items-center"
                   >
-                    Log In
+                    {isSubmitting ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        {isLogin ? "Signing in..." : "Creating account..."}
+                      </>
+                    ) : (
+                      <>{isLogin ? "Sign In" : "Create Account"}</>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </form>
+            
+            <div className="mt-6 text-center text-sm text-slate-400">
+              {isLogin ? (
+                <p>
+                  Don't have an account?{" "}
+                  <button
+                    onClick={() => setIsLogin(false)}
+                    className="text-blue-400 hover:text-blue-300 focus:outline-none"
+                  >
+                    Register here
                   </button>
                 </p>
-              </div>
-            </TabsContent>
-          </Tabs>
+              ) : (
+                <p>
+                  Already have an account?{" "}
+                  <button
+                    onClick={() => setIsLogin(true)}
+                    className="text-blue-400 hover:text-blue-300 focus:outline-none"
+                  >
+                    Sign in
+                  </button>
+                </p>
+              )}
+            </div>
+          </div>
+          
+          <div className="mt-8 text-center">
+            <p className="text-xs text-slate-500">
+              Development build for go4itsports.org
+            </p>
+          </div>
         </div>
       </div>
       
-      {/* Right column - hero section */}
-      <div className="md:w-1/2 bg-gradient-to-br from-blue-900 to-indigo-900 p-8 flex flex-col justify-center items-center">
-        <div className="max-w-xl text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Elevate Your Game with Advanced Video Analysis
-          </h2>
-          <p className="text-xl mb-8">
-            Join thousands of student athletes who are using Go4It's GAR scoring system
-            to improve their performance and get noticed by coaches.
-          </p>
-          
-          <div className="grid grid-cols-2 gap-6 mb-12">
-            <div className="bg-blue-800/30 backdrop-blur-sm p-4 rounded-lg">
-              <h3 className="font-bold text-xl mb-2">Video Analysis</h3>
-              <p className="text-blue-100">
-                Upload your game footage and get AI-powered insights and improvements
-              </p>
+      {/* Hero Section */}
+      <div 
+        className="w-full md:w-1/2 bg-slate-900 flex items-center justify-center p-8 hidden md:flex"
+        style={{
+          backgroundImage: 'linear-gradient(to bottom right, rgba(14, 22, 40, 0.9), rgba(14, 22, 40, 0.95))',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="max-w-md mx-auto text-center">
+          <div className="mb-8">
+            <div className="bg-blue-600 p-4 rounded-full inline-block mb-4">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 7V12L15 15" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M17.4 19.8C19.4 18.4 20.7 16.2 20.9 13.7C21.1 11.2 20.3 8.7 18.5 6.9C16.8 5.1 14.2 4.1 11.7 4.1C9.19999 4.1 6.59999 5.1 4.89999 6.9C3.09999 8.7 2.29999 11.2 2.49999 13.7C2.69999 16.2 4.09999 18.4 5.99999 19.8" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M12 21C13.6569 21 15 19.6569 15 18C15 16.3431 13.6569 15 12 15C10.3431 15 9 16.3431 9 18C9 19.6569 10.3431 21 12 21Z" fill="white"/>
+              </svg>
             </div>
-            <div className="bg-blue-800/30 backdrop-blur-sm p-4 rounded-lg">
-              <h3 className="font-bold text-xl mb-2">NCAA Tracking</h3>
-              <p className="text-blue-100">
-                Keep your academics on track with NCAA eligibility monitoring
-              </p>
-            </div>
-            <div className="bg-blue-800/30 backdrop-blur-sm p-4 rounded-lg">
-              <h3 className="font-bold text-xl mb-2">Coach Connect</h3>
-              <p className="text-blue-100">
-                Get noticed by coaches and receive professional feedback
-              </p>
-            </div>
-            <div className="bg-blue-800/30 backdrop-blur-sm p-4 rounded-lg">
-              <h3 className="font-bold text-xl mb-2">Mobile First</h3>
-              <p className="text-blue-100">
-                Access your profile, videos, and feedback from any device
-              </p>
-            </div>
+            <h2 className="text-3xl font-bold text-white mb-4">Elevate Your Athletic Potential</h2>
+            <p className="text-slate-300">
+              Go4It Sports combines cutting-edge video analysis with a personalized StarPath™ development system to help neurodivergent athletes reach their full potential.
+            </p>
           </div>
           
-          <div className="flex justify-center">
-            <div className="px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm text-sm font-medium">
-              Trusted by 5,000+ student athletes across the country
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-slate-800/50 p-4 rounded-lg">
+              <h3 className="text-blue-400 font-medium mb-2">Video Analysis</h3>
+              <p className="text-slate-300 text-sm">Upload your game footage for professional GAR scoring and personalized insights.</p>
+            </div>
+            <div className="bg-slate-800/50 p-4 rounded-lg">
+              <h3 className="text-blue-400 font-medium mb-2">StarPath Progress</h3>
+              <p className="text-slate-300 text-sm">Track your development through interactive skill trees and achievement systems.</p>
+            </div>
+            <div className="bg-slate-800/50 p-4 rounded-lg">
+              <h3 className="text-blue-400 font-medium mb-2">NCAA Eligibility</h3>
+              <p className="text-slate-300 text-sm">Monitor your academic progress toward meeting college eligibility requirements.</p>
+            </div>
+            <div className="bg-slate-800/50 p-4 rounded-lg">
+              <h3 className="text-blue-400 font-medium mb-2">Coach Connections</h3>
+              <p className="text-slate-300 text-sm">Connect with coaches who can help take your game to the next level.</p>
             </div>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default AuthPage;
