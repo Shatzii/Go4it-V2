@@ -2,195 +2,83 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom animations for feature commercial */
-@keyframes float-slow {
-  0%, 100% {
-    transform: translateY(0) translateX(0);
-  }
-  25% {
-    transform: translateY(-10px) translateX(5px);
-  }
-  50% {
-    transform: translateY(-5px) translateX(-5px);
-  }
-  75% {
-    transform: translateY(10px) translateX(3px);
-  }
+:root {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --background: #0e1628;
+  --foreground: #f8fafc;
+  --muted: #64748b;
+  --radius: 0.5rem;
 }
 
-@keyframes pulse-slow {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-  50% {
-    transform: scale(1.5);
-    opacity: 0.3;
-  }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  line-height: 1.5;
 }
 
-.animate-float-slow {
-  animation: float-slow 8s ease-in-out infinite;
-}
-
-.animate-pulse-slow {
-  animation: pulse-slow 3s ease-in-out infinite;
-}
-
-/* Add animation keyframes for skill ranking visualizer */
-@keyframes shine {
-  0% {
-    left: -100%;
-  }
-  50%, 100% {
-    left: 100%;
-  }
-}
-
+/* Animation for StarPath */
 @keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
 }
 
-@keyframes sparkle {
-  0% {
-    transform: scale(1);
-    opacity: 0.8;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0.8;
-  }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply font-sans antialiased bg-background text-foreground;
-    background-color: #000814;
-    transition: background-color 0.3s ease, color 0.3s ease, letter-spacing 0.3s ease, word-spacing 0.3s ease;
-  }
-}
-
-@layer components {
-  .neon-text {
-    @apply text-[#00c8ff];
-    text-shadow: 0 0 5px rgba(0, 200, 255, 0.5), 0 0 10px rgba(0, 200, 255, 0.3);
-  }
-  
-  .neon-border {
-    @apply border border-[#00c8ff];
-    box-shadow: 0 0 5px rgba(0, 200, 255, 0.5), 0 0 10px rgba(0, 200, 255, 0.3);
-  }
-  
-  .verified-gradient {
-    background: linear-gradient(135deg, #00c8ff 0%, #0099ff 100%);
-  }
-  
-  .verified-button {
-    @apply bg-primary hover:bg-primary/90 text-white font-bold;
-    box-shadow: 0 0 10px rgba(0, 200, 255, 0.7);
-    transition: all 0.3s ease;
-  }
-  
-  .verified-button:hover {
-    box-shadow: 0 0 15px rgba(0, 200, 255, 0.9);
-    transform: translateY(-1px);
-  }
-  
-  .card-glow {
-    @apply bg-card border border-border;
-    box-shadow: 0 0 10px rgba(0, 200, 255, 0.1);
-    transition: box-shadow 0.3s ease;
-  }
-  
-  .card-glow:hover {
-    box-shadow: 0 0 20px rgba(0, 200, 255, 0.3);
-  }
-  
-  /* Sidebar Animation Styles */
-  .sidebar-link {
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-  }
-  
-  .sidebar-link::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0, 200, 255, 0.1), transparent);
-    transition: all 0.5s ease;
-  }
-  
-  .sidebar-link:hover::before {
-    left: 100%;
-  }
-  
-  .sidebar-link.active {
-    background: linear-gradient(90deg, rgba(0, 200, 255, 0.1), rgba(0, 200, 255, 0.3));
-    box-shadow: 0 0 10px rgba(0, 200, 255, 0.5);
-  }
-  
-  /* Sidebar Transition Effects */
-  .sidebar-enter {
-    transform: translateX(-100%);
+@keyframes slideIn {
+  from { 
+    transform: translateY(10px);
     opacity: 0;
   }
-  
-  .sidebar-enter-active {
-    transform: translateX(0);
-    opacity: 1;
-    transition: all 0.3s ease;
-  }
-  
-  .sidebar-exit {
-    transform: translateX(0);
+  to { 
+    transform: translateY(0);
     opacity: 1;
   }
-  
-  .sidebar-exit-active {
-    transform: translateX(-100%);
-    opacity: 0;
-    transition: all 0.3s ease;
-  }
-  
-  /* Fullscreen toggle button animation */
-  .fullscreen-toggle {
-    transition: all 0.3s ease;
-  }
-  
-  .fullscreen-toggle:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 15px rgba(0, 200, 255, 0.7);
-  }
-  
-  /* Mobile menu animation */
-  .mobile-menu-overlay {
-    backdrop-filter: blur(5px);
-  }
-  
-  /* Hide scrollbar for carousel */
-  .hide-scrollbar, .scrollbar-hide {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
-  }
-  
-  .hide-scrollbar::-webkit-scrollbar, .scrollbar-hide::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
-  }
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+/* Scrollbar style */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.7);
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom utility classes */
+.text-gradient {
+  background: linear-gradient(to right, #2563eb, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
