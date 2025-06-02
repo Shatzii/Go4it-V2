@@ -1,24 +1,20 @@
-import React from 'react';
-import './globals.css';
-import { ClerkProvider } from '@clerk/nextjs';
+import React from 'react'
+import './globals.css'
+import type { Metadata } from 'next'
 
-export const metadata = {
-  title: 'Go4It Sports Platform',
-  description: 'Advanced sports analytics platform for neurodivergent student athletes',
-};
+export const metadata: Metadata = {
+  title: 'Go4It Sports',
+  description: 'Advanced AI-enhanced sports analytics platform for neurodivergent student athletes',
+}
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className="bg-slate-900 text-white">
-          {children}
-        </body>
-      </html>
-    </ClerkProvider>
-  );
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  )
 }

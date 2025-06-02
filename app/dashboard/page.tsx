@@ -1,16 +1,8 @@
+'use client';
 import React from 'react';
-import { auth, currentUser } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { UserButton } from '@clerk/nextjs';
 import { Video, Star, BookOpen, BarChart3, Target, User } from 'lucide-react';
 
-export default async function DashboardPage() {
-  const { userId } = auth();
-  const user = await currentUser();
-  
-  if (!userId) {
-    redirect('/sign-in');
-  }
+export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -20,8 +12,8 @@ export default async function DashboardPage() {
           <div className="flex justify-between items-center">
             <div className="text-2xl font-bold text-white">Go4It Sports</div>
             <div className="flex items-center space-x-4">
-              <span className="text-slate-300">Welcome, {user?.firstName}!</span>
-              <UserButton />
+              <span className="text-slate-300">Welcome, Athlete!</span>
+              <div className="bg-blue-600 text-white px-3 py-1 rounded">Profile</div>
             </div>
           </div>
         </div>
