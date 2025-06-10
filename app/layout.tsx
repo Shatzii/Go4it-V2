@@ -1,6 +1,5 @@
 import React from 'react';
 import './globals.css';
-import { ClerkProvider } from '@clerk/nextjs';
 
 export const metadata = {
   title: 'Go4It Sports Platform',
@@ -13,12 +12,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className="bg-slate-900 text-white">
-          {children}
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <body className="bg-slate-900 text-white">
+        {children}
+      </body>
+    </html>
   );
 }
