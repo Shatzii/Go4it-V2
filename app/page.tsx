@@ -1,116 +1,159 @@
 import React from 'react';
-import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs';
-import { Video, BookOpen, Target, Trophy, Users, Star } from 'lucide-react';
+import Link from 'next/link';
+import { Star, Trophy, BookOpen, Video, Users, Target } from 'lucide-react';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+    <div className="min-h-screen bg-slate-900">
       {/* Navigation */}
-      <nav className="flex justify-between items-center p-6">
-        <div className="text-2xl font-bold text-white">
-          Go4It Sports
-        </div>
-        <div className="space-x-4">
-          <SignInButton mode="modal">
-            <button className="btn-secondary">
-              Sign In
-            </button>
-          </SignInButton>
-          <SignUpButton mode="modal">
-            <button className="btn-primary">
-              Get Started
-            </button>
-          </SignUpButton>
+      <nav className="border-b border-slate-800">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex justify-between items-center">
+            <div className="text-2xl font-bold text-white">Go4It Sports</div>
+            <div className="flex space-x-4">
+              <Link href="/dashboard" className="text-blue-400 hover:text-blue-300">
+                Dashboard
+              </Link>
+              <Link href="/starpath" className="text-blue-400 hover:text-blue-300">
+                StarPath
+              </Link>
+              <Link href="/profile" className="text-blue-400 hover:text-blue-300">
+                Profile
+              </Link>
+            </div>
+          </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-6 py-20 text-center">
-        <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
-          Your Sports Journey
-          <span className="block text-blue-400">Starts Here</span>
-        </h1>
-        <p className="text-xl text-slate-300 mb-8 max-w-3xl mx-auto">
-          Advanced analytics platform designed for neurodivergent student athletes. 
-          Track performance, analyze videos, and navigate your path to college sports.
-        </p>
-        <SignUpButton mode="modal">
-          <button className="btn-primary text-lg px-8 py-4">
-            Start Your Journey
-          </button>
-        </SignUpButton>
-      </section>
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        <div className="text-center">
+          <h1 className="text-5xl font-bold text-white mb-6">
+            Advanced Sports Analytics for Student Athletes
+          </h1>
+          <p className="text-xl text-slate-400 mb-8 max-w-3xl mx-auto">
+            Comprehensive platform featuring AI-powered coaching, skill development tracking, 
+            and NCAA compliance monitoring designed specifically for neurodivergent athletes.
+          </p>
+          <div className="flex justify-center space-x-4">
+            <Link href="/dashboard" className="btn-primary text-lg px-8 py-3">
+              Get Started
+            </Link>
+            <Link href="/starpath" className="btn-secondary text-lg px-8 py-3">
+              Explore StarPath
+            </Link>
+          </div>
+        </div>
+      </div>
 
       {/* Features Grid */}
-      <section className="max-w-7xl mx-auto px-6 py-20">
-        <div className="grid md:grid-cols-3 gap-8">
-          <FeatureCard 
-            icon={<Video className="h-8 w-8" />}
-            title="Video Analysis"
-            description="Upload game footage and get detailed GAR scoring with AI-powered insights"
-          />
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        <h2 className="text-3xl font-bold text-white text-center mb-12">
+          Platform Features
+        </h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           <FeatureCard 
             icon={<Star className="h-8 w-8" />}
-            title="StarPath™"
-            description="Interactive skill development tracking to level up your athletic abilities"
+            title="StarPath™ Skill Development"
+            description="Interactive skill progression system with XP tracking and achievement unlocks"
+            bgColor="bg-purple-600"
           />
+          
+          <FeatureCard 
+            icon={<Video className="h-8 w-8" />}
+            title="Video Analysis & GAR Scoring"
+            description="AI-powered video analysis with Game Analysis Rating for performance insights"
+            bgColor="bg-blue-600"
+          />
+          
           <FeatureCard 
             icon={<BookOpen className="h-8 w-8" />}
-            title="Academic Tracking"
-            description="Stay on track for NCAA eligibility with comprehensive academic monitoring"
+            title="Academic Progress Tracking"
+            description="NCAA eligibility monitoring with course requirements and GPA tracking"
+            bgColor="bg-green-600"
           />
+          
+          <FeatureCard 
+            icon={<Users className="h-8 w-8" />}
+            title="Recruitment Monitoring"
+            description="Real-time tracking with 711 active scouts monitoring opportunities"
+            bgColor="bg-orange-600"
+          />
+          
           <FeatureCard 
             icon={<Trophy className="h-8 w-8" />}
             title="Performance Analytics"
-            description="Advanced metrics and visualizations to understand your athletic progress"
+            description="Comprehensive statistics and progress visualization tools"
+            bgColor="bg-red-600"
           />
+          
           <FeatureCard 
             icon={<Target className="h-8 w-8" />}
-            title="Recruitment Tools"
-            description="Connect with college coaches and showcase your athletic achievements"
-          />
-          <FeatureCard 
-            icon={<Users className="h-8 w-8" />}
-            title="Coach Portal"
-            description="Dedicated dashboard for coaches to track and support their athletes"
+            title="AI Coaching Insights"
+            description="Personalized recommendations powered by advanced AI analysis"
+            bgColor="bg-indigo-600"
           />
         </div>
-      </section>
+      </div>
+
+      {/* Stats Section */}
+      <div className="bg-slate-800 py-16">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid md:grid-cols-3 gap-8 text-center">
+            <div>
+              <div className="text-4xl font-bold text-blue-400 mb-2">711</div>
+              <div className="text-slate-300">Active Athlete Scouts</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-purple-400 mb-2">395</div>
+              <div className="text-slate-300">Transfer Portal Monitors</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-green-400 mb-2">24/7</div>
+              <div className="text-slate-300">Real-Time Monitoring</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Call to Action */}
-      <section className="max-w-4xl mx-auto px-6 py-20 text-center">
+      <div className="max-w-4xl mx-auto px-6 py-16 text-center">
         <h2 className="text-4xl font-bold text-white mb-6">
           Ready to Elevate Your Game?
         </h2>
         <p className="text-lg text-slate-300 mb-8">
-          Join thousands of student athletes already using Go4It Sports to reach their potential.
+          Join student athletes using Go4It Sports to reach their potential with comprehensive analytics and AI-powered insights.
         </p>
-        <SignUpButton mode="modal">
+        <Link href="/dashboard">
           <button className="btn-primary text-lg px-8 py-4">
-            Create Your Profile
+            Start Your Journey
           </button>
-        </SignUpButton>
-      </section>
+        </Link>
+      </div>
     </div>
   );
 }
 
-function FeatureCard({ icon, title, description }: {
+function FeatureCard({ 
+  icon, 
+  title, 
+  description, 
+  bgColor 
+}: {
   icon: React.ReactNode;
   title: string;
   description: string;
+  bgColor: string;
 }) {
   return (
-    <div className="card hover:border-blue-400/50 transition-colors">
-      <div className="text-blue-400 mb-4">
-        {icon}
+    <div className="card hover:border-blue-400/50 transition-all duration-200">
+      <div className={`${bgColor} p-3 rounded-lg inline-flex mb-4`}>
+        <div className="text-white">
+          {icon}
+        </div>
       </div>
-      <h3 className="text-xl font-semibold text-white mb-3">
-        {title}
-      </h3>
-      <p className="text-slate-300">
-        {description}
-      </p>
+      <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
+      <p className="text-slate-400 text-sm">{description}</p>
     </div>
   );
 }
