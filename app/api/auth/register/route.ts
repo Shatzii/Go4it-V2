@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
 import { db } from '@/lib/db';
-import { users, athleteProfiles } from '@/lib/schema';
-import { hashPassword, setAuthCookie } from '@/lib/auth';
+import { users, insertUserSchema } from '@/shared/schema';
+import { hashPassword, createSession } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
-    const { username, email, password, name, role = 'student' } = await request.json();
+    const { username, email, password, firstName, lastName, role = 'athlete' } = await request.json();
 
-    if (!username || !email || !password || !name) {
+    if (!username || !email || !password) {
       return NextResponse.json(
-        { error: 'All fields are required' },
+        { error: 'Username, email, and password are required' },
         { status: 400 }
       );
     }
@@ -39,26 +39,29 @@ export async function POST(request: NextRequest) {
         username,
         email,
         password: hashedPassword,
-        name,
+        firstName,
+        lastName,
         role,
       })
       .returning();
 
-    // Create athlete profile if role is student
-    if (role === 'student') {
-      await db.insert(athleteProfiles).values({
-        userId: newUser.id,
-        bio: `Welcome to Go4It Sports, ${name}!`,
-        verifiedStatus: false,
-      });
-    }
+    // Create session and get token
+    const token = await createSession(newUser.id);
 
     // Set auth cookie
-    await setAuthCookie(newUser.id, newUser.role || 'student');
+    const response = NextResponse.json({ 
+      user: { ...newUser, password: undefined },
+      success: true 
+    });
+    
+    response.cookies.set('auth-token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 // 24 hours
+    });
 
-    // Return user data (without password)
-    const { password: _, ...userWithoutPassword } = newUser;
-    return NextResponse.json({ user: userWithoutPassword });
+    return response;
   } catch (error) {
     console.error('Registration error:', error);
     return NextResponse.json(

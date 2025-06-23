@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
 import { db } from '@/lib/db';
-import { users } from '@/lib/schema';
-import { verifyPassword, setAuthCookie } from '@/lib/auth';
+import { users } from '@/shared/schema';
+import { comparePasswords, createSession } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password
-    const isValid = await verifyPassword(password, user.password);
+    const isValid = await comparePasswords(password, user.password);
     if (!isValid) {
       return NextResponse.json(
         { error: 'Invalid credentials' },
@@ -38,12 +38,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Set auth cookie
-    await setAuthCookie(user.id, user.role || 'student');
+    // Create session and get token
+    const token = await createSession(user.id);
 
-    // Return user data (without password)
-    const { password: _, ...userWithoutPassword } = user;
-    return NextResponse.json({ user: userWithoutPassword });
+    // Set auth cookie
+    const response = NextResponse.json({ 
+      user: { ...user, password: undefined },
+      success: true 
+    });
+    
+    response.cookies.set('auth-token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 // 24 hours
+    });
+
+    return response;
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
