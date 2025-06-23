@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { teamRosters, teams, users } from '@/shared/schema';
+import { teamRosters, teams } from '@/shared/enhanced-schema';
+import { users } from '@/shared/schema';
 import { eq, and } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
