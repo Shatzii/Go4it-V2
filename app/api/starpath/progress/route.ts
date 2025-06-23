@@ -1,42 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getUserFromRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { userSkillProgress, skills, skillTrees, xpTransactions } from '@/lib/schema';
-import { getUser } from '@/lib/auth';
-import { eq, and } from 'drizzle-orm';
+import { starPathProgress } from '@/shared/schema';
+import { eq } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getUser(request);
+    const user = await getUserFromRequest(request);
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
-    // Get user's skill progress with skill and tree data
-    const progress = await db
-      .select({
-        id: userSkillProgress.id,
-        skillId: userSkillProgress.skillId,
-        xpEarned: userSkillProgress.xpEarned,
-        level: userSkillProgress.level,
-        unlocked: userSkillProgress.unlocked,
-        completed: userSkillProgress.completed,
-        skillName: skills.name,
-        skillDescription: skills.description,
-        xpRequired: skills.xpRequired,
-        category: skills.category,
-        treeName: skillTrees.name,
-        sportType: skillTrees.sportType
-      })
-      .from(userSkillProgress)
-      .leftJoin(skills, eq(userSkillProgress.skillId, skills.id))
-      .leftJoin(skillTrees, eq(skills.treeId, skillTrees.id))
-      .where(eq(userSkillProgress.userId, user.id));
+    // Get user's StarPath progress
+    const userProgress = await db
+      .select()
+      .from(starPathProgress)
+      .where(eq(starPathProgress.userId, user.id));
 
-    return NextResponse.json({ progress });
+    // Calculate overall progress metrics
+    const totalXp = userProgress.reduce((sum, node) => sum + node.totalXp, 0);
+    const completedNodes = userProgress.filter(node => node.isUnlocked && node.totalXp >= 1000).length;
+    const currentTier = Math.floor(totalXp / 500) + 1;
+
+    return NextResponse.json({
+      progress: userProgress,
+      stats: {
+        totalXp,
+        completedNodes,
+        currentTier,
+        activeNodes: userProgress.filter(node => node.isUnlocked).length
+      }
+    });
+
   } catch (error) {
     console.error('StarPath progress error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch progress' },
+      { error: 'Failed to load progress' },
       { status: 500 }
     );
   }
@@ -44,12 +43,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getUser(request);
+    const user = await getUserFromRequest(request);
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
-    const { skillId, xpGained, source, description } = await request.json();
+    const { skillId, xpGained, activityType } = await request.json();
 
     if (!skillId || !xpGained) {
       return NextResponse.json(
@@ -58,74 +57,47 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get current progress
-    const [currentProgress] = await db
+    // Update or create progress entry
+    const [existingProgress] = await db
       .select()
-      .from(userSkillProgress)
-      .where(and(
-        eq(userSkillProgress.userId, user.id),
-        eq(userSkillProgress.skillId, skillId)
-      ))
-      .limit(1);
+      .from(starPathProgress)
+      .where(eq(starPathProgress.userId, user.id))
+      .where(eq(starPathProgress.skillId, skillId));
 
-    const newXpTotal = (currentProgress?.xpEarned || 0) + xpGained;
-    
-    // Get skill info for level calculation
-    const [skill] = await db
-      .select()
-      .from(skills)
-      .where(eq(skills.id, skillId))
-      .limit(1);
-
-    if (!skill) {
-      return NextResponse.json({ error: 'Skill not found' }, { status: 404 });
-    }
-
-    const newLevel = Math.floor(newXpTotal / skill.xpRequired);
-    const completed = newXpTotal >= skill.xpRequired;
-
-    // Update or insert progress
     let updatedProgress;
-    if (currentProgress) {
+    
+    if (existingProgress) {
+      const newTotalXp = existingProgress.totalXp + xpGained;
+      const newLevel = Math.floor(newTotalXp / 200) + 1; // 200 XP per level
+      
       [updatedProgress] = await db
-        .update(userSkillProgress)
+        .update(starPathProgress)
         .set({
-          xpEarned: newXpTotal,
-          level: newLevel,
-          completed,
-          lastActivityAt: new Date()
+          totalXp: newTotalXp,
+          currentLevel: Math.min(newLevel, 5), // Max level 5
+          lastUpdated: new Date()
         })
-        .where(eq(userSkillProgress.id, currentProgress.id))
+        .where(eq(starPathProgress.id, existingProgress.id))
         .returning();
     } else {
       [updatedProgress] = await db
-        .insert(userSkillProgress)
+        .insert(starPathProgress)
         .values({
           userId: user.id,
           skillId,
-          xpEarned: newXpTotal,
-          level: newLevel,
-          unlocked: true,
-          completed,
-          unlockedAt: new Date(),
-          completedAt: completed ? new Date() : null
+          skillName: skillId.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          currentLevel: 1,
+          totalXp: xpGained,
+          isUnlocked: true
         })
         .returning();
     }
 
-    // Record XP transaction
-    await db.insert(xpTransactions).values({
-      userId: user.id,
-      skillId,
-      amount: xpGained,
-      source: source || 'manual',
-      description: description || 'Skill progress update'
-    });
-
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       progress: updatedProgress,
-      levelUp: newLevel > (currentProgress?.level || 0)
+      xpGained,
+      message: `Gained ${xpGained} XP in ${skillId}`
     });
 
   } catch (error) {
