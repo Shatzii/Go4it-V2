@@ -26,8 +26,9 @@ export default function AuthPage() {
       username: formData.get('username'),
       email: formData.get('email'),
       password: formData.get('password'),
-      name: formData.get('name'),
-      role: formData.get('role') || 'student'
+      firstName: formData.get('firstName'),
+      lastName: formData.get('lastName'),
+      role: formData.get('role') || 'athlete'
     };
 
     try {
@@ -73,18 +74,33 @@ export default function AuthPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {!isLogin && (
               <>
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-slate-200 mb-2">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    required={!isLogin}
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-md text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter your full name"
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="firstName" className="block text-sm font-medium text-slate-200 mb-2">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      name="firstName"
+                      id="firstName"
+                      required={!isLogin}
+                      className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-md text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="First name"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="lastName" className="block text-sm font-medium text-slate-200 mb-2">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      name="lastName"
+                      id="lastName"
+                      required={!isLogin}
+                      className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-md text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Last name"
+                    />
+                  </div>
                 </div>
 
                 <div>
