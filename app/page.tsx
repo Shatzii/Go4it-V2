@@ -11,14 +11,11 @@ export default function HomePage() {
           <div className="flex justify-between items-center">
             <div className="text-2xl font-bold text-white">Go4It Sports</div>
             <div className="flex space-x-4">
-              <Link href="/dashboard" className="text-blue-400 hover:text-blue-300">
-                Dashboard
+              <Link href="/auth" className="text-blue-400 hover:text-blue-300">
+                Sign In
               </Link>
-              <Link href="/starpath" className="text-blue-400 hover:text-blue-300">
-                StarPath
-              </Link>
-              <Link href="/profile" className="text-blue-400 hover:text-blue-300">
-                Profile
+              <Link href="/auth" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
+                Get Started
               </Link>
             </div>
           </div>
@@ -36,11 +33,11 @@ export default function HomePage() {
             and NCAA compliance monitoring designed specifically for neurodivergent athletes.
           </p>
           <div className="flex justify-center space-x-4">
-            <Link href="/dashboard" className="btn-primary text-lg px-8 py-3">
+            <Link href="/auth" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg px-8 py-3 rounded-md transition-colors">
               Get Started
             </Link>
-            <Link href="/starpath" className="btn-secondary text-lg px-8 py-3">
-              Explore StarPath
+            <Link href="/auth" className="bg-slate-700 hover:bg-slate-600 text-white font-semibold text-lg px-8 py-3 rounded-md transition-colors">
+              Learn More
             </Link>
           </div>
         </div>
