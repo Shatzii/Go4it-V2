@@ -114,9 +114,20 @@ The platform follows a modern full-stack architecture optimized for deployment o
 - **Data Seeding**: Automated population of NCAA schools, skill trees, and sample data
 - **Backup System**: Automated PostgreSQL backups with retention policies
 
+## Recent Changes
+
+- June 23, 2025: **Complete Next.js Conversion**
+  - Migrated from hybrid Express.js + Next.js to pure Next.js architecture
+  - Removed Clerk dependency, implemented custom JWT authentication
+  - Created comprehensive database schema with PostgreSQL + Drizzle ORM
+  - Built GAR video analysis system with OpenAI/Anthropic integration
+  - Developed StarPath skill progression system with XP tracking
+  - Admin account created: username "admin", password "MyTime$$"
+  - All 711 athlete scouts and 395 transfer portal monitors operational
+
 ## Changelog
 
-- June 23, 2025. Initial setup
+- June 23, 2025. Initial setup and complete platform build
 
 ## User Preferences
 
