@@ -7,16 +7,13 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['pg'],
   },
-  output: 'standalone',
-  env: {
-    PORT: process.env.PORT || '5000',
-  },
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
   },
+  swcMinify: false,
 }
 
 module.exports = nextConfig
