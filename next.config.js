@@ -1,11 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['localhost', '*.replit.dev'],
     unoptimized: true,
-  },
-  experimental: {
-    serverComponentsExternalPackages: ['pg'],
   },
   eslint: {
     ignoreDuringBuilds: true,
@@ -14,6 +10,9 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   swcMinify: false,
+  env: {
+    PORT: process.env.PORT || '5000',
+  },
 }
 
 module.exports = nextConfig
