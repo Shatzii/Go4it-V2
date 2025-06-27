@@ -1,78 +1,184 @@
-# Go4It Sports Platform - Complete Deployment Package
+# Go4It Sports Platform
 
-## **Quick Start Guide**
+A comprehensive sports analytics platform designed for neurodivergent student athletes aged 12-18, featuring AI-powered video analysis, skill progression tracking, and team management tools.
 
-This package contains the complete Go4It Sports platform with clean Next.js architecture and comprehensive backend services.
+## Overview
 
-### **Installation**
+Go4It Sports transforms athletic development through personalized AI coaching, GAR (Growth and Ability Rating) video analysis, and StarPath skill progression - all optimized for ADHD-friendly design patterns.
 
-1. **Install Dependencies**
-   ```bash
-   npm install
-   ```
+## Key Features
 
-2. **Environment Setup**
-   ```bash
-   cp .env.example .env.local
-   # Edit .env.local with your actual keys
-   ```
+### 🎯 Core Platform
+- **GAR Video Analysis**: AI-powered 0-100 scale performance scoring
+- **StarPath Progression**: Interactive skill trees with XP-based advancement
+- **Go4It Teams**: Complete management for flag football, soccer, basketball, track & field
+- **Real-Time Performance Tracking**: Live metrics and personalized ADHD attention zones
+- **Academic Integration**: NCAA eligibility monitoring and GPA tracking
 
-3. **Database Setup**
-   ```bash
-   npm run db:push
-   ```
+### 🤖 AI-Powered Coaching
+- **Multiple AI Providers**: OpenAI and Anthropic integration with emotional intelligence
+- **Self-Hosted AI Models**: Complete Hugging Face model integration for cost-effective analysis
+- **Personalized Recommendations**: ADHD-aware coaching and development suggestions
+- **Mock AI Support**: Development-friendly testing without API costs
 
-4. **Start Development**
-   ```bash
-   npm run dev
-   ```
+### 🏆 Advanced Features
+- **Mobile Video Tools**: Built-in recording with technique overlays
+- **Communication Hub**: Coach-athlete messaging and parent progress sharing
+- **Achievement System**: Gamified badges, challenges, and milestone rewards
+- **Recruitment Tools**: College matching and scout monitoring
 
-## **Required Environment Variables**
+## Business Model
 
-### **Essential for Basic Functionality**
-- `DATABASE_URL` - PostgreSQL connection string
-- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` - Clerk authentication
-- `CLERK_SECRET_KEY` - Clerk backend integration
+### Subscription-Based Self-Hosting
+- **Starter**: $47/month (50 athletes, basic features)
+- **Professional**: $97/month (200 athletes, full AI)
+- **Enterprise**: $297/month (unlimited, white-label)
 
-### **For Full Feature Access**
-- `OPENAI_API_KEY` - AI coaching features
-- `ANTHROPIC_API_KEY` - Advanced AI insights
-- `TWILIO_*` - SMS notifications
+### Benefits
+- **For Customers**: Complete data ownership, no usage limits, offline capability
+- **For Business**: Recurring revenue without infrastructure costs
+- **Win-Win**: Reduced operational overhead while maintaining feature control
 
-## **Platform Architecture**
+## Technical Architecture
 
-### **Frontend Structure**
-- `/app/page.tsx` - Landing page with authentication
-- `/app/dashboard/page.tsx` - Main user dashboard
-- `/app/starpath/page.tsx` - Interactive skill progression
-- `/app/profile/page.tsx` - Student athlete profiles
+### Frontend
+- **Framework**: Next.js 14 with TypeScript
+- **Styling**: Tailwind CSS with dark theme (ADHD-optimized)
+- **Authentication**: JWT-based with session management
+- **State Management**: React hooks with TanStack Query
 
-### **Backend Services**
-- Full Express server with comprehensive APIs
-- 711 athlete scouts monitoring recruitment data
-- 395 transfer portal monitors active
-- AI coaching service with personalized recommendations
-- Academic progress tracking for NCAA compliance
+### Backend
+- **Runtime**: Node.js with Express.js
+- **Database**: PostgreSQL with Drizzle ORM
+- **AI Integration**: OpenAI, Anthropic, and self-hosted Hugging Face models
+- **License Management**: Subscription validation and feature gating
 
-### **Key Features Ready**
-- StarPath skill development system
-- Player progress tracking with XP/levels
-- Real-time recruitment monitoring
-- Academic eligibility tracking
-- Coach portal infrastructure
-- Video analysis framework
+### Self-Hosted AI
+- **Player Detection**: facebook/detr-resnet-50-dc5
+- **Sport Classification**: microsoft/resnet-50
+- **Pose Estimation**: google/movenet-singlepose-thunder
+- **Action Recognition**: FCakyon/yolov8n-action-classification
+- **Text Generation**: TheBloke/Llama-2-7B-Chat-GGML
 
-## **Development Priorities**
+## Quick Start
 
-1. **Complete Clerk Integration** - Connect frontend auth with backend APIs
-2. **Academic Progress Interface** - NCAA compliance tracking UI
-3. **Coach Portal Dashboard** - Revenue-generating feature
-4. **Video Analysis UI** - For self-hosted GAR engine
+### Requirements
+- Node.js 18+
+- PostgreSQL 15+
+- Docker (recommended)
+- 4GB RAM minimum (8GB recommended)
 
-## **Database Status**
-- Schema deployed and operational
-- Skill tree data seeded for multiple sports
-- Player progress tracking active
-- Academic course requirements configured
+### Installation
+```bash
+# Clone repository
+git clone https://github.com/Shatzii/Go4it-V2.git
+cd Go4it-V2
 
-The platform foundation is robust with powerful backend services operational and ready for frontend completion.
+# Install dependencies
+npm install
+
+# Set up environment
+cp .env.example .env
+# Edit .env with your configuration
+
+# Set up database
+npm run db:push
+
+# Start development server
+npm run dev
+```
+
+### Self-Hosted Deployment
+```bash
+# Extract deployment package
+unzip go4it-sports-professional.zip
+cd go4it-sports-professional
+
+# One-command setup
+./scripts/setup.sh
+
+# Access at https://localhost
+```
+
+## Server Requirements
+
+### Minimum (Starter Edition)
+- 2 CPU cores
+- 4GB RAM
+- 20GB SSD storage
+- 10 Mbps network
+
+### Recommended (Professional Edition)
+- 4 CPU cores
+- 8GB RAM
+- 50GB SSD storage
+- 25 Mbps network
+
+### Optimal (Enterprise Edition)
+- 8 CPU cores
+- 16GB RAM
+- 100GB SSD storage
+- 50 Mbps network
+
+## License & Subscription
+
+This software operates on a subscription-based licensing model:
+
+- Software remains owned by Go4It Sports
+- Customers license usage rights based on subscription tier
+- License validation occurs every 24 hours
+- Features automatically adjust based on subscription status
+- Grace periods provided for offline operation
+
+## Documentation
+
+- [Deployment Guide](SUBSCRIPTION_DEPLOYMENT_GUIDE.md)
+- [Business Model](BUSINESS_MODEL_TRANSITION.md)
+- [Server Requirements](SERVER_REQUIREMENTS_GUIDE.md)
+- [GitHub Copilot Build Guide](COPILOT_BUILD_PROMPT.md)
+- [License Management](SUBSCRIPTION_LICENSING_MODEL.md)
+
+## Support
+
+### For Customers
+- Documentation and user guides included
+- Community forum access
+- Priority support with Professional/Enterprise tiers
+
+### For Developers
+- Complete GitHub Copilot build prompts
+- Self-hosted AI model integration
+- Comprehensive API documentation
+
+## Contributing
+
+This is commercial software. For feature requests or bug reports, please contact support through the customer portal.
+
+## Security
+
+- Server fingerprinting prevents license sharing
+- Encrypted license validation
+- Secure JWT authentication
+- GDPR-compliant data handling
+
+## Changelog
+
+### v2.0.0 (June 2025)
+- Complete platform rebuild with all 10 comprehensive improvements
+- Subscription-based licensing system implementation
+- Self-hosted AI model integration
+- Advanced team management for 4 sports
+- Real-time performance tracking
+- Enhanced accessibility features
+
+### v1.0.0 (December 2024)
+- Initial platform launch
+- Basic GAR analysis
+- Team management foundation
+- Authentication system
+
+---
+
+**Go4It Sports** - Empowering neurodivergent student athletes through intelligent sports analytics.
+
+For more information, visit [go4itsports.com](https://go4itsports.com)
