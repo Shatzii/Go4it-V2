@@ -13,6 +13,13 @@ import path from "path";
 import { WebSocketServer, WebSocket } from 'ws';
 import { setWebSocketStats, WebSocketStats } from './websocket-stats';
 import { errorHandler, notFoundHandler, asyncHandler, AppError, ErrorTypes } from './middleware/error-handler';
+import { 
+  requiresSubscription, 
+  requiresFeature, 
+  checkAthleteLimit, 
+  getLicenseStatus,
+  handleLicenseExpiration 
+} from "./middleware/license-middleware";
 
 // Extended WebSocket interface with isAlive flag for connection monitoring
 interface ExtendedWebSocket extends WebSocket {
@@ -191,8 +198,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Apply database error handling setup
   // Error tracking will be handled through error-handler middleware
   
+  // Apply license expiration handler to all routes
+  app.use(handleLicenseExpiration);
+  
   // Apply cache middleware for all routes
   app.use(cacheMiddleware(300)); // 5-minute TTL
+  
+  // License status endpoint (always accessible)
+  app.get('/api/license/status', getLicenseStatus);
   
   // Add health check routes
   app.get('/api/health', asyncHandler(async (req: Request, res: Response) => {
@@ -1382,7 +1395,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Upload video endpoint
-  app.post("/api/videos/upload", isAuthenticated, videoUpload.single("video"), async (req: Request, res: Response) => {
+  app.post("/api/videos/upload", isAuthenticated, requiresFeature('basic_gar_analysis'), checkAthleteLimit, videoUpload.single("video"), async (req: Request, res: Response) => {
     try {
       console.log("Video upload received:", req.file ? "File present" : "No file");
       console.log("Request body:", req.body);
@@ -1528,7 +1541,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   );
 
   // Generate GAR scores for a video
-  app.post("/api/videos/:id/generate-gar", isAuthenticated, async (req: Request, res: Response) => {
+  app.post("/api/videos/:id/generate-gar", isAuthenticated, requiresFeature('basic_gar_analysis'), async (req: Request, res: Response) => {
     try {
       const videoId = parseInt(req.params.id);
       const video = await storage.getVideo(videoId);
@@ -1921,7 +1934,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Generate video highlight with AI
-  app.post("/api/videos/:id/generate-highlight", isAuthenticated, async (req: Request, res: Response) => {
+  app.post("/api/videos/:id/generate-highlight", isAuthenticated, requiresFeature('advanced_gar_analysis'), async (req: Request, res: Response) => {
     try {
       const videoId = parseInt(req.params.id);
       const video = await storage.getVideo(videoId);
