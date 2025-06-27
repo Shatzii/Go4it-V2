@@ -6017,6 +6017,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register Scout Vision routes
   app.use('/api', scoutRoutes);
 
+  // Phase 1 Cutting-Edge Features
+  app.use('/api/biomechanical', biomechanicalRoutes);
+  app.use('/api/emotional-intelligence', emotionalIntelligenceRoutes);
+  app.use('/api/college-match', collegeMatchRoutes);
+
   // Register MyPlayer routes
   app.use('/api/myplayer', isAuthenticatedMiddleware, myplayerRoutes);
   
