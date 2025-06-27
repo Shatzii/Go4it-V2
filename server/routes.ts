@@ -39,6 +39,14 @@ import { registerAnthropicCoachRoutes } from './routes/anthropic-coach-routes';
 import hybridCoachRoutes, { registerHybridCoachRoutes } from './routes/hybrid-coach-routes';
 import { aiCoachService } from './services/ai-coach-service';
 import { User, insertNcaaEligibilitySchema } from "@shared/schema";
+
+// Advanced Feature Route Imports
+import vrTrainingRoutes from './routes/vr-training-routes';
+import arOverlayRoutes from './routes/ar-overlay-routes';
+import scoutNetworkRoutes from './routes/scout-network-routes';
+import aiRivalRoutes from './routes/ai-rival-routes';
+import voiceCoachingRoutes from './routes/voice-coaching-routes';
+import teamChemistryRoutes from './routes/team-chemistry-routes';
 import { isAdminMiddleware, isAuthenticatedMiddleware } from './middleware/auth-middleware';
 import { cacheMiddleware, invalidateCache } from './middleware/cache-middleware';
 import * as accessControl from './middleware/access-control';
@@ -6021,6 +6029,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/biomechanical', biomechanicalRoutes);
   app.use('/api/emotional-intelligence', emotionalIntelligenceRoutes);
   app.use('/api/college-match', collegeMatchRoutes);
+
+  // Priority 1 Advanced Features
+  app.use('/api/vr', vrTrainingRoutes);
+  app.use('/api/ar', arOverlayRoutes);
+  app.use('/api/scouts', scoutNetworkRoutes);
+  app.use('/api/rivals', aiRivalRoutes);
+
+  // Priority 2 Advanced Features
+  app.use('/api/voice-coach', voiceCoachingRoutes);
+  app.use('/api/team-chemistry', teamChemistryRoutes);
 
   // Register MyPlayer routes
   app.use('/api/myplayer', isAuthenticatedMiddleware, myplayerRoutes);
