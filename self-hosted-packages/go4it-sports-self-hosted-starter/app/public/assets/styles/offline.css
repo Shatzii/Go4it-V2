@@ -1,0 +1,143 @@
+:root {
+  --primary: #00B4D8;
+  --background: #0E1628;
+  --foreground: #F8F9FA;
+  --muted: #ADB5BD;
+  --accent: #0077B6;
+  --radius: 0.5rem;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.offline-container {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+.logo-container {
+  margin-bottom: 2rem;
+}
+
+.logo {
+  width: 120px;
+  height: 120px;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--foreground);
+}
+
+p {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  color: var(--muted);
+}
+
+.retry-button {
+  background-color: var(--primary);
+  color: var(--background);
+  font-weight: bold;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  font-size: 1rem;
+}
+
+.retry-button:hover {
+  background-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.retry-button:active {
+  transform: translateY(0);
+}
+
+.connection-status {
+  margin-top: 2rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  background-color: rgba(173, 181, 189, 0.1);
+}
+
+.status-indicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  background-color: #dc3545;
+}
+
+.info-list {
+  text-align: left;
+  margin: 2rem auto;
+  max-width: 500px;
+}
+
+.info-item {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: flex-start;
+}
+
+.info-icon {
+  flex-shrink: 0;
+  margin-right: 1rem;
+  color: var(--primary);
+  width: 24px;
+  height: 24px;
+}
+
+.info-text {
+  flex-grow: 1;
+}
+
+footer {
+  margin-top: auto;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+  padding: 1rem 0;
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  p {
+    font-size: 1rem;
+  }
+  
+  .logo {
+    width: 80px;
+    height: 80px;
+  }
+}
