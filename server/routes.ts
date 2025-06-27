@@ -75,6 +75,9 @@ import uploaderRouter from './uploader';
 import agentMessageRouter from './agent-message';
 import statusRouter from './status';
 import authRoutes from './routes/auth-routes';
+import biomechanicalRoutes from './routes/biomechanical-routes';
+import emotionalIntelligenceRoutes from './routes/emotional-intelligence-routes';
+import collegeMatchRoutes from './routes/college-match-routes';
 
 // Helper function to determine event status
 function getEventStatus(event: any): 'upcoming' | 'filling_fast' | 'sold_out' | 'past' {
