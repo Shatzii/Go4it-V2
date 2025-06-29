@@ -1,0 +1,109 @@
+You're a senior full-stack developer helping to prep a sports recruiting platform, Go4It, for deployment. Do NOT rebuild from scratch. Instead, optimize the existing codebase in Replit to:
+
+- Prepare for AI engine integration (sports video analysis)
+- Make the project production-ready
+- Allow clean deployment to a Hetzner VPS
+- Support a FileBrowser-based upload workflow
+
+---
+
+### CORE GOALS:
+- This platform is for video upload, GAR scoring, highlight generation, and player development.
+- We will host the AI engine separately, but you should scaffold the site so it’s ready to plug in with real endpoints.
+- You must preserve the current frontend, layout, and routes — just upgrade and expand.
+
+---
+
+### ✅ STRUCTURE & DEPLOYMENT:
+
+1. Add a `deploy.sh` script to:
+   - Build frontend
+   - Zip project for server upload
+
+2. Add `.env.example` with keys like:
+   - `DATABASE_URL`
+   - `PORT`
+   - `JWT_SECRET`
+   - `UPLOAD_DIR=/var/www/go4itsports/uploads`
+
+3. Generate `ecosystem.config.js` for PM2 with settings:
+   - App name: `go4it`
+   - Script: `npm start`
+   - Watch: true
+
+4. Add `/scripts/setup_structure.sh` to auto-create these folders:
+   - `/var/www/go4itsports/uploads/{videos,images,highlights,temp}`
+   - `/var/www/go4itsports/logs`
+   - `/var/www/go4itsports/public`
+   - `/var/www/go4itsports/api_locker`
+
+5. Create `/api/health` route for live status checks.
+
+---
+
+### ✅ FRONTEND ENHANCEMENTS:
+
+1. Keep current layout and design (React + Tailwind + Vite)
+2. Add pages/components to simulate future AI engine outputs:
+   - `AIResultsCard.tsx`
+   - `UploadStatus.tsx`
+   - `GARScoreMock.tsx`
+   - `StarPathProgress.tsx`
+   - `HighlightPreview.tsx`
+
+3. Base path in `vite.config.ts` should match `/client/` for production
+
+4. Use mock data and dummy responses for:
+   - GAR Scores
+   - Highlight Results
+   - Rankings (Hot 100)
+
+---
+
+### ✅ BACKEND STRUCTURE (API PREP):
+
+Create Express or FastAPI-style mock endpoints:
+- `POST /api/upload-video`
+- `POST /api/analyze`
+- `GET /api/gar-score`
+- `GET /api/rankings/hot100`
+- `GET /api/starpath`
+
+Place all AI scaffolding under:
+- `/engine/video-analysis-service.ts`
+- `/engine/gar-scoring.ts`
+- `/engine/highlight-builder.ts`
+
+---
+
+### ✅ FILEBROWSER INTEGRATION:
+
+1. Assume FileBrowser is running at `/opt/filebrowser/`
+2. Upload root: `/var/www/go4itsports/`
+3. Default upload folder: `/var/www/go4itsports/uploads/temp`
+4. Add backend support to:
+   - Move files from `temp/` to `videos/` after analysis
+   - Track file status in a DB or JSON mock file
+5. In README.md, document the FileBrowser workflow and how users can:
+   - Upload manually
+   - View uploaded files
+   - Trigger processing once AI is active
+
+---
+
+### ✅ BONUS FEATURES:
+
+- Add `Nginx config sample` as `go4itsports.conf`
+- Add `.env.production` template
+- All folders + logs must be permissions-safe (`chmod 755`)
+
+---
+
+### IMPORTANT:
+- Do NOT add CMS or code editor
+- Do NOT remove existing features
+- This site is for SPORTS, not development
+
+---
+
+Let me know when this project is ready to deploy to the VPS and connect to our AI model stack.

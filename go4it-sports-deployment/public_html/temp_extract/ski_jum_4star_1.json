@@ -1,0 +1,41 @@
+{
+  "id": "ski_jum_4star_1",
+  "name": "Star 4 - Jumper #1",
+  "star_level": 4,
+  "sport": "Ski Jumping",
+  "position": "Jumper",
+  "age_group": "16-18",
+  "metrics": {
+    "height": "6'0",
+    "weight": "190 lbs",
+    "forty_yard_dash": "4.7s",
+    "vertical": "30\"",
+    "gpa": "3.6"
+  },
+  "traits": {
+    "movement": [
+      "explosive",
+      "fluid hips"
+    ],
+    "mental": [
+      "leader",
+      "quick processor"
+    ],
+    "resilience": [
+      "improving"
+    ]
+  },
+  "film_expectations": [
+    "Explosive first step",
+    "High motor throughout play",
+    "Football IQ in real-time"
+  ],
+  "training_focus": [
+    "Footwork drills",
+    "Reaction training",
+    "Decision-making under pressure"
+  ],
+  "avatar": "https://placehold.co/200x200?text=Sk4*1",
+  "rank": "Top 400 in region",
+  "xp_level": 2000
+}

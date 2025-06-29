@@ -1,0 +1,1 @@
+// Placeholder component for visualizing athlete's skill tree

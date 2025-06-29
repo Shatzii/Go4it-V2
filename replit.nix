@@ -1,5 +1,9 @@
 {pkgs}: {
   deps = [
+    pkgs.unixtools.ping
+    pkgs.htop-vim
+    pkgs.nmap
+    pkgs.gh
     pkgs.redis
     pkgs.openssh
     pkgs.giflib

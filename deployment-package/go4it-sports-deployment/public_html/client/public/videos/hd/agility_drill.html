@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agility Drill Animation</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0c1325;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+    }
+    
+    .animation-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    
+    .timer {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 20px;
+      font-size: 24px;
+      font-weight: bold;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .timer-label {
+      font-size: 12px;
+      opacity: 0.7;
+      margin-bottom: 2px;
+    }
+    
+    .course-map {
+      position: absolute;
+      width: 60%;
+      height: 60%;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .cone {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background-color: rgba(255, 165, 0, 0.8);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    .cone-1 {
+      top: 20%;
+      left: 20%;
+    }
+    
+    .cone-2 {
+      top: 20%;
+      left: 80%;
+    }
+    
+    .cone-3 {
+      top: 80%;
+      left: 80%;
+    }
+    
+    .cone-4 {
+      top: 80%;
+      left: 20%;
+    }
+    
+    .cone-5 {
+      top: 50%;
+      left: 50%;
+    }
+    
+    .path-line {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      stroke: rgba(0, 255, 0, 0.4);
+      stroke-width: 2;
+      fill: none;
+      stroke-dasharray: 5;
+      animation: dashAnimation 2s linear infinite;
+    }
+    
+    @keyframes dashAnimation {
+      to {
+        stroke-dashoffset: -20;
+      }
+    }
+    
+    .athlete-tracker {
+      position: absolute;
+      top: 20%;
+      left: 20%;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid rgba(0, 255, 0, 0.7);
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(0, 255, 0, 0.9);
+      font-size: 10px;
+      animation: trackAgility 6s linear infinite;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    }
+    
+    @keyframes trackAgility {
+      0% {
+        top: 20%;
+        left: 20%;
+      }
+      20% {
+        top: 20%;
+        left: 80%;
+      }
+      40% {
+        top: 80%;
+        left: 80%;
+      }
+      60% {
+        top: 50%;
+        left: 50%;
+      }
+      80% {
+        top: 80%;
+        left: 20%;
+      }
+      100% {
+        top: 20%;
+        left: 20%;
+      }
+    }
+    
+    .metric-data {
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      background-color: rgba(0, 100, 255, 0.3);
+      backdrop-filter: blur(10px);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+    
+    .metric-label {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    
+    .metric-value {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    
+    .quality-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: rgba(0, 200, 0, 0.2);
+      border: 1px solid rgba(0, 200, 0, 0.4);
+      color: rgba(0, 255, 0, 0.8);
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      backdrop-filter: blur(4px);
+    }
+    
+    .quality-badge:before {
+      content: "";
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background-color: rgba(0, 255, 0, 0.8);
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+    
+    .cone-label {
+      position: absolute;
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.7);
+      transform: translate(-50%, -150%);
+    }
+  </style>
+</head>
+<body>
+  <div class="animation-container">
+    <video id="animation-video" autoplay loop muted playsinline>
+      <source src="/videos/agility_drill.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    
+    <div class="overlay">
+      <div class="course-map">
+        <svg class="path-line" viewBox="0 0 100 100">
+          <path d="M 20,20 L 80,20 L 80,80 L 50,50 L 20,80 L 20,20 Z" />
+        </svg>
+        
+        <div class="cone cone-1">
+          <div class="cone-label">START</div>
+        </div>
+        <div class="cone cone-2">
+          <div class="cone-label">2</div>
+        </div>
+        <div class="cone cone-3">
+          <div class="cone-label">3</div>
+        </div>
+        <div class="cone cone-4">
+          <div class="cone-label">5</div>
+        </div>
+        <div class="cone cone-5">
+          <div class="cone-label">4</div>
+        </div>
+        
+        <div class="athlete-tracker">
+          <span id="speed-counter">MP</span>
+        </div>
+      </div>
+      
+      <div class="timer">
+        <div class="timer-label">TIME</div>
+        <div id="timer-value">5.23s</div>
+      </div>
+    </div>
+    
+    <div class="metric-data">
+      <div class="metric-label">5-10-5 AGILITY</div>
+      <div class="metric-value">5.23s</div>
+    </div>
+    
+    <div class="quality-badge">128-Bit Ultra HD</div>
+  </div>
+
+  <script>
+    // Get references to DOM elements
+    const video = document.getElementById('animation-video');
+    const timerValue = document.getElementById('timer-value');
+    const speedCounter = document.getElementById('speed-counter');
+    
+    // Timer functionality
+    let timer = 0;
+    let timerRunning = true;
+    const totalTime = 5.23; // Total agility drill time
+    
+    // Handle messages from parent window
+    window.addEventListener('message', function(event) {
+      if (event.data.action === 'play') {
+        video.play();
+        timerRunning = true;
+      } else if (event.data.action === 'pause') {
+        video.pause();
+        timerRunning = false;
+      }
+    });
+    
+    // Update timer
+    function updateTimer() {
+      if (timerRunning) {
+        timer += 0.01;
+        if (timer > totalTime) {
+          timer = 0;
+        }
+        
+        // Format timer display
+        timerValue.textContent = timer.toFixed(2) + 's';
+        
+        // Update speed counter based on time
+        const phase = (timer / totalTime) * 5; // 5 phases of drill
+        let speed;
+        
+        if (phase < 1) {
+          // Sprint to cone 2
+          speed = 15 + Math.floor(phase * 5);
+        } else if (phase < 2) {
+          // Turn and sprint to cone 3
+          speed = 18 - Math.floor((phase - 1) * 3);
+        } else if (phase < 3) {
+          // Turn and sprint to middle cone
+          speed = 16 + Math.floor((phase - 2) * 4);
+        } else if (phase < 4) {
+          // Turn and sprint to cone 4
+          speed = 18 - Math.floor((phase - 3) * 3);
+        } else {
+          // Final sprint back to start
+          speed = 16 + Math.floor((phase - 4) * 5);
+        }
+        
+        speedCounter.textContent = speed + 'mph';
+      }
+      
+      requestAnimationFrame(updateTimer);
+    }
+    
+    // Start animation
+    video.addEventListener('loadeddata', function() {
+      setTimeout(() => updateTimer(), 1000);
+    });
+    
+    // Reset animation when video loops
+    video.addEventListener('seeked', function() {
+      timer = 0;
+    });
+  </script>
+</body>
+</html>

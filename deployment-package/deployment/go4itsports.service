@@ -1,0 +1,19 @@
+[Unit]
+Description=Go4It Sports Platform
+After=network.target postgresql.service
+
+[Service]
+User=go4it
+Group=go4it
+WorkingDirectory=/var/www/go4itsports
+ExecStart=/usr/bin/npm run start:production
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=go4itsports
+Environment=NODE_ENV=production
+Environment=PORT=3000
+
+[Install]
+WantedBy=multi-user.target

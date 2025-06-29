@@ -1,0 +1,12 @@
+{
+  "name": "go4it-mega-frontend",
+  "version": "4.0.0",
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  }
+}
