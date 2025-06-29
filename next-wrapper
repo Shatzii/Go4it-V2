@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Next.js Wrapper - Forces port 5000 for Replit compatibility
+# This script intercepts 'next dev' and runs it with correct parameters
+
+if [ "$1" = "dev" ]; then
+    echo "🚀 Starting Go4It Sports Platform on port 5000 (Replit Compatible)"
+    exec /home/runner/workspace/node_modules/.bin/next dev -p 5000 -H 0.0.0.0
+else
+    # Pass through all other Next.js commands normally
+    exec /home/runner/workspace/node_modules/.bin/next "$@"
+fi
