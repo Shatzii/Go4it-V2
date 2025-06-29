@@ -1,99 +1,83 @@
-// This is a simple wrapper to start the application
-// It doesn't use tsx, just plain node.js to avoid the vite.config.ts issue
+#!/usr/bin/env node
 
-console.log('Starting Go4It Sports Platform...');
+// Go4It Sports App Starter
+// This script ensures the app starts on port 5000 as expected by the Replit workflow
 
-import { exec } from 'child_process';
-import os from 'os';
-import fs from 'fs';
-import path from 'path';
+const { spawn } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
-// Create a modified vite.config.js file without the problematic import
-function createModifiedViteConfig() {
-  const configPath = path.resolve('./vite.config.simple.js');
-  const content = `
-    import { defineConfig } from "vite";
-    import react from "@vitejs/plugin-react";
-    import themePlugin from "@replit/vite-plugin-shadcn-theme-json";
-    import path from "path";
-    import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
+console.log('🚀 Starting Go4It Sports Platform...');
 
-    // Dummy cartographer function
-    function cartographer() {
-      return {
-        name: 'cartographer-dummy',
-        apply: () => {},
-        enforce: 'pre',
-      };
+// Set environment variables
+process.env.PORT = '5000';
+process.env.HOSTNAME = '0.0.0.0';
+
+// Function to start the custom Next.js server
+function startCustomServer() {
+  console.log('📡 Starting custom Next.js server on port 5000...');
+  
+  const serverScript = `
+const { createServer } = require('http')
+const { parse } = require('url')
+const next = require('next')
+
+const dev = process.env.NODE_ENV !== 'production'
+const hostname = '0.0.0.0'
+const port = 5000
+
+const app = next({ dev, hostname, port })
+const handle = app.getRequestHandler()
+
+console.log('⚡ Preparing Next.js application...')
+
+app.prepare().then(() => {
+  createServer(async (req, res) => {
+    try {
+      const parsedUrl = parse(req.url, true)
+      await handle(req, res, parsedUrl)
+    } catch (err) {
+      console.error('Error occurred handling', req.url, err)
+      res.statusCode = 500
+      res.end('internal server error')
     }
+  })
+    .once('error', (err) => {
+      console.error('❌ Server error:', err)
+      process.exit(1)
+    })
+    .listen(port, hostname, () => {
+      console.log(\`✅ Go4It Sports Platform ready on http://\${hostname}:\${port}\`)
+      console.log(\`🌐 Local access: http://localhost:\${port}\`)
+    })
+})
+`;
 
-    export default defineConfig({
-      plugins: [
-        react(),
-        runtimeErrorOverlay(),
-        themePlugin(),
-        ...(process.env.NODE_ENV !== "production" &&
-        process.env.REPL_ID !== undefined
-          ? [cartographer()]
-          : []),
-      ],
-      resolve: {
-        alias: {
-          "@": path.resolve("./client/src"),
-          "@shared": path.resolve("./shared"),
-          "@assets": path.resolve("./attached_assets"),
-        },
-      },
-      root: path.resolve("./client"),
-      build: {
-        outDir: path.resolve("./dist/public"),
-        emptyOutDir: true,
-      },
-    });
-  `;
+  // Write the server script to a temporary file
+  fs.writeFileSync('./temp-server.js', serverScript);
+  
+  // Start the server
+  const child = spawn('node', ['temp-server.js'], {
+    stdio: 'inherit',
+    env: { ...process.env, PORT: '5000' }
+  });
 
-  fs.writeFileSync(configPath, content);
-  console.log('Created modified Vite config at vite.config.simple.js');
+  child.on('error', (error) => {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  });
+
+  child.on('close', (code) => {
+    console.log(`🔄 Server exited with code ${code}`);
+    // Clean up temp file
+    try {
+      fs.unlinkSync('./temp-server.js');
+    } catch (e) {
+      // Ignore cleanup errors
+    }
+    process.exit(code);
+  });
 }
 
-// Set required environment variables
-process.env.VITE_CONFIG_PATH = './vite.config.simple.js';
-process.env.NODE_ENV = 'development';
-process.env.DEBUG = '*';
-
-// Create the modified vite config
-createModifiedViteConfig();
-
-// Start the application using tsx but with a specific command line
-// that bypasses the problematic vite.config.ts
-const command = 'NODE_OPTIONS="--no-warnings" tsx --tsconfig ./tsconfig.json --experimental-specifier-resolution=node ./server/index.fixed.ts';
-
-console.log('Running command:', command);
-
-const child = exec(command, {
-  env: {
-    ...process.env,
-    VITE_CONFIG_PATH: './vite.config.simple.js',
-    NODE_OPTIONS: '--no-warnings'
-  }
-});
-
-child.stdout.on('data', (data) => {
-  console.log(data.toString().trim());
-});
-
-child.stderr.on('data', (data) => {
-  console.error(data.toString().trim());
-});
-
-child.on('exit', (code) => {
-  if (code !== 0) {
-    console.error(`Process exited with code ${code}`);
-  }
-});
-
-// Ensure we close the child process when this script ends
-process.on('SIGINT', () => {
-  child.kill();
-  process.exit();
-});
+// Start the server
+startCustomServer();
