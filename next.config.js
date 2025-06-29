@@ -13,6 +13,11 @@ const nextConfig = {
   env: {
     PORT: process.env.PORT || '5000',
   },
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['*']
+    }
+  },
 }
 
 module.exports = nextConfig
