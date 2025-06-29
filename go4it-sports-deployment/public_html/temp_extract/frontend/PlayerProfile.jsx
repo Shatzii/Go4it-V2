@@ -1,0 +1,1 @@
+// Player profile page with GAR, XP, position fit, goals, and trait tracker placeholders

@@ -1,0 +1,2 @@
+This is a placeholder for sample video files.
+Video files would be stored in this directory in a production environment.

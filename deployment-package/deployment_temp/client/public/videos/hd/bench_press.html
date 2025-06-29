@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bench Press Animation</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0c1325;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+    }
+    
+    .animation-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    
+    .weight-counter {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 20px;
+      font-size: 28px;
+      font-weight: bold;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .weight-label {
+      font-size: 12px;
+      opacity: 0.7;
+      margin-bottom: 2px;
+    }
+    
+    .rep-counter {
+      position: absolute;
+      bottom: 20%;
+      right: 20%;
+      background-color: rgba(255, 60, 0, 0.3);
+      backdrop-filter: blur(4px);
+      color: white;
+      font-size: 36px;
+      font-weight: bold;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(255, 60, 0, 0.5);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .weight-plates {
+      position: absolute;
+      bottom: 20%;
+      left: 20%;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .plate {
+      width: 15px;
+      height: 40px;
+      background-color: rgba(200, 200, 200, 0.8);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .plate-45 {
+      background-color: rgba(0, 100, 255, 0.8);
+      height: 50px;
+      color: white;
+    }
+    
+    .plate-25 {
+      background-color: rgba(255, 60, 0, 0.8);
+      height: 45px;
+      color: white;
+    }
+    
+    .plate-10 {
+      background-color: rgba(0, 200, 100, 0.8);
+      height: 35px;
+      color: white;
+    }
+    
+    .barbell-path {
+      position: absolute;
+      width: 60%;
+      height: 40%;
+      top: 35%;
+      left: 20%;
+      border-left: 1px dotted rgba(255, 255, 255, 0.2);
+      border-right: 1px dotted rgba(255, 255, 255, 0.2);
+    }
+    
+    .barbell-indicator {
+      position: absolute;
+      width: 100px;
+      height: 6px;
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: 3px;
+      top: 35%;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: barbellMove 2.5s infinite cubic-bezier(0.45, 0, 0.55, 1);
+    }
+    
+    @keyframes barbellMove {
+      0%, 100% {
+        top: 35%;
+      }
+      50% {
+        top: 75%;
+      }
+    }
+    
+    .power-meter {
+      position: absolute;
+      left: 10%;
+      height: 70%;
+      width: 20px;
+      background: linear-gradient(to top, 
+        rgba(255, 0, 0, 0.5), 
+        rgba(255, 165, 0, 0.5), 
+        rgba(255, 255, 0, 0.5), 
+        rgba(0, 255, 0, 0.5));
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    
+    .power-fill {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.2);
+      animation: powerPulse 2.5s infinite;
+    }
+    
+    @keyframes powerPulse {
+      0%, 100% {
+        height: 20%;
+      }
+      50% {
+        height: 85%;
+      }
+    }
+    
+    .metric-data {
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      background-color: rgba(0, 100, 255, 0.3);
+      backdrop-filter: blur(10px);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+    
+    .metric-label {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    
+    .metric-value {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    
+    .quality-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: rgba(0, 200, 0, 0.2);
+      border: 1px solid rgba(0, 200, 0, 0.4);
+      color: rgba(0, 255, 0, 0.8);
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      backdrop-filter: blur(4px);
+    }
+    
+    .quality-badge:before {
+      content: "";
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background-color: rgba(0, 255, 0, 0.8);
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+    
+    .bench-path {
+      position: absolute;
+      width: 60%;
+      height: 1px;
+      background-color: rgba(255, 255, 255, 0.2);
+      top: 75%;
+      left: 20%;
+    }
+    
+    .ceiling-path {
+      position: absolute;
+      width: 60%;
+      height: 1px;
+      background-color: rgba(255, 255, 255, 0.2);
+      top: 35%;
+      left: 20%;
+    }
+  </style>
+</head>
+<body>
+  <div class="animation-container">
+    <video id="animation-video" autoplay loop muted playsinline>
+      <source src="/videos/bench_press.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    
+    <div class="overlay">
+      <div class="barbell-path">
+        <div class="ceiling-path"></div>
+        <div class="bench-path"></div>
+        <div class="barbell-indicator"></div>
+      </div>
+      
+      <div class="power-meter">
+        <div class="power-fill" id="power-meter-fill"></div>
+      </div>
+      
+      <div class="weight-counter">
+        <div class="weight-label">BENCH PRESS</div>
+        <div id="weight-value">225 lbs</div>
+      </div>
+      
+      <div class="rep-counter" id="rep-counter">1</div>
+      
+      <div class="weight-plates">
+        <div class="plate plate-45">45</div>
+        <div class="plate plate-45">45</div>
+        <div class="plate plate-25">25</div>
+        <div class="plate plate-10">10</div>
+        <div class="plate">BAR</div>
+        <div class="plate plate-10">10</div>
+        <div class="plate plate-25">25</div>
+        <div class="plate plate-45">45</div>
+        <div class="plate plate-45">45</div>
+      </div>
+    </div>
+    
+    <div class="metric-data">
+      <div class="metric-label">MAX BENCH</div>
+      <div class="metric-value">225 lbs</div>
+    </div>
+    
+    <div class="quality-badge">128-Bit Ultra HD</div>
+  </div>
+
+  <script>
+    // Get references to DOM elements
+    const video = document.getElementById('animation-video');
+    const weightValue = document.getElementById('weight-value');
+    const repCounter = document.getElementById('rep-counter');
+    const powerMeterFill = document.getElementById('power-meter-fill');
+    
+    // Animation variables
+    let benchRunning = true;
+    let benchPhase = 0;
+    let repCount = 1;
+    
+    // Handle messages from parent window
+    window.addEventListener('message', function(event) {
+      if (event.data.action === 'play') {
+        video.play();
+        benchRunning = true;
+      } else if (event.data.action === 'pause') {
+        video.pause();
+        benchRunning = false;
+      }
+    });
+    
+    // Update bench press animation
+    function updateBenchAnimation() {
+      if (benchRunning) {
+        benchPhase += 0.01;
+        
+        // Complete cycle is 2.5 seconds
+        if (benchPhase > 2.5) {
+          benchPhase = 0;
+          repCount++;
+          if (repCount > 8) {
+            repCount = 1;
+          }
+          
+          // Update rep counter with a pulse animation
+          repCounter.textContent = repCount;
+          repCounter.style.transform = 'scale(1.2)';
+          setTimeout(() => {
+            repCounter.style.transform = 'scale(1)';
+          }, 200);
+        }
+        
+        // Calculate current position based on sine wave for smooth motion
+        const normalizedPhase = (benchPhase % 2.5) / 2.5;
+        
+        // Only update text if rep counter is visible
+        repCounter.textContent = repCount;
+      }
+      
+      requestAnimationFrame(updateBenchAnimation);
+    }
+    
+    // Start animation
+    video.addEventListener('loadeddata', function() {
+      setTimeout(() => updateBenchAnimation(), 1000);
+    });
+    
+    // Reset animation when video loops
+    video.addEventListener('seeked', function() {
+      benchPhase = 0;
+      repCount = 1;
+    });
+  </script>
+</body>
+</html>
