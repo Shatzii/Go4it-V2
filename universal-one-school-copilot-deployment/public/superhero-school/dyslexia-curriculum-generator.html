@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dyslexia Curriculum Generator | ShotziOS Educational Platform</title>
+  <style>
+    /* Base styles optimized for dyslexia */
+    :root {
+      --bg-color: #0f0f1a;
+      --text-color: #e6e6ff;
+      --accent-color: #3498db;
+      --accent-dark: #2980b9;
+      --accent-light: #5dade2;
+      --card-bg: #1a1a2e;
+      --nav-bg: #141428;
+      --success-color: #27ae60;
+      --warning-color: #e67e22;
+      --danger-color: #e74c3c;
+      --inactive-color: #7f8c8d;
+      --header-height: 64px;
+      --sidebar-width: 260px;
+      --border-radius: 8px;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: "Open Dyslexic", "Comic Sans MS", Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      letter-spacing: 0.025em;
+      word-spacing: 0.1em;
+      padding-bottom: 60px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header styles */
+    header {
+      background-color: var(--nav-bg);
+      height: var(--header-height);
+      border-bottom: 2px solid var(--accent-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--accent-color);
+    }
+    
+    .logo img {
+      height: 40px;
+      margin-right: 10px;
+    }
+    
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--accent-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+    
+    /* Navigation */
+    nav {
+      background-color: var(--nav-bg);
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+      overflow-x: auto;
+      padding: 0 20px;
+    }
+    
+    .nav-links li a {
+      color: var(--text-color);
+      text-decoration: none;
+      padding: 5px 10px;
+      border-radius: var(--border-radius);
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+    
+    .nav-links li a:hover,
+    .nav-links li a.active {
+      background-color: var(--accent-color);
+      color: white;
+    }
+    
+    /* Main content area */
+    main {
+      padding: 20px 0;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--accent-color);
+      margin-bottom: 15px;
+      margin-top: 30px;
+      font-weight: 600;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      border-bottom: 2px solid var(--accent-color);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    
+    h2 {
+      font-size: 1.5rem;
+    }
+    
+    h3 {
+      font-size: 1.25rem;
+    }
+    
+    p {
+      margin-bottom: 15px;
+    }
+    
+    /* Card layouts */
+    .card {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      overflow: hidden;
+      border-left: 4px solid var(--accent-color);
+    }
+    
+    .card-header {
+      padding: 15px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .card-content {
+      padding: 20px;
+    }
+    
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      background-color: var(--accent-color);
+      color: white;
+      padding: 10px 15px;
+      border-radius: var(--border-radius);
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+    }
+    
+    .btn:hover {
+      background-color: var(--accent-dark);
+    }
+    
+    .btn-success {
+      background-color: var(--success-color);
+    }
+    
+    .btn-success:hover {
+      background-color: #219952;
+    }
+    
+    .btn-warning {
+      background-color: var(--warning-color);
+    }
+    
+    .btn-warning:hover {
+      background-color: #d35400;
+    }
+    
+    .btn-danger {
+      background-color: var(--danger-color);
+    }
+    
+    .btn-danger:hover {
+      background-color: #c0392b;
+    }
+    
+    .btn-outlined {
+      background-color: transparent;
+      border: 2px solid var(--accent-color);
+      color: var(--accent-color);
+    }
+    
+    .btn-outlined:hover {
+      background-color: var(--accent-color);
+      color: white;
+    }
+    
+    .btn:disabled, .btn.disabled {
+      background-color: var(--inactive-color);
+      cursor: not-allowed;
+    }
+    
+    /* Grid layouts */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    /* Dyslexia-specific styles */
+    .dyslexia-friendly-text {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      word-spacing: 0.15em;
+      letter-spacing: 0.04em;
+    }
+    
+    /* Features specialized for dyslexia */
+    .reading-guide {
+      background-color: rgba(52, 152, 219, 0.2);
+      padding: 2px;
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .reading-guide::after {
+      content: "👁️";
+      position: absolute;
+      right: -20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      opacity: 0.7;
+    }
+    
+    .text-to-speech-btn {
+      background-color: var(--accent-light);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .text-to-speech-btn:hover {
+      background-color: var(--accent-color);
+      transform: scale(1.1);
+    }
+    
+    /* Form elements */
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 10px 15px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--border-radius);
+      color: var(--text-color);
+      font-family: inherit;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+    }
+    
+    select.form-control {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e6e6ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+    
+    /* Tab panel styles */
+    .tab-container {
+      margin-bottom: 30px;
+    }
+    
+    .tab-buttons {
+      display: flex;
+      border-bottom: 2px solid var(--accent-color);
+      margin-bottom: 20px;
+    }
+    
+    .tab-btn {
+      padding: 10px 20px;
+      background-color: transparent;
+      border: none;
+      color: var(--text-color);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+    }
+    
+    .tab-btn:hover {
+      color: var(--accent-color);
+    }
+    
+    .tab-btn.active {
+      color: var(--accent-color);
+      border-bottom-color: var(--accent-color);
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Loading spinner */
+    .spinner {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--accent-color);
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Lesson content styles */
+    .lesson-container {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      margin-top: 30px;
+      display: none;
+    }
+    
+    .lesson-title {
+      color: var(--accent-color);
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 10px;
+    }
+    
+    .lesson-metadata {
+      margin-bottom: 20px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .lesson-objectives {
+      margin-bottom: 20px;
+    }
+    
+    .lesson-objectives h3 {
+      color: var(--accent-color);
+      margin-bottom: 10px;
+    }
+    
+    .lesson-objectives ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    
+    .lesson-objectives li {
+      margin-bottom: 8px;
+      padding-left: 24px;
+      position: relative;
+    }
+    
+    .lesson-objectives li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--accent-color);
+    }
+    
+    .lesson-content {
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+    
+    .lesson-visuals {
+      margin-bottom: 20px;
+    }
+    
+    .lesson-visuals h3 {
+      color: var(--accent-color);
+      margin-bottom: 10px;
+    }
+    
+    .visual-item {
+      background-color: rgba(52, 152, 219, 0.1);
+      border-radius: var(--border-radius);
+      padding: 15px;
+      margin-bottom: 15px;
+      border-left: 3px solid var(--accent-color);
+    }
+    
+    .lesson-activities {
+      margin-bottom: 20px;
+    }
+    
+    .lesson-activities h3 {
+      color: var(--accent-color);
+      margin-bottom: 10px;
+    }
+    
+    .activity-item {
+      background-color: rgba(39, 174, 96, 0.1);
+      border-radius: var(--border-radius);
+      padding: 15px;
+      margin-bottom: 15px;
+      border-left: 3px solid var(--success-color);
+    }
+    
+    .lesson-assessment {
+      margin-bottom: 20px;
+    }
+    
+    .lesson-assessment h3 {
+      color: var(--accent-color);
+      margin-bottom: 10px;
+    }
+    
+    .assessment-item {
+      background-color: rgba(230, 126, 34, 0.1);
+      border-radius: var(--border-radius);
+      padding: 15px;
+      margin-bottom: 15px;
+      border-left: 3px solid var(--warning-color);
+    }
+    
+    .lesson-resources {
+      margin-bottom: 20px;
+    }
+    
+    .lesson-resources h3 {
+      color: var(--accent-color);
+      margin-bottom: 10px;
+    }
+    
+    .resource-item {
+      display: inline-block;
+      background-color: rgba(52, 152, 219, 0.1);
+      border-radius: var(--border-radius);
+      padding: 8px 12px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+    
+    .lesson-actions {
+      margin-top: 30px;
+      display: flex;
+      gap: 15px;
+    }
+    
+    /* Topic suggestions */
+    .topic-suggestions {
+      margin-top: 20px;
+      display: none;
+    }
+    
+    .topic-suggestions h3 {
+      color: var(--accent-color);
+      margin-bottom: 10px;
+    }
+    
+    .topic-tag {
+      display: inline-block;
+      background-color: rgba(52, 152, 219, 0.1);
+      border: 1px solid rgba(52, 152, 219, 0.3);
+      color: var(--text-color);
+      border-radius: 20px;
+      padding: 5px 15px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .topic-tag:hover {
+      background-color: rgba(52, 152, 219, 0.2);
+      border-color: var(--accent-color);
+    }
+    
+    /* Personalization Section */
+    .personalization-section {
+      margin-top: 30px;
+      margin-bottom: 20px;
+      background-color: rgba(52, 152, 219, 0.05);
+      border: 1px solid rgba(52, 152, 219, 0.1);
+      border-radius: var(--border-radius);
+      padding: 15px;
+    }
+    
+    .section-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .section-header h3 {
+      color: var(--accent-color);
+      margin: 0;
+      font-size: 1.1rem;
+    }
+    
+    .tooltip-icon {
+      margin-left: 10px;
+      cursor: help;
+      opacity: 0.7;
+      transition: opacity 0.3s ease;
+    }
+    
+    .tooltip-icon:hover {
+      opacity: 1;
+    }
+    
+    .personalization-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    
+    /* API selection */
+    .api-selection {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .api-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    
+    /* Help character bubble */
+    .help-character {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: var(--accent-color);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      z-index: 100;
+      transition: all 0.3s ease;
+    }
+    
+    .help-character:hover {
+      transform: scale(1.1);
+    }
+    
+    .help-panel {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      width: 300px;
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      z-index: 100;
+      transition: all 0.3s ease;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px);
+    }
+    
+    .help-panel.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    
+    .help-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .help-character-name {
+      font-weight: bold;
+      color: var(--accent-color);
+    }
+    
+    .help-close {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    
+    .help-message {
+      margin-bottom: 15px;
+    }
+    
+    .help-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .help-option {
+      padding: 8px 12px;
+      background-color: rgba(52, 152, 219, 0.1);
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .help-option:hover {
+      background-color: rgba(52, 152, 219, 0.3);
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 15px;
+      }
+      
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .tab-buttons {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <img src="/logo.png" alt="ShotziOS Logo" />
+          <span>ShotziOS Educational Platform</span>
+        </div>
+        <div class="avatar">S</div>
+      </div>
+    </div>
+  </header>
+  
+  <nav>
+    <div class="container">
+      <ul class="nav-links">
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/superhero-school">Superhero School</a></li>
+        <li><a href="/superhero-school/dyslexia-learning">Dyslexia Super-Learning</a></li>
+        <li><a href="/superhero-school/adaptive-learning">AI Adaptive Learning</a></li>
+        <li><a href="/superhero-school/dyslexia-curriculum-generator" class="active">Curriculum Generator</a></li>
+        <li><a href="/superhero-school/dyslexia-curriculum-upload">Upload & Convert</a></li>
+        <li><a href="/superhero-school/gpa-calculator">GPA Calculator</a></li>
+        <li><a href="/superhero-school/medication-tracker">Medication Tracker</a></li>
+        <li><a href="/superhero-school/medication-timeline">Medication Timeline</a></li>
+        <li><a href="/superhero-school/medical-vault">Medical Vault</a></li>
+      </ul>
+    </div>
+  </nav>
+  
+  <main class="container">
+    <h1>Dyslexia-Friendly Curriculum Generator</h1>
+    
+    <div class="card">
+      <div class="card-header">
+        <span>Generate Custom Learning Content for Dyslexic Students</span>
+        <button class="text-to-speech-btn" title="Read aloud">🔊</button>
+      </div>
+      <div class="card-content dyslexia-friendly-text">
+        <p>This AI-powered tool generates personalized, <span class="reading-guide">dyslexia-friendly educational content</span> for students from kindergarten through master's level. The content is specifically designed to support dyslexic learners with proper formatting, clear structure, and multi-sensory approaches.</p>
+        
+        <p>Select your preferences below to create custom curriculum materials for any subject, grade level, and learning format.</p>
+        <p><strong>Already have curriculum materials?</strong> <a href="/superhero-school/dyslexia-curriculum-upload" style="color: var(--accent-color);">Upload and convert them to dyslexia-friendly formats here!</a></p>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-header">
+        <span>Curriculum Generator</span>
+      </div>
+      <div class="card-content">
+        <form id="curriculum-form">
+          <div class="form-group">
+            <label class="form-label" for="subject">Subject:</label>
+            <select class="form-control" id="subject" required>
+              <option value="">Select a subject</option>
+              <option value="reading">Reading</option>
+              <option value="writing">Writing</option>
+              <option value="mathematics">Mathematics</option>
+              <option value="science">Science</option>
+              <option value="social-studies">Social Studies</option>
+              <option value="language-arts">Language Arts</option>
+              <option value="history">History</option>
+              <option value="art">Art</option>
+              <option value="music">Music</option>
+              <option value="physical-education">Physical Education</option>
+              <option value="computer-science">Computer Science</option>
+              <option value="foreign-language">Foreign Language</option>
+              <option value="economics">Economics</option>
+              <option value="psychology">Psychology</option>
+              <option value="biology">Biology</option>
+              <option value="chemistry">Chemistry</option>
+              <option value="physics">Physics</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="grade">Grade Level:</label>
+            <select class="form-control" id="grade" required>
+              <option value="">Select a grade level</option>
+              <option value="K">Kindergarten</option>
+              <option value="1">1st Grade</option>
+              <option value="2">2nd Grade</option>
+              <option value="3">3rd Grade</option>
+              <option value="4">4th Grade</option>
+              <option value="5">5th Grade</option>
+              <option value="6">6th Grade</option>
+              <option value="7">7th Grade</option>
+              <option value="8">8th Grade</option>
+              <option value="9">9th Grade</option>
+              <option value="10">10th Grade</option>
+              <option value="11">11th Grade</option>
+              <option value="12">12th Grade</option>
+              <option value="college-freshman">College Freshman</option>
+              <option value="college-sophomore">College Sophomore</option>
+              <option value="college-junior">College Junior</option>
+              <option value="college-senior">College Senior</option>
+              <option value="masters">Master's Level</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="format">Learning Format:</label>
+            <select class="form-control" id="format" required>
+              <option value="">Select a learning format</option>
+              <option value="text">Text-based (Dyslexia-Friendly)</option>
+              <option value="audio">Audio Script</option>
+              <option value="visual">Visual Guide with Diagrams</option>
+              <option value="game">Game-Based Learning</option>
+              <option value="chat">AI Chat-Based Learning</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="state">State Standards (Optional):</label>
+            <select class="form-control" id="state">
+              <option value="general">General (No specific state)</option>
+              <option value="alabama">Alabama</option>
+              <option value="alaska">Alaska</option>
+              <option value="arizona">Arizona</option>
+              <option value="arkansas">Arkansas</option>
+              <option value="california">California</option>
+              <option value="colorado">Colorado</option>
+              <option value="connecticut">Connecticut</option>
+              <option value="delaware">Delaware</option>
+              <option value="florida">Florida</option>
+              <option value="georgia">Georgia</option>
+              <option value="hawaii">Hawaii</option>
+              <option value="idaho">Idaho</option>
+              <option value="illinois">Illinois</option>
+              <option value="indiana">Indiana</option>
+              <option value="iowa">Iowa</option>
+              <option value="kansas">Kansas</option>
+              <option value="kentucky">Kentucky</option>
+              <option value="louisiana">Louisiana</option>
+              <option value="maine">Maine</option>
+              <option value="maryland">Maryland</option>
+              <option value="massachusetts">Massachusetts</option>
+              <option value="michigan">Michigan</option>
+              <option value="minnesota">Minnesota</option>
+              <option value="mississippi">Mississippi</option>
+              <option value="missouri">Missouri</option>
+              <option value="montana">Montana</option>
+              <option value="nebraska">Nebraska</option>
+              <option value="nevada">Nevada</option>
+              <option value="new-hampshire">New Hampshire</option>
+              <option value="new-jersey">New Jersey</option>
+              <option value="new-mexico">New Mexico</option>
+              <option value="new-york">New York</option>
+              <option value="north-carolina">North Carolina</option>
+              <option value="north-dakota">North Dakota</option>
+              <option value="ohio">Ohio</option>
+              <option value="oklahoma">Oklahoma</option>
+              <option value="oregon">Oregon</option>
+              <option value="pennsylvania">Pennsylvania</option>
+              <option value="rhode-island">Rhode Island</option>
+              <option value="south-carolina">South Carolina</option>
+              <option value="south-dakota">South Dakota</option>
+              <option value="tennessee">Tennessee</option>
+              <option value="texas">Texas</option>
+              <option value="utah">Utah</option>
+              <option value="vermont">Vermont</option>
+              <option value="virginia">Virginia</option>
+              <option value="washington">Washington</option>
+              <option value="west-virginia">West Virginia</option>
+              <option value="wisconsin">Wisconsin</option>
+              <option value="wyoming">Wyoming</option>
+            </select>
+          </div>
+          
+          <div class="topic-suggestions" id="topic-suggestions">
+            <h3>Suggested Topics</h3>
+            <div id="topic-tags-container"></div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="topic">Specific Topic:</label>
+            <input type="text" class="form-control" id="topic" placeholder="Enter a specific topic or select from suggestions above">
+          </div>
+          
+          <div class="personalization-section">
+            <div class="section-header">
+              <h3>Personalized Learning Strategies</h3>
+              <span class="tooltip-icon" title="Customize content based on learning needs">ℹ️</span>
+            </div>
+            
+            <div class="personalization-options">
+              <div class="form-group">
+                <label class="form-label" for="learning-style">Primary Learning Style:</label>
+                <select class="form-control" id="learning-style">
+                  <option value="multimodal">Multi-modal (Balanced)</option>
+                  <option value="visual">Visual learner</option>
+                  <option value="auditory">Auditory learner</option>
+                  <option value="kinesthetic">Kinesthetic learner</option>
+                  <option value="reading-writing">Reading/Writing learner</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="reading-level">Reading Level Adaptation:</label>
+                <select class="form-control" id="reading-level">
+                  <option value="grade-level">Grade-level appropriate</option>
+                  <option value="advanced">Advanced (1-2 grades above)</option>
+                  <option value="simplified">Simplified (1-2 grades below)</option>
+                  <option value="highly-visual">Highly visual with minimal text</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="strength-area">Strength Area to Leverage:</label>
+                <select class="form-control" id="strength-area">
+                  <option value="none">No specific strength focus</option>
+                  <option value="verbal">Verbal reasoning</option>
+                  <option value="spatial">Spatial reasoning</option>
+                  <option value="logical">Logical/mathematical reasoning</option>
+                  <option value="creative">Creative thinking</option>
+                  <option value="social">Social/emotional intelligence</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <div class="api-selection">
+            <label class="form-label" style="margin-bottom: 0; margin-right: 15px;">AI Model:</label>
+            <div class="api-option">
+              <input type="radio" id="api-anthropic" name="api" value="anthropic" checked>
+              <label for="api-anthropic">Claude (Anthropic)</label>
+            </div>
+            <div class="api-option">
+              <input type="radio" id="api-perplexity" name="api" value="perplexity">
+              <label for="api-perplexity">Perplexity AI</label>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn btn-success" id="generate-btn" style="margin-top: 20px;">Generate Curriculum</button>
+        </form>
+      </div>
+    </div>
+    
+    <div class="lesson-container" id="lesson-container">
+      <div class="lesson-title" id="lesson-title">Learning Fractions for 3rd Grade</div>
+      
+      <div class="lesson-metadata">
+        <div><strong>Grade Level:</strong> <span id="lesson-grade">3rd Grade</span></div>
+        <div><strong>Subject:</strong> <span id="lesson-subject">Mathematics</span></div>
+        <div><strong>Format:</strong> <span id="lesson-format">Text-based (Dyslexia-Friendly)</span></div>
+      </div>
+      
+      <div class="lesson-objectives">
+        <h3>Learning Objectives</h3>
+        <ul id="lesson-objectives-list">
+          <!-- Objectives will be added here dynamically -->
+        </ul>
+      </div>
+      
+      <div class="lesson-content">
+        <h3>Lesson Content</h3>
+        <div id="lesson-content-text" class="dyslexia-friendly-text">
+          <!-- Lesson content will be added here dynamically -->
+        </div>
+      </div>
+      
+      <div class="lesson-visuals">
+        <h3>Visual Supports</h3>
+        <div id="lesson-visuals-container">
+          <!-- Visual descriptions will be added here dynamically -->
+        </div>
+      </div>
+      
+      <div class="lesson-activities">
+        <h3>Learning Activities</h3>
+        <div id="lesson-activities-container">
+          <!-- Activities will be added here dynamically -->
+        </div>
+      </div>
+      
+      <div class="lesson-assessment">
+        <h3>Assessment</h3>
+        <div id="lesson-assessment-container">
+          <!-- Assessment items will be added here dynamically -->
+        </div>
+      </div>
+      
+      <div class="lesson-resources">
+        <h3>Additional Resources</h3>
+        <div id="lesson-resources-container">
+          <!-- Resources will be added here dynamically -->
+        </div>
+      </div>
+      
+      <div class="lesson-actions">
+        <button class="btn btn-outlined" id="print-lesson-btn">Print Lesson</button>
+        <button class="btn btn-outlined" id="save-lesson-btn">Save as PDF</button>
+        <button class="btn" id="customize-lesson-btn">Customize</button>
+      </div>
+    </div>
+  </main>
+  
+  <div id="help-bubble" class="help-character">🧠</div>
+  
+  <div id="help-content" class="help-panel">
+    <div class="help-panel-header">
+      <span class="help-character-name">Professor Nova</span>
+      <button id="help-close">✕</button>
+    </div>
+    <div class="help-message dyslexia-friendly-text">
+      <p>Hi there! I'm Professor Nova, your curriculum assistant. I can help you create dyslexia-friendly educational content optimized for different learning styles. What would you like to know?</p>
+    </div>
+    <div class="help-options">
+      <div class="help-option dyslexia-friendly-text">What makes content dyslexia-friendly?</div>
+      <div class="help-option dyslexia-friendly-text">How do I choose the best format?</div>
+      <div class="help-option dyslexia-friendly-text">Can I edit the generated content?</div>
+      <div class="help-option dyslexia-friendly-text">What's the difference between AI models?</div>
+    </div>
+  </div>
+  
+  <script>
+    // DOM Elements
+    const subjectSelect = document.getElementById('subject');
+    const gradeSelect = document.getElementById('grade');
+    const formatSelect = document.getElementById('format');
+    const stateSelect = document.getElementById('state');
+    const topicInput = document.getElementById('topic');
+    const topicSuggestions = document.getElementById('topic-suggestions');
+    const topicTagsContainer = document.getElementById('topic-tags-container');
+    const generateBtn = document.getElementById('generate-btn');
+    const lessonContainer = document.getElementById('lesson-container');
+    const curriculumForm = document.getElementById('curriculum-form');
+    
+    // Lesson display elements
+    const lessonTitle = document.getElementById('lesson-title');
+    const lessonGrade = document.getElementById('lesson-grade');
+    const lessonSubject = document.getElementById('lesson-subject');
+    const lessonFormat = document.getElementById('lesson-format');
+    const lessonObjectivesList = document.getElementById('lesson-objectives-list');
+    const lessonContentText = document.getElementById('lesson-content-text');
+    const lessonVisualsContainer = document.getElementById('lesson-visuals-container');
+    const lessonActivitiesContainer = document.getElementById('lesson-activities-container');
+    const lessonAssessmentContainer = document.getElementById('lesson-assessment-container');
+    const lessonResourcesContainer = document.getElementById('lesson-resources-container');
+    
+    // Button actions
+    const printLessonBtn = document.getElementById('print-lesson-btn');
+    const saveLessonBtn = document.getElementById('save-lesson-btn');
+    const customizeLessonBtn = document.getElementById('customize-lesson-btn');
+    
+    // Help panel elements
+    const helpBubble = document.getElementById('help-bubble');
+    const helpContent = document.getElementById('help-content');
+    const helpClose = document.getElementById('help-close');
+    const helpOptions = document.querySelectorAll('.help-option');
+    
+    // Event Listeners
+    subjectSelect.addEventListener('change', handleSubjectOrGradeChange);
+    gradeSelect.addEventListener('change', handleSubjectOrGradeChange);
+    curriculumForm.addEventListener('submit', handleFormSubmit);
+    
+    printLessonBtn.addEventListener('click', printLesson);
+    saveLessonBtn.addEventListener('click', saveAsPDF);
+    customizeLessonBtn.addEventListener('click', customizeLesson);
+    
+    helpBubble.addEventListener('click', toggleHelpPanel);
+    helpClose.addEventListener('click', closeHelpPanel);
+    helpOptions.forEach(option => {
+      option.addEventListener('click', handleHelpOptionClick);
+    });
+    
+    // Text-to-speech functionality
+    document.querySelectorAll('.text-to-speech-btn').forEach(btn => {
+      btn.addEventListener('click', handleTextToSpeech);
+    });
+    
+    // Reading guide functionality
+    document.querySelectorAll('.reading-guide').forEach(guide => {
+      guide.addEventListener('click', handleReadingGuide);
+    });
+    
+    /**
+     * Handle subject or grade change to load topic suggestions
+     */
+    function handleSubjectOrGradeChange() {
+      const subject = subjectSelect.value;
+      const grade = gradeSelect.value;
+      
+      if (subject && grade) {
+        // Show the topic suggestions section
+        topicSuggestions.style.display = 'block';
+        
+        // In a real implementation, we'd fetch topics from the API
+        // For now, use sample topics
+        fetchTopicSuggestions(subject, grade);
+      } else {
+        topicSuggestions.style.display = 'none';
+      }
+    }
+    
+    /**
+     * Fetch topic suggestions from the API
+     */
+    function fetchTopicSuggestions(subject, grade) {
+      // Clear previous topic tags
+      topicTagsContainer.innerHTML = '';
+      
+      // In a real implementation, we'd make an API call here
+      // For now, create sample topic tags based on subject and grade
+      const sampleTopics = getSampleTopics(subject, grade);
+      
+      sampleTopics.forEach(topic => {
+        const topicTag = document.createElement('div');
+        topicTag.className = 'topic-tag';
+        topicTag.textContent = topic;
+        topicTag.addEventListener('click', () => {
+          topicInput.value = topic;
+        });
+        
+        topicTagsContainer.appendChild(topicTag);
+      });
+    }
+    
+    /**
+     * Get sample topics based on subject and grade
+     */
+    function getSampleTopics(subject, grade) {
+      // Sample topics based on subject and grade
+      const allTopics = {
+        'reading': {
+          'K': ['Letter Recognition', 'Phonemic Awareness', 'Simple Sight Words', 'Reading Directionality'],
+          '1': ['Consonant Blends', 'Short Vowel Sounds', 'Basic Reading Comprehension', 'Story Elements'],
+          '2': ['Long Vowel Patterns', 'Reading Fluency', 'Character Analysis', 'Main Idea'],
+          '3': ['Reading Strategies', 'Context Clues', 'Chapter Books', 'Summarizing'],
+          '4': ['Advanced Phonics', 'Reading Comprehension Strategies', 'Story Structure', 'Literary Devices'],
+          '5': ['Analyzing Text', 'Making Inferences', 'Author\'s Purpose', 'Comparing Texts'],
+          '6': ['Textual Evidence', 'Literary Analysis', 'Theme Development', 'Point of View'],
+          '7': ['Figurative Language', 'Text Structure', 'Central Ideas', 'Character Development'],
+          '8': ['Complex Text Analysis', 'Argument Analysis', 'Text Connections', 'Evaluating Sources'],
+          '9': ['Critical Reading', 'Literary Criticism', 'Rhetorical Analysis', 'Research Skills'],
+          '10': ['World Literature', 'Literary Movements', 'Close Reading', 'Analytical Reading'],
+          '11': ['American Literature', 'Advanced Literary Analysis', 'Synthesis of Ideas', 'Critical Thinking'],
+          '12': ['British Literature', 'Contemporary Literature', 'Advanced Analysis', 'Literary Theory'],
+        },
+        'mathematics': {
+          'K': ['Number Recognition', 'Counting to 20', 'Basic Shapes', 'Patterns'],
+          '1': ['Addition to 20', 'Subtraction from 20', '2D and 3D Shapes', 'Measurement'],
+          '2': ['Place Value', 'Addition and Subtraction to 100', 'Time and Money', 'Simple Fractions'],
+          '3': ['Multiplication', 'Division', 'Fractions', 'Area and Perimeter'],
+          '4': ['Multi-digit Multiplication', 'Long Division', 'Decimals', 'Geometry'],
+          '5': ['Operations with Decimals', 'Fractions and Mixed Numbers', 'Volume', 'Coordinate Plane'],
+          '6': ['Ratios and Proportions', 'Introductory Algebra', 'Statistical Thinking', 'Geometry'],
+          '7': ['Proportional Relationships', 'Operations with Rational Numbers', 'Expressions and Equations', 'Statistics and Probability'],
+          '8': ['Linear Equations', 'Functions', 'Pythagorean Theorem', 'Scientific Notation'],
+          '9': ['Algebra Foundations', 'Linear Functions', 'Systems of Equations', 'Exponential Functions'],
+          '10': ['Quadratic Functions', 'Geometric Proofs', 'Trigonometry', 'Probability'],
+          '11': ['Polynomial Functions', 'Rational Functions', 'Advanced Trigonometry', 'Statistics'],
+          '12': ['Calculus Concepts', 'Advanced Functions', 'Vectors', 'Mathematical Modeling'],
+        }
+      };
+      
+      // If we have predefined topics for this subject and grade, return them
+      if (allTopics[subject] && allTopics[subject][grade]) {
+        return allTopics[subject][grade];
+      }
+      
+      // Otherwise, generate some generic topics
+      const gradeText = gradeSelect.options[gradeSelect.selectedIndex].text;
+      const subjectText = subjectSelect.options[subjectSelect.selectedIndex].text;
+      
+      return [
+        `Introduction to ${subjectText} for ${gradeText}`,
+        `${subjectText} Fundamentals`,
+        `Essential ${subjectText} Concepts`,
+        `${gradeText} ${subjectText} Standards`,
+        `Building ${subjectText} Skills`
+      ];
+    }
+    
+    /**
+     * Handle form submission to generate curriculum
+     */
+    async function handleFormSubmit(event) {
+      event.preventDefault();
+      
+      const subject = subjectSelect.value;
+      const grade = gradeSelect.value;
+      const format = formatSelect.value;
+      const state = stateSelect.value;
+      const topic = topicInput.value || `${subjectSelect.options[subjectSelect.selectedIndex].text} for ${gradeSelect.options[gradeSelect.selectedIndex].text}`;
+      const api = document.querySelector('input[name="api"]:checked').value;
+      
+      // Get personalization parameters
+      const learningStyle = document.getElementById('learning-style').value;
+      const readingLevel = document.getElementById('reading-level').value;
+      const strengthArea = document.getElementById('strength-area').value;
+      
+      if (!subject || !grade || !format) {
+        alert('Please select a subject, grade level, and learning format.');
+        return;
+      }
+      
+      // Show loading state
+      generateBtn.disabled = true;
+      generateBtn.innerHTML = '<span class="spinner"></span> Generating...';
+      
+      try {
+        // Create the request body with form data
+        const requestData = {
+          subject,
+          grade,
+          format,
+          state,
+          topic,
+          api,
+          personalization: {
+            learningStyle,
+            readingLevel,
+            strengthArea
+          }
+        };
+        
+        // Make the actual API call to our backend
+        const response = await fetch('/api/dyslexia-curriculum', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestData)
+        });
+        
+        // Check if the request was successful
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to generate curriculum');
+        }
+        
+        // Get the curriculum data
+        const lessonData = await response.json();
+        
+        // Display the lesson data
+        displayLessonData(lessonData);
+        
+        // Reset form button
+        generateBtn.disabled = false;
+        generateBtn.innerHTML = 'Generate Curriculum';
+        
+        // Scroll to the lesson container
+        lessonContainer.scrollIntoView({ behavior: 'smooth' });
+      } catch (error) {
+        console.error('Error generating curriculum:', error);
+        alert(`Error: ${error.message || 'Failed to generate curriculum. Please try again.'}`);
+        
+        // Reset form button
+        generateBtn.disabled = false;
+        generateBtn.innerHTML = 'Generate Curriculum';
+      }
+    }
+    
+    /**
+     * Display the generated lesson data
+     */
+    function displayLessonData(data) {
+      // Show the lesson container
+      lessonContainer.style.display = 'block';
+      
+      // Set the lesson title and metadata
+      lessonTitle.textContent = data.title;
+      lessonGrade.textContent = data.grade_level;
+      lessonSubject.textContent = data.subject;
+      lessonFormat.textContent = getFormatDisplayText(data.format);
+      
+      // Set learning objectives
+      lessonObjectivesList.innerHTML = '';
+      data.learning_objectives.forEach(objective => {
+        const li = document.createElement('li');
+        li.textContent = objective;
+        lessonObjectivesList.appendChild(li);
+      });
+      
+      // Set lesson content
+      lessonContentText.innerHTML = formatContentForDyslexia(data.content);
+      
+      // Set visuals
+      lessonVisualsContainer.innerHTML = '';
+      data.visuals.forEach(visual => {
+        const visualItem = document.createElement('div');
+        visualItem.className = 'visual-item dyslexia-friendly-text';
+        visualItem.textContent = visual;
+        lessonVisualsContainer.appendChild(visualItem);
+      });
+      
+      // Set activities
+      lessonActivitiesContainer.innerHTML = '';
+      data.activities.forEach(activity => {
+        const activityItem = document.createElement('div');
+        activityItem.className = 'activity-item dyslexia-friendly-text';
+        activityItem.textContent = activity;
+        lessonActivitiesContainer.appendChild(activityItem);
+      });
+      
+      // Set assessment items
+      lessonAssessmentContainer.innerHTML = '';
+      data.assessment.forEach(assessment => {
+        const assessmentItem = document.createElement('div');
+        assessmentItem.className = 'assessment-item dyslexia-friendly-text';
+        assessmentItem.textContent = assessment;
+        lessonAssessmentContainer.appendChild(assessmentItem);
+      });
+      
+      // Set additional resources
+      lessonResourcesContainer.innerHTML = '';
+      data.additional_resources.forEach(resource => {
+        const resourceItem = document.createElement('div');
+        resourceItem.className = 'resource-item';
+        resourceItem.textContent = resource;
+        lessonResourcesContainer.appendChild(resourceItem);
+      });
+    }
+    
+    /**
+     * Format the content text to be more dyslexia-friendly
+     */
+    function formatContentForDyslexia(content) {
+      // Replace paragraphs with proper spacing
+      let formatted = content.replace(/\n\n/g, '</p><p>');
+      
+      // Add paragraph tags if not already present
+      if (!formatted.startsWith('<p>')) {
+        formatted = '<p>' + formatted;
+      }
+      if (!formatted.endsWith('</p>')) {
+        formatted = formatted + '</p>';
+      }
+      
+      // Replace bullet points with styled lists
+      formatted = formatted.replace(/\n\s*[-•*]\s+/g, '</p><p class="bullet-point">• ');
+      
+      // Highlight key terms
+      const keyTerms = ['important', 'remember', 'key', 'note', 'essential', 'focus', 'critical'];
+      keyTerms.forEach(term => {
+        const regex = new RegExp(`\\b${term}\\b`, 'gi');
+        formatted = formatted.replace(regex, match => `<strong>${match}</strong>`);
+      });
+      
+      return formatted;
+    }
+    
+    /**
+     * Get display text for the format
+     */
+    function getFormatDisplayText(format) {
+      const formatMap = {
+        'text': 'Text-based (Dyslexia-Friendly)',
+        'audio': 'Audio Script',
+        'visual': 'Visual Guide with Diagrams',
+        'game': 'Game-Based Learning',
+        'chat': 'AI Chat-Based Learning'
+      };
+      
+      return formatMap[format] || format;
+    }
+    
+    /**
+     * Print the lesson
+     */
+    function printLesson() {
+      window.print();
+    }
+    
+    /**
+     * Save the lesson as PDF
+     */
+    function saveAsPDF() {
+      alert('In a production environment, this would save the current lesson as a PDF file.');
+      // In a real implementation, we would use a PDF generation library
+    }
+    
+    /**
+     * Open the customize lesson interface
+     */
+    function customizeLesson() {
+      alert('In a production environment, this would open an editor to customize the lesson content.');
+      // In a real implementation, we would show an editor interface
+    }
+    
+    /**
+     * Toggle the help panel
+     */
+    function toggleHelpPanel() {
+      helpContent.classList.toggle('active');
+    }
+    
+    /**
+     * Close the help panel
+     */
+    function closeHelpPanel() {
+      helpContent.classList.remove('active');
+    }
+    
+    /**
+     * Handle help option click
+     */
+    function handleHelpOptionClick(event) {
+      const optionText = event.target.textContent;
+      let responseText = '';
+      
+      // Provide different responses based on the option clicked
+      if (optionText.includes('dyslexia-friendly')) {
+        responseText = "Dyslexia-friendly content uses specific formatting techniques: larger spacing between lines, short paragraphs, bullet points instead of dense text, clear headings, simple sans-serif fonts, high contrast colors, and visual aids supporting text content. Our generator implements these best practices automatically to make learning materials more accessible.";
+      } else if (optionText.includes('best format')) {
+        responseText = "The best format depends on your student's learning preferences: Text-based format uses dyslexia-friendly formatting with bullet points and clear structure. Audio format creates scripts optimized for listening. Visual guides focus on diagrams and visual learning. Game-based format creates interactive activities. Chat-based simulates a tutoring conversation. For most students, a multi-sensory approach combining formats works best!";
+      } else if (optionText.includes('edit the generated')) {
+        responseText = "Yes! After generating content, click the 'Customize' button to open our editor. You can modify any part of the lesson while maintaining dyslexia-friendly formatting. You can also save the content as a PDF or print it directly. In the future, we'll add the ability to save lessons to your library and share them with other teachers.";
+      } else if (optionText.includes('difference between AI')) {
+        responseText = "We offer two powerful AI models: Claude (by Anthropic) excels at educational content with nuanced understanding of learning needs and produces content with excellent formatting and structure. Perplexity AI has broader knowledge coverage for specialized subjects and sometimes generates more creative activities. Try both to see which works best for your specific needs!";
+      }
+      
+      // Update the help message
+      document.querySelector('.help-message').innerHTML = `<p>${responseText}</p>`;
+      
+      // Update the help options
+      const helpOptionsContainer = document.querySelector('.help-options');
+      helpOptionsContainer.innerHTML = `
+        <div class="help-option dyslexia-friendly-text">How can I save lessons for later?</div>
+        <div class="help-option dyslexia-friendly-text">Can I see some example lessons?</div>
+        <div class="help-option dyslexia-friendly-text">Will this work for all dyslexic students?</div>
+        <div class="help-option dyslexia-friendly-text">I have a different question</div>
+      `;
+      
+      // Add event listeners to the new help options
+      document.querySelectorAll('.help-option').forEach(option => {
+        option.addEventListener('click', handleSecondaryHelpOptionClick);
+      });
+    }
+    
+    /**
+     * Handle secondary help option click
+     */
+    function handleSecondaryHelpOptionClick(event) {
+      const optionText = event.target.textContent;
+      let responseText = '';
+      
+      // Provide different responses based on the option clicked
+      if (optionText.includes('save lessons')) {
+        responseText = "Currently in our demo version, you can save lessons as PDFs or print them. In the full version coming next month, you'll have a personal lesson library where you can save, organize, and retrieve all your generated content. You'll also be able to share lessons with colleagues and track which lessons were most effective.";
+      } else if (optionText.includes('example lessons')) {
+        responseText = "Yes! Click the 'Generate Curriculum' button without making any selections, and I'll show you some featured example lessons across different subjects and grade levels. These examples showcase the different formatting options and can help you get ideas for your own custom lessons.";
+      } else if (optionText.includes('all dyslexic students')) {
+        responseText = "While our curriculum generator follows research-based best practices for dyslexia support, every student has unique needs. The content is designed to be a starting point that you can customize. Some students may need more visual supports, others more audio elements. The customization tools let you tailor the generated content to meet your specific student's needs.";
+      } else if (optionText.includes('different question')) {
+        responseText = "Feel free to ask me anything about the curriculum generator or dyslexia-friendly teaching approaches! I'm here to help you create the most effective materials for your students. You can also email support@shotzios.com for more detailed assistance.";
+      }
+      
+      // Update the help message
+      document.querySelector('.help-message').innerHTML = `<p>${responseText}</p>`;
+    }
+    
+    /**
+     * Handle text-to-speech functionality
+     */
+    function handleTextToSpeech(event) {
+      // Get the parent card
+      const card = event.target.closest('.card');
+      // Get the text content
+      const textContent = card.querySelector('.card-content').textContent.trim();
+      
+      // Use the browser's speech synthesis API
+      if ('speechSynthesis' in window) {
+        const speech = new SpeechSynthesisUtterance();
+        speech.text = textContent;
+        speech.rate = 0.9; // Slightly slower rate for dyslexic readers
+        speech.pitch = 1;
+        window.speechSynthesis.speak(speech);
+      } else {
+        alert('Sorry, your browser does not support text-to-speech!');
+      }
+    }
+    
+    /**
+     * Handle reading guide functionality
+     */
+    function handleReadingGuide(event) {
+      const guide = event.target;
+      guide.style.backgroundColor = 'rgba(52, 152, 219, 0.4)';
+      setTimeout(() => {
+        guide.style.backgroundColor = 'rgba(52, 152, 219, 0.2)';
+      }, 1000);
+    }
+    
+    /**
+     * Generate mock lesson data for demonstration purposes
+     * In a real implementation, this would come from the API
+     */
+    function generateMockLessonData(subject, grade, format, topic, state) {
+      // Sample data for demonstration
+      const sampleLessonData = {
+        title: topic || `${subjectSelect.options[subjectSelect.selectedIndex].text} for ${gradeSelect.options[gradeSelect.selectedIndex].text}`,
+        grade_level: gradeSelect.options[gradeSelect.selectedIndex].text,
+        subject: subjectSelect.options[subjectSelect.selectedIndex].text,
+        topic: topic,
+        learning_objectives: [
+          "Understand key concepts related to the topic",
+          "Apply knowledge through hands-on activities",
+          "Develop critical thinking skills through analysis",
+          "Connect new concepts to prior knowledge"
+        ],
+        content: "This lesson introduces students to important concepts in an accessible, dyslexia-friendly format.\n\nKey points are organized in small, manageable chunks with ample spacing to reduce visual stress.\n\n• Information is presented in bullet points when possible\n• Complex ideas are broken down into simpler steps\n• Visual supports reinforce text content\n• Frequent summarizing helps consolidate learning\n\nStudents will explore the topic through multiple learning modalities, including visual, auditory, and kinesthetic approaches.",
+        visuals: [
+          "Concept Map: A visual diagram showing relationships between key ideas with color-coding for easier tracking",
+          "Step-by-Step Process Diagram: Breaking down complex procedures into numbered visual steps",
+          "Compare & Contrast Chart: Visual organization of similarities and differences using a dual-column approach"
+        ],
+        activities: [
+          "Hands-on Exploration: Students manipulate physical objects to understand abstract concepts",
+          "Collaborative Discussion: Small group exercise with structured prompts to guide conversation",
+          "Creative Application: Students create their own visual representation of the concept"
+        ],
+        assessment: [
+          "What are the main components of the concept we learned today?",
+          "How would you apply this knowledge in a real-world situation?",
+          "Compare this concept to something we learned previously. How are they connected?"
+        ],
+        additional_resources: [
+          "Interactive Online Tool",
+          "Video Tutorial",
+          "Printable Reference Guide",
+          "Extension Activities"
+        ],
+        format: format,
+        api_source: document.querySelector('input[name="api"]:checked').value,
+        timestamp: new Date().toISOString()
+      };
+      
+      return sampleLessonData;
+    }
+  </script>
+  
+  <!-- Curriculum Assessment Integration Script -->
+  <script src="/js/curriculum-assessment-integration.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize curriculum assessment integration with dyslexia-specific adaptations
+      if (typeof window.curriculumAssessmentIntegration !== 'undefined') {
+        window.curriculumAssessmentIntegration.initCurriculumAssessmentIntegration({
+          userId: '1', // Default user ID for testing, replace with actual user ID in production
+          curriculumType: 'dyslexia',
+          neurotype: 'dyslexia',
+          adaptationLevel: 'high'
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go4It Sports | Verified Athletic Profiling</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        go4it: {
+                            navy: "#0f172a",
+                            electric: "#3b82f6",
+                            matrix: "#00f5ff"
+                        }
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"]
+                    },
+                    animation: {
+                        grow: 'grow 1s ease-in-out forwards'
+                    },
+                    keyframes: {
+                        grow: {
+                            '0%': { height: '0%' },
+                            '100%': { height: 'var(--height)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+    </style>
+</head>
+<body class="font-sans antialiased text-white bg-go4it-navy">
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center">
+        <div class="container mx-auto px-6 py-24">
+            <div class="flex items-center gap-3 mb-8">
+                <svg class="w-12 h-12 text-go4it-electric" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M12,1L3,5v6c0,5.55 3.84,10.74 9,12c5.16-1.26 9-6.45 9-12V5L12,1z"/>
+                </svg>
+                <span class="bg-go4it-electric text-go4it-navy px-3 py-1 text-sm font-bold">VERIFIED</span>
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl font-bold mb-4">
+                <span class="text-go4it-matrix">GET SCORED.</span><br>
+                GET SEEN.<br>
+                GET RECRUITED.
+            </h1>
+            
+            <p class="text-xl text-gray-300 mb-8 max-w-2xl">
+                The <span class="font-bold text-white">Global Athlete Rating (GAR)</span> is your passport to college scouts, pro teams, and elite training.
+            </p>
+            
+            <div class="flex gap-4">
+                <button class="bg-go4it-electric hover:bg-go4it-matrix text-go4it-navy font-bold px-8 py-3 rounded-lg transition-all">
+                    FIND A COMBINE
+                </button>
+                <button class="border-2 border-go4it-electric text-go4it-electric hover:bg-go4it-electric/10 font-bold px-8 py-3 rounded-lg transition-all">
+                    HOW GAR WORKS
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- GAR Score Section -->
+    <section class="py-20 bg-gradient-to-b from-go4it-navy to-black">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row gap-12 items-center">
+                <div class="md:w-1/2">
+                    <h2 class="text-3xl font-bold mb-6">
+                        <span class="text-go4it-matrix">YOUR GAR SCORE</span> BREAKDOWN
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <div class="w-16 h-16 bg-go4it-electric/10 rounded-lg flex items-center justify-center mr-4">
+                                <svg class="w-8 h-8 text-go4it-electric" viewBox="0 0 24 24"><path fill="currentColor" d="M13,6V18L21.5,12L13,6M12,6L3.5,12L12,18V6Z"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold">SPEED (30%)</h3>
+                                <p class="text-gray-400">40yd dash, shuttle run, reaction time</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <div class="w-16 h-16 bg-go4it-electric/10 rounded-lg flex items-center justify-center mr-4">
+                                <svg class="w-8 h-8 text-go4it-electric" viewBox="0 0 24 24"><path fill="currentColor" d="M12,3A9,9 0 0,1 21,12A9,9 0 0,1 12,21A9,9 0 0,1 3,12A9,9 0 0,1 12,3Z"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold">COGNITIVE (25%)</h3>
+                                <p class="text-gray-400">Decision IQ, memory, processing speed</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <div class="w-16 h-16 bg-go4it-electric/10 rounded-lg flex items-center justify-center mr-4">
+                                <svg class="w-8 h-8 text-go4it-electric" viewBox="0 0 24 24"><path fill="currentColor" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold">MENTAL (20%)</h3>
+                                <p class="text-gray-400">Confidence, coachability, grit</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="md:w-1/2">
+                    <div class="bg-go4it-navy/50 border border-go4it-electric/20 rounded-xl p-6">
+                        <h3 class="text-go4it-matrix font-bold mb-4">SAMPLE ATHLETE PROFILE</h3>
+                        <div class="h-64 bg-black rounded-lg flex items-end gap-1 p-2">
+                            <div class="w-full bg-go4it-electric animate-grow" style="--height:70%"></div>
+                            <div class="w-full bg-go4it-matrix animate-grow" style="--height:85%"></div>
+                            <div class="w-full bg-go4it-electric animate-grow" style="--height:60%"></div>
+                        </div>
+                        <p class="text-center mt-4 text-gray-400">
+                            <span class="text-go4it-matrix font-bold">GAR 87</span> | Top 5% Globally
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Combine Tour Section -->
+    <section class="py-20 bg-black">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-4xl font-bold mb-6">
+                <span class="text-go4it-matrix">2025 COMBINE TOUR</span> CITIES OPEN NOW
+            </h2>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 max-w-4xl mx-auto">
+                <div class="bg-go4it-navy/50 p-4 rounded-lg border border-go4it-electric/10">
+                    <p class="text-go4it-matrix font-bold">MIAMI</p>
+                    <p class="text-sm">Jan 15-17</p>
+                </div>
+                <div class="bg-go4it-navy/50 p-4 rounded-lg border border-go4it-electric/10">
+                    <p class="text-go4it-matrix font-bold">BERLIN</p>
+                    <p class="text-sm">Feb 2-4</p>
+                </div>
+                <div class="bg-go4it-navy/50 p-4 rounded-lg border border-go4it-electric/10">
+                    <p class="text-go4it-matrix font-bold">NAIROBI</p>
+                    <p class="text-sm">Mar 8-10</p>
+                </div>
+                <div class="bg-go4it-navy/50 p-4 rounded-lg border border-go4it-electric/10">
+                    <p class="text-go4it-matrix font-bold">TOKYO</p>
+                    <p class="text-sm">Apr 5-7</p>
+                </div>
+            </div>
+            
+            <button class="bg-go4it-electric hover:bg-go4it-matrix text-go4it-navy font-bold px-12 py-4 rounded-lg text-lg transition-all mx-auto">
+                REGISTER FOR NEXT COMBINE
+            </button>
+        </div>
+    </section>
+</body>
+</html>

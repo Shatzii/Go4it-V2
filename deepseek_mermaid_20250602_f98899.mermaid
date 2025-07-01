@@ -1,0 +1,14 @@
+graph TB
+    subgraph Your Data Center
+        A[GPU Nodes] --> B[AI Model Zoo]
+        C[NVMe Storage] --> D[Vector DB]
+        E[10G Fabric] --> F[Container Orchestrator]
+    end
+
+    subgraph Pharaoh Stack
+        B --> G[Private Copilot]
+        D --> H[Knowledge Engine]
+        F --> I[Self-Healing Apps]
+    end
+
+    G & H & I --> J[(Pharaoh Dashboard)]

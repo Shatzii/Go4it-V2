@@ -1,0 +1,414 @@
+# Universal One School - Security Configuration
+# Complete cybersecurity settings for educational platform
+
+security:
+  
+  # Authentication Configuration
+  authentication:
+    jwt:
+      algorithm: "HS256"
+      access_token_expiry: "24h"
+      refresh_token_expiry: "7d"
+      issuer: "universal-one-school"
+      audience: "educational-platform"
+      
+    password_policy:
+      min_length: 8
+      require_uppercase: true
+      require_lowercase: true
+      require_numbers: true
+      require_special_chars: true
+      max_attempts: 5
+      lockout_duration: "30m"
+      
+    session:
+      secure: true
+      same_site: "strict"
+      http_only: true
+      max_age: "24h"
+      
+  # Multi-Factor Authentication
+  mfa:
+    enabled: true
+    required_for_roles: ["school_admin", "platform_admin", "super_admin"]
+    optional_for_roles: ["teacher", "parent"]
+    totp:
+      issuer: "Universal One School"
+      algorithm: "SHA1"
+      digits: 6
+      window: 1
+      
+  # Rate Limiting
+  rate_limiting:
+    authentication:
+      window: "15m"
+      max_attempts: 10
+      
+    api_calls:
+      window: "1h" 
+      max_requests: 1000
+      
+    password_reset:
+      window: "1h"
+      max_attempts: 3
+      
+  # Encryption Configuration
+  encryption:
+    data_at_rest:
+      algorithm: "AES-256-GCM"
+      key_derivation: "PBKDF2"
+      iterations: 100000
+      
+    data_in_transit:
+      tls_version: "1.3"
+      cipher_suites:
+        - "TLS_AES_256_GCM_SHA384"
+        - "TLS_CHACHA20_POLY1305_SHA256"
+        - "TLS_AES_128_GCM_SHA256"
+        
+    database:
+      encryption: "column_level"
+      key_rotation: "90d"
+      
+  # Access Control
+  access_control:
+    rbac:
+      enabled: true
+      inheritance: true
+      
+    resource_permissions:
+      student_records:
+        read: ["teacher", "school_admin", "platform_admin"]
+        write: ["teacher", "school_admin"]
+        delete: ["school_admin", "platform_admin"]
+        
+      grades:
+        read: ["student", "parent", "teacher", "school_admin"]
+        write: ["teacher", "school_admin"] 
+        delete: ["school_admin"]
+        
+      system_configuration:
+        read: ["platform_admin", "super_admin"]
+        write: ["platform_admin", "super_admin"]
+        delete: ["super_admin"]
+        
+  # Security Headers
+  security_headers:
+    content_security_policy:
+      default_src: "'self'"
+      script_src: "'self' 'unsafe-inline' cdn.jsdelivr.net"
+      style_src: "'self' 'unsafe-inline' fonts.googleapis.com"
+      font_src: "'self' fonts.gstatic.com"
+      img_src: "'self' data: blob: https:"
+      connect_src: "'self' api.anthropic.com"
+      frame_ancestors: "'none'"
+      
+    hsts:
+      max_age: 31536000
+      include_subdomains: true
+      preload: true
+      
+    other_headers:
+      x_frame_options: "DENY"
+      x_content_type_options: "nosniff"
+      x_xss_protection: "1; mode=block"
+      referrer_policy: "strict-origin-when-cross-origin"
+      
+# Compliance Configuration
+compliance:
+  
+  # COPPA (Children's Online Privacy Protection Act)
+  coppa:
+    enabled: true
+    age_verification: true
+    parental_consent_required: true
+    data_minimization: true
+    retention_period: "student_graduation + 1_year"
+    
+    restricted_data_collection:
+      - location_data
+      - behavioral_tracking
+      - biometric_data
+      - unnecessary_personal_info
+      
+  # FERPA (Family Educational Rights and Privacy Act)
+  ferpa:
+    enabled: true
+    directory_information_control: true
+    educational_records_protection: true
+    disclosure_logging: true
+    parent_access_rights: true
+    
+    protected_data_types:
+      - grades
+      - disciplinary_records
+      - special_education_records
+      - health_records
+      - counseling_records
+      
+  # GDPR (General Data Protection Regulation)
+  gdpr:
+    enabled: true
+    lawful_basis_tracking: true
+    data_subject_rights: true
+    privacy_by_design: true
+    
+    data_subject_rights:
+      - right_to_access
+      - right_to_rectification
+      - right_to_erasure
+      - right_to_portability
+      - right_to_restrict_processing
+      
+# Monitoring and Alerting
+monitoring:
+  
+  # Security Event Logging
+  logging:
+    level: "INFO"
+    format: "JSON"
+    retention: "7_years"
+    
+    log_events:
+      - authentication_events
+      - authorization_failures
+      - data_access_events
+      - system_configuration_changes
+      - security_violations
+      - compliance_events
+      
+  # Real-time Alerts
+  alerts:
+    email:
+      enabled: true
+      recipients: ["security@universalschool.edu"]
+      
+    webhook:
+      enabled: true
+      url: "https://security.universalschool.edu/webhook"
+      
+    alert_conditions:
+      critical:
+        - multiple_failed_logins: 5
+        - privilege_escalation_attempt: 1
+        - data_breach_indicator: 1
+        - compliance_violation: 1
+        
+      high:
+        - unusual_data_access: 100
+        - system_intrusion_attempt: 1
+        - unauthorized_admin_access: 1
+        
+      medium:
+        - failed_authentication: 10
+        - suspicious_ip_activity: 1
+        - policy_violation: 1
+        
+  # Threat Detection
+  threat_detection:
+    enabled: true
+    
+    patterns:
+      brute_force:
+        window: "15m"
+        threshold: 5
+        action: "block_ip"
+        
+      data_exfiltration:
+        threshold: 1000  # records per hour
+        action: "alert_admin"
+        
+      privilege_escalation:
+        threshold: 1
+        action: "lock_account"
+        
+# Network Security
+network:
+  
+  # Firewall Configuration
+  firewall:
+    default_policy: "deny"
+    
+    allowed_inbound:
+      - port: 443
+        protocol: "tcp"
+        source: "0.0.0.0/0"
+        description: "HTTPS traffic"
+        
+      - port: 80
+        protocol: "tcp" 
+        source: "0.0.0.0/0"
+        description: "HTTP redirect to HTTPS"
+        
+    allowed_outbound:
+      - port: 443
+        protocol: "tcp"
+        destination: "api.anthropic.com"
+        description: "AI service"
+        
+      - port: 443
+        protocol: "tcp"
+        destination: "smtp.sendgrid.net"
+        description: "Email service"
+        
+  # DDoS Protection
+  ddos_protection:
+    enabled: true
+    rate_limits:
+      requests_per_second: 100
+      connections_per_ip: 10
+      
+    mitigation:
+      - challenge_response
+      - ip_reputation_filtering
+      - geographic_blocking
+      
+  # SSL/TLS Configuration
+  tls:
+    min_version: "1.2"
+    preferred_version: "1.3"
+    
+    certificate:
+      type: "letsencrypt"
+      auto_renewal: true
+      
+    cipher_suites:
+      - "ECDHE-RSA-AES256-GCM-SHA384"
+      - "ECDHE-RSA-CHACHA20-POLY1305"
+      - "ECDHE-RSA-AES128-GCM-SHA256"
+
+# Student Self-Hosting Security
+student_hosting:
+  
+  # Local Security
+  local_security:
+    database_encryption: true
+    file_encryption: true
+    secure_communication: true
+    
+  # Parent Sync Security
+  parent_sync:
+    encryption_in_transit: true
+    data_minimization: true
+    consent_verification: true
+    
+  # Device Security
+  device_security:
+    application_signing: true
+    integrity_verification: true
+    secure_storage: true
+    
+# Incident Response
+incident_response:
+  
+  # Response Team
+  team:
+    primary_contact: "security@universalschool.edu"
+    escalation_contact: "ciso@universalschool.edu"
+    emergency_contact: "+1-800-EDU-SEC1"
+    
+  # Response Procedures
+  procedures:
+    detection:
+      automated_monitoring: true
+      manual_reporting: true
+      
+    containment:
+      isolate_affected_systems: true
+      preserve_evidence: true
+      
+    investigation:
+      forensic_analysis: true
+      root_cause_analysis: true
+      
+    recovery:
+      system_restoration: true
+      enhanced_monitoring: true
+      
+    post_incident:
+      incident_report: true
+      lessons_learned: true
+      process_improvement: true
+      
+  # Notification Requirements
+  notifications:
+    internal:
+      immediate: ["security_team", "management"]
+      within_2h: ["legal_team", "compliance"]
+      within_24h: ["all_staff"]
+      
+    external:
+      regulatory: "within_72h"
+      law_enforcement: "if_criminal_activity"
+      affected_users: "within_72h"
+      
+# Backup and Recovery
+backup:
+  
+  # Data Backup
+  data:
+    frequency: "daily"
+    retention: "30_days"
+    encryption: true
+    offsite_storage: true
+    
+  # System Backup
+  system:
+    frequency: "weekly"
+    retention: "12_weeks"
+    automated_testing: true
+    
+  # Recovery Testing
+  recovery:
+    frequency: "monthly"
+    full_system_test: "quarterly"
+    documentation: "updated_monthly"
+
+# Security Training
+training:
+  
+  # Staff Training
+  staff:
+    security_awareness: "quarterly"
+    phishing_simulation: "monthly"
+    incident_response: "bi_annually"
+    
+  # User Education
+  users:
+    privacy_education: true
+    safe_computing: true
+    password_security: true
+    
+# Audit and Assessment
+audit:
+  
+  # Internal Audits
+  internal:
+    security_controls: "quarterly"
+    compliance_review: "bi_annually"
+    risk_assessment: "annually"
+    
+  # External Audits
+  external:
+    penetration_testing: "annually"
+    compliance_audit: "annually"
+    code_review: "with_major_releases"
+
+# Environment-Specific Settings
+environments:
+  
+  development:
+    debug_mode: true
+    logging_level: "DEBUG"
+    ssl_verification: false
+    
+  staging:
+    debug_mode: false
+    logging_level: "INFO"
+    ssl_verification: true
+    
+  production:
+    debug_mode: false
+    logging_level: "WARN"
+    ssl_verification: true
+    performance_monitoring: true

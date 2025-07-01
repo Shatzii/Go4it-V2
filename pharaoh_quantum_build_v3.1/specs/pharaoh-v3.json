@@ -1,0 +1,6 @@
+{
+  "cloud": ["aws", "linode"],
+  "frameworks": ["next15", "fastify", "trpc"],
+  "optimization": "max",
+  "monitoring": "sentinel-mode"
+}

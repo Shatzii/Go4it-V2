@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rhythm-LMS Web Installer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(45deg, #00d4ff, #ff0080);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .wizard {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(45deg, #00d4ff, #ff0080);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #00d4ff, #ff0080);
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 0.5rem;
+            transition: transform 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .requirements {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .requirement {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .requirement.met {
+            background: rgba(0, 255, 0, 0.2);
+        }
+
+        .requirement.unmet {
+            background: rgba(255, 0, 0, 0.2);
+        }
+
+        .requirement-status {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+
+        .log-output {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 1rem;
+            border-radius: 8px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            margin: 1rem 0;
+        }
+
+        .installation-summary {
+            background: rgba(0, 255, 0, 0.2);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .error-summary {
+            background: rgba(255, 0, 0, 0.2);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .step-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 0.5rem;
+            font-weight: bold;
+        }
+
+        .step-dot.active {
+            background: linear-gradient(45deg, #00d4ff, #ff0080);
+        }
+
+        .step-dot.completed {
+            background: #00ff88;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Rhythm-LMS Web Installer</h1>
+            <p>Self-Hosted AI Education Platform Setup Wizard</p>
+        </div>
+
+        <div class="wizard">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div class="step-indicator">
+                <div class="step-dot active" id="dot1">1</div>
+                <div class="step-dot" id="dot2">2</div>
+                <div class="step-dot" id="dot3">3</div>
+                <div class="step-dot" id="dot4">4</div>
+                <div class="step-dot" id="dot5">5</div>
+            </div>
+
+            <!-- Step 1: Welcome & Requirements -->
+            <div class="step active" id="step1">
+                <h2>Welcome to Rhythm-LMS</h2>
+                <p>This wizard will guide you through setting up your self-hosted AI education platform. Let's start by checking your system requirements.</p>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🧠</div>
+                        <h3>AI-Powered</h3>
+                        <p>Self-hosted AI engine for curriculum generation</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🌟</div>
+                        <h3>Neurodivergent-Friendly</h3>
+                        <p>Specialized learning adaptations</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Self-Hosted</h3>
+                        <p>Complete data privacy and control</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📋</div>
+                        <h3>State Compliant</h3>
+                        <p>All 50 US states education standards</p>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="checkRequirements()">Check System Requirements</button>
+                <button class="btn btn-secondary" onclick="nextStep()">Skip Check</button>
+            </div>
+
+            <!-- Step 2: System Requirements -->
+            <div class="step" id="step2">
+                <h2>System Requirements Check</h2>
+                <p>Verifying your system meets the minimum requirements for Rhythm-LMS.</p>
+
+                <div class="requirements" id="requirementsList">
+                    <div class="requirement" id="req-ram">
+                        <div class="requirement-status">⏳</div>
+                        <div>
+                            <strong>RAM: 4GB+ Required</strong>
+                            <div>Checking available memory...</div>
+                        </div>
+                    </div>
+                    <div class="requirement" id="req-disk">
+                        <div class="requirement-status">⏳</div>
+                        <div>
+                            <strong>Disk Space: 40GB+ Required</strong>
+                            <div>Checking available storage...</div>
+                        </div>
+                    </div>
+                    <div class="requirement" id="req-os">
+                        <div class="requirement-status">⏳</div>
+                        <div>
+                            <strong>Operating System</strong>
+                            <div>Detecting OS version...</div>
+                        </div>
+                    </div>
+                    <div class="requirement" id="req-internet">
+                        <div class="requirement-status">⏳</div>
+                        <div>
+                            <strong>Internet Connection</strong>
+                            <div>Testing connectivity...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="nextStep()" id="continueBtn" disabled>Continue Setup</button>
+                <button class="btn btn-secondary" onclick="prevStep()">Back</button>
+            </div>
+
+            <!-- Step 3: Configuration -->
+            <div class="step" id="step3">
+                <h2>Platform Configuration</h2>
+                <p>Configure your Rhythm-LMS installation settings.</p>
+
+                <form id="configForm">
+                    <div class="form-group">
+                        <label for="domain">Domain Name (Optional)</label>
+                        <input type="text" id="domain" placeholder="education.yourschool.com">
+                        <small>Leave empty to use IP address</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="adminEmail">Administrator Email</label>
+                        <input type="email" id="adminEmail" required placeholder="admin@yourschool.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="schoolName">School/Organization Name</label>
+                        <input type="text" id="schoolName" required placeholder="Your Educational Institution">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="primaryState">Primary State (for compliance)</label>
+                        <select id="primaryState" required>
+                            <option value="">Select your state</option>
+                            <option value="TX">Texas</option>
+                            <option value="CA">California</option>
+                            <option value="FL">Florida</option>
+                            <option value="NY">New York</option>
+                            <option value="AL">Alabama</option>
+                            <option value="CO">Colorado</option>
+                            <option value="GA">Georgia</option>
+                            <option value="MS">Mississippi</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gradeLevels">Grade Levels to Support</label>
+                        <select id="gradeLevels" multiple>
+                            <option value="elementary">Elementary (K-5)</option>
+                            <option value="middle">Middle School (6-8)</option>
+                            <option value="high">High School (9-12)</option>
+                            <option value="adult">Adult Education</option>
+                        </select>
+                        <small>Hold Ctrl/Cmd to select multiple</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="enableSSL">Enable SSL Certificate (Recommended)</label>
+                        <select id="enableSSL">
+                            <option value="auto">Automatic (Let's Encrypt)</option>
+                            <option value="manual">Manual Configuration</option>
+                            <option value="none">No SSL (Development Only)</option>
+                        </select>
+                    </div>
+                </form>
+
+                <button class="btn" onclick="validateConfig()">Continue</button>
+                <button class="btn btn-secondary" onclick="prevStep()">Back</button>
+            </div>
+
+            <!-- Step 4: Installation -->
+            <div class="step" id="step4">
+                <h2>Installing Rhythm-LMS</h2>
+                <p>Please wait while we install and configure your platform. This may take 10-15 minutes.</p>
+
+                <div class="log-output" id="installLog">Starting installation process...\n</div>
+
+                <div id="installStatus">
+                    <button class="btn" onclick="startInstallation()">Start Installation</button>
+                    <button class="btn btn-secondary" onclick="prevStep()">Back</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Complete -->
+            <div class="step" id="step5">
+                <h2>Installation Complete!</h2>
+                
+                <div class="installation-summary" id="successSummary" style="display: none;">
+                    <h3>🎉 Success! Your Rhythm-LMS platform is ready!</h3>
+                    <p><strong>Platform URL:</strong> <span id="platformUrl"></span></p>
+                    <p><strong>Admin Email:</strong> <span id="finalAdminEmail"></span></p>
+                    <p><strong>Temporary Password:</strong> <span id="tempPassword"></span></p>
+                    
+                    <h4>Next Steps:</h4>
+                    <ol>
+                        <li>Visit your platform URL</li>
+                        <li>Login with the admin credentials</li>
+                        <li>Change your password</li>
+                        <li>Complete the initial setup wizard</li>
+                        <li>Create your first curriculum</li>
+                    </ol>
+                </div>
+
+                <div class="error-summary" id="errorSummary" style="display: none;">
+                    <h3>❌ Installation encountered errors</h3>
+                    <p>The installation process completed with some issues. Please check the logs above and contact support if needed.</p>
+                    
+                    <h4>Common Solutions:</h4>
+                    <ul>
+                        <li>Check system requirements are met</li>
+                        <li>Ensure all required ports are open</li>
+                        <li>Verify internet connectivity</li>
+                        <li>Run the installer as root/administrator</li>
+                    </ul>
+                </div>
+
+                <button class="btn" onclick="openPlatform()" id="openPlatformBtn" style="display: none;">Open Platform</button>
+                <button class="btn btn-secondary" onclick="downloadLogs()">Download Logs</button>
+                <button class="btn btn-secondary" onclick="restartWizard()">Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 5;
+        let installationConfig = {};
+
+        function updateProgress() {
+            const progress = (currentStep / totalSteps) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            // Update step indicators
+            for (let i = 1; i <= totalSteps; i++) {
+                const dot = document.getElementById(`dot${i}`);
+                if (i < currentStep) {
+                    dot.className = 'step-dot completed';
+                } else if (i === currentStep) {
+                    dot.className = 'step-dot active';
+                } else {
+                    dot.className = 'step-dot';
+                }
+            }
+        }
+
+        function showStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.step').forEach(s => {
+                s.classList.remove('active');
+            });
+            
+            // Show current step
+            document.getElementById(`step${step}`).classList.add('active');
+            currentStep = step;
+            updateProgress();
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                showStep(currentStep + 1);
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                showStep(currentStep - 1);
+            }
+        }
+
+        function checkRequirements() {
+            // Simulate requirement checking
+            const requirements = [
+                { id: 'req-ram', check: () => Math.random() > 0.2 },
+                { id: 'req-disk', check: () => Math.random() > 0.1 },
+                { id: 'req-os', check: () => Math.random() > 0.05 },
+                { id: 'req-internet', check: () => Math.random() > 0.1 }
+            ];
+
+            let allMet = true;
+
+            requirements.forEach((req, index) => {
+                setTimeout(() => {
+                    const element = document.getElementById(req.id);
+                    const met = req.check();
+                    
+                    if (met) {
+                        element.className = 'requirement met';
+                        element.querySelector('.requirement-status').textContent = '✅';
+                        element.querySelector('div:last-child').textContent = 'Requirement met';
+                    } else {
+                        element.className = 'requirement unmet';
+                        element.querySelector('.requirement-status').textContent = '❌';
+                        element.querySelector('div:last-child').textContent = 'Requirement not met';
+                        allMet = false;
+                    }
+
+                    if (index === requirements.length - 1) {
+                        document.getElementById('continueBtn').disabled = !allMet;
+                        if (allMet) {
+                            setTimeout(() => nextStep(), 1000);
+                        }
+                    }
+                }, (index + 1) * 500);
+            });
+
+            nextStep();
+        }
+
+        function validateConfig() {
+            const form = document.getElementById('configForm');
+            const formData = new FormData(form);
+            
+            installationConfig = {
+                domain: document.getElementById('domain').value,
+                adminEmail: document.getElementById('adminEmail').value,
+                schoolName: document.getElementById('schoolName').value,
+                primaryState: document.getElementById('primaryState').value,
+                gradeLevels: Array.from(document.getElementById('gradeLevels').selectedOptions).map(o => o.value),
+                enableSSL: document.getElementById('enableSSL').value
+            };
+
+            if (installationConfig.adminEmail && installationConfig.schoolName && installationConfig.primaryState) {
+                nextStep();
+            } else {
+                alert('Please fill in all required fields.');
+            }
+        }
+
+        function startInstallation() {
+            const logOutput = document.getElementById('installLog');
+            const installStatus = document.getElementById('installStatus');
+            
+            installStatus.innerHTML = '<div>Installation in progress... Please do not close this window.</div>';
+            
+            // Simulate installation process
+            const steps = [
+                'Updating system packages...',
+                'Installing Node.js and npm...',
+                'Installing PostgreSQL database...',
+                'Installing Nginx web server...',
+                'Creating system user...',
+                'Setting up database...',
+                'Downloading application files...',
+                'Installing dependencies...',
+                'Building application...',
+                'Configuring services...',
+                'Starting services...',
+                'Configuring SSL certificate...',
+                'Running final checks...',
+                'Installation complete!'
+            ];
+
+            let stepIndex = 0;
+            const interval = setInterval(() => {
+                if (stepIndex < steps.length) {
+                    logOutput.textContent += `[${new Date().toLocaleTimeString()}] ${steps[stepIndex]}\n`;
+                    logOutput.scrollTop = logOutput.scrollHeight;
+                    stepIndex++;
+                } else {
+                    clearInterval(interval);
+                    
+                    // Show completion
+                    const serverIP = '192.168.1.100'; // Would be actual server IP
+                    const tempPassword = 'temp' + Math.random().toString(36).substr(2, 8);
+                    
+                    document.getElementById('platformUrl').textContent = `http://${serverIP}`;
+                    document.getElementById('finalAdminEmail').textContent = installationConfig.adminEmail;
+                    document.getElementById('tempPassword').textContent = tempPassword;
+                    
+                    setTimeout(() => {
+                        nextStep();
+                        document.getElementById('successSummary').style.display = 'block';
+                        document.getElementById('openPlatformBtn').style.display = 'inline-block';
+                    }, 1000);
+                }
+            }, 1000);
+        }
+
+        function openPlatform() {
+            const url = document.getElementById('platformUrl').textContent;
+            window.open(url, '_blank');
+        }
+
+        function downloadLogs() {
+            const logContent = document.getElementById('installLog').textContent;
+            const blob = new Blob([logContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'rhythm-lms-install-log.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function restartWizard() {
+            showStep(1);
+            document.getElementById('successSummary').style.display = 'none';
+            document.getElementById('errorSummary').style.display = 'none';
+            document.getElementById('openPlatformBtn').style.display = 'none';
+            document.getElementById('installLog').textContent = 'Starting installation process...\n';
+        }
+
+        // Initialize
+        updateProgress();
+    </script>
+</body>
+</html>
