@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Language Learning School | ShotziOS</title>
+  <style>
+    /* Base styles optimized for neurodivergent users */
+    :root {
+      --bg-color: #0f0f1a;
+      --text-color: #e6e6ff;
+      --accent-color: #27ae60;
+      --accent-dark: #219952;
+      --accent-light: #2ecc71;
+      --card-bg: #1a1a2e;
+      --nav-bg: #141428;
+      --success-color: #27ae60;
+      --warning-color: #e67e22;
+      --danger-color: #e74c3c;
+      --header-height: 64px;
+      --border-radius: 8px;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: "Open Dyslexic", "Comic Sans MS", Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      letter-spacing: 0.025em;
+      word-spacing: 0.1em;
+      padding-bottom: 60px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header styles */
+    header {
+      background-color: var(--nav-bg);
+      height: var(--header-height);
+      border-bottom: 2px solid var(--accent-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--accent-color);
+    }
+    
+    .logo img {
+      height: 40px;
+      margin-right: 10px;
+    }
+    
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--accent-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+    
+    /* Navigation */
+    nav {
+      background-color: var(--nav-bg);
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+      overflow-x: auto;
+      padding: 0 20px;
+    }
+    
+    .nav-links li a {
+      color: var(--text-color);
+      text-decoration: none;
+      padding: 5px 10px;
+      border-radius: var(--border-radius);
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+    
+    .nav-links li a:hover,
+    .nav-links li a.active {
+      background-color: var(--accent-color);
+      color: white;
+    }
+    
+    /* Main content area */
+    main {
+      padding: 20px 0;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--accent-color);
+      margin-bottom: 15px;
+      margin-top: 30px;
+      font-weight: 600;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      border-bottom: 2px solid var(--accent-color);
+      padding-bottom: 15px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    
+    h2 {
+      font-size: 1.8rem;
+    }
+    
+    h3 {
+      font-size: 1.4rem;
+    }
+    
+    p {
+      margin-bottom: 15px;
+    }
+    
+    /* Hero section */
+    .hero {
+      text-align: center;
+      padding: 60px 0;
+      background-color: rgba(39, 174, 96, 0.1);
+      border-radius: var(--border-radius);
+      margin-bottom: 40px;
+    }
+    
+    .hero h1 {
+      border-bottom: none;
+      margin-bottom: 20px;
+      font-size: 2.8rem;
+    }
+    
+    .hero p {
+      max-width: 800px;
+      margin: 0 auto 30px;
+      font-size: 1.1rem;
+    }
+    
+    /* Button styles */
+    .btn {
+      display: inline-block;
+      background-color: var(--accent-color);
+      color: white;
+      padding: 12px 24px;
+      border-radius: var(--border-radius);
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      margin: 5px;
+    }
+    
+    .btn:hover {
+      background-color: var(--accent-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-large {
+      font-size: 1.1rem;
+      padding: 14px 28px;
+    }
+    
+    .btn-outlined {
+      background-color: transparent;
+      border: 2px solid var(--accent-color);
+      color: var(--accent-color);
+    }
+    
+    .btn-outlined:hover {
+      background-color: var(--accent-color);
+      color: white;
+    }
+    
+    /* Feature cards */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 30px;
+      margin: 40px 0;
+    }
+    
+    .feature-card {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border-top: 4px solid var(--accent-color);
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .feature-card-header {
+      padding: 20px;
+      background-color: rgba(39, 174, 96, 0.1);
+      text-align: center;
+    }
+    
+    .feature-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+    
+    .feature-title {
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: var(--accent-color);
+    }
+    
+    .feature-card-content {
+      padding: 20px;
+    }
+    
+    .feature-description {
+      margin-bottom: 20px;
+    }
+    
+    .feature-actions {
+      display: flex;
+      justify-content: center;
+    }
+    
+    /* Language cards */
+    .language-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 40px 0;
+    }
+    
+    .language-card {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+    
+    .language-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
+    }
+    
+    .language-flag {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      background-color: rgba(39, 174, 96, 0.1);
+    }
+    
+    .language-name {
+      padding: 15px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--accent-color);
+    }
+    
+    /* Call to action section */
+    .cta-section {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 40px;
+      text-align: center;
+      margin: 60px 0;
+    }
+    
+    .cta-title {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+    
+    .cta-text {
+      max-width: 700px;
+      margin: 0 auto 30px;
+    }
+    
+    /* Footer styles */
+    footer {
+      background-color: var(--nav-bg);
+      padding: 40px 0;
+      margin-top: 60px;
+    }
+    
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+    
+    .footer-section {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .footer-title {
+      font-size: 1.2rem;
+      color: var(--accent-color);
+      margin-bottom: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 10px;
+    }
+    
+    .footer-links {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 10px;
+    }
+    
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+      color: var(--accent-color);
+    }
+    
+    .copyright {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .language-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .footer-content {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <img src="/logo.png" alt="ShotziOS Logo" />
+          <span>Language Learning School</span>
+        </div>
+        <div class="avatar">A</div>
+      </div>
+    </div>
+  </header>
+  
+  <nav>
+    <div class="container">
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/language-school" class="active">Language School</a></li>
+        <li><a href="/language-school/student-dashboard.html">Student Dashboard</a></li>
+        <li><a href="/superhero-school">Superhero School</a></li>
+        <li><a href="/law-school">Law School</a></li>
+      </ul>
+    </div>
+  </nav>
+  
+  <div class="hero">
+    <div class="container">
+      <h1>Welcome to Language Learning School</h1>
+      <p>AI-powered language acquisition courses across multiple languages, designed specifically for neurodivergent learners with adaptive learning pathways and multi-modal teaching methods.</p>
+      <a href="/language-school/student-dashboard" class="btn btn-large">Student Dashboard</a>
+      <a href="#features" class="btn btn-large btn-outlined">Explore Features</a>
+    </div>
+  </div>
+  
+  <main class="container">
+    <h2>Available Languages</h2>
+    <p>Our specialized language learning program offers courses in the following languages, each with neurodivergent-friendly learning methods:</p>
+    
+    <div class="language-grid">
+      <a href="/language-school/spanish" class="language-card">
+        <div class="language-flag">🇪🇸</div>
+        <div class="language-name">Spanish</div>
+      </a>
+      
+      <a href="/language-school/german" class="language-card">
+        <div class="language-flag">🇩🇪</div>
+        <div class="language-name">German</div>
+      </a>
+      
+      <a href="/language-school/french" class="language-card">
+        <div class="language-flag">🇫🇷</div>
+        <div class="language-name">French</div>
+      </a>
+      
+      <a href="/language-school/italian" class="language-card">
+        <div class="language-flag">🇮🇹</div>
+        <div class="language-name">Italian</div>
+      </a>
+      
+      <a href="/language-school/japanese" class="language-card">
+        <div class="language-flag">🇯🇵</div>
+        <div class="language-name">Japanese</div>
+      </a>
+      
+      <a href="/language-school/chinese" class="language-card">
+        <div class="language-flag">🇨🇳</div>
+        <div class="language-name">Chinese</div>
+      </a>
+      
+      <a href="/language-school/russian" class="language-card">
+        <div class="language-flag">🇷🇺</div>
+        <div class="language-name">Russian</div>
+      </a>
+    </div>
+    
+    <h2 id="features">Language Learning Features</h2>
+    <p>Our specialized language learning platform offers a comprehensive suite of tools and resources designed specifically for neurodivergent learners.</p>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-card-header">
+          <div class="feature-icon">🗣️</div>
+          <div class="feature-title">AI Conversation Partner</div>
+        </div>
+        <div class="feature-card-content">
+          <div class="feature-description">
+            Practice speaking and listening with our AI-powered conversation partner that adapts to your skill level and provides real-time feedback.
+          </div>
+          <div class="feature-actions">
+            <a href="/language-school/conversation" class="btn">Start Conversation</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-card-header">
+          <div class="feature-icon">🧠</div>
+          <div class="feature-title">Multi-Modal Learning</div>
+        </div>
+        <div class="feature-card-content">
+          <div class="feature-description">
+            Learn through visual, auditory, and kinesthetic methods that accommodate different neurodivergent learning styles and preferences.
+          </div>
+          <div class="feature-actions">
+            <a href="/language-school/multimodal" class="btn">Explore Methods</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-card-header">
+          <div class="feature-icon">📝</div>
+          <div class="feature-title">Vocabulary Builder</div>
+        </div>
+        <div class="feature-card-content">
+          <div class="feature-description">
+            AI-powered vocabulary learning system that creates personalized word lists and spaced repetition schedules based on your interests.
+          </div>
+          <div class="feature-actions">
+            <a href="/language-school/vocabulary" class="btn">Build Vocabulary</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-card-header">
+          <div class="feature-icon">🎮</div>
+          <div class="feature-title">Language Learning Games</div>
+        </div>
+        <div class="feature-card-content">
+          <div class="feature-description">
+            Engaging gamified experiences that make language acquisition fun and motivating for neurodivergent students.
+          </div>
+          <div class="feature-actions">
+            <a href="/language-school/games" class="btn">Play Games</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-card-header">
+          <div class="feature-icon">🌍</div>
+          <div class="feature-title">Cultural Context Learning</div>
+        </div>
+        <div class="feature-card-content">
+          <div class="feature-description">
+            Learn language within its cultural context through immersive stories, videos, and interactive scenarios from native speakers.
+          </div>
+          <div class="feature-actions">
+            <a href="/language-school/culture" class="btn">Explore Cultures</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-card-header">
+          <div class="feature-icon">📊</div>
+          <div class="feature-title">Progress Analytics</div>
+        </div>
+        <div class="feature-card-content">
+          <div class="feature-description">
+            Detailed progress tracking that identifies strengths, areas for improvement, and optimal learning patterns for your neurodivergent profile.
+          </div>
+          <div class="feature-actions">
+            <a href="/language-school/analytics" class="btn">View Analytics</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-card-header">
+          <div class="feature-icon">💊</div>
+          <div class="feature-title">Medication Integration</div>
+        </div>
+        <div class="feature-card-content">
+          <div class="feature-description">
+            Track how medication timing affects your language learning performance to identify optimal study windows.
+          </div>
+          <div class="feature-actions">
+            <a href="/language-school/medication" class="btn">Medication Tracking</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-card-header">
+          <div class="feature-icon">⭐</div>
+          <div class="feature-title">Student Dashboard</div>
+        </div>
+        <div class="feature-card-content">
+          <div class="feature-description">
+            Comprehensive dashboard that brings together all language learning tools with personalized learning paths and progress tracking.
+          </div>
+          <div class="feature-actions">
+            <a href="/language-school/student-dashboard" class="btn">Go to Dashboard</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="cta-section">
+      <h2 class="cta-title">Unlock Your Language Potential</h2>
+      <p class="cta-text">Our specialized language learning platform is designed to help neurodivergent students harness their unique cognitive strengths for effective and enjoyable language acquisition.</p>
+      <a href="/language-school/student-dashboard" class="btn btn-large">Access Student Dashboard</a>
+    </div>
+  </main>
+  
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3 class="footer-title">Schools</h3>
+          <ul class="footer-links">
+            <li><a href="/law-school">Shatzii School of Law</a></li>
+            <li><a href="/superhero-school">Neurodivergent Superhero School</a></li>
+            <li><a href="/language-school">Language Learning School</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3 class="footer-title">Languages</h3>
+          <ul class="footer-links">
+            <li><a href="/language-school/spanish">Spanish</a></li>
+            <li><a href="/language-school/german">German</a></li>
+            <li><a href="/language-school/french">French</a></li>
+            <li><a href="/language-school/japanese">Japanese</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3 class="footer-title">Features</h3>
+          <ul class="footer-links">
+            <li><a href="/language-school/conversation">AI Conversation Partner</a></li>
+            <li><a href="/language-school/vocabulary">Vocabulary Builder</a></li>
+            <li><a href="/language-school/games">Language Games</a></li>
+            <li><a href="/language-school/medication">Medication Tracking</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3 class="footer-title">Platform</h3>
+          <ul class="footer-links">
+            <li><a href="/">Main Platform</a></li>
+            <li><a href="/dashboard">Admin Dashboard</a></li>
+            <li><a href="/security">Security Center</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="copyright">
+        &copy; 2025 ShotziOS Educational Platform. All rights reserved.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

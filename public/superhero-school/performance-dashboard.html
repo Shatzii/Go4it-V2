@@ -1,0 +1,2096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Performance Optimization Dashboard - ShotziOS</title>
+  <style>
+    :root {
+      --primary-color: #1e90ff;
+      --primary-hover: #32cd32;
+      --background-dark: #000000;
+      --card-background: #121212;
+      --text-light: #ffffff;
+      --text-secondary: #888888;
+      --border-color: #333333;
+      --success-color: #32cd32;
+      --warning-color: #f39c12;
+      --danger-color: #e74c3c;
+      --improving: #32cd32;
+      --declining: #e74c3c;
+      --stable: #f39c12;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Open Dyslexic', Arial, sans-serif;
+      background-color: var(--background-dark);
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 2px solid var(--primary-color);
+      margin-bottom: 30px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-weight: bold;
+    }
+
+    h1, h2, h3, h4 {
+      color: var(--primary-color);
+      margin-bottom: 15px;
+    }
+
+    .dashboard-nav {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .nav-link {
+      color: var(--text-light);
+      text-decoration: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      background-color: rgba(30, 144, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background-color: var(--primary-hover);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .dashboard-link {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--primary-color);
+      text-decoration: none;
+      margin-bottom: 20px;
+    }
+
+    .dashboard-link:hover {
+      color: var(--primary-hover);
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .dashboard-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      background-color: var(--card-background);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      height: 100%;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .card-subtitle {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .metric {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .metric-value {
+      font-size: 24px;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .metric-label {
+      color: var(--text-secondary);
+    }
+
+    .trend {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .trend-improving {
+      color: var(--improving);
+    }
+
+    .trend-declining {
+      color: var(--declining);
+    }
+
+    .trend-stable {
+      color: var(--stable);
+    }
+
+    .trend-icon {
+      margin-right: 5px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background-color: var(--border-color);
+      border-radius: 4px;
+      margin-bottom: 15px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      background-color: var(--primary-color);
+      transition: width 0.5s ease;
+    }
+
+    .chart-container {
+      width: 100%;
+      height: 200px;
+      margin: 15px 0;
+    }
+
+    .recommendation-card {
+      margin-bottom: 15px;
+      padding: 15px;
+      border-left: 3px solid var(--primary-color);
+      background-color: rgba(30, 144, 255, 0.05);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .recommendation-neurotype {
+      border-left-color: var(--success-color);
+      background-color: rgba(50, 205, 50, 0.05);
+    }
+
+    .recommendation-targeted {
+      border-left-color: var(--warning-color);
+      background-color: rgba(243, 156, 18, 0.05);
+    }
+
+    .recommendation-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .recommendation-body {
+      margin-bottom: 10px;
+    }
+
+    .recommendation-rationale {
+      font-style: italic;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .medication-correlation {
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .correlation-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .correlation-name {
+      font-weight: bold;
+    }
+
+    .correlation-meta {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .dimension-list {
+      margin-top: 10px;
+    }
+
+    .dimension-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+
+    .filters {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      min-width: 200px;
+    }
+
+    .filter-label {
+      margin-bottom: 5px;
+      color: var(--primary-color);
+    }
+
+    .filter-select {
+      background-color: var(--card-background);
+      color: var(--text-light);
+      border: 1px solid var(--border-color);
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-family: 'Open Dyslexic', Arial, sans-serif;
+    }
+
+    .filter-select:focus {
+      outline: 2px solid var(--primary-color);
+    }
+
+    .button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      font-family: 'Open Dyslexic', Arial, sans-serif;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .button:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(30, 144, 255, 0.2);
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 0;
+      color: var(--text-secondary);
+    }
+
+    .tab-container {
+      margin-bottom: 20px;
+    }
+
+    .tab-buttons {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 20px;
+    }
+
+    .tab-button {
+      padding: 10px 20px;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-family: 'Open Dyslexic', Arial, sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .tab-button.active {
+      color: var(--primary-color);
+      border-bottom: 2px solid var(--primary-color);
+    }
+
+    .tab-button:hover {
+      color: var(--primary-hover);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .dashboard-row {
+        flex-direction: column;
+      }
+      
+      .filters {
+        flex-direction: column;
+      }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      .button:hover,
+      .nav-link:hover {
+        transform: none;
+      }
+      
+      .progress-fill {
+        transition: none;
+      }
+    }
+
+    [role="button"]:focus,
+    button:focus,
+    select:focus {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+  </style>
+  <!-- Chart.js for visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">ShotziOS</div>
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">S</div>
+        <div id="userName">Student</div>
+      </div>
+    </header>
+
+    <a href="./student-dashboard.html" class="dashboard-link">
+      ← Back to Dashboard
+    </a>
+
+    <h1>Performance Optimization Dashboard</h1>
+    
+    <div class="dashboard-nav">
+      <a href="#overview" class="nav-link active" data-tab="overview-tab">Overview</a>
+      <a href="#recommendations" class="nav-link" data-tab="recommendations-tab">Recommendations</a>
+      <a href="#detailed-metrics" class="nav-link" data-tab="metrics-tab">Detailed Metrics</a>
+      <a href="#medication-analysis" class="nav-link" data-tab="medication-tab">Medication Analysis</a>
+    </div>
+
+    <div class="tab-container">
+      <!-- Overview Tab -->
+      <div id="overview-tab" class="tab-content active">
+        <div class="filters">
+          <div class="filter-group">
+            <label for="time-range" class="filter-label">Time Range</label>
+            <select id="time-range" class="filter-select">
+              <option value="daily">Last 24 Hours</option>
+              <option value="weekly">Last 7 Days</option>
+              <option value="monthly" selected>Last 30 Days</option>
+              <option value="yearly">Last Year</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="subject-filter" class="filter-label">Subject</label>
+            <select id="subject-filter" class="filter-select">
+              <option value="all">All Subjects</option>
+              <option value="Math">Math</option>
+              <option value="Science">Science</option>
+              <option value="English">English</option>
+              <option value="History">History</option>
+            </select>
+          </div>
+          <button id="update-overview" class="button">Update Overview</button>
+        </div>
+
+        <!-- Performance Summary Cards -->
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Overall Performance</h3>
+              <div id="overall-trend" class="trend trend-stable">
+                <span class="trend-icon">◆</span>
+                <span class="trend-text">Stable</span>
+              </div>
+            </div>
+            <div class="metric">
+              <div id="overall-score" class="metric-value">0</div>
+              <div class="metric-label">Score</div>
+            </div>
+            <div class="progress-bar">
+              <div id="overall-progress" class="progress-fill" style="width: 0%;"></div>
+            </div>
+            <div class="chart-container">
+              <canvas id="overall-chart"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Speed Performance</h3>
+              <div id="speed-trend" class="trend trend-stable">
+                <span class="trend-icon">◆</span>
+                <span class="trend-text">Stable</span>
+              </div>
+            </div>
+            <div class="metric">
+              <div id="speed-score" class="metric-value">0</div>
+              <div class="metric-label">Score</div>
+            </div>
+            <div class="progress-bar">
+              <div id="speed-progress" class="progress-fill" style="width: 0%;"></div>
+            </div>
+            <div class="chart-container">
+              <canvas id="speed-chart"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Accuracy Performance</h3>
+              <div id="accuracy-trend" class="trend trend-stable">
+                <span class="trend-icon">◆</span>
+                <span class="trend-text">Stable</span>
+              </div>
+            </div>
+            <div class="metric">
+              <div id="accuracy-score" class="metric-value">0</div>
+              <div class="metric-label">Score</div>
+            </div>
+            <div class="progress-bar">
+              <div id="accuracy-progress" class="progress-fill" style="width: 0%;"></div>
+            </div>
+            <div class="chart-container">
+              <canvas id="accuracy-chart"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Comprehension Performance</h3>
+              <div id="comprehension-trend" class="trend trend-stable">
+                <span class="trend-icon">◆</span>
+                <span class="trend-text">Stable</span>
+              </div>
+            </div>
+            <div class="metric">
+              <div id="comprehension-score" class="metric-value">0</div>
+              <div class="metric-label">Score</div>
+            </div>
+            <div class="progress-bar">
+              <div id="comprehension-progress" class="progress-fill" style="width: 0%;"></div>
+            </div>
+            <div class="chart-container">
+              <canvas id="comprehension-chart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subject Performance -->
+        <h2>Subject Performance</h2>
+        <div class="dashboard-row" id="subject-cards">
+          <!-- Subject cards will be dynamically generated here -->
+          <div class="loading">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommendations Tab -->
+      <div id="recommendations-tab" class="tab-content">
+        <div class="filters">
+          <div class="filter-group">
+            <label for="neurotype" class="filter-label">Neurotype</label>
+            <select id="neurotype" class="filter-select">
+              <option value="">No Specific Adaptation</option>
+              <option value="dyslexia">Dyslexia</option>
+              <option value="adhd">ADHD</option>
+              <option value="autism">Autism</option>
+            </select>
+          </div>
+          <button id="generate-recommendations" class="button">Generate Recommendations</button>
+        </div>
+
+        <div class="card">
+          <h3>Learning Optimization Recommendations</h3>
+          <div id="recommendations-list">
+            <div class="loading">
+              <div class="spinner"></div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Previous Optimization Reports</h3>
+        <div class="card">
+          <div id="optimization-history">
+            <div class="loading">
+              <div class="spinner"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Metrics Tab -->
+      <div id="metrics-tab" class="tab-content">
+        <div class="filters">
+          <div class="filter-group">
+            <label for="metrics-subject" class="filter-label">Subject</label>
+            <select id="metrics-subject" class="filter-select">
+              <option value="">All Subjects</option>
+              <option value="Math">Math</option>
+              <option value="Science">Science</option>
+              <option value="English">English</option>
+              <option value="History">History</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="metrics-dimension" class="filter-label">Dimension</label>
+            <select id="metrics-dimension" class="filter-select">
+              <option value="">All Dimensions</option>
+              <option value="overall">Overall</option>
+              <option value="speed">Speed</option>
+              <option value="accuracy">Accuracy</option>
+              <option value="comprehension">Comprehension</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="metrics-range" class="filter-label">Time Range</label>
+            <select id="metrics-range" class="filter-select">
+              <option value="7">Last 7 Days</option>
+              <option value="30" selected>Last 30 Days</option>
+              <option value="90">Last 90 Days</option>
+              <option value="365">Last Year</option>
+            </select>
+          </div>
+          <button id="fetch-metrics" class="button">Fetch Metrics</button>
+        </div>
+
+        <div class="card">
+          <h3>Performance Metrics</h3>
+          <div class="chart-container" style="height: 300px;">
+            <canvas id="detailed-metrics-chart"></canvas>
+          </div>
+          <div id="metrics-table">
+            <div class="loading">
+              <div class="spinner"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Medication Analysis Tab -->
+      <div id="medication-tab" class="tab-content">
+        <div class="filters">
+          <div class="filter-group">
+            <label for="medication-name" class="filter-label">Medication</label>
+            <select id="medication-name" class="filter-select">
+              <option value="">All Medications</option>
+              <option value="Methylphenidate">Methylphenidate</option>
+              <option value="Amphetamine">Amphetamine</option>
+              <option value="Atomoxetine">Atomoxetine</option>
+            </select>
+          </div>
+          <button id="analyze-medication" class="button">Analyze Correlation</button>
+        </div>
+
+        <div class="card">
+          <h3>Medication-Performance Correlation</h3>
+          <div id="medication-correlation">
+            <div class="loading">
+              <div class="spinner"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Track Medication</h3>
+          <form id="medication-form">
+            <div class="filters" style="margin-bottom: 0;">
+              <div class="filter-group">
+                <label for="med-name" class="filter-label">Medication</label>
+                <select id="med-name" class="filter-select" required>
+                  <option value="">Select Medication</option>
+                  <option value="Methylphenidate">Methylphenidate</option>
+                  <option value="Amphetamine">Amphetamine</option>
+                  <option value="Atomoxetine">Atomoxetine</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label for="med-dosage" class="filter-label">Dosage</label>
+                <select id="med-dosage" class="filter-select" required>
+                  <option value="">Select Dosage</option>
+                  <option value="5mg">5mg</option>
+                  <option value="10mg">10mg</option>
+                  <option value="15mg">15mg</option>
+                  <option value="20mg">20mg</option>
+                  <option value="25mg">25mg</option>
+                  <option value="30mg">30mg</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label for="med-time" class="filter-label">Time of Day</label>
+                <select id="med-time" class="filter-select" required>
+                  <option value="">Select Time</option>
+                  <option value="morning">Morning</option>
+                  <option value="midday">Midday</option>
+                  <option value="afternoon">Afternoon</option>
+                  <option value="evening">Evening</option>
+                </select>
+              </div>
+              <button type="submit" class="button">Record Medication</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simulated user data
+    const currentUser = {
+      id: 'student123',
+      name: 'Sam Student',
+      type: 'student',
+      neurotype: 'adhd' // For simulated data
+    };
+
+    // Set user info
+    document.getElementById('userName').textContent = currentUser.name;
+    document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
+
+    // Chart instances
+    const charts = {};
+    
+    // Nav tabs functionality
+    const navLinks = document.querySelectorAll('.nav-link');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    navLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Deactivate all links and tabs
+        navLinks.forEach(l => l.classList.remove('active'));
+        tabContents.forEach(t => t.classList.remove('active'));
+        
+        // Activate the clicked link and corresponding tab
+        this.classList.add('active');
+        const tabId = this.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+
+    // API endpoints (would be replaced with actual endpoints in production)
+    const API = {
+      performanceSummary: '/api/performance/summary/',
+      recommendations: '/api/performance/recommendations/',
+      metrics: '/api/performance/metrics/',
+      optimizations: '/api/performance/optimizations/',
+      medicationAnalyze: '/api/performance/medication/analyze/',
+      medicationTrack: '/api/performance/medication/track',
+      sampleData: '/api/performance/sample/'
+    };
+
+    // Initialize the dashboard
+    window.addEventListener('DOMContentLoaded', () => {
+      // Load performance summary
+      loadOverview();
+      
+      // Set up event listeners
+      document.getElementById('update-overview').addEventListener('click', loadOverview);
+      document.getElementById('generate-recommendations').addEventListener('click', loadRecommendations);
+      document.getElementById('fetch-metrics').addEventListener('click', loadDetailedMetrics);
+      document.getElementById('analyze-medication').addEventListener('click', analyzeMedicationCorrelation);
+      document.getElementById('medication-form').addEventListener('submit', trackMedication);
+      
+      // Load sample data (for demo purposes)
+      generateSampleData();
+    });
+
+    // Load overview
+    async function loadOverview() {
+      const timeRange = document.getElementById('time-range').value;
+      const subject = document.getElementById('subject-filter').value;
+      
+      // In a real implementation, this would be an API call
+      // For demo, we'll simulate the API response with randomized data
+      const summary = await simulatePerformanceSummary(currentUser.id, timeRange, subject);
+      
+      // Update overall metrics
+      updateOverallMetrics(summary);
+      
+      // Update dimension-specific metrics
+      updateDimensionMetrics('speed', summary);
+      updateDimensionMetrics('accuracy', summary);
+      updateDimensionMetrics('comprehension', summary);
+      
+      // Update subject cards
+      updateSubjectCards(summary);
+    }
+
+    // Update overall metrics
+    function updateOverallMetrics(summary) {
+      const overall = summary.overall;
+      
+      // Update score and progress bar
+      document.getElementById('overall-score').textContent = overall.average.toFixed(1);
+      document.getElementById('overall-progress').style.width = `${overall.average}%`;
+      
+      // Update trend
+      const trendElement = document.getElementById('overall-trend');
+      trendElement.className = `trend trend-${overall.trend}`;
+      
+      let trendIcon = '◆';
+      if (overall.trend === 'improving') trendIcon = '▲';
+      if (overall.trend === 'declining') trendIcon = '▼';
+      
+      trendElement.innerHTML = `
+        <span class="trend-icon">${trendIcon}</span>
+        <span class="trend-text">${overall.trend.charAt(0).toUpperCase() + overall.trend.slice(1)}</span>
+      `;
+      
+      // Update chart
+      if (!charts.overall) {
+        const ctx = document.getElementById('overall-chart').getContext('2d');
+        charts.overall = createTrendChart(ctx, 'Overall Performance');
+      }
+      
+      // Generate some trend data
+      const data = generateTrendData(overall.average, overall.trend, 10);
+      
+      // Update chart data
+      charts.overall.data.datasets[0].data = data;
+      charts.overall.update();
+    }
+
+    // Update dimension metrics
+    function updateDimensionMetrics(dimension, summary) {
+      // Look for this dimension across all subjects
+      let dimensionData = {
+        average: 0,
+        trend: 'stable',
+        count: 0
+      };
+      
+      // Calculate average across all subjects
+      let totalSum = 0;
+      let totalCount = 0;
+      
+      Object.values(summary.subjects).forEach(subject => {
+        if (subject.dimensions[dimension]) {
+          totalSum += subject.dimensions[dimension].average * subject.dimensions[dimension].count;
+          totalCount += subject.dimensions[dimension].count;
+        }
+      });
+      
+      if (totalCount > 0) {
+        dimensionData.average = totalSum / totalCount;
+        
+        // Determine overall trend for this dimension
+        let improvingCount = 0;
+        let decliningCount = 0;
+        
+        Object.values(summary.subjects).forEach(subject => {
+          if (subject.dimensions[dimension]) {
+            if (subject.dimensions[dimension].trend === 'improving') improvingCount++;
+            if (subject.dimensions[dimension].trend === 'declining') decliningCount++;
+          }
+        });
+        
+        if (improvingCount > decliningCount) dimensionData.trend = 'improving';
+        else if (decliningCount > improvingCount) dimensionData.trend = 'declining';
+      }
+      
+      // Update score and progress bar
+      document.getElementById(`${dimension}-score`).textContent = dimensionData.average.toFixed(1);
+      document.getElementById(`${dimension}-progress`).style.width = `${dimensionData.average}%`;
+      
+      // Update trend
+      const trendElement = document.getElementById(`${dimension}-trend`);
+      trendElement.className = `trend trend-${dimensionData.trend}`;
+      
+      let trendIcon = '◆';
+      if (dimensionData.trend === 'improving') trendIcon = '▲';
+      if (dimensionData.trend === 'declining') trendIcon = '▼';
+      
+      trendElement.innerHTML = `
+        <span class="trend-icon">${trendIcon}</span>
+        <span class="trend-text">${dimensionData.trend.charAt(0).toUpperCase() + dimensionData.trend.slice(1)}</span>
+      `;
+      
+      // Update chart
+      if (!charts[dimension]) {
+        const ctx = document.getElementById(`${dimension}-chart`).getContext('2d');
+        charts[dimension] = createTrendChart(ctx, `${dimension.charAt(0).toUpperCase() + dimension.slice(1)} Performance`);
+      }
+      
+      // Generate some trend data
+      const data = generateTrendData(dimensionData.average, dimensionData.trend, 10);
+      
+      // Update chart data
+      charts[dimension].data.datasets[0].data = data;
+      charts[dimension].update();
+    }
+
+    // Update subject cards
+    function updateSubjectCards(summary) {
+      const subjectCardsContainer = document.getElementById('subject-cards');
+      subjectCardsContainer.innerHTML = '';
+      
+      if (Object.keys(summary.subjects).length === 0) {
+        subjectCardsContainer.innerHTML = `
+          <div class="empty-state">
+            <h3>No subject data available</h3>
+            <p>Performance data for specific subjects will appear here once available.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // Create a card for each subject
+      Object.entries(summary.subjects).forEach(([subject, data]) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.flex = '1';
+        card.style.minWidth = '300px';
+        
+        const trendIcon = getTrendIcon(data.trend);
+        
+        card.innerHTML = `
+          <div class="card-header">
+            <h3 class="card-title">${subject}</h3>
+            <div class="trend trend-${data.trend}">
+              <span class="trend-icon">${trendIcon}</span>
+              <span class="trend-text">${data.trend.charAt(0).toUpperCase() + data.trend.slice(1)}</span>
+            </div>
+          </div>
+          <div class="metric">
+            <div class="metric-value">${data.average.toFixed(1)}</div>
+            <div class="metric-label">Overall Score</div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${data.average}%;"></div>
+          </div>
+          <div class="chart-container">
+            <canvas id="subject-${subject}-chart"></canvas>
+          </div>
+        `;
+        
+        subjectCardsContainer.appendChild(card);
+        
+        // Create chart for this subject
+        const ctx = document.getElementById(`subject-${subject}-chart`).getContext('2d');
+        const subjectChart = createTrendChart(ctx, `${subject} Performance`);
+        
+        // Generate some trend data
+        const data = generateTrendData(data.average, data.trend, 10);
+        
+        // Update chart data
+        subjectChart.data.datasets[0].data = data;
+        subjectChart.update();
+      });
+    }
+
+    // Load recommendations
+    async function loadRecommendations() {
+      const neurotype = document.getElementById('neurotype').value || null;
+      
+      // Show loading state
+      document.getElementById('recommendations-list').innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+        </div>
+      `;
+      
+      // In a real implementation, this would be an API call
+      // For demo, we'll simulate the API response
+      const recommendations = await simulateRecommendations(currentUser.id, neurotype);
+      
+      // Update recommendations list
+      displayRecommendations(recommendations);
+      
+      // Load optimization history
+      loadOptimizationHistory();
+    }
+
+    // Display recommendations
+    function displayRecommendations(data) {
+      const recommendationsContainer = document.getElementById('recommendations-list');
+      
+      if (!data.recommendations || data.recommendations.length === 0) {
+        recommendationsContainer.innerHTML = `
+          <div class="empty-state">
+            <h3>No recommendations available</h3>
+            <p>Recommendations will appear here once more performance data is available.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // Display strengths and weaknesses
+      let content = `
+        <div class="card-header">
+          <h4>Performance Summary</h4>
+          <div class="trend trend-${data.summary.overallTrend}">
+            <span class="trend-icon">${getTrendIcon(data.summary.overallTrend)}</span>
+            <span class="trend-text">${data.summary.overallTrend.charAt(0).toUpperCase() + data.summary.overallTrend.slice(1)}</span>
+          </div>
+        </div>
+        <div class="metric">
+          <div class="metric-value">${data.summary.overallAverage.toFixed(1)}</div>
+          <div class="metric-label">Overall Score</div>
+        </div>
+      `;
+      
+      // Strengths
+      if (data.strengths && data.strengths.length > 0) {
+        content += `<h4>Strengths</h4><ul>`;
+        data.strengths.forEach(strength => {
+          content += `<li><strong>${strength.subject} - ${strength.dimension}:</strong> ${strength.score.toFixed(1)}</li>`;
+        });
+        content += `</ul>`;
+      }
+      
+      // Weaknesses
+      if (data.weaknesses && data.weaknesses.length > 0) {
+        content += `<h4>Areas for Improvement</h4><ul>`;
+        data.weaknesses.forEach(weakness => {
+          content += `<li><strong>${weakness.subject} - ${weakness.dimension}:</strong> ${weakness.score.toFixed(1)} (${weakness.trend})</li>`;
+        });
+        content += `</ul>`;
+      }
+      
+      // Recommendations
+      content += `<h4>Recommendations</h4>`;
+      
+      data.recommendations.forEach(rec => {
+        content += `
+          <div class="recommendation-card recommendation-${rec.type}">
+            <div class="recommendation-title">${rec.title}</div>
+            <div class="recommendation-body">${rec.description}</div>
+            <div class="recommendation-rationale">${rec.rationale}</div>
+          </div>
+        `;
+      });
+      
+      recommendationsContainer.innerHTML = content;
+    }
+
+    // Load optimization history
+    async function loadOptimizationHistory() {
+      // Show loading state
+      document.getElementById('optimization-history').innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+        </div>
+      `;
+      
+      // In a real implementation, this would be an API call
+      // For demo, we'll simulate the API response
+      const history = await simulateOptimizationHistory(currentUser.id);
+      
+      // Display optimization history
+      const historyContainer = document.getElementById('optimization-history');
+      
+      if (!history || history.length === 0) {
+        historyContainer.innerHTML = `
+          <div class="empty-state">
+            <h3>No optimization history</h3>
+            <p>Previous optimization reports will appear here after they are generated.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      let content = `<table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th style="text-align: left; padding: 8px; border-bottom: 1px solid var(--border-color);">Date</th>
+            <th style="text-align: center; padding: 8px; border-bottom: 1px solid var(--border-color);">Overall Score</th>
+            <th style="text-align: center; padding: 8px; border-bottom: 1px solid var(--border-color);">Trend</th>
+            <th style="text-align: center; padding: 8px; border-bottom: 1px solid var(--border-color);">Recommendations</th>
+          </tr>
+        </thead>
+        <tbody>
+      `;
+      
+      history.forEach(opt => {
+        const date = new Date(opt.timestamp).toLocaleDateString();
+        
+        content += `
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid var(--border-color);">${date}</td>
+            <td style="text-align: center; padding: 8px; border-bottom: 1px solid var(--border-color);">${opt.summary.overallAverage.toFixed(1)}</td>
+            <td style="text-align: center; padding: 8px; border-bottom: 1px solid var(--border-color);">
+              <span class="trend trend-${opt.summary.overallTrend}">
+                <span class="trend-icon">${getTrendIcon(opt.summary.overallTrend)}</span>
+                <span class="trend-text">${opt.summary.overallTrend.charAt(0).toUpperCase() + opt.summary.overallTrend.slice(1)}</span>
+              </span>
+            </td>
+            <td style="text-align: center; padding: 8px; border-bottom: 1px solid var(--border-color);">${opt.recommendationsCount}</td>
+          </tr>
+        `;
+      });
+      
+      content += `</tbody></table>`;
+      historyContainer.innerHTML = content;
+    }
+
+    // Load detailed metrics
+    async function loadDetailedMetrics() {
+      const subject = document.getElementById('metrics-subject').value;
+      const dimension = document.getElementById('metrics-dimension').value;
+      const daysRange = document.getElementById('metrics-range').value;
+      
+      // Show loading state
+      document.getElementById('metrics-table').innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+        </div>
+      `;
+      
+      // In a real implementation, this would be an API call
+      // For demo, we'll simulate the API response
+      const metrics = await simulateDetailedMetrics(currentUser.id, subject, dimension, daysRange);
+      
+      // Display metrics
+      displayDetailedMetrics(metrics, subject, dimension);
+    }
+
+    // Display detailed metrics
+    function displayDetailedMetrics(metrics, subjectFilter, dimensionFilter) {
+      const tableContainer = document.getElementById('metrics-table');
+      
+      if (!metrics || metrics.length === 0) {
+        tableContainer.innerHTML = `
+          <div class="empty-state">
+            <h3>No metrics data available</h3>
+            <p>Detailed metrics will appear here once more performance data is collected.</p>
+          </div>
+        `;
+        
+        // Clear chart
+        if (charts.detailedMetrics) {
+          charts.detailedMetrics.destroy();
+          charts.detailedMetrics = null;
+        }
+        
+        return;
+      }
+      
+      // Group metrics by date, subject, and dimension
+      const groupedData = {};
+      const subjects = new Set();
+      const dimensions = new Set();
+      const dates = [];
+      
+      // Sort metrics by date (oldest first)
+      metrics.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+      
+      // Group metrics and collect unique values
+      metrics.forEach(metric => {
+        const date = new Date(metric.timestamp).toLocaleDateString();
+        const subject = metric.subject;
+        const dimension = metric.dimension;
+        
+        if (!groupedData[date]) {
+          groupedData[date] = {};
+          dates.push(date);
+        }
+        
+        if (!groupedData[date][subject]) {
+          groupedData[date][subject] = {};
+        }
+        
+        if (!groupedData[date][subject][dimension]) {
+          groupedData[date][subject][dimension] = [];
+        }
+        
+        groupedData[date][subject][dimension].push(metric);
+        
+        subjects.add(subject);
+        dimensions.add(dimension);
+      });
+      
+      // Create chart data
+      const chartData = {
+        labels: dates,
+        datasets: []
+      };
+      
+      // Add datasets
+      const subjectsArray = [...subjects].sort();
+      const dimensionsArray = [...dimensions].sort();
+      
+      // Filter subjects if needed
+      const filteredSubjects = subjectFilter ? [subjectFilter] : subjectsArray;
+      
+      // Filter dimensions if needed
+      const filteredDimensions = dimensionFilter ? [dimensionFilter] : dimensionsArray;
+      
+      // Create a dataset for each subject-dimension combination
+      filteredSubjects.forEach(subject => {
+        filteredDimensions.forEach(dimension => {
+          const data = dates.map(date => {
+            if (groupedData[date][subject] && 
+                groupedData[date][subject][dimension]) {
+              // Calculate average if multiple metrics exist for this combination
+              const metrics = groupedData[date][subject][dimension];
+              const sum = metrics.reduce((acc, m) => acc + m.value, 0);
+              return sum / metrics.length;
+            } else {
+              return null; // No data for this date-subject-dimension
+            }
+          });
+          
+          // Generate a color based on subject and dimension
+          const hue = (subjectsArray.indexOf(subject) * 60 + dimensionsArray.indexOf(dimension) * 30) % 360;
+          
+          chartData.datasets.push({
+            label: `${subject} - ${dimension}`,
+            data: data,
+            borderColor: `hsl(${hue}, 70%, 60%)`,
+            backgroundColor: `hsla(${hue}, 70%, 60%, 0.2)`,
+            tension: 0.3,
+            fill: false
+          });
+        });
+      });
+      
+      // Create or update chart
+      const ctx = document.getElementById('detailed-metrics-chart').getContext('2d');
+      
+      if (charts.detailedMetrics) {
+        charts.detailedMetrics.data = chartData;
+        charts.detailedMetrics.update();
+      } else {
+        charts.detailedMetrics = new Chart(ctx, {
+          type: 'line',
+          data: chartData,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                min: 0,
+                max: 100,
+                ticks: {
+                  color: '#888'
+                },
+                grid: {
+                  color: 'rgba(255, 255, 255, 0.1)'
+                }
+              },
+              x: {
+                ticks: {
+                  color: '#888'
+                },
+                grid: {
+                  color: 'rgba(255, 255, 255, 0.1)'
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                position: 'top',
+                labels: {
+                  color: '#fff'
+                }
+              }
+            }
+          }
+        });
+      }
+      
+      // Create metrics table
+      let tableContent = `
+        <h4 style="margin-top: 20px;">Raw Metrics Data</h4>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+          <thead>
+            <tr>
+              <th style="text-align: left; padding: 8px; border-bottom: 1px solid var(--border-color);">Date</th>
+              <th style="text-align: left; padding: 8px; border-bottom: 1px solid var(--border-color);">Subject</th>
+              <th style="text-align: left; padding: 8px; border-bottom: 1px solid var(--border-color);">Dimension</th>
+              <th style="text-align: center; padding: 8px; border-bottom: 1px solid var(--border-color);">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      // Sort metrics by date (newest first)
+      const sortedMetrics = [...metrics].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      
+      // Show only the most recent 20 metrics
+      const displayMetrics = sortedMetrics.slice(0, 20);
+      
+      displayMetrics.forEach(metric => {
+        const date = new Date(metric.timestamp).toLocaleString();
+        
+        tableContent += `
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid var(--border-color);">${date}</td>
+            <td style="padding: 8px; border-bottom: 1px solid var(--border-color);">${metric.subject}</td>
+            <td style="padding: 8px; border-bottom: 1px solid var(--border-color);">${metric.dimension}</td>
+            <td style="text-align: center; padding: 8px; border-bottom: 1px solid var(--border-color);">${metric.value.toFixed(1)}</td>
+          </tr>
+        `;
+      });
+      
+      tableContent += `</tbody></table>`;
+      
+      // Add pagination info if there are more metrics
+      if (metrics.length > 20) {
+        tableContent += `
+          <div style="text-align: center; margin-top: 10px; color: var(--text-secondary);">
+            Showing 20 of ${metrics.length} metrics. Use filters to refine results.
+          </div>
+        `;
+      }
+      
+      tableContainer.innerHTML = tableContent;
+    }
+
+    // Analyze medication correlation
+    async function analyzeMedicationCorrelation() {
+      const medication = document.getElementById('medication-name').value || null;
+      
+      // Show loading state
+      document.getElementById('medication-correlation').innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+        </div>
+      `;
+      
+      // In a real implementation, this would be an API call
+      // For demo, we'll simulate the API response
+      const correlation = await simulateMedicationCorrelation(currentUser.id, medication);
+      
+      // Display correlation
+      displayMedicationCorrelation(correlation);
+    }
+
+    // Display medication correlation
+    function displayMedicationCorrelation(data) {
+      const correlationContainer = document.getElementById('medication-correlation');
+      
+      if (!data.correlations || data.correlations.length === 0) {
+        correlationContainer.innerHTML = `
+          <div class="empty-state">
+            <h3>No medication correlation data available</h3>
+            <p>${data.message || 'Medication correlation data will appear here once medication tracking and performance data is available.'}</p>
+          </div>
+        `;
+        return;
+      }
+      
+      let content = '';
+      
+      data.correlations.forEach(correlation => {
+        content += `
+          <div class="medication-correlation">
+            <div class="correlation-header">
+              <div class="correlation-name">${correlation.medication}</div>
+              <div class="correlation-meta">
+                Data from ${correlation.recordsCount} medication records
+              </div>
+            </div>
+            
+            <div class="metric">
+              <div class="metric-value">${correlation.averages.overall.toFixed(1)}</div>
+              <div class="metric-label">Average Performance with Medication</div>
+            </div>
+            
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${correlation.averages.overall}%;"></div>
+            </div>
+            
+            <h4>Performance by Dimension</h4>
+            <div class="dimension-list">
+        `;
+        
+        // Add each dimension
+        Object.entries(correlation.averages.dimensions).forEach(([dimension, value]) => {
+          content += `
+            <div class="dimension-item">
+              <div>${dimension.charAt(0).toUpperCase() + dimension.slice(1)}</div>
+              <div>${value.toFixed(1)}</div>
+            </div>
+          `;
+        });
+        
+        content += `</div>`;
+        
+        // Add dosage and time information
+        content += `
+          <h4>Medication Details</h4>
+          <div style="margin-top: 5px;">
+            <div><strong>Dosages:</strong> ${correlation.dosages.join(', ')}</div>
+            <div><strong>Times of Day:</strong> ${correlation.timesOfDay.join(', ')}</div>
+          </div>
+        `;
+        
+        content += `</div>`;
+      });
+      
+      correlationContainer.innerHTML = content;
+    }
+
+    // Track medication
+    async function trackMedication(event) {
+      event.preventDefault();
+      
+      const medicationName = document.getElementById('med-name').value;
+      const dosage = document.getElementById('med-dosage').value;
+      const timeOfDay = document.getElementById('med-time').value;
+      
+      // Simulated effects and context
+      const efficacyData = {
+        studentId: currentUser.id,
+        medication: medicationName,
+        dosage: dosage,
+        timeOfDay: timeOfDay,
+        effects: {
+          focus: 70 + Math.random() * 20,
+          duration: 4 + Math.random() * 2,
+          side_effects: Math.random() * 30
+        },
+        context: {
+          sleep_quality: Math.random() > 0.7 ? 'poor' : 'good',
+          activity_level: Math.random() > 0.5 ? 'high' : 'low'
+        }
+      };
+      
+      // In a real implementation, this would be an API call
+      // For demo, we'll simulate the API response
+      const result = await simulateTrackMedication(efficacyData);
+      
+      // Reset form
+      document.getElementById('medication-form').reset();
+      
+      // Show success message
+      alert('Medication tracking recorded successfully!');
+      
+      // Refresh medication correlation
+      analyzeMedicationCorrelation();
+    }
+
+    // Generate sample data
+    async function generateSampleData() {
+      // Check if data already exists
+      const localStorageKey = `performanceData_${currentUser.id}`;
+      
+      if (localStorage.getItem(localStorageKey)) {
+        console.log('Sample data already exists in localStorage');
+        return;
+      }
+      
+      console.log('Generating sample performance data...');
+      
+      // In a real implementation, this would be an API call
+      // For demo, we'll store the data in localStorage
+      const sampleData = generateSamplePerformanceData(currentUser.id, currentUser.neurotype);
+      
+      localStorage.setItem(localStorageKey, JSON.stringify(sampleData));
+      console.log('Sample data generated and stored in localStorage');
+    }
+
+    // Helper Functions
+
+    // Create a trend chart
+    function createTrendChart(ctx, label) {
+      return new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: Array(10).fill('').map((_, i) => ''),
+          datasets: [{
+            label: label,
+            data: [],
+            borderColor: 'rgba(30, 144, 255, 1)',
+            backgroundColor: 'rgba(30, 144, 255, 0.2)',
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              enabled: false
+            }
+          },
+          scales: {
+            y: {
+              display: false,
+              suggestedMin: 0,
+              suggestedMax: 100
+            },
+            x: {
+              display: false
+            }
+          },
+          elements: {
+            point: {
+              radius: 0
+            }
+          }
+        }
+      });
+    }
+
+    // Generate trend data
+    function generateTrendData(average, trend, points) {
+      const data = [];
+      let currentValue = average * 0.9; // Start slightly below average
+      
+      for (let i = 0; i < points; i++) {
+        // Add random variation
+        const randomVariation = (Math.random() - 0.5) * 5;
+        
+        // Add trend component
+        let trendComponent = 0;
+        if (trend === 'improving') {
+          trendComponent = i * 0.5; // Gradually increase
+        } else if (trend === 'declining') {
+          trendComponent = -i * 0.5; // Gradually decrease
+        }
+        
+        // Update value
+        currentValue = Math.min(100, Math.max(0, currentValue + randomVariation + trendComponent));
+        data.push(currentValue);
+      }
+      
+      // Ensure the last value matches the average
+      data[points-1] = average;
+      
+      return data;
+    }
+
+    // Get trend icon
+    function getTrendIcon(trend) {
+      if (trend === 'improving') return '▲';
+      if (trend === 'declining') return '▼';
+      return '◆';
+    }
+
+    // Simulated API Functions (for demo purposes)
+
+    // Simulate performance summary
+    async function simulatePerformanceSummary(studentId, timeFrame, subjectFilter) {
+      // Get data from localStorage
+      const localStorageKey = `performanceData_${studentId}`;
+      const storedData = localStorage.getItem(localStorageKey);
+      
+      if (!storedData) {
+        return {
+          studentId,
+          timeFrame,
+          from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+          to: new Date().toISOString(),
+          subjects: {},
+          overall: {
+            average: 0,
+            trend: 'stable',
+            metrics: 0
+          }
+        };
+      }
+      
+      const performanceData = JSON.parse(storedData);
+      
+      // Filter data based on timeFrame
+      const now = new Date();
+      let startDate;
+      
+      switch (timeFrame) {
+        case 'daily':
+          startDate = new Date(now);
+          startDate.setDate(startDate.getDate() - 1);
+          break;
+        case 'weekly':
+          startDate = new Date(now);
+          startDate.setDate(startDate.getDate() - 7);
+          break;
+        case 'yearly':
+          startDate = new Date(now);
+          startDate.setFullYear(startDate.getFullYear() - 1);
+          break;
+        case 'monthly':
+        default:
+          startDate = new Date(now);
+          startDate.setMonth(startDate.getMonth() - 1);
+      }
+      
+      // Filter metrics
+      const filteredMetrics = performanceData.metrics.filter(m => {
+        const metricDate = new Date(m.timestamp);
+        
+        // Time filter
+        if (metricDate < startDate) {
+          return false;
+        }
+        
+        // Subject filter
+        if (subjectFilter && subjectFilter !== 'all' && m.subject !== subjectFilter) {
+          return false;
+        }
+        
+        return true;
+      });
+      
+      // Group metrics by subject and dimension
+      const groupedMetrics = {};
+      
+      filteredMetrics.forEach(metric => {
+        const subject = metric.subject;
+        const dimension = metric.dimension;
+        
+        if (!groupedMetrics[subject]) {
+          groupedMetrics[subject] = {};
+        }
+        
+        if (!groupedMetrics[subject][dimension]) {
+          groupedMetrics[subject][dimension] = [];
+        }
+        
+        groupedMetrics[subject][dimension].push(metric);
+      });
+      
+      // Calculate subjects data
+      const subjects = {};
+      let overallSum = 0;
+      let overallCount = 0;
+      
+      Object.entries(groupedMetrics).forEach(([subject, dimensions]) => {
+        let subjectSum = 0;
+        let subjectCount = 0;
+        const subjectDimensions = {};
+        
+        Object.entries(dimensions).forEach(([dimension, metrics]) => {
+          // Calculate average
+          const sum = metrics.reduce((acc, m) => acc + m.value, 0);
+          const average = metrics.length > 0 ? sum / metrics.length : 0;
+          
+          // Calculate trend
+          let trend = 'stable';
+          if (metrics.length >= 3) {
+            const sortedMetrics = [...metrics].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            const first = sortedMetrics[0].value;
+            const last = sortedMetrics[sortedMetrics.length - 1].value;
+            const diff = last - first;
+            
+            if (diff > 5) trend = 'improving';
+            else if (diff < -5) trend = 'declining';
+          }
+          
+          subjectDimensions[dimension] = {
+            average,
+            trend,
+            count: metrics.length,
+            recent: metrics.slice(-5).map(m => m.value)
+          };
+          
+          subjectSum += sum;
+          subjectCount += metrics.length;
+        });
+        
+        subjects[subject] = {
+          dimensions: subjectDimensions,
+          average: subjectCount > 0 ? subjectSum / subjectCount : 0,
+          trend: determineTrend(subjectDimensions),
+          metrics: subjectCount
+        };
+        
+        overallSum += subjectSum;
+        overallCount += subjectCount;
+      });
+      
+      // Calculate overall trend
+      const overallTrend = determineTrend(
+        Object.values(subjects).flatMap(s => Object.values(s.dimensions))
+      );
+      
+      return {
+        studentId,
+        timeFrame,
+        from: startDate.toISOString(),
+        to: now.toISOString(),
+        subjects,
+        overall: {
+          average: overallCount > 0 ? overallSum / overallCount : 0,
+          trend: overallTrend,
+          metrics: overallCount
+        }
+      };
+    }
+
+    // Determine trend from multiple dimensions
+    function determineTrend(dimensions) {
+      let improving = 0;
+      let declining = 0;
+      
+      dimensions.forEach(dim => {
+        if (dim.trend === 'improving') improving++;
+        else if (dim.trend === 'declining') declining++;
+      });
+      
+      if (improving > declining) return 'improving';
+      if (declining > improving) return 'declining';
+      return 'stable';
+    }
+
+    // Simulate recommendations
+    async function simulateRecommendations(studentId, neurotype) {
+      // Simulate some recommendations based on neurotype
+      const generalRecommendations = [
+        {
+          type: 'general',
+          title: 'Regular Review Sessions',
+          description: 'Schedule regular review sessions focusing on connecting new material with previously mastered concepts.',
+          rationale: 'Research shows that spaced repetition improves long-term retention.'
+        },
+        {
+          type: 'general',
+          title: 'Active Recall Practice',
+          description: 'Instead of re-reading notes, practice actively recalling information through self-quizzing.',
+          rationale: 'Active recall strengthens neural pathways associated with the information.'
+        }
+      ];
+      
+      let neurotypeRecommendations = [];
+      
+      if (neurotype === 'dyslexia') {
+        neurotypeRecommendations = [
+          {
+            type: 'neurotype',
+            title: 'Multi-Sensory Learning Approach',
+            description: 'Use text-to-speech technology while simultaneously following along with the text. Incorporate tactile elements when possible.',
+            rationale: 'Multi-sensory approaches are particularly effective for students with dyslexia.'
+          },
+          {
+            type: 'neurotype',
+            title: 'Visual Organization Tools',
+            description: 'Use color-coding, mind maps, and visual organizers to structure information.',
+            rationale: 'Visual organization reduces text-processing demands and highlights key relationships.'
+          }
+        ];
+      } else if (neurotype === 'adhd') {
+        neurotypeRecommendations = [
+          {
+            type: 'neurotype',
+            title: 'Chunked Learning Sessions',
+            description: 'Break study sessions into 15-20 minute focused blocks with 5-minute movement breaks in between.',
+            rationale: 'Short, focused sessions with movement breaks help maintain attention for students with ADHD.'
+          },
+          {
+            type: 'neurotype',
+            title: 'Environmental Optimization',
+            description: 'Create a distraction-reduced environment with noise-cancelling headphones or white noise as needed.',
+            rationale: 'Controlling environmental stimuli can significantly improve focus for students with ADHD.'
+          }
+        ];
+      } else if (neurotype === 'autism') {
+        neurotypeRecommendations = [
+          {
+            type: 'neurotype',
+            title: 'Structured Learning Routines',
+            description: 'Establish and maintain consistent study routines with clear expectations and transitions.',
+            rationale: 'Predictable structures reduce cognitive load and anxiety for students with autism.'
+          },
+          {
+            type: 'neurotype',
+            title: 'Concrete Example Mapping',
+            description: 'Create explicit connections between abstract concepts and concrete examples using visual mapping.',
+            rationale: 'Concrete examples help students with autism generalize learning across contexts.'
+          }
+        ];
+      }
+      
+      const targetedRecommendations = [
+        {
+          type: 'targeted',
+          title: 'Improve Processing Speed in Math',
+          description: 'Practice timed exercises gradually increasing speed requirements as accuracy improves.',
+          rationale: 'Controlled practice with feedback can improve processing speed while maintaining accuracy.'
+        },
+        {
+          type: 'targeted',
+          title: 'Enhance Accuracy in Science',
+          description: 'Use checklists and self-verification strategies before submitting work.',
+          rationale: 'Self-checking procedures reduce errors and build metacognitive skills.'
+        }
+      ];
+      
+      // Generate random strengths and weaknesses
+      const strengths = [];
+      const weaknesses = [];
+      
+      const subjects = ['Math', 'Science', 'English', 'History'];
+      const dimensions = ['speed', 'accuracy', 'comprehension'];
+      
+      // Add 2 random strengths
+      for (let i = 0; i < 2; i++) {
+        const subject = subjects[Math.floor(Math.random() * subjects.length)];
+        const dimension = dimensions[Math.floor(Math.random() * dimensions.length)];
+        const score = 80 + Math.random() * 20;
+        
+        strengths.push({
+          subject,
+          dimension,
+          score
+        });
+      }
+      
+      // Add 2 random weaknesses
+      for (let i = 0; i < 2; i++) {
+        const subject = subjects[Math.floor(Math.random() * subjects.length)];
+        const dimension = dimensions[Math.floor(Math.random() * dimensions.length)];
+        const score = 40 + Math.random() * 20;
+        const trend = ['improving', 'declining', 'stable'][Math.floor(Math.random() * 3)];
+        
+        weaknesses.push({
+          subject,
+          dimension,
+          score,
+          trend
+        });
+      }
+      
+      // Combined recommendations
+      const recommendations = [
+        ...generalRecommendations,
+        ...neurotypeRecommendations,
+        ...targetedRecommendations
+      ];
+      
+      return {
+        id: 'opt_' + Date.now(),
+        studentId,
+        neurotype,
+        timestamp: new Date().toISOString(),
+        summary: {
+          overallAverage: 70 + Math.random() * 10,
+          overallTrend: ['improving', 'stable', 'declining'][Math.floor(Math.random() * 3)]
+        },
+        strengths,
+        weaknesses,
+        recommendations
+      };
+    }
+
+    // Simulate optimization history
+    async function simulateOptimizationHistory(studentId) {
+      // Generate 3 historical optimization records
+      const history = [];
+      
+      for (let i = 0; i < 3; i++) {
+        const timestamp = new Date();
+        timestamp.setDate(timestamp.getDate() - (i * 10)); // 10 days apart
+        
+        history.push({
+          id: 'opt_' + timestamp.getTime(),
+          timestamp: timestamp.toISOString(),
+          summary: {
+            overallAverage: 65 + Math.random() * 20,
+            overallTrend: ['improving', 'stable', 'declining'][Math.floor(Math.random() * 3)]
+          },
+          recommendationsCount: 4 + Math.floor(Math.random() * 3)
+        });
+      }
+      
+      return history;
+    }
+
+    // Simulate detailed metrics
+    async function simulateDetailedMetrics(studentId, subject, dimension, daysRange) {
+      // Get data from localStorage
+      const localStorageKey = `performanceData_${studentId}`;
+      const storedData = localStorage.getItem(localStorageKey);
+      
+      if (!storedData) {
+        return [];
+      }
+      
+      const performanceData = JSON.parse(storedData);
+      
+      // Filter metrics
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - parseInt(daysRange));
+      
+      return performanceData.metrics.filter(m => {
+        const metricDate = new Date(m.timestamp);
+        
+        // Time filter
+        if (metricDate < startDate) {
+          return false;
+        }
+        
+        // Subject filter
+        if (subject && m.subject !== subject) {
+          return false;
+        }
+        
+        // Dimension filter
+        if (dimension && m.dimension !== dimension) {
+          return false;
+        }
+        
+        return true;
+      });
+    }
+
+    // Simulate medication correlation
+    async function simulateMedicationCorrelation(studentId, medication) {
+      // Get data from localStorage
+      const localStorageKey = `medicationData_${studentId}`;
+      let medicationData = [];
+      
+      if (localStorage.getItem(localStorageKey)) {
+        medicationData = JSON.parse(localStorage.getItem(localStorageKey));
+      } else {
+        // Generate some sample medication data if none exists
+        for (let i = 0; i < 10; i++) {
+          const timestamp = new Date();
+          timestamp.setDate(timestamp.getDate() - i);
+          
+          medicationData.push({
+            id: 'med_' + timestamp.getTime(),
+            studentId,
+            medication: 'Methylphenidate',
+            dosage: '10mg',
+            timeOfDay: 'morning',
+            effects: {
+              focus: 70 + Math.random() * 20,
+              duration: 4 + Math.random() * 2,
+              side_effects: Math.random() * 30
+            },
+            timestamp: timestamp.toISOString()
+          });
+        }
+        
+        localStorage.setItem(localStorageKey, JSON.stringify(medicationData));
+      }
+      
+      // Filter by medication if specified
+      if (medication) {
+        medicationData = medicationData.filter(m => m.medication === medication);
+      }
+      
+      if (medicationData.length === 0) {
+        return {
+          studentId,
+          correlations: [],
+          message: medication 
+            ? `No data available for medication: ${medication}`
+            : 'No medication data available for analysis'
+        };
+      }
+      
+      // Group by medication
+      const medications = {};
+      
+      medicationData.forEach(record => {
+        const med = record.medication;
+        
+        if (!medications[med]) {
+          medications[med] = [];
+        }
+        
+        medications[med].push(record);
+      });
+      
+      // Generate correlation analysis
+      const correlations = [];
+      
+      Object.entries(medications).forEach(([med, records]) => {
+        const dosages = [...new Set(records.map(r => r.dosage))];
+        const timesOfDay = [...new Set(records.map(r => r.timeOfDay))];
+        
+        // Simulate performance averages
+        const dimensionScores = {
+          speed: 60 + Math.random() * 30,
+          accuracy: 60 + Math.random() * 30,
+          comprehension: 60 + Math.random() * 30
+        };
+        
+        const overallAverage = Object.values(dimensionScores).reduce((a, b) => a + b, 0) / 3;
+        
+        correlations.push({
+          medication: med,
+          recordsCount: records.length,
+          metricsWithMedication: Math.floor(records.length * 2.5),
+          averages: {
+            overall: overallAverage,
+            dimensions: dimensionScores
+          },
+          dosages,
+          timesOfDay
+        });
+      });
+      
+      return {
+        studentId,
+        correlations,
+        message: correlations.length > 0 
+          ? 'Correlation analysis complete'
+          : 'Insufficient data for correlation analysis'
+      };
+    }
+
+    // Simulate track medication
+    async function simulateTrackMedication(efficacyData) {
+      // Get data from localStorage
+      const localStorageKey = `medicationData_${efficacyData.studentId}`;
+      let medicationData = [];
+      
+      if (localStorage.getItem(localStorageKey)) {
+        medicationData = JSON.parse(localStorage.getItem(localStorageKey));
+      }
+      
+      // Add new record
+      const newRecord = {
+        id: 'med_' + Date.now(),
+        ...efficacyData,
+        timestamp: new Date().toISOString()
+      };
+      
+      medicationData.push(newRecord);
+      
+      // Save to localStorage
+      localStorage.setItem(localStorageKey, JSON.stringify(medicationData));
+      
+      return newRecord;
+    }
+
+    // Generate sample performance data
+    function generateSamplePerformanceData(studentId, neurotype) {
+      const metrics = [];
+      const subjects = ['Math', 'Science', 'English', 'History'];
+      const dimensions = ['speed', 'accuracy', 'comprehension', 'overall'];
+      
+      // Generate 30 days of data
+      for (let day = 0; day < 30; day++) {
+        const date = new Date();
+        date.setDate(date.getDate() - (30 - day));
+        
+        subjects.forEach(subject => {
+          dimensions.forEach(dimension => {
+            // Base value is 60-80
+            let baseValue = 60 + Math.random() * 20;
+            
+            // Add trend over time (improvement)
+            baseValue += (day / 30) * 10;
+            
+            // For ADHD, speed dimension is lower
+            if (neurotype === 'adhd' && dimension === 'speed') {
+              baseValue -= 10;
+            }
+            
+            // For dyslexia, comprehension in English is lower
+            if (neurotype === 'dyslexia' && dimension === 'comprehension' && subject === 'English') {
+              baseValue -= 15;
+            }
+            
+            // Add some daily variation
+            const value = Math.min(100, Math.max(0, baseValue + (Math.random() * 10 - 5)));
+            
+            metrics.push({
+              id: `metric_${Date.now()}_${Math.random()}`,
+              studentId,
+              subject,
+              dimension,
+              value,
+              timestamp: date.toISOString(),
+              context: {
+                source: 'sample_data'
+              }
+            });
+          });
+        });
+      }
+      
+      return {
+        metrics
+      };
+    }
+  </script>
+</body>
+</html>

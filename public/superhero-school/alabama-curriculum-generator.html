@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alabama Curriculum Generator | Superhero School</title>
+  
+  <!-- Accessibility Voice Guidance -->
+  <script src="/js/accessibility-voice.js"></script>
+  
+  <style>
+    /* Enhanced styles for neurodivergent-friendly design */
+    :root {
+      --bg-color: #000000; /* Pure black background */
+      --text-color: #ffffff; /* Pure white text for maximum contrast */
+      --accent-color: #1e90ff; /* Brighter blue for better visibility */
+      --accent-dark: #0066cc;
+      --accent-light: #50b3ff;
+      --accent-highlight: #32cd32; /* Bright green for hover highlights */
+      --card-bg: #121212; /* Very dark card backgrounds */
+      --nav-bg: #0a0a0a; /* Nearly black navigation background */
+      --success-color: #27ae60;
+      --warning-color: #e67e22;
+      --danger-color: #e74c3c;
+      --purple-color: #9b59b6;
+      --purple-dark: #8e44ad;
+      --green-light: #2ecc71;
+      --inactive-color: #7f8c8d;
+      --header-height: 64px;
+      --sidebar-width: 260px;
+      --border-radius: 8px;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: "Open Dyslexic", "Comic Sans MS", Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      letter-spacing: 0.025em;
+      word-spacing: 0.1em;
+      padding-bottom: 60px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header styles */
+    header {
+      background-color: var(--nav-bg);
+      height: var(--header-height);
+      border-bottom: 2px solid var(--accent-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--accent-color);
+    }
+    
+    .logo img {
+      height: 40px;
+      margin-right: 10px;
+    }
+    
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--accent-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    /* Navigation */
+    nav {
+      background-color: var(--nav-bg);
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+      overflow-x: auto;
+      padding: 0 20px;
+    }
+    
+    .nav-links li a {
+      color: var(--text-color);
+      text-decoration: none;
+      padding: 5px 10px;
+      border-radius: var(--border-radius);
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+    
+    .nav-links li a:hover,
+    .nav-links li a.active {
+      background-color: var(--accent-highlight);
+      color: white;
+    }
+    
+    /* Main content area */
+    main {
+      padding: 20px 0;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--accent-color);
+      margin-bottom: 15px;
+      margin-top: 30px;
+      font-weight: 600;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      border-bottom: 2px solid var(--accent-color);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    
+    h2 {
+      font-size: 1.5rem;
+    }
+    
+    h3 {
+      font-size: 1.25rem;
+    }
+    
+    p {
+      margin-bottom: 15px;
+    }
+    
+    /* Card layouts */
+    .card {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      overflow: hidden;
+      border-left: 4px solid var(--accent-color);
+    }
+    
+    .card-header {
+      padding: 15px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .card-content {
+      padding: 20px;
+    }
+    
+    /* Form styles */
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    
+    select, input, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: var(--border-radius);
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-color);
+      font-family: inherit;
+      font-size: 1rem;
+    }
+    
+    select:focus, input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+    
+    /* Generator form */
+    .generator-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    @media (max-width: 768px) {
+      .generator-form {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    /* API selection */
+    .api-selection {
+      margin-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 20px;
+      display: flex;
+      gap: 30px;
+    }
+    
+    .api-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .api-option input[type="radio"] {
+      width: auto;
+      margin-right: 5px;
+    }
+    
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      background-color: var(--accent-color);
+      color: white;
+      padding: 10px 15px;
+      border-radius: var(--border-radius);
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+    }
+    
+    .btn:hover {
+      background-color: var(--accent-highlight);
+    }
+    
+    .btn-success {
+      background-color: var(--success-color);
+    }
+    
+    .btn-success:hover {
+      background-color: #219952;
+    }
+    
+    .btn-warning {
+      background-color: var(--warning-color);
+    }
+    
+    .btn-warning:hover {
+      background-color: #d35400;
+    }
+    
+    .btn-danger {
+      background-color: var(--danger-color);
+    }
+    
+    .btn-danger:hover {
+      background-color: #c0392b;
+    }
+    
+    .btn-large {
+      padding: 12px 24px;
+      font-size: 1.1rem;
+    }
+    
+    /* Loading animation */
+    .loading {
+      display: none;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .loading.active {
+      display: block;
+    }
+    
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--accent-color);
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Curriculum display */
+    .curriculum-container {
+      display: none;
+      margin-top: 30px;
+    }
+    
+    .curriculum-container.active {
+      display: block;
+    }
+    
+    .curriculum-header {
+      background-color: var(--accent-dark);
+      padding: 15px 20px;
+      border-radius: var(--border-radius) var(--border-radius) 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .curriculum-metadata {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 15px;
+      border-radius: 0 0 var(--border-radius) var(--border-radius);
+      margin-bottom: 20px;
+    }
+    
+    .metadata-item {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .metadata-label {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .metadata-value {
+      font-weight: bold;
+    }
+    
+    /* Tabs for curriculum sections */
+    .curriculum-tabs {
+      display: flex;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 20px;
+      overflow-x: auto;
+    }
+    
+    .tab {
+      padding: 10px 15px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
+    }
+    
+    .tab:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .tab.active {
+      border-bottom-color: var(--accent-color);
+      font-weight: bold;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Curriculum units display */
+    .units-list {
+      margin-top: 20px;
+    }
+    
+    .unit-card {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: var(--border-radius);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    
+    .unit-header {
+      background-color: var(--accent-dark);
+      padding: 10px 15px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .unit-title {
+      font-weight: bold;
+    }
+    
+    .unit-content {
+      padding: 15px;
+      display: none;
+    }
+    
+    .unit-content.active {
+      display: block;
+    }
+    
+    /* Lesson list */
+    .lessons-list {
+      margin-top: 15px;
+    }
+    
+    .lesson-item {
+      padding: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .lesson-item:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .lesson-item.active {
+      background-color: rgba(30, 144, 255, 0.1);
+      border-left: 3px solid var(--accent-color);
+    }
+    
+    /* Lesson details */
+    .lesson-details {
+      padding: 15px;
+      background-color: rgba(255, 255, 255, 0.02);
+      border-radius: var(--border-radius);
+      margin-top: 10px;
+    }
+    
+    .lesson-section {
+      margin-bottom: 15px;
+    }
+    
+    .section-title {
+      font-weight: bold;
+      color: var(--accent-color);
+      margin-bottom: 5px;
+    }
+    
+    /* Error panel */
+    .error-panel {
+      display: none;
+      background-color: rgba(231, 76, 60, 0.2);
+      border-left: 4px solid var(--danger-color);
+      padding: 15px;
+      border-radius: var(--border-radius);
+      margin: 20px 0;
+    }
+    
+    .error-panel.active {
+      display: block;
+    }
+    
+    .error-title {
+      font-weight: bold;
+      color: var(--danger-color);
+      margin-bottom: 5px;
+    }
+    
+    /* Download button */
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+    }
+    
+    /* Accessibility features */
+    .text-to-speech-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--accent-color);
+      font-size: 1.2rem;
+      padding: 5px;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+    
+    .text-to-speech-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--accent-highlight);
+    }
+    
+    /* Tooltip */
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 200px;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 0.8rem;
+    }
+    
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <img src="/logo.png" alt="ShotziOS Logo" />
+          <span>ShotziOS Educational Platform</span>
+        </div>
+        <div class="avatar">S</div>
+      </div>
+    </div>
+  </header>
+  
+  <nav>
+    <div class="container">
+      <ul class="nav-links">
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/superhero-school">Superhero School</a></li>
+        <li><a href="/superhero-school/student-dashboard.html">Student Dashboard</a></li>
+        <li><a href="/superhero-school/dyslexia-curriculum-generator.html">Dyslexia Curriculum</a></li>
+        <li><a href="/superhero-school/neurodivergent-curriculum-generator.html">Neurodivergent Curriculum</a></li>
+        <li><a href="/superhero-school/alabama-curriculum-generator.html" class="active">Alabama Curriculum</a></li>
+        <li><a href="/superhero-school/learning-companion-demo.html">Learning Companion</a></li>
+      </ul>
+    </div>
+  </nav>
+  
+  <main class="container">
+    <h1>Alabama Standards Curriculum Generator</h1>
+    
+    <p>Generate comprehensive, year-long K-12 curriculum that aligns with Alabama education standards, with adaptations for neurodivergent learners.</p>
+    
+    <div class="card">
+      <div class="card-header">
+        <span>Curriculum Parameters</span>
+        <button class="text-to-speech-btn" title="Read aloud">🔊</button>
+      </div>
+      <div class="card-content">
+        <form id="curriculum-form">
+          <div class="generator-form">
+            <div class="form-group">
+              <label for="subject">Subject Area</label>
+              <select id="subject" name="subject" required>
+                <option value="">Select Subject</option>
+                <option value="english">English Language Arts</option>
+                <option value="math">Mathematics</option>
+                <option value="science">Science</option>
+                <option value="social-studies">Social Studies</option>
+                <option value="arts">Arts Education</option>
+                <option value="pe">Physical Education</option>
+                <option value="health">Health Education</option>
+                <option value="technology">Technology</option>
+                <option value="career">Career and Technical Education</option>
+                <option value="foreign-language">World Languages</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="grade">Grade Level</label>
+              <select id="grade" name="grade" required>
+                <option value="">Select Grade Level</option>
+                <option value="1">1st Grade</option>
+                <option value="2">2nd Grade</option>
+                <option value="3">3rd Grade</option>
+                <option value="4">4th Grade</option>
+                <option value="5">5th Grade</option>
+                <option value="6">6th Grade</option>
+                <option value="7">7th Grade</option>
+                <option value="8">8th Grade</option>
+                <option value="9">9th Grade</option>
+                <option value="10">10th Grade</option>
+                <option value="11">11th Grade</option>
+                <option value="12">12th Grade</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="neurotype">Neurotype Adaptations</label>
+              <select id="neurotype" name="neurotype">
+                <option value="general">General Adaptations</option>
+                <option value="adhd">ADHD</option>
+                <option value="autism">Autism Spectrum</option>
+                <option value="dyslexia">Dyslexia</option>
+                <option value="dyscalculia">Dyscalculia</option>
+                <option value="dysgraphia">Dysgraphia</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="api-selection">
+            <div class="api-option">
+              <input type="radio" id="api-anthropic" name="api" value="anthropic" checked>
+              <label for="api-anthropic">Claude (Anthropic)</label>
+              <div class="tooltip">
+                <span>ℹ️</span>
+                <span class="tooltiptext">Anthropic Claude 3.7 Sonnet provides detailed, standards-aligned curriculum</span>
+              </div>
+            </div>
+            <div class="api-option">
+              <input type="radio" id="api-perplexity" name="api" value="perplexity">
+              <label for="api-perplexity">Perplexity AI</label>
+              <div class="tooltip">
+                <span>ℹ️</span>
+                <span class="tooltiptext">Perplexity's reasoning model focuses on factual accuracy and up-to-date standards</span>
+              </div>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn btn-success btn-large" id="generate-btn" style="margin-top: 20px;">Generate Alabama Standards Curriculum</button>
+        </form>
+      </div>
+    </div>
+    
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>Generating comprehensive curriculum... This may take up to 60 seconds.</p>
+      <p class="small" style="font-size: 0.9rem; opacity: 0.7;">We're creating a full year-long curriculum with detailed units, lessons, and Alabama standards alignment.</p>
+    </div>
+    
+    <div class="error-panel" id="error-panel">
+      <div class="error-title">Error Generating Curriculum</div>
+      <p id="error-message">There was a problem generating the curriculum. Please try again.</p>
+    </div>
+    
+    <div class="curriculum-container" id="curriculum-container">
+      <div class="curriculum-header">
+        <h2 id="curriculum-title">Alabama Standards Curriculum</h2>
+        <button class="text-to-speech-btn" title="Read aloud">🔊</button>
+      </div>
+      
+      <div class="curriculum-metadata">
+        <div class="metadata-item">
+          <span class="metadata-label">Subject</span>
+          <span class="metadata-value" id="metadata-subject">Mathematics</span>
+        </div>
+        
+        <div class="metadata-item">
+          <span class="metadata-label">Grade Level</span>
+          <span class="metadata-value" id="metadata-grade">5th Grade</span>
+        </div>
+        
+        <div class="metadata-item">
+          <span class="metadata-label">Adaptations For</span>
+          <span class="metadata-value" id="metadata-neurotype">General</span>
+        </div>
+        
+        <div class="metadata-item">
+          <span class="metadata-label">Generated By</span>
+          <span class="metadata-value" id="metadata-source">Claude (Anthropic)</span>
+        </div>
+      </div>
+      
+      <div class="curriculum-tabs">
+        <div class="tab active" data-tab="overview">Overview</div>
+        <div class="tab" data-tab="standards">Alabama Standards</div>
+        <div class="tab" data-tab="units">Units</div>
+        <div class="tab" data-tab="adaptations">Adaptations</div>
+        <div class="tab" data-tab="resources">Resources</div>
+      </div>
+      
+      <div class="tab-content active" id="overview-tab">
+        <div id="curriculum-overview">
+          <!-- Overview content will be populated here -->
+        </div>
+      </div>
+      
+      <div class="tab-content" id="standards-tab">
+        <div id="alabama-standards">
+          <!-- Standards content will be populated here -->
+        </div>
+      </div>
+      
+      <div class="tab-content" id="units-tab">
+        <div id="curriculum-units">
+          <!-- Units will be populated here -->
+        </div>
+      </div>
+      
+      <div class="tab-content" id="adaptations-tab">
+        <div id="curriculum-adaptations">
+          <!-- Adaptations content will be populated here -->
+        </div>
+      </div>
+      
+      <div class="tab-content" id="resources-tab">
+        <div id="curriculum-resources">
+          <!-- Resources content will be populated here -->
+        </div>
+      </div>
+      
+      <button class="btn download-btn" id="download-btn">
+        <span>💾</span> Download Curriculum (JSON)
+      </button>
+    </div>
+  </main>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // DOM Elements
+      const form = document.getElementById('curriculum-form');
+      const loadingEl = document.getElementById('loading');
+      const errorPanelEl = document.getElementById('error-panel');
+      const errorMessageEl = document.getElementById('error-message');
+      const curriculumContainerEl = document.getElementById('curriculum-container');
+      const downloadBtn = document.getElementById('download-btn');
+      
+      // Current curriculum data
+      let currentCurriculum = null;
+      
+      // Form submission
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Hide previous results and errors
+        curriculumContainerEl.classList.remove('active');
+        errorPanelEl.classList.remove('active');
+        
+        // Show loading indicator
+        loadingEl.classList.add('active');
+        
+        // Get form data
+        const formData = new FormData(form);
+        const subject = formData.get('subject');
+        const grade = formData.get('grade');
+        const neurotype = formData.get('neurotype');
+        const api = formData.get('api');
+        
+        // Announce to screen readers
+        if (window.accessibilityVoice) {
+          window.accessibilityVoice.announce(`Generating ${neurotype} adapted curriculum for ${subject} grade ${grade} using ${api} API. This may take up to a minute.`);
+        }
+        
+        try {
+          // Make API request
+          const response = await fetch('/api/alabama-curriculum/generate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              subject,
+              grade,
+              neurotype,
+              api
+            })
+          });
+          
+          const result = await response.json();
+          
+          if (!result.success) {
+            throw new Error(result.error || 'Failed to generate curriculum');
+          }
+          
+          // Store curriculum data
+          currentCurriculum = result.data;
+          
+          // Display the curriculum
+          displayCurriculum(currentCurriculum);
+          
+          // Announce success to screen readers
+          if (window.accessibilityVoice) {
+            window.accessibilityVoice.announce(`Curriculum generated successfully. Now displaying the content.`);
+          }
+        } catch (error) {
+          console.error('Error generating curriculum:', error);
+          
+          // Show error message
+          errorMessageEl.textContent = error.message || 'There was a problem generating the curriculum. Please try again.';
+          errorPanelEl.classList.add('active');
+          
+          // Announce error to screen readers
+          if (window.accessibilityVoice) {
+            window.accessibilityVoice.announce(`Error generating curriculum: ${error.message}`);
+          }
+        } finally {
+          // Hide loading indicator
+          loadingEl.classList.remove('active');
+        }
+      });
+      
+      /**
+       * Display the generated curriculum
+       */
+      function displayCurriculum(data) {
+        // Update metadata
+        document.getElementById('metadata-subject').textContent = data.metadata.subject;
+        document.getElementById('metadata-grade').textContent = data.metadata.grade;
+        document.getElementById('metadata-neurotype').textContent = data.metadata.neurotype;
+        document.getElementById('metadata-source').textContent = `${data.model} (${data.source})`;
+        
+        // Process curriculum data
+        const curriculum = data.curriculum;
+        
+        // Handle different API responses
+        if (curriculum.raw_content) {
+          // Handle raw text content
+          document.getElementById('curriculum-overview').innerHTML = `<pre style="white-space: pre-wrap;">${curriculum.raw_content}</pre>`;
+          
+          // Hide other tabs
+          document.querySelectorAll('.tab:not([data-tab="overview"])').forEach(tab => {
+            tab.style.display = 'none';
+          });
+        } else {
+          // Handle structured JSON content
+          
+          // Overview
+          if (curriculum.curriculum_overview) {
+            let overviewHtml = '';
+            
+            if (typeof curriculum.curriculum_overview === 'string') {
+              overviewHtml = `<p>${curriculum.curriculum_overview}</p>`;
+            } else {
+              if (curriculum.curriculum_overview.title) {
+                overviewHtml += `<h3>${curriculum.curriculum_overview.title}</h3>`;
+              }
+              
+              if (curriculum.curriculum_overview.description) {
+                overviewHtml += `<p>${curriculum.curriculum_overview.description}</p>`;
+              }
+              
+              if (curriculum.curriculum_overview.goals) {
+                overviewHtml += `<h4>Curriculum Goals</h4><ul>`;
+                if (Array.isArray(curriculum.curriculum_overview.goals)) {
+                  curriculum.curriculum_overview.goals.forEach(goal => {
+                    overviewHtml += `<li>${goal}</li>`;
+                  });
+                } else {
+                  overviewHtml += `<li>${curriculum.curriculum_overview.goals}</li>`;
+                }
+                overviewHtml += `</ul>`;
+              }
+            }
+            
+            document.getElementById('curriculum-overview').innerHTML = overviewHtml;
+          }
+          
+          // Standards
+          if (curriculum.alabama_standards) {
+            let standardsHtml = '<h3>Alabama Education Standards</h3>';
+            
+            if (typeof curriculum.alabama_standards === 'string') {
+              standardsHtml += `<p>${curriculum.alabama_standards}</p>`;
+            } else if (Array.isArray(curriculum.alabama_standards)) {
+              standardsHtml += '<ul>';
+              curriculum.alabama_standards.forEach(standard => {
+                if (typeof standard === 'string') {
+                  standardsHtml += `<li>${standard}</li>`;
+                } else if (standard.code && standard.description) {
+                  standardsHtml += `<li><strong>${standard.code}</strong>: ${standard.description}</li>`;
+                }
+              });
+              standardsHtml += '</ul>';
+            } else {
+              // Handle object format
+              Object.entries(curriculum.alabama_standards).forEach(([category, standards]) => {
+                standardsHtml += `<h4>${category}</h4><ul>`;
+                
+                if (Array.isArray(standards)) {
+                  standards.forEach(standard => {
+                    if (typeof standard === 'string') {
+                      standardsHtml += `<li>${standard}</li>`;
+                    } else if (standard.code && standard.description) {
+                      standardsHtml += `<li><strong>${standard.code}</strong>: ${standard.description}</li>`;
+                    }
+                  });
+                } else {
+                  standardsHtml += `<li>${standards}</li>`;
+                }
+                
+                standardsHtml += '</ul>';
+              });
+            }
+            
+            document.getElementById('alabama-standards').innerHTML = standardsHtml;
+          }
+          
+          // Units
+          if (curriculum.units) {
+            let unitsHtml = '<div class="units-list">';
+            
+            curriculum.units.forEach((unit, unitIndex) => {
+              unitsHtml += `
+                <div class="unit-card">
+                  <div class="unit-header" onclick="toggleUnitContent(${unitIndex})">
+                    <div class="unit-title">Unit ${unitIndex + 1}: ${unit.title || 'Untitled Unit'}</div>
+                    <div class="unit-toggle">▼</div>
+                  </div>
+                  <div class="unit-content" id="unit-content-${unitIndex}">
+                    ${unit.description ? `<p>${unit.description}</p>` : ''}
+                    ${unit.duration ? `<p><strong>Duration:</strong> ${unit.duration}</p>` : ''}
+                    
+                    ${unit.objectives ? `
+                      <h4>Unit Objectives</h4>
+                      <ul>
+                        ${Array.isArray(unit.objectives) ? 
+                          unit.objectives.map(obj => `<li>${obj}</li>`).join('') : 
+                          `<li>${unit.objectives}</li>`}
+                      </ul>
+                    ` : ''}
+                    
+                    ${unit.lessons ? renderLessons(unit.lessons) : ''}
+                  </div>
+                </div>
+              `;
+            });
+            
+            unitsHtml += '</div>';
+            
+            document.getElementById('curriculum-units').innerHTML = unitsHtml;
+          }
+          
+          // Adaptations
+          let adaptationsHtml = '<h3>Neurodivergent Adaptations</h3>';
+          
+          if (curriculum.adaptations) {
+            if (typeof curriculum.adaptations === 'string') {
+              adaptationsHtml += `<p>${curriculum.adaptations}</p>`;
+            } else if (Array.isArray(curriculum.adaptations)) {
+              adaptationsHtml += '<ul>';
+              curriculum.adaptations.forEach(adaptation => {
+                adaptationsHtml += `<li>${adaptation}</li>`;
+              });
+              adaptationsHtml += '</ul>';
+            } else {
+              // Handle object format
+              Object.entries(curriculum.adaptations).forEach(([category, items]) => {
+                adaptationsHtml += `<h4>${category}</h4>`;
+                
+                if (Array.isArray(items)) {
+                  adaptationsHtml += '<ul>';
+                  items.forEach(item => {
+                    adaptationsHtml += `<li>${item}</li>`;
+                  });
+                  adaptationsHtml += '</ul>';
+                } else {
+                  adaptationsHtml += `<p>${items}</p>`;
+                }
+              });
+            }
+          } else {
+            // Generate default adaptations based on neurotype
+            const neurotype = data.metadata.neurotype;
+            adaptationsHtml += `<p>Below are adaptations designed for ${neurotype} learners:</p>`;
+            
+            switch (neurotype.toLowerCase()) {
+              case 'adhd':
+                adaptationsHtml += `
+                  <ul>
+                    <li>Chunked content with frequent breaks</li>
+                    <li>Visual timers and schedules</li>
+                    <li>Gamified learning activities</li>
+                    <li>Movement breaks incorporated into lessons</li>
+                    <li>Clear, concise instructions</li>
+                    <li>Multi-modal presentation of content</li>
+                  </ul>
+                `;
+                break;
+              case 'autism spectrum':
+              case 'autism':
+                adaptationsHtml += `
+                  <ul>
+                    <li>Clear, explicit instructions and expectations</li>
+                    <li>Visual supports and structured routines</li>
+                    <li>Sensory considerations in all activities</li>
+                    <li>Advance notice for transitions and changes</li>
+                    <li>Special interest incorporation</li>
+                    <li>Social skill development embedded in content</li>
+                  </ul>
+                `;
+                break;
+              case 'dyslexia':
+                adaptationsHtml += `
+                  <ul>
+                    <li>Audio support for reading materials</li>
+                    <li>Dyslexia-friendly fonts and formatting</li>
+                    <li>Color-coding for key concepts</li>
+                    <li>Multi-sensory approaches to literacy</li>
+                    <li>Text-to-speech technology integration</li>
+                    <li>Alternative assessment options</li>
+                  </ul>
+                `;
+                break;
+              case 'dyscalculia':
+                adaptationsHtml += `
+                  <ul>
+                    <li>Concrete manipulatives for mathematical concepts</li>
+                    <li>Visual models and representations</li>
+                    <li>Verbalization of mathematical thinking</li>
+                    <li>Real-world context for abstract concepts</li>
+                    <li>Grid paper and organizational tools</li>
+                    <li>Calculators and digital math tools</li>
+                  </ul>
+                `;
+                break;
+              default:
+                adaptationsHtml += `
+                  <ul>
+                    <li>Universal Design for Learning (UDL) framework</li>
+                    <li>Multi-modal content presentation</li>
+                    <li>Choice in demonstration of learning</li>
+                    <li>Strength-based approaches</li>
+                    <li>Flexible pacing options</li>
+                    <li>Technology integration for accessibility</li>
+                  </ul>
+                `;
+            }
+          }
+          
+          document.getElementById('curriculum-adaptations').innerHTML = adaptationsHtml;
+          
+          // Resources
+          let resourcesHtml = '<h3>Curriculum Resources</h3>';
+          
+          if (curriculum.resources) {
+            if (typeof curriculum.resources === 'string') {
+              resourcesHtml += `<p>${curriculum.resources}</p>`;
+            } else if (Array.isArray(curriculum.resources)) {
+              resourcesHtml += '<ul>';
+              curriculum.resources.forEach(resource => {
+                resourcesHtml += `<li>${resource}</li>`;
+              });
+              resourcesHtml += '</ul>';
+            } else {
+              // Handle object format
+              Object.entries(curriculum.resources).forEach(([category, items]) => {
+                resourcesHtml += `<h4>${category}</h4>`;
+                
+                if (Array.isArray(items)) {
+                  resourcesHtml += '<ul>';
+                  items.forEach(item => {
+                    resourcesHtml += `<li>${item}</li>`;
+                  });
+                  resourcesHtml += '</ul>';
+                } else {
+                  resourcesHtml += `<p>${items}</p>`;
+                }
+              });
+            }
+          } else {
+            resourcesHtml += `
+              <p>The following resources support this Alabama standards-aligned curriculum:</p>
+              
+              <h4>Digital Resources</h4>
+              <ul>
+                <li>Alabama Learning Exchange (ALEX): <a href="https://alex.state.al.us/" target="_blank">https://alex.state.al.us/</a></li>
+                <li>Alabama State Department of Education: <a href="https://www.alabamaachieves.org/" target="_blank">https://www.alabamaachieves.org/</a></li>
+                <li>Khan Academy: <a href="https://www.khanacademy.org/" target="_blank">https://www.khanacademy.org/</a></li>
+                <li>ReadWorks: <a href="https://www.readworks.org/" target="_blank">https://www.readworks.org/</a></li>
+                <li>National Science Foundation Resources: <a href="https://www.nsf.gov/news/classroom/" target="_blank">https://www.nsf.gov/news/classroom/</a></li>
+                <li>PBS Learning Media: <a href="https://www.pbslearningmedia.org/" target="_blank">https://www.pbslearningmedia.org/</a></li>
+              </ul>
+              
+              <h4>Assessment Tools</h4>
+              <ul>
+                <li>Formative assessment templates</li>
+                <li>Project rubrics</li>
+                <li>Self-assessment checklists</li>
+                <li>Digital portfolios</li>
+                <li>Performance-based assessments</li>
+              </ul>
+              
+              <h4>Instructional Materials</h4>
+              <ul>
+                <li>Interactive digital simulations</li>
+                <li>Adaptive learning software</li>
+                <li>Hands-on manipulatives</li>
+                <li>Visual supports and graphic organizers</li>
+                <li>Text-to-speech tools</li>
+              </ul>
+            `;
+          }
+          
+          document.getElementById('curriculum-resources').innerHTML = resourcesHtml;
+        }
+        
+        // Show the curriculum container
+        curriculumContainerEl.classList.add('active');
+      }
+      
+      /**
+       * Render lessons list and details
+       */
+      function renderLessons(lessons) {
+        if (!lessons || lessons.length === 0) {
+          return '<p>No lessons defined for this unit.</p>';
+        }
+        
+        let html = `
+          <h4>Lessons</h4>
+          <div class="lessons-list">
+        `;
+        
+        lessons.forEach((lesson, index) => {
+          html += `
+            <div class="lesson-item" onclick="showLessonDetails(this, ${index})">
+              <div class="lesson-title">Lesson ${index + 1}: ${lesson.title || 'Untitled Lesson'}</div>
+            </div>
+          `;
+        });
+        
+        html += `</div>
+        <div class="lesson-details" id="lesson-details">
+          <p>Select a lesson to view details</p>
+        </div>`;
+        
+        return html;
+      }
+      
+      /**
+       * Tab switching
+       */
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+          // Remove active class from all tabs
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          
+          // Add active class to clicked tab
+          this.classList.add('active');
+          
+          // Hide all tab content
+          document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+          });
+          
+          // Show selected tab content
+          const tabId = this.getAttribute('data-tab') + '-tab';
+          document.getElementById(tabId).classList.add('active');
+          
+          // Announce tab change to screen readers
+          if (window.accessibilityVoice) {
+            window.accessibilityVoice.announce(`Showing ${this.textContent} tab`);
+          }
+        });
+      });
+      
+      /**
+       * Download button
+       */
+      downloadBtn.addEventListener('click', function() {
+        if (!currentCurriculum) return;
+        
+        const dataStr = JSON.stringify(currentCurriculum, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        
+        const subject = currentCurriculum.metadata.subject.toLowerCase().replace(/\s+/g, '-');
+        const grade = currentCurriculum.metadata.grade.toLowerCase().replace(/\s+/g, '-');
+        
+        const exportName = `alabama-${subject}-${grade}-curriculum.json`;
+        
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportName);
+        linkElement.click();
+        
+        // Announce to screen readers
+        if (window.accessibilityVoice) {
+          window.accessibilityVoice.announce(`Downloading curriculum as JSON file: ${exportName}`);
+        }
+      });
+      
+      /**
+       * Text to speech buttons
+       */
+      document.querySelectorAll('.text-to-speech-btn').forEach(button => {
+        button.addEventListener('click', function() {
+          const contentElement = this.closest('.card, .curriculum-header').nextElementSibling;
+          
+          if (contentElement && window.accessibilityVoice) {
+            const text = contentElement.textContent.trim();
+            window.accessibilityVoice.speak(text);
+          }
+        });
+      });
+    });
+    
+    /**
+     * Toggle unit content visibility
+     */
+    function toggleUnitContent(unitIndex) {
+      const contentElement = document.getElementById(`unit-content-${unitIndex}`);
+      const headerElement = contentElement.previousElementSibling;
+      const toggleIcon = headerElement.querySelector('.unit-toggle');
+      
+      contentElement.classList.toggle('active');
+      
+      if (contentElement.classList.contains('active')) {
+        toggleIcon.textContent = '▲';
+      } else {
+        toggleIcon.textContent = '▼';
+      }
+      
+      // Announce to screen readers
+      if (window.accessibilityVoice) {
+        const unitTitle = headerElement.querySelector('.unit-title').textContent;
+        if (contentElement.classList.contains('active')) {
+          window.accessibilityVoice.announce(`Expanded ${unitTitle}`);
+        } else {
+          window.accessibilityVoice.announce(`Collapsed ${unitTitle}`);
+        }
+      }
+    }
+    
+    /**
+     * Show lesson details
+     */
+    function showLessonDetails(element, lessonIndex) {
+      // Remove active class from all lessons
+      document.querySelectorAll('.lesson-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      // Add active class to clicked lesson
+      element.classList.add('active');
+      
+      // Get the current unit index
+      const unitContent = element.closest('.unit-content');
+      const unitId = unitContent.id;
+      const unitIndex = parseInt(unitId.replace('unit-content-', ''));
+      
+      // Get the curriculum data from the global variable
+      const curriculum = currentCurriculum?.curriculum;
+      
+      if (!curriculum || !curriculum.units || !curriculum.units[unitIndex] || !curriculum.units[unitIndex].lessons) {
+        return;
+      }
+      
+      const lesson = curriculum.units[unitIndex].lessons[lessonIndex];
+      const detailsElement = unitContent.querySelector('.lesson-details');
+      
+      if (!lesson || !detailsElement) {
+        return;
+      }
+      
+      let html = `
+        <h4>${lesson.title || `Lesson ${lessonIndex + 1}`}</h4>
+        ${lesson.description ? `<p>${lesson.description}</p>` : ''}
+        ${lesson.duration ? `<p><strong>Duration:</strong> ${lesson.duration}</p>` : ''}
+      `;
+      
+      if (lesson.objectives) {
+        html += `
+          <div class="lesson-section">
+            <div class="section-title">Learning Objectives</div>
+            <ul>
+              ${Array.isArray(lesson.objectives) ? 
+                lesson.objectives.map(obj => `<li>${obj}</li>`).join('') : 
+                `<li>${lesson.objectives}</li>`}
+            </ul>
+          </div>
+        `;
+      }
+      
+      if (lesson.activities) {
+        html += `
+          <div class="lesson-section">
+            <div class="section-title">Activities</div>
+        `;
+        
+        if (typeof lesson.activities === 'string') {
+          html += `<p>${lesson.activities}</p>`;
+        } else if (Array.isArray(lesson.activities)) {
+          html += '<ol>';
+          lesson.activities.forEach(activity => {
+            if (typeof activity === 'string') {
+              html += `<li>${activity}</li>`;
+            } else if (activity.title) {
+              html += `<li><strong>${activity.title}</strong>: ${activity.description || ''}</li>`;
+            }
+          });
+          html += '</ol>';
+        }
+        
+        html += `</div>`;
+      }
+      
+      if (lesson.assessment) {
+        html += `
+          <div class="lesson-section">
+            <div class="section-title">Assessment</div>
+            ${typeof lesson.assessment === 'string' ? 
+              `<p>${lesson.assessment}</p>` : 
+              Array.isArray(lesson.assessment) ? 
+                `<ul>${lesson.assessment.map(a => `<li>${a}</li>`).join('')}</ul>` :
+                `<p>${JSON.stringify(lesson.assessment)}</p>`}
+          </div>
+        `;
+      }
+      
+      if (lesson.materials) {
+        html += `
+          <div class="lesson-section">
+            <div class="section-title">Materials</div>
+            ${typeof lesson.materials === 'string' ? 
+              `<p>${lesson.materials}</p>` : 
+              Array.isArray(lesson.materials) ? 
+                `<ul>${lesson.materials.map(m => `<li>${m}</li>`).join('')}</ul>` :
+                `<p>${JSON.stringify(lesson.materials)}</p>`}
+          </div>
+        `;
+      }
+      
+      if (lesson.standards) {
+        html += `
+          <div class="lesson-section">
+            <div class="section-title">Alabama Standards</div>
+            ${typeof lesson.standards === 'string' ? 
+              `<p>${lesson.standards}</p>` : 
+              Array.isArray(lesson.standards) ? 
+                `<ul>${lesson.standards.map(s => `<li>${s}</li>`).join('')}</ul>` :
+                `<p>${JSON.stringify(lesson.standards)}</p>`}
+          </div>
+        `;
+      }
+      
+      if (lesson.adaptations) {
+        html += `
+          <div class="lesson-section">
+            <div class="section-title">Adaptations</div>
+            ${typeof lesson.adaptations === 'string' ? 
+              `<p>${lesson.adaptations}</p>` : 
+              Array.isArray(lesson.adaptations) ? 
+                `<ul>${lesson.adaptations.map(a => `<li>${a}</li>`).join('')}</ul>` :
+                `<p>${JSON.stringify(lesson.adaptations)}</p>`}
+          </div>
+        `;
+      }
+      
+      detailsElement.innerHTML = html;
+      
+      // Announce to screen readers
+      if (window.accessibilityVoice) {
+        window.accessibilityVoice.announce(`Showing details for ${lesson.title || `Lesson ${lessonIndex + 1}`}`);
+      }
+    }
+    
+    // Initialize global variable to store curriculum data
+    let currentCurriculum = null;
+  </script>
+</body>
+</html>

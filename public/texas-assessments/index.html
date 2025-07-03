@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texas Assessment Center - STAAR & TEA Compliance</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --texas-blue: #002868;
+            --texas-red: #bf0a30;
+            --assessment-purple: #7c3aed;
+            --success-green: #16a34a;
+            --warning-orange: #ea580c;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--texas-blue) 0%, var(--assessment-purple) 100%);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .assessment-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--texas-blue), var(--assessment-purple));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin: 0 0 0.5rem;
+            font-weight: 700;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .assessment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .assessment-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .assessment-card.staar { border-color: var(--texas-red); }
+        .assessment-card.benchmark { border-color: var(--assessment-purple); }
+        .assessment-card.adaptive { border-color: var(--success-green); }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+        }
+
+        .card-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-check {
+            color: var(--success-green);
+            font-weight: bold;
+        }
+
+        .card-button {
+            background: linear-gradient(135deg, var(--texas-blue), var(--assessment-purple));
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+        }
+
+        .card-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .staar-section {
+            background: linear-gradient(135deg, #fef3f3, #fecaca);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--texas-red);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .staar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .staar-subject {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .subject-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .grade-levels {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .accommodations-section {
+            background: linear-gradient(135deg, #f0f9ff, #dbeafe);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .accommodations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .accommodation-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            border-left: 4px solid var(--assessment-purple);
+        }
+
+        .accommodation-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .accommodation-description {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, var(--texas-blue), #1e3a8a);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="assessment-container">
+        <div class="header">
+            <h1>Texas Assessment Center</h1>
+            <p>STAAR Testing & TEA Compliance for Neurodivergent Learners</p>
+        </div>
+
+        <div class="content">
+            <div class="assessment-grid">
+                <div class="assessment-card staar">
+                    <div class="card-header">
+                        <div class="card-title">STAAR Testing</div>
+                        <div class="card-icon">📊</div>
+                    </div>
+                    <div class="card-description">
+                        Official Texas state assessments aligned with TEKS standards, with full accommodations for neurodivergent learners.
+                    </div>
+                    <ul class="feature-list">
+                        <li><span class="feature-check">✓</span>Grade 3-12 Mathematics</li>
+                        <li><span class="feature-check">✓</span>Grade 3-8 Reading Language Arts</li>
+                        <li><span class="feature-check">✓</span>Grade 5 & 8 Science</li>
+                        <li><span class="feature-check">✓</span>Grade 8 Social Studies</li>
+                        <li><span class="feature-check">✓</span>High School End-of-Course Exams</li>
+                    </ul>
+                    <a href="#staar-details" class="card-button">View STAAR Details</a>
+                </div>
+
+                <div class="assessment-card benchmark">
+                    <div class="card-header">
+                        <div class="card-title">Benchmark Assessments</div>
+                        <div class="card-icon">📈</div>
+                    </div>
+                    <div class="card-description">
+                        Regular progress monitoring aligned with Texas standards to track student growth and identify learning needs.
+                    </div>
+                    <ul class="feature-list">
+                        <li><span class="feature-check">✓</span>Monthly Progress Checks</li>
+                        <li><span class="feature-check">✓</span>TEKS Alignment Verification</li>
+                        <li><span class="feature-check">✓</span>Individualized Learning Plans</li>
+                        <li><span class="feature-check">✓</span>Parent Progress Reports</li>
+                        <li><span class="feature-check">✓</span>Teacher Analytics Dashboard</li>
+                    </ul>
+                    <a href="#benchmark-details" class="card-button">Access Benchmarks</a>
+                </div>
+
+                <div class="assessment-card adaptive">
+                    <div class="card-header">
+                        <div class="card-title">Adaptive Assessments</div>
+                        <div class="card-icon">🧠</div>
+                    </div>
+                    <div class="card-description">
+                        AI-powered assessments that adapt to each student's neurodivergent learning profile and accommodation needs.
+                    </div>
+                    <ul class="feature-list">
+                        <li><span class="feature-check">✓</span>ADHD-Friendly Format</li>
+                        <li><span class="feature-check">✓</span>Dyslexia Accommodations</li>
+                        <li><span class="feature-check">✓</span>Autism Spectrum Support</li>
+                        <li><span class="feature-check">✓</span>Executive Function Aids</li>
+                        <li><span class="feature-check">✓</span>Sensory Break Integration</li>
+                    </ul>
+                    <a href="#adaptive-details" class="card-button">Try Adaptive Assessment</a>
+                </div>
+            </div>
+
+            <div class="staar-section" id="staar-details">
+                <h2 class="section-title">
+                    <span>🎯</span>
+                    STAAR Testing Requirements by Grade
+                </h2>
+                
+                <div class="staar-grid">
+                    <div class="staar-subject">
+                        <div class="subject-title">Reading Language Arts</div>
+                        <div class="grade-levels">Grades 3-8</div>
+                        <p>Comprehensive reading comprehension, vocabulary, and written expression aligned with Texas Essential Knowledge and Skills.</p>
+                    </div>
+
+                    <div class="staar-subject">
+                        <div class="subject-title">Mathematics</div>
+                        <div class="grade-levels">Grades 3-12</div>
+                        <p>Mathematical reasoning, problem-solving, and computational skills progressing through algebraic concepts.</p>
+                    </div>
+
+                    <div class="staar-subject">
+                        <div class="subject-title">Science</div>
+                        <div class="grade-levels">Grades 5, 8, & EOC</div>
+                        <p>Scientific inquiry, laboratory skills, and understanding of physical, life, and earth sciences.</p>
+                    </div>
+
+                    <div class="staar-subject">
+                        <div class="subject-title">Social Studies</div>
+                        <div class="grade-levels">Grade 8 & EOC</div>
+                        <p>Historical analysis, geographic skills, citizenship, and understanding of government and economics.</p>
+                    </div>
+
+                    <div class="staar-subject">
+                        <div class="subject-title">End-of-Course Exams</div>
+                        <div class="grade-levels">High School</div>
+                        <p>Algebra I, Biology, English I & II, and U.S. History assessments for graduation requirements.</p>
+                    </div>
+
+                    <div class="staar-subject">
+                        <div class="subject-title">STAAR Alt 2</div>
+                        <div class="grade-levels">Special Education</div>
+                        <p>Alternative assessment for students with significant cognitive disabilities, based on alternate achievement standards.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accommodations-section">
+                <h2 class="section-title">
+                    <span>♿</span>
+                    Testing Accommodations for Neurodivergent Learners
+                </h2>
+                
+                <div class="accommodations-grid">
+                    <div class="accommodation-card">
+                        <div class="accommodation-title">ADHD Support</div>
+                        <div class="accommodation-description">
+                            Extended time, frequent breaks, reduced distractions, fidget tools, and alternative seating arrangements.
+                        </div>
+                    </div>
+
+                    <div class="accommodation-card">
+                        <div class="accommodation-title">Dyslexia Accommodations</div>
+                        <div class="accommodation-description">
+                            Text-to-speech technology, larger fonts, dyslexia-friendly colors, and oral response options.
+                        </div>
+                    </div>
+
+                    <div class="accommodation-card">
+                        <div class="accommodation-title">Autism Spectrum Support</div>
+                        <div class="accommodation-description">
+                            Structured environment, visual schedules, noise-reducing headphones, and predictable routines.
+                        </div>
+                    </div>
+
+                    <div class="accommodation-card">
+                        <div class="accommodation-title">Executive Function Support</div>
+                        <div class="accommodation-description">
+                            Organizational aids, step-by-step instructions, progress monitoring, and task breakdown strategies.
+                        </div>
+                    </div>
+
+                    <div class="accommodation-card">
+                        <div class="accommodation-title">Technology Accommodations</div>
+                        <div class="accommodation-description">
+                            Speech-to-text software, word processing tools, calculators, and assistive technology devices.
+                        </div>
+                    </div>
+
+                    <div class="accommodation-card">
+                        <div class="accommodation-title">Environmental Modifications</div>
+                        <div class="accommodation-description">
+                            Separate testing room, adjusted lighting, temperature control, and minimal visual distractions.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="/texas-enrollment/" class="nav-button">
+                    <span>📝</span>
+                    Student Enrollment
+                </a>
+                <a href="/texas-reporting/" class="nav-button">
+                    <span>📈</span>
+                    TEA Reporting
+                </a>
+                <a href="/texas-peims/" class="nav-button">
+                    <span>🏛️</span>
+                    PEIMS Data
+                </a>
+                <a href="/texas-charter-compliance.html" class="nav-button">
+                    <span>📋</span>
+                    Compliance Center
+                </a>
+                <a href="/" class="nav-button">
+                    <span>🏠</span>
+                    Main Platform
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Smooth scrolling for internal links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+
+            // Card interaction effects
+            const cards = document.querySelectorAll('.assessment-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

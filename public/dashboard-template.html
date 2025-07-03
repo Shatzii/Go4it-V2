@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShatziiOS Dashboard</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+    header {
+      background-color: #6a1b9a;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    .dashboard-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .dashboard-card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      transition: transform 0.3s ease;
+    }
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+    }
+    .dashboard-card h3 {
+      margin-top: 0;
+      color: #6a1b9a;
+    }
+    .navigation {
+      background-color: #8e24aa;
+      padding: 0.5rem;
+    }
+    .navigation ul {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      justify-content: center;
+    }
+    .navigation li {
+      margin: 0 1rem;
+    }
+    .navigation a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem;
+      border-radius: 4px;
+    }
+    .navigation a:hover {
+      background-color: rgba(255,255,255,0.2);
+    }
+    footer {
+      background-color: #6a1b9a;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ShatziiOS Dashboard</h1>
+  </header>
+  
+  <nav class="navigation">
+    <ul>
+      <li><a href="/dashboard/neurodivergent-elementary">Elementary School</a></li>
+      <li><a href="/dashboard/neurodivergent-middle">Middle School</a></li>
+      <li><a href="/dashboard/neurodivergent-high">High School</a></li>
+      <li><a href="/dashboard/neurodivergent-college">College</a></li>
+      <li><a href="/dashboard/law-school">Law School</a></li>
+      <li><a href="/dashboard/language-school">Language School</a></li>
+      <li><a href="/dashboard/ceo">CEO Dashboard</a></li>
+    </ul>
+  </nav>
+  
+  <main>
+    <h2>Welcome to the ShatziiOS Dashboard</h2>
+    <p>Select a module below to get started:</p>
+    
+    <div class="dashboard-container">
+      <div class="dashboard-card">
+        <h3>Students</h3>
+        <p>Manage student profiles, track progress, and view learning analytics.</p>
+      </div>
+      
+      <div class="dashboard-card">
+        <h3>Courses</h3>
+        <p>Browse available courses, manage enrollments, and update curriculum.</p>
+      </div>
+      
+      <div class="dashboard-card">
+        <h3>AI Teachers</h3>
+        <p>Configure AI teaching assistants and customize learning experiences.</p>
+      </div>
+      
+      <div class="dashboard-card">
+        <h3>Resources</h3>
+        <p>Access educational materials, lesson plans, and interactive content.</p>
+      </div>
+      
+      <div class="dashboard-card">
+        <h3>Reports</h3>
+        <p>Generate progress reports, achievement certificates, and analytics.</p>
+      </div>
+      
+      <div class="dashboard-card">
+        <h3>Settings</h3>
+        <p>Configure system preferences, user permissions, and notifications.</p>
+      </div>
+    </div>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 ShatziiOS - Personalized Education Platform</p>
+  </footer>
+</body>
+</html>

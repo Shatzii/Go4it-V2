@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Law Student Dashboard - The Lawyer Makers</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/css/school-navigation.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .law-theme {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+        }
+        
+        .law-dashboard-header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 2.5rem 0;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .law-dashboard-header::before {
+            content: '⚖️';
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            font-size: 3rem;
+            opacity: 0.3;
+        }
+        
+        .law-student-profile {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        
+        .law-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            border: 4px solid rgba(255,255,255,0.2);
+        }
+        
+        .law-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .law-stat-card {
+            background: rgba(255,255,255,0.95);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(44, 62, 80, 0.2);
+            border-top: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .law-stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(44, 62, 80, 0.3);
+        }
+        
+        .law-stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .case-study-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 25px rgba(44, 62, 80, 0.15);
+            border-left: 6px solid var(--primary-color);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .case-study-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(44, 62, 80, 0.25);
+        }
+        
+        .case-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .case-status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 0.5rem 0;
+        }
+        
+        .status-active {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        
+        .status-review {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .status-completed {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .legal-progress {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .moot-court-section {
+            background: #f8f9fa;
+            border: 2px solid var(--accent-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .upcoming-deadlines {
+            background: #fff5f5;
+            border: 2px solid #e53e3e;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .deadline-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(229, 62, 62, 0.2);
+        }
+        
+        .deadline-item:last-child {
+            border-bottom: none;
+        }
+        
+        .urgency-high {
+            color: #c53030;
+            font-weight: 600;
+        }
+        
+        .urgency-medium {
+            color: #d69e2e;
+            font-weight: 600;
+        }
+        
+        .urgency-low {
+            color: #38a169;
+            font-weight: 600;
+        }
+        
+        .law-action-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+            margin: 0.25rem;
+        }
+        
+        .law-action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(44, 62, 80, 0.3);
+        }
+        
+        .research-tools {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .tool-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.1);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tool-card:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+        
+        .tool-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .bar-prep-section {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+        }
+        
+        .prep-progress {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .prep-stat {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .prep-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body class="law-theme">
+    <div class="school-page-header">
+        <div class="container">
+            <!-- Law Dashboard Header -->
+            <div class="law-dashboard-header">
+                <div class="law-student-profile">
+                    <div class="law-avatar">⚖️</div>
+                    <div>
+                        <h1>Welcome, Future Lawyer!</h1>
+                        <p style="font-size: 1.1rem; margin-top: 0.5rem;">Building tomorrow's legal advocates</p>
+                    </div>
+                </div>
+                
+                <div class="law-stats">
+                    <div class="law-stat-card">
+                        <div class="law-stat-number">3.7</div>
+                        <div>Law School GPA</div>
+                    </div>
+                    <div class="law-stat-card">
+                        <div class="law-stat-number">8</div>
+                        <div>Active Cases</div>
+                    </div>
+                    <div class="law-stat-card">
+                        <div class="law-stat-number">245</div>
+                        <div>Research Hours</div>
+                    </div>
+                    <div class="law-stat-card">
+                        <div class="law-stat-number">2L</div>
+                        <div>Current Year</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Case Studies -->
+            <section class="section">
+                <h2 class="section-title">📋 Active Case Studies</h2>
+                
+                <div class="grid-2" style="gap: 1.5rem;">
+                    <div class="case-study-card">
+                        <h3 class="case-title">Miranda v. Arizona Constitutional Analysis</h3>
+                        <span class="case-status status-active">In Progress</span>
+                        <p style="margin: 1rem 0; color: #666;">Analyzing Fifth Amendment protections and police interrogation procedures.</p>
+                        <div class="legal-progress">
+                            <p><strong>Research Phase:</strong> Constitutional Precedents</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 75%;"></div>
+                            </div>
+                            <p style="font-size: 0.9rem;">75% Complete</p>
+                        </div>
+                        <p><strong>Due:</strong> March 20, 2024</p>
+                    </div>
+                    
+                    <div class="case-study-card">
+                        <h3 class="case-title">Corporate Contract Dispute Analysis</h3>
+                        <span class="case-status status-review">Under Review</span>
+                        <p style="margin: 1rem 0; color: #666;">Examining breach of contract claims in commercial transactions.</p>
+                        <div class="legal-progress">
+                            <p><strong>Current Stage:</strong> Legal Brief Writing</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%;"></div>
+                            </div>
+                            <p style="font-size: 0.9rem;">60% Complete</p>
+                        </div>
+                        <p><strong>Due:</strong> March 25, 2024</p>
+                    </div>
+                    
+                    <div class="case-study-card">
+                        <h3 class="case-title">Environmental Law Regulation Study</h3>
+                        <span class="case-status status-completed">Completed</span>
+                        <p style="margin: 1rem 0; color: #666;">EPA compliance analysis for industrial waste management.</p>
+                        <div class="legal-progress">
+                            <p><strong>Final Grade:</strong> A- (92%)</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 100%;"></div>
+                            </div>
+                            <p style="font-size: 0.9rem;">Submitted</p>
+                        </div>
+                        <p><strong>Submitted:</strong> March 10, 2024</p>
+                    </div>
+                    
+                    <div class="case-study-card">
+                        <h3 class="case-title">Criminal Law: Self-Defense Analysis</h3>
+                        <span class="case-status status-active">Research Phase</span>
+                        <p style="margin: 1rem 0; color: #666;">Examining justifiable force standards in criminal defense cases.</p>
+                        <div class="legal-progress">
+                            <p><strong>Current Focus:</strong> Case Law Research</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 45%;"></div>
+                            </div>
+                            <p style="font-size: 0.9rem;">45% Complete</p>
+                        </div>
+                        <p><strong>Due:</strong> April 1, 2024</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Upcoming Deadlines -->
+            <section class="section">
+                <div class="upcoming-deadlines">
+                    <h3>⏰ Critical Deadlines</h3>
+                    <div class="deadline-item">
+                        <span><strong>Constitutional Law:</strong> Miranda Analysis Brief</span>
+                        <span class="urgency-high">Due Tomorrow</span>
+                    </div>
+                    <div class="deadline-item">
+                        <span><strong>Moot Court:</strong> Oral Argument Preparation</span>
+                        <span class="urgency-high">Due Thursday</span>
+                    </div>
+                    <div class="deadline-item">
+                        <span><strong>Contracts:</strong> UCC Article 2 Analysis</span>
+                        <span class="urgency-medium">Due Next Week</span>
+                    </div>
+                    <div class="deadline-item">
+                        <span><strong>Legal Writing:</strong> Appellate Brief Draft</span>
+                        <span class="urgency-low">Due March 30</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Moot Court Section -->
+            <section class="section">
+                <div class="moot-court-section">
+                    <h3>🏛️ Moot Court Competition</h3>
+                    <p><strong>Current Case:</strong> Smith v. State Technology Privacy Rights</p>
+                    <p><strong>Your Role:</strong> Petitioner's Counsel</p>
+                    <p><strong>Argument Date:</strong> Friday, March 22, 2024 at 2:00 PM</p>
+                    
+                    <div style="margin: 1.5rem 0;">
+                        <button class="law-action-btn">Review Case Materials</button>
+                        <button class="law-action-btn">Practice Oral Arguments</button>
+                        <button class="law-action-btn">Research Precedents</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Research Tools -->
+            <section class="section">
+                <h2 class="section-title">🔍 Legal Research Tools</h2>
+                <div class="research-tools">
+                    <div class="tool-card">
+                        <div class="tool-icon">📚</div>
+                        <h4>Legal Database</h4>
+                        <p>Access case law, statutes, and legal journals</p>
+                        <button class="law-action-btn" onclick="openDatabase()">Access Library</button>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-icon">🔍</div>
+                        <h4>Case Citation Tool</h4>
+                        <p>Proper legal citation formatting and verification</p>
+                        <button class="law-action-btn" onclick="openCitations()">Citation Helper</button>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-icon">📝</div>
+                        <h4>Brief Generator</h4>
+                        <p>Structured legal brief and memo templates</p>
+                        <button class="law-action-btn" onclick="openBriefs()">Create Brief</button>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-icon">⚖️</div>
+                        <h4>Legal Ethics Guide</h4>
+                        <p>Professional responsibility and ethics resources</p>
+                        <button class="law-action-btn" onclick="openEthics()">Ethics Guide</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bar Exam Preparation -->
+            <div class="bar-prep-section">
+                <h2>📜 Bar Exam Preparation Progress</h2>
+                <p>Track your preparation for the upcoming bar examination</p>
+                
+                <div class="prep-progress">
+                    <div class="prep-stat">
+                        <div class="prep-number">78%</div>
+                        <div>Overall Progress</div>
+                    </div>
+                    <div class="prep-stat">
+                        <div class="prep-number">156</div>
+                        <div>Practice Questions</div>
+                    </div>
+                    <div class="prep-stat">
+                        <div class="prep-number">12</div>
+                        <div>Mock Exams</div>
+                    </div>
+                    <div class="prep-stat">
+                        <div class="prep-number">85%</div>
+                        <div>Success Rate</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 1.5rem;">
+                    <button class="law-action-btn" style="background: rgba(255,255,255,0.2);" onclick="startPractice()">Practice Questions</button>
+                    <button class="law-action-btn" style="background: rgba(255,255,255,0.2);" onclick="takeMockExam()">Mock Exam</button>
+                    <button class="law-action-btn" style="background: rgba(255,255,255,0.2);" onclick="reviewProgress()">Review Progress</button>
+                </div>
+            </div>
+
+            <!-- AI Legal Advisor -->
+            <section class="section">
+                <div class="case-study-card" style="background: linear-gradient(135deg, #2c3e50, #34495e); color: white;">
+                    <h2 style="color: white;">🤖 AI Legal Research Assistant</h2>
+                    <p style="margin: 1rem 0;">Advanced AI to help with legal research, case analysis, and writing</p>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <p><strong>Legal AI:</strong> "I've identified 3 relevant precedents for your Miranda analysis. The Fourth Circuit's decision in Wilson v. State provides particularly strong support for your argument."</p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button class="law-action-btn" style="background: rgba(255,255,255,0.2);" onclick="askLegalQuestion()">Ask Legal Question</button>
+                        <button class="law-action-btn" style="background: rgba(255,255,255,0.2);" onclick="analyzePrecedent()">Analyze Precedent</button>
+                        <button class="law-action-btn" style="background: rgba(255,255,255,0.2);" onclick="reviewWriting()">Review Writing</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>The Lawyer Makers</h3>
+                    <p>Shaping tomorrow's legal advocates</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal Resources</h4>
+                    <a href="/schools/law-school/">Law School Hub</a>
+                    <a href="/schools/law-school/dashboard.html">Dashboard</a>
+                    <a href="/demo/">AI Legal Assistant</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <a href="/contact/">Academic Support</a>
+                    <a href="/help/">Student Resources</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 The Universal One School - The Lawyer Makers Dashboard</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function openDatabase() {
+            alert("Accessing comprehensive legal database! 📚");
+        }
+        
+        function openCitations() {
+            alert("Opening citation formatting tool! 📖");
+        }
+        
+        function openBriefs() {
+            alert("Loading legal brief templates! 📝");
+        }
+        
+        function openEthics() {
+            alert("Accessing professional ethics resources! ⚖️");
+        }
+        
+        function startPractice() {
+            alert("Starting bar exam practice session! 📜");
+        }
+        
+        function takeMockExam() {
+            alert("Launching full-length mock bar exam! ⏱️");
+        }
+        
+        function reviewProgress() {
+            alert("Analyzing your bar prep progress! 📊");
+        }
+        
+        function askLegalQuestion() {
+            alert("AI Legal Assistant ready for your question! 🤖");
+        }
+        
+        function analyzePrecedent() {
+            alert("AI analyzing case precedents! 🔍");
+        }
+        
+        function reviewWriting() {
+            alert("AI reviewing your legal writing! ✍️");
+        }
+        
+        // Progress bar animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 400);
+            });
+        });
+    </script>
+    
+    <script src="/js/school-navigation.js"></script>
+</body>
+</html>

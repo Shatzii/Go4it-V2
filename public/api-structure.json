@@ -1,0 +1,499 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2025-04-26",
+  "apiBase": "/api",
+  "categories": [
+    {
+      "name": "Authentication",
+      "prefix": "/auth",
+      "endpoints": [
+        {
+          "path": "/login",
+          "method": "POST",
+          "description": "Authenticate user and return session token",
+          "parameters": ["username", "password", "role"],
+          "roles": ["all"]
+        },
+        {
+          "path": "/logout",
+          "method": "POST",
+          "description": "End user session",
+          "parameters": [],
+          "roles": ["all"]
+        },
+        {
+          "path": "/register",
+          "method": "POST",
+          "description": "Register new user account",
+          "parameters": ["username", "password", "email", "role", "schoolType"],
+          "roles": ["anonymous"]
+        },
+        {
+          "path": "/profile",
+          "method": "GET",
+          "description": "Get current user profile data",
+          "parameters": [],
+          "roles": ["all-authenticated"]
+        },
+        {
+          "path": "/profile",
+          "method": "PUT",
+          "description": "Update user profile data",
+          "parameters": ["profileData"],
+          "roles": ["all-authenticated"]
+        }
+      ]
+    },
+    {
+      "name": "Assessment",
+      "prefix": "/assessment",
+      "endpoints": [
+        {
+          "path": "/learning-style",
+          "method": "GET",
+          "description": "Get user's learning style assessment results",
+          "parameters": ["userId"],
+          "roles": ["student", "parent", "teacher", "admin"]
+        },
+        {
+          "path": "/learning-style",
+          "method": "POST",
+          "description": "Submit learning style assessment results",
+          "parameters": ["userId", "assessmentData"],
+          "roles": ["student", "parent", "teacher", "admin"]
+        },
+        {
+          "path": "/neurodivergent-profile",
+          "method": "GET",
+          "description": "Get user's neurodivergent profile",
+          "parameters": ["userId"],
+          "roles": ["student", "parent", "teacher", "admin"]
+        },
+        {
+          "path": "/neurodivergent-profile",
+          "method": "POST",
+          "description": "Update user's neurodivergent profile",
+          "parameters": ["userId", "profileData"],
+          "roles": ["student", "parent", "teacher", "admin"]
+        },
+        {
+          "path": "/mood-tracker",
+          "method": "POST",
+          "description": "Record student's learning mood",
+          "parameters": ["userId", "mood", "timestamp", "notes"],
+          "roles": ["student", "parent", "teacher"]
+        },
+        {
+          "path": "/mood-tracker/:userId",
+          "method": "GET",
+          "description": "Get student's mood history",
+          "parameters": ["timeRange"],
+          "roles": ["student", "parent", "teacher", "admin"]
+        }
+      ]
+    },
+    {
+      "name": "Neurodivergent School",
+      "prefix": "/superhero-school",
+      "endpoints": [
+        {
+          "path": "/curriculum/:gradeLevel/:subject",
+          "method": "GET",
+          "description": "Get curriculum content for specific grade and subject",
+          "parameters": ["adaptationType", "learningStyle"],
+          "roles": ["student", "parent", "teacher", "admin"]
+        },
+        {
+          "path": "/generate-curriculum",
+          "method": "POST",
+          "description": "Generate personalized curriculum content",
+          "parameters": ["gradeLevel", "subject", "learningStyle", "adaptationType", "tierLevel"],
+          "roles": ["teacher", "admin"]
+        },
+        {
+          "path": "/powers",
+          "method": "GET",
+          "description": "Get available superhero powers (learning tools)",
+          "parameters": ["gradeLevel"],
+          "roles": ["student", "parent", "teacher", "admin"]
+        },
+        {
+          "path": "/missions",
+          "method": "GET",
+          "description": "Get available learning missions",
+          "parameters": ["gradeLevel", "subject"],
+          "roles": ["student", "parent", "teacher", "admin"]
+        },
+        {
+          "path": "/missions/:missionId/progress",
+          "method": "POST",
+          "description": "Update student progress on a mission",
+          "parameters": ["userId", "progress", "completionData"],
+          "roles": ["student", "teacher"]
+        },
+        {
+          "path": "/community/events",
+          "method": "GET",
+          "description": "Get upcoming community events",
+          "parameters": ["timeRange"],
+          "roles": ["student", "parent", "teacher", "admin"]
+        },
+        {
+          "path": "/community/groups",
+          "method": "GET",
+          "description": "Get available family/community groups",
+          "parameters": [],
+          "roles": ["parent", "teacher", "admin"]
+        }
+      ]
+    },
+    {
+      "name": "Law School",
+      "prefix": "/law-school",
+      "endpoints": [
+        {
+          "path": "/curriculum/:courseId",
+          "method": "GET",
+          "description": "Get law school curriculum content",
+          "parameters": ["adaptationType", "learningStyle"],
+          "roles": ["student", "teacher", "admin"]
+        },
+        {
+          "path": "/bar-exams",
+          "method": "GET",
+          "description": "Get available UAE Bar Exam practice tests",
+          "parameters": [],
+          "roles": ["student", "teacher", "admin"]
+        },
+        {
+          "path": "/bar-exam-progress/:examId",
+          "method": "GET",
+          "description": "Get student progress on specific bar exam",
+          "parameters": ["userId"],
+          "roles": ["student", "teacher", "admin"]
+        },
+        {
+          "path": "/bar-exam-progress/:examId",
+          "method": "POST",
+          "description": "Update student progress on specific bar exam",
+          "parameters": ["userId", "progress", "score"],
+          "roles": ["student", "teacher"]
+        },
+        {
+          "path": "/ai/legal-analysis",
+          "method": "POST",
+          "description": "Generate AI legal analysis of case documents",
+          "parameters": ["caseText", "questionPrompt", "tierLevel"],
+          "roles": ["student", "teacher", "admin"]
+        },
+        {
+          "path": "/ai/case-study",
+          "method": "POST",
+          "description": "Generate case studies and hypotheticals",
+          "parameters": ["topic", "complexity", "tierLevel"],
+          "roles": ["teacher", "admin"]
+        },
+        {
+          "path": "/community/events",
+          "method": "GET",
+          "description": "Get upcoming law school events",
+          "parameters": ["timeRange"],
+          "roles": ["student", "teacher", "admin"]
+        }
+      ]
+    },
+    {
+      "name": "Language School",
+      "prefix": "/language-school",
+      "endpoints": [
+        {
+          "path": "/courses",
+          "method": "GET",
+          "description": "Get available language courses",
+          "parameters": [],
+          "roles": ["student", "parent", "teacher", "admin"]
+        },
+        {
+          "path": "/modules/:languageId/:levelId",
+          "method": "GET",
+          "description": "Get language learning modules",
+          "parameters": ["adaptationType", "learningStyle"],
+          "roles": ["student", "parent", "teacher", "admin"]
+        },
+        {
+          "path": "/vocabulary/:listId",
+          "method": "GET",
+          "description": "Get vocabulary list",
+          "parameters": ["languageId", "learningStyle"],
+          "roles": ["student", "parent", "teacher", "admin"]
+        },
+        {
+          "path": "/vocabulary-progress/:listId",
+          "method": "POST",
+          "description": "Update vocabulary learning progress",
+          "parameters": ["userId", "itemIds", "masteryLevel"],
+          "roles": ["student", "teacher"]
+        },
+        {
+          "path": "/ai/translation",
+          "method": "POST",
+          "description": "Generate AI translations",
+          "parameters": ["text", "sourceLanguage", "targetLanguage", "tierLevel"],
+          "roles": ["student", "teacher", "admin"]
+        },
+        {
+          "path": "/ai/conversation",
+          "method": "POST",
+          "description": "Generate conversational practice scenarios",
+          "parameters": ["language", "topic", "proficiencyLevel", "tierLevel"],
+          "roles": ["student", "teacher", "admin"]
+        },
+        {
+          "path": "/community/language-exchange",
+          "method": "GET",
+          "description": "Get language exchange opportunities",
+          "parameters": ["languageId"],
+          "roles": ["student", "parent", "teacher", "admin"]
+        }
+      ]
+    },
+    {
+      "name": "AI Services",
+      "prefix": "/ai",
+      "endpoints": [
+        {
+          "path": "/status",
+          "method": "GET",
+          "description": "Check if AI integration is working",
+          "parameters": [],
+          "roles": ["admin"]
+        },
+        {
+          "path": "/create-teacher",
+          "method": "POST",
+          "description": "Create an AI teacher system prompt",
+          "parameters": ["subject", "gradeLevel", "teachingStyle", "tierLevel"],
+          "roles": ["admin", "teacher"]
+        },
+        {
+          "path": "/teacher-response",
+          "method": "POST",
+          "description": "Generate a response from an AI teacher",
+          "parameters": ["teacherId", "prompt", "context", "studentProfile", "tierLevel"],
+          "roles": ["student", "teacher", "admin"]
+        },
+        {
+          "path": "/learning-plan",
+          "method": "POST",
+          "description": "Generate a learning plan for a student",
+          "parameters": ["studentProfile", "subject", "timeframe", "goals", "tierLevel"],
+          "roles": ["student", "parent", "teacher", "admin"]
+        },
+        {
+          "path": "/curriculum-content",
+          "method": "POST",
+          "description": "Generate curriculum content",
+          "parameters": ["subject", "gradeLevel", "learningStyle", "adaptationType", "tierLevel"],
+          "roles": ["teacher", "admin"]
+        },
+        {
+          "path": "/educational-analysis",
+          "method": "POST",
+          "description": "Analyze educational content with AI",
+          "parameters": ["content", "analysisType", "tierLevel"],
+          "roles": ["teacher", "admin"]
+        },
+        {
+          "path": "/deep-research",
+          "method": "POST",
+          "description": "Perform deep research on a topic (Premium tier)",
+          "parameters": ["topic", "researchDepth", "researchBreadth", "format"],
+          "roles": ["student", "teacher", "admin"]
+        }
+      ]
+    },
+    {
+      "name": "Content Management",
+      "prefix": "/cms",
+      "endpoints": [
+        {
+          "path": "/news",
+          "method": "GET",
+          "description": "Get news articles",
+          "parameters": ["schoolType", "limit", "offset"],
+          "roles": ["all"]
+        },
+        {
+          "path": "/news",
+          "method": "POST",
+          "description": "Create news article",
+          "parameters": ["title", "content", "schoolType", "featured"],
+          "roles": ["admin"]
+        },
+        {
+          "path": "/blog",
+          "method": "GET",
+          "description": "Get blog posts",
+          "parameters": ["schoolType", "category", "limit", "offset"],
+          "roles": ["all"]
+        },
+        {
+          "path": "/blog",
+          "method": "POST",
+          "description": "Create blog post",
+          "parameters": ["title", "content", "schoolType", "category", "tags"],
+          "roles": ["admin", "teacher"]
+        },
+        {
+          "path": "/events",
+          "method": "GET",
+          "description": "Get events",
+          "parameters": ["schoolType", "timeRange", "limit", "offset"],
+          "roles": ["all"]
+        },
+        {
+          "path": "/events",
+          "method": "POST",
+          "description": "Create event",
+          "parameters": ["title", "description", "date", "schoolType", "location"],
+          "roles": ["admin", "teacher"]
+        }
+      ]
+    },
+    {
+      "name": "Administration",
+      "prefix": "/admin",
+      "endpoints": [
+        {
+          "path": "/users",
+          "method": "GET",
+          "description": "Get list of users",
+          "parameters": ["role", "schoolType", "limit", "offset"],
+          "roles": ["admin"]
+        },
+        {
+          "path": "/users/:userId",
+          "method": "PUT",
+          "description": "Update user account",
+          "parameters": ["userData"],
+          "roles": ["admin"]
+        },
+        {
+          "path": "/users/:userId",
+          "method": "DELETE",
+          "description": "Delete user account",
+          "parameters": [],
+          "roles": ["admin"]
+        },
+        {
+          "path": "/analytics/usage",
+          "method": "GET",
+          "description": "Get platform usage analytics",
+          "parameters": ["schoolType", "timeRange", "metricType"],
+          "roles": ["admin"]
+        },
+        {
+          "path": "/analytics/learning",
+          "method": "GET",
+          "description": "Get learning analytics",
+          "parameters": ["schoolType", "gradeLevel", "subject", "timeRange"],
+          "roles": ["admin", "teacher"]
+        },
+        {
+          "path": "/subscription/:userId",
+          "method": "GET",
+          "description": "Get user subscription details",
+          "parameters": [],
+          "roles": ["admin"]
+        },
+        {
+          "path": "/subscription/:userId",
+          "method": "PUT",
+          "description": "Update user subscription",
+          "parameters": ["tierLevel", "paymentDetails", "expirationDate"],
+          "roles": ["admin"]
+        }
+      ]
+    },
+    {
+      "name": "Sentinel Security",
+      "prefix": "/sentinel",
+      "endpoints": [
+        {
+          "path": "/status",
+          "method": "GET",
+          "description": "Get security system status",
+          "parameters": [],
+          "roles": ["admin"]
+        },
+        {
+          "path": "/threats",
+          "method": "GET",
+          "description": "Get detected security threats",
+          "parameters": ["severity", "timeRange", "limit", "offset"],
+          "roles": ["admin"]
+        },
+        {
+          "path": "/audit-logs",
+          "method": "GET",
+          "description": "Get security audit logs",
+          "parameters": ["userId", "actionType", "timeRange", "limit", "offset"],
+          "roles": ["admin"]
+        },
+        {
+          "path": "/user-activity/:userId",
+          "method": "GET",
+          "description": "Get user security activity",
+          "parameters": ["timeRange", "limit", "offset"],
+          "roles": ["admin"]
+        },
+        {
+          "path": "/security-settings",
+          "method": "GET",
+          "description": "Get platform security settings",
+          "parameters": [],
+          "roles": ["admin"]
+        },
+        {
+          "path": "/security-settings",
+          "method": "PUT",
+          "description": "Update platform security settings",
+          "parameters": ["settingsData"],
+          "roles": ["admin"]
+        }
+      ]
+    }
+  ],
+  "tierLevels": [
+    {
+      "id": "basic",
+      "name": "Basic Tier",
+      "price": 49,
+      "apiLimits": {
+        "aiRequests": 50,
+        "contentGeneration": "limited",
+        "deepResearch": false
+      }
+    },
+    {
+      "id": "standard",
+      "name": "Standard Tier",
+      "price": 129,
+      "apiLimits": {
+        "aiRequests": 500,
+        "contentGeneration": "moderate",
+        "deepResearch": false
+      }
+    },
+    {
+      "id": "premium",
+      "name": "Premium Tier",
+      "price": 199,
+      "apiLimits": {
+        "aiRequests": "unlimited",
+        "contentGeneration": "unlimited",
+        "deepResearch": true
+      }
+    }
+  ]
+}
