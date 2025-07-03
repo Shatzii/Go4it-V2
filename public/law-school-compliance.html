@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Law School Compliance Dashboard - ShotziOS</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="assets/js/helpBubble.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #000000;
+      color: #ffffff;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      color: #ffffff !important;
+    }
+    p {
+      color: #e0e0e0 !important;
+    }
+    a {
+      color: #0070f3;
+    }
+    .text-gray-600, .text-gray-800, .text-gray-500, .text-gray-700 {
+      color: #e0e0e0 !important;
+    }
+    .bg-white {
+      background-color: #121212 !important;
+    }
+    .bg-gray-50, .bg-gray-100 {
+      background-color: #181818 !important;
+    }
+    .border-gray-300 {
+      border-color: #333333 !important;
+    }
+    .card {
+      background-color: #121212 !important;
+      border: 1px solid #0070f3 !important;
+    }
+    .header-gradient {
+      background: linear-gradient(135deg, #0070f3 0%, #003580 100%);
+    }
+    button, .button {
+      background-color: #0070f3 !important;
+      color: white !important;
+      border: none !important;
+    }
+    button:hover, .button:hover {
+      background-color: #0060d0 !important;
+    }
+    footer {
+      background-color: #121212 !important;
+      border-top: 1px solid #333333;
+    }
+    .tabs-container {
+      border-bottom: 1px solid #333333;
+    }
+    .tab {
+      border-bottom: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+    .tab.active {
+      border-bottom: 2px solid #0070f3;
+      color: #0070f3 !important;
+    }
+    table th {
+      background-color: #162038 !important;
+      color: #ffffff !important;
+    }
+    table td {
+      border-color: #333333 !important;
+    }
+    .chart-container {
+      background-color: #121212 !important;
+      border: 1px solid #0070f3 !important;
+    }
+    /* Status indicators */
+    .status-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+    }
+    .status-high {
+      background-color: #FF3D3D;
+    }
+    .status-medium {
+      background-color: #FFC107;
+    }
+    .status-low {
+      background-color: #0EB100;
+    }
+    /* Progress bars */
+    .progress-container {
+      width: 100%;
+      height: 8px;
+      background-color: #333333;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background-color: #0070f3;
+    }
+    /* Statistics cards */
+    .stat-card {
+      border-radius: 8px;
+      padding: 1rem;
+      background-color: #162038;
+      border: 1px solid #0070f3;
+    }
+    /* Compliance score indicators */
+    .compliance-score {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+    }
+    .score-high {
+      background-color: #0EB100;
+    }
+    .score-medium {
+      background-color: #FFC107;
+    }
+    .score-low {
+      background-color: #FF3D3D;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header-gradient text-white shadow-lg">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-4">
+          <a href="index.html" class="text-white px-3 py-1 rounded hover:bg-blue-600">
+            🏠 Home
+          </a>
+          <h1 class="text-2xl font-bold flex items-center">
+            <span class="mr-2">⚖️</span> Law School Compliance Dashboard
+          </h1>
+        </div>
+        <div class="flex items-center space-x-3">
+          <button class="flex items-center space-x-1 bg-blue-700 px-3 py-1 rounded text-sm">
+            <span>👤</span>
+            <span>Compliance Officer</span>
+          </button>
+          <button class="bg-blue-800 px-3 py-1 rounded text-sm">Logout</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dashboard Content -->
+  <main class="container mx-auto py-6 px-4">
+    <!-- Dashboard Tabs -->
+    <div class="tabs-container flex space-x-6 mb-6 pb-2 overflow-x-auto">
+      <button class="tab active text-lg px-2">Overview</button>
+      <button class="tab text-lg px-2">Regulatory Compliance</button>
+      <button class="tab text-lg px-2">Audit Logs</button>
+      <button class="tab text-lg px-2">Risk Management</button>
+      <button class="tab text-lg px-2">Incident Reports</button>
+      <button class="tab text-lg px-2">Training</button>
+      <button class="tab text-lg px-2">Reports</button>
+    </div>
+
+    <!-- Overview Dashboard -->
+    <div class="space-y-6">
+      <!-- Key Compliance Statistics -->
+      <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="stat-card">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs text-gray-400">Overall Compliance</p>
+              <p class="text-2xl font-bold">92%</p>
+            </div>
+            <div class="compliance-score score-high">
+              <span>A</span>
+            </div>
+          </div>
+          <div class="mt-2">
+            <div class="flex items-center">
+              <span class="text-green-400 text-xs mr-1">+2.5%</span>
+              <span class="text-xs">from last quarter</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs text-gray-400">Open Issues</p>
+              <p class="text-2xl font-bold">7</p>
+            </div>
+            <div class="p-2 rounded-full bg-opacity-20 bg-yellow-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+          </div>
+          <div class="mt-2">
+            <div class="flex items-center">
+              <span class="text-green-400 text-xs mr-1">-3</span>
+              <span class="text-xs">from last month</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs text-gray-400">Data Privacy Score</p>
+              <p class="text-2xl font-bold">89%</p>
+            </div>
+            <div class="compliance-score score-medium">
+              <span>B+</span>
+            </div>
+          </div>
+          <div class="mt-2">
+            <div class="flex items-center">
+              <span class="text-green-400 text-xs mr-1">+1.2%</span>
+              <span class="text-xs">from last assessment</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs text-gray-400">Regulatory Updates</p>
+              <p class="text-2xl font-bold">3</p>
+            </div>
+            <div class="p-2 rounded-full bg-opacity-20 bg-blue-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+          <div class="mt-2">
+            <div class="flex items-center">
+              <span class="text-xs">Pending review</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Compliance by Category -->
+      <section class="bg-white rounded-lg p-4">
+        <h3 class="font-medium mb-4">Compliance by Category</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <div class="space-y-4">
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span class="text-sm">Academic Standards</span>
+                  <span class="text-sm">95%</span>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-bar" style="width: 95%; background-color: #0EB100;"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span class="text-sm">Data Privacy & Security</span>
+                  <span class="text-sm">89%</span>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-bar" style="width: 89%; background-color: #FFC107;"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span class="text-sm">Faculty Qualifications</span>
+                  <span class="text-sm">98%</span>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-bar" style="width: 98%; background-color: #0EB100;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="space-y-4">
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span class="text-sm">Operational Procedures</span>
+                  <span class="text-sm">91%</span>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-bar" style="width: 91%; background-color: #0EB100;"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span class="text-sm">Financial Controls</span>
+                  <span class="text-sm">93%</span>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-bar" style="width: 93%; background-color: #0EB100;"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span class="text-sm">Ethics & Professional Conduct</span>
+                  <span class="text-sm">87%</span>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-bar" style="width: 87%; background-color: #FFC107;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recent Compliance Issues and Audit History -->
+      <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <!-- Recent Compliance Issues -->
+        <div class="bg-white rounded-lg p-4">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-medium">Recent Compliance Issues</h3>
+            <button class="text-xs px-3 py-1 rounded">View All</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-700">
+              <thead>
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Issue</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Category</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Priority</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-700">
+                <tr>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="text-sm font-medium">Data retention policy update needed</div>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Data Privacy</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Apr 5, 2025</td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <span class="status-indicator status-high"></span>
+                    <span class="text-sm">High</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="text-sm font-medium">Faculty ethics training overdue</div>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Ethics</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Apr 3, 2025</td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <span class="status-indicator status-medium"></span>
+                    <span class="text-sm">Medium</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="text-sm font-medium">Accessibility compliance review</div>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Accessibility</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Apr 2, 2025</td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <span class="status-indicator status-medium"></span>
+                    <span class="text-sm">Medium</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="text-sm font-medium">Course material copyright review</div>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Academic</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Mar 29, 2025</td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <span class="status-indicator status-low"></span>
+                    <span class="text-sm">Low</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Audit History -->
+        <div class="bg-white rounded-lg p-4">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-medium">Recent Audit History</h3>
+            <button class="text-xs px-3 py-1 rounded">View All</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-700">
+              <thead>
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Audit Type</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Score</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-700">
+                <tr>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="text-sm font-medium">Internal Data Security Audit</div>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Mar 15, 2025</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Complete</td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="text-sm font-medium">89%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="text-sm font-medium">UAE Ministry of Education Audit</div>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Feb 25, 2025</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Complete</td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="text-sm font-medium">94%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="text-sm font-medium">Financial Controls Audit</div>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Jan 18, 2025</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Complete</td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="text-sm font-medium">92%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="text-sm font-medium">Bar Association Standards Review</div>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Dec 12, 2024</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Complete</td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="text-sm font-medium">96%</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Policy Compliance and Risk Assessment -->
+      <section class="grid grid-cols-1 gap-4">
+        <div class="bg-white rounded-lg p-4">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-medium">Policy Compliance Status</h3>
+            <button class="text-xs px-3 py-1 rounded">Update Policies</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-700">
+              <thead>
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Policy</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Last Updated</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-700">
+                <tr>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="text-sm font-medium">Data Privacy & Protection Policy</div>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Jan 20, 2025</td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs rounded bg-yellow-900 text-yellow-300">Needs Review</span>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <button class="px-2 py-1 text-xs rounded">Review</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="text-sm font-medium">Faculty Code of Conduct</div>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Mar 5, 2025</td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs rounded bg-green-900 text-green-300">Compliant</span>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <button class="px-2 py-1 text-xs rounded">View</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="text-sm font-medium">Academic Integrity Policy</div>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Mar 12, 2025</td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs rounded bg-green-900 text-green-300">Compliant</span>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <button class="px-2 py-1 text-xs rounded">View</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="text-sm font-medium">Equal Opportunity & Accessibility Policy</div>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Dec 8, 2024</td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs rounded bg-red-900 text-red-300">Update Required</span>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <button class="px-2 py-1 text-xs rounded">Update</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <div class="text-sm font-medium">Financial Aid & Scholarship Policy</div>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">Feb 17, 2025</td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs rounded bg-green-900 text-green-300">Compliant</span>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <button class="px-2 py-1 text-xs rounded">View</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Upcoming Compliance Deadlines -->
+      <section class="bg-white rounded-lg p-4">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-medium">Upcoming Compliance Deadlines</h3>
+          <button class="text-xs px-3 py-1 rounded">View Calendar</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-700">
+            <thead>
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Requirement</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Due Date</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Days Left</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Assigned To</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-700">
+              <tr>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="text-sm font-medium">Annual Data Privacy Report</div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm">Apr 30, 2025</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm">20 days</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm">Amina Hassan</td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <span class="px-2 py-1 text-xs rounded bg-yellow-900 text-yellow-300">In Progress</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="text-sm font-medium">Bar Association Accreditation Renewal</div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm">May 15, 2025</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm">35 days</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm">Mohammed Al-Farsi</td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <span class="px-2 py-1 text-xs rounded bg-blue-900 text-blue-300">Not Started</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="text-sm font-medium">Faculty Credentials Review</div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm">May 1, 2025</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm">21 days</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm">Layla Al-Zaabi</td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <span class="px-2 py-1 text-xs rounded bg-yellow-900 text-yellow-300">In Progress</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="text-sm font-medium">Quarterly Compliance Training</div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm">Apr 20, 2025</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm">10 days</td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm">Sarah Al-Maktoum</td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <span class="px-2 py-1 text-xs rounded bg-green-900 text-green-300">Ready</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-gray-200 p-4 mt-12">
+    <div class="container mx-auto">
+      <div class="text-center">
+        <p class="text-sm">&copy; 2025 ShotziOS Learning Platform - Law School Compliance Dashboard</p>
+        <p class="text-xs text-gray-400 mt-1">
+          Version 2.5.3 • Last Updated: April 10, 2025
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Help Bubble -->
+  <div id="helpBubble" class="fixed right-4 bottom-4 z-50"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeHelpBubble('law-compliance', 'right');
+    });
+  </script>
+</body>
+</html>
