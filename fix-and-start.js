@@ -1,40 +1,26 @@
-// This is a simplified script to start the server in a way that bypasses the Vite config issues
-const { exec } = require('child_process');
-const { promises: fs } = require('fs');
-const path = require('path');
+#!/usr/bin/env node
 
-// Setup the environment for running the server
-process.env.NODE_ENV = 'development';
-process.env.PORT = '3000';
-process.env.DEBUG = '*';
+/**
+ * Go4It Sports Platform - Workflow Fix & Start
+ * This file replaces the problematic next dev command
+ */
 
-console.log('Starting Go4It Sports Platform...');
+const { spawn } = require('child_process');
 
-// Run the server with tsx
-const command = 'npx tsx server/index.ts';
-console.log(`Running command: ${command}`);
-
-// Execute the command and pipe output to console
-const child = exec(command, {
-  env: process.env
+// Start the properly configured server
+const server = spawn('node', ['server.js'], {
+  stdio: 'inherit',
+  env: {
+    ...process.env,
+    NODE_ENV: 'development',
+    PORT: '5000'
+  }
 });
 
-child.stdout.on('data', (data) => {
-  console.log(data.toString().trim());
-});
+// Handle process cleanup
+process.on('SIGINT', () => server.kill('SIGINT'));
+process.on('SIGTERM', () => server.kill('SIGTERM'));
 
-child.stderr.on('data', (data) => {
-  console.error(data.toString().trim());
-});
-
-child.on('exit', (code) => {
-  console.log(`Server process exited with code ${code}`);
+server.on('exit', (code) => {
   process.exit(code);
-});
-
-// Handle termination signals
-process.on('SIGINT', () => {
-  console.log('Shutting down server...');
-  child.kill('SIGINT');
-  process.exit(0);
 });
