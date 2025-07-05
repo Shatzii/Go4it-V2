@@ -78,34 +78,196 @@ export default function OptimizedHomePage() {
       <main className="flex-1">
         <div className="max-w-7xl mx-auto px-6 py-20">
           <div className="text-center mb-16">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-              Revolutionary Sports Analytics
+            <h1 className="text-6xl md:text-7xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+              GET <span className="text-blue-400">VERIFIED</span>
             </h1>
-            <p className="text-xl text-slate-300 mb-8 max-w-3xl mx-auto">
-              AI-powered platform designed specifically for neurodivergent student athletes aged 12-18.
-              Advanced video analysis, personalized coaching, and college recruitment tools.
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+              GAR Rating System
+            </h2>
+            <p className="text-xl text-slate-300 mb-4 max-w-2xl mx-auto">
+              The Ultimate AI-Powered Athlete Evaluation
+            </p>
+            <p className="text-lg text-slate-400 mb-8 max-w-3xl mx-auto">
+              Our revolutionary GAR Rating System uses AI to analyze physical metrics, cognitive abilities, and psychological factors for the most comprehensive athlete evaluation available.
             </p>
             
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+            {/* Feature Cards */}
+            <div className="grid md:grid-cols-2 gap-6 mb-8 max-w-2xl mx-auto">
+              <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-6 border border-slate-700">
+                <h3 className="text-lg font-semibold text-white mb-2">AI Motion Analysis</h3>
+                <p className="text-sm text-slate-300">Our cutting-edge AI technology analyzes your motion mechanics with professional-grade accuracy.</p>
+              </div>
+              <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-6 border border-slate-700">
+                <h3 className="text-lg font-semibold text-white mb-2">Verified Combines</h3>
+                <p className="text-sm text-slate-300">Participate in certified athletic combines where your performance metrics are verified by professionals.</p>
+              </div>
+            </div>
+            
+            {/* Action Button */}
+            <div className="mb-8">
               <SafeLink 
-                href="/dashboard" 
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg px-8 py-3 rounded-md transition-colors inline-flex items-center justify-center"
+                href="/auth" 
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg px-8 py-4 rounded-lg transition-colors inline-block"
               >
-                Explore Platform
-                <ExternalLink className="ml-2 w-5 h-5" />
-              </SafeLink>
-              <SafeLink 
-                href="/starpath" 
-                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold text-lg px-8 py-3 rounded-md transition-colors"
-              >
-                View StarPath
+                Get Verified Today
               </SafeLink>
             </div>
 
             {/* Platform Status */}
             <div className="flex items-center justify-center">
               <PlatformStatusIndicator status={platformStatus} />
+            </div>
+          </div>
+
+          {/* Top Verified Athletes */}
+          <div className="mb-16">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-3xl font-bold text-white">Top Verified Athletes</h2>
+              <SafeLink href="/athletes" className="text-blue-400 hover:text-blue-300 transition-colors">
+                View All
+              </SafeLink>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Sample Athletes */}
+              <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                <div className="relative mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full mb-3"></div>
+                  <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                    VERIFIED
+                  </div>
+                </div>
+                <div className="text-right mb-2">
+                  <div className="text-3xl font-bold text-white">92</div>
+                  <div className="text-slate-400 text-sm">GAR Score</div>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">Alonzo Barrett</h3>
+                <p className="text-slate-400 text-sm mb-2">Shooting Guard</p>
+                <div className="flex justify-between text-xs text-slate-500">
+                  <span>SPORT: Basketball</span>
+                  <span>POSITION: Guard</span>
+                </div>
+              </div>
+              
+              <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                <div className="relative mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-500 rounded-full mb-3"></div>
+                  <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                    VERIFIED
+                  </div>
+                </div>
+                <div className="text-right mb-2">
+                  <div className="text-3xl font-bold text-white">87</div>
+                  <div className="text-slate-400 text-sm">GAR Score</div>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">Sarah Johnson</h3>
+                <p className="text-slate-400 text-sm mb-2">Sprinter</p>
+                <div className="flex justify-between text-xs text-slate-500">
+                  <span>SPORT: Track</span>
+                  <span>POSITION: Sprinter</span>
+                </div>
+              </div>
+              
+              <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                <div className="relative mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mb-3"></div>
+                  <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                    VERIFIED
+                  </div>
+                </div>
+                <div className="text-right mb-2">
+                  <div className="text-3xl font-bold text-white">94</div>
+                  <div className="text-slate-400 text-sm">GAR Score</div>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">Malik Barrett</h3>
+                <p className="text-slate-400 text-sm mb-2">Center Midfielder</p>
+                <div className="flex justify-between text-xs text-slate-500">
+                  <span>SPORT: Soccer</span>
+                  <span>POSITION: Midfielder</span>
+                </div>
+              </div>
+              
+              <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                <div className="relative mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-full mb-3"></div>
+                  <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                    VERIFIED
+                  </div>
+                </div>
+                <div className="text-right mb-2">
+                  <div className="text-3xl font-bold text-white">91</div>
+                  <div className="text-slate-400 text-sm">GAR Score</div>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-1">Emma Wilson</h3>
+                <p className="text-slate-400 text-sm mb-2">Outside Hitter</p>
+                <div className="flex justify-between text-xs text-slate-500">
+                  <span>SPORT: Volleyball</span>
+                  <span>POSITION: Hitter</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Upcoming Combine Events */}
+          <div className="mb-16">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-3xl font-bold text-white">Upcoming Combine Events</h2>
+              <SafeLink href="/combine-tour" className="text-blue-400 hover:text-blue-300 transition-colors">
+                View All Events
+              </SafeLink>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="text-orange-500 text-sm font-semibold">FILLING FAST</div>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">Chicago Elite Combine</h3>
+                <p className="text-slate-400 text-sm mb-4">Chicago, IL • Jul 11, 2025</p>
+                <p className="text-slate-300 text-sm mb-6">
+                  Join us for a comprehensive evaluation featuring physical testing, skills assessment, and game play. College coaches will be in attendance to evaluate talent.
+                </p>
+                <SafeLink 
+                  href="/combine-tour/chicago-elite-combine-2025" 
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors w-full text-center inline-block"
+                >
+                  Register Now
+                </SafeLink>
+              </div>
+              
+              <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="text-orange-500 text-sm font-semibold">FILLING FAST</div>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">Los Angeles Skills Showcase</h3>
+                <p className="text-slate-400 text-sm mb-4">Los Angeles, CA • Jul 18, 2025</p>
+                <p className="text-slate-300 text-sm mb-6">
+                  An exclusive opportunity for top high school athletes to showcase their skills in front of college scouts and coaches.
+                </p>
+                <SafeLink 
+                  href="/combine-tour/la-skills-showcase-2025" 
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors w-full text-center inline-block"
+                >
+                  Register Now
+                </SafeLink>
+              </div>
+              
+              <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="text-orange-500 text-sm font-semibold">FILLING FAST</div>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">Dallas All-Stars Combine</h3>
+                <p className="text-slate-400 text-sm mb-4">Arlington, TX • Jul 5, 2025</p>
+                <p className="text-slate-300 text-sm mb-6">
+                  The premier combine event in Texas featuring comprehensive testing and evaluation for multiple sports.
+                </p>
+                <SafeLink 
+                  href="/combine-tour/dallas-all-stars-2025" 
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors w-full text-center inline-block"
+                >
+                  Register Now
+                </SafeLink>
+              </div>
             </div>
           </div>
 
