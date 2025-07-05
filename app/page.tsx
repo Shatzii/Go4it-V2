@@ -49,6 +49,12 @@ export default function OptimizedHomePage() {
                 Sign In
               </SafeLink>
               <SafeLink 
+                href="/admin" 
+                className="text-red-400 hover:text-red-300 transition-colors text-sm"
+              >
+                Admin
+              </SafeLink>
+              <SafeLink 
                 href="/dashboard" 
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
               >

@@ -12,13 +12,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Return user data without password
-    const { password: _, ...userWithoutPassword } = user;
-    return NextResponse.json({ user: userWithoutPassword });
+    return NextResponse.json({ 
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        firstName: user.firstName,
+        lastName: user.lastName
+      }
+    });
   } catch (error) {
     console.error('Auth check error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Authentication failed' },
       { status: 500 }
     );
   }
