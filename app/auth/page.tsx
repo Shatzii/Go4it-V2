@@ -192,13 +192,7 @@ export default function AuthPage() {
             </p>
           </div>
 
-          {isLogin && (
-            <div className="mt-6 p-4 bg-slate-800 rounded-md">
-              <p className="text-sm text-slate-300 mb-2">Demo Credentials:</p>
-              <p className="text-xs text-slate-400">Username: admin</p>
-              <p className="text-xs text-slate-400">Password: MyTime$$</p>
-            </div>
-          )}
+
         </div>
       </div>
 
