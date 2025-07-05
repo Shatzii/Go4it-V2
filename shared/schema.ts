@@ -1,10 +1,10 @@
-import { pgTable, text, integer, timestamp, boolean, decimal, jsonb } from 'drizzle-orm/pg-core';
+import { pgTable, text, integer, timestamp, boolean, decimal, jsonb, serial } from 'drizzle-orm/pg-core';
 import { createInsertSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
 // Users table
 export const users = pgTable('users', {
-  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+  id: serial('id').primaryKey(),
   username: text('username').notNull().unique(),
   email: text('email').notNull().unique(),
   password: text('password').notNull(),
@@ -23,7 +23,7 @@ export const users = pgTable('users', {
 
 // Video analysis table
 export const videoAnalysis = pgTable('video_analysis', {
-  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+  id: serial('id').primaryKey(),
   userId: integer('user_id').notNull().references(() => users.id),
   fileName: text('file_name').notNull(),
   filePath: text('file_path').notNull(),
@@ -36,7 +36,7 @@ export const videoAnalysis = pgTable('video_analysis', {
 
 // StarPath progress table
 export const starPathProgress = pgTable('starpath_progress', {
-  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+  id: serial('id').primaryKey(),
   userId: integer('user_id').notNull().references(() => users.id),
   skillId: text('skill_id').notNull(),
   skillName: text('skill_name').notNull(),
@@ -49,7 +49,7 @@ export const starPathProgress = pgTable('starpath_progress', {
 
 // Achievements table
 export const achievements = pgTable('achievements', {
-  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+  id: serial('id').primaryKey(),
   userId: integer('user_id').notNull().references(() => users.id),
   achievementId: text('achievement_id').notNull(),
   title: text('title').notNull(),
@@ -60,7 +60,7 @@ export const achievements = pgTable('achievements', {
 
 // NCAA schools table
 export const ncaaSchools = pgTable('ncaa_schools', {
-  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+  id: serial('id').primaryKey(),
   schoolName: text('school_name').notNull(),
   division: text('division').notNull(), // D1, D2, D3, NAIA, NJCAA
   conference: text('conference'),
