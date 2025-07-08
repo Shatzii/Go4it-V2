@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -115,7 +114,7 @@ interface RecentActivity {
   priority?: 'low' | 'medium' | 'high';
 }
 
-export default function StudentAthleteDashboard() {
+function DashboardContent() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -138,7 +137,7 @@ export default function StudentAthleteDashboard() {
     weeklyGoalProgress: 68,
     monthlyRank: 142
   });
-  
+
   const [academicProgress, setAcademicProgress] = useState<AcademicProgress>({
     currentGPA: 3.4,
     targetGPA: 3.8,
@@ -496,7 +495,7 @@ export default function StudentAthleteDashboard() {
               <h3 className="text-lg font-bold text-white">Academic Progress Tracker</h3>
               <School className="h-5 w-5 text-green-400" />
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-400">{academicProgress.currentGPA}</div>
@@ -555,7 +554,7 @@ export default function StudentAthleteDashboard() {
               <h3 className="text-lg font-bold text-white">GAR Video Analysis</h3>
               <Target className="h-5 w-5 text-blue-400" />
             </div>
-            
+
             <div className="text-center mb-6">
               <div className="text-4xl font-bold text-white mb-2">{starPathProgress.garScore}/100</div>
               <div className="text-sm text-slate-400">Overall GAR Score</div>
@@ -610,7 +609,7 @@ export default function StudentAthleteDashboard() {
             onClick={() => router.push('/starpath')}
             color="blue"
           />
-          
+
           <FeatureCard
             icon={<Target className="h-6 w-6" />}
             title="Skill Tree"
@@ -802,7 +801,7 @@ export default function StudentAthleteDashboard() {
               <h3 className="text-lg font-bold text-white">Weekly Goals</h3>
               <Target className="h-5 w-5 text-green-400" />
             </div>
-            
+
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-slate-400">Training Sessions</span>
@@ -811,7 +810,7 @@ export default function StudentAthleteDashboard() {
               <div className="w-full bg-slate-700 rounded-full h-2">
                 <div className="bg-green-500 h-2 rounded-full" style={{ width: '80%' }}></div>
               </div>
-              
+
               <div className="flex justify-between items-center">
                 <span className="text-slate-400">Video Uploads</span>
                 <span className="text-white">2/3</span>
@@ -819,7 +818,7 @@ export default function StudentAthleteDashboard() {
               <div className="w-full bg-slate-700 rounded-full h-2">
                 <div className="bg-blue-500 h-2 rounded-full" style={{ width: '67%' }}></div>
               </div>
-              
+
               <div className="flex justify-between items-center">
                 <span className="text-slate-400">Study Hours</span>
                 <span className="text-white">18/20</span>
@@ -841,7 +840,7 @@ export default function StudentAthleteDashboard() {
               <h3 className="text-lg font-bold text-white">Performance Ranking</h3>
               <Medal className="h-5 w-5 text-yellow-400" />
             </div>
-            
+
             <div className="text-center mb-6">
               <div className="text-3xl font-bold text-yellow-400">#{starPathProgress.monthlyRank}</div>
               <div className="text-sm text-slate-400">National Ranking</div>
@@ -952,7 +951,6 @@ function FeatureCard({
         <span>{action}</span>
         <ArrowRight className="h-3 w-3" />
       </button>
-    </div>
   );
 }
 
@@ -965,5 +963,52 @@ function QuickActionButton({ icon, title, onClick }: { icon: React.ReactNode; ti
       <div className="text-white mb-2 flex justify-center group-hover:scale-110 transition-transform">{icon}</div>
       <div className="text-xs text-slate-300 font-medium">{title}</div>
     </button>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-400 mx-auto mb-4"></div>
+        <p className="text-white text-lg">Loading your athlete dashboard...</p>
+      </div>
+    </div>
+  );
+}
+
+// Consider implementing a more robust error boundary for production
+function ErrorBoundary({ children }: { children: React.ReactNode }) {
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    if (hasError) {
+      // You can log the error to an error reporting service here
+      console.error('An error occurred in the component.');
+    }
+  }, [hasError]);
+
+  if (hasError) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+          <p className="text-white text-lg font-bold mb-2">Oops! Something went wrong.</p>
+          <p className="text-slate-400">We're sorry, but an error occurred while loading this page.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return children;
+}
+
+export default function StudentAthleteDashboard() {
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={<LoadingFallback />}>
+        <DashboardContent />
+      </Suspense>
+    </ErrorBoundary>
   );
 }
