@@ -361,6 +361,20 @@ export default function DashboardPage() {
                   color="bg-orange-600 hover:bg-orange-700"
                   onClick={() => router.push('/academics')}
                 />
+                <ActionButton
+                  title="Highlight Reel Generator"
+                  description="Create professional highlight reels with AI"
+                  icon={<Video className="w-8 h-8" />}
+                  color="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700"
+                  onClick={() => router.push('/highlight-reel')}
+                />
+                <ActionButton
+                  title="Performance Analytics"
+                  description="Advanced biomechanical analysis"
+                  icon={<BarChart3 className="w-8 h-8" />}
+                  color="bg-cyan-600 hover:bg-cyan-700"
+                  onClick={() => router.push('/analytics')}
+                />
               </div>
             </div>
 
@@ -414,9 +428,18 @@ export default function DashboardPage() {
                 <Upload className="h-10 w-10 text-slate-400 mx-auto mb-3" />
                 <h4 className="text-lg font-semibold text-white mb-2">Upload Performance Video</h4>
                 <p className="text-slate-400 mb-4">Get AI-powered GAR scoring and biomechanical analysis</p>
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors">
-                  Select Video File
-                </button>
+                <div className="flex space-x-3">
+                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                    Select Video File
+                  </button>
+                  <button 
+                    onClick={() => router.push('/highlight-reel')}
+                    className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center space-x-2"
+                  >
+                    <Play className="w-4 h-4" />
+                    <span>Create Highlight Reel</span>
+                  </button>
+                </div>
               </div>
               
               {/* Recent GAR Analysis */}
