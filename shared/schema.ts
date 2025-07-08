@@ -51,11 +51,11 @@ export const starPathProgress = pgTable('starpath_progress', {
 export const achievements = pgTable('achievements', {
   id: serial('id').primaryKey(),
   userId: integer('user_id').notNull().references(() => users.id),
-  achievementId: text('achievement_id').notNull(),
+  achievementType: text('achievement_type').notNull(),
   title: text('title').notNull(),
   description: text('description'),
-  badgeIcon: text('badge_icon'),
-  earnedAt: timestamp('earned_at').notNull().defaultNow(),
+  iconType: text('icon_type'),
+  earnedDate: timestamp('earned_date').notNull().defaultNow(),
 });
 
 // NCAA schools table
