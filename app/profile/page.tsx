@@ -1,11 +1,17 @@
-import React from 'react';
-import { auth, currentUser } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { UserProfile } from '@clerk/nextjs';
+'use client';
 
-export default async function ProfilePage() {
-  const { userId } = auth();
-  const user = await currentUser();
+import React from 'react';
+import { useAuth, useUser } from '@clerk/nextjs';
+import { UserProfile } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
+
+export default function ProfilePage() {
+  const { isLoaded, userId } = useAuth();
+  const { user } = useUser();
+  
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
   
   if (!userId) {
     redirect('/sign-in');
