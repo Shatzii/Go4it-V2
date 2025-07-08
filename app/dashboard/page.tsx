@@ -195,7 +195,7 @@ export default function DashboardPage() {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-6">
               <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                Go4It Sports
+                Player Dashboard
               </h1>
               <nav className="hidden md:flex space-x-6">
                 <NavLink href="/dashboard" active>Dashboard</NavLink>
