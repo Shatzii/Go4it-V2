@@ -71,6 +71,27 @@ export default function AuthPage() {
             </p>
           </div>
 
+          {/* Demo Credentials for Login */}
+          {isLogin && (
+            <div className="bg-blue-600/10 border border-blue-500/30 rounded-lg p-4 mb-6">
+              <h3 className="text-blue-400 font-semibold mb-2 text-center">Demo Credentials</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-300">Athlete:</span>
+                  <span className="text-white font-mono">demo / demo123</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-300">Coach:</span>
+                  <span className="text-white font-mono">coach / demo123</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-300">Admin:</span>
+                  <span className="text-white font-mono">admin / demo123</span>
+                </div>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {!isLogin && (
               <>
