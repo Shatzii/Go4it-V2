@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import ClientOnly from '@/components/ClientOnly';
 import { 
   Star, 
   Trophy, 
@@ -119,6 +118,7 @@ interface RecentActivity {
 export default function StudentAthleteDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [mounted, setMounted] = useState(false);
   const [starPathProgress, setStarPathProgress] = useState<StarPathProgress>({
     currentStarLevel: 2,
     targetStarLevel: 5,
@@ -297,15 +297,7 @@ export default function StudentAthleteDashboard() {
   }
 
   return (
-    <ClientOnly fallback={
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-400 mx-auto mb-4"></div>
-          <p className="text-white text-lg">Loading your athlete dashboard...</p>
-        </div>
-      </div>
-    }>
-      <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-slate-950 text-white">
       {/* Header */}
       <header className="bg-slate-900 border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -976,7 +968,6 @@ function QuickActionButton({ icon, title, onClick }: { icon: React.ReactNode; ti
     </button>
   );
 }
-      </div>
-    </ClientOnly>
+    </div>
   );
 }
