@@ -1,5 +1,10 @@
 {
   "/page": "app/page.js",
   "/auth/page": "app/auth/page.js",
-  "/api/auth/login/route": "app/api/auth/login/route.js"
+  "/api/auth/login/route": "app/api/auth/login/route.js",
+  "/api/auth/me/route": "app/api/auth/me/route.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/api/gar/stats/route": "app/api/gar/stats/route.js",
+  "/api/starpath/stats/route": "app/api/starpath/stats/route.js",
+  "/api/achievements/stats/route": "app/api/achievements/stats/route.js"
 }
