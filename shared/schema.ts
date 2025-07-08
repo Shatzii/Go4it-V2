@@ -103,6 +103,44 @@ export const insertAchievementSchema = createInsertSchema(achievements).omit({
   earnedAt: true,
 });
 
+// Videos table for highlight reel generation
+export const videos = pgTable('videos', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  fileName: text('file_name').notNull(),
+  filePath: text('file_path').notNull(),
+  sport: text('sport').notNull(),
+  garScore: decimal('gar_score', { precision: 5, scale: 2 }),
+  analysisData: jsonb('analysis_data'),
+  duration: integer('duration'), // in seconds
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+// Highlight reels table
+export const highlightReels = pgTable('highlight_reels', {
+  id: serial('id').primaryKey(),
+  videoId: integer('video_id').notNull().references(() => videos.id),
+  title: text('title').notNull(),
+  duration: integer('duration').notNull().default(60), // in seconds
+  highlights: jsonb('highlights').notNull(), // array of highlight moments
+  status: text('status').notNull().default('processing'), // processing, completed, failed
+  downloadUrl: text('download_url'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  processedAt: timestamp('processed_at'),
+});
+
+// Zod schemas for new tables
+export const insertVideoSchema = createInsertSchema(videos).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertHighlightReelSchema = createInsertSchema(highlightReels).omit({
+  id: true,
+  createdAt: true,
+  processedAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
