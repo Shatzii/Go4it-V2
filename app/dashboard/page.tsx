@@ -231,7 +231,6 @@ export default function StudentAthleteDashboard() {
   ]);
 
   const [loading, setLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -966,8 +965,5 @@ function QuickActionButton({ icon, title, onClick }: { icon: React.ReactNode; ti
       <div className="text-white mb-2 flex justify-center group-hover:scale-110 transition-transform">{icon}</div>
       <div className="text-xs text-slate-300 font-medium">{title}</div>
     </button>
-  );
-}
-    </div>
   );
 }
