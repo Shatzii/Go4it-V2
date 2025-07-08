@@ -230,8 +230,10 @@ export default function StudentAthleteDashboard() {
   ]);
 
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     loadUserData();
   }, []);
 
@@ -282,7 +284,7 @@ export default function StudentAthleteDashboard() {
     }
   };
 
-  if (loading) {
+  if (!mounted || loading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
         <div className="text-center">
