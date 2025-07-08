@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -32,7 +33,20 @@ import {
   Plus,
   Settings,
   Eye,
-  School
+  School,
+  ChevronRight,
+  Timer,
+  MapPin,
+  Gamepad2,
+  Upload,
+  LineChart,
+  UserPlus,
+  Headphones,
+  Smartphone,
+  Search,
+  FileText,
+  AlertCircle,
+  ThumbsUp
 } from 'lucide-react';
 
 interface User {
@@ -56,6 +70,10 @@ interface StarPathProgress {
   achievements: number;
   garScore?: number;
   lastGarAnalysis?: string;
+  unlockedSkills: number;
+  totalSkills: number;
+  weeklyGoalProgress: number;
+  monthlyRank: number;
 }
 
 interface AcademicProgress {
@@ -65,19 +83,39 @@ interface AcademicProgress {
   totalCredits: number;
   ncaaEligible: boolean;
   upcomingDeadlines: number;
+  currentCourses: number;
+  semesterHours: number;
+  academicStanding: string;
+}
+
+interface HealthMetrics {
+  recoveryScore: number;
+  sleepHours: number;
+  hydrationLevel: number;
+  energyLevel: number;
+  injuryStatus: string;
+  lastWorkout: string;
+}
+
+interface ScoutActivity {
+  scoutName: string;
+  action: string;
+  timestamp: string;
+  university: string;
 }
 
 interface RecentActivity {
   id: string;
-  type: 'workout' | 'video' | 'achievement' | 'academic' | 'skill';
+  type: 'workout' | 'video' | 'achievement' | 'academic' | 'skill' | 'scout' | 'team';
   title: string;
   description: string;
   xpEarned?: number;
   timestamp: string;
   verified?: boolean;
+  priority?: 'low' | 'medium' | 'high';
 }
 
-export default function PlayerDashboard() {
+export default function StudentAthleteDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [starPathProgress, setStarPathProgress] = useState<StarPathProgress>({
@@ -93,16 +131,55 @@ export default function PlayerDashboard() {
     longestStreak: 14,
     achievements: 12,
     garScore: 78,
-    lastGarAnalysis: '2024-01-15'
+    lastGarAnalysis: '2024-01-15',
+    unlockedSkills: 15,
+    totalSkills: 44,
+    weeklyGoalProgress: 68,
+    monthlyRank: 142
   });
+  
   const [academicProgress, setAcademicProgress] = useState<AcademicProgress>({
     currentGPA: 3.4,
     targetGPA: 3.8,
     completedCredits: 45,
     totalCredits: 120,
     ncaaEligible: true,
-    upcomingDeadlines: 3
+    upcomingDeadlines: 3,
+    currentCourses: 5,
+    semesterHours: 15,
+    academicStanding: 'Good Standing'
   });
+
+  const [healthMetrics, setHealthMetrics] = useState<HealthMetrics>({
+    recoveryScore: 85,
+    sleepHours: 7.5,
+    hydrationLevel: 82,
+    energyLevel: 78,
+    injuryStatus: 'Healthy',
+    lastWorkout: '6 hours ago'
+  });
+
+  const [scoutActivity, setScoutActivity] = useState<ScoutActivity[]>([
+    {
+      scoutName: 'Mike Johnson',
+      action: 'Viewed profile',
+      timestamp: '2 hours ago',
+      university: 'Duke University'
+    },
+    {
+      scoutName: 'Sarah Williams',
+      action: 'Downloaded highlight reel',
+      timestamp: '1 day ago',
+      university: 'Stanford University'
+    },
+    {
+      scoutName: 'Coach Rodriguez',
+      action: 'Requested contact',
+      timestamp: '3 days ago',
+      university: 'UCLA'
+    }
+  ]);
+
   const [recentActivities, setRecentActivities] = useState<RecentActivity[]>([
     {
       id: '1',
@@ -111,7 +188,8 @@ export default function PlayerDashboard() {
       description: 'Completed advanced agility training session',
       xpEarned: 150,
       timestamp: '2 hours ago',
-      verified: true
+      verified: true,
+      priority: 'medium'
     },
     {
       id: '2',
@@ -120,7 +198,8 @@ export default function PlayerDashboard() {
       description: 'New video analysis shows 12% improvement',
       xpEarned: 200,
       timestamp: '1 day ago',
-      verified: true
+      verified: true,
+      priority: 'high'
     },
     {
       id: '3',
@@ -129,7 +208,24 @@ export default function PlayerDashboard() {
       description: 'Completed 7 consecutive days of training',
       xpEarned: 300,
       timestamp: '2 days ago',
-      verified: true
+      verified: true,
+      priority: 'high'
+    },
+    {
+      id: '4',
+      type: 'scout',
+      title: 'Scout Interest',
+      description: 'Duke University scout viewed your profile',
+      timestamp: '2 hours ago',
+      priority: 'high'
+    },
+    {
+      id: '5',
+      type: 'academic',
+      title: 'Assignment Submitted',
+      description: 'Biology lab report submitted on time',
+      timestamp: '1 day ago',
+      priority: 'medium'
     }
   ]);
 
@@ -141,14 +237,12 @@ export default function PlayerDashboard() {
 
   const loadUserData = async () => {
     try {
-      // Simulate API calls - replace with actual API endpoints
       const userResponse = await fetch('/api/auth/me');
       if (userResponse.ok) {
         const userData = await userResponse.json();
         setUser(userData);
       }
 
-      // Load StarPath progress
       const starPathResponse = await fetch('/api/starpath/progress');
       if (starPathResponse.ok) {
         const progress = await starPathResponse.json();
@@ -173,15 +267,13 @@ export default function PlayerDashboard() {
     return titles[level] || 'Unknown Level';
   };
 
-  const getStarLevelColor = (level: number) => {
-    const colors = {
-      1: 'text-gray-400',
-      2: 'text-blue-400',
-      3: 'text-green-400', 
-      4: 'text-purple-400',
-      5: 'text-yellow-400'
-    };
-    return colors[level] || 'text-gray-400';
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'text-red-400 bg-red-400/10 border-red-400/20';
+      case 'medium': return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20';
+      case 'low': return 'text-green-400 bg-green-400/10 border-green-400/20';
+      default: return 'text-blue-400 bg-blue-400/10 border-blue-400/20';
+    }
   };
 
   if (loading) {
@@ -189,7 +281,7 @@ export default function PlayerDashboard() {
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-400 mx-auto mb-4"></div>
-          <p className="text-white text-lg">Loading your StarPath journey...</p>
+          <p className="text-white text-lg">Loading your athlete dashboard...</p>
         </div>
       </div>
     );
@@ -203,19 +295,24 @@ export default function PlayerDashboard() {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-6">
               <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                Player Dashboard
+                Student Athlete Dashboard
               </h1>
               <nav className="hidden md:flex space-x-6">
                 <NavLink href="/dashboard" active>Dashboard</NavLink>
                 <NavLink href="/starpath">StarPath</NavLink>
                 <NavLink href="/gar-upload">Video Analysis</NavLink>
+                <NavLink href="/academics">Academics</NavLink>
                 <NavLink href="/profile">Profile</NavLink>
                 <NavLink href="/teams">Teams</NavLink>
               </nav>
             </div>
             <div className="flex items-center space-x-4">
-              <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                Quick Upload
+              <button 
+                onClick={() => router.push('/gar-upload')}
+                className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
+              >
+                <Upload className="h-4 w-4" />
+                <span>Quick Upload</span>
               </button>
               <button className="p-2 hover:bg-slate-800 rounded-lg transition-colors">
                 <Settings className="h-5 w-5" />
@@ -232,18 +329,28 @@ export default function PlayerDashboard() {
             Welcome back, {user?.firstName || user?.username || 'Athlete'}!
           </h2>
           <p className="text-slate-400">
-            Continue your journey to become a Five-Star Athlete. You're currently a {getStarLevelTitle(starPathProgress.currentStarLevel)}.
+            Continue your journey to become a Five-Star Athlete. You're currently a {getStarLevelTitle(starPathProgress.currentStarLevel)} with {starPathProgress.currentXP} XP.
           </p>
         </div>
 
-        {/* StarPath Progress Overview */}
+        {/* Quick Stats Overview */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+          <QuickStat icon={<Star className="h-5 w-5" />} label="Star Level" value={starPathProgress.currentStarLevel} color="yellow" />
+          <QuickStat icon={<Target className="h-5 w-5" />} label="GAR Score" value={starPathProgress.garScore} color="blue" />
+          <QuickStat icon={<BookOpen className="h-5 w-5" />} label="GPA" value={academicProgress.currentGPA.toFixed(1)} color="green" />
+          <QuickStat icon={<Dumbbell className="h-5 w-5" />} label="Workouts" value={starPathProgress.verifiedWorkouts} color="purple" />
+          <QuickStat icon={<Eye className="h-5 w-5" />} label="Scout Views" value="24" color="orange" />
+          <QuickStat icon={<Flame className="h-5 w-5" />} label="Streak" value={starPathProgress.streakDays} color="red" />
+        </div>
+
+        {/* Main Dashboard Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          {/* Main StarPath Card */}
+          {/* StarPath Progress Card */}
           <div className="lg:col-span-2 bg-gradient-to-br from-slate-900 to-slate-800 rounded-lg p-6 border border-slate-700">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-xl font-bold text-white mb-1">StarPath Progress</h3>
-                <p className="text-slate-400">Real-world training meets digital progression</p>
+                <h3 className="text-xl font-bold text-white mb-1">StarPath Training System</h3>
+                <p className="text-slate-400">Interactive hybrid training progression</p>
               </div>
               <div className="flex items-center space-x-1">
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -265,7 +372,7 @@ export default function PlayerDashboard() {
                 <div className="text-sm text-slate-400">Current XP</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-400">{starPathProgress.skillTreeProgress}%</div>
+                <div className="text-2xl font-bold text-green-400">{starPathProgress.unlockedSkills}/{starPathProgress.totalSkills}</div>
                 <div className="text-sm text-slate-400">Skills Unlocked</div>
               </div>
               <div className="text-center">
@@ -301,97 +408,303 @@ export default function PlayerDashboard() {
                 onClick={() => router.push('/starpath')}
                 className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
               >
-                <Play className="h-4 w-4" />
+                <Gamepad2 className="h-4 w-4" />
                 <span>Continue StarPath</span>
               </button>
               <button
-                onClick={() => router.push('/gar-upload')}
+                onClick={() => router.push('/myplayer/verification')}
                 className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
+              >
+                <CheckCircle className="h-4 w-4" />
+                <span>Submit Workout</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Scout Activity & Health */}
+          <div className="space-y-4">
+            {/* Scout Activity Card */}
+            <div className="bg-slate-900 rounded-lg p-4 border border-slate-800">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="font-medium text-white">Scout Activity</h4>
+                <Eye className="h-5 w-5 text-blue-400" />
+              </div>
+              <div className="space-y-3">
+                {scoutActivity.slice(0, 2).map((activity, index) => (
+                  <div key={index} className="text-sm">
+                    <div className="text-white font-medium">{activity.scoutName}</div>
+                    <div className="text-slate-400">{activity.action}</div>
+                    <div className="text-xs text-slate-500">{activity.university} • {activity.timestamp}</div>
+                  </div>
+                ))}
+              </div>
+              <button 
+                onClick={() => router.push('/scout-network')}
+                className="w-full mt-3 bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded text-sm transition-colors"
+              >
+                View All Scout Activity
+              </button>
+            </div>
+
+            {/* Health Metrics Card */}
+            <div className="bg-slate-900 rounded-lg p-4 border border-slate-800">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="font-medium text-white">Health Metrics</h4>
+                <Heart className="h-5 w-5 text-red-400" />
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-400">Recovery</span>
+                  <span className="text-green-400">{healthMetrics.recoveryScore}%</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-400">Sleep</span>
+                  <span className="text-blue-400">{healthMetrics.sleepHours}h</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-400">Energy</span>
+                  <span className="text-yellow-400">{healthMetrics.energyLevel}%</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-400">Status</span>
+                  <span className="text-green-400">{healthMetrics.injuryStatus}</span>
+                </div>
+              </div>
+              <button 
+                onClick={() => router.push('/health')}
+                className="w-full mt-3 bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded text-sm transition-colors"
+              >
+                View Health Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Academic Progress & GAR Analysis */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          {/* Academic Progress */}
+          <div className="bg-slate-900 rounded-lg p-6 border border-slate-800">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-bold text-white">Academic Progress Tracker</h3>
+              <School className="h-5 w-5 text-green-400" />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-400">{academicProgress.currentGPA}</div>
+                <div className="text-sm text-slate-400">Current GPA</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-400">{academicProgress.completedCredits}</div>
+                <div className="text-sm text-slate-400">Credits Earned</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-400">{academicProgress.currentCourses}</div>
+                <div className="text-sm text-slate-400">Current Courses</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-400">{academicProgress.upcomingDeadlines}</div>
+                <div className="text-sm text-slate-400">Due Soon</div>
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <div className="flex items-center justify-between text-sm mb-2">
+                <span className="text-slate-300">Degree Progress</span>
+                <span className="text-slate-300">
+                  {academicProgress.completedCredits}/{academicProgress.totalCredits} Credits
+                </span>
+              </div>
+              <div className="w-full bg-slate-700 rounded-full h-2">
+                <div
+                  className="bg-gradient-to-r from-green-500 to-blue-500 h-2 rounded-full"
+                  style={{
+                    width: `${(academicProgress.completedCredits / academicProgress.totalCredits) * 100}%`
+                  }}
+                ></div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-2">
+                <CheckCircle className="h-4 w-4 text-green-400" />
+                <span className="text-sm text-green-400">NCAA Eligible</span>
+              </div>
+              <div className="text-sm text-slate-400">{academicProgress.academicStanding}</div>
+            </div>
+
+            <button 
+              onClick={() => router.push('/academics')}
+              className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              View Academic Dashboard
+            </button>
+          </div>
+
+          {/* GAR Analysis */}
+          <div className="bg-slate-900 rounded-lg p-6 border border-slate-800">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-bold text-white">GAR Video Analysis</h3>
+              <Target className="h-5 w-5 text-blue-400" />
+            </div>
+            
+            <div className="text-center mb-6">
+              <div className="text-4xl font-bold text-white mb-2">{starPathProgress.garScore}/100</div>
+              <div className="text-sm text-slate-400">Overall GAR Score</div>
+              <div className="text-xs text-slate-500">Last updated: {starPathProgress.lastGarAnalysis}</div>
+            </div>
+
+            <div className="space-y-3 mb-6">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400">Technical Skills</span>
+                <span className="text-blue-400">82/100</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400">Athletic Ability</span>
+                <span className="text-green-400">85/100</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400">Game Readiness</span>
+                <span className="text-yellow-400">74/100</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400">Physical Condition</span>
+                <span className="text-purple-400">79/100</span>
+              </div>
+            </div>
+
+            <div className="flex space-x-3">
+              <button 
+                onClick={() => router.push('/gar-upload')}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center space-x-2"
               >
                 <Video className="h-4 w-4" />
                 <span>Upload Video</span>
               </button>
-            </div>
-          </div>
-
-          {/* Quick Stats */}
-          <div className="space-y-4">
-            {/* GAR Score */}
-            <div className="bg-slate-900 rounded-lg p-4 border border-slate-800">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="font-medium text-white">Latest GAR Score</h4>
-                <Target className="h-5 w-5 text-blue-400" />
-              </div>
-              <div className="text-2xl font-bold text-white mb-1">{starPathProgress.garScore}/100</div>
-              <div className="text-sm text-slate-400">From {starPathProgress.lastGarAnalysis}</div>
-              <button className="w-full mt-3 bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded text-sm transition-colors">
-                View Analysis
-              </button>
-            </div>
-
-            {/* Academic Progress */}
-            <div className="bg-slate-900 rounded-lg p-4 border border-slate-800">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="font-medium text-white">Academic Status</h4>
-                <BookOpen className="h-5 w-5 text-green-400" />
-              </div>
-              <div className="text-2xl font-bold text-white mb-1">{academicProgress.currentGPA}</div>
-              <div className="text-sm text-slate-400">Current GPA</div>
-              <div className="flex items-center mt-2">
-                <CheckCircle className="h-4 w-4 text-green-400 mr-1" />
-                <span className="text-sm text-green-400">NCAA Eligible</span>
-              </div>
-              <button className="w-full mt-3 bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded text-sm transition-colors">
-                View Academics
+              <button 
+                onClick={() => router.push('/video-analysis')}
+                className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                <BarChart3 className="h-4 w-4" />
               </button>
             </div>
           </div>
         </div>
 
-        {/* Feature Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Video Analysis */}
+        {/* Feature Grid - All Student Athlete Tools */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
+          {/* Core Features */}
           <FeatureCard
-            icon={<Video className="h-6 w-6" />}
-            title="Video Analysis"
-            description="Upload videos for GAR scoring"
-            action="Upload Video"
-            onClick={() => router.push('/gar-upload')}
+            icon={<Gamepad2 className="h-6 w-6" />}
+            title="StarPath Training"
+            description="Interactive skill development"
+            action="Continue"
+            onClick={() => router.push('/starpath')}
             color="blue"
           />
-
-          {/* Skill Tree */}
+          
           <FeatureCard
             icon={<Target className="h-6 w-6" />}
-            title="Skill Development"
-            description="Interactive skill tree progression"
-            action="Train Skills"
+            title="Skill Tree"
+            description="Unlock new abilities"
+            action="Develop"
             onClick={() => router.push('/skill-tree')}
             color="green"
           />
 
-          {/* Workout Verification */}
           <FeatureCard
             icon={<Dumbbell className="h-6 w-6" />}
             title="Workout Verification"
-            description="Submit workouts for XP rewards"
-            action="Submit Workout"
+            description="Submit for XP rewards"
+            action="Submit"
             onClick={() => router.push('/myplayer/verification')}
             color="purple"
           />
 
-          {/* Academic Tracker */}
           <FeatureCard
-            icon={<BookOpen className="h-6 w-6" />}
-            title="Academic Progress"
-            description="Track GPA and NCAA eligibility"
-            action="View Academics"
-            onClick={() => router.push('/academics')}
+            icon={<Video className="h-6 w-6" />}
+            title="Video Analysis"
+            description="GAR scoring & feedback"
+            action="Upload"
+            onClick={() => router.push('/gar-upload')}
             color="orange"
+          />
+
+          {/* Additional Features */}
+          <FeatureCard
+            icon={<School className="h-6 w-6" />}
+            title="Academic Tracker"
+            description="GPA & NCAA eligibility"
+            action="View"
+            onClick={() => router.push('/academics')}
+            color="green"
+          />
+
+          <FeatureCard
+            icon={<Eye className="h-6 w-6" />}
+            title="Scout Network"
+            description="College recruitment"
+            action="Connect"
+            onClick={() => router.push('/scout-network')}
+            color="yellow"
+          />
+
+          <FeatureCard
+            icon={<Heart className="h-6 w-6" />}
+            title="Health Metrics"
+            description="Recovery & wellness"
+            action="Monitor"
+            onClick={() => router.push('/health')}
+            color="red"
+          />
+
+          <FeatureCard
+            icon={<MessageCircle className="h-6 w-6" />}
+            title="AI Coach"
+            description="Personalized guidance"
+            action="Chat"
+            onClick={() => router.push('/myplayer/ai-coach')}
+            color="blue"
+          />
+
+          <FeatureCard
+            icon={<Users className="h-6 w-6" />}
+            title="Team Hub"
+            description="Team communications"
+            action="Connect"
+            onClick={() => router.push('/teams')}
+            color="purple"
+          />
+
+          <FeatureCard
+            icon={<Camera className="h-6 w-6" />}
+            title="Mobile Capture"
+            description="Record training videos"
+            action="Record"
+            onClick={() => router.push('/mobile-video')}
+            color="orange"
+          />
+
+          <FeatureCard
+            icon={<TrendingUp className="h-6 w-6" />}
+            title="Analytics"
+            description="Performance insights"
+            action="Analyze"
+            onClick={() => router.push('/analytics')}
+            color="green"
+          />
+
+          <FeatureCard
+            icon={<Award className="h-6 w-6" />}
+            title="Achievements"
+            description="Badges & milestones"
+            action="Explore"
+            onClick={() => router.push('/achievements')}
+            color="yellow"
           />
         </div>
 
-        {/* Recent Activity & Achievements */}
+        {/* Recent Activity & Notifications */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Activity */}
           <div className="bg-slate-900 rounded-lg p-6 border border-slate-800">
@@ -401,13 +714,15 @@ export default function PlayerDashboard() {
             </div>
             <div className="space-y-4">
               {recentActivities.map((activity) => (
-                <div key={activity.id} className="flex items-center space-x-4 p-3 bg-slate-800 rounded-lg">
+                <div key={activity.id} className={`flex items-center space-x-4 p-3 bg-slate-800 rounded-lg border ${getPriorityColor(activity.priority || 'low')}`}>
                   <div className="flex-shrink-0">
                     {activity.type === 'workout' && <Dumbbell className="h-5 w-5 text-purple-400" />}
                     {activity.type === 'video' && <Video className="h-5 w-5 text-blue-400" />}
                     {activity.type === 'achievement' && <Trophy className="h-5 w-5 text-yellow-400" />}
                     {activity.type === 'academic' && <BookOpen className="h-5 w-5 text-green-400" />}
                     {activity.type === 'skill' && <Target className="h-5 w-5 text-orange-400" />}
+                    {activity.type === 'scout' && <Eye className="h-5 w-5 text-red-400" />}
+                    {activity.type === 'team' && <Users className="h-5 w-5 text-purple-400" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
@@ -438,64 +753,118 @@ export default function PlayerDashboard() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <QuickActionButton
-                icon={<Camera className="h-5 w-5" />}
-                title="Record Video"
+                icon={<Upload className="h-5 w-5" />}
+                title="Upload Video"
+                onClick={() => router.push('/gar-upload')}
+              />
+              <QuickActionButton
+                icon={<CheckCircle className="h-5 w-5" />}
+                title="Submit Workout"
+                onClick={() => router.push('/myplayer/verification')}
+              />
+              <QuickActionButton
+                icon={<Smartphone className="h-5 w-5" />}
+                title="Mobile Capture"
                 onClick={() => router.push('/mobile-video')}
               />
               <QuickActionButton
                 icon={<MessageCircle className="h-5 w-5" />}
-                title="AI Coach Chat"
+                title="AI Coach"
                 onClick={() => router.push('/myplayer/ai-coach')}
               />
               <QuickActionButton
-                icon={<Users className="h-5 w-5" />}
-                title="Team Hub"
-                onClick={() => router.push('/teams')}
+                icon={<FileText className="h-5 w-5" />}
+                title="View Transcript"
+                onClick={() => router.push('/academics/progress')}
               />
               <QuickActionButton
-                icon={<TrendingUp className="h-5 w-5" />}
-                title="Analytics"
-                onClick={() => router.push('/analytics')}
-              />
-              <QuickActionButton
-                icon={<Heart className="h-5 w-5" />}
-                title="Health Metrics"
-                onClick={() => router.push('/health')}
-              />
-              <QuickActionButton
-                icon={<Eye className="h-5 w-5" />}
-                title="Scout Vision"
+                icon={<Search className="h-5 w-5" />}
+                title="Scout Search"
                 onClick={() => router.push('/scout-network')}
               />
             </div>
           </div>
         </div>
 
-        {/* Achievements Section */}
-        <div className="mt-8 bg-slate-900 rounded-lg p-6 border border-slate-800">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-white">Recent Achievements</h3>
-            <Award className="h-5 w-5 text-yellow-400" />
+        {/* Weekly Goals & Monthly Ranking */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+          {/* Weekly Goals */}
+          <div className="bg-slate-900 rounded-lg p-6 border border-slate-800">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-bold text-white">Weekly Goals</h3>
+              <Target className="h-5 w-5 text-green-400" />
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Training Sessions</span>
+                <span className="text-white">4/5</span>
+              </div>
+              <div className="w-full bg-slate-700 rounded-full h-2">
+                <div className="bg-green-500 h-2 rounded-full" style={{ width: '80%' }}></div>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Video Uploads</span>
+                <span className="text-white">2/3</span>
+              </div>
+              <div className="w-full bg-slate-700 rounded-full h-2">
+                <div className="bg-blue-500 h-2 rounded-full" style={{ width: '67%' }}></div>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Study Hours</span>
+                <span className="text-white">18/20</span>
+              </div>
+              <div className="w-full bg-slate-700 rounded-full h-2">
+                <div className="bg-purple-500 h-2 rounded-full" style={{ width: '90%' }}></div>
+              </div>
+            </div>
+
+            <div className="mt-4 text-center">
+              <div className="text-2xl font-bold text-white">{starPathProgress.weeklyGoalProgress}%</div>
+              <div className="text-sm text-slate-400">Weekly Progress</div>
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <AchievementCard
-              icon="🔥"
-              title="Streak Master"
-              description="7-day training streak"
-              date="Today"
-            />
-            <AchievementCard
-              icon="⭐"
-              title="Star Rising"
-              description="Reached 2-Star level"
-              date="3 days ago"
-            />
-            <AchievementCard
-              icon="🏆"
-              title="Skill Collector"
-              description="Unlocked 15 skills"
-              date="1 week ago"
-            />
+
+          {/* Monthly Ranking & Achievements */}
+          <div className="bg-slate-900 rounded-lg p-6 border border-slate-800">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-bold text-white">Performance Ranking</h3>
+              <Medal className="h-5 w-5 text-yellow-400" />
+            </div>
+            
+            <div className="text-center mb-6">
+              <div className="text-3xl font-bold text-yellow-400">#{starPathProgress.monthlyRank}</div>
+              <div className="text-sm text-slate-400">National Ranking</div>
+              <div className="text-xs text-slate-500">Among {getStarLevelTitle(starPathProgress.currentStarLevel)} athletes</div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400">XP This Month</span>
+                <span className="text-blue-400">+2,340</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400">Skills Unlocked</span>
+                <span className="text-green-400">+3</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400">Scout Views</span>
+                <span className="text-purple-400">+47</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400">GPA Improvement</span>
+                <span className="text-orange-400">+0.2</span>
+              </div>
+            </div>
+
+            <div className="mt-4 p-3 bg-slate-800 rounded-lg">
+              <div className="flex items-center space-x-2">
+                <ThumbsUp className="h-4 w-4 text-green-400" />
+                <span className="text-sm text-white">Keep it up! You're in the top 15% this month.</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -519,6 +888,27 @@ function NavLink({ href, children, active = false }: { href: string; children: R
   );
 }
 
+function QuickStat({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: string | number; color: string }) {
+  const colorClasses = {
+    yellow: 'text-yellow-400',
+    blue: 'text-blue-400',
+    green: 'text-green-400',
+    purple: 'text-purple-400',
+    orange: 'text-orange-400',
+    red: 'text-red-400'
+  };
+
+  return (
+    <div className="bg-slate-900 rounded-lg p-4 border border-slate-800 text-center">
+      <div className={`flex justify-center mb-2 ${colorClasses[color]}`}>
+        {icon}
+      </div>
+      <div className="text-lg font-bold text-white">{value}</div>
+      <div className="text-xs text-slate-400">{label}</div>
+    </div>
+  );
+}
+
 function FeatureCard({ 
   icon, 
   title, 
@@ -539,16 +929,18 @@ function FeatureCard({
     green: 'border-green-500/20 hover:border-green-500/40',
     purple: 'border-purple-500/20 hover:border-purple-500/40',
     orange: 'border-orange-500/20 hover:border-orange-500/40',
+    yellow: 'border-yellow-500/20 hover:border-yellow-500/40',
+    red: 'border-red-500/20 hover:border-red-500/40',
   };
 
   return (
-    <div className={`bg-slate-900 rounded-lg p-6 border transition-all hover:scale-105 cursor-pointer ${colorClasses[color]}`} onClick={onClick}>
+    <div className={`bg-slate-900 rounded-lg p-4 border transition-all hover:scale-105 cursor-pointer ${colorClasses[color]}`} onClick={onClick}>
       <div className="flex items-center space-x-3 mb-3">
         <div className="text-white">{icon}</div>
-        <h4 className="font-medium text-white">{title}</h4>
+        <h4 className="font-medium text-white text-sm">{title}</h4>
       </div>
-      <p className="text-slate-400 text-sm mb-4">{description}</p>
-      <button className="w-full bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded text-sm transition-colors flex items-center justify-center space-x-2">
+      <p className="text-slate-400 text-xs mb-3">{description}</p>
+      <button className="w-full bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded text-xs transition-colors flex items-center justify-center space-x-2">
         <span>{action}</span>
         <ArrowRight className="h-3 w-3" />
       </button>
@@ -560,21 +952,10 @@ function QuickActionButton({ icon, title, onClick }: { icon: React.ReactNode; ti
   return (
     <button
       onClick={onClick}
-      className="p-4 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors text-center group"
+      className="p-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors text-center group"
     >
       <div className="text-white mb-2 flex justify-center group-hover:scale-110 transition-transform">{icon}</div>
       <div className="text-xs text-slate-300 font-medium">{title}</div>
     </button>
-  );
-}
-
-function AchievementCard({ icon, title, description, date }: { icon: string; title: string; description: string; date: string }) {
-  return (
-    <div className="bg-slate-800 rounded-lg p-4 text-center">
-      <div className="text-2xl mb-2">{icon}</div>
-      <h4 className="font-medium text-white mb-1">{title}</h4>
-      <p className="text-sm text-slate-400 mb-2">{description}</p>
-      <span className="text-xs text-slate-500">{date}</span>
-    </div>
   );
 }
