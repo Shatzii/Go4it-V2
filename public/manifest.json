@@ -1,62 +1,25 @@
 {
-  "name": "Go4It Sports",
-  "short_name": "Go4It",
-  "description": "Sports analytics platform for neurodivergent student athletes",
+  "name": "Go4It Sports Platform",
+  "short_name": "Go4It Sports",
+  "description": "Elite athletic development platform for neurodivergent student athletes",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0E1628",
-  "theme_color": "#00B4D8",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/assets/images/logo.svg",
-      "type": "image/svg+xml",
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512x512.png",
       "sizes": "512x512",
-      "purpose": "any"
+      "type": "image/png"
     }
   ],
-  "shortcuts": [
-    {
-      "name": "Dashboard",
-      "short_name": "Dashboard",
-      "description": "Go to your Dashboard",
-      "url": "/dashboard"
-    },
-    {
-      "name": "Upload Video",
-      "short_name": "Upload",
-      "description": "Upload a new video for analysis",
-      "url": "/upload-video"
-    },
-    {
-      "name": "StarPath",
-      "short_name": "StarPath",
-      "description": "View your StarPath progress",
-      "url": "/myplayer-star-path"
-    }
-  ],
-  "categories": ["sports", "education", "health"],
-  "prefer_related_applications": false,
-  "screenshots": [],
-  "related_applications": [],
-  "scope": "/",
-  "lang": "en-US",
-  "dir": "ltr",
-  "iarc_rating_id": "",
-  "share_target": {
-    "action": "/share",
-    "method": "POST",
-    "enctype": "multipart/form-data",
-    "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url",
-      "files": [
-        {
-          "name": "file",
-          "accept": ["image/*", "video/*"]
-        }
-      ]
-    }
-  }
+  "categories": ["sports", "education", "productivity"],
+  "lang": "en",
+  "dir": "ltr"
 }
