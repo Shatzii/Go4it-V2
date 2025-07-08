@@ -6,26 +6,17 @@ export async function GET(request: NextRequest) {
     const user = await getUserFromRequest(request);
     
     if (!user) {
-      return NextResponse.json(
-        { error: 'Not authenticated' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
-    return NextResponse.json({ 
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        firstName: user.firstName,
-        lastName: user.lastName
-      }
-    });
+    // Remove password from user data
+    const { password, ...userWithoutPassword } = user;
+    
+    return NextResponse.json(userWithoutPassword);
   } catch (error) {
-    console.error('Auth check error:', error);
+    console.error('Auth me error:', error);
     return NextResponse.json(
-      { error: 'Authentication failed' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

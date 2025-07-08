@@ -241,6 +241,10 @@ export default function StudentAthleteDashboard() {
       if (userResponse.ok) {
         const userData = await userResponse.json();
         setUser(userData);
+      } else {
+        // If user is not authenticated, redirect to login
+        router.push('/auth');
+        return;
       }
 
       const starPathResponse = await fetch('/api/starpath/progress');
@@ -251,6 +255,8 @@ export default function StudentAthleteDashboard() {
 
     } catch (error) {
       console.error('Error loading user data:', error);
+      // On error, redirect to login
+      router.push('/auth');
     } finally {
       setLoading(false);
     }
