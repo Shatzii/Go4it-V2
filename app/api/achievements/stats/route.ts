@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
 
     const totalAchievements = userAchievements.length;
     const recentAchievements = userAchievements
-      .sort((a, b) => new Date(b.earnedAt).getTime() - new Date(a.earnedAt).getTime())
+      .sort((a, b) => new Date(b.earned_date || new Date()).getTime() - new Date(a.earned_date || new Date()).getTime())
       .slice(0, 3);
 
     return NextResponse.json({
@@ -28,8 +28,8 @@ export async function GET(request: NextRequest) {
         id: achievement.id,
         title: achievement.title,
         description: achievement.description,
-        badgeIcon: achievement.badgeIcon,
-        earnedAt: achievement.earnedAt
+        iconType: achievement.icon_type,
+        earnedAt: achievement.earned_date
       }))
     });
 
