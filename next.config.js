@@ -12,8 +12,9 @@ const nextConfig = {
     PORT: '5000', 
     HOSTNAME: '0.0.0.0' 
   },
-  output: 'standalone',
-  distDir: '.next',
+  // Simplified config for development
+  assetPrefix: process.env.NODE_ENV === 'production' ? undefined : '',
+  trailingSlash: false,
 };
 
 module.exports = nextConfig;
