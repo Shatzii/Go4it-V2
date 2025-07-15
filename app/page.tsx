@@ -3,7 +3,21 @@
 import React, { useState, useEffect } from 'react'
 import { CheckCircle, ExternalLink, Activity, Target, Users, BarChart3, Star, TrendingUp, Award, Calendar, MapPin, ArrowRight, Play } from 'lucide-react'
 
-// Go4It Sports Landing Page - Matching deployed site design exactly
+// Star Rating Component to match deployed site
+function StarRating({ rating, maxRating = 5 }: { rating: number; maxRating?: number }) {
+  const stars = []
+  for (let i = 1; i <= maxRating; i++) {
+    stars.push(
+      <Star 
+        key={i} 
+        className={`w-4 h-4 ${i <= rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
+      />
+    )
+  }
+  return <div className="flex items-center gap-1">{stars}</div>
+}
+
+// Go4It Sports Landing Page - Exact match to deployed site styling
 export default function Go4ItHomePage() {
   const [platformStatus, setPlatformStatus] = useState('loading')
 
@@ -26,24 +40,24 @@ export default function Go4ItHomePage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <nav className="bg-card border-b border-border sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-2xl font-bold text-foreground">
               Go4It Sports
             </div>
             <div className="flex items-center space-x-4">
               <SafeLink 
                 href="/auth" 
-                className="text-gray-600 hover:text-gray-900 transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 Sign In
               </SafeLink>
               <SafeLink 
                 href="/auth" 
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors"
               >
                 Get Started
               </SafeLink>
@@ -53,20 +67,20 @@ export default function Go4ItHomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
             GET VERIFIED
           </h1>
           
           <div className="mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               GAR Rating System
             </h2>
-            <p className="text-xl text-gray-600 mb-6">
+            <p className="text-xl text-muted-foreground mb-6">
               The Ultimate AI-Powered Athlete Evaluation
             </p>
-            <p className="text-lg text-gray-600 max-w-4xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-4xl mx-auto">
               Our revolutionary GAR Rating System uses AI to analyze physical metrics, cognitive abilities, 
               and psychological factors for the most comprehensive athlete evaluation available.
             </p>
@@ -74,12 +88,12 @@ export default function Go4ItHomePage() {
           
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
             <FeatureCard
-              icon={<Activity className="w-8 h-8 text-blue-600" />}
+              icon={<Activity className="w-8 h-8 text-primary" />}
               title="AI Motion Analysis"
               description="Our cutting-edge AI technology analyzes your motion mechanics with professional-grade accuracy."
             />
             <FeatureCard
-              icon={<Award className="w-8 h-8 text-indigo-600" />}
+              icon={<Award className="w-8 h-8 text-primary" />}
               title="Verified Combines"
               description="Participate in certified athletic combines where your performance metrics are verified by professionals."
             />
@@ -87,7 +101,7 @@ export default function Go4ItHomePage() {
           
           <SafeLink 
             href="/auth" 
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors inline-flex items-center gap-2"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-lg text-lg font-semibold transition-colors inline-flex items-center gap-2"
           >
             Get Verified Today
             <ArrowRight className="w-5 h-5" />
@@ -96,13 +110,13 @@ export default function Go4ItHomePage() {
       </section>
 
       {/* Top Verified Athletes */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/10">
+        <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">Top Verified Athletes</h2>
+            <h2 className="text-3xl font-bold text-foreground">Top Verified Athletes</h2>
             <SafeLink 
               href="/athletes" 
-              className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2"
+              className="text-primary hover:text-primary/80 font-medium flex items-center gap-2"
             >
               View All
               <ArrowRight className="w-4 h-4" />
@@ -147,13 +161,13 @@ export default function Go4ItHomePage() {
       </section>
 
       {/* Upcoming Combine Events */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">Upcoming Combine Events</h2>
+            <h2 className="text-3xl font-bold text-foreground">Upcoming Combine Events</h2>
             <SafeLink 
               href="/combine-tour" 
-              className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2"
+              className="text-primary hover:text-primary/80 font-medium flex items-center gap-2"
             >
               View All Events
               <ArrowRight className="w-4 h-4" />
@@ -187,13 +201,13 @@ export default function Go4ItHomePage() {
       </section>
 
       {/* Blog & News */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/10">
+        <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">Blog & News</h2>
+            <h2 className="text-3xl font-bold text-foreground">Blog & News</h2>
             <SafeLink 
               href="/blog" 
-              className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2"
+              className="text-primary hover:text-primary/80 font-medium flex items-center gap-2"
             >
               View All
               <ArrowRight className="w-4 h-4" />
@@ -201,16 +215,16 @@ export default function Go4ItHomePage() {
           </div>
           
           <div className="flex gap-4 mb-8">
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+            <button className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium">
               Featured
             </button>
-            <button className="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium">
+            <button className="text-muted-foreground hover:text-foreground px-4 py-2 rounded-lg text-sm font-medium">
               Training
             </button>
-            <button className="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium">
+            <button className="text-muted-foreground hover:text-foreground px-4 py-2 rounded-lg text-sm font-medium">
               Nutrition
             </button>
-            <button className="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium">
+            <button className="text-muted-foreground hover:text-foreground px-4 py-2 rounded-lg text-sm font-medium">
               Recruiting
             </button>
           </div>
@@ -242,10 +256,10 @@ export default function Go4ItHomePage() {
       </section>
 
       {/* Community Forum */}
-      <section className="py-20 bg-blue-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Community Forum</h2>
-          <p className="text-xl text-blue-100 mb-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-primary">
+        <div className="max-w-7xl mx-auto text-center">
+          <h2 className="text-3xl font-bold text-primary-foreground mb-4">Community Forum</h2>
+          <p className="text-xl text-primary-foreground/80 mb-8">
             Connect with athletes, coaches, and parents in our community forum. Share experiences, get advice, and build your network.
           </p>
           
@@ -273,17 +287,17 @@ export default function Go4ItHomePage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-indigo-600">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold text-white mb-4">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-secondary">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl font-bold text-secondary-foreground mb-4">
             Ready to Elevate Your Athletic Journey?
           </h2>
-          <p className="text-xl text-blue-100 mb-8">
+          <p className="text-xl text-secondary-foreground/80 mb-8">
             Join thousands of athletes who have discovered their potential and connected with coaches through our platform.
           </p>
           <SafeLink 
             href="/auth" 
-            className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors inline-flex items-center gap-2"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-lg text-lg font-semibold transition-colors inline-flex items-center gap-2"
           >
             Get Started Today
             <ArrowRight className="w-5 h-5" />
@@ -292,41 +306,41 @@ export default function Go4ItHomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 bg-gray-800 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <footer className="py-12 px-4 sm:px-6 lg:px-8 bg-card border-t border-border">
+        <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <div className="text-xl font-bold mb-4">Go4It Sports</div>
-              <p className="text-gray-400">
+              <div className="text-xl font-bold text-foreground mb-4">Go4It Sports</div>
+              <p className="text-muted-foreground">
                 Empowering athletes through AI-powered performance analysis and verified evaluation.
               </p>
             </div>
             <div>
-              <h3 className="font-semibold mb-4">Platform</h3>
+              <h3 className="font-semibold text-foreground mb-4">Platform</h3>
               <div className="space-y-2">
-                <SafeLink href="/dashboard" className="text-gray-400 hover:text-white block">Dashboard</SafeLink>
-                <SafeLink href="/gar-upload" className="text-gray-400 hover:text-white block">GAR Analysis</SafeLink>
-                <SafeLink href="/combine-tour" className="text-gray-400 hover:text-white block">Combines</SafeLink>
+                <SafeLink href="/dashboard" className="text-muted-foreground hover:text-foreground block">Dashboard</SafeLink>
+                <SafeLink href="/gar-upload" className="text-muted-foreground hover:text-foreground block">GAR Analysis</SafeLink>
+                <SafeLink href="/combine-tour" className="text-muted-foreground hover:text-foreground block">Combines</SafeLink>
               </div>
             </div>
             <div>
-              <h3 className="font-semibold mb-4">Community</h3>
+              <h3 className="font-semibold text-foreground mb-4">Community</h3>
               <div className="space-y-2">
-                <SafeLink href="/community/athletes" className="text-gray-400 hover:text-white block">Athletes</SafeLink>
-                <SafeLink href="/community/coaches" className="text-gray-400 hover:text-white block">Coaches</SafeLink>
-                <SafeLink href="/community/parents" className="text-gray-400 hover:text-white block">Parents</SafeLink>
+                <SafeLink href="/community/athletes" className="text-muted-foreground hover:text-foreground block">Athletes</SafeLink>
+                <SafeLink href="/community/coaches" className="text-muted-foreground hover:text-foreground block">Coaches</SafeLink>
+                <SafeLink href="/community/parents" className="text-muted-foreground hover:text-foreground block">Parents</SafeLink>
               </div>
             </div>
             <div>
-              <h3 className="font-semibold mb-4">Support</h3>
+              <h3 className="font-semibold text-foreground mb-4">Support</h3>
               <div className="space-y-2">
-                <SafeLink href="/about" className="text-gray-400 hover:text-white block">About</SafeLink>
-                <SafeLink href="/contact" className="text-gray-400 hover:text-white block">Contact</SafeLink>
-                <SafeLink href="/privacy" className="text-gray-400 hover:text-white block">Privacy</SafeLink>
+                <SafeLink href="/about" className="text-muted-foreground hover:text-foreground block">About</SafeLink>
+                <SafeLink href="/contact" className="text-muted-foreground hover:text-foreground block">Contact</SafeLink>
+                <SafeLink href="/privacy" className="text-muted-foreground hover:text-foreground block">Privacy</SafeLink>
               </div>
             </div>
           </div>
-          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+          <div className="border-t border-border mt-8 pt-8 text-center text-muted-foreground">
             <p>&copy; 2025 Go4It Sports. All rights reserved.</p>
           </div>
         </div>
@@ -365,10 +379,10 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+    <div className="bg-card p-6 rounded-lg border border-border hover:border-primary/50 transition-colors">
       <div className="mb-4">{icon}</div>
-      <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
-      <p className="text-gray-600">{description}</p>
+      <h3 className="text-xl font-semibold text-card-foreground mb-2">{title}</h3>
+      <p className="text-muted-foreground">{description}</p>
     </div>
   )
 }
@@ -389,7 +403,7 @@ function AthleteCard({
   imageUrl: string;
 }) {
   return (
-    <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+    <div className="bg-card rounded-lg border border-border overflow-hidden hover:border-primary/50 transition-colors">
       <div className="relative">
         <img 
           src={imageUrl} 
@@ -401,22 +415,37 @@ function AthleteCard({
             VERIFIED
           </div>
         )}
-        <div className="absolute bottom-2 left-2 bg-blue-600 text-white px-3 py-1 rounded-full text-lg font-bold">
+        
+        {/* GAR Score circle - matching deployed site style */}
+        <div className="absolute bottom-2 left-2 bg-primary text-primary-foreground w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold">
           {garScore}
         </div>
       </div>
       <div className="p-4">
-        <h3 className="font-semibold text-lg text-gray-900 mb-1">{name}</h3>
-        <p className="text-gray-600 text-sm mb-1">{position}</p>
-        <div className="flex justify-between text-xs text-gray-500">
-          <span>SPORT: {sport}</span>
-          <span>GAR: {garScore}/100</span>
+        <h3 className="font-semibold text-lg text-card-foreground mb-1">{name}</h3>
+        <p className="text-muted-foreground text-sm mb-1">{position}</p>
+        
+        {/* Match deployed site format exactly */}
+        <div className="text-xs text-muted-foreground space-y-1 mb-2">
+          <div>SPORT{sport}</div>
+          <div>POSITION{position}</div>
+          <div>GAR{garScore}/100</div>
         </div>
+        
+        {/* Star Rating based on GAR score */}
+        <div className="flex items-center gap-2 mb-2">
+          <StarRating rating={Math.floor(garScore / 20)} maxRating={5} />
+          <span className="text-xs text-muted-foreground">({garScore}/100)</span>
+        </div>
+        
         <div className="mt-3 flex gap-2">
-          <button className="bg-blue-600 text-white px-3 py-1 rounded text-xs font-medium">
+          <SafeLink 
+            href={`/profile/${encodeURIComponent(name.toLowerCase().replace(' ', '-'))}`}
+            className="bg-primary text-primary-foreground px-3 py-1 rounded text-xs font-medium hover:bg-primary/90 transition-colors"
+          >
             View Profile
-          </button>
-          <button className="text-blue-600 border border-blue-600 px-3 py-1 rounded text-xs font-medium">
+          </SafeLink>
+          <button className="text-primary border border-primary px-3 py-1 rounded text-xs font-medium hover:bg-primary/10 transition-colors">
             Highlights
           </button>
         </div>
@@ -439,23 +468,23 @@ function CombineEventCard({
   description: string;
 }) {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+    <div className="bg-card p-6 rounded-lg border border-border hover:border-primary/50 transition-colors">
       <div className="flex justify-between items-start mb-3">
         <span className="bg-orange-500 text-white px-2 py-1 rounded text-xs font-semibold">
           {status}
         </span>
       </div>
-      <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
-      <div className="flex items-center text-gray-600 text-sm mb-1">
+      <h3 className="text-xl font-semibold text-card-foreground mb-2">{title}</h3>
+      <div className="flex items-center text-muted-foreground text-sm mb-1">
         <MapPin className="w-4 h-4 mr-1" />
         {location}
       </div>
-      <div className="flex items-center text-gray-600 text-sm mb-3">
+      <div className="flex items-center text-muted-foreground text-sm mb-3">
         <Calendar className="w-4 h-4 mr-1" />
         {date}
       </div>
-      <p className="text-gray-600 text-sm mb-4">{description}</p>
-      <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
+      <p className="text-muted-foreground text-sm mb-4">{description}</p>
+      <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded text-sm font-medium transition-colors">
         Register Now
       </button>
     </div>
@@ -476,7 +505,7 @@ function BlogCard({
   excerpt: string;
 }) {
   return (
-    <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+    <div className="bg-card rounded-lg border border-border overflow-hidden hover:border-primary/50 transition-colors">
       <img 
         src={imageUrl} 
         alt={title} 
@@ -484,14 +513,14 @@ function BlogCard({
       />
       <div className="p-4">
         <div className="flex items-center gap-2 mb-2">
-          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
+          <span className="bg-primary/10 text-primary px-2 py-1 rounded text-xs font-medium">
             {category}
           </span>
-          <span className="text-gray-500 text-xs">{date}</span>
+          <span className="text-muted-foreground text-xs">{date}</span>
         </div>
-        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{title}</h3>
-        <p className="text-gray-600 text-sm mb-3 line-clamp-3">{excerpt}</p>
-        <button className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1">
+        <h3 className="font-semibold text-card-foreground mb-2 line-clamp-2">{title}</h3>
+        <p className="text-muted-foreground text-sm mb-3 line-clamp-3">{excerpt}</p>
+        <button className="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1">
           Read Article
           <ArrowRight className="w-3 h-3" />
         </button>
@@ -512,13 +541,13 @@ function CommunityCard({
   href: string;
 }) {
   return (
-    <div className="bg-blue-500 p-6 rounded-lg text-center">
-      <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
-      <h4 className="text-lg text-blue-100 mb-3">{subtitle}</h4>
-      <p className="text-blue-100 text-sm mb-4">{description}</p>
+    <div className="bg-primary/10 p-6 rounded-lg text-center">
+      <h3 className="text-xl font-semibold text-primary-foreground mb-2">{title}</h3>
+      <h4 className="text-lg text-primary-foreground/80 mb-3">{subtitle}</h4>
+      <p className="text-primary-foreground/70 text-sm mb-4">{description}</p>
       <SafeLink 
         href={href} 
-        className="bg-white text-blue-600 px-4 py-2 rounded text-sm font-medium hover:bg-gray-100 transition-colors inline-block"
+        className="bg-card text-card-foreground px-4 py-2 rounded text-sm font-medium hover:bg-card/90 transition-colors inline-block"
       >
         Join Discussion
       </SafeLink>
