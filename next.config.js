@@ -9,29 +9,24 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Disable all minification to resolve build errors
-  // swcMinify option is deprecated in Next.js 15+
+  // Disable all optimizations for faster builds
   webpack: (config, { dev, isServer }) => {
-    if (!dev && !isServer) {
-      // Disable Terser minification completely for production builds
-      config.optimization.minimize = false;
-      config.optimization.minimizer = [];
-    }
-    
-    // Add chunking to reduce build size
-    config.optimization.splitChunks = {
-      chunks: 'all',
-      maxInitialRequests: 25,
-      maxAsyncRequests: 25,
-      cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          chunks: 'all',
-        },
-      },
+    // Disable all minification and optimization
+    config.optimization = {
+      ...config.optimization,
+      minimize: false,
+      minimizer: [],
+      splitChunks: false,
+      runtimeChunk: false,
     };
     
+    // Reduce build complexity
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': require('path').resolve(__dirname, '.'),
+    };
+    
+    // Speed up builds
     if (dev && isServer) {
       config.watchOptions = {
         poll: 1000,
@@ -51,11 +46,13 @@ const nextConfig = {
       allowedOrigins: ['*']
     }
   },
-  // Add timeout configurations for build
-  staticPageGenerationTimeout: 120,
-  // Skip static generation for dynamic routes
+  // Reduce build complexity
+  output: 'standalone',
+  distDir: '.next',
+  // Skip static optimization for faster builds
+  staticPageGenerationTimeout: 60,
   generateBuildId: async () => {
-    return 'build-' + Date.now();
+    return 'build-simple';
   },
   async headers() {
     return [
