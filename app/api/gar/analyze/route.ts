@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest } from '../../../../lib/auth';
-import { db } from '../../../../lib/db';
-import { videoAnalysis } from '../../../../lib/schema';
+import { getUserFromRequest } from '@/lib/auth';
+import { db } from '@/lib/db';
+import { videoAnalysis } from '@/lib/schema';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
-import { createAIModelManager } from '../../../../lib/ai-models';
+import { createAIModelManager } from '@/lib/ai-models';
 
 // GAR Analysis Engine - Growth and Ability Rating (0-100)
 interface GARAnalysis {
