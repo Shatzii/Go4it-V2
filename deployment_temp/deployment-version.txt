@@ -1,4 +1,0 @@
-Go4It Sports Platform
-Deployment Package created: 2025-04-25 21:12:27
-Git commit: 91b77201cc07f68911a9231a3af949850b851417
-Package timestamp: 20250425-211221
