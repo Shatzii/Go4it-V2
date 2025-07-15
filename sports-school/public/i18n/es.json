@@ -1,0 +1,122 @@
+{
+  "common": {
+    "welcome": "Bienvenido a ShatziiOS",
+    "loading": "Cargando...",
+    "error": "Ha ocurrido un error",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "submit": "Enviar",
+    "download": "Descargar",
+    "upload": "Subir",
+    "view": "Ver",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "yes": "Sí",
+    "no": "No",
+    "settings": "Configuración",
+    "profile": "Perfil",
+    "logout": "Cerrar sesión",
+    "help": "Ayuda"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "dashboard": "Panel de control",
+    "curriculum": "Plan de estudios",
+    "courses": "Cursos",
+    "lessons": "Lecciones",
+    "activities": "Actividades",
+    "assignments": "Tareas",
+    "assessments": "Evaluaciones",
+    "resources": "Recursos",
+    "students": "Estudiantes",
+    "teachers": "Profesores",
+    "parents": "Padres",
+    "reports": "Informes"
+  },
+  "accessibility": {
+    "options": "Opciones de accesibilidad",
+    "dyslexicFont": "Fuente para dislexia",
+    "highContrast": "Alto contraste",
+    "reducedMotion": "Movimiento reducido",
+    "textToSpeech": "Texto a voz",
+    "increaseFontSize": "Aumentar tamaño de fuente",
+    "decreaseFontSize": "Disminuir tamaño de fuente",
+    "resetSettings": "Restablecer configuración",
+    "parentMode": "Modo de traducción para padres"
+  },
+  "transformer": {
+    "title": "Transformador de Plan de Estudios",
+    "upload": {
+      "header": "Subir Plan de Estudios",
+      "description": "Suba su documento de plan de estudios para transformarlo para estudiantes neurodivergentes. Admitimos documentos PDF, Word y texto.",
+      "dragdrop": "Arrastre y suelte su archivo aquí",
+      "or": "o",
+      "browse": "Explorar archivos",
+      "directentry": "O ingrese texto directamente:",
+      "formats": "Formatos admitidos: PDF, Word, Texto"
+    },
+    "options": {
+      "header": "Opciones de transformación",
+      "learningdiff": "Enfoque en diferencia de aprendizaje:",
+      "dyslexia": "Dislexia",
+      "adhd": "TDAH",
+      "autism": "Espectro autista",
+      "all": "Todos",
+      "gradelevel": "Nivel educativo:",
+      "elementary": "Primaria (K-6)",
+      "middle": "Intermedia (7-8)",
+      "highschool": "Secundaria (9-12)",
+      "college": "Universidad",
+      "style": "Estilo visual:",
+      "superhero": "Tema de superhéroes (K-6)",
+      "modern": "Tema moderno (7-12)",
+      "professional": "Profesional (Universidad)",
+      "language": "Idioma de salida:",
+      "english": "Inglés",
+      "german": "Alemán",
+      "spanish": "Español"
+    },
+    "preview": {
+      "header": "Vista previa y transformación",
+      "transform": "Transformar plan de estudios",
+      "preview": "Vista previa:",
+      "nopreview": "Aún no hay vista previa disponible. Transforme su plan de estudios para ver los resultados.",
+      "download": "Descargar plan de estudios transformado"
+    },
+    "steps": {
+      "one": "Suba su documento o ingrese texto directamente",
+      "two": "Seleccione opciones de transformación",
+      "three": "Transforme su plan de estudios"
+    },
+    "status": {
+      "uploading": "Subiendo archivo...",
+      "processing": "Procesando plan de estudios...",
+      "transforming": "Transformando para {learningDifference}...",
+      "complete": "¡Transformación completa!",
+      "error": "Error: {message}"
+    }
+  },
+  "courseBuilder": {
+    "title": "Constructor de Cursos",
+    "description": "Cree y organice contenido educativo visualmente."
+  },
+  "schools": {
+    "primary": "Escuela Primaria Neurodivergente K-6",
+    "secondary": "Escuela Secundaria Neurodivergente 7-12",
+    "lawSchool": "Los Creadores de Abogados",
+    "languageSchool": "Escuela de Aprendizaje de Idiomas"
+  },
+  "footer": {
+    "description": "Una plataforma educativa avanzada con IA especializada en aprendizaje digital inclusivo para estudiantes neurodivergentes.",
+    "copyright": "© 2025 ShatziiOS. Todos los derechos reservados.",
+    "privacy": "Política de privacidad",
+    "terms": "Términos de servicio",
+    "contact": "Contacto"
+  }
+}

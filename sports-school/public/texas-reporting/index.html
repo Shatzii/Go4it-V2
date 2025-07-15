@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEA Reporting Dashboard - Texas Charter School</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --texas-blue: #002868;
+            --texas-red: #bf0a30;
+            --report-green: #16a34a;
+            --warning-orange: #ea580c;
+            --data-purple: #7c3aed;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--texas-blue) 0%, var(--data-purple) 100%);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .reporting-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--texas-blue), var(--texas-red));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin: 0 0 0.5rem;
+            font-weight: 700;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .reporting-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+            border: 2px solid transparent;
+        }
+
+        .stat-card.enrollment { border-color: var(--report-green); }
+        .stat-card.attendance { border-color: var(--data-purple); }
+        .stat-card.performance { border-color: var(--texas-blue); }
+        .stat-card.compliance { border-color: var(--warning-orange); }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .report-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .report-card.monthly { border-color: var(--report-green); }
+        .report-card.annual { border-color: var(--texas-blue); }
+        .report-card.compliance { border-color: var(--warning-orange); }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .status-badge.current { background: var(--report-green); }
+        .status-badge.pending { background: var(--warning-orange); }
+        .status-badge.overdue { background: var(--texas-red); }
+
+        .report-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .report-metrics {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .report-metrics li {
+            padding: 0.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .metric-label {
+            color: #666;
+        }
+
+        .metric-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .card-button {
+            background: linear-gradient(135deg, var(--texas-blue), var(--data-purple));
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+        }
+
+        .card-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .peims-section {
+            background: linear-gradient(135deg, #f0f9ff, #dbeafe);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .peims-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .peims-module {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--data-purple);
+        }
+
+        .module-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .module-description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .module-status {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .module-status.complete {
+            background: #dcfce7;
+            color: var(--report-green);
+        }
+
+        .module-status.pending {
+            background: #fef3c7;
+            color: var(--warning-orange);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, var(--texas-blue), #1e3a8a);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="reporting-container">
+        <div class="header">
+            <h1>Texas Education Agency Reporting</h1>
+            <p>Charter School Data & Compliance Dashboard</p>
+        </div>
+
+        <div class="content">
+            <div class="reporting-stats">
+                <div class="stat-card enrollment">
+                    <div class="stat-number">324</div>
+                    <div class="stat-label">Total Enrolled Students</div>
+                </div>
+                <div class="stat-card attendance">
+                    <div class="stat-number">96.2%</div>
+                    <div class="stat-label">Average Daily Attendance</div>
+                </div>
+                <div class="stat-card performance">
+                    <div class="stat-number">87%</div>
+                    <div class="stat-label">STAAR Meets Grade Level</div>
+                </div>
+                <div class="stat-card compliance">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">TEA Compliance Rate</div>
+                </div>
+            </div>
+
+            <div class="reports-grid">
+                <div class="report-card monthly">
+                    <div class="card-header">
+                        <div class="card-title">Monthly Reports</div>
+                        <div class="status-badge current">CURRENT</div>
+                    </div>
+                    <div class="report-description">
+                        Monthly data submissions including enrollment, attendance, and special education services.
+                    </div>
+                    <ul class="report-metrics">
+                        <li>
+                            <span class="metric-label">Enrollment Count</span>
+                            <span class="metric-value">324 students</span>
+                        </li>
+                        <li>
+                            <span class="metric-label">Attendance Rate</span>
+                            <span class="metric-value">96.2%</span>
+                        </li>
+                        <li>
+                            <span class="metric-label">Special Ed Services</span>
+                            <span class="metric-value">42 students</span>
+                        </li>
+                        <li>
+                            <span class="metric-label">ESL Services</span>
+                            <span class="metric-value">28 students</span>
+                        </li>
+                    </ul>
+                    <a href="#" class="card-button">Generate Monthly Report</a>
+                </div>
+
+                <div class="report-card annual">
+                    <div class="card-header">
+                        <div class="card-title">Annual Performance</div>
+                        <div class="status-badge pending">IN PROGRESS</div>
+                    </div>
+                    <div class="report-description">
+                        Comprehensive annual report including STAAR results, graduation rates, and accountability ratings.
+                    </div>
+                    <ul class="report-metrics">
+                        <li>
+                            <span class="metric-label">STAAR Performance</span>
+                            <span class="metric-value">87% Meets</span>
+                        </li>
+                        <li>
+                            <span class="metric-label">Academic Growth</span>
+                            <span class="metric-value">+12% increase</span>
+                        </li>
+                        <li>
+                            <span class="metric-label">Graduation Rate</span>
+                            <span class="metric-value">94%</span>
+                        </li>
+                        <li>
+                            <span class="metric-label">College Readiness</span>
+                            <span class="metric-value">78%</span>
+                        </li>
+                    </ul>
+                    <a href="#" class="card-button">View Annual Data</a>
+                </div>
+
+                <div class="report-card compliance">
+                    <div class="card-header">
+                        <div class="card-title">Compliance Monitoring</div>
+                        <div class="status-badge current">COMPLIANT</div>
+                    </div>
+                    <div class="report-description">
+                        Real-time compliance tracking for all TEA requirements including teacher certification and curriculum standards.
+                    </div>
+                    <ul class="report-metrics">
+                        <li>
+                            <span class="metric-label">Teacher Certification</span>
+                            <span class="metric-value">100% Certified</span>
+                        </li>
+                        <li>
+                            <span class="metric-label">TEKS Alignment</span>
+                            <span class="metric-value">100% Aligned</span>
+                        </li>
+                        <li>
+                            <span class="metric-label">Safety Training</span>
+                            <span class="metric-value">100% Complete</span>
+                        </li>
+                        <li>
+                            <span class="metric-label">Financial Audit</span>
+                            <span class="metric-value">Clean Opinion</span>
+                        </li>
+                    </ul>
+                    <a href="#" class="card-button">Compliance Dashboard</a>
+                </div>
+            </div>
+
+            <div class="peims-section">
+                <h2 class="section-title">
+                    <span>📊</span>
+                    PEIMS Data Collection Modules
+                </h2>
+                
+                <div class="peims-grid">
+                    <div class="peims-module">
+                        <div class="module-title">Student Enrollment</div>
+                        <div class="module-description">
+                            Student demographic data, enrollment dates, and program participation tracking.
+                        </div>
+                        <span class="module-status complete">Data Complete</span>
+                    </div>
+
+                    <div class="peims-module">
+                        <div class="module-title">Staff Information</div>
+                        <div class="module-description">
+                            Teacher certifications, assignments, and professional development records.
+                        </div>
+                        <span class="module-status complete">Data Complete</span>
+                    </div>
+
+                    <div class="peims-module">
+                        <div class="module-title">Financial Data</div>
+                        <div class="module-description">
+                            Budget allocations, expenditures, and revenue sources for state funding.
+                        </div>
+                        <span class="module-status pending">Pending Review</span>
+                    </div>
+
+                    <div class="peims-module">
+                        <div class="module-title">Special Programs</div>
+                        <div class="module-description">
+                            Special education, gifted and talented, and bilingual program data.
+                        </div>
+                        <span class="module-status complete">Data Complete</span>
+                    </div>
+
+                    <div class="peims-module">
+                        <div class="module-title">Assessment Results</div>
+                        <div class="module-description">
+                            STAAR test scores, graduation rates, and academic achievement data.
+                        </div>
+                        <span class="module-status complete">Data Complete</span>
+                    </div>
+
+                    <div class="peims-module">
+                        <div class="module-title">Discipline Records</div>
+                        <div class="module-description">
+                            Student discipline incidents, consequences, and behavioral intervention data.
+                        </div>
+                        <span class="module-status complete">Data Complete</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="/texas-enrollment/" class="nav-button">
+                    <span>📝</span>
+                    Student Enrollment
+                </a>
+                <a href="/texas-assessments/" class="nav-button">
+                    <span>📊</span>
+                    Assessment Center
+                </a>
+                <a href="/texas-peims/" class="nav-button">
+                    <span>🏛️</span>
+                    PEIMS Integration
+                </a>
+                <a href="/texas-charter-compliance.html" class="nav-button">
+                    <span>📋</span>
+                    Compliance Center
+                </a>
+                <a href="/" class="nav-button">
+                    <span>🏠</span>
+                    Main Platform
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate stat numbers on page load
+            const statNumbers = document.querySelectorAll('.stat-number');
+            statNumbers.forEach(stat => {
+                const finalValue = stat.textContent;
+                stat.textContent = '0';
+                
+                if (finalValue.includes('%')) {
+                    const numValue = parseFloat(finalValue);
+                    animateValue(stat, 0, numValue, 1000, '%');
+                } else {
+                    const numValue = parseInt(finalValue.replace(/,/g, ''));
+                    animateValue(stat, 0, numValue, 1000);
+                }
+            });
+
+            function animateValue(element, start, end, duration, suffix = '') {
+                const range = end - start;
+                const increment = range / (duration / 16);
+                let current = start;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= end) {
+                        current = end;
+                        clearInterval(timer);
+                    }
+                    
+                    if (suffix === '%') {
+                        element.textContent = current.toFixed(1) + '%';
+                    } else {
+                        element.textContent = Math.floor(current).toLocaleString();
+                    }
+                }, 16);
+            }
+
+            // Card hover effects
+            const reportCards = document.querySelectorAll('.report-card');
+            reportCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

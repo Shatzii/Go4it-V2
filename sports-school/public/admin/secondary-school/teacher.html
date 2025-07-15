@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Portal - S.T.A.G.E Prep</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --stage-blue: #667eea;
+            --stage-purple: #764ba2;
+            --stage-teal: #4ecdc4;
+            --stage-green: #45b7d1;
+            --stage-orange: #f9ca24;
+            --stage-red: #f0932b;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--stage-blue) 0%, var(--stage-purple) 100%);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .portal-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .portal-header {
+            background: linear-gradient(135deg, var(--stage-blue), var(--stage-purple));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .portal-header h1 {
+            font-size: 2.5rem;
+            margin: 0 0 0.5rem;
+            font-weight: 700;
+        }
+
+        .portal-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .portal-nav {
+            background: #f8f9fa;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            text-decoration: none;
+            color: #666;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active, .nav-tab:hover {
+            background: var(--stage-blue);
+            color: white;
+            border-color: var(--stage-blue);
+        }
+
+        .portal-content {
+            padding: 2rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .dashboard-card.courses { border-color: var(--stage-teal); }
+        .dashboard-card.grades { border-color: var(--stage-orange); }
+        .dashboard-card.analytics { border-color: var(--stage-purple); }
+        .dashboard-card.resources { border-color: var(--stage-green); }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .card-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .card-button {
+            background: linear-gradient(135deg, var(--stage-blue), var(--stage-purple));
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .card-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .students-section {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .student-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--stage-teal);
+        }
+
+        .student-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .student-grade {
+            background: var(--stage-green);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .student-info {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, var(--stage-teal), var(--stage-green));
+            border-radius: 3px;
+        }
+
+        .adaptations {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .adaptation-tag {
+            background: var(--stage-blue);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .adaptation-tag.dyslexia { background: var(--stage-red); }
+        .adaptation-tag.adhd { background: var(--stage-orange); }
+        .adaptation-tag.autism { background: var(--stage-purple); }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, var(--stage-teal), var(--stage-green));
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .students-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .portal-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="portal-container">
+        <div class="portal-header">
+            <h1>S.T.A.G.E Prep Faculty Portal</h1>
+            <p>Advanced learning management for grades 7-12</p>
+        </div>
+
+        <div class="portal-nav">
+            <div class="nav-tabs">
+                <a href="#" class="nav-tab active">Dashboard</a>
+                <a href="#" class="nav-tab">Course Management</a>
+                <a href="#" class="nav-tab">Student Analytics</a>
+                <a href="#" class="nav-tab">Assessments</a>
+                <a href="#" class="nav-tab">Accommodations</a>
+                <a href="#" class="nav-tab">Reports</a>
+            </div>
+        </div>
+
+        <div class="portal-content">
+            <div class="dashboard-grid">
+                <div class="dashboard-card courses">
+                    <span class="card-icon">📚</span>
+                    <div class="card-title">My Courses</div>
+                    <div class="card-description">
+                        Manage curriculum for Advanced Chemistry, Calculus II, and Computer Science
+                    </div>
+                    <div class="card-stats">
+                        <span>3 Active Courses</span>
+                        <span>89 Students</span>
+                    </div>
+                    <a href="#" class="card-button">Manage Courses</a>
+                </div>
+
+                <div class="dashboard-card grades">
+                    <span class="card-icon">📊</span>
+                    <div class="card-title">Grade Center</div>
+                    <div class="card-description">
+                        Track assignments, assessments, and adaptive grading for neurodivergent learners
+                    </div>
+                    <div class="card-stats">
+                        <span>24 Pending Reviews</span>
+                        <span>3.7 Avg GPA</span>
+                    </div>
+                    <a href="#" class="card-button">Review Grades</a>
+                </div>
+
+                <div class="dashboard-card analytics">
+                    <span class="card-icon">📈</span>
+                    <div class="card-title">Learning Analytics</div>
+                    <div class="card-description">
+                        Monitor engagement patterns and accommodation effectiveness
+                    </div>
+                    <div class="card-stats">
+                        <span>92% Engagement</span>
+                        <span>15% Improvement</span>
+                    </div>
+                    <a href="#" class="card-button">View Analytics</a>
+                </div>
+
+                <div class="dashboard-card resources">
+                    <span class="card-icon">🎯</span>
+                    <div class="card-title">Teaching Resources</div>
+                    <div class="card-description">
+                        Access adaptive materials and neurodiversity-focused teaching tools
+                    </div>
+                    <div class="card-stats">
+                        <span>156 Resources</span>
+                        <span>23 Templates</span>
+                    </div>
+                    <a href="#" class="card-button">Browse Resources</a>
+                </div>
+            </div>
+
+            <div class="students-section">
+                <h2 class="section-title">
+                    <span>🎓</span>
+                    Current Students Overview
+                </h2>
+                
+                <div class="students-grid">
+                    <div class="student-card">
+                        <div class="student-header">
+                            <div class="student-name">Emma Martinez</div>
+                            <div class="student-grade">A-</div>
+                        </div>
+                        <div class="student-info">Grade 11 • Advanced Chemistry • Last active: 2 hours ago</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 88%;"></div>
+                        </div>
+                        <div class="adaptations">
+                            <span class="adaptation-tag adhd">ADHD</span>
+                            <span class="adaptation-tag">Extended Time</span>
+                        </div>
+                    </div>
+
+                    <div class="student-card">
+                        <div class="student-header">
+                            <div class="student-name">Marcus Johnson</div>
+                            <div class="student-grade">B+</div>
+                        </div>
+                        <div class="student-info">Grade 12 • Calculus II • Last active: 45 min ago</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 79%;"></div>
+                        </div>
+                        <div class="adaptations">
+                            <span class="adaptation-tag dyslexia">Dyslexia</span>
+                            <span class="adaptation-tag">Audio Support</span>
+                        </div>
+                    </div>
+
+                    <div class="student-card">
+                        <div class="student-header">
+                            <div class="student-name">Aria Chen</div>
+                            <div class="student-grade">A</div>
+                        </div>
+                        <div class="student-info">Grade 10 • Computer Science • Last active: 1 hour ago</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 94%;"></div>
+                        </div>
+                        <div class="adaptations">
+                            <span class="adaptation-tag autism">Autism</span>
+                            <span class="adaptation-tag">Structured Environment</span>
+                        </div>
+                    </div>
+
+                    <div class="student-card">
+                        <div class="student-header">
+                            <div class="student-name">Jordan Taylor</div>
+                            <div class="student-grade">B</div>
+                        </div>
+                        <div class="student-info">Grade 9 • General Science • Last active: 3 hours ago</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 72%;"></div>
+                        </div>
+                        <div class="adaptations">
+                            <span class="adaptation-tag">Neurotypical</span>
+                            <span class="adaptation-tag">Standard Format</span>
+                        </div>
+                    </div>
+
+                    <div class="student-card">
+                        <div class="student-header">
+                            <div class="student-name">Taylor Rodriguez</div>
+                            <div class="student-grade">A-</div>
+                        </div>
+                        <div class="student-info">Grade 11 • Advanced Chemistry • Last active: 30 min ago</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 86%;"></div>
+                        </div>
+                        <div class="adaptations">
+                            <span class="adaptation-tag adhd">ADHD</span>
+                            <span class="adaptation-tag dyslexia">Dyslexia</span>
+                        </div>
+                    </div>
+
+                    <div class="student-card">
+                        <div class="student-header">
+                            <div class="student-name">Alex Kim</div>
+                            <div class="student-grade">B+</div>
+                        </div>
+                        <div class="student-info">Grade 12 • Computer Science • Last active: 4 hours ago</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 81%;"></div>
+                        </div>
+                        <div class="adaptations">
+                            <span class="adaptation-tag autism">Autism</span>
+                            <span class="adaptation-tag">Visual Learning</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="/schools/secondary-school/" class="nav-button">
+                    <span>🏠</span>
+                    Back to School
+                </a>
+                <a href="/admin/secondary-school/" class="nav-button">
+                    <span>📊</span>
+                    Student Dashboard
+                </a>
+                <a href="/admin/secondary-school/parent/" class="nav-button">
+                    <span>👨‍👩‍👧‍👦</span>
+                    Parent Portal
+                </a>
+                <a href="/demo/" class="nav-button">
+                    <span>🤖</span>
+                    AI Assistant
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab navigation
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Animate progress bars
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 500);
+            });
+        });
+    </script>
+</body>
+</html>
