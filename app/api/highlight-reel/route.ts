@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { highlightReels, videos } from '@/shared/schema';
+import { db } from '../../../../lib/db';
+import { highlightReels, videos } from '../../../../lib/schema';
 import { eq, desc } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
