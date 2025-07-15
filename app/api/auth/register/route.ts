@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { hashPassword, createSession } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { users, insertUserSchema } from '@/lib/schema';
-import { hashPassword, createJWT } from '@/lib/auth';
 import { eq } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Validate request body
     const validatedData = insertUserSchema.parse(body);
 

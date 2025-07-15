@@ -20,11 +20,22 @@ const nextConfig = {
       runtimeChunk: false,
     };
     
-    // Reduce build complexity
+    // Enhanced module resolution
     config.resolve.alias = {
       ...config.resolve.alias,
       '@': require('path').resolve(__dirname, '.'),
+      'lib': require('path').resolve(__dirname, 'lib'),
+      'shared': require('path').resolve(__dirname, 'shared'),
+      'components': require('path').resolve(__dirname, 'components'),
     };
+    
+    // Improve module resolution
+    config.resolve.modules = [
+      require('path').resolve(__dirname, '.'),
+      require('path').resolve(__dirname, 'lib'),
+      require('path').resolve(__dirname, 'shared'),
+      'node_modules'
+    ];
     
     // Speed up builds
     if (dev && isServer) {

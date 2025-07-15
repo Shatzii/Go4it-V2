@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { comparePasswords, createSession } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
-import { comparePasswords, createJWT } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
