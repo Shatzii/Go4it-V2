@@ -6,7 +6,7 @@ entrypoint = "client/index.html"
 # Production environment variables
 [env]
 NODE_ENV = "production"
-PORT = "3000"
+PORT = "5000"
 APP_URL = "https://go4it-sports.replit.app"
 
 # Static assets
