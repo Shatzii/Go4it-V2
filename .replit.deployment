@@ -1,5 +1,5 @@
 # Replit Deployment Configuration
-run = "node build/server/index.js"
+run = "npm run start"
 build = "npm run build"
 entrypoint = "client/index.html"
 
