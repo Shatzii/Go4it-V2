@@ -1,53 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserFromRequest } from '@/lib/auth'
-import { db } from '@/lib/db'
-import { users } from '@/shared/schema'
-import { eq } from 'drizzle-orm'
 
 export async function GET(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request)
+    
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-
-    // Mock student data - in production, this would come from database
+    
+    // Mock student academic data
     const student = {
-      id: user.id.toString(),
+      id: user.id,
       name: `${user.firstName} ${user.lastName}`,
-      grade: '11',
-      gpa: 3.8,
-      credits: 45,
-      sport: user.sport || 'Football',
+      grade: '11th',
+      gpa: user.gpa || 3.7,
+      credits: 18,
+      sport: user.sport || 'Basketball',
       ncaaEligible: true,
       courses: [
         {
           id: '1',
-          title: 'Algebra II',
+          title: 'Advanced Mathematics',
           subject: 'Mathematics',
-          grade: '11',
-          credits: 1,
-          instructor: 'Professor Newton',
-          schedule: 'Mon/Wed/Fri 9:00-10:30 AM',
+          grade: '11th',
+          credits: 4,
+          instructor: 'Dr. Smith',
+          schedule: 'Mon/Wed/Fri 10:00-11:00',
           progress: 75,
           isNCAAEligible: true,
+          currentGrade: 'A-',
           assignments: [
             {
               id: '1',
-              title: 'Quadratic Functions Quiz',
+              title: 'Calculus Quiz 3',
               type: 'quiz',
               dueDate: '2024-07-20',
               status: 'pending',
-              score: 0,
               maxScore: 100
             },
             {
               id: '2',
-              title: 'Factoring Polynomials',
-              type: 'essay',
+              title: 'Statistics Project',
+              type: 'project',
               dueDate: '2024-07-25',
               status: 'submitted',
-              score: 0,
+              score: 92,
               maxScore: 100
             }
           ]
@@ -56,52 +54,56 @@ export async function GET(request: NextRequest) {
           id: '2',
           title: 'English Literature',
           subject: 'English',
-          grade: '11',
-          credits: 1,
-          instructor: 'Ms. Shakespeare',
-          schedule: 'Tue/Thu 10:00-11:30 AM',
+          grade: '11th',
+          credits: 3,
+          instructor: 'Ms. Johnson',
+          schedule: 'Tue/Thu 9:00-10:30',
           progress: 82,
           isNCAAEligible: true,
+          currentGrade: 'B+',
           assignments: [
             {
               id: '3',
-              title: 'Romeo and Juliet Essay',
+              title: 'Essay on Shakespeare',
               type: 'essay',
               dueDate: '2024-07-18',
               status: 'graded',
-              score: 92,
-              maxScore: 100
-            }
-          ]
-        },
-        {
-          id: '3',
-          title: 'Sports Science',
-          subject: 'Science',
-          grade: '11',
-          credits: 1,
-          instructor: 'Dr. Curie',
-          schedule: 'Mon/Wed 2:00-3:30 PM',
-          progress: 68,
-          isNCAAEligible: false,
-          assignments: [
-            {
-              id: '4',
-              title: 'Biomechanics Lab Report',
-              type: 'project',
-              dueDate: '2024-07-22',
-              status: 'pending',
-              score: 0,
+              score: 85,
               maxScore: 100
             }
           ]
         }
-      ]
+      ],
+      upcomingAssignments: [
+        {
+          id: '1',
+          title: 'Calculus Quiz 3',
+          course: 'Advanced Mathematics',
+          type: 'quiz',
+          dueDate: '2024-07-20',
+          status: 'pending'
+        },
+        {
+          id: '4',
+          title: 'History Essay',
+          course: 'AP History',
+          type: 'essay',
+          dueDate: '2024-07-22',
+          status: 'pending'
+        }
+      ],
+      academicProgress: {
+        totalCredits: 18,
+        requiredCredits: 24,
+        ncaaEligibleCredits: 16,
+        currentGPA: user.gpa || 3.7,
+        projectedGPA: 3.8
+      }
     }
-
+    
     return NextResponse.json({ student })
   } catch (error) {
-    console.error('Failed to fetch student data:', error)
-    return NextResponse.json({ error: 'Failed to fetch student data' }, { status: 500 })
+    console.error('Error fetching student data:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

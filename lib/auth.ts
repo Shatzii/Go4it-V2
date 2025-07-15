@@ -35,19 +35,35 @@ export async function verifyJWT(token: string): Promise<{ userId: number } | nul
 }
 
 export async function getUserFromRequest(request: NextRequest) {
-  const token = request.cookies.get('auth-token')?.value;
-  
-  if (!token) {
-    return null;
-  }
+  try {
+    // Try to get token from Authorization header first
+    const authHeader = request.headers.get('authorization')
+    let token = null
+    
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.replace('Bearer ', '')
+    }
+    
+    // If no token in header, try cookies
+    if (!token) {
+      token = request.cookies.get('auth-token')?.value
+    }
+    
+    if (!token) {
+      return null
+    }
 
-  const payload = await verifyJWT(token);
-  if (!payload) {
-    return null;
-  }
+    const payload = await verifyJWT(token)
+    if (!payload) {
+      return null
+    }
 
-  const [user] = await db.select().from(users).where(eq(users.id, payload.userId));
-  return user || null;
+    const [user] = await db.select().from(users).where(eq(users.id, payload.userId))
+    return user || null
+  } catch (error) {
+    console.error('Error getting user from request:', error)
+    return null
+  }
 }
 
 export async function createSession(userId: number): Promise<string> {
