@@ -3,18 +3,17 @@ const nextConfig = {
   images: { unoptimized: true },
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
-  webpack: (config) => {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@': require('path').resolve(__dirname, '.'),
-    };
-    return config;
+  experimental: { 
+    serverActions: { 
+      allowedOrigins: ['localhost:5000', '*.replit.app', '*.replit.dev'] 
+    } 
   },
-  env: { PORT: '5000', HOSTNAME: '0.0.0.0' },
-  experimental: { serverActions: { allowedOrigins: ['*'] } },
+  env: { 
+    PORT: '5000', 
+    HOSTNAME: '0.0.0.0' 
+  },
   output: 'standalone',
   distDir: '.next',
-  generateBuildId: () => 'build-fixed',
 };
 
 module.exports = nextConfig;
