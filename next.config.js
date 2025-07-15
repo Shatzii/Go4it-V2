@@ -18,6 +18,20 @@ const nextConfig = {
       config.optimization.minimizer = [];
     }
     
+    // Add chunking to reduce build size
+    config.optimization.splitChunks = {
+      chunks: 'all',
+      maxInitialRequests: 25,
+      maxAsyncRequests: 25,
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+      },
+    };
+    
     if (dev && isServer) {
       config.watchOptions = {
         poll: 1000,
@@ -36,6 +50,12 @@ const nextConfig = {
     serverActions: {
       allowedOrigins: ['*']
     }
+  },
+  // Add timeout configurations for build
+  staticPageGenerationTimeout: 120,
+  // Skip static generation for dynamic routes
+  generateBuildId: async () => {
+    return 'build-' + Date.now();
   },
   async headers() {
     return [
