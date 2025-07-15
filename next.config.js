@@ -10,7 +10,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   // Disable all minification to resolve build errors
-  swcMinify: false,
+  // swcMinify option is deprecated in Next.js 15+
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {
       // Disable Terser minification completely for production builds
