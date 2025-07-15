@@ -28,43 +28,65 @@ export interface LocalModelInfo {
 // Small, efficient models for local deployment
 export const AVAILABLE_LOCAL_MODELS: LocalModelInfo[] = [
   {
-    name: 'Sports Coach Mini',
-    size: '1.2GB',
-    description: 'Lightweight sports coaching model optimized for athletic performance analysis',
-    downloadUrl: '/models/sports-coach-mini.gguf',
-    modelFile: 'sports-coach-mini.gguf',
+    name: 'llama3.1:8b',
+    size: '4.7GB',
+    description: 'General-purpose AI model optimized for coaching and instruction',
+    downloadUrl: 'ollama://llama3.1:8b',
+    modelFile: 'llama3.1-8b.gguf',
     requirements: {
-      ram: '4GB',
-      storage: '1.5GB',
-      gpu: 'Optional - CPU only'
+      ram: '8GB',
+      storage: '5GB',
+      gpu: 'Optional (CUDA/ROCm)'
     },
-    capabilities: ['Performance Analysis', 'Technique Feedback', 'Drill Recommendations']
+    capabilities: ['coaching', 'instruction', 'sports', 'personalization', 'analytics']
   },
   {
-    name: 'Education Assistant Lite',
-    size: '800MB',
-    description: 'ADHD-friendly educational model for neurodivergent students',
-    downloadUrl: '/models/education-assistant-lite.gguf',
-    modelFile: 'education-assistant-lite.gguf',
-    requirements: {
-      ram: '3GB',
-      storage: '1GB',
-      gpu: 'Optional - CPU only'
-    },
-    capabilities: ['Academic Support', 'ADHD Accommodations', 'Learning Strategies']
-  },
-  {
-    name: 'Video Analysis Compact',
-    size: '2.1GB',
-    description: 'Computer vision model for sports video analysis',
-    downloadUrl: '/models/video-analysis-compact.onnx',
-    modelFile: 'video-analysis-compact.onnx',
+    name: 'codellama:7b',
+    size: '3.8GB',
+    description: 'Code-focused model for technical drill instructions',
+    downloadUrl: 'ollama://codellama:7b',
+    modelFile: 'codellama-7b.gguf',
     requirements: {
       ram: '6GB',
-      storage: '2.5GB',
-      gpu: 'Recommended - RTX 3060 or better'
+      storage: '4GB'
     },
-    capabilities: ['Movement Detection', 'Posture Analysis', 'Performance Metrics']
+    capabilities: ['instruction', 'technical', 'drills']
+  },
+  {
+    name: 'mistral:7b',
+    size: '4.1GB',
+    description: 'Fast and efficient model for quick coaching responses',
+    downloadUrl: 'ollama://mistral:7b',
+    modelFile: 'mistral-7b.gguf',
+    requirements: {
+      ram: '6GB',
+      storage: '4.5GB'
+    },
+    capabilities: ['coaching', 'sports', 'motivation', 'psychology']
+  },
+  {
+    name: 'neural-chat:7b',
+    size: '4.2GB',
+    description: 'Conversational AI optimized for student-athlete interactions',
+    downloadUrl: 'ollama://neural-chat:7b',
+    modelFile: 'neural-chat-7b.gguf',
+    requirements: {
+      ram: '6GB',
+      storage: '4.5GB'
+    },
+    capabilities: ['coaching', 'conversation', 'psychology', 'motivation', 'education']
+  },
+  {
+    name: 'phi3:mini',
+    size: '2.3GB',
+    description: 'Lightweight model for basic coaching and quick responses',
+    downloadUrl: 'ollama://phi3:mini',
+    modelFile: 'phi3-mini.gguf',
+    requirements: {
+      ram: '4GB',
+      storage: '2.5GB'
+    },
+    capabilities: ['coaching', 'basic', 'fast']
   }
 ];
 
