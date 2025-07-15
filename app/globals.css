@@ -2,6 +2,52 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Go4It Sports Color Variables - Matching deployed site */
+:root {
+  --background: 223 100% 0%;
+  --foreground: 201 100% 93%;
+  --muted: 195 100% 19%;
+  --muted-foreground: 201 100% 93%;
+  --popover: 200 100% 7%;
+  --popover-foreground: 201 100% 93%;
+  --card: 200 100% 7%;
+  --card-foreground: 201 100% 93%;
+  --border: 195 100% 19%;
+  --input: 195 100% 19%;
+  --primary: 195 100% 35%;
+  --primary-foreground: 201 87% 98%;
+  --secondary: 195 100% 19%;
+  --secondary-foreground: 201 100% 93%;
+  --accent: 195 100% 19%;
+  --accent-foreground: 201 100% 93%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 195 100% 35%;
+  --radius: 0.75rem;
+}
+
+.light {
+  --background: 200 84% 71%;
+  --foreground: 200 100% 7%;
+  --muted: 195 100% 43%;
+  --muted-foreground: 200 100% 7%;
+  --popover: 201 100% 97%;
+  --popover-foreground: 200 100% 7%;
+  --card: 201 100% 97%;
+  --card-foreground: 200 100% 7%;
+  --border: 195 100% 43%;
+  --input: 195 100% 43%;
+  --primary: 195 100% 43%;
+  --primary-foreground: 201 100% 99%;
+  --secondary: 200 100% 77%;
+  --secondary-foreground: 200 100% 7%;
+  --accent: 195 100% 43%;
+  --accent-foreground: 200 100% 7%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 195 100% 43%;
+}
+
 /* Custom scrollbar styles */
 ::-webkit-scrollbar {
   width: 8px;
