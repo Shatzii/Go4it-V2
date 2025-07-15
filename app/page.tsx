@@ -66,18 +66,33 @@ export default function Go4ItHomePage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
-            GET VERIFIED
-          </h1>
+      {/* Hero Section - Neon Style */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 hero-bg min-h-screen flex items-center">
+        <div className="max-w-7xl mx-auto text-center relative z-10">
+          {/* Main GET VERIFIED with neon effect */}
+          <div className="relative mb-8">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-96 h-96 border-4 border-primary rounded-full opacity-20"></div>
+            </div>
+            <div className="relative">
+              <h1 className="text-6xl md:text-8xl font-bold neon-text mb-4 tracking-wider">
+                GET
+              </h1>
+              <h1 className="text-6xl md:text-8xl font-bold neon-text tracking-wider">
+                VERIFIED
+              </h1>
+              {/* Checkmark icon with neon glow */}
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-primary">
+                <CheckCircle className="w-24 h-24 neon-glow" />
+              </div>
+            </div>
+          </div>
           
-          <div className="mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <div className="mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
               GAR Rating System
             </h2>
-            <p className="text-xl text-muted-foreground mb-6">
+            <p className="text-xl text-foreground mb-6">
               The Ultimate AI-Powered Athlete Evaluation
             </p>
             <p className="text-lg text-muted-foreground max-w-4xl mx-auto">
@@ -88,12 +103,12 @@ export default function Go4ItHomePage() {
           
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
             <FeatureCard
-              icon={<Activity className="w-8 h-8 text-primary" />}
+              icon={<Activity className="w-8 h-8 text-primary neon-glow" />}
               title="AI Motion Analysis"
               description="Our cutting-edge AI technology analyzes your motion mechanics with professional-grade accuracy."
             />
             <FeatureCard
-              icon={<Award className="w-8 h-8 text-primary" />}
+              icon={<Award className="w-8 h-8 text-primary neon-glow" />}
               title="Verified Combines"
               description="Participate in certified athletic combines where your performance metrics are verified by professionals."
             />
@@ -101,7 +116,7 @@ export default function Go4ItHomePage() {
           
           <SafeLink 
             href="/auth" 
-            className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-lg text-lg font-semibold transition-colors inline-flex items-center gap-2"
+            className="neon-border bg-background hover:bg-primary/10 text-primary px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center gap-2"
           >
             Get Verified Today
             <ArrowRight className="w-5 h-5" />
@@ -379,7 +394,7 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="bg-card p-6 rounded-lg border border-border hover:border-primary/50 transition-colors">
+    <div className="bg-card p-6 rounded-lg border border-border hover:neon-border transition-all duration-300">
       <div className="mb-4">{icon}</div>
       <h3 className="text-xl font-semibold text-card-foreground mb-2">{title}</h3>
       <p className="text-muted-foreground">{description}</p>
@@ -403,7 +418,7 @@ function AthleteCard({
   imageUrl: string;
 }) {
   return (
-    <div className="bg-card rounded-lg border border-border overflow-hidden hover:border-primary/50 transition-colors">
+    <div className="bg-card rounded-lg border border-border overflow-hidden hover:neon-border transition-all duration-300">
       <div className="relative">
         <img 
           src={imageUrl} 
@@ -411,13 +426,13 @@ function AthleteCard({
           className="w-full h-48 object-cover"
         />
         {verified && (
-          <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-semibold">
+          <div className="absolute top-2 right-2 bg-primary text-primary-foreground px-2 py-1 rounded text-xs font-semibold neon-glow">
             VERIFIED
           </div>
         )}
         
-        {/* GAR Score circle - matching deployed site style */}
-        <div className="absolute bottom-2 left-2 bg-primary text-primary-foreground w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold">
+        {/* GAR Score circle with neon glow */}
+        <div className="absolute bottom-2 left-2 bg-primary text-primary-foreground w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold neon-glow">
           {garScore}
         </div>
       </div>
@@ -432,7 +447,7 @@ function AthleteCard({
           <div>GAR{garScore}/100</div>
         </div>
         
-        {/* Star Rating based on GAR score */}
+        {/* Star Rating based on GAR score with neon glow */}
         <div className="flex items-center gap-2 mb-2">
           <StarRating rating={Math.floor(garScore / 20)} maxRating={5} />
           <span className="text-xs text-muted-foreground">({garScore}/100)</span>
@@ -441,11 +456,11 @@ function AthleteCard({
         <div className="mt-3 flex gap-2">
           <SafeLink 
             href={`/profile/${encodeURIComponent(name.toLowerCase().replace(' ', '-'))}`}
-            className="bg-primary text-primary-foreground px-3 py-1 rounded text-xs font-medium hover:bg-primary/90 transition-colors"
+            className="bg-primary text-primary-foreground px-3 py-1 rounded text-xs font-medium hover:bg-primary/90 transition-colors neon-glow"
           >
             View Profile
           </SafeLink>
-          <button className="text-primary border border-primary px-3 py-1 rounded text-xs font-medium hover:bg-primary/10 transition-colors">
+          <button className="text-primary border border-primary px-3 py-1 rounded text-xs font-medium hover:neon-border transition-all duration-300">
             Highlights
           </button>
         </div>

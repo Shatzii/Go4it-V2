@@ -2,50 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Go4It Sports Color Variables - Matching deployed site */
+/* Go4It Sports Neon Color Variables - Matching GET VERIFIED design */
 :root {
-  --background: 223 100% 0%;
-  --foreground: 201 100% 93%;
-  --muted: 195 100% 19%;
-  --muted-foreground: 201 100% 93%;
-  --popover: 200 100% 7%;
-  --popover-foreground: 201 100% 93%;
-  --card: 200 100% 7%;
-  --card-foreground: 201 100% 93%;
-  --border: 195 100% 19%;
-  --input: 195 100% 19%;
-  --primary: 195 100% 35%;
-  --primary-foreground: 201 87% 98%;
-  --secondary: 195 100% 19%;
-  --secondary-foreground: 201 100% 93%;
-  --accent: 195 100% 19%;
-  --accent-foreground: 201 100% 93%;
+  --background: 220 20% 5%;
+  --foreground: 195 100% 85%;
+  --muted: 220 20% 15%;
+  --muted-foreground: 195 50% 60%;
+  --popover: 220 20% 8%;
+  --popover-foreground: 195 100% 85%;
+  --card: 220 20% 8%;
+  --card-foreground: 195 100% 85%;
+  --border: 195 100% 30%;
+  --input: 195 100% 30%;
+  --primary: 195 100% 60%;
+  --primary-foreground: 220 20% 5%;
+  --secondary: 220 20% 15%;
+  --secondary-foreground: 195 100% 85%;
+  --accent: 195 100% 60%;
+  --accent-foreground: 220 20% 5%;
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 98%;
-  --ring: 195 100% 35%;
+  --ring: 195 100% 60%;
   --radius: 0.75rem;
 }
 
-.light {
-  --background: 200 84% 71%;
-  --foreground: 200 100% 7%;
-  --muted: 195 100% 43%;
-  --muted-foreground: 200 100% 7%;
-  --popover: 201 100% 97%;
-  --popover-foreground: 200 100% 7%;
-  --card: 201 100% 97%;
-  --card-foreground: 200 100% 7%;
-  --border: 195 100% 43%;
-  --input: 195 100% 43%;
-  --primary: 195 100% 43%;
-  --primary-foreground: 201 100% 99%;
-  --secondary: 200 100% 77%;
-  --secondary-foreground: 200 100% 7%;
-  --accent: 195 100% 43%;
-  --accent-foreground: 200 100% 7%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
-  --ring: 195 100% 43%;
+/* Neon glow effects */
+.neon-text {
+  color: hsl(195, 100%, 60%);
+  text-shadow: 
+    0 0 10px hsl(195, 100%, 60%),
+    0 0 20px hsl(195, 100%, 60%),
+    0 0 30px hsl(195, 100%, 60%);
+}
+
+.neon-border {
+  border: 2px solid hsl(195, 100%, 60%);
+  box-shadow: 
+    0 0 10px hsl(195, 100%, 60%),
+    inset 0 0 10px hsl(195, 100%, 60%);
+}
+
+.neon-glow {
+  filter: drop-shadow(0 0 10px hsl(195, 100%, 60%));
+}
+
+.hero-bg {
+  background: radial-gradient(circle at center, hsl(220, 30%, 8%) 0%, hsl(220, 20%, 3%) 100%);
+  position: relative;
+}
+
+.hero-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, hsl(195, 100%, 60%, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, hsl(195, 100%, 60%, 0.1) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 /* Custom scrollbar styles */
