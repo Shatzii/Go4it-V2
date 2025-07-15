@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest } from '../../../../lib/auth';
-import { db } from '../../../../lib/db';
+import { getUserFromRequest } from '@/lib/auth';
+import { db } from '@/lib/db';
 import { healthMetrics, recoveryPlans } from '@/shared/enhanced-schema';
 import { eq, desc } from 'drizzle-orm';
 

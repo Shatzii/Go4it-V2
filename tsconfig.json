@@ -38,15 +38,6 @@
       ],
       "@/components/*": [
         "./components/*"
-      ],
-      "lib/*": [
-        "./lib/*"
-      ],
-      "shared/*": [
-        "./shared/*"
-      ],
-      "components/*": [
-        "./components/*"
       ]
     }
   },
