@@ -66,61 +66,187 @@ export default function Go4ItHomePage() {
         </div>
       </nav>
 
-      {/* Hero Section - Neon Style */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 hero-bg min-h-screen flex items-center">
-        <div className="max-w-7xl mx-auto text-center relative z-10">
-          {/* Main GET VERIFIED with neon effect */}
-          <div className="relative mb-8">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-96 h-96 border-4 border-primary rounded-full opacity-20"></div>
+      {/* Hero Section - Dynamic Sports Platform */}
+      <section className="relative py-20 px-4 sm:px-6 lg:px-8 min-h-screen flex items-center overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent"></div>
+          {/* Floating elements */}
+          <div className="absolute top-20 left-20 w-20 h-20 bg-primary/10 rounded-full blur-xl animate-pulse"></div>
+          <div className="absolute bottom-40 right-32 w-32 h-32 bg-secondary/10 rounded-full blur-xl animate-pulse delay-300"></div>
+          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-accent/10 rounded-full blur-xl animate-pulse delay-700"></div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Column - Content */}
+            <div className="space-y-8">
+              <div className="space-y-6">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium text-primary">Platform Status: {platformStatus.charAt(0).toUpperCase() + platformStatus.slice(1)}</span>
+                </div>
+                
+                <h1 className="text-5xl lg:text-7xl font-bold text-foreground leading-tight">
+                  Elevate Your
+                  <span className="block text-primary bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                    Athletic Journey
+                  </span>
+                </h1>
+                
+                <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
+                  The ultimate AI-powered platform designed specifically for neurodivergent student athletes. 
+                  Combine elite athletic training with academic excellence.
+                </p>
+              </div>
+              
+              {/* Key Features */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center gap-3 p-4 bg-card/50 rounded-lg border border-border/50">
+                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                    <Activity className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-foreground">AI Coach</div>
+                    <div className="text-sm text-muted-foreground">Personal Training</div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3 p-4 bg-card/50 rounded-lg border border-border/50">
+                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                    <BarChart3 className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-foreground">GAR Rating</div>
+                    <div className="text-sm text-muted-foreground">Performance Analytics</div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3 p-4 bg-card/50 rounded-lg border border-border/50">
+                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                    <Target className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-foreground">StarPath</div>
+                    <div className="text-sm text-muted-foreground">Skill Progression</div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3 p-4 bg-card/50 rounded-lg border border-border/50">
+                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                    <Users className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-foreground">Academy</div>
+                    <div className="text-sm text-muted-foreground">Full Education</div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <SafeLink 
+                  href="/auth" 
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                >
+                  <Play className="w-5 h-5" />
+                  Start Your Journey
+                </SafeLink>
+                
+                <SafeLink 
+                  href="/ai-coach" 
+                  className="border border-primary/30 hover:bg-primary/10 text-primary px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center gap-2"
+                >
+                  <Target className="w-5 h-5" />
+                  Try AI Coach
+                </SafeLink>
+              </div>
             </div>
+            
+            {/* Right Column - Visual Elements */}
             <div className="relative">
-              <h1 className="text-6xl md:text-8xl font-bold neon-text mb-4 tracking-wider">
-                GET
-              </h1>
-              <h1 className="text-6xl md:text-8xl font-bold neon-text tracking-wider">
-                VERIFIED
-              </h1>
-              {/* Checkmark icon with neon glow */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-primary">
-                <CheckCircle className="w-24 h-24 neon-glow" />
+              {/* Main Visual Container */}
+              <div className="relative bg-gradient-to-br from-card to-card/50 rounded-3xl border border-border/50 p-8 shadow-2xl">
+                {/* Performance Stats */}
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xl font-semibold text-foreground">Performance Overview</h3>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                      <span className="text-sm text-muted-foreground">Live</span>
+                    </div>
+                  </div>
+                  
+                  {/* Progress Bars */}
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-medium text-foreground">Athletic Performance</span>
+                        <span className="text-sm text-primary font-semibold">92%</span>
+                      </div>
+                      <div className="w-full bg-secondary/20 rounded-full h-2">
+                        <div className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full w-[92%] transition-all duration-1000"></div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-medium text-foreground">Academic Progress</span>
+                        <span className="text-sm text-primary font-semibold">87%</span>
+                      </div>
+                      <div className="w-full bg-secondary/20 rounded-full h-2">
+                        <div className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full w-[87%] transition-all duration-1000 delay-300"></div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-medium text-foreground">StarPath Level</span>
+                        <span className="text-sm text-primary font-semibold">Elite</span>
+                      </div>
+                      <div className="w-full bg-secondary/20 rounded-full h-2">
+                        <div className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full w-[95%] transition-all duration-1000 delay-500"></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Quick Stats */}
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/50">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-primary">1,247</div>
+                      <div className="text-sm text-muted-foreground">Training Hours</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-primary">94%</div>
+                      <div className="text-sm text-muted-foreground">Success Rate</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Floating Achievement Card */}
+              <div className="absolute -top-4 -right-4 bg-primary text-primary-foreground p-4 rounded-2xl shadow-lg transform rotate-3">
+                <div className="flex items-center gap-2">
+                  <Award className="w-5 h-5" />
+                  <span className="font-semibold">New Achievement!</span>
+                </div>
+                <div className="text-sm opacity-90">Elite Performance Unlocked</div>
+              </div>
+              
+              {/* Floating Notification */}
+              <div className="absolute -bottom-4 -left-4 bg-card border border-border/50 p-4 rounded-2xl shadow-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                    <Target className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-foreground text-sm">AI Coach Ready</div>
+                    <div className="text-xs text-muted-foreground">3 new drills available</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          
-          <div className="mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-              GAR Rating System
-            </h2>
-            <p className="text-xl text-foreground mb-6">
-              The Ultimate AI-Powered Athlete Evaluation
-            </p>
-            <p className="text-lg text-muted-foreground max-w-4xl mx-auto">
-              Our revolutionary GAR Rating System uses AI to analyze physical metrics, cognitive abilities, 
-              and psychological factors for the most comprehensive athlete evaluation available.
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
-            <FeatureCard
-              icon={<Activity className="w-8 h-8 text-primary neon-glow" />}
-              title="AI Motion Analysis"
-              description="Our cutting-edge AI technology analyzes your motion mechanics with professional-grade accuracy."
-            />
-            <FeatureCard
-              icon={<Award className="w-8 h-8 text-primary neon-glow" />}
-              title="Verified Combines"
-              description="Participate in certified athletic combines where your performance metrics are verified by professionals."
-            />
-          </div>
-          
-          <SafeLink 
-            href="/auth" 
-            className="neon-border bg-background hover:bg-primary/10 text-primary px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center gap-2"
-          >
-            Get Verified Today
-            <ArrowRight className="w-5 h-5" />
-          </SafeLink>
         </div>
       </section>
 
