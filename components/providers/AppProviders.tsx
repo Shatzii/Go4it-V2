@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { User } from '@/shared/schema';
+import { User } from '@/lib/schema';
 
 interface AppContextType {
   user: User | null;
@@ -29,13 +29,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           setUser(userData);
         }
       } catch (err) {
-        console.error('Auth initialization failed:', err);
+        console.log('Auth initialization failed, using guest mode:', err);
+        // Set user to null for guest mode
+        setUser(null);
       } finally {
         setLoading(false);
       }
     };
 
-    initializeAuth();
+    // Set timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      console.log('Auth initialization timed out, using guest mode');
+      setUser(null);
+      setLoading(false);
+    }, 3000);
+
+    initializeAuth().finally(() => {
+      clearTimeout(timeoutId);
+    });
   }, []);
 
   const value = {

@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { SignJWT, jwtVerify } from 'jose';
 import { db } from './db';
-import { users, userSessions } from '@/shared/schema';
+import { users, userSessions } from './schema';
 import { eq } from 'drizzle-orm';
 
 const JWT_SECRET = new TextEncoder().encode(
