@@ -14,7 +14,11 @@ import {
   Play,
   Pause,
   RefreshCw,
-  Info
+  Info,
+  Shield,
+  Key,
+  Lock,
+  Unlock
 } from 'lucide-react';
 
 interface LocalModelInfo {
@@ -29,8 +33,15 @@ interface LocalModelInfo {
     gpu?: string;
   };
   capabilities: string[];
-  status?: 'not_installed' | 'downloading' | 'installed' | 'ready';
+  status?: 'not_installed' | 'downloading' | 'installed' | 'ready' | 'licensed' | 'encrypted';
   downloadProgress?: number;
+  licenseInfo?: {
+    id: string;
+    licenseKey: string;
+    expirationDate: string;
+    features: string[];
+    encrypted: boolean;
+  };
 }
 
 interface SystemRequirements {
@@ -46,6 +57,9 @@ export default function ModelsPage() {
   const [loading, setLoading] = useState(true);
   const [downloadingModel, setDownloadingModel] = useState<string | null>(null);
   const [useLocalModels, setUseLocalModels] = useState(false);
+  const [showLicenseModal, setShowLicenseModal] = useState(false);
+  const [selectedModelForLicense, setSelectedModelForLicense] = useState<string | null>(null);
+  const [licenseKey, setLicenseKey] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -168,10 +182,115 @@ export default function ModelsPage() {
     localStorage.setItem('useLocalModels', newValue.toString());
   };
 
+  const generateLicense = async (modelName: string) => {
+    try {
+      const response = await fetch('/api/models/license', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'generate',
+          modelName,
+          features: ['offline_use', 'commercial_use'],
+          maxActivations: 1,
+          validityDays: 365
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          // Update model with license info
+          setModels(prevModels => 
+            prevModels.map(model => 
+              model.name === modelName 
+                ? { 
+                    ...model, 
+                    status: 'licensed',
+                    licenseInfo: {
+                      id: data.license.id,
+                      licenseKey: data.license.licenseKey,
+                      expirationDate: data.license.expirationDate,
+                      features: data.license.features,
+                      encrypted: false
+                    }
+                  }
+                : model
+            )
+          );
+          
+          // Show license key to user
+          alert(`License generated successfully!\nLicense Key: ${data.license.licenseKey}\n\nPlease save this key securely.`);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to generate license:', error);
+    }
+  };
+
+  const validateLicense = async (modelName: string, licenseKey: string) => {
+    try {
+      const response = await fetch('/api/models/license', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'validate',
+          licenseKey
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.valid) {
+          // Update model with validated license
+          setModels(prevModels => 
+            prevModels.map(model => 
+              model.name === modelName 
+                ? { 
+                    ...model, 
+                    status: 'ready',
+                    licenseInfo: {
+                      id: data.license.id,
+                      licenseKey: licenseKey,
+                      expirationDate: data.license.expirationDate,
+                      features: data.license.features,
+                      encrypted: true
+                    }
+                  }
+                : model
+            )
+          );
+          
+          setShowLicenseModal(false);
+          setLicenseKey('');
+          setSelectedModelForLicense(null);
+        } else {
+          alert(`License validation failed: ${data.error}`);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to validate license:', error);
+    }
+  };
+
+  const openLicenseModal = (modelName: string) => {
+    setSelectedModelForLicense(modelName);
+    setShowLicenseModal(true);
+  };
+
+  const closeLicenseModal = () => {
+    setShowLicenseModal(false);
+    setLicenseKey('');
+    setSelectedModelForLicense(null);
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'ready':
         return <CheckCircle className="h-5 w-5 text-primary" />;
+      case 'licensed':
+        return <Shield className="h-5 w-5 text-primary" />;
+      case 'encrypted':
+        return <Lock className="h-5 w-5 text-primary" />;
       case 'installed':
         return <CheckCircle className="h-5 w-5 text-primary/70" />;
       case 'downloading':
@@ -185,6 +304,10 @@ export default function ModelsPage() {
     switch (status) {
       case 'ready':
         return 'Ready to use';
+      case 'licensed':
+        return 'Licensed';
+      case 'encrypted':
+        return 'Encrypted';
       case 'installed':
         return 'Installed';
       case 'downloading':
@@ -334,6 +457,21 @@ export default function ModelsPage() {
                 </div>
               )}
 
+              {/* License Information */}
+              {model.licenseInfo && (
+                <div className="mb-4 p-3 bg-primary/10 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-primary">Licensed Model</span>
+                    <Shield className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <div>Expires: {new Date(model.licenseInfo.expirationDate).toLocaleDateString()}</div>
+                    <div>Features: {model.licenseInfo.features.join(', ')}</div>
+                    <div>Encrypted: {model.licenseInfo.encrypted ? 'Yes' : 'No'}</div>
+                  </div>
+                </div>
+              )}
+
               {/* Action Buttons */}
               <div className="flex space-x-2">
                 {model.status === 'not_installed' && (
@@ -356,12 +494,30 @@ export default function ModelsPage() {
                   </>
                 )}
                 {model.status === 'installed' && (
+                  <>
+                    <button
+                      onClick={() => generateLicense(model.name)}
+                      className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors neon-border"
+                    >
+                      <Key className="h-4 w-4 mr-2 inline" />
+                      Generate License
+                    </button>
+                    <button
+                      onClick={() => openLicenseModal(model.name)}
+                      className="flex-1 bg-muted hover:bg-muted/80 text-muted-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      <Unlock className="h-4 w-4 mr-2 inline" />
+                      Enter License
+                    </button>
+                  </>
+                )}
+                {model.status === 'licensed' && (
                   <button
                     className="flex-1 bg-primary/20 text-primary px-4 py-2 rounded-lg text-sm font-medium"
                     disabled
                   >
-                    <CheckCircle className="h-4 w-4 mr-2 inline" />
-                    Installed
+                    <Shield className="h-4 w-4 mr-2 inline" />
+                    Licensed
                   </button>
                 )}
                 {model.status === 'ready' && (
@@ -401,6 +557,54 @@ export default function ModelsPage() {
             </div>
           </div>
         </div>
+
+        {/* License Key Modal */}
+        {showLicenseModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full mx-4 neon-border">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-foreground">Enter License Key</h3>
+                <button
+                  onClick={closeLicenseModal}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  ×
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    License Key for {selectedModelForLicense}
+                  </label>
+                  <input
+                    type="text"
+                    value={licenseKey}
+                    onChange={(e) => setLicenseKey(e.target.value)}
+                    placeholder="Enter your license key..."
+                    className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  />
+                </div>
+                
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => selectedModelForLicense && validateLicense(selectedModelForLicense, licenseKey)}
+                    disabled={!licenseKey.trim()}
+                    className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 neon-border"
+                  >
+                    Validate License
+                  </button>
+                  <button
+                    onClick={closeLicenseModal}
+                    className="flex-1 bg-muted hover:bg-muted/80 text-muted-foreground px-4 py-2 rounded-lg font-medium transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
