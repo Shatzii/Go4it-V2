@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect } from 'react'
 import { CheckCircle, ExternalLink, Activity, Target, Users, BarChart3, Star, TrendingUp, Award, Calendar, MapPin, ArrowRight, Play } from 'lucide-react'
+import Image from 'next/image'
+// Using public logo path for Next.js
+const logoImage = '/attached_assets/Go4it Logo_1752616197577.jpeg'
 
 // Star Rating Component to match deployed site
 function StarRating({ rating, maxRating = 5 }: { rating: number; maxRating?: number }) {
@@ -40,30 +43,39 @@ export default function Go4ItHomePage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       {/* Navigation */}
-      <nav className="bg-card border-b border-border sticky top-0 z-50">
+      <nav className="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="text-2xl font-bold text-foreground">
-              Go4It Sports
+            <div className="flex items-center space-x-3">
+              <Image
+                src={logoImage}
+                alt="Go4It Sports Logo"
+                width={40}
+                height={40}
+                className="rounded-lg"
+              />
+              <div className="text-2xl font-bold text-white">
+                Go4It Sports
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <SafeLink 
                 href="/cms" 
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-slate-300 hover:text-white transition-colors"
               >
                 CMS
               </SafeLink>
               <SafeLink 
                 href="/auth" 
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-slate-300 hover:text-white transition-colors"
               >
                 Sign In
               </SafeLink>
               <SafeLink 
                 href="/auth" 
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-lg"
               >
                 Get Started
               </SafeLink>
@@ -75,12 +87,22 @@ export default function Go4ItHomePage() {
       {/* Hero Section - Dynamic Sports Platform */}
       <section className="relative py-20 px-4 sm:px-6 lg:px-8 min-h-screen flex items-center overflow-hidden">
         {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-800/90 to-slate-900/90">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent"></div>
           {/* Floating elements */}
-          <div className="absolute top-20 left-20 w-20 h-20 bg-primary/10 rounded-full blur-xl animate-pulse"></div>
-          <div className="absolute bottom-40 right-32 w-32 h-32 bg-secondary/10 rounded-full blur-xl animate-pulse delay-300"></div>
-          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-accent/10 rounded-full blur-xl animate-pulse delay-700"></div>
+          <div className="absolute top-20 left-20 w-20 h-20 bg-primary/20 rounded-full blur-xl animate-pulse"></div>
+          <div className="absolute bottom-40 right-32 w-32 h-32 bg-secondary/20 rounded-full blur-xl animate-pulse delay-300"></div>
+          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-accent/20 rounded-full blur-xl animate-pulse delay-700"></div>
+          {/* Additional floating logo elements */}
+          <div className="absolute top-1/3 right-1/4 opacity-10">
+            <Image
+              src={logoImage}
+              alt="Go4It Logo"
+              width={60}
+              height={60}
+              className="rounded-full animate-pulse delay-1000"
+            />
+          </div>
         </div>
         
         <div className="max-w-7xl mx-auto relative z-10">
@@ -88,19 +110,19 @@ export default function Go4ItHomePage() {
             {/* Left Column - Content */}
             <div className="space-y-8">
               <div className="space-y-6">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-primary">Platform Status: {platformStatus.charAt(0).toUpperCase() + platformStatus.slice(1)}</span>
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 rounded-full border border-primary/30">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium text-primary-foreground">Platform Status: {platformStatus.charAt(0).toUpperCase() + platformStatus.slice(1)}</span>
                 </div>
                 
-                <h1 className="text-5xl lg:text-7xl font-bold text-foreground leading-tight">
+                <h1 className="text-5xl lg:text-7xl font-bold text-white leading-tight">
                   Elevate Your
                   <span className="block text-primary bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                     Athletic Journey
                   </span>
                 </h1>
                 
-                <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
+                <p className="text-xl text-slate-300 leading-relaxed max-w-xl">
                   The ultimate AI-powered platform designed specifically for neurodivergent student athletes. 
                   Combine elite athletic training with academic excellence.
                 </p>
@@ -108,43 +130,43 @@ export default function Go4ItHomePage() {
               
               {/* Key Features */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-3 p-4 bg-card/50 rounded-lg border border-border/50">
-                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                <div className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 backdrop-blur-sm">
+                  <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
                     <Activity className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <div className="font-semibold text-foreground">AI Coach</div>
-                    <div className="text-sm text-muted-foreground">Personal Training</div>
+                    <div className="font-semibold text-white">AI Coach</div>
+                    <div className="text-sm text-slate-300">Personal Training</div>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-3 p-4 bg-card/50 rounded-lg border border-border/50">
-                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                <div className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 backdrop-blur-sm">
+                  <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
                     <BarChart3 className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <div className="font-semibold text-foreground">GAR Rating</div>
-                    <div className="text-sm text-muted-foreground">Performance Analytics</div>
+                    <div className="font-semibold text-white">GAR Rating</div>
+                    <div className="text-sm text-slate-300">Performance Analytics</div>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-3 p-4 bg-card/50 rounded-lg border border-border/50">
-                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                <div className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 backdrop-blur-sm">
+                  <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
                     <Target className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <div className="font-semibold text-foreground">StarPath</div>
-                    <div className="text-sm text-muted-foreground">Skill Progression</div>
+                    <div className="font-semibold text-white">StarPath</div>
+                    <div className="text-sm text-slate-300">Skill Progression</div>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-3 p-4 bg-card/50 rounded-lg border border-border/50">
-                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                <div className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 backdrop-blur-sm">
+                  <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
                     <Users className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <div className="font-semibold text-foreground">Academy</div>
-                    <div className="text-sm text-muted-foreground">Full Education</div>
+                    <div className="font-semibold text-white">Academy</div>
+                    <div className="text-sm text-slate-300">Full Education</div>
                   </div>
                 </div>
               </div>
@@ -153,7 +175,7 @@ export default function Go4ItHomePage() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <SafeLink 
                   href="/auth" 
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                  className="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
                 >
                   <Play className="w-5 h-5" />
                   Start Your Journey
@@ -161,7 +183,7 @@ export default function Go4ItHomePage() {
                 
                 <SafeLink 
                   href="/ai-coach" 
-                  className="border border-primary/30 hover:bg-primary/10 text-primary px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center gap-2"
+                  className="border border-primary/50 hover:bg-primary/20 text-primary hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center gap-2 backdrop-blur-sm"
                 >
                   <Target className="w-5 h-5" />
                   Try AI Coach
@@ -172,14 +194,14 @@ export default function Go4ItHomePage() {
             {/* Right Column - Visual Elements */}
             <div className="relative">
               {/* Main Visual Container */}
-              <div className="relative bg-gradient-to-br from-card to-card/50 rounded-3xl border border-border/50 p-8 shadow-2xl">
+              <div className="relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 rounded-3xl border border-slate-700/50 p-8 shadow-2xl backdrop-blur-sm">
                 {/* Performance Stats */}
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-semibold text-foreground">Performance Overview</h3>
+                    <h3 className="text-xl font-semibold text-white">Performance Overview</h3>
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                      <span className="text-sm text-muted-foreground">Live</span>
+                      <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                      <span className="text-sm text-slate-300">Live</span>
                     </div>
                   </div>
                   
@@ -187,51 +209,51 @@ export default function Go4ItHomePage() {
                   <div className="space-y-4">
                     <div>
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-foreground">Athletic Performance</span>
+                        <span className="text-sm font-medium text-white">Athletic Performance</span>
                         <span className="text-sm text-primary font-semibold">92%</span>
                       </div>
-                      <div className="w-full bg-secondary/20 rounded-full h-2">
+                      <div className="w-full bg-slate-700/50 rounded-full h-2">
                         <div className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full w-[92%] transition-all duration-1000"></div>
                       </div>
                     </div>
                     
                     <div>
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-foreground">Academic Progress</span>
+                        <span className="text-sm font-medium text-white">Academic Progress</span>
                         <span className="text-sm text-primary font-semibold">87%</span>
                       </div>
-                      <div className="w-full bg-secondary/20 rounded-full h-2">
+                      <div className="w-full bg-slate-700/50 rounded-full h-2">
                         <div className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full w-[87%] transition-all duration-1000 delay-300"></div>
                       </div>
                     </div>
                     
                     <div>
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-foreground">StarPath Level</span>
+                        <span className="text-sm font-medium text-white">StarPath Level</span>
                         <span className="text-sm text-primary font-semibold">Elite</span>
                       </div>
-                      <div className="w-full bg-secondary/20 rounded-full h-2">
+                      <div className="w-full bg-slate-700/50 rounded-full h-2">
                         <div className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full w-[95%] transition-all duration-1000 delay-500"></div>
                       </div>
                     </div>
                   </div>
                   
                   {/* Quick Stats */}
-                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/50">
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-700/50">
                     <div className="text-center">
                       <div className="text-2xl font-bold text-primary">1,247</div>
-                      <div className="text-sm text-muted-foreground">Training Hours</div>
+                      <div className="text-sm text-slate-300">Training Hours</div>
                     </div>
                     <div className="text-center">
                       <div className="text-2xl font-bold text-primary">94%</div>
-                      <div className="text-sm text-muted-foreground">Success Rate</div>
+                      <div className="text-sm text-slate-300">Success Rate</div>
                     </div>
                   </div>
                 </div>
               </div>
               
               {/* Floating Achievement Card */}
-              <div className="absolute -top-4 -right-4 bg-primary text-primary-foreground p-4 rounded-2xl shadow-lg transform rotate-3">
+              <div className="absolute -top-4 -right-4 bg-primary text-white p-4 rounded-2xl shadow-lg transform rotate-3">
                 <div className="flex items-center gap-2">
                   <Award className="w-5 h-5" />
                   <span className="font-semibold">New Achievement!</span>
@@ -240,14 +262,14 @@ export default function Go4ItHomePage() {
               </div>
               
               {/* Floating Notification */}
-              <div className="absolute -bottom-4 -left-4 bg-card border border-border/50 p-4 rounded-2xl shadow-lg">
+              <div className="absolute -bottom-4 -left-4 bg-slate-800/90 border border-slate-700/50 p-4 rounded-2xl shadow-lg backdrop-blur-sm">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
                     <Target className="w-4 h-4 text-primary" />
                   </div>
                   <div>
-                    <div className="font-semibold text-foreground text-sm">AI Coach Ready</div>
-                    <div className="text-xs text-muted-foreground">3 new drills available</div>
+                    <div className="font-semibold text-white text-sm">AI Coach Ready</div>
+                    <div className="text-xs text-slate-300">3 new drills available</div>
                   </div>
                 </div>
               </div>
@@ -257,10 +279,10 @@ export default function Go4ItHomePage() {
       </section>
 
       {/* Top Verified Athletes */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/10">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/50">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground">Top Verified Athletes</h2>
+            <h2 className="text-3xl font-bold text-white">Top Verified Athletes</h2>
             <SafeLink 
               href="/athletes" 
               className="text-primary hover:text-primary/80 font-medium flex items-center gap-2"
@@ -308,10 +330,10 @@ export default function Go4ItHomePage() {
       </section>
 
       {/* Upcoming Combine Events */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground">Upcoming Combine Events</h2>
+            <h2 className="text-3xl font-bold text-white">Upcoming Combine Events</h2>
             <SafeLink 
               href="/combine-tour" 
               className="text-primary hover:text-primary/80 font-medium flex items-center gap-2"
@@ -348,10 +370,10 @@ export default function Go4ItHomePage() {
       </section>
 
       {/* Blog & News */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/10">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-800/50">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground">Blog & News</h2>
+            <h2 className="text-3xl font-bold text-white">Blog & News</h2>
             <SafeLink 
               href="/blog" 
               className="text-primary hover:text-primary/80 font-medium flex items-center gap-2"
@@ -365,13 +387,13 @@ export default function Go4ItHomePage() {
             <button className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium">
               Featured
             </button>
-            <button className="text-muted-foreground hover:text-foreground px-4 py-2 rounded-lg text-sm font-medium">
+            <button className="text-slate-300 hover:text-white px-4 py-2 rounded-lg text-sm font-medium">
               Training
             </button>
-            <button className="text-muted-foreground hover:text-foreground px-4 py-2 rounded-lg text-sm font-medium">
+            <button className="text-slate-300 hover:text-white px-4 py-2 rounded-lg text-sm font-medium">
               Nutrition
             </button>
-            <button className="text-muted-foreground hover:text-foreground px-4 py-2 rounded-lg text-sm font-medium">
+            <button className="text-slate-300 hover:text-white px-4 py-2 rounded-lg text-sm font-medium">
               Recruiting
             </button>
           </div>
@@ -405,8 +427,8 @@ export default function Go4ItHomePage() {
       {/* Community Forum */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-primary">
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-primary-foreground mb-4">Community Forum</h2>
-          <p className="text-xl text-primary-foreground/80 mb-8">
+          <h2 className="text-3xl font-bold text-white mb-4">Community Forum</h2>
+          <p className="text-xl text-white/80 mb-8">
             Connect with athletes, coaches, and parents in our community forum. Share experiences, get advice, and build your network.
           </p>
           
@@ -434,17 +456,17 @@ export default function Go4ItHomePage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-secondary">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-800 to-slate-900">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-secondary-foreground mb-4">
+          <h2 className="text-4xl font-bold text-white mb-4">
             Ready to Elevate Your Athletic Journey?
           </h2>
-          <p className="text-xl text-secondary-foreground/80 mb-8">
+          <p className="text-xl text-slate-300 mb-8">
             Join thousands of athletes who have discovered their potential and connected with coaches through our platform.
           </p>
           <SafeLink 
             href="/auth" 
-            className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-lg text-lg font-semibold transition-colors inline-flex items-center gap-2"
+            className="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors inline-flex items-center gap-2 shadow-lg"
           >
             Get Started Today
             <ArrowRight className="w-5 h-5" />
@@ -453,41 +475,50 @@ export default function Go4ItHomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-4 sm:px-6 lg:px-8 bg-card border-t border-border">
+      <footer className="py-12 px-4 sm:px-6 lg:px-8 bg-slate-900 border-t border-slate-700">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <div className="text-xl font-bold text-foreground mb-4">Go4It Sports</div>
-              <p className="text-muted-foreground">
+              <div className="flex items-center space-x-3 mb-4">
+                <Image
+                  src={logoImage}
+                  alt="Go4It Sports Logo"
+                  width={32}
+                  height={32}
+                  className="rounded-lg"
+                />
+                <div className="text-xl font-bold text-white">Go4It Sports</div>
+              </div>
+              <p className="text-slate-300">
                 Empowering athletes through AI-powered performance analysis and verified evaluation.
               </p>
             </div>
             <div>
-              <h3 className="font-semibold text-foreground mb-4">Platform</h3>
+              <h3 className="font-semibold text-white mb-4">Platform</h3>
               <div className="space-y-2">
-                <SafeLink href="/dashboard" className="text-muted-foreground hover:text-foreground block">Dashboard</SafeLink>
-                <SafeLink href="/gar-upload" className="text-muted-foreground hover:text-foreground block">GAR Analysis</SafeLink>
-                <SafeLink href="/combine-tour" className="text-muted-foreground hover:text-foreground block">Combines</SafeLink>
+                <SafeLink href="/dashboard" className="text-slate-300 hover:text-white block">Dashboard</SafeLink>
+                <SafeLink href="/gar-upload" className="text-slate-300 hover:text-white block">GAR Analysis</SafeLink>
+                <SafeLink href="/combine-tour" className="text-slate-300 hover:text-white block">Combines</SafeLink>
               </div>
             </div>
             <div>
-              <h3 className="font-semibold text-foreground mb-4">Community</h3>
+              <h3 className="font-semibold text-white mb-4">Community</h3>
               <div className="space-y-2">
-                <SafeLink href="/community/athletes" className="text-muted-foreground hover:text-foreground block">Athletes</SafeLink>
-                <SafeLink href="/community/coaches" className="text-muted-foreground hover:text-foreground block">Coaches</SafeLink>
-                <SafeLink href="/community/parents" className="text-muted-foreground hover:text-foreground block">Parents</SafeLink>
+                <SafeLink href="/community/athletes" className="text-slate-300 hover:text-white block">Athletes</SafeLink>
+                <SafeLink href="/community/coaches" className="text-slate-300 hover:text-white block">Coaches</SafeLink>
+                <SafeLink href="/community/parents" className="text-slate-300 hover:text-white block">Parents</SafeLink>
               </div>
             </div>
             <div>
-              <h3 className="font-semibold text-foreground mb-4">Support</h3>
+              <h3 className="font-semibold text-white mb-4">Support</h3>
               <div className="space-y-2">
-                <SafeLink href="/about" className="text-muted-foreground hover:text-foreground block">About</SafeLink>
-                <SafeLink href="/contact" className="text-muted-foreground hover:text-foreground block">Contact</SafeLink>
-                <SafeLink href="/privacy" className="text-muted-foreground hover:text-foreground block">Privacy</SafeLink>
+                <SafeLink href="/about" className="text-slate-300 hover:text-white block">About</SafeLink>
+                <SafeLink href="/contact" className="text-slate-300 hover:text-white block">Contact</SafeLink>
+                <SafeLink href="/privacy" className="text-slate-300 hover:text-white block">Privacy</SafeLink>
               </div>
             </div>
           </div>
-          <div className="border-t border-border mt-8 pt-8 text-center text-muted-foreground">
+          <div className="border-t border-slate-700 mt-8 pt-8 text-center text-slate-300">
             <p>&copy; 2025 Go4It Sports. All rights reserved.</p>
           </div>
         </div>
