@@ -26,6 +26,18 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@/lib/*": [
+        "./lib/*"
+      ],
+      "@/shared/*": [
+        "./shared/*"
+      ],
+      "@/app/*": [
+        "./app/*"
+      ],
+      "@/components/*": [
+        "./components/*"
       ]
     }
   },
