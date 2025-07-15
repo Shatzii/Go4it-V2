@@ -71,20 +71,20 @@ export default function AcademyPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+    <div className="min-h-screen bg-background text-foreground hero-bg">
       {/* Header */}
-      <div className="bg-slate-800/50 backdrop-blur border-b border-slate-700">
+      <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-white">Go4It Sports Academy</h1>
-              <p className="text-slate-300 mt-2">AI-Powered Education for Student Athletes</p>
+              <h1 className="text-3xl font-bold text-foreground neon-text">Go4It Sports Academy</h1>
+              <p className="text-muted-foreground mt-2">AI-Powered Education for Student Athletes</p>
             </div>
             <div className="flex space-x-4">
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors">
+              <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-lg transition-colors neon-border">
                 Enroll Now
               </button>
-              <button className="border border-slate-600 hover:border-slate-500 text-white px-6 py-2 rounded-lg transition-colors">
+              <button className="border border-border hover:border-primary text-foreground px-6 py-2 rounded-lg transition-colors">
                 Parent Portal
               </button>
             </div>
@@ -95,40 +95,40 @@ export default function AcademyPage() {
       {/* Stats Overview */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid md:grid-cols-4 gap-6 mb-12">
-          <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 border border-slate-700">
+          <div className="bg-card rounded-lg p-6 border border-border neon-border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-slate-400 text-sm">Total Students</p>
-                <p className="text-2xl font-bold text-white">{studentStats.totalStudents}</p>
+                <p className="text-muted-foreground text-sm">Total Students</p>
+                <p className="text-2xl font-bold text-foreground">{studentStats.totalStudents}</p>
               </div>
-              <Users className="w-8 h-8 text-blue-400" />
+              <Users className="w-8 h-8 text-primary neon-glow" />
             </div>
           </div>
-          <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 border border-slate-700">
+          <div className="bg-card rounded-lg p-6 border border-border neon-border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-slate-400 text-sm">Active Classes</p>
-                <p className="text-2xl font-bold text-white">{studentStats.activeClasses}</p>
+                <p className="text-muted-foreground text-sm">Active Classes</p>
+                <p className="text-2xl font-bold text-foreground">{studentStats.activeClasses}</p>
               </div>
-              <BookOpen className="w-8 h-8 text-green-400" />
+              <BookOpen className="w-8 h-8 text-primary neon-glow" />
             </div>
           </div>
-          <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 border border-slate-700">
+          <div className="bg-card rounded-lg p-6 border border-border neon-border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-slate-400 text-sm">Assignments Completed</p>
-                <p className="text-2xl font-bold text-white">{studentStats.completedAssignments}</p>
+                <p className="text-muted-foreground text-sm">Assignments Completed</p>
+                <p className="text-2xl font-bold text-foreground">{studentStats.completedAssignments}</p>
               </div>
-              <Award className="w-8 h-8 text-purple-400" />
+              <Award className="w-8 h-8 text-primary neon-glow" />
             </div>
           </div>
-          <div className="bg-slate-800/50 backdrop-blur rounded-lg p-6 border border-slate-700">
+          <div className="bg-card rounded-lg p-6 border border-border neon-border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-slate-400 text-sm">Average Grade</p>
-                <p className="text-2xl font-bold text-white">{studentStats.averageGrade}%</p>
+                <p className="text-muted-foreground text-sm">Average Grade</p>
+                <p className="text-2xl font-bold text-foreground">{studentStats.averageGrade}%</p>
               </div>
-              <TrendingUp className="w-8 h-8 text-orange-400" />
+              <TrendingUp className="w-8 h-8 text-primary neon-glow" />
             </div>
           </div>
         </div>

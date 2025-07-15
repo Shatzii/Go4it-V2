@@ -57,43 +57,43 @@ export default function OptimizedAuthPage() {
 
   return (
     <ClientOnly>
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4 hero-bg">
         <div className="max-w-md w-full space-y-8">
           {/* Header */}
           <div className="text-center">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
+            <h1 className="text-4xl font-bold text-primary neon-text mb-2">
               Go4It Sports
             </h1>
-            <p className="text-slate-400">
+            <p className="text-muted-foreground">
               Elite athletic development platform for neurodivergent student athletes
             </p>
           </div>
 
           {/* Feature Highlights */}
           <div className="grid grid-cols-3 gap-4 mb-8">
-            <div className="text-center p-4 bg-slate-800/50 rounded-lg">
-              <Star className="h-8 w-8 text-blue-400 mx-auto mb-2" />
-              <p className="text-xs text-slate-400">StarPath Training</p>
+            <div className="text-center p-4 bg-card/50 rounded-lg border border-border/50">
+              <Star className="h-8 w-8 text-primary mx-auto mb-2 neon-glow" />
+              <p className="text-xs text-muted-foreground">StarPath Training</p>
             </div>
-            <div className="text-center p-4 bg-slate-800/50 rounded-lg">
-              <Trophy className="h-8 w-8 text-green-400 mx-auto mb-2" />
-              <p className="text-xs text-slate-400">GAR Analysis</p>
+            <div className="text-center p-4 bg-card/50 rounded-lg border border-border/50">
+              <Trophy className="h-8 w-8 text-primary mx-auto mb-2 neon-glow" />
+              <p className="text-xs text-muted-foreground">GAR Analysis</p>
             </div>
-            <div className="text-center p-4 bg-slate-800/50 rounded-lg">
-              <Target className="h-8 w-8 text-purple-400 mx-auto mb-2" />
-              <p className="text-xs text-slate-400">AI Coaching</p>
+            <div className="text-center p-4 bg-card/50 rounded-lg border border-border/50">
+              <Target className="h-8 w-8 text-primary mx-auto mb-2 neon-glow" />
+              <p className="text-xs text-muted-foreground">AI Coaching</p>
             </div>
           </div>
 
           {/* Auth Form */}
-          <div className="bg-slate-800 rounded-lg p-6 shadow-xl">
+          <div className="bg-card rounded-lg p-6 shadow-xl border border-border neon-border">
             <div className="flex mb-6">
               <button
                 onClick={() => setIsLogin(true)}
                 className={`flex-1 py-2 px-4 rounded-l-lg text-sm font-medium transition-colors ${
                   isLogin
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                    ? 'bg-primary text-primary-foreground neon-border'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
                 }`}
               >
                 Sign In
@@ -102,8 +102,8 @@ export default function OptimizedAuthPage() {
                 onClick={() => setIsLogin(false)}
                 className={`flex-1 py-2 px-4 rounded-r-lg text-sm font-medium transition-colors ${
                   !isLogin
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                    ? 'bg-primary text-primary-foreground neon-border'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
                 }`}
               >
                 Sign Up
@@ -115,39 +115,39 @@ export default function OptimizedAuthPage() {
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1">
                         First Name
                       </label>
                       <input
                         name="firstName"
                         type="text"
                         required
-                        className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                         placeholder="Enter first name"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1">
                         Last Name
                       </label>
                       <input
                         name="lastName"
                         type="text"
                         required
-                        className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                         placeholder="Enter last name"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1">
+                    <label className="block text-sm font-medium text-foreground mb-1">
                       Email
                     </label>
                     <input
                       name="email"
                       type="email"
                       required
-                      className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                       placeholder="Enter email address"
                     />
                   </div>
@@ -155,27 +155,27 @@ export default function OptimizedAuthPage() {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Username
                 </label>
                 <input
                   name="username"
                   type="text"
                   required
-                  className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                   placeholder="Enter username"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Password
                 </label>
                 <input
                   name="password"
                   type="password"
                   required
-                  className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                   placeholder="Enter password"
                 />
               </div>
@@ -197,7 +197,7 @@ export default function OptimizedAuthPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center"
+                className="w-full bg-primary hover:bg-primary/90 disabled:bg-primary/50 disabled:cursor-not-allowed text-primary-foreground py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center neon-border"
               >
                 {isLoading ? (
                   <>
@@ -211,20 +211,20 @@ export default function OptimizedAuthPage() {
             </form>
 
             {/* Demo Credentials */}
-            <div className="mt-6 pt-4 border-t border-slate-700">
-              <p className="text-xs text-slate-400 mb-2">Demo Credentials:</p>
+            <div className="mt-6 pt-4 border-t border-border">
+              <p className="text-xs text-muted-foreground mb-2">Demo Credentials:</p>
               <div className="grid grid-cols-3 gap-2 text-xs">
-                <div className="bg-slate-700 p-2 rounded">
-                  <p className="text-slate-300">Athlete</p>
-                  <p className="text-slate-400">demo/demo123</p>
+                <div className="bg-muted p-2 rounded border border-border">
+                  <p className="text-foreground">Athlete</p>
+                  <p className="text-muted-foreground">demo/demo123</p>
                 </div>
-                <div className="bg-slate-700 p-2 rounded">
-                  <p className="text-slate-300">Coach</p>
-                  <p className="text-slate-400">coach/demo123</p>
+                <div className="bg-muted p-2 rounded border border-border">
+                  <p className="text-foreground">Coach</p>
+                  <p className="text-muted-foreground">coach/demo123</p>
                 </div>
-                <div className="bg-slate-700 p-2 rounded">
-                  <p className="text-slate-300">Admin</p>
-                  <p className="text-slate-400">admin/demo123</p>
+                <div className="bg-muted p-2 rounded border border-border">
+                  <p className="text-foreground">Admin</p>
+                  <p className="text-muted-foreground">admin/demo123</p>
                 </div>
               </div>
             </div>

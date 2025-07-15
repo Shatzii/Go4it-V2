@@ -119,16 +119,16 @@ export default function TeamsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 p-6">
+    <div className="min-h-screen bg-background text-foreground hero-bg p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Team Management</h1>
-              <p className="text-slate-400">Manage your athletic teams and rosters</p>
+              <h1 className="text-3xl font-bold text-foreground neon-text mb-2">Team Management</h1>
+              <p className="text-muted-foreground">Manage your athletic teams and rosters</p>
             </div>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+            <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors neon-border">
               <Plus className="h-4 w-4" />
               <span>Create Team</span>
             </button>
@@ -138,16 +138,16 @@ export default function TeamsPage() {
         {/* Filters */}
         <div className="mb-6 flex items-center space-x-4">
           <div className="flex items-center space-x-2">
-            <Filter className="h-4 w-4 text-slate-400" />
-            <span className="text-slate-400">Filter by sport:</span>
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <span className="text-muted-foreground">Filter by sport:</span>
           </div>
           <div className="flex space-x-2">
             <button
               onClick={() => setSelectedSport('all')}
               className={`px-3 py-1 rounded-full text-sm transition-colors ${
                 selectedSport === 'all'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                  ? 'bg-primary text-primary-foreground neon-border'
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
               }`}
             >
               All Sports
@@ -158,8 +158,8 @@ export default function TeamsPage() {
                 onClick={() => setSelectedSport(sport.value)}
                 className={`px-3 py-1 rounded-full text-sm transition-colors ${
                   selectedSport === sport.value
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                    ? 'bg-primary text-primary-foreground neon-border'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
                 }`}
               >
                 {sport.icon} {sport.label}
@@ -171,7 +171,7 @@ export default function TeamsPage() {
         {/* Teams Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTeams.map((team) => (
-            <div key={team.id} className="bg-slate-800 rounded-lg overflow-hidden hover:bg-slate-750 transition-colors">
+            <div key={team.id} className="bg-card border border-border rounded-lg overflow-hidden hover:bg-card/80 transition-colors neon-border">
               {/* Team Header */}
               <div 
                 className="h-16 flex items-center justify-between px-6"
