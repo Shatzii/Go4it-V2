@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Camera, Video, Square, Upload, RotateCw, Flash, FlashOff, Check, X } from 'lucide-react'
+import { Camera, Video, Square, Upload, RotateCw, Zap, ZapOff, Check, X } from 'lucide-react'
 
 export function MobileVideoCapture() {
   const [isRecording, setIsRecording] = useState(false)
@@ -250,9 +250,9 @@ export function MobileVideoCapture() {
               className="p-2 bg-white/20 rounded-full"
             >
               {flashEnabled ? (
-                <Flash className="w-5 h-5 text-white" />
+                <Zap className="w-5 h-5 text-white" />
               ) : (
-                <FlashOff className="w-5 h-5 text-white" />
+                <ZapOff className="w-5 h-5 text-white" />
               )}
             </button>
             <button

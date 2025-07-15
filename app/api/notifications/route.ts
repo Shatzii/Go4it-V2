@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserFromRequest } from '@/lib/auth'
-import { db } from '@/lib/db'
-import { sql } from 'drizzle-orm'
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,43 +8,57 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
-    // Mock notifications for now - in production, this would be from a notifications table
+    // Mock notifications data - in production, this would come from database
     const notifications = [
       {
         id: '1',
         type: 'video',
-        title: 'Video Analysis Complete',
-        message: 'Your latest performance video has been analyzed. GAR Score: 87.3',
-        timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
+        title: 'New Video Analysis Complete',
+        message: 'Your football performance video has been analyzed with a GAR score of 87.3',
+        timestamp: new Date('2024-07-15T14:30:00Z'),
         read: false,
-        actionUrl: '/videos/latest'
+        actionUrl: '/video-analysis/12345',
+        priority: 'high'
       },
       {
         id: '2',
         type: 'achievement',
-        title: 'Achievement Unlocked!',
-        message: 'You earned the "Consistent Performer" badge for 7 days of training',
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
+        title: 'Achievement Unlocked: Speed Demon',
+        message: 'You achieved a new personal best in the 40-yard dash!',
+        timestamp: new Date('2024-07-15T12:15:00Z'),
         read: false,
-        actionUrl: '/achievements'
+        actionUrl: '/achievements',
+        priority: 'medium'
       },
       {
         id: '3',
         type: 'team',
         title: 'Team Practice Reminder',
-        message: 'Team practice starts in 1 hour at the main field',
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4), // 4 hours ago
+        message: 'Football practice scheduled for tomorrow at 3:30 PM',
+        timestamp: new Date('2024-07-15T10:00:00Z'),
         read: true,
-        actionUrl: '/schedule'
+        actionUrl: '/teams/schedule',
+        priority: 'medium'
       },
       {
         id: '4',
         type: 'course',
-        title: 'Assignment Due Tomorrow',
-        message: 'Math assignment "Quadratic Functions" is due tomorrow at 11:59 PM',
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6), // 6 hours ago
+        title: 'Assignment Due Soon',
+        message: 'Math homework is due in 2 days',
+        timestamp: new Date('2024-07-14T16:20:00Z'),
         read: true,
-        actionUrl: '/academy/assignments'
+        actionUrl: '/academy/assignments',
+        priority: 'low'
+      },
+      {
+        id: '5',
+        type: 'system',
+        title: 'Platform Update',
+        message: 'New features have been added to the recruitment center',
+        timestamp: new Date('2024-07-14T09:45:00Z'),
+        read: false,
+        actionUrl: '/recruitment',
+        priority: 'low'
       }
     ]
 
@@ -54,32 +66,5 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Failed to fetch notifications:', error)
     return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 })
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const user = await getUserFromRequest(request)
-    if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
-    }
-
-    const { type, title, message, actionUrl } = await request.json()
-
-    // In production, this would insert into a notifications table
-    const notification = {
-      id: Date.now().toString(),
-      type,
-      title,
-      message,
-      timestamp: new Date(),
-      read: false,
-      actionUrl
-    }
-
-    return NextResponse.json({ notification })
-  } catch (error) {
-    console.error('Failed to create notification:', error)
-    return NextResponse.json({ error: 'Failed to create notification' }, { status: 500 })
   }
 }
