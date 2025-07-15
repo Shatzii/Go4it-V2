@@ -85,6 +85,23 @@ export class AIModelManager {
     }
   }
 
+  async generateResponseWithLicense(prompt: string, licenseKey: string, context?: any): Promise<string> {
+    if (this.config.type === 'local') {
+      // Validate license before using local model
+      const { createModelEncryptionManager } = await import('./model-encryption');
+      const encryptionManager = createModelEncryptionManager();
+      
+      const validation = await encryptionManager.validateLicense(licenseKey);
+      if (!validation.valid) {
+        throw new Error(`License validation failed: ${validation.error}`);
+      }
+      
+      return this.generateLocalResponse(prompt, context);
+    } else {
+      return this.generateCloudResponse(prompt, context);
+    }
+  }
+
   private async generateCloudResponse(prompt: string, context?: any): Promise<string> {
     switch (this.config.provider) {
       case 'openai':
