@@ -5,6 +5,10 @@ import { videoAnalysis } from '@/lib/schema';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { createAIModelManager } from '@/lib/ai-models';
+import { createAdvancedVideoAnalyzer } from '@/lib/advanced-video-analysis';
+import { createRealTimeAnalyzer } from '@/lib/real-time-analysis';
+import { createMultiAngleSynchronizer } from '@/lib/multi-angle-sync';
+import { createPredictiveAnalyticsEngine } from '@/lib/predictive-analytics';
 
 // GAR Analysis Engine - Growth and Ability Rating (0-100)
 interface GARAnalysis {
@@ -38,6 +42,95 @@ interface GARAnalysis {
 }
 
 async function analyzeVideoWithAI(filePath: string, sport: string, userId: number): Promise<GARAnalysis> {
+  try {
+    // Create advanced video analyzer with highest quality settings
+    const advancedAnalyzer = createAdvancedVideoAnalyzer(sport, 'intermediate', true);
+    
+    // Create predictive analytics engine
+    const predictiveEngine = createPredictiveAnalyticsEngine(sport, {
+      userId: userId,
+      sport: sport,
+      skill_level: 'intermediate'
+    });
+    
+    // Perform comprehensive analysis
+    const advancedAnalysis = await advancedAnalyzer.analyzeVideo(filePath, {
+      sport: sport,
+      userId: userId,
+      analysis_type: 'comprehensive'
+    });
+    
+    // Add predictive insights
+    const performancePredictions = await predictiveEngine.predictPerformance(['6 months', '1 year']);
+    const injuryRisk = await predictiveEngine.predictInjuryRisk();
+    const recruitmentPredictions = await predictiveEngine.predictRecruitment();
+    const optimizationRecs = await predictiveEngine.generateOptimizationRecommendations();
+    
+    // Add analysis data to predictive engine
+    await predictiveEngine.addAnalysisData(advancedAnalysis);
+    
+    // Convert advanced analysis to GAR format
+    return convertToGARAnalysis(advancedAnalysis, {
+      predictions: performancePredictions,
+      injuryRisk: injuryRisk,
+      recruitment: recruitmentPredictions,
+      optimization: optimizationRecs
+    });
+    
+  } catch (error) {
+    console.error('Advanced video analysis failed:', error);
+    
+    // Fallback to standard AI analysis
+    return await fallbackToStandardAnalysis(filePath, sport, userId);
+  }
+}
+
+// Convert advanced analysis to GAR format for backward compatibility
+function convertToGARAnalysis(advancedAnalysis: any, predictions: any): GARAnalysis {
+  return {
+    overallScore: advancedAnalysis.overallScore,
+    technicalSkills: advancedAnalysis.technicalSkills,
+    athleticism: advancedAnalysis.athleticism,
+    gameAwareness: advancedAnalysis.gameAwareness,
+    consistency: advancedAnalysis.consistency,
+    improvement: advancedAnalysis.improvement,
+    breakdown: {
+      strengths: advancedAnalysis.breakdown.strengths,
+      weaknesses: advancedAnalysis.breakdown.weaknesses,
+      recommendations: advancedAnalysis.breakdown.recommendations,
+      keyMoments: advancedAnalysis.breakdown.keyMoments.map((moment: any) => ({
+        timestamp: moment.timestamp,
+        description: moment.description,
+        score: moment.score
+      }))
+    },
+    coachingInsights: {
+      focus_areas: advancedAnalysis.coachingInsights.focus_areas,
+      drill_recommendations: advancedAnalysis.coachingInsights.drill_recommendations.map((drill: any) => drill.drill),
+      mental_game: advancedAnalysis.coachingInsights.mental_game,
+      physical_development: advancedAnalysis.coachingInsights.physical_development
+    },
+    comparison: {
+      peer_percentile: advancedAnalysis.comparison.peer_percentile,
+      grade_level_ranking: advancedAnalysis.comparison.grade_level_ranking,
+      college_readiness: advancedAnalysis.comparison.college_readiness
+    },
+    // Enhanced features from advanced analysis
+    biomechanics: advancedAnalysis.biomechanics,
+    movement: advancedAnalysis.movement,
+    tactical: advancedAnalysis.tactical,
+    mental: advancedAnalysis.mental,
+    predictions: predictions.predictions,
+    injuryRisk: predictions.injuryRisk,
+    recruitment: predictions.recruitment,
+    optimization: predictions.optimization,
+    multiAngle: advancedAnalysis.multiAngle,
+    realTime: advancedAnalysis.realTime
+  };
+}
+
+// Fallback to standard analysis if advanced analysis fails
+async function fallbackToStandardAnalysis(filePath: string, sport: string, userId: number): Promise<GARAnalysis> {
   const analysisPrompt = `
     Analyze this ${sport} performance video for a neurodivergent student athlete (ages 12-18).
     Provide detailed Growth and Ability Rating (GAR) analysis focusing on:
@@ -75,9 +168,9 @@ async function analyzeVideoWithAI(filePath: string, sport: string, userId: numbe
     
     return parseAIResponse(response, sport);
   } catch (error) {
-    console.error('AI analysis failed:', error);
+    console.error('Standard AI analysis failed:', error);
     
-    // Fallback to manual analysis if AI fails
+    // Final fallback to manual analysis
     return generateFallbackAnalysis(sport, filePath);
   }
 }
