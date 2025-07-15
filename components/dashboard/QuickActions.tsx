@@ -15,37 +15,37 @@ export function QuickActions() {
       title: 'Upload Video',
       icon: Upload,
       color: 'bg-blue-500 hover:bg-blue-600',
-      onClick: () => console.log('Upload video')
+      href: '/gar-upload'
     },
     {
-      title: 'Start Training',
+      title: 'StarPath',
       icon: Play,
       color: 'bg-green-500 hover:bg-green-600',
-      onClick: () => console.log('Start training')
+      href: '/starpath'
     },
     {
-      title: 'Schedule Session',
+      title: 'Academy',
       icon: Calendar,
       color: 'bg-purple-500 hover:bg-purple-600',
-      onClick: () => console.log('Schedule session')
+      href: '/academy'
     },
     {
-      title: 'Message Coach',
+      title: 'AI Teachers',
       icon: MessageCircle,
       color: 'bg-orange-500 hover:bg-orange-600',
-      onClick: () => console.log('Message coach')
+      href: '/ai-teachers'
     },
     {
-      title: 'Set Goals',
+      title: 'Teams',
       icon: Target,
       color: 'bg-pink-500 hover:bg-pink-600',
-      onClick: () => console.log('Set goals')
+      href: '/teams'
     },
     {
-      title: 'View Progress',
+      title: 'Profile',
       icon: TrendingUp,
       color: 'bg-indigo-500 hover:bg-indigo-600',
-      onClick: () => console.log('View progress')
+      href: '/profile'
     }
   ];
 
@@ -54,14 +54,14 @@ export function QuickActions() {
       <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {actions.map((action, index) => (
-          <button
+          <a
             key={index}
-            onClick={action.onClick}
-            className={`p-4 rounded-lg transition-colors text-white ${action.color} flex flex-col items-center space-y-2`}
+            href={action.href}
+            className={`p-4 rounded-lg transition-colors text-white ${action.color} flex flex-col items-center space-y-2 hover:scale-105 transform duration-200`}
           >
             <action.icon className="h-6 w-6" />
             <span className="text-sm font-medium">{action.title}</span>
-          </button>
+          </a>
         ))}
       </div>
     </div>
