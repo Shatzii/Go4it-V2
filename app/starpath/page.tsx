@@ -168,10 +168,10 @@ export default function StarPathPage() {
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      technical: 'bg-blue-500/20 border-blue-500 text-blue-400',
-      physical: 'bg-green-500/20 border-green-500 text-green-400',
-      mental: 'bg-purple-500/20 border-purple-500 text-purple-400',
-      tactical: 'bg-orange-500/20 border-orange-500 text-orange-400'
+      technical: 'bg-primary/20 border-primary text-primary',
+      physical: 'bg-primary/20 border-primary text-primary',
+      mental: 'bg-primary/20 border-primary text-primary',
+      tactical: 'bg-primary/20 border-primary text-primary'
     };
     return colors[category] || colors.technical;
   };
@@ -187,28 +187,28 @@ export default function StarPathPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-background text-foreground hero-bg">
       {/* Header */}
-      <header className="bg-slate-900 border-b border-slate-800">
+      <header className="bg-card border-b border-border">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => router.push('/dashboard')}
-                className="text-blue-400 hover:text-blue-300 transition-colors"
+                className="text-primary hover:text-primary/80 transition-colors"
               >
                 ← Back to Dashboard
               </button>
-              <h1 className="text-2xl font-bold text-white">StarPath Development</h1>
+              <h1 className="text-2xl font-bold text-foreground neon-text">StarPath Development</h1>
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-right">
-                <div className="text-sm text-slate-400">Total XP</div>
-                <div className="text-lg font-bold text-yellow-400">{userProgress.totalXp}</div>
+                <div className="text-sm text-muted-foreground">Total XP</div>
+                <div className="text-lg font-bold text-primary">{userProgress.totalXp}</div>
               </div>
               <div className="text-right">
-                <div className="text-sm text-slate-400">Tier</div>
-                <div className="text-lg font-bold text-blue-400">{userProgress.currentTier}</div>
+                <div className="text-sm text-muted-foreground">Tier</div>
+                <div className="text-lg font-bold text-primary">{userProgress.currentTier}</div>
               </div>
             </div>
           </div>
@@ -218,25 +218,25 @@ export default function StarPathPage() {
       {/* Progress Overview */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-slate-900 rounded-lg p-4 border border-slate-800 text-center">
-            <Star className="h-8 w-8 text-yellow-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-white">{userProgress.totalXp}</div>
-            <div className="text-sm text-slate-400">Total Experience</div>
+          <div className="bg-card rounded-lg p-4 border border-border neon-border text-center">
+            <Star className="h-8 w-8 text-primary mx-auto mb-2 neon-glow" />
+            <div className="text-2xl font-bold text-foreground">{userProgress.totalXp}</div>
+            <div className="text-sm text-muted-foreground">Total Experience</div>
           </div>
-          <div className="bg-slate-900 rounded-lg p-4 border border-slate-800 text-center">
-            <CheckCircle className="h-8 w-8 text-green-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-white">{starPathData.filter(n => n.currentLevel > 0).length}</div>
-            <div className="text-sm text-slate-400">Skills in Progress</div>
+          <div className="bg-card rounded-lg p-4 border border-border neon-border text-center">
+            <CheckCircle className="h-8 w-8 text-primary mx-auto mb-2 neon-glow" />
+            <div className="text-2xl font-bold text-foreground">{starPathData.filter(n => n.currentLevel > 0).length}</div>
+            <div className="text-sm text-muted-foreground">Skills in Progress</div>
           </div>
-          <div className="bg-slate-900 rounded-lg p-4 border border-slate-800 text-center">
-            <Trophy className="h-8 w-8 text-purple-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-white">{userProgress.achievements}</div>
-            <div className="text-sm text-slate-400">Achievements Earned</div>
+          <div className="bg-card rounded-lg p-4 border border-border neon-border text-center">
+            <Trophy className="h-8 w-8 text-primary mx-auto mb-2 neon-glow" />
+            <div className="text-2xl font-bold text-foreground">{userProgress.achievements}</div>
+            <div className="text-sm text-muted-foreground">Achievements Earned</div>
           </div>
-          <div className="bg-slate-900 rounded-lg p-4 border border-slate-800 text-center">
-            <Target className="h-8 w-8 text-blue-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-white">{userProgress.currentTier}</div>
-            <div className="text-sm text-slate-400">Current Tier</div>
+          <div className="bg-card rounded-lg p-4 border border-border neon-border text-center">
+            <Target className="h-8 w-8 text-primary mx-auto mb-2 neon-glow" />
+            <div className="text-2xl font-bold text-foreground">{userProgress.currentTier}</div>
+            <div className="text-sm text-muted-foreground">Current Tier</div>
           </div>
         </div>
 

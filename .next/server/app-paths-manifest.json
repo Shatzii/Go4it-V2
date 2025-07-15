@@ -1,7 +1,9 @@
 {
   "/api/health/route": "app/api/health/route.js",
   "/api/auth/me/route": "app/api/auth/me/route.js",
-  "/api/auth/login/route": "app/api/auth/login/route.js",
+  "/api/starpath/progress/route": "app/api/starpath/progress/route.js",
+  "/api/starpath/train/route": "app/api/starpath/train/route.js",
   "/page": "app/page.js",
-  "/auth/page": "app/auth/page.js"
+  "/dashboard/page": "app/dashboard/page.js",
+  "/starpath/page": "app/starpath/page.js"
 }

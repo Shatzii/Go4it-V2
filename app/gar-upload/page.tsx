@@ -176,19 +176,19 @@ export default function GARUploadPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-background text-foreground hero-bg">
       {/* Header */}
-      <header className="bg-slate-900 border-b border-slate-800">
+      <header className="bg-card border-b border-border">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => router.push('/dashboard')}
-                className="text-blue-400 hover:text-blue-300 transition-colors"
+                className="text-primary hover:text-primary/80 transition-colors"
               >
                 ← Back to Dashboard
               </button>
-              <h1 className="text-2xl font-bold text-white">GAR Video Analysis</h1>
+              <h1 className="text-2xl font-bold text-foreground neon-text">GAR Video Analysis</h1>
             </div>
           </div>
         </div>
@@ -196,12 +196,12 @@ export default function GARUploadPage() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-slate-900 rounded-lg p-8 border border-slate-800">
+        <div className="bg-card rounded-lg p-8 border border-border neon-border">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-white mb-4">
+            <h2 className="text-3xl font-bold text-foreground neon-text mb-4">
               Upload Your Performance Video
             </h2>
-            <p className="text-slate-400 max-w-2xl mx-auto">
+            <p className="text-muted-foreground max-w-2xl mx-auto">
               Get your Growth and Ability Rating (GAR) with AI-powered analysis. 
               Our system provides detailed feedback on technique, athleticism, and improvement areas.
             </p>
@@ -209,13 +209,13 @@ export default function GARUploadPage() {
 
           {/* Sport Selection */}
           <div className="mb-8">
-            <label className="block text-sm font-medium text-slate-200 mb-3">
+            <label className="block text-sm font-medium text-foreground mb-3">
               Select Your Sport
             </label>
             <select
               value={selectedSport}
               onChange={(e) => setSelectedSport(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               disabled={uploadProgress.status === 'uploading' || uploadProgress.status === 'analyzing'}
             >
               <option value="">Choose a sport...</option>
@@ -231,10 +231,10 @@ export default function GARUploadPage() {
           <div
             className={`border-2 border-dashed rounded-lg p-12 text-center transition-all ${
               dragActive
-                ? 'border-blue-500 bg-blue-500/10'
+                ? 'border-primary bg-primary/10'
                 : selectedFile
-                ? 'border-green-500 bg-green-500/10'
-                : 'border-slate-600 hover:border-slate-500'
+                ? 'border-primary bg-primary/10'
+                : 'border-border hover:border-primary/50'
             }`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
