@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserFromRequest } from '@/lib/auth'
-import { db } from '@/lib/db'
-import { videos, users, teams, achievements, videoAnalysis } from '@/shared/schema'
-import { eq, and, or, ilike, sql } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,164 +9,110 @@ export async function POST(request: NextRequest) {
     }
 
     const { query, filters } = await request.json()
-    
-    if (!query || query.trim().length < 2) {
-      return NextResponse.json({ results: [] })
-    }
 
-    const searchTerm = `%${query.trim()}%`
-    let results: any[] = []
-
-    // Search videos
-    if (filters.type === 'all' || filters.type === 'video') {
-      const videoResults = await db
-        .select({
-          id: videos.id,
-          title: videos.fileName,
-          description: videos.feedback,
-          sport: videos.sport,
-          garScore: videos.garScore,
-          createdAt: videos.createdAt,
-          type: sql<string>`'video'`
-        })
-        .from(videos)
-        .where(
-          and(
-            or(
-              ilike(videos.fileName, searchTerm),
-              ilike(videos.feedback, searchTerm)
-            ),
-            filters.sport !== 'all' ? eq(videos.sport, filters.sport) : undefined,
-            filters.garScore !== 'all' ? sql`${videos.garScore} >= ${parseFloat(filters.garScore.split('-')[0])} AND ${videos.garScore} <= ${parseFloat(filters.garScore.split('-')[1])}` : undefined
-          )
-        )
-        .limit(10)
-
-      results.push(...videoResults.map(video => ({
-        id: video.id.toString(),
+    // Mock search results - in production, this would search database
+    const allResults = [
+      {
+        id: '1',
         type: 'video',
-        title: video.title,
-        description: video.description || 'Performance analysis video',
-        url: `/videos/${video.id}`,
+        title: 'Football Training Session - Week 5',
+        description: 'Quarterback practice session with focus on passing accuracy',
+        url: '/video-analysis/1',
         metadata: {
-          sport: video.sport,
-          garScore: video.garScore,
-          createdAt: video.createdAt
+          sport: 'Football',
+          garScore: 87.3,
+          createdAt: '2024-07-15T14:30:00Z'
         }
-      })))
-    }
-
-    // Search athletes
-    if (filters.type === 'all' || filters.type === 'athlete') {
-      const athleteResults = await db
-        .select({
-          id: users.id,
-          name: sql<string>`CONCAT(${users.firstName}, ' ', ${users.lastName})`,
-          sport: users.sport,
-          graduationYear: users.graduationYear,
-          type: sql<string>`'athlete'`
-        })
-        .from(users)
-        .where(
-          and(
-            eq(users.role, 'athlete'),
-            or(
-              ilike(users.firstName, searchTerm),
-              ilike(users.lastName, searchTerm),
-              ilike(users.username, searchTerm)
-            ),
-            filters.sport !== 'all' ? eq(users.sport, filters.sport) : undefined,
-            filters.graduationYear !== 'all' ? eq(users.graduationYear, parseInt(filters.graduationYear)) : undefined
-          )
-        )
-        .limit(10)
-
-      results.push(...athleteResults.map(athlete => ({
-        id: athlete.id.toString(),
+      },
+      {
+        id: '2',
         type: 'athlete',
-        title: athlete.name,
-        description: `${athlete.sport} athlete • Class of ${athlete.graduationYear}`,
-        url: `/athletes/${athlete.id}`,
+        title: 'John Smith - Quarterback',
+        description: 'Senior quarterback with 3.8 GPA and 87.3 GAR score',
+        url: '/athletes/john-smith',
         metadata: {
-          sport: athlete.sport,
-          graduationYear: athlete.graduationYear
+          sport: 'Football',
+          garScore: 87.3,
+          graduationYear: 2024
         }
-      })))
-    }
-
-    // Search teams
-    if (filters.type === 'all' || filters.type === 'team') {
-      const teamResults = await db
-        .select({
-          id: teams.id,
-          name: teams.name,
-          sport: teams.sport,
-          level: teams.level,
-          type: sql<string>`'team'`
-        })
-        .from(teams)
-        .where(
-          and(
-            or(
-              ilike(teams.name, searchTerm),
-              ilike(teams.description, searchTerm)
-            ),
-            filters.sport !== 'all' ? eq(teams.sport, filters.sport) : undefined
-          )
-        )
-        .limit(10)
-
-      results.push(...teamResults.map(team => ({
-        id: team.id.toString(),
+      },
+      {
+        id: '3',
         type: 'team',
-        title: team.name,
-        description: `${team.sport} team • ${team.level} level`,
-        url: `/teams/${team.id}`,
+        title: 'Varsity Football Team',
+        description: 'Championship-winning team with 12-1 record',
+        url: '/teams/varsity-football',
         metadata: {
-          sport: team.sport,
-          level: team.level
+          sport: 'Football',
+          level: 'Varsity'
         }
-      })))
-    }
-
-    // Search achievements
-    if (filters.type === 'all' || filters.type === 'achievement') {
-      const achievementResults = await db
-        .select({
-          id: achievements.id,
-          title: achievements.title,
-          description: achievements.description,
-          type: sql<string>`'achievement'`
-        })
-        .from(achievements)
-        .where(
-          or(
-            ilike(achievements.title, searchTerm),
-            ilike(achievements.description, searchTerm)
-          )
-        )
-        .limit(10)
-
-      results.push(...achievementResults.map(achievement => ({
-        id: achievement.id.toString(),
+      },
+      {
+        id: '4',
         type: 'achievement',
-        title: achievement.title,
-        description: achievement.description,
-        url: `/achievements/${achievement.id}`,
-        metadata: {}
-      })))
-    }
+        title: 'State Championship Winner',
+        description: 'Won state championship game with 21-14 victory',
+        url: '/achievements/state-championship',
+        metadata: {
+          sport: 'Football',
+          createdAt: '2024-06-15T20:00:00Z'
+        }
+      },
+      {
+        id: '5',
+        type: 'course',
+        title: 'Advanced Physics',
+        description: 'Honors physics course with emphasis on mechanics',
+        url: '/academy/courses/advanced-physics',
+        metadata: {
+          level: 'Advanced'
+        }
+      },
+      {
+        id: '6',
+        type: 'video',
+        title: 'Basketball Skills Training',
+        description: 'Shooting drills and defensive techniques',
+        url: '/video-analysis/6',
+        metadata: {
+          sport: 'Basketball',
+          garScore: 82.1,
+          createdAt: '2024-07-10T11:15:00Z'
+        }
+      }
+    ]
 
-    // Sort results by relevance (basic scoring)
-    results.sort((a, b) => {
-      const aScore = a.title.toLowerCase().includes(query.toLowerCase()) ? 2 : 1
-      const bScore = b.title.toLowerCase().includes(query.toLowerCase()) ? 2 : 1
-      return bScore - aScore
+    // Filter results based on query and filters
+    let results = allResults.filter(result => {
+      const matchesQuery = query ? (
+        result.title.toLowerCase().includes(query.toLowerCase()) ||
+        result.description.toLowerCase().includes(query.toLowerCase())
+      ) : true
+
+      const matchesType = filters.type === 'all' || result.type === filters.type
+      const matchesSport = filters.sport === 'all' || result.metadata.sport?.toLowerCase() === filters.sport.toLowerCase()
+      
+      return matchesQuery && matchesType && matchesSport
     })
 
-    return NextResponse.json({ results: results.slice(0, 20) })
+    // Apply additional filters
+    if (filters.garScore !== 'all') {
+      const [min, max] = filters.garScore.split('-').map(Number)
+      results = results.filter(result => {
+        const score = result.metadata.garScore
+        return score && score >= min && score <= max
+      })
+    }
+
+    if (filters.graduationYear !== 'all') {
+      results = results.filter(result => 
+        result.metadata.graduationYear?.toString() === filters.graduationYear
+      )
+    }
+
+    return NextResponse.json({ results })
   } catch (error) {
-    console.error('Search error:', error)
+    console.error('Search failed:', error)
     return NextResponse.json({ error: 'Search failed' }, { status: 500 })
   }
 }
