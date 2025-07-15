@@ -1,80 +1,97 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Bell, X, Check, AlertCircle, Trophy, Video, Users, BookOpen } from 'lucide-react'
+import { Bell, X, Check, Video, Trophy, Users, BookOpen, AlertCircle, Settings } from 'lucide-react'
 
 interface Notification {
   id: string
-  type: 'success' | 'info' | 'warning' | 'achievement' | 'video' | 'team' | 'course'
+  type: 'video' | 'achievement' | 'team' | 'course' | 'system' | 'reminder'
   title: string
   message: string
   timestamp: Date
   read: boolean
   actionUrl?: string
+  priority: 'low' | 'medium' | 'high'
 }
 
 export function NotificationSystem() {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [isOpen, setIsOpen] = useState(false)
-  const [unreadCount, setUnreadCount] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [settings, setSettings] = useState({
+    enableBrowser: true,
+    enableEmail: false,
+    enableSMS: false,
+    videoAnalysis: true,
+    achievements: true,
+    teamUpdates: true,
+    courseReminders: true,
+    systemAlerts: true
+  })
 
   useEffect(() => {
-    // Load notifications from API
     fetchNotifications()
+    requestNotificationPermission()
     
-    // Set up real-time notifications
+    // Set up WebSocket connection for real-time notifications
     const ws = new WebSocket(`${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`)
     
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data)
       if (data.type === 'notification') {
-        addNotification(data.notification)
+        handleNewNotification(data.notification)
       }
     }
 
     return () => ws.close()
   }, [])
 
-  useEffect(() => {
-    const count = notifications.filter(n => !n.read).length
-    setUnreadCount(count)
-  }, [notifications])
-
   const fetchNotifications = async () => {
     try {
       const response = await fetch('/api/notifications')
       if (response.ok) {
         const data = await response.json()
-        setNotifications(data.notifications || [])
+        setNotifications(data.notifications)
       }
     } catch (error) {
       console.error('Failed to fetch notifications:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
-  const addNotification = (notification: Notification) => {
+  const requestNotificationPermission = async () => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      await Notification.requestPermission()
+    }
+  }
+
+  const handleNewNotification = (notification: Notification) => {
     setNotifications(prev => [notification, ...prev])
     
-    // Show browser notification if permission granted
-    if (Notification.permission === 'granted') {
+    // Show browser notification if enabled
+    if (settings.enableBrowser && 'Notification' in window && Notification.permission === 'granted') {
       new Notification(notification.title, {
         body: notification.message,
-        icon: '/icon-192.png'
+        icon: '/icon-192x192.png',
+        tag: notification.id
       })
     }
   }
 
   const markAsRead = async (notificationId: string) => {
     try {
-      await fetch(`/api/notifications/${notificationId}/read`, {
+      const response = await fetch(`/api/notifications/${notificationId}/read`, {
         method: 'POST'
       })
       
-      setNotifications(prev => 
-        prev.map(n => 
-          n.id === notificationId ? { ...n, read: true } : n
+      if (response.ok) {
+        setNotifications(prev => 
+          prev.map(n => 
+            n.id === notificationId ? { ...n, read: true } : n
+          )
         )
-      )
+      }
     } catch (error) {
       console.error('Failed to mark notification as read:', error)
     }
@@ -82,59 +99,94 @@ export function NotificationSystem() {
 
   const markAllAsRead = async () => {
     try {
-      await fetch('/api/notifications/mark-all-read', {
+      const response = await fetch('/api/notifications/read-all', {
         method: 'POST'
       })
       
-      setNotifications(prev => 
-        prev.map(n => ({ ...n, read: true }))
-      )
+      if (response.ok) {
+        setNotifications(prev => prev.map(n => ({ ...n, read: true })))
+      }
     } catch (error) {
       console.error('Failed to mark all notifications as read:', error)
     }
   }
 
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'achievement': return <Trophy className="w-4 h-4 text-yellow-500" />
-      case 'video': return <Video className="w-4 h-4 text-blue-500" />
-      case 'team': return <Users className="w-4 h-4 text-green-500" />
-      case 'course': return <BookOpen className="w-4 h-4 text-purple-500" />
-      case 'warning': return <AlertCircle className="w-4 h-4 text-orange-500" />
-      default: return <Bell className="w-4 h-4 text-slate-400" />
+  const deleteNotification = async (notificationId: string) => {
+    try {
+      const response = await fetch(`/api/notifications/${notificationId}`, {
+        method: 'DELETE'
+      })
+      
+      if (response.ok) {
+        setNotifications(prev => prev.filter(n => n.id !== notificationId))
+      }
+    } catch (error) {
+      console.error('Failed to delete notification:', error)
     }
   }
 
-  const requestNotificationPermission = () => {
-    if ('Notification' in window) {
-      Notification.requestPermission()
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case 'video': return <Video className="w-5 h-5 text-red-500" />
+      case 'achievement': return <Trophy className="w-5 h-5 text-yellow-500" />
+      case 'team': return <Users className="w-5 h-5 text-blue-500" />
+      case 'course': return <BookOpen className="w-5 h-5 text-green-500" />
+      case 'system': return <AlertCircle className="w-5 h-5 text-orange-500" />
+      default: return <Bell className="w-5 h-5 text-gray-500" />
     }
   }
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'border-l-red-500'
+      case 'medium': return 'border-l-yellow-500'
+      case 'low': return 'border-l-green-500'
+      default: return 'border-l-gray-500'
+    }
+  }
+
+  const formatTime = (timestamp: Date) => {
+    const now = new Date()
+    const diff = now.getTime() - new Date(timestamp).getTime()
+    const minutes = Math.floor(diff / 60000)
+    const hours = Math.floor(minutes / 60)
+    const days = Math.floor(hours / 24)
+
+    if (days > 0) return `${days}d ago`
+    if (hours > 0) return `${hours}h ago`
+    if (minutes > 0) return `${minutes}m ago`
+    return 'Just now'
+  }
+
+  const unreadCount = notifications.filter(n => !n.read).length
 
   return (
     <div className="relative">
+      {/* Notification Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors"
       >
-        <Bell className="w-5 h-5 text-white" />
+        <Bell className="w-5 h-5 text-slate-300" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
       </button>
 
+      {/* Notification Panel */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-slate-900 rounded-lg shadow-xl border border-slate-700 z-50">
+        <div className="absolute right-0 top-full mt-2 w-80 bg-slate-900 border border-slate-700 rounded-lg shadow-xl z-50">
+          {/* Header */}
           <div className="p-4 border-b border-slate-700">
             <div className="flex items-center justify-between">
-              <h3 className="text-white font-semibold">Notifications</h3>
+              <h3 className="text-lg font-semibold text-white">Notifications</h3>
               <div className="flex items-center gap-2">
                 {unreadCount > 0 && (
                   <button
                     onClick={markAllAsRead}
-                    className="text-xs text-blue-400 hover:text-blue-300"
+                    className="text-sm text-blue-400 hover:text-blue-300"
                   >
                     Mark all read
                   </button>
@@ -143,70 +195,96 @@ export function NotificationSystem() {
                   onClick={() => setIsOpen(false)}
                   className="text-slate-400 hover:text-white"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
           </div>
 
+          {/* Notifications List */}
           <div className="max-h-96 overflow-y-auto">
-            {notifications.length === 0 ? (
-              <div className="p-8 text-center text-slate-400">
-                <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p>No notifications yet</p>
+            {loading ? (
+              <div className="p-8 text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+                <p className="text-slate-400 mt-2">Loading notifications...</p>
               </div>
-            ) : (
-              <div className="p-2">
+            ) : notifications.length > 0 ? (
+              <div className="divide-y divide-slate-700">
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className={`p-3 rounded-lg mb-2 cursor-pointer transition-colors ${
-                      notification.read 
-                        ? 'bg-slate-800 hover:bg-slate-700' 
-                        : 'bg-blue-600/20 hover:bg-blue-600/30 border border-blue-600/30'
+                    className={`p-4 hover:bg-slate-800 transition-colors border-l-4 ${getPriorityColor(notification.priority)} ${
+                      !notification.read ? 'bg-slate-800/50' : ''
                     }`}
-                    onClick={() => {
-                      if (!notification.read) {
-                        markAsRead(notification.id)
-                      }
-                      if (notification.actionUrl) {
-                        window.location.href = notification.actionUrl
-                      }
-                    }}
                   >
                     <div className="flex items-start gap-3">
-                      {getNotificationIcon(notification.type)}
-                      <div className="flex-1">
-                        <h4 className="text-white font-medium text-sm">
-                          {notification.title}
-                        </h4>
-                        <p className="text-slate-400 text-xs mt-1">
-                          {notification.message}
-                        </p>
-                        <p className="text-slate-500 text-xs mt-1">
-                          {new Date(notification.timestamp).toLocaleString()}
-                        </p>
+                      <div className="mt-1">
+                        {getNotificationIcon(notification.type)}
                       </div>
-                      {!notification.read && (
-                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-1"></div>
-                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-medium text-white truncate">{notification.title}</h4>
+                          {!notification.read && (
+                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                          )}
+                        </div>
+                        <p className="text-sm text-slate-400 mb-2">{notification.message}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-slate-500">
+                            {formatTime(notification.timestamp)}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            {notification.actionUrl && (
+                              <a
+                                href={notification.actionUrl}
+                                onClick={() => markAsRead(notification.id)}
+                                className="text-xs text-blue-400 hover:text-blue-300"
+                              >
+                                View
+                              </a>
+                            )}
+                            {!notification.read && (
+                              <button
+                                onClick={() => markAsRead(notification.id)}
+                                className="text-xs text-slate-400 hover:text-white"
+                              >
+                                <Check className="w-4 h-4" />
+                              </button>
+                            )}
+                            <button
+                              onClick={() => deleteNotification(notification.id)}
+                              className="text-xs text-slate-400 hover:text-red-400"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
+            ) : (
+              <div className="p-8 text-center text-slate-400">
+                <Bell className="w-12 h-12 mx-auto mb-4 text-slate-600" />
+                <p>No notifications yet</p>
+              </div>
             )}
           </div>
 
-          {Notification.permission === 'default' && (
-            <div className="p-4 border-t border-slate-700">
-              <button
-                onClick={requestNotificationPermission}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm transition-colors"
-              >
-                Enable Browser Notifications
-              </button>
-            </div>
-          )}
+          {/* Footer */}
+          <div className="p-3 border-t border-slate-700">
+            <button
+              onClick={() => {
+                setIsOpen(false)
+                // Open notification settings
+              }}
+              className="w-full flex items-center justify-center gap-2 text-sm text-slate-400 hover:text-white transition-colors"
+            >
+              <Settings className="w-4 h-4" />
+              Notification Settings
+            </button>
+          </div>
         </div>
       )}
     </div>
