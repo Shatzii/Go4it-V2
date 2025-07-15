@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest } from '../../../../lib/auth';
-import { db } from '../../../../lib/db';
+import { getUserFromRequest } from '@/lib/auth';
+import { db } from '@/lib/db';
 import { aiCoachingProfiles } from '@/shared/enhanced-schema';
 import { eq } from 'drizzle-orm';
 

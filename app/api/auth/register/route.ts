@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { hashPassword, createSession } from '@/lib/auth';
+import { hashPassword, createJWT } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { users, insertUserSchema } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
