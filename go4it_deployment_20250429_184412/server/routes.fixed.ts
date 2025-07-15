@@ -1,1 +1,0 @@
-// This is a temporary file to be manually copied over for the deviceFingerprint fix

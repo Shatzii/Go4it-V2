@@ -1,215 +1,157 @@
-# Go4It Sports Platform
+# Go4It Sports Platform - Replit.md
 
 ## Overview
 
-Go4It Sports is a comprehensive sports analytics platform designed specifically for neurodivergent student athletes aged 12-18, particularly those with ADHD. The platform combines video analysis, skill progression tracking, AI coaching, and recruitment tools to provide a complete development ecosystem for young athletes.
-
-## System Architecture
-
-The platform follows a modern full-stack architecture optimized for deployment on Replit and traditional servers:
-
-### Frontend Architecture
-- **Framework**: React.js with TypeScript
-- **Build Tool**: Vite for fast development and optimized production builds
-- **Authentication**: Clerk for user management with session bridging
-- **Styling**: Tailwind CSS with dark theme (ADHD-friendly design)
-- **State Management**: Built-in React state with hooks
-- **UI Components**: Custom component library optimized for neurodivergent users
-
-### Backend Architecture
-- **Runtime**: Node.js with Express.js
-- **Database**: PostgreSQL with Drizzle ORM
-- **Authentication**: Dual system - Clerk (frontend) with Express sessions (backend)
-- **AI Services**: Integrated OpenAI and Anthropic APIs for coaching features
-- **File Storage**: Local filesystem with cloud storage options
-- **WebSocket Support**: Real-time features for live coaching and notifications
-
-## Key Components
-
-### 1. Video Analysis System (GAR)
-- **Growth and Ability Rating (GAR)**: Proprietary scoring system (0-100 scale)
-- **Upload Processing**: Drag-and-drop interface with AI-powered analysis
-- **Frame Analysis**: Detailed breakdown of athletic performance
-- **Comparison Tools**: Before/after video analysis capabilities
-
-### 2. StarPath Skill Development
-- **Interactive Skill Trees**: Visual progression system with unlockable nodes
-- **XP System**: Points-based advancement through completed activities
-- **Achievement Badges**: Milestone rewards and recognition system
-- **Personalized Recommendations**: AI-driven drill and training suggestions
-
-### 3. User Management System
-- **Multi-Role Support**: Student athletes, coaches, and parents
-- **Profile Management**: Sport-specific profiles with performance tracking
-- **Academic Integration**: NCAA eligibility monitoring and GPA tracking
-- **Communication Tools**: Coach-athlete messaging and progress sharing
-
-### 4. AI Coaching Engine
-- **Multiple AI Providers**: OpenAI and Anthropic integration with fallback support
-- **Personalized Coaching**: ADHD-aware coaching recommendations
-- **Performance Analysis**: Automated insights from video and performance data
-- **Mock AI Support**: Development-friendly testing without API costs
-
-### 5. Recruitment Hub
-- **Scout Monitoring**: 711 active athlete scouts tracking recruitment data
-- **Transfer Portal**: 395 monitors tracking player movements
-- **College Matching**: NCAA school database with program information
-- **Communication Tracking**: Recruitment timeline and contact management
-
-## Data Flow
-
-### Authentication Flow
-1. User authenticates via Clerk (frontend)
-2. Middleware bridges Clerk session to Express backend
-3. Backend validates session for API access
-4. User data synced between Clerk and PostgreSQL
-
-### Video Analysis Flow
-1. User uploads video via drag-and-drop interface
-2. File processed and stored in uploads directory
-3. AI analysis triggered (OpenAI/Anthropic or mock data)
-4. GAR score calculated and stored in database
-5. Results displayed in interactive dashboard
-
-### Skill Progression Flow
-1. User completes activities or uploads performance videos
-2. XP points calculated based on performance metrics
-3. Skill tree nodes unlocked based on XP thresholds
-4. Achievement badges awarded for milestones
-5. Progress synced across all user interfaces
-
-## External Dependencies
-
-### Required Services
-- **PostgreSQL**: Primary database for user data, performance metrics, and content
-- **Clerk**: Authentication and user management service
-- **OpenAI API**: AI coaching and analysis features
-- **Anthropic API**: Alternative AI provider for coaching features
-
-### Optional Services
-- **Twilio**: SMS notifications for coaches and parents
-- **SendGrid**: Transactional email delivery
-- **Cloud Storage**: Alternative to local file storage
-
-### Development Dependencies
-- **Drizzle ORM**: Type-safe database operations
-- **Vite**: Frontend build tool and development server
-- **TypeScript**: Type safety across the entire stack
-
-## Deployment Strategy
-
-### Replit Deployment (Current)
-- **Port Configuration**: Frontend (3000), Backend (5000), WebSocket (5001)
-- **Database**: PostgreSQL module integrated with Replit
-- **Environment**: Development-optimized with hot reloading
-- **Scaling**: Autoscale deployment target for production
-
-### Production Deployment Options
-1. **Hetzner VPS**: Optimized configuration for go4itsports.org
-2. **Traditional Server**: Nginx reverse proxy with PM2 process management
-3. **Cloud Platforms**: AWS, DigitalOcean, or similar providers
-
-### Database Migration Strategy
-- **Schema Management**: Drizzle migrations for version control
-- **Data Seeding**: Automated population of NCAA schools, skill trees, and sample data
-- **Backup System**: Automated PostgreSQL backups with retention policies
-
-## Recent Changes
-
-### Platform Status: January 8, 2025 - COMPREHENSIVE OPTIMIZATION COMPLETE
-- ✅ **10-Strategy Comprehensive Optimization Implemented**: Complete modular architecture with reusable components, mobile-first responsive design, and performance monitoring
-- ✅ **Advanced Component Architecture**: Created LoadingSpinner, SkeletonLoader, StatCard, QuickActions, ActivityFeed, and DashboardHeader components with TypeScript support
-- ✅ **PWA Capabilities Added**: Progressive Web App manifest, service worker ready, mobile app experience with offline support
-- ✅ **Real-time WebSocket Integration**: Live coaching feedback, performance updates, and real-time communication with automatic reconnection
-- ✅ **AI-Powered Coaching Engine**: ADHD-optimized coaching insights, personalized training recommendations, and adaptive feedback system
-- ✅ **Video Analysis System Enhanced**: GAR scoring with AI analysis, video upload component, and comprehensive performance tracking
-- ✅ **One-Click Highlight Reel Generator**: AI-powered moment detection, customizable duration, professional transitions, and automated highlight creation
-- ✅ **Mobile Navigation System**: Touch-friendly navigation, responsive design, and mobile-specific user experience optimization
-- ✅ **Performance Monitoring**: Real-time metrics tracking, memory usage monitoring, and development performance insights
-- ✅ **Error Boundary System**: Comprehensive error handling, graceful degradation, and user-friendly error messages
-- ✅ **ADHD-Friendly Design System**: High contrast modes, reduced motion support, focus management, and neurodivergent-optimized interfaces
-- ✅ **Authentication System Optimized**: Secure login/registration, session management, and user profile integration
-- ✅ **Database Integration Enhanced**: PostgreSQL with Drizzle ORM, type-safe operations, and comprehensive data modeling
-- ✅ **CSS Framework Optimized**: Custom Tailwind CSS with ADHD-friendly patterns, accessibility features, and responsive utilities
-
-### Platform Status: July 5, 2025 - COMPREHENSIVE PLATFORM RESTORED
-- ✅ **Server Configuration Fixed**: Custom server.js properly detects Replit environment and runs on port 5000
-- ✅ **Health Check Operational**: All systems healthy with database connection confirmed
-- ✅ **Port Configuration Resolved**: Application runs correctly on port 5000 with proper network binding
-- ✅ **Next.js Integration Working**: Custom server properly handles Next.js app with hot reloading
-- ✅ **API Endpoints Functional**: Health check returns full system status with all features enabled
-- ✅ **Database Connection Confirmed**: PostgreSQL database accessible and operational
-- ✅ **Environment Detection Working**: Server properly identifies Replit environment
-- ✅ **Database Schema Fixed**: Replaced generatedAlwaysAsIdentity with serial for Drizzle compatibility
-- ✅ **User Registration Working**: Registration API successfully creates user accounts in database
-- ✅ **Database Structure Updated**: All required table columns properly configured and accessible
-- ✅ **Authentication System Ready**: Users can now successfully sign up for platform accounts
-- ✅ **Demo Credentials Removed**: Cleaned up authentication interface for production readiness
-- ✅ **Admin System Created**: Fully functional admin panel with user management and system monitoring
-- ✅ **Comprehensive Dashboard Restored**: Complete dashboard with enhanced navigation, quick stats, performance metrics, activity feeds, and interactive components
-- ✅ **GAR Video Analysis Hub**: Full video upload interface with AI-powered scoring, recent GAR history, and performance tracking
-- ✅ **Recruitment Dashboard**: Detailed recruitment tracking with 47 profile views, 12 active scouts, college interests, and real-time scout activity
-- ✅ **Academic Progress Tracker**: NCAA eligibility monitoring, GPA tracking (3.8 current), course completion progress, and SAT/ACT requirements
-- ✅ **AI Coaching Engine**: Personalized ADHD-aware coaching insights, daily focus recommendations, and performance trend analysis
-- ✅ **StarPath Integration**: Interactive skill progression with Level 8 status, 2,450 XP, achievement badges, and full skill tree access
-- ✅ **One-Click Highlight Reel Generator**: AI-powered highlight reel creation with smart moment detection, customizable duration, and professional output
-- ✅ **Original Design Features Rebuilt**: Restored comprehensive UI components including enhanced stat cards, action buttons, performance metrics, and activity tracking from previous platform version
-
-### Platform Status: June 29, 2025 - GITHUB REPOSITORY PREPARATION COMPLETE
-- ✅ **Universal Port Server**: `server.js` tested and confirmed working - auto-detects environment and uses correct ports
-- ✅ **Database-Independent Architecture**: Landing page tested - works even when database fails
-- ✅ **Bulletproof Landing Page**: Confirmed never crashes, always functional with graceful degradation
-- ✅ **Health Monitoring**: Real-time system status via `/api/health` endpoint tested and operational
-- ✅ **Port Configuration**: Server correctly detects Replit (port 5000) vs local (port 3000) automatically
-- ✅ **Production Architecture**: Enterprise-grade error handling and performance optimization confirmed
-- ✅ **Live Demonstration**: Platform successfully running with all features healthy and operational
-- ✅ **ADHD-Friendly UI**: Clear status indicators and consistent user feedback implemented
-- ✅ **GitHub Repository Files**: Professional README.md, CONTRIBUTING.md, .gitignore, and GITHUB_SETUP.md created
-- ✅ **Repository Documentation**: Complete setup guide with architecture diagrams and deployment instructions
-
-### Previous Solutions: June 2025 - Workflow Configuration Fixed
-- ✓ Identified and resolved Replit workflow port configuration issue
-- ✓ Created custom Next.js server that properly runs on port 5000
-- ✓ Application now starts correctly with proper network binding (0.0.0.0:5000)
-- ✓ Workflow expects port 5000 but npm run dev starts on port 3000 - resolved with custom server
-- ✓ All Next.js features working: hot reloading, development mode, routing
-- ✓ Created startup scripts and documentation for easy deployment
-
-### Platform Status: June 2025 - Phase 1 Cutting-Edge Features Complete
-- ✓ All 10 comprehensive improvements successfully implemented
-- ✓ Complete Go4It Teams section with sport-specific management
-- ✓ Real-time performance tracking and advanced AI coaching
-- ✓ Mobile video tools and enhanced accessibility features
-- ✓ Platform running on Next.js with port configuration resolved
-- ✓ GitHub Copilot build prompts created for complete platform reconstruction
-- ✓ Subscription-based licensing system implemented for self-hosted deployment
-- ✓ License validation and feature gating system integrated
-- ✓ Self-hosted packages created for three subscription tiers
-- ✓ **Phase 1 Industry-Leading Features Implemented:**
-  - Real-time biomechanical analysis with computer vision
-  - ADHD-specialized emotional intelligence coaching system
-  - AI-powered college matching with scholarship opportunity monitoring
-  - Frustration detection and intervention system
-  - Adaptive coaching based on emotional state analysis
-  - Personalized recruitment timeline generation
-- Admin access: username "admin", password "MyTime$$"
-
-- June 23, 2025: **Complete Platform Enhancement & Go4It Teams Integration**
-  - **Real-Time Performance Tracking**: Live heart rate monitoring, instant feedback, personalized ADHD attention zones
-  - **Advanced AI Coaching**: Emotional intelligence analysis, frustration detection, adaptive coaching tones
-  - **Gamified Achievement System**: Daily/weekly challenges, team competitions, parent celebration moments
-  - **Mobile Video Recording Tools**: Built-in camera with technique overlays, voice guidance, offline recording
-  - **Go4It Teams Management**: Complete team system for flag football, soccer, basketball, track & field
-  - **Communication Hub**: Coach-athlete messaging, parent progress sharing, peer support groups
-  - **Academic Integration Expansion**: GPA tracking, NCAA eligibility timeline, scholarship matching
-  - **Enhanced Accessibility**: Neurodivergent support, multi-language, sensory preferences, focus modes
-  - **Injury Prevention System**: Biomechanical analysis, recovery recommendations, medical integration
-  - **Advanced Analytics Platform**: Longitudinal tracking, predictive modeling, recruitment insights
-
-## Changelog
-
-- June 23, 2025. Initial setup and complete platform build
+Go4It Sports Platform is an advanced AI-powered athletics platform designed specifically for neurodivergent student athletes. The platform combines video analysis, performance tracking, academic monitoring, and recruitment tools into a comprehensive solution. It features a Growth and Ability Rating (GAR) system, StarPath progression tracking, and extensive NCAA compliance tools.
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+
+## System Architecture
+
+### Frontend Architecture
+- **Framework**: Next.js 14.1.0 with React 18.2.0
+- **Styling**: Tailwind CSS with custom component library
+- **UI Components**: Radix UI for accessible, customizable components
+- **State Management**: React Query for server state, React Hook Form for form handling
+- **Build Tool**: Vite for development, Next.js for production builds
+
+### Backend Architecture
+- **Server**: Express.js with custom middleware
+- **Database**: PostgreSQL with Drizzle ORM
+- **Authentication**: JWT-based auth with bcrypt for password hashing
+- **API Design**: RESTful endpoints with comprehensive error handling
+- **File Handling**: Multer for file uploads with organized storage structure
+
+### Data Storage Solutions
+- **Primary Database**: PostgreSQL via Drizzle ORM
+- **Connection**: Uses @neondatabase/serverless for cloud database connectivity
+- **Schema Management**: Drizzle Kit for migrations and schema generation
+- **Caching**: Redis-based caching system for improved performance
+
+## Key Components
+
+### 1. Video Analysis System (GAR)
+- AI-powered video processing for athletic performance analysis
+- Growth and Ability Rating system with standardized scoring
+- Optimized for 4 vCPU/16GB RAM server configuration
+- Supports multiple video formats with automatic transcoding
+
+### 2. StarPath Progression System
+- Skill tree implementation with XP tracking
+- Achievement system with visual progress indicators
+- Gamified learning experience tailored for neurodivergent athletes
+
+### 3. Academic Tracking
+- Course enrollment and grade tracking
+- NCAA eligibility monitoring
+- Core course identification for compliance
+
+### 4. Recruitment Tools
+- NCAA school and coaching staff database
+- Transfer portal monitoring
+- Social media scouting capabilities
+- Athletic department contact management
+
+### 5. Team Management
+- Comprehensive team roster management
+- Performance analytics and reporting
+- Coach-athlete communication tools
+
+## Data Flow
+
+### Authentication Flow
+1. User submits credentials via login form
+2. Server validates against database using bcrypt
+3. JWT token generated and returned to client
+4. Token stored in session and included in API requests
+5. Server middleware validates token on protected routes
+
+### Video Analysis Flow
+1. Admin uploads video files via web interface
+2. Files stored in organized directory structure
+3. AI processing pipeline analyzes video content
+4. Results stored in database with associated metadata
+5. Frontend displays analysis results with interactive visualizations
+
+### Data Synchronization
+- Real-time updates via WebSocket connections
+- Cached data with TTL for performance optimization
+- Background sync for offline capabilities
+
+## External Dependencies
+
+### Core Dependencies
+- **Database**: PostgreSQL with Drizzle ORM
+- **Authentication**: JWT with bcrypt
+- **File Processing**: Multer for uploads
+- **UI Framework**: Radix UI components
+- **Styling**: Tailwind CSS
+
+### AI/ML Integration
+- OpenAI API for advanced text analysis
+- Custom video processing pipeline
+- Hugging Face model integration for sports analysis
+
+### Development Tools
+- TypeScript for type safety
+- ESLint for code quality
+- Tailwind CSS for styling
+- Drizzle Kit for database management
+
+## Deployment Strategy
+
+### Development Environment
+- Uses Replit for development and testing
+- Custom server configuration for port 5000
+- Health check endpoints for monitoring
+- Automated build and deployment scripts
+
+### Production Deployment
+- Optimized for go4itsports.org domain
+- Static file serving with CDN considerations
+- Environment-specific configurations
+- Database migration scripts for schema updates
+
+### Performance Optimizations
+- Code splitting and lazy loading
+- Image optimization and compression
+- Database query optimization
+- Caching strategies for frequently accessed data
+
+### Monitoring and Maintenance
+- Health check endpoints (`/api/health`)
+- Error logging and monitoring
+- Performance metrics tracking
+- Automated backup systems
+
+## Architecture Decisions
+
+### Database Choice: PostgreSQL with Drizzle ORM
+- **Problem**: Need for reliable, scalable database with type safety
+- **Solution**: PostgreSQL provides ACID compliance and scalability, Drizzle ORM offers type-safe queries
+- **Alternatives**: MongoDB, MySQL with different ORMs
+- **Pros**: Strong consistency, excellent performance, type safety
+- **Cons**: More complex setup than NoSQL alternatives
+
+### Authentication Strategy: JWT with bcrypt
+- **Problem**: Secure user authentication and session management
+- **Solution**: JWT tokens for stateless authentication, bcrypt for password hashing
+- **Alternatives**: Session-based auth, OAuth providers
+- **Pros**: Stateless, scalable, secure password storage
+- **Cons**: Token management complexity, potential for token hijacking
+
+### Frontend Framework: Next.js with React
+- **Problem**: Need for modern, performant web application
+- **Solution**: Next.js provides SSR/SSG capabilities with React ecosystem
+- **Alternatives**: Vue.js, Angular, vanilla React
+- **Pros**: Great developer experience, built-in optimizations, large ecosystem
+- **Cons**: Framework lock-in, learning curve for team
+
+### Styling Solution: Tailwind CSS
+- **Problem**: Consistent, maintainable styling system
+- **Solution**: Utility-first CSS framework with design system
+- **Alternatives**: Styled-components, CSS modules, traditional CSS
+- **Pros**: Rapid development, consistent design, small bundle size
+- **Cons**: Learning curve, potential for cluttered markup
