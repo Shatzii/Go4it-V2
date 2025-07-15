@@ -22,10 +22,10 @@ export default function OptimizedAuthPage() {
 
     const formData = new FormData(e.currentTarget);
     const credentials = {
-      username: formData.get('username') as string,
+      email: formData.get('email') as string,
       password: formData.get('password') as string,
       ...(isLogin ? {} : {
-        email: formData.get('email') as string,
+        username: formData.get('username') as string,
         firstName: formData.get('firstName') as string,
         lastName: formData.get('lastName') as string,
       })
@@ -154,18 +154,33 @@ export default function OptimizedAuthPage() {
                 </>
               )}
 
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
-                  Username
-                </label>
-                <input
-                  name="username"
-                  type="text"
-                  required
-                  className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Enter username"
-                />
-              </div>
+              {isLogin ? (
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    Email
+                  </label>
+                  <input
+                    name="email"
+                    type="email"
+                    required
+                    className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="Enter email address"
+                  />
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    Username
+                  </label>
+                  <input
+                    name="username"
+                    type="text"
+                    required
+                    className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="Enter username"
+                  />
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1">
@@ -210,24 +225,7 @@ export default function OptimizedAuthPage() {
               </button>
             </form>
 
-            {/* Demo Credentials */}
-            <div className="mt-6 pt-4 border-t border-border">
-              <p className="text-xs text-muted-foreground mb-2">Demo Credentials:</p>
-              <div className="grid grid-cols-3 gap-2 text-xs">
-                <div className="bg-muted p-2 rounded border border-border">
-                  <p className="text-foreground">Athlete</p>
-                  <p className="text-muted-foreground">demo/demo123</p>
-                </div>
-                <div className="bg-muted p-2 rounded border border-border">
-                  <p className="text-foreground">Coach</p>
-                  <p className="text-muted-foreground">coach/demo123</p>
-                </div>
-                <div className="bg-muted p-2 rounded border border-border">
-                  <p className="text-foreground">Admin</p>
-                  <p className="text-muted-foreground">admin/demo123</p>
-                </div>
-              </div>
-            </div>
+
           </div>
         </div>
       </div>
