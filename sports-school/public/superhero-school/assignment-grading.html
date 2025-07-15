@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assignment Grading - ShotziOS</title>
+  <style>
+    body {
+      font-family: 'Open Dyslexic', Arial, sans-serif;
+      background-color: #000000;
+      color: #ffffff;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 2px solid #1e90ff;
+      margin-bottom: 30px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #1e90ff;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #1e90ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-weight: bold;
+    }
+
+    h1, h2, h3 {
+      color: #1e90ff;
+    }
+
+    .card {
+      background-color: #121212;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .assignment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .assignment-header-left {
+      flex-grow: 1;
+    }
+
+    .due-date {
+      font-size: 14px;
+      color: #888;
+      margin-top: 5px;
+    }
+
+    .points {
+      font-size: 16px;
+      color: #1e90ff;
+    }
+
+    .assignment-content {
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #1e90ff;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      padding: 10px;
+      font-family: 'Open Dyslexic', Arial, sans-serif;
+      background-color: #1c1c1c;
+      color: white;
+      border: 1px solid #444;
+      border-radius: 4px;
+      resize: vertical;
+    }
+
+    input[type="number"] {
+      width: 80px;
+      padding: 8px;
+      font-family: 'Open Dyslexic', Arial, sans-serif;
+      background-color: #1c1c1c;
+      color: white;
+      border: 1px solid #444;
+      border-radius: 4px;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .button {
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Open Dyslexic', Arial, sans-serif;
+      transition: all 0.3s ease;
+      border: none;
+    }
+
+    .button.primary {
+      background-color: #1e90ff;
+      color: white;
+    }
+
+    .button.secondary {
+      background-color: #333;
+      color: white;
+    }
+
+    .button.success {
+      background-color: #32cd32;
+      color: white;
+    }
+
+    .button:hover {
+      background-color: #32cd32;
+      transform: translateY(-2px);
+    }
+
+    .dashboard-link {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #1e90ff;
+      text-decoration: none;
+      margin-bottom: 20px;
+    }
+
+    .dashboard-link:hover {
+      color: #32cd32;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .success-message {
+      background-color: rgba(50, 205, 50, 0.1);
+      color: #32cd32;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .error-message {
+      background-color: rgba(255, 76, 76, 0.1);
+      color: #ff4c4c;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .loading {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #1e90ff;
+      border-top: 4px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .submission-navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .nav-button {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #1e90ff;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+
+    .nav-button:hover {
+      color: #32cd32;
+      background-color: rgba(30, 144, 255, 0.1);
+    }
+
+    .nav-button:disabled {
+      color: #555;
+      cursor: not-allowed;
+    }
+
+    .submissions-counter {
+      text-align: center;
+      font-size: 14px;
+      color: #888;
+    }
+
+    .submission-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #333;
+    }
+
+    .student-info {
+      font-size: 16px;
+    }
+
+    .submission-date {
+      font-size: 14px;
+      color: #888;
+    }
+
+    .rubric-section {
+      margin-bottom: 20px;
+    }
+
+    .rubric-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #1c1c1c;
+      border-radius: 4px;
+    }
+
+    .rubric-description {
+      flex-grow: 1;
+    }
+
+    .rubric-points {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tab-container {
+      display: flex;
+      border-bottom: 1px solid #333;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      background-color: transparent;
+      border: none;
+      color: #888;
+      font-family: 'Open Dyslexic', Arial, sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .tab.active {
+      color: #1e90ff;
+      border-bottom: 2px solid #1e90ff;
+    }
+
+    .tab:hover {
+      color: #1e90ff;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .attachment-list {
+      margin-top: 15px;
+    }
+
+    .attachment-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+    }
+
+    .attachment-icon {
+      color: #1e90ff;
+    }
+
+    .attachment-link {
+      color: #1e90ff;
+      text-decoration: none;
+    }
+
+    .attachment-link:hover {
+      text-decoration: underline;
+      color: #32cd32;
+    }
+
+    @media (max-width: 768px) {
+      .assignment-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .button-container {
+        flex-direction: column;
+      }
+
+      .button {
+        width: 100%;
+      }
+
+      .rubric-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .rubric-points {
+        margin-top: 10px;
+      }
+    }
+
+    /* Accessibility features */
+    textarea:focus, button:focus, input:focus {
+      outline: 2px solid #32cd32;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">ShotziOS</div>
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">T</div>
+        <div id="userName">Teacher</div>
+      </div>
+    </header>
+
+    <a href="./teacher-dashboard.html" class="dashboard-link">
+      ← Back to Dashboard
+    </a>
+
+    <div id="loadingIndicator" class="loading">
+      <div class="loading-spinner"></div>
+    </div>
+
+    <div id="messageContainer" class="hidden"></div>
+
+    <div id="assignmentContainer" class="hidden">
+      <div class="card">
+        <div class="assignment-header">
+          <div class="assignment-header-left">
+            <h1 id="assignmentTitle">Assignment Title</h1>
+            <div class="due-date">Due: <span id="assignmentDueDate">--/--/----</span></div>
+          </div>
+          <div class="points">
+            Points: <span id="assignmentPoints">100</span>
+          </div>
+        </div>
+
+        <div class="assignment-content">
+          <h2>Description</h2>
+          <div id="assignmentDescription">Loading assignment description...</div>
+        </div>
+      </div>
+
+      <div class="card" id="submissionsContainer">
+        <h2>Student Submissions</h2>
+        
+        <div class="submissions-summary">
+          <div id="submissionStats">Submissions: 0/0 students</div>
+          <div id="gradingProgress">Graded: 0/0 submissions</div>
+        </div>
+
+        <div id="noSubmissionMessage" class="hidden">
+          <p>No submissions yet. Check back later.</p>
+        </div>
+
+        <div id="submissionViewContainer" class="hidden">
+          <div class="submission-navigation">
+            <button id="prevSubmissionButton" class="nav-button" disabled>
+              ← Previous
+            </button>
+            <div class="submissions-counter">
+              Submission <span id="currentSubmissionNumber">1</span> of <span id="totalSubmissions">1</span>
+            </div>
+            <button id="nextSubmissionButton" class="nav-button">
+              Next →
+            </button>
+          </div>
+
+          <div class="submission-info">
+            <div class="student-info">
+              Student: <strong id="studentName">Student Name</strong>
+            </div>
+            <div class="submission-date" id="submissionDate">
+              Submitted: --/--/---- --:--
+            </div>
+          </div>
+
+          <div class="tab-container">
+            <button class="tab active" data-tab="submission-tab">Submission</button>
+            <button class="tab" data-tab="grading-tab">Grading</button>
+          </div>
+
+          <div id="submission-tab" class="tab-content active">
+            <h3>Student Work</h3>
+            <div id="submissionContent" class="assignment-content">
+              <!-- Submission content will be displayed here -->
+            </div>
+
+            <div id="submissionAttachments" class="attachment-list">
+              <!-- Submission attachments will be displayed here -->
+            </div>
+          </div>
+
+          <div id="grading-tab" class="tab-content">
+            <form id="gradingForm">
+              <div class="form-group">
+                <label for="scoreInput">Score</label>
+                <div class="score-input">
+                  <input type="number" id="scoreInput" min="0" max="100" required>
+                  / <span id="maxScoreDisplay">100</span>
+                </div>
+              </div>
+
+              <div class="rubric-section">
+                <h3>Rubric</h3>
+                <div id="rubricItems">
+                  <!-- Rubric items will be generated here -->
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="feedbackInput">Feedback</label>
+                <textarea id="feedbackInput" placeholder="Provide feedback to the student..."></textarea>
+              </div>
+
+              <div class="button-container">
+                <button type="submit" class="button success" id="saveGradeButton">Save Grade</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simulated user data (would normally come from authentication)
+    const currentUser = {
+      id: 'teacher456',
+      name: 'Terry Teacher',
+      type: 'teacher',
+      classes: ['class101', 'class102']
+    };
+
+    // DOM Elements
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const messageContainer = document.getElementById('messageContainer');
+    const assignmentContainer = document.getElementById('assignmentContainer');
+    const submissionViewContainer = document.getElementById('submissionViewContainer');
+    const noSubmissionMessage = document.getElementById('noSubmissionMessage');
+    const prevSubmissionButton = document.getElementById('prevSubmissionButton');
+    const nextSubmissionButton = document.getElementById('nextSubmissionButton');
+    const currentSubmissionNumber = document.getElementById('currentSubmissionNumber');
+    const totalSubmissions = document.getElementById('totalSubmissions');
+    const gradingForm = document.getElementById('gradingForm');
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    // Set user info
+    document.getElementById('userName').textContent = currentUser.name;
+    document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
+
+    // Current state
+    let currentAssignment = null;
+    let submissions = [];
+    let currentSubmissionIndex = 0;
+
+    // Get assignment ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const assignmentId = urlParams.get('id');
+
+    if (!assignmentId) {
+      showMessage('No assignment ID provided', 'error');
+      loadingIndicator.classList.add('hidden');
+    } else {
+      // Initialize page
+      loadAssignment(assignmentId);
+    }
+
+    // Tab switching
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        // Remove active class from all tabs and contents
+        tabs.forEach(t => t.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+        
+        // Add active class to clicked tab and corresponding content
+        this.classList.add('active');
+        const tabId = this.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+
+    // Previous submission button
+    prevSubmissionButton.addEventListener('click', function() {
+      if (currentSubmissionIndex > 0) {
+        currentSubmissionIndex--;
+        displaySubmission(submissions[currentSubmissionIndex]);
+        updateNavigationButtons();
+      }
+    });
+
+    // Next submission button
+    nextSubmissionButton.addEventListener('click', function() {
+      if (currentSubmissionIndex < submissions.length - 1) {
+        currentSubmissionIndex++;
+        displaySubmission(submissions[currentSubmissionIndex]);
+        updateNavigationButtons();
+      }
+    });
+
+    // Grading form submission
+    gradingForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+      saveGrade();
+    });
+
+    // Load assignment details
+    async function loadAssignment(assignmentId) {
+      try {
+        // In a real implementation, this would be an API call
+        // For demo, we'll simulate the API response
+        const assignment = {
+          id: assignmentId,
+          title: 'Understanding Literary Elements in "To Kill a Mockingbird"',
+          description: `<p>After reading chapters 1-5 of "To Kill a Mockingbird," analyze how Harper Lee develops the following literary elements:</p>
+           <ul>
+             <li>Setting (Maycomb County)</li>
+             <li>Character development (Scout and Atticus)</li>
+             <li>Themes (prejudice, growing up)</li>
+             <li>Narrative voice</li>
+           </ul>
+           <p>Your analysis should be 500-750 words and include specific examples from the text to support your points.</p>`,
+          classId: 'class101',
+          teacherId: 'teacher456',
+          dueDate: '2025-04-18T23:59:59.999Z',
+          totalPoints: 50,
+          type: 'essay',
+          rubric: [
+            {
+              id: 'setting',
+              description: 'Analysis of setting and its impact on the story',
+              maxPoints: 10
+            },
+            {
+              id: 'character',
+              description: 'Character development analysis with specific examples',
+              maxPoints: 15
+            },
+            {
+              id: 'themes',
+              description: 'Identification and analysis of major themes',
+              maxPoints: 15
+            },
+            {
+              id: 'voice',
+              description: 'Analysis of narrative voice and perspective',
+              maxPoints: 10
+            }
+          ]
+        };
+        
+        currentAssignment = assignment;
+        
+        // Display assignment details
+        document.getElementById('assignmentTitle').textContent = assignment.title;
+        document.getElementById('assignmentDescription').innerHTML = assignment.description;
+        document.getElementById('assignmentPoints').textContent = assignment.totalPoints;
+        document.getElementById('maxScoreDisplay').textContent = assignment.totalPoints;
+        
+        // Format the due date
+        const dueDate = new Date(assignment.dueDate);
+        document.getElementById('assignmentDueDate').textContent = dueDate.toLocaleDateString() + ' ' + 
+          dueDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        // Generate rubric items
+        generateRubricItems(assignment.rubric);
+        
+        // Load submissions
+        loadSubmissions(assignmentId);
+        
+        // Show the assignment container and hide loading
+        assignmentContainer.classList.remove('hidden');
+        loadingIndicator.classList.add('hidden');
+      } catch (error) {
+        console.error('Error loading assignment:', error);
+        showMessage('Failed to load assignment. Please try again later.', 'error');
+        loadingIndicator.classList.add('hidden');
+      }
+    }
+
+    // Generate rubric items
+    function generateRubricItems(rubric) {
+      const rubricContainer = document.getElementById('rubricItems');
+      rubricContainer.innerHTML = '';
+      
+      rubric.forEach(item => {
+        const rubricItem = document.createElement('div');
+        rubricItem.className = 'rubric-item';
+        
+        const rubricDescription = document.createElement('div');
+        rubricDescription.className = 'rubric-description';
+        rubricDescription.textContent = item.description;
+        
+        const rubricPoints = document.createElement('div');
+        rubricPoints.className = 'rubric-points';
+        
+        const pointsInput = document.createElement('input');
+        pointsInput.type = 'number';
+        pointsInput.id = `rubric-${item.id}`;
+        pointsInput.min = '0';
+        pointsInput.max = item.maxPoints;
+        pointsInput.required = true;
+        
+        const maxPoints = document.createElement('span');
+        maxPoints.textContent = `/ ${item.maxPoints}`;
+        
+        rubricPoints.appendChild(pointsInput);
+        rubricPoints.appendChild(maxPoints);
+        
+        rubricItem.appendChild(rubricDescription);
+        rubricItem.appendChild(rubricPoints);
+        
+        rubricContainer.appendChild(rubricItem);
+      });
+    }
+
+    // Load submissions for the assignment
+    async function loadSubmissions(assignmentId) {
+      try {
+        // In a real implementation, this would be an API call
+        // For demo, we'll simulate some submissions
+        submissions = [
+          {
+            id: 'sub1',
+            assignmentId: assignmentId,
+            studentId: 'student123',
+            studentName: 'Sam Student',
+            content: `<p>In "To Kill a Mockingbird," Harper Lee masterfully develops several literary elements that contribute to the novel's depth and impact.</p>
+            
+            <p><strong>Setting:</strong> Maycomb County is depicted as a sleepy, old town in Alabama during the Great Depression. Lee describes it as "an old town, but it was a tired old town when I first knew it." This setting establishes both the physical and social environment of the story. The hot summers, the layout of the neighborhood, and the socioeconomic divisions all play crucial roles in the narrative. For example, the Radley house is described as a dark, mysterious place, reflecting the town's perception of Boo Radley.</p>
+            
+            <p><strong>Character Development:</strong> Scout's character is developed through her curious and questioning nature. In the early chapters, we see her eagerness to understand the world around her, particularly through her interactions with Atticus. She asks direct questions and makes observations that reveal her developing moral compass. Atticus, meanwhile, is established as a fair and wise father figure who treats his children with respect. His explanation to Scout about understanding others by "walking in their shoes" establishes his character's empathy and wisdom.</p>
+            
+            <p><strong>Themes:</strong> The theme of prejudice is introduced through several incidents, including the children's fascination with Boo Radley and their preconceived notions about him based on town gossip. We also see early hints of the racial prejudice that will become more prominent later. The theme of growing up is evident in Scout's observations and questions, as well as her interactions with Jem and Dill, as they navigate childhood experiences and begin to understand more complex social issues.</p>
+            
+            <p><strong>Narrative Voice:</strong> Lee uses Scout as a first-person narrator, but with the perspective of both the child experiencing the events and the adult looking back on them. This creates a unique dual perspective that allows for both innocent observations and more mature reflections. Scout's voice is distinct, with a combination of childlike wonder and occasional adult insight, giving readers both an immediate connection to events and a thoughtful analysis of their significance.</p>`,
+            attachments: [
+              {
+                originalName: 'mockingbird_analysis.docx',
+                timestamp: Date.now() - 86400000,
+                size: 24500,
+                mimetype: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+              }
+            ],
+            dateSubmitted: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+            graded: false
+          },
+          {
+            id: 'sub2',
+            assignmentId: assignmentId,
+            studentId: 'student456',
+            studentName: 'Alex Anderson',
+            content: `<p>Harper Lee's "To Kill a Mockingbird" uses several literary elements to create a rich and meaningful story.</p>
+            
+            <p>The setting of Maycomb County is important because it shows what life was like in a small Southern town during the Depression. Lee describes Maycomb as having "no hurry, for there was nowhere to go." This shows how isolated and slow-paced the town is. The weather is often hot and humid, which adds to the tension in some scenes.</p>
+            
+            <p>Scout and Atticus are developed as complex characters in these early chapters. Scout is shown as a tomboy who is curious and intelligent. She asks many questions and wants to understand everything around her. Atticus is portrayed as an unusual father for that time period. He is older than other fathers, highly educated, and treats his children with respect rather than strict discipline. When he tells Scout, "You never really understand a person until you consider things from his point of view," he shows his wisdom and empathy.</p>
+            
+            <p>The book explores themes like prejudice and growing up. We see prejudice in how the town treats Boo Radley, based only on rumors and fear. The children are growing up as they start to question the town's ways of thinking and form their own opinions. Scout especially begins to see the complexities of adult life.</p>
+            
+            <p>The story is told from Scout's perspective, but as an adult looking back on her childhood. This gives us both a child's immediate experiences and an adult's reflection on them. Her voice sounds authentic as a child while still providing insights that help readers understand the deeper issues in the story.</p>`,
+            attachments: [],
+            dateSubmitted: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+            graded: false
+          },
+          {
+            id: 'sub3',
+            assignmentId: assignmentId,
+            studentId: 'student789',
+            studentName: 'Jamie Johnson',
+            content: `<p>Harper Lee uses different literary elements to make "To Kill a Mockingbird" an interesting and meaningful story.</p>
+            
+            <p>The setting is Maycomb County, Alabama during the Great Depression. It's described as a small, slow town where everyone knows everyone else's business. The weather is usually hot, and this affects how people behave. The Radley house is described as dark and mysterious, which makes Boo Radley seem scary to the children.</p>
+            
+            <p>Scout is developed as a character who is smart and curious but doesn't always understand adult things. She asks a lot of questions and wants to be included in what the older kids are doing. Atticus is shown to be a wise and fair father who teaches his children important lessons. He tells Scout to try to see things from other people's perspectives.</p>
+            
+            <p>One theme in the book is prejudice, which we see in how people treat Boo Radley based on rumors. Another theme is growing up, as Scout and Jem learn more about the world and start to form their own opinions.</p>
+            
+            <p>The story is told by Scout as an adult looking back on her childhood. This means we get to see things through a child's eyes but with some adult understanding added. The way she tells the story helps us understand both what happened and why it was important.</p>`,
+            attachments: [
+              {
+                originalName: 'literature_analysis.pdf',
+                timestamp: Date.now() - 172800000,
+                size: 498200,
+                mimetype: 'application/pdf'
+              },
+              {
+                originalName: 'character_notes.txt',
+                timestamp: Date.now() - 172900000,
+                size: 1240,
+                mimetype: 'text/plain'
+              }
+            ],
+            dateSubmitted: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), // 4 days ago
+            graded: false
+          }
+        ];
+        
+        // Update submission stats
+        document.getElementById('submissionStats').textContent = 
+          `Submissions: ${submissions.length}/${20} students`; // Assuming 20 students in class
+        
+        document.getElementById('gradingProgress').textContent = 
+          `Graded: ${submissions.filter(s => s.graded).length}/${submissions.length} submissions`;
+        
+        // Display submissions if available
+        if (submissions.length > 0) {
+          submissionViewContainer.classList.remove('hidden');
+          totalSubmissions.textContent = submissions.length;
+          
+          // Display the first submission
+          currentSubmissionIndex = 0;
+          displaySubmission(submissions[currentSubmissionIndex]);
+          updateNavigationButtons();
+        } else {
+          noSubmissionMessage.classList.remove('hidden');
+        }
+      } catch (error) {
+        console.error('Error loading submissions:', error);
+        showMessage('Failed to load submissions. Please try again later.', 'error');
+        noSubmissionMessage.classList.remove('hidden');
+      }
+    }
+
+    // Display a submission
+    function displaySubmission(submission) {
+      // Set student info
+      document.getElementById('studentName').textContent = submission.studentName;
+      
+      // Format submission date
+      const submissionDate = new Date(submission.dateSubmitted);
+      document.getElementById('submissionDate').textContent = 
+        `Submitted: ${submissionDate.toLocaleDateString()} ${submissionDate.toLocaleTimeString()}`;
+      
+      // Display submission content
+      document.getElementById('submissionContent').innerHTML = submission.content;
+      
+      // Display attachments
+      const attachmentsContainer = document.getElementById('submissionAttachments');
+      attachmentsContainer.innerHTML = '<h3>Attachments</h3>';
+      
+      if (submission.attachments && submission.attachments.length > 0) {
+        submission.attachments.forEach(attachment => {
+          const attachmentItem = document.createElement('div');
+          attachmentItem.className = 'attachment-item';
+          
+          const attachmentIcon = document.createElement('span');
+          attachmentIcon.className = 'attachment-icon';
+          attachmentIcon.innerHTML = '📎';
+          
+          const attachmentLink = document.createElement('a');
+          attachmentLink.className = 'attachment-link';
+          attachmentLink.textContent = attachment.originalName;
+          attachmentLink.href = `/api/assignments/file/${attachment.timestamp}/${encodeURIComponent(attachment.originalName)}`;
+          attachmentLink.target = '_blank';
+          
+          attachmentItem.appendChild(attachmentIcon);
+          attachmentItem.appendChild(attachmentLink);
+          attachmentsContainer.appendChild(attachmentItem);
+        });
+      } else {
+        attachmentsContainer.innerHTML += '<p>No attachments</p>';
+      }
+      
+      // Reset grading form if not already graded
+      if (!submission.graded) {
+        document.getElementById('scoreInput').value = '';
+        document.getElementById('feedbackInput').value = '';
+        
+        // Reset rubric inputs
+        const rubricInputs = document.querySelectorAll('#rubricItems input');
+        rubricInputs.forEach(input => {
+          input.value = '';
+        });
+      } else {
+        // Fill in existing grades
+        document.getElementById('scoreInput').value = submission.score;
+        document.getElementById('feedbackInput').value = submission.feedback || '';
+        
+        // Fill in rubric scores if available
+        if (submission.rubricScores) {
+          Object.entries(submission.rubricScores).forEach(([id, score]) => {
+            const input = document.getElementById(`rubric-${id}`);
+            if (input) {
+              input.value = score;
+            }
+          });
+        }
+      }
+      
+      // Update current submission number
+      currentSubmissionNumber.textContent = currentSubmissionIndex + 1;
+    }
+
+    // Update navigation buttons based on current position
+    function updateNavigationButtons() {
+      prevSubmissionButton.disabled = currentSubmissionIndex === 0;
+      nextSubmissionButton.disabled = currentSubmissionIndex === submissions.length - 1;
+    }
+
+    // Save grade for current submission
+    async function saveGrade() {
+      loadingIndicator.classList.remove('hidden');
+      
+      try {
+        const score = parseFloat(document.getElementById('scoreInput').value);
+        const feedback = document.getElementById('feedbackInput').value;
+        
+        if (isNaN(score) || score < 0 || score > currentAssignment.totalPoints) {
+          showMessage(`Please enter a valid score between 0 and ${currentAssignment.totalPoints}.`, 'error');
+          loadingIndicator.classList.add('hidden');
+          return;
+        }
+        
+        // Collect rubric scores
+        const rubricScores = {};
+        currentAssignment.rubric.forEach(item => {
+          const inputElement = document.getElementById(`rubric-${item.id}`);
+          if (inputElement && inputElement.value) {
+            const rubricScore = parseFloat(inputElement.value);
+            if (!isNaN(rubricScore) && rubricScore >= 0 && rubricScore <= item.maxPoints) {
+              rubricScores[item.id] = rubricScore;
+            } else {
+              showMessage(`Please enter a valid score for ${item.description}.`, 'error');
+              loadingIndicator.classList.add('hidden');
+              return;
+            }
+          }
+        });
+        
+        // In a real implementation, this would be an API call
+        // For demo, we'll update the local submission data
+        const currentSubmission = submissions[currentSubmissionIndex];
+        
+        // Update the submission with grading info
+        submissions[currentSubmissionIndex] = {
+          ...currentSubmission,
+          graded: true,
+          score: score,
+          feedback: feedback,
+          rubricScores: rubricScores,
+          gradedBy: currentUser.id,
+          gradedAt: new Date().toISOString()
+        };
+        
+        // Update grading progress
+        document.getElementById('gradingProgress').textContent = 
+          `Graded: ${submissions.filter(s => s.graded).length}/${submissions.length} submissions`;
+        
+        showMessage('Grade saved successfully!', 'success');
+        loadingIndicator.classList.add('hidden');
+        
+        // Move to next submission if available
+        if (currentSubmissionIndex < submissions.length - 1) {
+          currentSubmissionIndex++;
+          displaySubmission(submissions[currentSubmissionIndex]);
+          updateNavigationButtons();
+          
+          // Switch back to submission tab
+          tabs.forEach(t => t.classList.remove('active'));
+          tabContents.forEach(c => c.classList.remove('active'));
+          document.querySelector('[data-tab="submission-tab"]').classList.add('active');
+          document.getElementById('submission-tab').classList.add('active');
+        }
+      } catch (error) {
+        console.error('Error saving grade:', error);
+        showMessage('Failed to save grade. Please try again.', 'error');
+        loadingIndicator.classList.add('hidden');
+      }
+    }
+
+    // Display messages to the user
+    function showMessage(message, type) {
+      messageContainer.innerHTML = `<div class="${type}-message">${message}</div>`;
+      messageContainer.classList.remove('hidden');
+      
+      // Scroll to message
+      messageContainer.scrollIntoView({ behavior: 'smooth' });
+      
+      // Auto-hide success messages after 5 seconds
+      if (type === 'success') {
+        setTimeout(() => {
+          messageContainer.classList.add('hidden');
+        }, 5000);
+      }
+    }
+  </script>
+</body>
+</html>

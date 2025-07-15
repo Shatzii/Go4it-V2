@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShatziiOS - Shatzii School of Law Dashboard</title>
+    <style>
+        :root {
+            --primary: #800000; /* Maroon for Law School */
+            --primary-light: #C77878;
+            --secondary: #D4AF37; /* Gold */
+            --background: #141414;
+            --card-bg: #1E1E1E;
+            --sidebar-bg: #0A0A0A;
+            --text: #FFFFFF;
+            --text-muted: #B0B0B0;
+            --danger: #FF4444;
+            --success: #00CC88;
+            --warning: #FFC107;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            background-color: var(--sidebar-bg);
+            padding: 2rem 1.5rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
+        }
+        
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 6px;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--text);
+            font-size: 1.5rem;
+        }
+        
+        .logo-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text);
+            line-height: 1.2;
+        }
+        
+        .logo-subtext {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 2rem 0;
+        }
+        
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .nav-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            padding-left: 0.5rem;
+            letter-spacing: 0.05em;
+        }
+        
+        .nav-item {
+            margin-bottom: 0.25rem;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(128, 0, 0, 0.1);
+            color: var(--primary-light);
+        }
+        
+        .nav-link.active {
+            background-color: rgba(128, 0, 0, 0.2);
+            color: var(--primary-light);
+            font-weight: 500;
+        }
+        
+        .nav-icon {
+            font-size: 1.25rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .main-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin: 0;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text);
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-name {
+            font-weight: 500;
+        }
+        
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .button, button {
+            background-color: var(--primary);
+            color: var(--text);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .button:hover, button:hover {
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+        
+        .button.secondary {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .button.secondary:hover {
+            background-color: rgba(128, 0, 0, 0.1);
+        }
+        
+        .button.gold {
+            background-color: var(--secondary);
+            color: #000;
+        }
+        
+        .button.gold:hover {
+            background-color: #E6C158;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin: 0;
+        }
+        
+        .progress-wrapper {
+            margin-bottom: 1.5rem;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-title {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .progress-value {
+            font-size: 0.9rem;
+            color: var(--primary-light);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 4px;
+        }
+        
+        .progress-fill.gold {
+            background-color: var(--secondary);
+        }
+        
+        .course-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1rem;
+        }
+        
+        .course-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            padding: 1.25rem;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            border: 1px solid var(--border);
+        }
+        
+        .course-card:hover {
+            transform: translateY(-4px);
+            background-color: rgba(128, 0, 0, 0.1);
+            border-color: rgba(128, 0, 0, 0.3);
+        }
+        
+        .course-subject {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .course-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            background-color: rgba(128, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .course-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        .course-teacher {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        
+        .course-progress {
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .course-progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 2px;
+        }
+        
+        .course-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .schedule-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .schedule-item {
+            display: flex;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .schedule-item:last-child {
+            border-bottom: none;
+        }
+        
+        .schedule-time {
+            min-width: 100px;
+            font-size: 0.9rem;
+            color: var(--primary-light);
+        }
+        
+        .schedule-details {
+            flex: 1;
+        }
+        
+        .schedule-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        .schedule-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        .case-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .case-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            transition: background-color 0.2s ease;
+        }
+        
+        .case-item:last-child {
+            border-bottom: none;
+        }
+        
+        .case-item:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+        
+        .case-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .case-reference {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--secondary);
+        }
+        
+        .case-year {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        .case-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .case-description {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+        }
+        
+        .badge.constitutional {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: #FFC107;
+        }
+        
+        .badge.tort {
+            background-color: rgba(0, 204, 136, 0.2);
+            color: #00CC88;
+        }
+        
+        .badge.criminal {
+            background-color: rgba(255, 68, 68, 0.2);
+            color: #FF4444;
+        }
+        
+        .badge.contract {
+            background-color: rgba(33, 150, 243, 0.2);
+            color: #2196F3;
+        }
+        
+        .badge.property {
+            background-color: rgba(156, 39, 176, 0.2);
+            color: #9C27B0;
+        }
+        
+        .exam-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .exam-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .exam-item:last-child {
+            border-bottom: none;
+        }
+        
+        .exam-info {
+            flex: 1;
+        }
+        
+        .exam-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        .exam-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        .exam-status {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .exam-status.upcoming {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: #FFC107;
+        }
+        
+        .exam-status.completed {
+            background-color: rgba(0, 204, 136, 0.2);
+            color: #00CC88;
+        }
+        
+        .resource-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+        
+        .resource-item {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            padding: 1rem;
+            text-align: center;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        
+        .resource-item:hover {
+            transform: translateY(-4px);
+            background-color: rgba(128, 0, 0, 0.1);
+        }
+        
+        .resource-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--secondary);
+        }
+        
+        .resource-title {
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .resource-description {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .footer {
+            margin-top: 1.5rem;
+            padding: 1.5rem 0 1rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            text-align: center;
+            font-size: 0.85rem;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">⚖️</div>
+                <div>
+                    <div class="logo-text">Shatzii School of Law</div>
+                    <div class="logo-subtext">UAE Bar Exam Preparation</div>
+                </div>
+            </div>
+            
+            <nav>
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link active">
+                                <span class="nav-icon">📊</span>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">📚</span>
+                                Courses
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">📝</span>
+                                Assignments
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">✅</span>
+                                Bar Exam Prep
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Library</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">⚖️</span>
+                                Case Law
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">📜</span>
+                                Legal Documents
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">📋</span>
+                                UAE Legal Codes
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Resources</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">🧠</span>
+                                Study Aids
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">👨‍⚖️</span>
+                                AI Legal Tutors
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">🔍</span>
+                                Research Tools
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            
+            <div class="nav-section" style="margin-top: 2rem;">
+                <a href="/" class="button secondary" style="width: 100%; justify-content: center;">
+                    <span>Exit to Home</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="header">
+                <h1 class="page-title">Law Student Dashboard</h1>
+                
+                <div class="user-menu">
+                    <div class="login-section" style="margin-right: 1rem;">
+                        <div style="display: flex; gap: 0.75rem;">
+                            <a href="#" class="button">Student</a>
+                            <a href="#" class="button secondary">Faculty</a>
+                            <a href="#" class="button secondary">Admin</a>
+                        </div>
+                    </div>
+                    
+                    <button class="button gold">
+                        <span>📝</span>
+                        Bar Exam Practice
+                    </button>
+                    
+                    <div class="user-profile">
+                        <div class="user-avatar">SA</div>
+                        <div class="user-info">
+                            <div class="user-name">Sarah Al-Mansouri</div>
+                            <div class="user-role">J.D. Candidate</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Dashboard Content -->
+            <div class="dashboard-grid">
+                <div class="main-column">
+                    <!-- Progress Overview Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">UAE Bar Exam Readiness</h2>
+                            <button class="button secondary" style="padding: 0.5rem 0.75rem; font-size: 0.8rem;">View Details</button>
+                        </div>
+                        
+                        <div class="progress-wrapper">
+                            <div class="progress-header">
+                                <div class="progress-title">Overall Readiness</div>
+                                <div class="progress-value">78%</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 78%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-wrapper">
+                            <div class="progress-header">
+                                <div class="progress-title">Practice Exam Scores</div>
+                                <div class="progress-value">82%</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 82%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-wrapper" style="margin-bottom: 0.5rem;">
+                            <div class="progress-header">
+                                <div class="progress-title">Curriculum Completion</div>
+                                <div class="progress-value">85%</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill gold" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+                            <button class="button gold">Take Practice Exam</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Courses Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Current Courses</h2>
+                            <button class="button secondary" style="padding: 0.5rem 0.75rem; font-size: 0.8rem;">View All</button>
+                        </div>
+                        
+                        <div class="course-list">
+                            <div class="course-card">
+                                <div class="course-subject">
+                                    <div class="course-icon">⚖️</div>
+                                    <div>UAE Law</div>
+                                </div>
+                                <div class="course-title">UAE Civil Procedure</div>
+                                <div class="course-teacher">Prof. Al-Hashemi</div>
+                                <div class="course-progress">
+                                    <div class="course-progress-fill" style="width: 90%"></div>
+                                </div>
+                                <div class="course-stats">
+                                    <div>Grade: A</div>
+                                    <div>90% Complete</div>
+                                </div>
+                            </div>
+                            
+                            <div class="course-card">
+                                <div class="course-subject">
+                                    <div class="course-icon">📜</div>
+                                    <div>Law</div>
+                                </div>
+                                <div class="course-title">Constitutional Law</div>
+                                <div class="course-teacher">Dr. Abdullah</div>
+                                <div class="course-progress">
+                                    <div class="course-progress-fill" style="width: 75%"></div>
+                                </div>
+                                <div class="course-stats">
+                                    <div>Grade: B+</div>
+                                    <div>75% Complete</div>
+                                </div>
+                            </div>
+                            
+                            <div class="course-card">
+                                <div class="course-subject">
+                                    <div class="course-icon">🏛️</div>
+                                    <div>Law</div>
+                                </div>
+                                <div class="course-title">International Law</div>
+                                <div class="course-teacher">Prof. Ramirez</div>
+                                <div class="course-progress">
+                                    <div class="course-progress-fill" style="width: 82%"></div>
+                                </div>
+                                <div class="course-stats">
+                                    <div>Grade: A-</div>
+                                    <div>82% Complete</div>
+                                </div>
+                            </div>
+                            
+                            <div class="course-card">
+                                <div class="course-subject">
+                                    <div class="course-icon">🔍</div>
+                                    <div>Skills</div>
+                                </div>
+                                <div class="course-title">Legal Research & Writing</div>
+                                <div class="course-teacher">Dr. Khan</div>
+                                <div class="course-progress">
+                                    <div class="course-progress-fill" style="width: 68%"></div>
+                                </div>
+                                <div class="course-stats">
+                                    <div>Grade: B+</div>
+                                    <div>68% Complete</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Case Law Studies -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Recent Case Studies</h2>
+                            <button class="button secondary" style="padding: 0.5rem 0.75rem; font-size: 0.8rem;">View Library</button>
+                        </div>
+                        
+                        <ul class="case-list">
+                            <li class="case-item">
+                                <div class="case-meta">
+                                    <span class="case-reference">UAE Supreme Court 45/2020</span>
+                                    <span class="case-year">2020</span>
+                                </div>
+                                <div class="case-title">Al-Mansoori v. Dubai Properties LLC</div>
+                                <div class="case-description">Landmark case establishing precedent for commercial lease disputes in Dubai free zones.</div>
+                                <div>
+                                    <span class="badge contract">Contract</span>
+                                    <span class="badge property">Property</span>
+                                </div>
+                            </li>
+                            
+                            <li class="case-item">
+                                <div class="case-meta">
+                                    <span class="case-reference">Federal Supreme Court 102/2018</span>
+                                    <span class="case-year">2019</span>
+                                </div>
+                                <div class="case-title">UAE Public Prosecution v. Rahman</div>
+                                <div class="case-description">Important criminal procedure case defining evidence admissibility standards.</div>
+                                <div>
+                                    <span class="badge criminal">Criminal</span>
+                                </div>
+                            </li>
+                            
+                            <li class="case-item">
+                                <div class="case-meta">
+                                    <span class="case-reference">Abu Dhabi Court of Cassation 734/2019</span>
+                                    <span class="case-year">2019</span>
+                                </div>
+                                <div class="case-title">Emirates Insurance Co. v. Al-Zaabi</div>
+                                <div class="case-description">Key tort law case establishing liability standards in insurance claims.</div>
+                                <div>
+                                    <span class="badge tort">Tort</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="side-column">
+                    <!-- Bar Exam Schedule Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Bar Exam Schedule</h2>
+                        </div>
+                        
+                        <ul class="exam-list">
+                            <li class="exam-item">
+                                <div class="exam-info">
+                                    <div class="exam-title">Practice Exam: Civil Procedure</div>
+                                    <div class="exam-meta">April 20, 2025 • 2 hours</div>
+                                </div>
+                                <span class="exam-status upcoming">Upcoming</span>
+                            </li>
+                            
+                            <li class="exam-item">
+                                <div class="exam-info">
+                                    <div class="exam-title">Practice Exam: Constitutional Law</div>
+                                    <div class="exam-meta">April 15, 2025 • 2 hours</div>
+                                </div>
+                                <span class="exam-status upcoming">Upcoming</span>
+                            </li>
+                            
+                            <li class="exam-item">
+                                <div class="exam-info">
+                                    <div class="exam-title">Practice Exam: Criminal Law</div>
+                                    <div class="exam-meta">April 5, 2025 • 2 hours</div>
+                                </div>
+                                <span class="exam-status completed">Completed</span>
+                            </li>
+                            
+                            <li class="exam-item">
+                                <div class="exam-info">
+                                    <div class="exam-title">UAE Bar Examination</div>
+                                    <div class="exam-meta">June 15, 2025 • Full Day</div>
+                                </div>
+                                <span class="exam-status upcoming">Scheduled</span>
+                            </li>
+                        </ul>
+                        
+                        <div style="text-align: center; margin-top: 1rem;">
+                            <button class="button gold" style="width: 100%;">View Full Exam Schedule</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Today's Schedule Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Today's Schedule</h2>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">April 13</span>
+                        </div>
+                        
+                        <ul class="schedule-list">
+                            <li class="schedule-item">
+                                <div class="schedule-time">9:00 AM</div>
+                                <div class="schedule-details">
+                                    <div class="schedule-title">UAE Civil Procedure</div>
+                                    <div class="schedule-meta">Room 302 • Prof. Al-Hashemi</div>
+                                </div>
+                            </li>
+                            
+                            <li class="schedule-item">
+                                <div class="schedule-time">11:30 AM</div>
+                                <div class="schedule-details">
+                                    <div class="schedule-title">Legal Research Session</div>
+                                    <div class="schedule-meta">Library • Dr. Khan</div>
+                                </div>
+                            </li>
+                            
+                            <li class="schedule-item">
+                                <div class="schedule-time">1:00 PM</div>
+                                <div class="schedule-details">
+                                    <div class="schedule-title">Lunch Break</div>
+                                    <div class="schedule-meta">Student Center</div>
+                                </div>
+                            </li>
+                            
+                            <li class="schedule-item">
+                                <div class="schedule-time">2:30 PM</div>
+                                <div class="schedule-details">
+                                    <div class="schedule-title">Constitutional Law</div>
+                                    <div class="schedule-meta">Room 215 • Dr. Abdullah</div>
+                                </div>
+                            </li>
+                            
+                            <li class="schedule-item">
+                                <div class="schedule-time">4:30 PM</div>
+                                <div class="schedule-details">
+                                    <div class="schedule-title">Study Group: Bar Prep</div>
+                                    <div class="schedule-meta">Study Room 4</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Study Resources Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Bar Exam Resources</h2>
+                        </div>
+                        
+                        <ul class="resource-list">
+                            <li class="resource-item">
+                                <div class="resource-icon">📝</div>
+                                <div class="resource-title">Practice Questions</div>
+                                <div class="resource-description">1000+ questions with explanations</div>
+                            </li>
+                            
+                            <li class="resource-item">
+                                <div class="resource-icon">📚</div>
+                                <div class="resource-title">Outlines</div>
+                                <div class="resource-description">Comprehensive study outlines</div>
+                            </li>
+                            
+                            <li class="resource-item">
+                                <div class="resource-icon">🧠</div>
+                                <div class="resource-title">Memory Aids</div>
+                                <div class="resource-description">Mnemonics and visual aids</div>
+                            </li>
+                            
+                            <li class="resource-item">
+                                <div class="resource-icon">🎬</div>
+                                <div class="resource-title">Video Lectures</div>
+                                <div class="resource-description">Expert video explanations</div>
+                            </li>
+                            
+                            <li class="resource-item">
+                                <div class="resource-icon">👨‍⚖️</div>
+                                <div class="resource-title">AI Tutor</div>
+                                <div class="resource-description">Personalized AI assistance</div>
+                            </li>
+                            
+                            <li class="resource-item">
+                                <div class="resource-icon">📋</div>
+                                <div class="resource-title">Flash Cards</div>
+                                <div class="resource-description">Digital flash cards</div>
+                            </li>
+                            
+                            <li class="resource-item">
+                                <div class="resource-icon">👨‍💻</div>
+                                <div class="resource-title">Professor Brown</div>
+                                <div class="resource-description">Dean of IT (Tech Support)</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>Shatzii School of Law • ShatziiOS Education Platform • &copy; 2025</p>
+                <p style="margin-top: 0.25rem;">Need assistance? Contact the <a href="#" style="color: var(--primary-light); text-decoration: none;">Academic Support Office</a></p>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
