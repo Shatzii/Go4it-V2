@@ -10,7 +10,7 @@ function StarRating({ rating, maxRating = 5 }: { rating: number; maxRating?: num
     stars.push(
       <Star 
         key={i} 
-        className={`w-4 h-4 ${i <= rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
+        className={`w-4 h-4 ${i <= rating ? 'text-primary fill-primary' : 'text-muted-foreground'}`}
       />
     )
   }
