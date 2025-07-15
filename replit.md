@@ -35,6 +35,7 @@ Preferred communication style: Simple, everyday language.
 ### 1. Video Analysis System (GAR)
 - AI-powered video processing for athletic performance analysis
 - Growth and Ability Rating system with standardized scoring
+- Supports both cloud APIs (OpenAI/Anthropic) and local self-hosted models
 - Optimized for 4 vCPU/16GB RAM server configuration
 - Supports multiple video formats with automatic transcoding
 
@@ -90,9 +91,12 @@ Preferred communication style: Simple, everyday language.
 - **Styling**: Tailwind CSS
 
 ### AI/ML Integration
-- OpenAI API for advanced text analysis
-- Custom video processing pipeline
-- Hugging Face model integration for sports analysis
+- **Hybrid AI Architecture**: Supports both cloud APIs and local self-hosted models
+- **Cloud Providers**: OpenAI API (GPT-4o), Anthropic (Claude Sonnet)
+- **Local Models**: Ollama integration for self-hosted LLMs
+- **Model Management**: Download and install lightweight models (1-2GB)
+- **Sports-Specific Models**: Specialized models for athletic performance analysis
+- **ADHD-Friendly Models**: Educational models optimized for neurodivergent students
 
 ### Development Tools
 - TypeScript for type safety

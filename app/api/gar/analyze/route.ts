@@ -4,6 +4,7 @@ import { db } from '../../../../lib/db';
 import { videoAnalysis } from '../../../../lib/schema';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
+import { createAIModelManager } from '../../../../lib/ai-models';
 
 // GAR Analysis Engine - Growth and Ability Rating (0-100)
 interface GARAnalysis {
@@ -37,7 +38,6 @@ interface GARAnalysis {
 }
 
 async function analyzeVideoWithAI(filePath: string, sport: string, userId: number): Promise<GARAnalysis> {
-  // This uses OpenAI/Anthropic for comprehensive analysis
   const analysisPrompt = `
     Analyze this ${sport} performance video for a neurodivergent student athlete (ages 12-18).
     Provide detailed Growth and Ability Rating (GAR) analysis focusing on:
@@ -55,70 +55,18 @@ async function analyzeVideoWithAI(filePath: string, sport: string, userId: numbe
   `;
 
   try {
-    // Check for OpenAI API key first
-    if (process.env.OPENAI_API_KEY) {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o', // Latest OpenAI model
-          messages: [
-            {
-              role: 'system',
-              content: 'You are an expert sports analyst specializing in youth athlete development and neurodivergent-friendly coaching.'
-            },
-            {
-              role: 'user',
-              content: `${analysisPrompt}\n\nSport: ${sport}\nVideo file: ${filePath}`
-            }
-          ],
-          max_tokens: 2000,
-          temperature: 0.7
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return parseAIResponse(data.choices[0].message.content, sport);
-      }
-    }
-
-    // Fallback to Anthropic if OpenAI unavailable
-    if (process.env.ANTHROPIC_API_KEY) {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'x-api-key': process.env.ANTHROPIC_API_KEY,
-          'content-type': 'application/json',
-          'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514', // Latest Anthropic model
-          max_tokens: 2000,
-          messages: [
-            {
-              role: 'user',
-              content: `${analysisPrompt}\n\nSport: ${sport}\nVideo file: ${filePath}`
-            }
-          ]
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return parseAIResponse(data.content[0].text, sport);
-      }
-    }
-
-    // If no API keys available, return error
-    throw new Error('AI analysis requires OpenAI or Anthropic API key');
-
+    // Use the AI model manager to handle both local and cloud models
+    const aiManager = createAIModelManager();
+    const response = await aiManager.generateResponse(
+      `${analysisPrompt}\n\nSport: ${sport}\nVideo file: ${filePath}`
+    );
+    
+    return parseAIResponse(response, sport);
   } catch (error) {
     console.error('AI analysis failed:', error);
-    throw error;
+    
+    // Fallback to manual analysis if AI fails
+    return generateFallbackAnalysis(sport, filePath);
   }
 }
 

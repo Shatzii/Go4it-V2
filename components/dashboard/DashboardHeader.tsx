@@ -20,6 +20,7 @@ export function DashboardHeader() {
               <NavLink href="/gar-upload">GAR Analysis</NavLink>
               <NavLink href="/academy">Academy</NavLink>
               <NavLink href="/teams">Teams</NavLink>
+              <NavLink href="/models">AI Models</NavLink>
             </nav>
           </div>
           
