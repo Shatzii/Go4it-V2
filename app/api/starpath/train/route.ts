@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest } from '@/lib/auth';
-import { db } from '@/lib/db';
-import { starPathProgress } from '@/shared/schema';
+import { getUserFromRequest } from '../../../../lib/auth';
+import { db } from '../../../../lib/db';
+import { starPathProgress } from '../../../../lib/schema';
 import { eq, and } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {

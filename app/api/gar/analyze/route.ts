@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest } from '@/lib/auth';
-import { db } from '@/lib/db';
-import { videoAnalysis } from '@/shared/schema';
+import { getUserFromRequest } from '../../../../lib/auth';
+import { db } from '../../../../lib/db';
+import { videoAnalysis } from '../../../../lib/schema';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 
