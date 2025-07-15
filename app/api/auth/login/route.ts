@@ -1,65 +1,54 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/lib/db';
+import { users } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
-import { db } from '../../../../lib/db';
-import { users } from '../../../../lib/schema';
-import { comparePasswords, createSession } from '../../../../lib/auth';
+import { comparePasswords, createJWT } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
-    const { username, password } = await request.json();
+    const { email, password } = await request.json();
 
-    if (!username || !password) {
-      return NextResponse.json(
-        { error: 'Username and password are required' },
-        { status: 400 }
-      );
+    if (!email || !password) {
+      return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
     }
 
-    // Find user by username
-    const [user] = await db
-      .select()
-      .from(users)
-      .where(eq(users.username, username))
-      .limit(1);
+    // Find user by email
+    const user = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
-      );
+    if (user.length === 0) {
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
     // Verify password
-    const isValid = await comparePasswords(password, user.password);
+    const isValid = await comparePasswords(password, user[0].password);
+
     if (!isValid) {
-      return NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
-    // Create session and get token
-    const token = await createSession(user.id);
+    // Create JWT token
+    const token = await createJWT(user[0].id);
 
-    // Set auth cookie
-    const response = NextResponse.json({ 
-      user: { ...user, password: undefined },
-      success: true 
-    });
-    
-    response.cookies.set('auth-token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 24 * 60 * 60 // 24 hours
-    });
+    // Update last login
+    await db.update(users)
+      .set({ lastLoginAt: new Date() })
+      .where(eq(users.id, user[0].id));
 
-    return response;
+    return NextResponse.json({ 
+      user: {
+        id: user[0].id,
+        email: user[0].email,
+        username: user[0].username,
+        role: user[0].role,
+        firstName: user[0].firstName,
+        lastName: user[0].lastName,
+        sport: user[0].sport,
+        position: user[0].position
+      },
+      token 
+    });
   } catch (error) {
     console.error('Login error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

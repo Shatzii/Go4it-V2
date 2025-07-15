@@ -1,72 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/lib/db';
+import { users, insertUserSchema } from '@/lib/schema';
+import { hashPassword, createJWT } from '@/lib/auth';
 import { eq } from 'drizzle-orm';
-import { db } from '../../../../lib/db';
-import { users, insertUserSchema } from '../../../../lib/schema';
-import { hashPassword, createSession } from '../../../../lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
-    const { username, email, password, firstName, lastName, role = 'athlete' } = await request.json();
-
-    if (!username || !email || !password) {
-      return NextResponse.json(
-        { error: 'Username, email, and password are required' },
-        { status: 400 }
-      );
-    }
+    const body = await request.json();
+    
+    // Validate request body
+    const validatedData = insertUserSchema.parse(body);
 
     // Check if user already exists
-    const existingUser = await db
-      .select()
-      .from(users)
-      .where(eq(users.username, username))
+    const existingUser = await db.select().from(users)
+      .where(eq(users.email, validatedData.email))
       .limit(1);
 
     if (existingUser.length > 0) {
-      return NextResponse.json(
-        { error: 'Username already exists' },
-        { status: 409 }
-      );
+      return NextResponse.json({ error: 'User already exists' }, { status: 400 });
     }
 
     // Hash password
-    const hashedPassword = await hashPassword(password);
+    const hashedPassword = await hashPassword(validatedData.password);
 
     // Create user
-    const [newUser] = await db
-      .insert(users)
-      .values({
-        username,
-        email,
-        password: hashedPassword,
-        firstName,
-        lastName,
-        role,
-      })
-      .returning();
+    const newUser = await db.insert(users).values({
+      ...validatedData,
+      password: hashedPassword,
+    }).returning();
 
-    // Create session and get token
-    const token = await createSession(newUser.id);
+    // Create JWT token
+    const token = await createJWT(newUser[0].id);
 
-    // Set auth cookie
-    const response = NextResponse.json({ 
-      user: { ...newUser, password: undefined },
-      success: true 
+    return NextResponse.json({ 
+      user: {
+        id: newUser[0].id,
+        email: newUser[0].email,
+        username: newUser[0].username,
+        role: newUser[0].role,
+        firstName: newUser[0].firstName,
+        lastName: newUser[0].lastName,
+        sport: newUser[0].sport,
+        position: newUser[0].position
+      },
+      token 
     });
-    
-    response.cookies.set('auth-token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 24 * 60 * 60 // 24 hours
-    });
-
-    return response;
   } catch (error) {
     console.error('Registration error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
