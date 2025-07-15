@@ -17,8 +17,8 @@ export function DashboardHeader() {
             <nav className="hidden md:flex space-x-6">
               <NavLink href="/dashboard" active>Dashboard</NavLink>
               <NavLink href="/starpath">StarPath</NavLink>
-              <NavLink href="/video-analysis">Video Analysis</NavLink>
-              <NavLink href="/academics">Academics</NavLink>
+              <NavLink href="/gar-upload">GAR Analysis</NavLink>
+              <NavLink href="/academy">Academy</NavLink>
               <NavLink href="/teams">Teams</NavLink>
             </nav>
           </div>

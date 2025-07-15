@@ -131,9 +131,9 @@ export default function OptimizedDashboard() {
                     <p className="text-sm text-slate-400 mb-3">
                       Get instant AI-powered analysis
                     </p>
-                    <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded text-sm transition-colors">
+                    <a href="/gar-upload" className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded text-sm transition-colors inline-block text-center">
                       Upload Video
-                    </button>
+                    </a>
                   </div>
                 </div>
               </div>
