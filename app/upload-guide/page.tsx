@@ -21,6 +21,15 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 
+// Simple SafeLink component for navigation
+function SafeLink({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) {
+  return (
+    <Link href={href} className={className}>
+      {children}
+    </Link>
+  )
+}
+
 export default function UploadGuidePage() {
   const uploadMethods = [
     {
