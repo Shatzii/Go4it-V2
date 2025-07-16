@@ -1,200 +1,261 @@
-'use client';
+'use client'
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Star, Trophy, Target, Eye, GraduationCap, Video } from 'lucide-react';
-import ClientOnly from '@/components/ClientOnly';
-import { DashboardSkeleton } from '@/components/ui/SkeletonLoader';
-import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
-import { StatCard } from '@/components/dashboard/StatCard';
-import { QuickActions } from '@/components/dashboard/QuickActions';
-import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
-import { AICoachingEngine } from '@/components/ai/AICoachingEngine';
-import { HighlightReelGenerator } from '@/components/highlights/HighlightReelGenerator';
-import { DashboardOverview } from './components/DashboardOverview';
+import { useEffect, useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Progress } from '@/components/ui/progress'
+import { Badge } from '@/components/ui/badge'
+import { 
+  TrendingUp, 
+  Trophy, 
+  BookOpen, 
+  Target, 
+  Calendar,
+  BarChart3,
+  Users,
+  Star,
+  Activity,
+  Clock,
+  CheckCircle
+} from 'lucide-react'
+import ClientOnly from '@/components/ClientOnly'
 
-export default function OptimizedDashboard() {
+export default function Dashboard() {
+  const [dashboardData, setDashboardData] = useState({
+    stats: {
+      garScore: 87,
+      overallProgress: 65,
+      coursesEnrolled: 6,
+      studyStreak: 15,
+      ncaaEligible: true
+    },
+    recentAnalyses: [
+      {
+        id: 1,
+        sport: 'Basketball',
+        score: 89,
+        date: '2024-01-15',
+        improvements: ['Shooting form', 'Footwork']
+      },
+      {
+        id: 2,
+        sport: 'Soccer',
+        score: 85,
+        date: '2024-01-14',
+        improvements: ['First touch', 'Passing accuracy']
+      }
+    ],
+    achievements: [
+      {
+        id: 1,
+        title: 'Sports Scholar',
+        description: 'Completed 5 sports science courses',
+        unlocked: true,
+        category: 'academic'
+      },
+      {
+        id: 2,
+        title: 'NCAA Ready',
+        description: 'Passed NCAA eligibility requirements',
+        unlocked: true,
+        category: 'compliance'
+      },
+      {
+        id: 3,
+        title: 'Athletic Excellence',
+        description: 'Achieved 90% in athletic training',
+        unlocked: false,
+        category: 'athletic'
+      }
+    ]
+  })
+
   return (
-    <ClientOnly fallback={<DashboardSkeleton />}>
-      <div className="min-h-screen bg-background text-foreground">
-        <DashboardHeader />
-        
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <DashboardOverview />
-        </main>
-      </div>
-    </ClientOnly>
-  );
-}
-          {/* Welcome Section */}
+    <ClientOnly>
+      <div className="min-h-screen bg-slate-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-foreground neon-text mb-2">
-              Welcome back, {user.firstName}!
-            </h1>
-            <p className="text-muted-foreground">
-              Ready to elevate your athletic performance today?
-            </p>
+            <h1 className="text-3xl font-bold mb-2">Athletic Dashboard</h1>
+            <p className="text-slate-400">Track your athletic and academic progress</p>
           </div>
 
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <StatCard
-              title="Star Level"
-              value="Level 8"
-              icon={Star}
-              color="blue"
-              trend={{ value: 12, isPositive: true }}
-            />
-            <StatCard
-              title="GAR Score"
-              value="78"
-              icon={Trophy}
-              color="green"
-              trend={{ value: 8, isPositive: true }}
-            />
-            <StatCard
-              title="Current GPA"
-              value="3.8"
-              icon={GraduationCap}
-              color="purple"
-              trend={{ value: 5, isPositive: true }}
-            />
-            <StatCard
-              title="Scout Views"
-              value="47"
-              icon={Eye}
-              color="orange"
-              trend={{ value: 23, isPositive: true }}
-            />
+            <Card className="bg-slate-800 border-slate-700">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-400">GAR Score</p>
+                    <p className="text-2xl font-bold text-green-400">{dashboardData.stats.garScore}</p>
+                  </div>
+                  <Trophy className="w-8 h-8 text-yellow-500" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-slate-800 border-slate-700">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-400">Overall Progress</p>
+                    <p className="text-2xl font-bold text-blue-400">{dashboardData.stats.overallProgress}%</p>
+                  </div>
+                  <TrendingUp className="w-8 h-8 text-blue-500" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-slate-800 border-slate-700">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-400">Courses</p>
+                    <p className="text-2xl font-bold text-purple-400">{dashboardData.stats.coursesEnrolled}</p>
+                  </div>
+                  <BookOpen className="w-8 h-8 text-purple-500" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-slate-800 border-slate-700">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-400">Study Streak</p>
+                    <p className="text-2xl font-bold text-orange-400">{dashboardData.stats.studyStreak} days</p>
+                  </div>
+                  <Activity className="w-8 h-8 text-orange-500" />
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Main Content Grid */}
+          {/* Main Content */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Column - Main Features */}
-            <div className="lg:col-span-2 space-y-6">
-              <QuickActions />
-              
-              {/* StarPath Progress */}
-              <div className="bg-card border border-border rounded-lg p-6 neon-border">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-foreground">StarPath Progress</h3>
-                  <span className="text-sm text-primary">Level 8 - Elite Prospect</span>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Current XP</span>
-                    <span className="text-sm text-foreground">2,450 / 3,000</span>
+            {/* Recent Analyses */}
+            <div className="lg:col-span-2">
+              <Card className="bg-slate-800 border-slate-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5" />
+                    Recent Video Analyses
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {dashboardData.recentAnalyses.map((analysis) => (
+                      <div key={analysis.id} className="border border-slate-700 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="font-semibold text-white">{analysis.sport}</h3>
+                          <div className="flex items-center gap-2">
+                            <span className="text-2xl font-bold text-green-400">{analysis.score}</span>
+                            <span className="text-sm text-slate-400">GAR</span>
+                          </div>
+                        </div>
+                        <p className="text-sm text-slate-400 mb-2">{analysis.date}</p>
+                        <div className="flex flex-wrap gap-2">
+                          {analysis.improvements.map((improvement, index) => (
+                            <Badge key={index} variant="secondary" className="bg-slate-700 text-slate-300">
+                              {improvement}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div 
-                      className="bg-gradient-to-r from-primary to-accent h-2 rounded-full neon-glow"
-                      style={{ width: '81.7%' }}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">550 XP to next level</span>
-                    <span className="text-primary">+150 XP today</span>
-                  </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
+            </div>
 
-              {/* Video Analysis Hub */}
-              <div className="bg-card border border-border rounded-lg p-6 neon-border">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-foreground">GAR Video Analysis</h3>
-                  <Video className="h-5 w-5 text-primary" />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-muted rounded-lg p-4">
-                    <h4 className="font-medium text-foreground mb-2">Latest Analysis</h4>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Your form has improved by 12% since last week
-                    </p>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-lg font-bold text-primary neon-text">78</span>
-                      <span className="text-sm text-muted-foreground">GAR Score</span>
+            {/* Sidebar */}
+            <div className="space-y-6">
+              {/* NCAA Status */}
+              <Card className="bg-slate-800 border-slate-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5" />
+                    NCAA Status
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-slate-400">Eligibility Status</span>
+                      <Badge variant="default" className="bg-green-500">
+                        {dashboardData.stats.ncaaEligible ? 'Eligible' : 'Not Eligible'}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-slate-400">Current GPA</span>
+                      <span className="text-sm text-white">3.8</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-slate-400">Credits Completed</span>
+                      <span className="text-sm text-white">45/120</span>
+                    </div>
+                    <div className="w-full bg-slate-700 rounded-full h-2">
+                      <div 
+                        className="bg-gradient-to-r from-green-500 to-blue-500 h-2 rounded-full"
+                        style={{ width: '37.5%' }}
+                      />
                     </div>
                   </div>
-                  <div className="bg-muted rounded-lg p-4">
-                    <h4 className="font-medium text-foreground mb-2">Upload New Video</h4>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Get instant AI-powered analysis
-                    </p>
-                    <a href="/gar-upload" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2 px-4 rounded text-sm transition-colors inline-block text-center neon-border">
+                </CardContent>
+              </Card>
+
+              {/* Achievements */}
+              <Card className="bg-slate-800 border-slate-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Trophy className="w-5 h-5" />
+                    Recent Achievements
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {dashboardData.achievements.filter(a => a.unlocked).map((achievement) => (
+                      <div key={achievement.id} className="flex items-center gap-3 p-2 bg-slate-700 rounded">
+                        <Star className="w-6 h-6 text-yellow-500" />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-white">{achievement.title}</p>
+                          <p className="text-xs text-slate-400">{achievement.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Quick Actions */}
+              <Card className="bg-slate-800 border-slate-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="w-5 h-5" />
+                    Quick Actions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <Button className="w-full justify-start" variant="outline">
+                      <Activity className="w-4 h-4 mr-2" />
                       Upload Video
-                    </a>
+                    </Button>
+                    <Button className="w-full justify-start" variant="outline">
+                      <BookOpen className="w-4 h-4 mr-2" />
+                      View Academy
+                    </Button>
+                    <Button className="w-full justify-start" variant="outline">
+                      <Trophy className="w-4 h-4 mr-2" />
+                      AI Coach
+                    </Button>
                   </div>
-                </div>
-              </div>
-
-              {/* AI Coaching Engine */}
-              <AICoachingEngine 
-                userId={user.id.toString()} 
-                sportType="soccer" 
-                adhdSupport={true} 
-              />
-
-              {/* Highlight Reel Generator */}
-              <HighlightReelGenerator />
-            </div>
-
-            {/* Right Column - Activity & Info */}
-            <div className="space-y-6">
-              <ActivityFeed />
-              
-              {/* Recruitment Status */}
-              <div className="bg-slate-800 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Recruitment Status</h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-400">Active Scouts</span>
-                    <span className="text-sm text-white">12</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-400">Profile Views</span>
-                    <span className="text-sm text-white">47</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-400">College Interests</span>
-                    <span className="text-sm text-white">8</span>
-                  </div>
-                  <div className="pt-2 border-t border-slate-700">
-                    <p className="text-sm text-blue-400">
-                      Duke University scout viewed your profile
-                    </p>
-                    <p className="text-xs text-slate-400 mt-1">2 hours ago</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Academic Progress */}
-              <div className="bg-slate-800 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Academic Progress</h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-400">Current GPA</span>
-                    <span className="text-sm text-white">3.8</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-400">NCAA Eligible</span>
-                    <span className="text-sm text-green-400">Yes</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-400">Credits Completed</span>
-                    <span className="text-sm text-white">45/120</span>
-                  </div>
-                  <div className="w-full bg-slate-700 rounded-full h-2">
-                    <div 
-                      className="bg-gradient-to-r from-green-500 to-blue-500 h-2 rounded-full"
-                      style={{ width: '37.5%' }}
-                    />
-                  </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
-        </main>
+        </div>
       </div>
     </ClientOnly>
-  );
+  )
 }
