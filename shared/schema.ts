@@ -80,6 +80,53 @@ export const starPathProgress = pgTable('starpath_progress', {
   lastUpdated: timestamp('last_updated').notNull().defaultNow(),
 });
 
+// Content tags table for smart tagging
+export const contentTags = pgTable('content_tags', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  fileId: integer('file_id').notNull(),
+  tagName: text('tag_name').notNull(),
+  tagCategory: text('tag_category').notNull(), // sport, skill, performance, event, location, equipment, technique, strategy
+  confidence: decimal('confidence', { precision: 3, scale: 2 }).notNull().default('0.8'),
+  relevance: decimal('relevance', { precision: 3, scale: 2 }).notNull().default('0.7'),
+  metadata: jsonb('metadata'), // Additional tag metadata
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+// User files table for file management
+export const userFiles = pgTable('user_files', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  fileName: text('file_name').notNull(),
+  filePath: text('file_path').notNull(),
+  fileType: text('file_type').notNull(), // video, image, document
+  fileSize: integer('file_size').notNull(),
+  sport: text('sport'),
+  description: text('description'),
+  isAnalyzed: boolean('is_analyzed').notNull().default(false),
+  analysisData: jsonb('analysis_data'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+// Content analysis table for detailed analysis results
+export const contentAnalysis = pgTable('content_analysis', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  fileId: integer('file_id').notNull().references(() => userFiles.id),
+  primarySport: text('primary_sport').notNull(),
+  secondarySports: text('secondary_sports').array(),
+  skills: jsonb('skills'), // Array of skill objects
+  performance: jsonb('performance'), // Performance metrics
+  context: jsonb('context'), // Analysis context
+  suggestions: text('suggestions').array(),
+  autoCategories: text('auto_categories').array(),
+  detectedObjects: text('detected_objects').array(),
+  timestamps: jsonb('timestamps'), // Video timestamps
+  analyzedAt: timestamp('analyzed_at').notNull().defaultNow(),
+});
+
 // Achievements table
 export const achievements = pgTable('achievements', {
   id: serial('id').primaryKey(),

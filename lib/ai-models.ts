@@ -1,444 +1,193 @@
-// AI Model Management for Go4It Sports Platform
-// Supports both cloud APIs and local self-hosted models
+// AI Model Manager for Smart Content Tagging
+// Handles both self-hosted and cloud AI models
 
 export interface AIModelConfig {
-  type: 'cloud' | 'local' | 'remote';
-  provider: 'openai' | 'anthropic' | 'ollama' | 'huggingface' | 'go4it-ai-engine';
-  model: string;
-  endpoint?: string;
-  apiKey?: string;
-  maxTokens?: number;
-  temperature?: number;
+  type: 'local' | 'cloud'
+  provider: string
+  model: string
+  endpoint?: string
+  apiKey?: string
+  timeout?: number
 }
 
-export interface LocalModelInfo {
-  name: string;
-  size: string;
-  description: string;
-  downloadUrl: string;
-  modelFile: string;
-  requirements: {
-    ram: string;
-    storage: string;
-    gpu?: string;
-  };
-  capabilities: string[];
+export interface AIResponse {
+  content: string
+  confidence: number
+  processingTime: number
+  model: string
 }
-
-// Small, efficient models for local deployment
-export const AVAILABLE_LOCAL_MODELS: LocalModelInfo[] = [
-  {
-    name: 'llama3.1:8b',
-    size: '4.7GB',
-    description: 'General-purpose AI model optimized for coaching and instruction',
-    downloadUrl: 'ollama://llama3.1:8b',
-    modelFile: 'llama3.1-8b.gguf',
-    requirements: {
-      ram: '8GB',
-      storage: '5GB',
-      gpu: 'Optional (CUDA/ROCm)'
-    },
-    capabilities: ['coaching', 'instruction', 'sports', 'personalization', 'analytics']
-  },
-  {
-    name: 'codellama:7b',
-    size: '3.8GB',
-    description: 'Code-focused model for technical drill instructions',
-    downloadUrl: 'ollama://codellama:7b',
-    modelFile: 'codellama-7b.gguf',
-    requirements: {
-      ram: '6GB',
-      storage: '4GB'
-    },
-    capabilities: ['instruction', 'technical', 'drills']
-  },
-  {
-    name: 'mistral:7b',
-    size: '4.1GB',
-    description: 'Fast and efficient model for quick coaching responses',
-    downloadUrl: 'ollama://mistral:7b',
-    modelFile: 'mistral-7b.gguf',
-    requirements: {
-      ram: '6GB',
-      storage: '4.5GB'
-    },
-    capabilities: ['coaching', 'sports', 'motivation', 'psychology']
-  },
-  {
-    name: 'neural-chat:7b',
-    size: '4.2GB',
-    description: 'Conversational AI optimized for student-athlete interactions',
-    downloadUrl: 'ollama://neural-chat:7b',
-    modelFile: 'neural-chat-7b.gguf',
-    requirements: {
-      ram: '6GB',
-      storage: '4.5GB'
-    },
-    capabilities: ['coaching', 'conversation', 'psychology', 'motivation', 'education']
-  },
-  {
-    name: 'phi3:mini',
-    size: '2.3GB',
-    description: 'Lightweight model for basic coaching and quick responses',
-    downloadUrl: 'ollama://phi3:mini',
-    modelFile: 'phi3-mini.gguf',
-    requirements: {
-      ram: '4GB',
-      storage: '2.5GB'
-    },
-    capabilities: ['coaching', 'basic', 'fast']
-  }
-];
 
 export class AIModelManager {
-  private config: AIModelConfig;
-  private localModelsPath: string;
+  private config: AIModelConfig
+  private defaultTimeout = 30000 // 30 seconds
 
   constructor(config: AIModelConfig) {
-    this.config = config;
-    this.localModelsPath = process.env.LOCAL_MODELS_PATH || './models';
-  }
-
-  async generateResponse(prompt: string, context?: any): Promise<string> {
-    if (this.config.type === 'cloud') {
-      return this.generateCloudResponse(prompt, context);
-    } else if (this.config.type === 'remote') {
-      return this.generateRemoteResponse(prompt, context);
-    } else {
-      return this.generateLocalResponse(prompt, context);
+    this.config = {
+      ...config,
+      timeout: config.timeout || this.defaultTimeout
     }
   }
 
-  async generateResponseWithLicense(prompt: string, licenseKey: string, context?: any): Promise<string> {
-    if (this.config.type === 'local') {
-      // Validate license before using local model
-      const { createModelEncryptionManager } = await import('./model-encryption');
-      const encryptionManager = createModelEncryptionManager();
-      
-      const validation = await encryptionManager.validateLicense(licenseKey);
-      if (!validation.valid) {
-        throw new Error(`License validation failed: ${validation.error}`);
-      }
-      
-      return this.generateLocalResponse(prompt, context);
-    } else {
-      return this.generateCloudResponse(prompt, context);
+  async generateResponse(
+    prompt: string,
+    context?: {
+      filePath?: string
+      fileType?: string
+      userPreferences?: any
     }
-  }
+  ): Promise<string> {
+    const startTime = Date.now()
 
-  private async generateCloudResponse(prompt: string, context?: any): Promise<string> {
-    switch (this.config.provider) {
-      case 'openai':
-        return this.callOpenAI(prompt, context);
-      case 'anthropic':
-        return this.callAnthropic(prompt, context);
-      default:
-        throw new Error(`Unsupported cloud provider: ${this.config.provider}`);
-    }
-  }
-
-  private async generateLocalResponse(prompt: string, context?: any): Promise<string> {
-    switch (this.config.provider) {
-      case 'ollama':
-        return this.callOllama(prompt, context);
-      case 'huggingface':
-        return this.callHuggingFace(prompt, context);
-      default:
-        throw new Error(`Unsupported local provider: ${this.config.provider}`);
-    }
-  }
-
-  private async generateRemoteResponse(prompt: string, context?: any): Promise<string> {
-    switch (this.config.provider) {
-      case 'go4it-ai-engine':
-        return this.callRemoteAIEngine(prompt, context);
-      default:
-        throw new Error(`Unsupported remote provider: ${this.config.provider}`);
-    }
-  }
-
-  private async callOpenAI(prompt: string, context?: any): Promise<string> {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.config.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: this.config.model,
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an expert sports analyst specializing in youth athlete development and neurodivergent-friendly coaching.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        max_tokens: this.config.maxTokens || 2000,
-        temperature: this.config.temperature || 0.7
-      })
-    });
-
-    const data = await response.json();
-    return data.choices[0].message.content;
-  }
-
-  private async callAnthropic(prompt: string, context?: any): Promise<string> {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': this.config.apiKey!,
-        'content-type': 'application/json',
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: this.config.model,
-        max_tokens: this.config.maxTokens || 2000,
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ]
-      })
-    });
-
-    const data = await response.json();
-    return data.content[0].text;
-  }
-
-  private async callOllama(prompt: string, context?: any): Promise<string> {
-    const endpoint = this.config.endpoint || 'http://localhost:11434/api/generate';
-    
     try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: this.config.model,
-          prompt: prompt,
-          stream: false,
-          options: {
-            temperature: this.config.temperature || 0.7,
-            num_predict: this.config.maxTokens || 2000
-          }
-        })
-      });
-
-      const data = await response.json();
-      return data.response;
-    } catch (error) {
-      // Fallback to intelligent local analysis when Ollama isn't available
-      return this.generateLocalSportsAnalysis(prompt, context);
-    }
-  }
-
-  private generateLocalSportsAnalysis(prompt: string, context?: any): string {
-    // Intelligent sports analysis without external dependencies
-    const sportKeywords = [
-      'basketball', 'football', 'soccer', 'tennis', 'baseball', 'volleyball', 'track', 'swimming',
-      'table tennis', 'badminton', 'golf', 'field hockey', 'cricket', 'rugby', 'ski jumping'
-    ];
-    const sport = sportKeywords.find(s => prompt.toLowerCase().includes(s)) || 'general';
-    
-    // Pattern-based analysis for different sports analysis types
-    if (prompt.includes('biomechanics') || prompt.includes('movement')) {
-      return this.generateBiomechanicsAnalysis(sport, context);
-    } else if (prompt.includes('tactical') || prompt.includes('strategy')) {
-      return this.generateTacticalAnalysis(sport, context);
-    } else if (prompt.includes('mental') || prompt.includes('psychology')) {
-      return this.generateMentalAnalysis(sport, context);
-    } else if (prompt.includes('technical') || prompt.includes('skill')) {
-      return this.generateTechnicalAnalysis(sport, context);
-    } else {
-      return this.generateGeneralAnalysis(sport, context);
-    }
-  }
-
-  private generateBiomechanicsAnalysis(sport: string, context?: any): string {
-    const analyses = {
-      basketball: "Biomechanical Analysis: Good shooting posture with slight forward lean. Balance score: 82/100. Coordination shows efficient energy transfer from legs to arms. Footwork demonstrates proper weight distribution. Recommendation: Focus on core stability and ankle mobility for improved consistency.",
-      soccer: "Biomechanical Analysis: Running gait shows good stride length and minimal energy waste. Balance during ball control: 85/100. Kicking mechanics display proper hip rotation and follow-through. Recommendation: Work on single-leg stability and dynamic balance exercises.",
-      tennis: "Biomechanical Analysis: Serve motion demonstrates good kinetic chain efficiency. Forehand stroke shows proper weight transfer. Balance and coordination: 80/100. Recommendation: Focus on rotational core strength and shoulder stability.",
-      baseball: "Biomechanical Analysis: Batting swing shows good hip rotation and weight transfer. Pitching mechanics demonstrate proper kinetic chain sequencing. Balance and coordination: 83/100. Recommendation: Work on core rotational strength and shoulder stability.",
-      football: "Biomechanical Analysis: Throwing motion shows efficient energy transfer from legs through torso. Running gait demonstrates good acceleration patterns. Balance and coordination: 81/100. Recommendation: Focus on lateral stability and explosive power development.",
-      volleyball: "Biomechanical Analysis: Jumping mechanics show good takeoff technique and vertical force generation. Spiking motion demonstrates proper arm swing. Balance and coordination: 84/100. Recommendation: Work on ankle stability and shoulder mobility.",
-      'table tennis': "Biomechanical Analysis: Stroke mechanics show efficient wrist and forearm coordination. Footwork demonstrates quick lateral movements. Balance and coordination: 79/100. Recommendation: Focus on reaction time and fine motor control training.",
-      badminton: "Biomechanical Analysis: Overhead clear motion shows good shoulder rotation and timing. Footwork demonstrates efficient court coverage. Balance and coordination: 80/100. Recommendation: Work on explosive leg power and shoulder flexibility.",
-      golf: "Biomechanical Analysis: Swing plane shows good consistency and tempo. Weight transfer demonstrates proper sequencing. Balance and coordination: 82/100. Recommendation: Focus on rotational flexibility and core stability.",
-      'field hockey': "Biomechanical Analysis: Stick handling shows good wrist control and body positioning. Running patterns demonstrate efficient direction changes. Balance and coordination: 78/100. Recommendation: Work on dynamic balance and hand-eye coordination.",
-      cricket: "Biomechanical Analysis: Bowling action shows good arm speed and release consistency. Batting stance demonstrates proper weight distribution. Balance and coordination: 81/100. Recommendation: Focus on rotational power and timing precision.",
-      rugby: "Biomechanical Analysis: Passing motion shows efficient spiral technique and body rotation. Contact skills demonstrate proper body positioning. Balance and coordination: 85/100. Recommendation: Work on core strength and contact stability.",
-      'ski jumping': "Biomechanical Analysis: Takeoff technique shows optimal forward lean and timing. In-flight position demonstrates good aerodynamic efficiency. Balance and coordination: 88/100. Recommendation: Focus on balance training and spatial awareness.",
-      general: "Biomechanical Analysis: Movement patterns show good overall efficiency. Balance and coordination within normal ranges. Posture demonstrates proper alignment. Recommendation: Continue with current training approach while focusing on sport-specific movements."
-    };
-    return analyses[sport] || analyses.general;
-  }
-
-  private generateTacticalAnalysis(sport: string, context?: any): string {
-    const analyses = {
-      basketball: "Tactical Analysis: Decision-making shows good court vision and passing accuracy. Positioning demonstrates understanding of offensive spacing. Defensive awareness: 78/100. Recommendation: Work on transition defense and help-side positioning.",
-      soccer: "Tactical Analysis: Field vision shows good understanding of passing lanes. Positioning demonstrates spatial awareness. Decision-making under pressure: 75/100. Recommendation: Focus on quick decision-making drills and situational awareness.",
-      tennis: "Tactical Analysis: Shot selection shows good understanding of court positioning. Strategy demonstrates ability to construct points. Mental toughness: 82/100. Recommendation: Work on pattern recognition and point construction.",
-      general: "Tactical Analysis: Shows good understanding of game situations. Decision-making demonstrates solid fundamentals. Strategic thinking: 77/100. Recommendation: Continue developing sport-specific tactical awareness."
-    };
-    return analyses[sport] || analyses.general;
-  }
-
-  private generateMentalAnalysis(sport: string, context?: any): string {
-    const analyses = {
-      basketball: "Mental Analysis: Focus and concentration levels are consistently high. Confidence demonstrates positive self-talk. Pressure response: 79/100. Recommendation: Practice visualization techniques and pre-game routines.",
-      soccer: "Mental Analysis: Mental toughness shows good resilience during challenging moments. Confidence levels are steady throughout play. Focus: 81/100. Recommendation: Work on breathing techniques and mindfulness training.",
-      tennis: "Mental Analysis: Competitive mindset shows strong determination. Emotional regulation during pressure points: 83/100. Recommendation: Develop point-by-point mentality and recovery strategies.",
-      general: "Mental Analysis: Shows good mental preparation and focus. Confidence levels are appropriate for skill level. Resilience: 80/100. Recommendation: Continue mental training and develop sport-specific mental strategies."
-    };
-    return analyses[sport] || analyses.general;
-  }
-
-  private generateTechnicalAnalysis(sport: string, context?: any): string {
-    const analyses = {
-      basketball: "Technical Analysis: Shooting form shows consistent mechanics with good arc. Dribbling technique demonstrates proper hand positioning. Ball handling: 84/100. Recommendation: Focus on weak-hand development and shooting consistency.",
-      soccer: "Technical Analysis: First touch shows good ball control and directional awareness. Passing accuracy demonstrates proper weight and timing. Technical skills: 79/100. Recommendation: Work on weak-foot development and 1v1 moves.",
-      tennis: "Technical Analysis: Groundstrokes show good racquet preparation and follow-through. Serve technique demonstrates proper toss and contact point. Technical execution: 82/100. Recommendation: Focus on consistency and shot depth.",
-      general: "Technical Analysis: Fundamental skills show solid execution. Technique demonstrates proper form and efficiency. Skill development: 81/100. Recommendation: Continue refining basic techniques while adding advanced skills."
-    };
-    return analyses[sport] || analyses.general;
-  }
-
-
-
-  private async callRemoteAIEngine(prompt: string, context?: any): Promise<string> {
-    const endpoint = this.config.endpoint || 'http://localhost:3001';
-    
-    try {
-      const response = await fetch(`${endpoint}/api/analyze-text`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': this.config.apiKey || '',
-        },
-        body: JSON.stringify({
-          prompt: prompt,
-          context: context,
-          model: this.config.model,
-          temperature: this.config.temperature || 0.7,
-          max_tokens: this.config.maxTokens || 2000
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Remote AI engine error: ${response.status}`);
+      switch (this.config.type) {
+        case 'local':
+          return await this.generateLocalResponse(prompt, context)
+        case 'cloud':
+          return await this.generateCloudResponse(prompt, context)
+        default:
+          throw new Error(`Unsupported AI model type: ${this.config.type}`)
       }
-
-      const data = await response.json();
-      return data.response || data.text || 'No response from remote AI engine';
     } catch (error) {
-      console.error('Remote AI engine failed:', error);
-      // Fallback to local sports analysis
-      return this.generateLocalSportsAnalysis(prompt, context);
+      console.error('AI model generation failed:', error)
+      return this.getFallbackResponse(prompt, context)
     }
   }
 
-  private async callHuggingFace(prompt: string, context?: any): Promise<string> {
-    const endpoint = this.config.endpoint || `http://localhost:8080/generate`;
-    
-    const response = await fetch(endpoint, {
+  private async generateLocalResponse(
+    prompt: string,
+    context?: any
+  ): Promise<string> {
+    // Use self-hosted AI model for content analysis
+    const payload = {
+      prompt: this.enhancePrompt(prompt),
+      context: context || {},
+      model: this.config.model,
+      temperature: 0.1, // Lower temperature for more consistent tagging
+      max_tokens: 1000
+    }
+
+    const response = await fetch(this.config.endpoint || 'http://localhost:8080/api/analyze', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'User-Agent': 'Go4It-Sports-Platform/1.0'
       },
-      body: JSON.stringify({
-        inputs: prompt,
-        parameters: {
-          max_new_tokens: this.config.maxTokens || 2000,
-          temperature: this.config.temperature || 0.7,
-          do_sample: true
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(this.config.timeout!)
+    })
+
+    if (!response.ok) {
+      throw new Error(`Local AI model request failed: ${response.status}`)
+    }
+
+    const data = await response.json()
+    return data.content || data.response || 'No response generated'
+  }
+
+  private async generateCloudResponse(
+    prompt: string,
+    context?: any
+  ): Promise<string> {
+    // Fallback to cloud AI if local model is unavailable
+    // This would integrate with external APIs like OpenAI or Anthropic
+    // For now, we'll simulate the response structure
+    
+    throw new Error('Cloud AI not configured - using local models only')
+  }
+
+  private enhancePrompt(prompt: string): string {
+    // Add system context for better sports analysis
+    const systemContext = `You are a professional sports analyst AI specialized in analyzing athletic content.
+    You have extensive knowledge of sports techniques, strategies, and performance metrics.
+    
+    Your task is to provide detailed, actionable analysis that helps athletes improve their performance.
+    Focus on:
+    - Technical skill assessment
+    - Tactical understanding
+    - Physical performance indicators
+    - Mental game aspects
+    - Specific improvement recommendations
+    
+    Provide structured, consistent output that can be parsed for tagging.
+    
+    Original request: `
+
+    return systemContext + prompt
+  }
+
+  private getFallbackResponse(prompt: string, context?: any): string {
+    // Provide basic analysis when AI models are unavailable
+    const fallbackAnalysis = `Fallback Analysis:
+    
+    Primary Sport: ${context?.sport || 'Unknown'}
+    Technical: 6/10 - Manual review recommended
+    Tactical: 6/10 - Manual review recommended  
+    Physical: 6/10 - Manual review recommended
+    Mental: 6/10 - Manual review recommended
+    Setting: Unknown
+    
+    Skill: Basic technique, 6, 0.5
+    Skill: Game awareness, 6, 0.5
+    
+    Tag: ${context?.sport || 'Athletic'} content, sport, 0.8
+    Tag: Training footage, event, 0.7
+    Tag: Performance analysis, performance, 0.6
+    
+    Suggestions:
+    - Manual analysis recommended for detailed insights
+    - Consider uploading additional context information
+    - Review AI model configuration for better results
+    `
+
+    return fallbackAnalysis
+  }
+
+  // Health check for AI model availability
+  async healthCheck(): Promise<{ available: boolean; latency: number; model: string }> {
+    const startTime = Date.now()
+    
+    try {
+      if (this.config.type === 'local') {
+        const response = await fetch(this.config.endpoint + '/health', {
+          method: 'GET',
+          signal: AbortSignal.timeout(5000) // 5 second timeout for health check
+        })
+        
+        const latency = Date.now() - startTime
+        return {
+          available: response.ok,
+          latency,
+          model: this.config.model
         }
-      })
-    });
-
-    const data = await response.json();
-    return data.generated_text || data[0]?.generated_text || '';
-  }
-
-  async checkLocalModelAvailability(): Promise<boolean> {
-    try {
-      if (this.config.provider === 'ollama') {
-        const response = await fetch('http://localhost:11434/api/tags');
-        return response.ok;
+      } else {
+        // Cloud model health check would go here
+        return {
+          available: false,
+          latency: 0,
+          model: this.config.model
+        }
       }
-      return false;
     } catch (error) {
-      return false;
+      return {
+        available: false,
+        latency: Date.now() - startTime,
+        model: this.config.model
+      }
     }
   }
 
-  async downloadModel(modelInfo: LocalModelInfo): Promise<void> {
-    // This would implement the actual model download logic
-    console.log(`Downloading model: ${modelInfo.name}`);
-    // In a real implementation, this would:
-    // 1. Download the model file
-    // 2. Verify checksum
-    // 3. Extract if needed
-    // 4. Set up local inference server
-  }
-}
-
-// Factory function to create AI model manager based on configuration
-export function createAIModelManager(): AIModelManager {
-  // Check if using remote AI engine server
-  const useRemoteEngine = process.env.USE_REMOTE_AI_ENGINE === 'true';
-  
-  if (useRemoteEngine) {
-    return new AIModelManager({
-      type: 'remote',
-      provider: 'go4it-ai-engine',
-      endpoint: process.env.AI_ENGINE_URL || 'http://localhost:3001',
-      apiKey: process.env.AI_ENGINE_API_KEY,
-      maxTokens: 2000,
-      temperature: 0.7
-    });
-  }
-  
-  // Default to self-hosted models for Go4It Sports Platform
-  // User preference: Use self-hosted AI models instead of external APIs
-  const useLocal = process.env.USE_LOCAL_MODELS !== 'false'; // Default to true
-  
-  if (useLocal) {
-    return new AIModelManager({
-      type: 'local',
-      provider: 'ollama',
-      model: process.env.LOCAL_SPORTS_MODEL || 'llama3.1:8b',
-      endpoint: process.env.OLLAMA_ENDPOINT || 'http://localhost:11434/api/generate',
-      maxTokens: 2000,
-      temperature: 0.7
-    });
-  } else {
-    // Fallback to cloud APIs only when explicitly requested
-    if (process.env.OPENAI_API_KEY) {
-      return new AIModelManager({
-        type: 'cloud',
-        provider: 'openai',
-        model: 'gpt-4o',
-        apiKey: process.env.OPENAI_API_KEY,
-        maxTokens: 2000,
-        temperature: 0.7
-      });
-    } else if (process.env.ANTHROPIC_API_KEY) {
-      return new AIModelManager({
-        type: 'cloud',
-        provider: 'anthropic',
-        model: 'claude-3-sonnet-20240229',
-        apiKey: process.env.ANTHROPIC_API_KEY,
-        maxTokens: 2000,
-        temperature: 0.7
-      });
-    } else {
-      throw new Error('No AI model configuration available');
+  // Get model information
+  getModelInfo(): {
+    type: string
+    provider: string
+    model: string
+    endpoint?: string
+  } {
+    return {
+      type: this.config.type,
+      provider: this.config.provider,
+      model: this.config.model,
+      endpoint: this.config.endpoint
     }
   }
 }
