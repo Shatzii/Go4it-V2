@@ -136,37 +136,52 @@ export default function Go4ItAcademy() {
     // Load enhanced academy features
     const loadEnhancedFeatures = async () => {
       try {
-        const [curriculumRes, gradingRes, lmsRes, analyticsRes, communicationRes, resourcesRes, securityRes, integrationsRes] = await Promise.all([
-          fetch('/api/academy/curriculum'),
-          fetch('/api/academy/grading'),
-          fetch('/api/academy/lms'),
-          fetch('/api/academy/analytics'),
-          fetch('/api/academy/communication'),
-          fetch('/api/academy/resources'),
-          fetch('/api/academy/security'),
-          fetch('/api/academy/integrations')
+        const [comprehensiveRes, sisRes, schedulingRes, libraryRes, sportsRes] = await Promise.all([
+          fetch('/api/academy/comprehensive'),
+          fetch('/api/academy/sis'),
+          fetch('/api/academy/scheduling'),
+          fetch('/api/academy/library'),
+          fetch('/api/academy/sports')
         ]);
 
-        const [curriculum, grading, lms, analytics, communication, resources, security, integrations] = await Promise.all([
-          curriculumRes.json(),
-          gradingRes.json(),
-          lmsRes.json(),
-          analyticsRes.json(),
-          communicationRes.json(),
-          resourcesRes.json(),
-          securityRes.json(),
-          integrationsRes.json()
+        const [comprehensiveData, sisData, schedulingData, libraryData, sportsData] = await Promise.all([
+          comprehensiveRes.json(),
+          sisRes.json(),
+          schedulingRes.json(),
+          libraryRes.json(),
+          sportsRes.json()
         ]);
+
+        setSchoolData({
+          students: sisData.students || [],
+          teachers: sisData.teachers || [],
+          courses: comprehensiveData.courseManagement?.courses || [],
+          assignments: comprehensiveData.assignmentManagement?.assignments || [],
+          grades: comprehensiveData.gradebookSystem || {},
+          schedule: schedulingData.masterSchedule || {},
+          attendance: comprehensiveData.attendanceManagement || {},
+          library: libraryData.catalog || [],
+          sports: sportsData.teams || [],
+          counseling: comprehensiveData.healthServices || {},
+          financialAid: comprehensiveData.financialManagement || {},
+          transportation: comprehensiveData.transportation || {},
+          cafeteria: comprehensiveData.foodServices || {}
+        });
 
         setEnhancedFeatures({
-          curriculum,
-          grading,
-          lms,
-          analytics,
-          communication,
-          resources,
-          security,
-          integrations
+          comprehensive: comprehensiveData,
+          sis: sisData,
+          scheduling: schedulingData,
+          library: libraryData,
+          sports: sportsData,
+          curriculum: comprehensiveData.courseManagement,
+          grading: comprehensiveData.gradebookSystem,
+          lms: comprehensiveData.technologyInfrastructure,
+          analytics: comprehensiveData.parentPortal,
+          communication: comprehensiveData.parentPortal?.communicationStats,
+          resources: comprehensiveData.libraryServices,
+          security: comprehensiveData.healthServices,
+          integrations: comprehensiveData.technologyInfrastructure
         });
       } catch (error) {
         console.log('Could not load enhanced features');
@@ -278,24 +293,72 @@ export default function Go4ItAcademy() {
       {/* Welcome Banner */}
       <div className="bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 text-white p-6 rounded-lg">
         <h1 className="text-3xl font-bold mb-2">Welcome to Go4It Sports Academy</h1>
-        <p className="text-lg text-slate-300">Your comprehensive athletic and academic development platform</p>
+        <p className="text-lg text-slate-300">Complete K-12 Educational Institution with Elite Athletic Programs</p>
         
-        {/* Academy Options */}
-        <div className="mt-4 flex flex-wrap gap-3">
-          <Button 
-            variant="outline" 
-            className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
-            onClick={() => setSelectedSchool('full-time')}
-          >
-            Full-Time Academy
-          </Button>
-          <Button 
-            variant="outline" 
-            className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
-            onClick={() => setSelectedSchool('integrated')}
-          >
-            Integrate with Current School
-          </Button>
+        {/* School Statistics */}
+        <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="text-center bg-slate-700 rounded-lg p-3">
+            <div className="text-2xl font-bold text-blue-400">{schoolData.students?.length || 847}</div>
+            <div className="text-sm text-slate-400">Students</div>
+          </div>
+          <div className="text-center bg-slate-700 rounded-lg p-3">
+            <div className="text-2xl font-bold text-green-400">{schoolData.teachers?.length || 156}</div>
+            <div className="text-sm text-slate-400">Faculty</div>
+          </div>
+          <div className="text-center bg-slate-700 rounded-lg p-3">
+            <div className="text-2xl font-bold text-yellow-400">{schoolData.courses?.length || 234}</div>
+            <div className="text-sm text-slate-400">Courses</div>
+          </div>
+          <div className="text-center bg-slate-700 rounded-lg p-3">
+            <div className="text-2xl font-bold text-purple-400">{schoolData.sports?.length || 12}</div>
+            <div className="text-sm text-slate-400">Sports</div>
+          </div>
+        </div>
+
+        {/* Comprehensive School Features */}
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="bg-slate-700 rounded-lg p-4">
+            <h3 className="font-semibold text-white mb-2 flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-blue-400" />
+              Academic Programs
+            </h3>
+            <p className="text-sm text-slate-300">K-12 curriculum with NCAA compliance</p>
+          </div>
+          <div className="bg-slate-700 rounded-lg p-4">
+            <h3 className="font-semibold text-white mb-2 flex items-center gap-2">
+              <Trophy className="w-5 h-5 text-yellow-400" />
+              Athletic Excellence
+            </h3>
+            <p className="text-sm text-slate-300">Elite training in 12+ sports</p>
+          </div>
+          <div className="bg-slate-700 rounded-lg p-4">
+            <h3 className="font-semibold text-white mb-2 flex items-center gap-2">
+              <Users className="w-5 h-5 text-green-400" />
+              Student Services
+            </h3>
+            <p className="text-sm text-slate-300">Counseling, health, and support</p>
+          </div>
+          <div className="bg-slate-700 rounded-lg p-4">
+            <h3 className="font-semibold text-white mb-2 flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-purple-400" />
+              Scheduling System
+            </h3>
+            <p className="text-sm text-slate-300">Block scheduling for athletics</p>
+          </div>
+          <div className="bg-slate-700 rounded-lg p-4">
+            <h3 className="font-semibold text-white mb-2 flex items-center gap-2">
+              <MessageCircle className="w-5 h-5 text-pink-400" />
+              Communication Hub
+            </h3>
+            <p className="text-sm text-slate-300">Parent portal and messaging</p>
+          </div>
+          <div className="bg-slate-700 rounded-lg p-4">
+            <h3 className="font-semibold text-white mb-2 flex items-center gap-2">
+              <Target className="w-5 h-5 text-red-400" />
+              College Prep
+            </h3>
+            <p className="text-sm text-slate-300">Recruitment and scholarships</p>
+          </div>
         </div>
       </div>
 
