@@ -386,9 +386,14 @@ export async function POST(request: NextRequest) {
 
     // Skip file validation for test mode
     if (!testMode) {
-      // Validate file type
-      const validTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/wmv'];
-      if (!validTypes.includes(file.type)) {
+      // Validate file type - more flexible validation
+      const validTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/quicktime'];
+      const validExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.m4v'];
+      
+      const hasValidType = validTypes.includes(file.type);
+      const hasValidExtension = validExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+      
+      if (!hasValidType && !hasValidExtension) {
         return NextResponse.json(
           { error: 'Invalid file type. Please upload MP4, AVI, MOV, or WMV files.' },
           { status: 400 }
@@ -425,7 +430,7 @@ export async function POST(request: NextRequest) {
       .insert(videoAnalysis)
       .values({
         userId: user.id,
-        fileName: file.name,
+        fileName: file?.name || 'test_video.mp4',
         filePath: filePath,
         sport: sport,
         garScore: analysis.overallScore.toString(),
