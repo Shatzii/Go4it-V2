@@ -1,636 +1,547 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useState, useEffect } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { 
-  Activity, 
   Users, 
-  BarChart3, 
-  Target, 
-  TrendingUp, 
-  Award, 
   Settings, 
+  BarChart3, 
+  FileText, 
   Database, 
   Shield, 
-  Globe, 
-  Zap,
-  AlertCircle,
+  Bell, 
+  Upload, 
+  Download,
+  Activity,
+  Server,
+  Globe,
+  UserCheck,
+  AlertTriangle,
   CheckCircle,
   XCircle,
-  Clock,
-  Server,
-  Cpu,
-  HardDrive,
-  Wifi,
-  Eye,
-  UserCheck,
-  FileText,
+  TrendingUp,
   Video,
-  BookOpen,
-  MessageSquare,
-  Star,
+  GraduationCap,
+  Target,
+  Brain,
+  Search,
+  Filter,
+  Edit,
+  Trash2,
+  Eye,
+  Plus,
+  Save,
   Calendar,
-  Download,
-  Upload,
-  RefreshCw,
-  Bell,
-  Lock,
-  Unlock,
-  AlertTriangle,
-  Info
+  Clock,
+  Star,
+  Trophy,
+  Zap,
+  MessageSquare,
+  Mail,
+  Phone,
+  MapPin,
+  Link,
+  Copy,
+  ExternalLink
 } from 'lucide-react'
-
-interface SystemMetrics {
-  platformStatus: string
-  totalUsers: number
-  activeUsers: number
-  totalContent: number
-  totalVideos: number
-  totalAchievements: number
-  serverUptime: string
-  cpuUsage: number
-  memoryUsage: number
-  storageUsage: number
-  networkLatency: number
-  dailyActiveUsers: number
-  weeklyActiveUsers: number
-  monthlyActiveUsers: number
-  contentViews: number
-  trainingHours: number
-  successRate: number
-}
-
-interface PlatformAlert {
-  id: string
-  type: 'error' | 'warning' | 'info' | 'success'
-  title: string
-  message: string
-  timestamp: string
-  resolved: boolean
-}
-
-const logoImage = '/attached_assets/Go4it Logo_1752616197577.jpeg'
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview')
-  const [platformStatus, setPlatformStatus] = useState('loading')
-  const [systemMetrics, setSystemMetrics] = useState<SystemMetrics>({
-    platformStatus: 'ready',
-    totalUsers: 12485,
-    activeUsers: 3247,
-    totalContent: 1856,
-    totalVideos: 542,
-    totalAchievements: 89,
-    serverUptime: '99.7%',
-    cpuUsage: 68,
-    memoryUsage: 72,
-    storageUsage: 45,
-    networkLatency: 42,
-    dailyActiveUsers: 1247,
-    weeklyActiveUsers: 5683,
-    monthlyActiveUsers: 18947,
-    contentViews: 89453,
-    trainingHours: 15672,
-    successRate: 94
-  })
-
-  const [platformAlerts, setPlatformAlerts] = useState<PlatformAlert[]>([
-    {
-      id: '1',
-      type: 'warning',
-      title: 'High Memory Usage',
-      message: 'Server memory usage is at 72%. Consider optimizing queries or scaling resources.',
-      timestamp: '2025-01-15T10:30:00Z',
-      resolved: false
-    },
-    {
-      id: '2',
-      type: 'info',
-      title: 'Scheduled Maintenance',
-      message: 'Platform maintenance scheduled for tonight at 2:00 AM EST.',
-      timestamp: '2025-01-15T09:00:00Z',
-      resolved: false
-    },
-    {
-      id: '3',
-      type: 'success',
-      title: 'Performance Optimization',
-      message: 'Database queries optimized. 15% improvement in response time.',
-      timestamp: '2025-01-15T08:15:00Z',
-      resolved: true
-    }
-  ])
+  const [isLoading, setIsLoading] = useState(true)
+  const [adminUser, setAdminUser] = useState(null)
 
   useEffect(() => {
-    // Simulate fetching platform status
-    const checkHealth = async () => {
+    // Check admin authentication
+    const checkAdminAuth = async () => {
       try {
-        const response = await fetch('/api/health')
+        const response = await fetch('/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
+          }
+        });
         if (response.ok) {
-          setPlatformStatus('ready')
+          const userData = await response.json();
+          if (userData.role === 'admin') {
+            setAdminUser(userData);
+            setIsLoading(false);
+          } else {
+            window.location.href = '/auth';
+          }
         } else {
-          setPlatformStatus('degraded')
+          window.location.href = '/auth';
         }
       } catch (error) {
-        setPlatformStatus('offline')
+        console.error('Admin auth check failed:', error);
+        window.location.href = '/auth';
       }
-    }
+    };
 
-    checkHealth()
-    const interval = setInterval(checkHealth, 30000) // Check every 30 seconds
+    checkAdminAuth();
+  }, []);
 
-    return () => clearInterval(interval)
-  }, [])
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'ready': return 'bg-green-100 text-green-800'
-      case 'degraded': return 'bg-yellow-100 text-yellow-800'
-      case 'offline': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
-    }
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-white">Loading Admin Dashboard...</p>
+        </div>
+      </div>
+    );
   }
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'ready': return <CheckCircle className="w-4 h-4" />
-      case 'degraded': return <AlertTriangle className="w-4 h-4" />
-      case 'offline': return <XCircle className="w-4 h-4" />
-      default: return <Clock className="w-4 h-4" />
-    }
-  }
+  const OverviewTab = () => (
+    <div className="space-y-6">
+      {/* System Statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-slate-400">Total Users</p>
+                <p className="text-2xl font-bold text-white">2,847</p>
+                <p className="text-xs text-green-400">+12% from last month</p>
+              </div>
+              <Users className="w-8 h-8 text-blue-500" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-slate-400">Active Sessions</p>
+                <p className="text-2xl font-bold text-white">1,234</p>
+                <p className="text-xs text-green-400">+8% from yesterday</p>
+              </div>
+              <Activity className="w-8 h-8 text-green-500" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-slate-400">Video Analyses</p>
+                <p className="text-2xl font-bold text-white">15,678</p>
+                <p className="text-xs text-green-400">+23% from last week</p>
+              </div>
+              <Video className="w-8 h-8 text-purple-500" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-slate-400">System Health</p>
+                <p className="text-2xl font-bold text-white">98.7%</p>
+                <p className="text-xs text-green-400">All systems operational</p>
+              </div>
+              <Server className="w-8 h-8 text-orange-500" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-  const getAlertIcon = (type: string) => {
-    switch (type) {
-      case 'error': return <XCircle className="w-4 h-4 text-red-500" />
-      case 'warning': return <AlertTriangle className="w-4 h-4 text-yellow-500" />
-      case 'info': return <Info className="w-4 h-4 text-blue-500" />
-      case 'success': return <CheckCircle className="w-4 h-4 text-green-500" />
-      default: return <AlertCircle className="w-4 h-4" />
-    }
-  }
+      {/* Recent Activity & System Status */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-white">Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[
+                { user: 'john.doe@email.com', action: 'Video Analysis Completed', time: '2 minutes ago', type: 'success' },
+                { user: 'sarah.smith@email.com', action: 'Account Registration', time: '5 minutes ago', type: 'info' },
+                { user: 'mike.johnson@email.com', action: 'Academy Enrollment', time: '12 minutes ago', type: 'success' },
+                { user: 'admin@goforit.com', action: 'System Settings Updated', time: '1 hour ago', type: 'warning' },
+                { user: 'emma.davis@email.com', action: 'GAR Score: 87/100', time: '2 hours ago', type: 'success' }
+              ].map((activity, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-slate-700 rounded">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-2 h-2 rounded-full ${
+                      activity.type === 'success' ? 'bg-green-500' : 
+                      activity.type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+                    }`}></div>
+                    <div>
+                      <p className="text-sm font-medium text-white">{activity.action}</p>
+                      <p className="text-xs text-slate-400">{activity.user}</p>
+                    </div>
+                  </div>
+                  <span className="text-xs text-slate-500">{activity.time}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-  const formatUptime = (timestamp: string) => {
-    const date = new Date(timestamp)
-    const now = new Date()
-    const diff = now.getTime() - date.getTime()
-    const hours = Math.floor(diff / (1000 * 60 * 60))
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-    
-    if (hours > 0) {
-      return `${hours}h ${minutes}m ago`
-    }
-    return `${minutes}m ago`
-  }
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-white">System Status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <span className="text-sm text-white">Web Server</span>
+                </div>
+                <Badge className="bg-green-500">Online</Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <span className="text-sm text-white">Database</span>
+                </div>
+                <Badge className="bg-green-500">Online</Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <span className="text-sm text-white">AI Engine</span>
+                </div>
+                <Badge className="bg-green-500">Online</Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <span className="text-sm text-white">Video Processing</span>
+                </div>
+                <Badge className="bg-green-500">Online</Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                  <span className="text-sm text-white">Email Service</span>
+                </div>
+                <Badge className="bg-yellow-500">Maintenance</Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+
+  const UsersTab = () => (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-white">User Management</h2>
+        <Button className="bg-blue-600 hover:bg-blue-700">
+          <Plus className="w-4 h-4 mr-2" />
+          Add User
+        </Button>
+      </div>
+
+      <Card className="bg-slate-800 border-slate-700">
+        <CardHeader>
+          <CardTitle className="text-white">User Statistics</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-white">2,847</p>
+              <p className="text-sm text-slate-400">Total Users</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-white">1,234</p>
+              <p className="text-sm text-slate-400">Active Today</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-white">567</p>
+              <p className="text-sm text-slate-400">Academy Students</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-white">89</p>
+              <p className="text-sm text-slate-400">Coaches</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-slate-800 border-slate-700">
+        <CardHeader>
+          <CardTitle className="text-white">Recent Users</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {[
+              { name: 'John Doe', email: 'john.doe@email.com', role: 'athlete', status: 'active', joined: '2 hours ago' },
+              { name: 'Sarah Smith', email: 'sarah.smith@email.com', role: 'coach', status: 'active', joined: '1 day ago' },
+              { name: 'Mike Johnson', email: 'mike.johnson@email.com', role: 'athlete', status: 'active', joined: '3 days ago' },
+              { name: 'Emma Davis', email: 'emma.davis@email.com', role: 'parent', status: 'active', joined: '1 week ago' }
+            ].map((user, index) => (
+              <div key={index} className="flex items-center justify-between p-3 bg-slate-700 rounded">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                    <span className="text-xs font-medium text-white">{user.name.split(' ').map(n => n[0]).join('')}</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white">{user.name}</p>
+                    <p className="text-xs text-slate-400">{user.email}</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Badge variant="secondary" className="bg-blue-500">{user.role}</Badge>
+                  <span className="text-xs text-slate-500">{user.joined}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+
+  const ContentTab = () => (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-white">Content Management</h2>
+        <Button className="bg-blue-600 hover:bg-blue-700">
+          <Plus className="w-4 h-4 mr-2" />
+          Create Content
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-white">
+              <FileText className="w-5 h-5" />
+              Blog Posts
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-400">Published</span>
+                <span className="font-semibold text-white">47</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-400">Drafts</span>
+                <span className="font-semibold text-white">12</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-400">Total Views</span>
+                <span className="font-semibold text-white">23,456</span>
+              </div>
+              <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
+                <FileText className="w-4 h-4 mr-2" />
+                Manage Posts
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-white">
+              <Video className="w-5 h-5" />
+              Training Videos
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-400">Total Videos</span>
+                <span className="font-semibold text-white">234</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-400">Hours Watched</span>
+                <span className="font-semibold text-white">1,234</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-400">New This Week</span>
+                <span className="font-semibold text-white">8</span>
+              </div>
+              <Button size="sm" className="w-full bg-green-600 hover:bg-green-700">
+                <Upload className="w-4 h-4 mr-2" />
+                Upload Video
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-white">
+              <Bell className="w-5 h-5" />
+              Announcements
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-400">Active</span>
+                <span className="font-semibold text-white">3</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-400">Scheduled</span>
+                <span className="font-semibold text-white">2</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-400">Total Sent</span>
+                <span className="font-semibold text-white">156</span>
+              </div>
+              <Button size="sm" className="w-full bg-purple-600 hover:bg-purple-700">
+                <Bell className="w-4 h-4 mr-2" />
+                New Announcement
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+
+  const SystemTab = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-white">System Settings</h2>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-white">General Settings</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label className="text-white">Platform Name</Label>
+              <Input defaultValue="Go4It Sports Platform" className="bg-slate-700 border-slate-600 text-white" />
+            </div>
+            <div>
+              <Label className="text-white">Support Email</Label>
+              <Input defaultValue="support@go4itsports.com" className="bg-slate-700 border-slate-600 text-white" />
+            </div>
+            <div>
+              <Label className="text-white">Maintenance Mode</Label>
+              <Select defaultValue="disabled">
+                <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="enabled">Enabled</SelectItem>
+                  <SelectItem value="disabled">Disabled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-white">AI Settings</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label className="text-white">AI Model Provider</Label>
+              <Select defaultValue="self-hosted">
+                <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="self-hosted">Self-Hosted</SelectItem>
+                  <SelectItem value="openai">OpenAI</SelectItem>
+                  <SelectItem value="anthropic">Anthropic</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-white">Video Analysis Quality</Label>
+              <Select defaultValue="high">
+                <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="performance">Performance</SelectItem>
+                  <SelectItem value="balanced">Balanced</SelectItem>
+                  <SelectItem value="high">High Quality</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-white">Max Upload Size (MB)</Label>
+              <Input defaultValue="500" className="bg-slate-700 border-slate-600 text-white" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-      {/* Navigation */}
-      <nav className="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <img
-                src={logoImage}
-                alt="Go4It Sports Logo"
-                className="w-10 h-10 rounded-lg"
-              />
-              <div className="text-xl font-bold text-white">Go4It Sports Admin</div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Badge className={getStatusColor(platformStatus)}>
-                {getStatusIcon(platformStatus)}
-                {platformStatus.charAt(0).toUpperCase() + platformStatus.slice(1)}
-              </Badge>
-              <Button variant="outline" size="sm" onClick={() => window.location.href = '/'}>
-                Back to Site
-              </Button>
+    <div className="min-h-screen bg-slate-900">
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 text-white p-6 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold mb-2">Go4It Sports Admin Dashboard</h1>
+                <p className="text-lg text-slate-300">Complete platform administration</p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="text-right">
+                  <p className="text-sm text-slate-400">Logged in as</p>
+                  <p className="font-medium">{adminUser?.email}</p>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+                  <span className="text-sm font-medium text-white">
+                    {adminUser?.firstName?.[0]}{adminUser?.lastName?.[0]}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </nav>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Admin Dashboard</h1>
-          <p className="text-lg text-slate-300">Comprehensive platform management and analytics</p>
-        </div>
-
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 bg-slate-800/50">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
-              <BarChart3 className="w-4 h-4" />
+        {/* Navigation Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-4 bg-slate-800 border-slate-700">
+            <TabsTrigger value="overview" className="text-white data-[state=active]:bg-blue-600">
+              <BarChart3 className="w-4 h-4 mr-2" />
               Overview
             </TabsTrigger>
-            <TabsTrigger value="users" className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
+            <TabsTrigger value="users" className="text-white data-[state=active]:bg-blue-600">
+              <Users className="w-4 h-4 mr-2" />
               Users
             </TabsTrigger>
-            <TabsTrigger value="content" className="flex items-center gap-2">
-              <FileText className="w-4 h-4" />
+            <TabsTrigger value="content" className="text-white data-[state=active]:bg-blue-600">
+              <FileText className="w-4 h-4 mr-2" />
               Content
             </TabsTrigger>
-            <TabsTrigger value="system" className="flex items-center gap-2">
-              <Server className="w-4 h-4" />
+            <TabsTrigger value="system" className="text-white data-[state=active]:bg-blue-600">
+              <Settings className="w-4 h-4 mr-2" />
               System
-            </TabsTrigger>
-            <TabsTrigger value="alerts" className="flex items-center gap-2">
-              <Bell className="w-4 h-4" />
-              Alerts
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings className="w-4 h-4" />
-              Settings
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              {/* Key Metrics Cards */}
-              <Card className="bg-slate-800/50 border-slate-700">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-slate-300">Total Users</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-white">{systemMetrics.totalUsers.toLocaleString()}</div>
-                  <div className="flex items-center text-sm text-green-400">
-                    <TrendingUp className="w-4 h-4 mr-1" />
-                    +12.5% from last month
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-slate-800/50 border-slate-700">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-slate-300">Active Users</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-white">{systemMetrics.activeUsers.toLocaleString()}</div>
-                  <div className="flex items-center text-sm text-green-400">
-                    <TrendingUp className="w-4 h-4 mr-1" />
-                    +8.3% from last week
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-slate-800/50 border-slate-700">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-slate-300">Content Items</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-white">{systemMetrics.totalContent.toLocaleString()}</div>
-                  <div className="flex items-center text-sm text-green-400">
-                    <TrendingUp className="w-4 h-4 mr-1" />
-                    +15.2% from last month
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-slate-800/50 border-slate-700">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-slate-300">Success Rate</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-white">{systemMetrics.successRate}%</div>
-                  <div className="flex items-center text-sm text-green-400">
-                    <TrendingUp className="w-4 h-4 mr-1" />
-                    +2.1% from last month
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Performance Overview */}
-            <Card className="bg-slate-800/50 border-slate-700 mb-8">
-              <CardHeader>
-                <CardTitle className="text-white">Performance Overview</CardTitle>
-                <CardDescription className="text-slate-300">
-                  Real-time platform performance metrics
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-white">Athletic Performance</span>
-                      <span className="text-sm text-primary font-semibold">92%</span>
-                    </div>
-                    <div className="w-full bg-slate-700/50 rounded-full h-2">
-                      <div className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full w-[92%] transition-all duration-1000"></div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-white">Academic Progress</span>
-                      <span className="text-sm text-primary font-semibold">87%</span>
-                    </div>
-                    <div className="w-full bg-slate-700/50 rounded-full h-2">
-                      <div className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full w-[87%] transition-all duration-1000 delay-300"></div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-white">StarPath Level</span>
-                      <span className="text-sm text-primary font-semibold">Elite</span>
-                    </div>
-                    <div className="w-full bg-slate-700/50 rounded-full h-2">
-                      <div className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full w-[95%] transition-all duration-1000 delay-500"></div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 pt-6 border-t border-slate-700/50 mt-6">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-primary">{systemMetrics.trainingHours.toLocaleString()}</div>
-                    <div className="text-sm text-slate-300">Training Hours</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-primary">{systemMetrics.successRate}%</div>
-                    <div className="text-sm text-slate-300">Success Rate</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Quick Actions */}
-            <Card className="bg-slate-800/50 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-white">Quick Actions</CardTitle>
-                <CardDescription className="text-slate-300">
-                  Common administrative tasks
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <Button className="h-20 flex flex-col items-center justify-center gap-2 bg-primary/20 hover:bg-primary/30 text-primary border-primary/30">
-                    <Users className="w-6 h-6" />
-                    Manage Users
-                  </Button>
-                  <Button className="h-20 flex flex-col items-center justify-center gap-2 bg-primary/20 hover:bg-primary/30 text-primary border-primary/30">
-                    <FileText className="w-6 h-6" />
-                    Content CMS
-                  </Button>
-                  <Button className="h-20 flex flex-col items-center justify-center gap-2 bg-primary/20 hover:bg-primary/30 text-primary border-primary/30">
-                    <BarChart3 className="w-6 h-6" />
-                    Analytics
-                  </Button>
-                  <Button className="h-20 flex flex-col items-center justify-center gap-2 bg-primary/20 hover:bg-primary/30 text-primary border-primary/30">
-                    <Settings className="w-6 h-6" />
-                    System Config
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+          <TabsContent value="overview" className="mt-6">
+            <OverviewTab />
           </TabsContent>
 
-          <TabsContent value="users">
-            <Card className="bg-slate-800/50 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-white">User Management</CardTitle>
-                <CardDescription className="text-slate-300">
-                  Manage user accounts and permissions
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="space-y-4">
-                    <div className="text-center p-6 bg-slate-900/50 rounded-lg">
-                      <div className="text-3xl font-bold text-white mb-2">{systemMetrics.dailyActiveUsers.toLocaleString()}</div>
-                      <div className="text-sm text-slate-300">Daily Active Users</div>
-                    </div>
-                    <div className="text-center p-6 bg-slate-900/50 rounded-lg">
-                      <div className="text-3xl font-bold text-white mb-2">{systemMetrics.weeklyActiveUsers.toLocaleString()}</div>
-                      <div className="text-sm text-slate-300">Weekly Active Users</div>
-                    </div>
-                    <div className="text-center p-6 bg-slate-900/50 rounded-lg">
-                      <div className="text-3xl font-bold text-white mb-2">{systemMetrics.monthlyActiveUsers.toLocaleString()}</div>
-                      <div className="text-sm text-slate-300">Monthly Active Users</div>
-                    </div>
-                  </div>
-                  
-                  <div className="col-span-2">
-                    <div className="text-center py-12">
-                      <Users className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                      <p className="text-slate-300">Advanced user management tools coming soon</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <TabsContent value="users" className="mt-6">
+            <UsersTab />
           </TabsContent>
 
-          <TabsContent value="content">
-            <Card className="bg-slate-800/50 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-white">Content Management</CardTitle>
-                <CardDescription className="text-slate-300">
-                  Content statistics and management tools
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                  <div className="text-center p-6 bg-slate-900/50 rounded-lg">
-                    <div className="text-2xl font-bold text-white mb-2">{systemMetrics.totalContent}</div>
-                    <div className="text-sm text-slate-300">Total Articles</div>
-                  </div>
-                  <div className="text-center p-6 bg-slate-900/50 rounded-lg">
-                    <div className="text-2xl font-bold text-white mb-2">{systemMetrics.totalVideos}</div>
-                    <div className="text-sm text-slate-300">Video Content</div>
-                  </div>
-                  <div className="text-center p-6 bg-slate-900/50 rounded-lg">
-                    <div className="text-2xl font-bold text-white mb-2">{systemMetrics.contentViews.toLocaleString()}</div>
-                    <div className="text-sm text-slate-300">Total Views</div>
-                  </div>
-                  <div className="text-center p-6 bg-slate-900/50 rounded-lg">
-                    <div className="text-2xl font-bold text-white mb-2">{systemMetrics.totalAchievements}</div>
-                    <div className="text-sm text-slate-300">Achievements</div>
-                  </div>
-                </div>
-                
-                <div className="text-center py-8">
-                  <Button onClick={() => window.location.href = '/cms'} className="bg-primary hover:bg-primary/90">
-                    <FileText className="w-4 h-4 mr-2" />
-                    Open Content Management System
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+          <TabsContent value="content" className="mt-6">
+            <ContentTab />
           </TabsContent>
 
-          <TabsContent value="system">
-            <Card className="bg-slate-800/50 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-white">System Health</CardTitle>
-                <CardDescription className="text-slate-300">
-                  Server performance and system metrics
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 bg-slate-900/50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <Cpu className="w-5 h-5 text-primary" />
-                        <span className="text-white">CPU Usage</span>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-white">{systemMetrics.cpuUsage}%</div>
-                        <div className="w-20 bg-slate-700 rounded-full h-2">
-                          <div 
-                            className="bg-primary h-2 rounded-full transition-all duration-500"
-                            style={{ width: `${systemMetrics.cpuUsage}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center justify-between p-4 bg-slate-900/50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <HardDrive className="w-5 h-5 text-primary" />
-                        <span className="text-white">Memory Usage</span>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-white">{systemMetrics.memoryUsage}%</div>
-                        <div className="w-20 bg-slate-700 rounded-full h-2">
-                          <div 
-                            className="bg-primary h-2 rounded-full transition-all duration-500"
-                            style={{ width: `${systemMetrics.memoryUsage}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center justify-between p-4 bg-slate-900/50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <Database className="w-5 h-5 text-primary" />
-                        <span className="text-white">Storage Usage</span>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-white">{systemMetrics.storageUsage}%</div>
-                        <div className="w-20 bg-slate-700 rounded-full h-2">
-                          <div 
-                            className="bg-primary h-2 rounded-full transition-all duration-500"
-                            style={{ width: `${systemMetrics.storageUsage}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center justify-between p-4 bg-slate-900/50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <Wifi className="w-5 h-5 text-primary" />
-                        <span className="text-white">Network Latency</span>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-white">{systemMetrics.networkLatency}ms</div>
-                        <div className="text-sm text-slate-300">Average response time</div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <div className="p-4 bg-slate-900/50 rounded-lg">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Server className="w-5 h-5 text-primary" />
-                        <span className="text-white font-medium">Server Uptime</span>
-                      </div>
-                      <div className="text-2xl font-bold text-white">{systemMetrics.serverUptime}</div>
-                      <div className="text-sm text-slate-300">Last 30 days</div>
-                    </div>
-                    
-                    <div className="p-4 bg-slate-900/50 rounded-lg">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Globe className="w-5 h-5 text-primary" />
-                        <span className="text-white font-medium">Platform Status</span>
-                      </div>
-                      <Badge className={getStatusColor(platformStatus)}>
-                        {getStatusIcon(platformStatus)}
-                        {platformStatus.charAt(0).toUpperCase() + platformStatus.slice(1)}
-                      </Badge>
-                    </div>
-                    
-                    <div className="p-4 bg-slate-900/50 rounded-lg">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Zap className="w-5 h-5 text-primary" />
-                        <span className="text-white font-medium">Performance Score</span>
-                      </div>
-                      <div className="text-2xl font-bold text-white">A+</div>
-                      <div className="text-sm text-slate-300">Excellent performance</div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="alerts">
-            <Card className="bg-slate-800/50 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-white">System Alerts</CardTitle>
-                <CardDescription className="text-slate-300">
-                  Platform notifications and alerts
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {platformAlerts.map((alert) => (
-                    <div key={alert.id} className={`p-4 rounded-lg border ${
-                      alert.resolved 
-                        ? 'bg-slate-900/30 border-slate-700 opacity-60' 
-                        : 'bg-slate-900/50 border-slate-600'
-                    }`}>
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start gap-3">
-                          {getAlertIcon(alert.type)}
-                          <div>
-                            <div className="font-medium text-white">{alert.title}</div>
-                            <div className="text-sm text-slate-300 mt-1">{alert.message}</div>
-                            <div className="text-xs text-slate-400 mt-2">
-                              {formatUptime(alert.timestamp)}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {alert.resolved && (
-                            <Badge variant="secondary" className="text-xs">
-                              Resolved
-                            </Badge>
-                          )}
-                          <Button variant="ghost" size="sm">
-                            <X className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="settings">
-            <Card className="bg-slate-800/50 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-white">Platform Settings</CardTitle>
-                <CardDescription className="text-slate-300">
-                  Configure platform preferences and settings
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Settings className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                  <p className="text-slate-300">Advanced settings panel coming soon</p>
-                </div>
-              </CardContent>
-            </Card>
+          <TabsContent value="system" className="mt-6">
+            <SystemTab />
           </TabsContent>
         </Tabs>
       </div>
