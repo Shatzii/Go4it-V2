@@ -19,6 +19,13 @@ export const users = pgTable('users', {
   isActive: boolean('is_active').notNull().default(true),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   lastLoginAt: timestamp('last_login_at'),
+  
+  // Subscription fields
+  stripeCustomerId: text('stripe_customer_id'),
+  stripeSubscriptionId: text('stripe_subscription_id'),
+  subscriptionPlan: text('subscription_plan').default('free'), // free, starter, pro, elite
+  subscriptionStatus: text('subscription_status').default('active'), // active, canceled, past_due
+  subscriptionEndDate: timestamp('subscription_end_date'),
 });
 
 // Video analysis table
