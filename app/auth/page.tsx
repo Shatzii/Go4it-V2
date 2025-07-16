@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Star, Trophy, Target, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import ClientOnly from '@/components/ClientOnly';
 import { useApp } from '@/components/providers/AppProviders';
+import { AuthClient } from '@/lib/auth-client';
 
 export default function OptimizedAuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -42,6 +43,11 @@ export default function OptimizedAuthPage() {
       const data = await response.json();
 
       if (response.ok) {
+        // Store the authentication token using our auth client
+        if (data.token) {
+          AuthClient.setToken(data.token);
+        }
+        
         setUser(data.user);
         setSuccess(isLogin ? 'Login successful!' : 'Registration successful!');
         

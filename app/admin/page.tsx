@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { AuthClient } from '@/lib/auth-client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -62,24 +63,36 @@ export default function AdminDashboard() {
     // Check admin authentication
     const checkAdminAuth = async () => {
       try {
-        const response = await fetch('/api/auth/me', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
-          }
-        });
-        if (response.ok) {
-          const userData = await response.json();
-          if (userData.role === 'admin') {
-            setAdminUser(userData);
-            setIsLoading(false);
-          } else {
-            window.location.href = '/auth';
-          }
+        // Add a small delay to ensure localStorage is available
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        const token = AuthClient.getToken();
+        console.log('Admin auth check - Token:', token ? 'Present' : 'Missing');
+        
+        if (!token) {
+          console.log('No token found, redirecting to auth');
+          alert('Please log in to access the admin dashboard');
+          window.location.href = '/auth';
+          return;
+        }
+        
+        const userData = await AuthClient.checkAuthStatus();
+        console.log('Admin auth check - User data:', userData);
+        
+        if (userData && userData.role === 'admin') {
+          setAdminUser(userData);
+          setIsLoading(false);
+          AuthClient.clearTokenFresh(); // Clear the fresh token flag
         } else {
+          console.log('User is not admin or auth failed, redirecting to auth');
+          alert(userData ? 'Admin access required' : 'Authentication failed. Please log in again.');
+          AuthClient.removeToken();
           window.location.href = '/auth';
         }
       } catch (error) {
         console.error('Admin auth check failed:', error);
+        alert('Error accessing admin dashboard. Please try logging in again.');
+        AuthClient.removeToken();
         window.location.href = '/auth';
       }
     };
