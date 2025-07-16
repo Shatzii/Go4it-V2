@@ -33,13 +33,7 @@ function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetError
 }
 
 // Force dynamic rendering for this page to prevent static generation issues
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
 // Prevent static generation during build
-export const fetchCache = 'force-no-store';
-export const runtime = 'nodejs';
-
 export default function PrimaryParentDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-900 via-orange-900 to-yellow-900 text-white p-4">

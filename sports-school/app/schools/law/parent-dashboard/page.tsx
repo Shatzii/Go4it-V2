@@ -56,13 +56,7 @@ const ClassCreator = createSafeDynamicImport(
 );
 
 // Force dynamic rendering for this page to prevent static generation issues
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
 // Prevent static generation during build
-export const fetchCache = 'force-no-store';
-export const runtime = 'nodejs';
-
 export default function LawParentDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 text-white p-4">
