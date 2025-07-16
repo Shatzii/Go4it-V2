@@ -1,5 +1,6 @@
 {pkgs}: {
   deps = [
+    pkgs.ollama
     pkgs.nano
     pkgs.unixtools.ping
     pkgs.htop-vim

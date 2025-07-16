@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  # Go4It Sports Platform Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://go4it_user:go4it_password@db:5432/go4it_sports
+      - JWT_SECRET=your-super-secure-jwt-secret-key-here
+      - SESSION_SECRET=your-session-secret-key-here
+      - USE_LOCAL_MODELS=true
+      - LOCAL_SPORTS_MODEL=llama3.1:8b
+      - OLLAMA_ENDPOINT=http://ollama:11434/api/generate
+      - NEXT_PUBLIC_APP_URL=https://yourdomain.com
+      - NEXT_PUBLIC_ENABLE_AI=true
+      - NEXT_PUBLIC_ENABLE_ANALYTICS=true
+    depends_on:
+      - db
+      - ollama
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - go4it-network
+
+  # PostgreSQL Database
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=go4it_sports
+      - POSTGRES_USER=go4it_user
+      - POSTGRES_PASSWORD=go4it_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    restart: unless-stopped
+    networks:
+      - go4it-network
+
+  # Ollama for Self-Hosted AI Models
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - go4it-network
+    command: ["ollama", "serve"]
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - app
+    restart: unless-stopped
+    networks:
+      - go4it-network
+
+  # Redis for Caching (Optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - go4it-network
+
+volumes:
+  postgres_data:
+  ollama_data:
+  redis_data:
+
+networks:
+  go4it-network:
+    driver: bridge
