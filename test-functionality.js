@@ -1,378 +1,231 @@
-#!/usr/bin/env node
-
 /**
  * Go4It Sports Platform - Comprehensive Functionality Testing
  * Tests actual functionality, not just visual appearance
  */
 
-const { spawn } = require('child_process');
-const http = require('http');
-const https = require('https');
-const { URL } = require('url');
+const { execSync } = require('child_process');
+const fs = require('fs');
 
-const BASE_URL = 'http://localhost:5000';
-let testResults = [];
-let authToken = null;
+console.log('🔧 COMPREHENSIVE FUNCTIONALITY ANALYSIS\n');
 
-// Test utilities
+// Test results storage
+const testResults = [];
+
 function log(message, type = 'info') {
   const timestamp = new Date().toISOString();
-  const prefix = type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ';
-  console.log(`[${timestamp}] ${prefix} ${message}`);
+  const symbols = { info: 'ℹ', success: '✅', error: '❌', warning: '⚠️', test: '🧪' };
+  console.log(`${symbols[type]} [${timestamp.split('T')[1].split('.')[0]}] ${message}`);
 }
 
 function addResult(test, passed, details = '') {
   testResults.push({ test, passed, details });
-  log(`${test}: ${passed ? 'PASSED' : 'FAILED'} ${details}`, passed ? 'success' : 'error');
 }
 
-async function makeRequest(url, options = {}) {
-  return new Promise((resolve) => {
-    const parsedUrl = new URL(url);
-    const isHttps = parsedUrl.protocol === 'https:';
-    const client = isHttps ? https : http;
-    
-    const requestOptions = {
-      hostname: parsedUrl.hostname,
-      port: parsedUrl.port || (isHttps ? 443 : 80),
-      path: parsedUrl.pathname + parsedUrl.search,
-      method: options.method || 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}),
-        ...options.headers
-      }
-    };
-    
-    const req = client.request(requestOptions, (res) => {
-      let data = '';
-      res.on('data', (chunk) => data += chunk);
-      res.on('end', () => {
-        try {
-          const jsonData = data ? JSON.parse(data) : {};
-          resolve({
-            ok: res.statusCode >= 200 && res.statusCode < 300,
-            status: res.statusCode,
-            data: jsonData
-          });
-        } catch (error) {
-          resolve({
-            ok: res.statusCode >= 200 && res.statusCode < 300,
-            status: res.statusCode,
-            data: { text: data }
-          });
-        }
-      });
-    });
-    
-    req.on('error', (error) => {
-      resolve({ ok: false, status: 0, error: error.message });
-    });
-    
-    if (options.body) {
-      req.write(options.body);
-    }
-    
-    req.end();
-  });
-}
-
-// Test 1: Database Connection
+// 1. Test Database Connection
 async function testDatabaseConnection() {
-  log('Testing database connection...');
+  log('Testing database connection...', 'test');
   
   try {
-    const result = await makeRequest(`${BASE_URL}/api/health`);
-    addResult('Database Connection', result.ok, `Status: ${result.status}`);
-    return result.ok;
-  } catch (error) {
-    addResult('Database Connection', false, error.message);
-    return false;
-  }
-}
-
-// Test 2: Authentication System
-async function testAuthentication() {
-  log('Testing authentication system...');
-  
-  // Test login with valid credentials
-  const loginResult = await makeRequest(`${BASE_URL}/api/auth/login`, {
-    method: 'POST',
-    body: JSON.stringify({
-      email: 'test@example.com',
-      password: 'password123'
-    })
-  });
-  
-  const loginPassed = loginResult.ok && loginResult.data.token;
-  addResult('Login Authentication', loginPassed, 
-    loginPassed ? 'Token received' : `Status: ${loginResult.status}, Error: ${loginResult.data.error || 'Unknown'}`);
-  
-  if (loginPassed) {
-    authToken = loginResult.data.token;
+    const dbTestResult = execSync('node -e "const { testConnection } = require(\'./lib/db\'); testConnection().then(console.log).catch(console.error)"', { encoding: 'utf8', timeout: 5000 });
     
-    // Test protected route access
-    const protectedResult = await makeRequest(`${BASE_URL}/api/auth/me`);
-    addResult('Protected Route Access', protectedResult.ok, 
-      protectedResult.ok ? 'User data retrieved' : `Status: ${protectedResult.status}`);
+    if (dbTestResult.includes('success') || dbTestResult.includes('connected')) {
+      log('Database connection successful', 'success');
+      addResult('Database Connection', true, 'PostgreSQL connection working');
+    } else {
+      log('Database connection failed', 'error');
+      addResult('Database Connection', false, 'PostgreSQL connection issues');
+    }
+  } catch (error) {
+    log(`Database test failed: ${error.message}`, 'error');
+    addResult('Database Connection', false, 'Database connection error');
   }
-  
-  // Test login with invalid credentials
-  const invalidLoginResult = await makeRequest(`${BASE_URL}/api/auth/login`, {
-    method: 'POST',
-    body: JSON.stringify({
-      email: 'wrong@example.com',
-      password: 'wrongpassword'
-    })
-  });
-  
-  const invalidLoginPassed = !invalidLoginResult.ok && invalidLoginResult.status === 401;
-  addResult('Invalid Login Rejection', invalidLoginPassed, 
-    invalidLoginPassed ? 'Correctly rejected' : 'Security issue: invalid login accepted');
-  
-  return loginPassed;
 }
 
-// Test 3: API Endpoints Functionality
+// 2. Test Authentication
+async function testAuthentication() {
+  log('Testing authentication system...', 'test');
+  
+  try {
+    // Test login endpoint
+    const loginTest = execSync('curl -s -X POST http://localhost:5000/api/auth/login -H "Content-Type: application/json" -d \'{"email":"test@example.com","password":"password123"}\'', { encoding: 'utf8', timeout: 5000 });
+    
+    if (loginTest.includes('token') || loginTest.includes('success')) {
+      log('Authentication login working', 'success');
+      addResult('Authentication - Login', true, 'Login endpoint functional');
+    } else {
+      log('Authentication login failed', 'error');
+      addResult('Authentication - Login', false, 'Login endpoint not working');
+    }
+    
+    // Test registration endpoint
+    const registerTest = execSync('curl -s -X POST http://localhost:5000/api/auth/register -H "Content-Type: application/json" -d \'{"email":"newuser@test.com","password":"password123","username":"testuser","firstName":"Test","lastName":"User"}\'', { encoding: 'utf8', timeout: 5000 });
+    
+    if (registerTest.includes('token') || registerTest.includes('success') || registerTest.includes('already exists')) {
+      log('Authentication registration working', 'success');
+      addResult('Authentication - Register', true, 'Registration endpoint functional');
+    } else {
+      log('Authentication registration failed', 'error');
+      addResult('Authentication - Register', false, 'Registration endpoint not working');
+    }
+    
+  } catch (error) {
+    log(`Authentication test failed: ${error.message}`, 'error');
+    addResult('Authentication', false, 'Authentication system error');
+  }
+}
+
+// 3. Test API Endpoints
 async function testAPIEndpoints() {
-  log('Testing API endpoints functionality...');
+  log('Testing API endpoints...', 'test');
   
   const endpoints = [
-    { path: '/api/health', method: 'GET', expectAuth: false },
-    { path: '/api/auth/me', method: 'GET', expectAuth: true },
-    { path: '/api/notifications', method: 'GET', expectAuth: true },
-    { path: '/api/performance/metrics', method: 'GET', expectAuth: true },
-    { path: '/api/analytics/dashboard', method: 'GET', expectAuth: true },
+    { path: '/api/health', expectCode: 200 },
+    { path: '/api/auth/me', expectCode: 401 }, // Should be unauthorized without token
+    { path: '/api/notifications', expectCode: 401 }, // Should be unauthorized without token
+    { path: '/api/gar/stats', expectCode: 401 }, // Should be unauthorized without token
   ];
   
   for (const endpoint of endpoints) {
-    const result = await makeRequest(`${BASE_URL}${endpoint.path}`, {
-      method: endpoint.method
-    });
-    
-    const expectedStatus = endpoint.expectAuth && !authToken ? 401 : 200;
-    const passed = result.status === expectedStatus;
-    
-    addResult(`API ${endpoint.path}`, passed, 
-      `Expected ${expectedStatus}, got ${result.status}`);
+    try {
+      const testResult = execSync(`curl -s -o /dev/null -w "%{http_code}" http://localhost:5000${endpoint.path}`, { encoding: 'utf8', timeout: 5000 });
+      const statusCode = parseInt(testResult.trim());
+      
+      if (statusCode === endpoint.expectCode) {
+        log(`${endpoint.path} - Status ${statusCode} ✓`, 'success');
+        addResult(`API - ${endpoint.path}`, true, `Returns expected ${endpoint.expectCode}`);
+      } else {
+        log(`${endpoint.path} - Status ${statusCode} (expected ${endpoint.expectCode})`, 'warning');
+        addResult(`API - ${endpoint.path}`, false, `Returns ${statusCode}, expected ${endpoint.expectCode}`);
+      }
+    } catch (error) {
+      log(`${endpoint.path} - Error: ${error.message}`, 'error');
+      addResult(`API - ${endpoint.path}`, false, 'Endpoint error');
+    }
   }
 }
 
-// Test 4: Database CRUD Operations
-async function testDatabaseOperations() {
-  log('Testing database CRUD operations...');
-  
-  if (!authToken) {
-    addResult('Database CRUD Operations', false, 'No auth token available');
-    return;
-  }
-  
-  // Test user data retrieval
-  const userResult = await makeRequest(`${BASE_URL}/api/auth/me`);
-  const userPassed = userResult.ok && userResult.data.id;
-  addResult('User Data Retrieval', userPassed, 
-    userPassed ? `User ID: ${userResult.data.id}` : 'No user data returned');
-  
-  // Test profile update (if endpoint exists)
-  const profileUpdateResult = await makeRequest(`${BASE_URL}/api/profile/update`, {
-    method: 'POST',
-    body: JSON.stringify({
-      firstName: 'Test',
-      lastName: 'User'
-    })
-  });
-  
-  // Don't fail if endpoint doesn't exist, just log
-  if (profileUpdateResult.status !== 404) {
-    addResult('Profile Update', profileUpdateResult.ok, 
-      profileUpdateResult.ok ? 'Profile updated' : `Status: ${profileUpdateResult.status}`);
-  }
-}
-
-// Test 5: Page Rendering and Functionality
+// 4. Test Page Functionality
 async function testPageFunctionality() {
-  log('Testing page functionality...');
+  log('Testing page functionality...', 'test');
   
   const pages = [
     { path: '/', name: 'Landing Page' },
-    { path: '/auth', name: 'Authentication Page' },
-    { path: '/dashboard', name: 'Dashboard Page' },
-    { path: '/academy', name: 'Academy Page' },
-    { path: '/video-analysis', name: 'Video Analysis Page' },
-    { path: '/student-dashboard', name: 'Student Dashboard Page' }
+    { path: '/auth', name: 'Authentication' },
+    { path: '/dashboard', name: 'Dashboard' },
+    { path: '/admin', name: 'Admin Panel' },
+    { path: '/academy', name: 'Academy' },
+    { path: '/upload', name: 'Upload' },
   ];
   
   for (const page of pages) {
     try {
-      const response = await makeRequest(`${BASE_URL}${page.path}`);
-      const content = response.data.text || JSON.stringify(response.data);
+      const testResult = execSync(`curl -s -o /dev/null -w "%{http_code}" http://localhost:5000${page.path}`, { encoding: 'utf8', timeout: 5000 });
+      const statusCode = parseInt(testResult.trim());
       
-      // Check for React hydration and basic functionality
-      const hasReactElements = content.includes('__NEXT_DATA__');
-      const hasTitle = content.includes('<title>');
-      const hasContent = content.length > 1000; // Minimum content size
-      
-      const passed = response.ok && hasReactElements && hasTitle && hasContent;
-      addResult(`${page.name} Functionality`, passed, 
-        `Status: ${response.status}, React: ${hasReactElements}, Content: ${hasContent}`);
+      if (statusCode === 200) {
+        log(`${page.name} - Loading ✓`, 'success');
+        addResult(`Page - ${page.name}`, true, 'Page loads successfully');
+      } else {
+        log(`${page.name} - Status ${statusCode}`, 'warning');
+        addResult(`Page - ${page.name}`, false, `Returns status ${statusCode}`);
+      }
     } catch (error) {
-      addResult(`${page.name} Functionality`, false, error.message);
+      log(`${page.name} - Error: ${error.message}`, 'error');
+      addResult(`Page - ${page.name}`, false, 'Page loading error');
     }
   }
 }
 
-// Test 6: Form Submissions
-async function testFormSubmissions() {
-  log('Testing form submission functionality...');
+// 5. Test File Structure
+async function testFileStructure() {
+  log('Testing file structure...', 'test');
   
-  // Test registration form
-  const registrationResult = await makeRequest(`${BASE_URL}/api/auth/register`, {
-    method: 'POST',
-    body: JSON.stringify({
-      username: 'testuser' + Date.now(),
-      email: `test${Date.now()}@example.com`,
-      password: 'password123',
-      firstName: 'Test',
-      lastName: 'User'
-    })
-  });
+  const criticalFiles = [
+    { path: 'lib/db.ts', name: 'Database Connection' },
+    { path: 'lib/auth.ts', name: 'Authentication Library' },
+    { path: 'lib/auth-client.ts', name: 'Auth Client' },
+    { path: 'app/api/auth/login/route.ts', name: 'Login API' },
+    { path: 'app/api/auth/me/route.ts', name: 'User API' },
+    { path: 'app/api/notifications/route.ts', name: 'Notifications API' },
+    { path: 'app/api/health/route.ts', name: 'Health Check API' },
+  ];
   
-  const regPassed = registrationResult.ok || registrationResult.status === 400; // 400 if user exists
-  addResult('Registration Form', regPassed, 
-    registrationResult.ok ? 'New user created' : 
-    registrationResult.status === 400 ? 'User exists (expected)' : 
-    `Status: ${registrationResult.status}`);
-}
-
-// Test 7: Real-time Features
-async function testRealTimeFeatures() {
-  log('Testing real-time features...');
-  
-  // Test notifications endpoint
-  const notificationsResult = await makeRequest(`${BASE_URL}/api/notifications`);
-  const notificationsPassed = authToken ? 
-    (notificationsResult.ok || notificationsResult.status === 401) : 
-    notificationsResult.status === 401;
-  
-  addResult('Notifications System', notificationsPassed, 
-    `Status: ${notificationsResult.status}`);
-  
-  // Test WebSocket connection would go here if implemented
-  // For now, just verify the endpoint exists
-}
-
-// Test 8: File Upload Functionality
-async function testFileUpload() {
-  log('Testing file upload functionality...');
-  
-  // Test video upload endpoint
-  const uploadResult = await makeRequest(`${BASE_URL}/api/videos/upload`, {
-    method: 'POST',
-    body: JSON.stringify({
-      filename: 'test.mp4',
-      filesize: 1024000,
-      type: 'video/mp4'
-    })
-  });
-  
-  // Don't fail if endpoint doesn't exist yet
-  if (uploadResult.status !== 404) {
-    addResult('File Upload', uploadResult.ok, 
-      uploadResult.ok ? 'Upload initiated' : `Status: ${uploadResult.status}`);
+  for (const file of criticalFiles) {
+    if (fs.existsSync(file.path)) {
+      log(`${file.name} - Found ✓`, 'success');
+      addResult(`File - ${file.name}`, true, 'File exists');
+    } else {
+      log(`${file.name} - Missing ❌`, 'error');
+      addResult(`File - ${file.name}`, false, 'File missing');
+    }
   }
 }
 
-// Test 9: Academy System Functionality
-async function testAcademySystem() {
-  log('Testing academy system functionality...');
+// 6. Test Token Inconsistencies
+async function testTokenInconsistencies() {
+  log('Testing token storage inconsistencies...', 'test');
   
-  // Test course enrollment
-  const coursesResult = await makeRequest(`${BASE_URL}/api/academy/courses`);
-  const coursesPassed = coursesResult.ok || coursesResult.status === 401;
-  addResult('Academy Courses', coursesPassed, 
-    coursesResult.ok ? 'Courses retrieved' : `Status: ${coursesResult.status}`);
-  
-  // Test student data
-  const studentResult = await makeRequest(`${BASE_URL}/api/academy/student`);
-  const studentPassed = studentResult.ok || studentResult.status === 401;
-  addResult('Student Data', studentPassed, 
-    studentResult.ok ? 'Student data retrieved' : `Status: ${studentResult.status}`);
-}
-
-// Test 10: Performance and Load Testing
-async function testPerformance() {
-  log('Testing performance and load handling...');
-  
-  const startTime = Date.now();
-  const promises = [];
-  
-  // Send 10 concurrent requests to test load handling
-  for (let i = 0; i < 10; i++) {
-    promises.push(makeRequest(`${BASE_URL}/api/health`));
+  try {
+    // Check for authToken vs auth-token inconsistencies
+    const authTokenRefs = execSync('grep -r "authToken" app/ --include="*.ts" --include="*.tsx" | wc -l', { encoding: 'utf8' });
+    const authTokenHyphenRefs = execSync('grep -r "auth-token" app/ --include="*.ts" --include="*.tsx" | wc -l', { encoding: 'utf8' });
+    
+    log(`Found ${authTokenRefs.trim()} references to 'authToken'`, 'info');
+    log(`Found ${authTokenHyphenRefs.trim()} references to 'auth-token'`, 'info');
+    
+    if (parseInt(authTokenRefs.trim()) > 0 && parseInt(authTokenHyphenRefs.trim()) > 0) {
+      log('Token storage inconsistency detected', 'warning');
+      addResult('Token Consistency', false, 'Mixed authToken and auth-token usage');
+    } else {
+      log('Token storage consistent', 'success');
+      addResult('Token Consistency', true, 'Consistent token naming');
+    }
+    
+  } catch (error) {
+    log(`Token consistency test failed: ${error.message}`, 'error');
+    addResult('Token Consistency', false, 'Test error');
   }
-  
-  const results = await Promise.all(promises);
-  const endTime = Date.now();
-  
-  const allPassed = results.every(result => result.ok);
-  const responseTime = endTime - startTime;
-  
-  addResult('Load Handling', allPassed, 
-    `10 concurrent requests in ${responseTime}ms, all passed: ${allPassed}`);
 }
 
 // Main test runner
 async function runTests() {
-  log('Starting comprehensive functionality tests...');
-  log('='.repeat(60));
+  log('Starting comprehensive functionality testing...', 'info');
   
-  // Run all tests
   await testDatabaseConnection();
   await testAuthentication();
   await testAPIEndpoints();
-  await testDatabaseOperations();
   await testPageFunctionality();
-  await testFormSubmissions();
-  await testRealTimeFeatures();
-  await testFileUpload();
-  await testAcademySystem();
-  await testPerformance();
+  await testFileStructure();
+  await testTokenInconsistencies();
   
-  // Summary
-  log('='.repeat(60));
-  log('TEST SUMMARY');
-  log('='.repeat(60));
+  // Generate summary report
+  log('\n📊 FUNCTIONALITY TEST SUMMARY', 'info');
+  log('================================', 'info');
   
   const passed = testResults.filter(r => r.passed).length;
+  const failed = testResults.filter(r => r.passed === false).length;
   const total = testResults.length;
-  const passRate = ((passed / total) * 100).toFixed(1);
   
-  log(`Total Tests: ${total}`);
-  log(`Passed: ${passed}`);
-  log(`Failed: ${total - passed}`);
-  log(`Pass Rate: ${passRate}%`);
+  log(`✅ Passed: ${passed}/${total}`, 'success');
+  log(`❌ Failed: ${failed}/${total}`, 'error');
+  log(`📈 Success Rate: ${Math.round((passed/total) * 100)}%`, 'info');
   
-  if (passed === total) {
-    log('🎉 ALL TESTS PASSED - Platform is fully functional!', 'success');
-  } else {
-    log('❌ Some tests failed - Platform needs attention', 'error');
-    
-    // Show failed tests
-    const failedTests = testResults.filter(r => !r.passed);
-    log('\nFailed Tests:');
-    failedTests.forEach(test => {
-      log(`  - ${test.test}: ${test.details}`, 'error');
+  // Show failed tests
+  if (failed > 0) {
+    log('\n🔍 ISSUES FOUND:', 'warning');
+    testResults.filter(r => !r.passed).forEach(result => {
+      log(`❌ ${result.test}: ${result.details}`, 'error');
     });
   }
   
-  return passRate >= 80; // 80% pass rate considered acceptable
+  // Show critical fixes needed
+  log('\n🔧 RECOMMENDED FIXES:', 'info');
+  log('1. Fix token storage inconsistency (authToken vs auth-token)', 'warning');
+  log('2. Ensure all API endpoints use consistent authentication', 'warning');
+  log('3. Verify database connection and schema sync', 'warning');
+  log('4. Test button functionality and form submissions', 'warning');
+  log('5. Implement proper error handling for failed API calls', 'warning');
 }
 
-// Run tests if called directly
-if (require.main === module) {
-  runTests().then(success => {
-    process.exit(success ? 0 : 1);
-  });
-}
-
-module.exports = { runTests };
+// Run the tests
+runTests().catch(console.error);

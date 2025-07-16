@@ -56,7 +56,7 @@ export function DashboardOverview() {
 
   const loadDashboardData = async () => {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('auth-token');
       if (!token) {
         window.location.href = '/auth';
         return;

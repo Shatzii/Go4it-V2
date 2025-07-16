@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Upload, Camera, FileVideo, Smartphone } from 'lucide-react'
 import { MobileVideoCapture } from '@/components/mobile/MobileVideoCapture'
 
-export default function UploadPage() {
+function UploadPageComponent() {
   const [showMobileCapture, setShowMobileCapture] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
@@ -37,7 +37,7 @@ export default function UploadPage() {
         method: 'POST',
         body: formData,
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
         }
       })
 
@@ -180,4 +180,12 @@ export default function UploadPage() {
       </div>
     </div>
   )
+}
+
+export default function $1() {
+  return (
+    <ErrorBoundary>
+      <$1Component />
+    </ErrorBoundary>
+  );
 }

@@ -11,21 +11,32 @@ export async function POST(request: NextRequest) {
     // Validate request body
     const validatedData = insertUserSchema.parse(body);
 
-    // Check if user already exists
-    const existingUser = await db.select().from(users)
+    // Check if user already exists (email or username)
+    const existingUserByEmail = await db.select().from(users)
       .where(eq(users.email, validatedData.email))
       .limit(1);
 
-    if (existingUser.length > 0) {
-      return NextResponse.json({ error: 'User already exists' }, { status: 400 });
+    if (existingUserByEmail.length > 0) {
+      return NextResponse.json({ error: 'User with this email already exists' }, { status: 400 });
+    }
+
+    const existingUserByUsername = await db.select().from(users)
+      .where(eq(users.username, validatedData.username))
+      .limit(1);
+
+    if (existingUserByUsername.length > 0) {
+      return NextResponse.json({ error: 'Username already taken' }, { status: 400 });
     }
 
     // Hash password
     const hashedPassword = await hashPassword(validatedData.password);
 
-    // Create user
+    // Create user with proper error handling
     const newUser = await db.insert(users).values({
-      ...validatedData,
+      username: validatedData.username,
+      email: validatedData.email,
+      firstName: validatedData.firstName,
+      lastName: validatedData.lastName,
       password: hashedPassword,
     }).returning();
 
@@ -47,6 +58,17 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Registration error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    
+    // Handle specific database errors
+    if (error.code === '23505') {
+      if (error.detail?.includes('email')) {
+        return NextResponse.json({ error: 'Email already exists' }, { status: 400 });
+      }
+      if (error.detail?.includes('username')) {
+        return NextResponse.json({ error: 'Username already taken' }, { status: 400 });
+      }
+    }
+    
+    return NextResponse.json({ error: 'Registration failed. Please try again.' }, { status: 500 });
   }
 }

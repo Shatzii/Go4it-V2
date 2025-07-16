@@ -124,7 +124,7 @@ export default function StarPathPage() {
 
   const loadStarPathProgress = async () => {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('auth-token');
       if (!token) {
         router.push('/auth');
         return;
