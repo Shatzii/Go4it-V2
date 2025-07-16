@@ -776,9 +776,14 @@ export default function Go4ItAcademy() {
                     1. Curriculum Management
                   </h4>
                   <p className="text-sm text-slate-300">K-12 standards alignment</p>
-                  <div className="text-xs text-slate-400 mt-1">
+                  <div className="text-xs text-slate-400 mt-1 mb-2">
                     {enhancedFeatures.curriculum ? 'Active' : 'Loading...'}
                   </div>
+                  <a href="/academy/curriculum" className="inline-block">
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+                      Access Feature
+                    </Button>
+                  </a>
                 </div>
                 <div className="bg-slate-700 rounded-lg p-4">
                   <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
@@ -786,9 +791,14 @@ export default function Go4ItAcademy() {
                     2. Advanced Grading
                   </h4>
                   <p className="text-sm text-slate-300">Weighted categories</p>
-                  <div className="text-xs text-slate-400 mt-1">
+                  <div className="text-xs text-slate-400 mt-1 mb-2">
                     {enhancedFeatures.grading ? 'Active' : 'Loading...'}
                   </div>
+                  <a href="/academy/grading" className="inline-block">
+                    <Button size="sm" className="bg-yellow-600 hover:bg-yellow-700 text-white">
+                      Access Feature
+                    </Button>
+                  </a>
                 </div>
                 <div className="bg-slate-700 rounded-lg p-4">
                   <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
@@ -796,9 +806,14 @@ export default function Go4ItAcademy() {
                     3. LMS Platform
                   </h4>
                   <p className="text-sm text-slate-300">Interactive content</p>
-                  <div className="text-xs text-slate-400 mt-1">
+                  <div className="text-xs text-slate-400 mt-1 mb-2">
                     {enhancedFeatures.lms ? 'Active' : 'Loading...'}
                   </div>
+                  <a href="/academy/lms" className="inline-block">
+                    <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white">
+                      Access Feature
+                    </Button>
+                  </a>
                 </div>
                 <div className="bg-slate-700 rounded-lg p-4">
                   <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
@@ -814,9 +829,14 @@ export default function Go4ItAcademy() {
                     5. Analytics & Reporting
                   </h4>
                   <p className="text-sm text-slate-300">Predictive analytics</p>
-                  <div className="text-xs text-slate-400 mt-1">
+                  <div className="text-xs text-slate-400 mt-1 mb-2">
                     {enhancedFeatures.analytics ? 'Active' : 'Loading...'}
                   </div>
+                  <a href="/academy/analytics" className="inline-block">
+                    <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white">
+                      Access Feature
+                    </Button>
+                  </a>
                 </div>
                 <div className="bg-slate-700 rounded-lg p-4">
                   <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
