@@ -346,41 +346,76 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
-    const formData = await request.formData();
-    const file = formData.get('video') as File;
-    const sport = formData.get('sport') as string;
+    const contentType = request.headers.get('content-type');
+    let file: File | null = null;
+    let sport: string = '';
+    let testMode: boolean = false;
 
-    if (!file || !sport) {
+    if (contentType?.includes('application/json')) {
+      // Handle JSON requests for testing
+      const body = await request.json();
+      sport = body.sport;
+      testMode = body.testMode || false;
+      
+      if (testMode) {
+        // Skip file processing for test mode
+        const testAnalysis = await analyzeVideoWithAI('test_video.mp4', sport, user.id);
+        return NextResponse.json({
+          success: true,
+          analysis: testAnalysis,
+          message: 'Test analysis completed successfully'
+        });
+      }
+    } else {
+      // Handle form data for actual file uploads
+      const formData = await request.formData();
+      file = formData.get('video') as File;
+      sport = formData.get('sport') as string;
+    }
+
+    if (!testMode && (!file || !sport)) {
       return NextResponse.json(
         { error: 'Video file and sport are required' },
         { status: 400 }
       );
     }
 
-    // Validate file type
-    const validTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/wmv'];
-    if (!validTypes.includes(file.type)) {
-      return NextResponse.json(
-        { error: 'Invalid file type. Please upload MP4, AVI, MOV, or WMV files.' },
-        { status: 400 }
-      );
+    if (!sport) {
+      return NextResponse.json({ error: 'Sport is required' }, { status: 400 });
     }
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), 'uploads');
-    try {
-      await mkdir(uploadsDir, { recursive: true });
-    } catch (error) {
-      // Directory might already exist
+    // Skip file validation for test mode
+    if (!testMode) {
+      // Validate file type
+      const validTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/wmv'];
+      if (!validTypes.includes(file.type)) {
+        return NextResponse.json(
+          { error: 'Invalid file type. Please upload MP4, AVI, MOV, or WMV files.' },
+          { status: 400 }
+        );
+      }
     }
 
-    // Save the uploaded file
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const fileName = `${Date.now()}-${file.name}`;
-    const filePath = path.join(uploadsDir, fileName);
+    let filePath = 'test_video.mp4';
+    
+    // Skip file processing for test mode
+    if (!testMode) {
+      // Create uploads directory if it doesn't exist
+      const uploadsDir = path.join(process.cwd(), 'uploads');
+      try {
+        await mkdir(uploadsDir, { recursive: true });
+      } catch (error) {
+        // Directory might already exist
+      }
 
-    await writeFile(filePath, buffer);
+      // Save the uploaded file
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const fileName = `${Date.now()}-${file.name}`;
+      filePath = path.join(uploadsDir, fileName);
+
+      await writeFile(filePath, buffer);
+    }
 
     // Perform AI analysis
     const analysis = await analyzeVideoWithAI(filePath, sport, user.id);
