@@ -1,35 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
-    unoptimized: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  // Minimal config for fastest possible builds
-  webpack: (config) => {
-    // Disable all optimizations
-    config.optimization = false;
-    config.resolve.alias = {
-      '@': require('path').resolve(__dirname, '.'),
-    };
-    return config;
-  },
-  env: {
-    PORT: '5000',
-    HOSTNAME: '0.0.0.0',
-  },
-  experimental: {
-    serverActions: {
-      allowedOrigins: ['*']
-    }
-  },
   output: 'standalone',
-  distDir: '.next',
-  generateBuildId: () => 'simple',
-}
+  images: { unoptimized: true },
+  eslint: { ignoreDuringBuilds: true },
+  typescript: { ignoreBuildErrors: true },
+  experimental: { 
+    serverActions: { 
+      allowedOrigins: ['localhost:5000', '*.replit.app', '*.replit.dev'] 
+    } 
+  },
+  env: { 
+    PORT: '5000', 
+    HOSTNAME: '0.0.0.0' 
+  },
+  basePath: '',
+  assetPrefix: '',
+  trailingSlash: false,
+};
 
 module.exports = nextConfig;
