@@ -141,7 +141,7 @@ export function EnhancedGamification() {
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 bg-slate-700/50 rounded-full flex items-center justify-center">
               <span className="text-2xl font-bold text-white">{userStats?.level}</span>
             </div>
             <div>
@@ -155,9 +155,9 @@ export function EnhancedGamification() {
           </div>
         </div>
         
-        <div className="bg-white/20 rounded-full h-3 mb-2">
+        <div className="bg-slate-700/50 rounded-full h-3 mb-2">
           <div 
-            className="bg-white h-3 rounded-full transition-all duration-300"
+            className="bg-slate-400 h-3 rounded-full transition-all duration-300"
             style={{ 
               width: `${userStats ? ((userStats.xp / (userStats.xp + userStats.xpToNextLevel)) * 100) : 0}%` 
             }}

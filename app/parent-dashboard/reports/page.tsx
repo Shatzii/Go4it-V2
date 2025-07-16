@@ -157,23 +157,23 @@ export default function ParentReports() {
   const selectedStudentData = students.find(s => s.id === selectedStudent)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-900">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-slate-800 shadow-sm border-b border-slate-700">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link href="/parent-dashboard" className="text-blue-600 hover:text-blue-700">
                 <ArrowLeft className="w-5 h-5" />
               </Link>
-              <h1 className="text-xl font-semibold text-gray-900">Academic Reports</h1>
+              <h1 className="text-xl font-semibold text-white">Academic Reports</h1>
             </div>
             <div className="flex items-center gap-3">
-              <button className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
+              <button className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-white hover:bg-gray-100 rounded-lg">
                 <Share className="w-4 h-4" />
                 Share
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
+              <button className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-white hover:bg-gray-100 rounded-lg">
                 <Printer className="w-4 h-4" />
                 Print
               </button>
@@ -188,7 +188,7 @@ export default function ParentReports() {
 
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <div className="bg-slate-800 rounded-lg shadow-sm border border-slate-700 p-6 mb-6">
           <div className="grid gap-4 md:grid-cols-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Student</label>
@@ -243,10 +243,10 @@ export default function ParentReports() {
         </div>
 
         {/* Report Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <div className="bg-slate-800 rounded-lg shadow-sm border border-slate-700 p-6 mb-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">{selectedStudentData?.name}</h2>
+              <h2 className="text-2xl font-bold text-white">{selectedStudentData?.name}</h2>
               <p className="text-gray-600">Grade {selectedStudentData?.grade} • SuperHero Elementary</p>
               <p className="text-gray-600">{reportData.period}</p>
             </div>
@@ -289,14 +289,14 @@ export default function ParentReports() {
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-6">
             {/* Subject Performance */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">Subject Performance</h3>
+            <div className="bg-slate-800 rounded-lg shadow-sm border border-slate-700 p-6">
+              <h3 className="text-lg font-semibold text-white mb-6">Subject Performance</h3>
               <div className="space-y-4">
                 {reportData.subjects.map((subject) => (
                   <div key={subject.name} className="border border-gray-200 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <h4 className="font-semibold text-gray-900">{subject.name}</h4>
+                        <h4 className="font-semibold text-white">{subject.name}</h4>
                         {getTrendIcon(subject.trend)}
                       </div>
                       <div className="text-right">
@@ -340,8 +340,8 @@ export default function ParentReports() {
             </div>
 
             {/* Attendance Details */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">Attendance Summary</h3>
+            <div className="bg-slate-800 rounded-lg shadow-sm border border-slate-700 p-6">
+              <h3 className="text-lg font-semibold text-white mb-6">Attendance Summary</h3>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <div className="text-center p-6 border-2 border-green-200 rounded-lg bg-green-50">
@@ -355,15 +355,15 @@ export default function ParentReports() {
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-slate-900 rounded-lg">
                     <span className="text-sm text-gray-600">Days Present</span>
                     <span className="font-semibold text-green-600">{reportData.attendance.present}</span>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-slate-900 rounded-lg">
                     <span className="text-sm text-gray-600">Excused Absences</span>
                     <span className="font-semibold text-blue-600">{reportData.attendance.excused}</span>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-slate-900 rounded-lg">
                     <span className="text-sm text-gray-600">Tardies</span>
                     <span className="font-semibold text-yellow-600">{reportData.attendance.tardies}</span>
                   </div>
@@ -374,14 +374,14 @@ export default function ParentReports() {
 
           <div className="space-y-6">
             {/* Achievements */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">Achievements</h3>
+            <div className="bg-slate-800 rounded-lg shadow-sm border border-slate-700 p-6">
+              <h3 className="text-lg font-semibold text-white mb-6">Achievements</h3>
               <div className="space-y-3">
                 {reportData.achievements.map((achievement, idx) => (
                   <div key={idx} className="flex items-start gap-3 p-3 bg-yellow-50 rounded-lg">
                     <Award className="w-5 h-5 text-yellow-600 mt-0.5" />
                     <div>
-                      <p className="text-sm font-medium text-gray-900">{achievement}</p>
+                      <p className="text-sm font-medium text-white">{achievement}</p>
                     </div>
                   </div>
                 ))}
@@ -389,8 +389,8 @@ export default function ParentReports() {
             </div>
 
             {/* Behavior Notes */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">Behavior & Social Skills</h3>
+            <div className="bg-slate-800 rounded-lg shadow-sm border border-slate-700 p-6">
+              <h3 className="text-lg font-semibold text-white mb-6">Behavior & Social Skills</h3>
               <div className="space-y-3">
                 {reportData.behaviorNotes.map((note, idx) => (
                   <div key={idx} className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
@@ -404,8 +404,8 @@ export default function ParentReports() {
             </div>
 
             {/* Recommendations */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">Teacher Recommendations</h3>
+            <div className="bg-slate-800 rounded-lg shadow-sm border border-slate-700 p-6">
+              <h3 className="text-lg font-semibold text-white mb-6">Teacher Recommendations</h3>
               <div className="space-y-3">
                 {reportData.recommendations.map((recommendation, idx) => (
                   <div key={idx} className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
@@ -419,18 +419,18 @@ export default function ParentReports() {
             </div>
 
             {/* Next Steps */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">Next Steps</h3>
+            <div className="bg-slate-800 rounded-lg shadow-sm border border-slate-700 p-6">
+              <h3 className="text-lg font-semibold text-white mb-6">Next Steps</h3>
               <div className="space-y-3">
-                <button className="w-full flex items-center gap-3 p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50">
+                <button className="w-full flex items-center gap-3 p-3 text-left border border-gray-200 rounded-lg hover:bg-slate-900">
                   <Calendar className="w-5 h-5 text-blue-500" />
                   <span className="text-sm font-medium">Schedule Parent Conference</span>
                 </button>
-                <button className="w-full flex items-center gap-3 p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50">
+                <button className="w-full flex items-center gap-3 p-3 text-left border border-gray-200 rounded-lg hover:bg-slate-900">
                   <Mail className="w-5 h-5 text-green-500" />
                   <span className="text-sm font-medium">Email Teacher</span>
                 </button>
-                <button className="w-full flex items-center gap-3 p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50">
+                <button className="w-full flex items-center gap-3 p-3 text-left border border-gray-200 rounded-lg hover:bg-slate-900">
                   <FileText className="w-5 h-5 text-purple-500" />
                   <span className="text-sm font-medium">View Detailed Assignments</span>
                 </button>
