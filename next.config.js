@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   images: { unoptimized: true },
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
@@ -12,8 +13,8 @@ const nextConfig = {
     PORT: '5000', 
     HOSTNAME: '0.0.0.0' 
   },
-  // Simplified config for development
-  assetPrefix: process.env.NODE_ENV === 'production' ? undefined : '',
+  basePath: '',
+  assetPrefix: '',
   trailingSlash: false,
 };
 
