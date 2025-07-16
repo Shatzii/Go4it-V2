@@ -72,6 +72,21 @@ export default function Go4ItAcademy() {
   const [selectedSchool, setSelectedSchool] = useState('go4it-academy')
   const [isAdmin, setIsAdmin] = useState(false)
   const [adminView, setAdminView] = useState('overview')
+  const [schoolData, setSchoolData] = useState({
+    students: [],
+    teachers: [],
+    courses: [],
+    assignments: [],
+    grades: [],
+    schedule: [],
+    attendance: [],
+    library: [],
+    sports: [],
+    counseling: [],
+    financialAid: [],
+    transportation: [],
+    cafeteria: []
+  })
   const [enhancedFeatures, setEnhancedFeatures] = useState({
     curriculum: null,
     grading: null,
@@ -80,7 +95,15 @@ export default function Go4ItAcademy() {
     communication: null,
     resources: null,
     security: null,
-    integrations: null
+    integrations: null,
+    sis: null,
+    scheduling: null,
+    library: null,
+    sports: null,
+    counseling: null,
+    finance: null,
+    transportation: null,
+    cafeteria: null
   })
   
   useEffect(() => {
