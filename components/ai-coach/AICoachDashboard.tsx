@@ -67,10 +67,26 @@ export function AICoachDashboard() {
 
   const fetchStarPathStatus = async () => {
     try {
-      const response = await fetch('/api/ai-coach/progress')
+      const token = localStorage.getItem('authToken');
+      if (!token) return;
+      
+      const response = await fetch('/api/starpath/progress', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
       if (response.ok) {
         const data = await response.json()
-        setStarPathStatus(data.starPathStatus)
+        setStarPathStatus({
+          currentLevel: `Level ${data.stats.currentTier}`,
+          totalXP: data.stats.totalXp,
+          nextLevelXP: data.stats.totalXp + 1000,
+          progress: (data.stats.totalXp % 1000) / 10,
+          unlockedSkills: data.progress.map(p => p.skillName),
+          nextSkill: 'Advanced Techniques',
+          achievements: data.progress.filter(p => p.isUnlocked).map(p => p.skillName)
+        });
       }
     } catch (error) {
       console.error('Failed to fetch StarPath status:', error)
@@ -80,18 +96,52 @@ export function AICoachDashboard() {
   const generateCoachingSession = async () => {
     setLoading(true)
     try {
-      const response = await fetch('/api/ai-coach', {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        alert('Please log in to use AI Coach');
+        return;
+      }
+      
+      const response = await fetch('/api/ai-coach/generate-skills', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(sessionConfig)
+        body: JSON.stringify({
+          sport: sessionConfig.sport.toLowerCase(),
+          level: sessionConfig.currentLevel.toLowerCase(),
+          focus_areas: sessionConfig.goals.split(',').map(s => s.trim())
+        })
       })
 
       if (response.ok) {
         const data = await response.json()
-        setActiveSession(data.session)
+        // Convert skills to coaching session format
+        const coachingSession: CoachingSession = {
+          id: Date.now().toString(),
+          sessionSummary: `${sessionConfig.sport} training session focusing on ${sessionConfig.goals}`,
+          drills: data.skills.map((skill: any, index: number) => ({
+            id: index.toString(),
+            name: skill.name,
+            description: skill.description,
+            instructions: skill.instructions || [],
+            equipment: skill.equipment || [],
+            difficulty: skill.difficulty || 'Intermediate',
+            duration: skill.duration || '10 minutes',
+            repetitions: skill.repetitions || '3 sets',
+            keyPoints: skill.keyPoints || [],
+            successMetrics: skill.successMetrics || [],
+            xpReward: skill.xpReward || 50,
+            completed: false
+          })),
+          starPathProgress: 'Skills generated successfully',
+          nextSteps: 'Complete the drills to progress in your StarPath journey',
+          sport: sessionConfig.sport,
+          currentLevel: sessionConfig.currentLevel,
+          timestamp: new Date().toISOString()
+        };
+        setActiveSession(coachingSession)
       } else {
         console.error('Failed to generate coaching session')
       }

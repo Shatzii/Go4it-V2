@@ -11,32 +11,21 @@ import { QuickActions } from '@/components/dashboard/QuickActions';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { AICoachingEngine } from '@/components/ai/AICoachingEngine';
 import { HighlightReelGenerator } from '@/components/highlights/HighlightReelGenerator';
-import { useApp } from '@/components/providers/AppProviders';
+import { DashboardOverview } from './components/DashboardOverview';
 
 export default function OptimizedDashboard() {
-  const { user, loading, setUser } = useApp();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/auth');
-    }
-  }, [user, loading, router]);
-
-  if (loading) {
-    return <DashboardSkeleton />;
-  }
-
-  if (!user) {
-    return null;
-  }
-
   return (
     <ClientOnly fallback={<DashboardSkeleton />}>
-      <div className="min-h-screen bg-background text-foreground hero-bg">
+      <div className="min-h-screen bg-background text-foreground">
         <DashboardHeader />
         
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <DashboardOverview />
+        </main>
+      </div>
+    </ClientOnly>
+  );
+}
           {/* Welcome Section */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-foreground neon-text mb-2">

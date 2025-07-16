@@ -33,9 +33,12 @@ export default function UploadPage() {
         })
       }, 200)
 
-      const response = await fetch('/api/videos/upload', {
+      const response = await fetch('/api/gar/analyze', {
         method: 'POST',
-        body: formData
+        body: formData,
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        }
       })
 
       clearInterval(progressInterval)
@@ -44,7 +47,7 @@ export default function UploadPage() {
       if (response.ok) {
         const data = await response.json()
         setTimeout(() => {
-          window.location.href = `/video-analysis/${data.videoId}`
+          window.location.href = `/dashboard?analysis=${data.analysisId}`
         }, 1000)
       }
     } catch (error) {
