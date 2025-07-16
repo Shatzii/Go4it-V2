@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { CheckCircle, ExternalLink, Activity, Target, Users, BarChart3, Star, TrendingUp, Award, Calendar, MapPin, ArrowRight, Play } from 'lucide-react'
 import Image from 'next/image'
 // Using public logo path for Next.js
-const logoImage = '/attached_assets/Go4it Logo_1752616197577.jpeg'
+const logoImage = '/go4it-logo-new.jpg'
 
 // Star Rating Component to match deployed site
 function StarRating({ rating, maxRating = 5 }: { rating: number; maxRating?: number }) {

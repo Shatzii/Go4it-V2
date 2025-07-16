@@ -159,15 +159,15 @@ export default function ParentCommunication() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-900">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-slate-800 shadow-sm border-b border-slate-700">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
             <Link href="/parent-dashboard" className="text-blue-600 hover:text-blue-700">
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <h1 className="text-xl font-semibold text-gray-900">Communication Center</h1>
+            <h1 className="text-xl font-semibold text-white">Communication Center</h1>
           </div>
         </div>
       </div>
@@ -176,10 +176,10 @@ export default function ParentCommunication() {
         <div className="grid gap-6 lg:grid-cols-4">
           {/* Conversations List */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm">
+            <div className="bg-slate-800 rounded-lg shadow-sm border border-slate-700">
               <div className="p-4 border-b">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-semibold text-gray-900">Messages</h2>
+                  <h2 className="font-semibold text-white">Messages</h2>
                   <button className="text-gray-500 hover:text-gray-700">
                     <MoreVertical className="w-4 h-4" />
                   </button>
@@ -215,7 +215,7 @@ export default function ParentCommunication() {
                 {conversations.map((conversation) => (
                   <div
                     key={conversation.id}
-                    className={`p-4 cursor-pointer hover:bg-gray-50 ${
+                    className={`p-4 cursor-pointer hover:bg-slate-900 ${
                       selectedConversation === conversation.id ? 'bg-blue-50 border-r-2 border-blue-500' : ''
                     }`}
                     onClick={() => setSelectedConversation(conversation.id)}
@@ -231,7 +231,7 @@ export default function ParentCommunication() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <h3 className="font-medium text-gray-900 truncate">{conversation.name}</h3>
+                          <h3 className="font-medium text-white truncate">{conversation.name}</h3>
                           <span className="text-xs text-gray-500">{conversation.timestamp}</span>
                         </div>
                         <p className="text-sm text-gray-600 truncate mt-1">{conversation.lastMessage}</p>
@@ -252,7 +252,7 @@ export default function ParentCommunication() {
 
           {/* Chat Area */}
           <div className="lg:col-span-3">
-            <div className="bg-white rounded-lg shadow-sm h-[600px] flex flex-col">
+            <div className="bg-slate-800 rounded-lg shadow-sm border border-slate-700 h-[600px] flex flex-col">
               {/* Chat Header */}
               <div className="p-4 border-b flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -265,7 +265,7 @@ export default function ParentCommunication() {
                     )}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">
+                    <h3 className="font-semibold text-white">
                       {selectedConversation === 'admin' ? 'School Administration' : selectedTeacher?.name}
                     </h3>
                     <p className="text-sm text-gray-600">
@@ -276,13 +276,13 @@ export default function ParentCommunication() {
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
+                  <button className="p-2 text-gray-600 hover:text-white hover:bg-gray-100 rounded-lg">
                     <Phone className="w-5 h-5" />
                   </button>
-                  <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
+                  <button className="p-2 text-gray-600 hover:text-white hover:bg-gray-100 rounded-lg">
                     <Video className="w-5 h-5" />
                   </button>
-                  <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
+                  <button className="p-2 text-gray-600 hover:text-white hover:bg-gray-100 rounded-lg">
                     <Calendar className="w-5 h-5" />
                   </button>
                 </div>
@@ -301,7 +301,7 @@ export default function ParentCommunication() {
                           ? 'bg-blue-500 text-white'
                           : message.type === 'announcement'
                           ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
-                          : 'bg-gray-100 text-gray-900'
+                          : 'bg-gray-100 text-white'
                       }`}
                     >
                       <p className="text-sm">{message.content}</p>
@@ -318,7 +318,7 @@ export default function ParentCommunication() {
               {/* Message Input */}
               <div className="p-4 border-t">
                 <div className="flex items-end gap-3">
-                  <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
+                  <button className="p-2 text-gray-600 hover:text-white hover:bg-gray-100 rounded-lg">
                     <Paperclip className="w-5 h-5" />
                   </button>
                   <div className="flex-1">
@@ -336,7 +336,7 @@ export default function ParentCommunication() {
                       }}
                     />
                   </div>
-                  <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
+                  <button className="p-2 text-gray-600 hover:text-white hover:bg-gray-100 rounded-lg">
                     <Smile className="w-5 h-5" />
                   </button>
                   <button

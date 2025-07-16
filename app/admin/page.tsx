@@ -501,9 +501,11 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
-                <Shield className="w-5 h-5 text-white" />
-              </div>
+              <img
+                src="/go4it-logo-new.jpg"
+                alt="Go4It Sports Logo"
+                className="w-8 h-8 rounded-lg object-cover"
+              />
               <div>
                 <h1 className="text-xl font-bold text-white">Go4It Sports Admin</h1>
                 <p className="text-sm text-slate-400">Platform Administration</p>
