@@ -62,6 +62,12 @@ export default function Go4ItHomePage() {
             </div>
             <div className="flex items-center space-x-4">
               <SafeLink 
+                href="/upload-guide" 
+                className="text-slate-300 hover:text-white transition-colors"
+              >
+                Upload Guide
+              </SafeLink>
+              <SafeLink 
                 href="/pricing" 
                 className="text-slate-300 hover:text-white transition-colors"
               >
