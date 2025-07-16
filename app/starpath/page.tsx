@@ -124,6 +124,32 @@ export default function StarPathPage() {
 
   const loadStarPathProgress = async () => {
     try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        router.push('/auth');
+        return;
+      }
+
+      const response = await fetch('/api/starpath/progress', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Update with real data from backend
+        setUserProgress({
+          totalXp: data.stats.totalXp,
+          completedNodes: data.stats.completedNodes,
+          currentTier: data.stats.currentTier,
+          achievements: data.stats.activeNodes
+        });
+      }
+    } catch (error) {
+      console.error('Failed to load StarPath progress:', error);
+    }
+    try {
       const response = await fetch('/api/starpath/progress');
       if (response.ok) {
         const data = await response.json();
