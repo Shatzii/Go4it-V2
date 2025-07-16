@@ -79,6 +79,28 @@ export default function Go4ItAcademy() {
     const masterAdmin = localStorage.getItem('master_admin') === 'true'
     const userRole = localStorage.getItem('user_role')
     setIsAdmin(adminMode || masterAdmin || userRole === 'admin')
+    
+    // Auto-switch to admin tab if user is admin
+    const checkUserRole = async () => {
+      try {
+        const response = await fetch('/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
+          }
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          if (userData.role === 'admin') {
+            setIsAdmin(true);
+            setActiveTab('admin');
+          }
+        }
+      } catch (error) {
+        console.log('Could not verify admin status');
+      }
+    };
+    
+    checkUserRole();
   }, [])
 
   const courses = [
