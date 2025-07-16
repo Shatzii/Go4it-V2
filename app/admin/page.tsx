@@ -496,25 +496,88 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-900">
+      {/* Standalone Admin Header */}
+      <div className="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+                <Shield className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-white">Go4It Sports Admin</h1>
+                <p className="text-sm text-slate-400">Platform Administration</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Button 
+                onClick={() => window.location.href = '/'}
+                variant="ghost"
+                size="sm"
+                className="text-slate-400 hover:text-white hover:bg-slate-700"
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Back to Site
+              </Button>
+              <div className="text-right">
+                <p className="text-sm text-slate-400">Logged in as</p>
+                <p className="font-medium text-white">{adminUser?.email}</p>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+                <span className="text-sm font-medium text-white">
+                  {adminUser?.firstName?.[0] || 'A'}{adminUser?.lastName?.[0] || 'D'}
+                </span>
+              </div>
+              <Button 
+                onClick={() => {
+                  AuthClient.removeToken();
+                  window.location.href = '/auth';
+                }}
+                variant="outline"
+                size="sm"
+                className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+              >
+                Logout
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Header */}
+        {/* Breadcrumb Navigation */}
+        <div className="mb-6">
+          <nav className="flex items-center space-x-2 text-sm text-slate-400">
+            <span>Admin</span>
+            <span>/</span>
+            <span className="text-white font-medium">
+              {activeTab === 'overview' && 'Dashboard Overview'}
+              {activeTab === 'users' && 'User Management'}
+              {activeTab === 'content' && 'Content Management'}
+              {activeTab === 'system' && 'System Settings'}
+            </span>
+          </nav>
+        </div>
+
+        {/* Quick Stats Banner */}
         <div className="mb-8">
           <div className="bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 text-white p-6 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold mb-2">Go4It Sports Admin Dashboard</h1>
-                <p className="text-lg text-slate-300">Complete platform administration</p>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-400">1,247</div>
+                <div className="text-sm text-slate-400">Active Users</div>
               </div>
-              <div className="flex items-center space-x-4">
-                <div className="text-right">
-                  <p className="text-sm text-slate-400">Logged in as</p>
-                  <p className="font-medium">{adminUser?.email}</p>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
-                  <span className="text-sm font-medium text-white">
-                    {adminUser?.firstName?.[0]}{adminUser?.lastName?.[0]}
-                  </span>
-                </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-400">98.5%</div>
+                <div className="text-sm text-slate-400">System Uptime</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-400">2,439</div>
+                <div className="text-sm text-slate-400">Videos Analyzed</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-400">156</div>
+                <div className="text-sm text-slate-400">Academy Students</div>
               </div>
             </div>
           </div>
