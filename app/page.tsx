@@ -62,12 +62,6 @@ export default function Go4ItHomePage() {
             </div>
             <div className="flex items-center space-x-4">
               <SafeLink 
-                href="/cms" 
-                className="text-slate-300 hover:text-white transition-colors"
-              >
-                CMS
-              </SafeLink>
-              <SafeLink 
                 href="/auth" 
                 className="text-slate-300 hover:text-white transition-colors"
               >
