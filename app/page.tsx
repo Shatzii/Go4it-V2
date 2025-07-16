@@ -68,6 +68,12 @@ export default function Go4ItHomePage() {
                 Upload Guide
               </SafeLink>
               <SafeLink 
+                href="/content-tagging" 
+                className="text-slate-300 hover:text-white transition-colors"
+              >
+                AI Tagging
+              </SafeLink>
+              <SafeLink 
                 href="/pricing" 
                 className="text-slate-300 hover:text-white transition-colors"
               >
