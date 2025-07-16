@@ -15,9 +15,6 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { Suspense } from 'react';
 
 // Force dynamic rendering for this page
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
 function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) {
   return (
     <Card className="bg-gradient-to-r from-red-500/20 to-pink-500/20 border-red-500">

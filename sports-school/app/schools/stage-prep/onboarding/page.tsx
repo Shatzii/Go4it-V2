@@ -13,9 +13,7 @@ import {
   Clock, Target, Heart
 } from 'lucide-react';
 
-// Force dynamic rendering for this page
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Client component for interactive onboarding
 
 export default function StagePrepOnboarding() {
   const [currentStep, setCurrentStep] = useState(1);
