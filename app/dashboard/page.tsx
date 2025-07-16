@@ -19,8 +19,8 @@ import {
   CheckCircle
 } from 'lucide-react'
 import ClientOnly from '@/components/ClientOnly'
-// import { EnhancedLoading, SkeletonCard, SkeletonList } from '@/components/enhanced-loading'
-// import { SmoothTransition, FadeInUp, SlideInCard, SmoothProgress } from '@/components/smooth-transitions'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { SmoothProgress } from '@/components/simple-transitions'
 
 function DashboardComponent() {
   const [loading, setLoading] = useState(true)
@@ -141,7 +141,7 @@ function DashboardComponent() {
                   <TrendingUp className="w-8 h-8 text-blue-500" />
                 </div>
                 <div className="mt-3">
-                  <Progress value={dashboardData.stats.overallProgress} className="h-2" />
+                  <SmoothProgress value={dashboardData.stats.overallProgress} />
                 </div>
               </CardContent>
             </Card>
@@ -300,10 +300,10 @@ function DashboardComponent() {
   )
 }
 
-export default function $1() {
+export default function Dashboard() {
   return (
     <ErrorBoundary>
-      <$1Component />
+      <DashboardComponent />
     </ErrorBoundary>
   );
 }

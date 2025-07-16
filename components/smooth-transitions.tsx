@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+// import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronRight, Home, User, Settings, LogOut } from 'lucide-react'
 
 interface SmoothTransitionProps {
@@ -19,52 +19,9 @@ export function SmoothTransition({
   duration = 0.5,
   direction = 'up'
 }: SmoothTransitionProps) {
-  const [isVisible, setIsVisible] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => setIsVisible(true), delay * 1000)
-        }
-      },
-      { threshold: 0.1 }
-    )
-
-    if (ref.current) {
-      observer.observe(ref.current)
-    }
-
-    return () => observer.disconnect()
-  }, [delay])
-
-  const variants = {
-    hidden: {
-      opacity: 0,
-      y: direction === 'up' ? 20 : direction === 'down' ? -20 : 0,
-      x: direction === 'left' ? 20 : direction === 'right' ? -20 : 0
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      x: 0,
-      transition: {
-        duration,
-        ease: 'easeOut'
-      }
-    }
-  }
-
   return (
-    <div ref={ref} className={className}>
-      <motion.div
-        initial="hidden"
-        animate={isVisible ? 'visible' : 'hidden'}
-        variants={variants}
-      >
-        {children}
-      </motion.div>
+    <div className={className}>
+      {children}
     </div>
   )
 }
