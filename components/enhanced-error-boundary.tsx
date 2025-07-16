@@ -4,7 +4,7 @@ import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { AlertTriangle, RefreshCw, Home, Bug } from 'lucide-react'
-import { SmoothTransition, FadeInUp } from './smooth-transitions'
+// import { SmoothTransition, FadeInUp } from './smooth-transitions'
 
 interface ErrorBoundaryProps {
   children: React.ReactNode
@@ -122,121 +122,109 @@ Additional Information:
 
       return (
         <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-          <SmoothTransition>
-            <Card className="bg-slate-800 border-slate-700 max-w-2xl w-full">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2 text-red-400">
-                  <AlertTriangle className="w-6 h-6" />
-                  <span>Something went wrong</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <FadeInUp>
-                  <div className="text-slate-300">
-                    {isNetworkError ? (
+          <Card className="bg-slate-800 border-slate-700 max-w-2xl w-full">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2 text-red-400">
+                <AlertTriangle className="w-6 h-6" />
+                <span>Something went wrong</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="text-slate-300">
+                {isNetworkError ? (
+                  <div>
+                    <p className="mb-2">A network error occurred. Please check your connection and try again.</p>
+                    <p className="text-sm text-slate-400">
+                      This might be due to a temporary connectivity issue or server maintenance.
+                    </p>
+                  </div>
+                ) : isChunkError ? (
+                  <div>
+                    <p className="mb-2">A loading error occurred. This usually resolves with a page refresh.</p>
+                    <p className="text-sm text-slate-400">
+                      This can happen when the application is updated while you're using it.
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="mb-2">An unexpected error occurred in the application.</p>
+                    <p className="text-sm text-slate-400">
+                      {error?.message || 'Unknown error'}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-slate-700 rounded-lg p-4">
+                <h4 className="font-semibold text-white mb-2">What you can do:</h4>
+                <ul className="space-y-1 text-sm text-slate-300">
+                  <li>• Try refreshing the page or clicking "Try Again" below</li>
+                  <li>• Check your internet connection</li>
+                  <li>• Clear your browser cache and cookies</li>
+                  <li>• Try again in a few minutes</li>
+                </ul>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button
+                  onClick={this.handleRetry}
+                  disabled={retryCount >= maxRetries}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Try Again {retryCount > 0 && `(${retryCount}/${maxRetries})`}
+                </Button>
+                
+                <Button
+                  onClick={this.handleGoHome}
+                  variant="outline"
+                  className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                >
+                  <Home className="w-4 h-4 mr-2" />
+                  Go to Homepage
+                </Button>
+              </div>
+
+              <div className="border-t border-slate-600 pt-4">
+                <Button
+                  onClick={this.handleReportBug}
+                  variant="ghost"
+                  size="sm"
+                  className="text-slate-400 hover:text-slate-300"
+                >
+                  <Bug className="w-4 h-4 mr-2" />
+                  Report this issue
+                </Button>
+              </div>
+
+              {process.env.NODE_ENV === 'development' && (
+                <details className="bg-slate-700 rounded-lg p-4">
+                  <summary className="cursor-pointer text-sm font-semibold text-slate-300 mb-2">
+                    Developer Information
+                  </summary>
+                  <div className="text-xs text-slate-400 space-y-2">
+                    <div>
+                      <strong>Error:</strong> {error?.message}
+                    </div>
+                    <div>
+                      <strong>Stack:</strong>
+                      <pre className="mt-1 overflow-x-auto whitespace-pre-wrap">
+                        {error?.stack}
+                      </pre>
+                    </div>
+                    {this.state.errorInfo && (
                       <div>
-                        <p className="mb-2">A network error occurred. Please check your connection and try again.</p>
-                        <p className="text-sm text-slate-400">
-                          This might be due to a temporary connectivity issue or server maintenance.
-                        </p>
-                      </div>
-                    ) : isChunkError ? (
-                      <div>
-                        <p className="mb-2">A loading error occurred. This usually resolves with a page refresh.</p>
-                        <p className="text-sm text-slate-400">
-                          This can happen when the application is updated while you're using it.
-                        </p>
-                      </div>
-                    ) : (
-                      <div>
-                        <p className="mb-2">An unexpected error occurred in the application.</p>
-                        <p className="text-sm text-slate-400">
-                          {error?.message || 'Unknown error'}
-                        </p>
+                        <strong>Component Stack:</strong>
+                        <pre className="mt-1 overflow-x-auto whitespace-pre-wrap">
+                          {this.state.errorInfo.componentStack}
+                        </pre>
                       </div>
                     )}
                   </div>
-                </FadeInUp>
-
-                <FadeInUp delay={0.1}>
-                  <div className="bg-slate-700 rounded-lg p-4">
-                    <h4 className="font-semibold text-white mb-2">What you can do:</h4>
-                    <ul className="space-y-1 text-sm text-slate-300">
-                      <li>• Try refreshing the page or clicking "Try Again" below</li>
-                      <li>• Check your internet connection</li>
-                      <li>• Clear your browser cache and cookies</li>
-                      <li>• Try again in a few minutes</li>
-                    </ul>
-                  </div>
-                </FadeInUp>
-
-                <FadeInUp delay={0.2}>
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Button
-                      onClick={this.handleRetry}
-                      disabled={retryCount >= maxRetries}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      <RefreshCw className="w-4 h-4 mr-2" />
-                      Try Again {retryCount > 0 && `(${retryCount}/${maxRetries})`}
-                    </Button>
-                    
-                    <Button
-                      onClick={this.handleGoHome}
-                      variant="outline"
-                      className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
-                    >
-                      <Home className="w-4 h-4 mr-2" />
-                      Go to Homepage
-                    </Button>
-                  </div>
-                </FadeInUp>
-
-                <FadeInUp delay={0.3}>
-                  <div className="border-t border-slate-600 pt-4">
-                    <Button
-                      onClick={this.handleReportBug}
-                      variant="ghost"
-                      size="sm"
-                      className="text-slate-400 hover:text-slate-300"
-                    >
-                      <Bug className="w-4 h-4 mr-2" />
-                      Report this issue
-                    </Button>
-                  </div>
-                </FadeInUp>
-
-                {process.env.NODE_ENV === 'development' && (
-                  <FadeInUp delay={0.4}>
-                    <details className="bg-slate-700 rounded-lg p-4">
-                      <summary className="cursor-pointer text-sm font-semibold text-slate-300 mb-2">
-                        Developer Information
-                      </summary>
-                      <div className="text-xs text-slate-400 space-y-2">
-                        <div>
-                          <strong>Error:</strong> {error?.message}
-                        </div>
-                        <div>
-                          <strong>Stack:</strong>
-                          <pre className="mt-1 overflow-x-auto whitespace-pre-wrap">
-                            {error?.stack}
-                          </pre>
-                        </div>
-                        {this.state.errorInfo && (
-                          <div>
-                            <strong>Component Stack:</strong>
-                            <pre className="mt-1 overflow-x-auto whitespace-pre-wrap">
-                              {this.state.errorInfo.componentStack}
-                            </pre>
-                          </div>
-                        )}
-                      </div>
-                    </details>
-                  </FadeInUp>
-                )}
-              </CardContent>
-            </Card>
-          </SmoothTransition>
+                </details>
+              )}
+            </CardContent>
+          </Card>
         </div>
       )
     }
