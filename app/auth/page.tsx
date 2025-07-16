@@ -44,7 +44,10 @@ export default function OptimizedAuthPage() {
       if (response.ok) {
         setUser(data.user);
         setSuccess(isLogin ? 'Login successful!' : 'Registration successful!');
-        setTimeout(() => router.push('/dashboard'), 1000);
+        
+        // Redirect based on user role
+        const redirectPath = data.user.role === 'admin' ? '/academy' : '/dashboard';
+        setTimeout(() => router.push(redirectPath), 1000);
       } else {
         setError(data.error || 'Authentication failed');
       }
