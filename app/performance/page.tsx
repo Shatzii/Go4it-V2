@@ -23,7 +23,7 @@ interface PerformanceAnalytics {
   };
 }
 
-export default function PerformancePage() {
+function PerformancePageComponent() {
   const [analytics, setAnalytics] = useState<PerformanceAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
   const [timeframe, setTimeframe] = useState('30');
@@ -34,7 +34,7 @@ export default function PerformancePage() {
 
   const loadPerformanceAnalytics = async () => {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('auth-token');
       if (!token) {
         window.location.href = '/auth';
         return;
@@ -241,5 +241,13 @@ export default function PerformancePage() {
         </Tabs>
       </div>
     </div>
+  );
+}
+
+export default function $1() {
+  return (
+    <ErrorBoundary>
+      <$1Component />
+    </ErrorBoundary>
   );
 }

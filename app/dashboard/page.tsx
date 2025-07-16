@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 import ClientOnly from '@/components/ClientOnly'
 
-export default function Dashboard() {
+function DashboardComponent() {
   const [dashboardData, setDashboardData] = useState({
     stats: {
       garScore: 87,
@@ -258,4 +258,12 @@ export default function Dashboard() {
       </div>
     </ClientOnly>
   )
+}
+
+export default function $1() {
+  return (
+    <ErrorBoundary>
+      <$1Component />
+    </ErrorBoundary>
+  );
 }
