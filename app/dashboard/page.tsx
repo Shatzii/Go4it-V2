@@ -19,8 +19,8 @@ import {
   CheckCircle
 } from 'lucide-react'
 import ClientOnly from '@/components/ClientOnly'
-import { EnhancedLoading, SkeletonCard, SkeletonList } from '@/components/enhanced-loading'
-import { SmoothTransition, FadeInUp, SlideInCard, SmoothProgress } from '@/components/smooth-transitions'
+// import { EnhancedLoading, SkeletonCard, SkeletonList } from '@/components/enhanced-loading'
+// import { SmoothTransition, FadeInUp, SlideInCard, SmoothProgress } from '@/components/smooth-transitions'
 
 function DashboardComponent() {
   const [loading, setLoading] = useState(true)
@@ -73,6 +73,22 @@ function DashboardComponent() {
     ]
   })
 
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      setLoading(true)
+      try {
+        // Simulate processing time
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        setLoading(false)
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error)
+        setLoading(false)
+      }
+    }
+    
+    fetchDashboardData()
+  }, [])
+
   if (loading) {
     return (
       <ClientOnly>
@@ -83,13 +99,7 @@ function DashboardComponent() {
               <p className="text-slate-400">Loading your latest performance data...</p>
             </div>
             <div className="flex justify-center mt-16">
-              <EnhancedLoading 
-                message="Loading your athlete dashboard"
-                type="processing"
-                showProgress={true}
-                progress={75}
-                animated={true}
-              />
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
             </div>
           </div>
         </div>
@@ -102,76 +112,64 @@ function DashboardComponent() {
       <div className="min-h-screen bg-slate-900 text-white">
         <div className="max-w-7xl mx-auto px-4 py-8">
           {/* Header */}
-          <FadeInUp>
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold mb-2">Athletic Dashboard</h1>
-              <p className="text-slate-400">Track your athletic and academic progress</p>
-            </div>
-          </FadeInUp>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-2">Athletic Dashboard</h1>
+            <p className="text-slate-400">Track your athletic and academic progress</p>
+          </div>
 
           {/* Stats Grid */}
-          <SmoothTransition delay={0.1}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <SlideInCard>
-                <Card className="bg-slate-800 border-slate-700">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-slate-400">GAR Score</p>
-                        <p className="text-2xl font-bold text-green-400">{dashboardData.stats.garScore}</p>
-                      </div>
-                      <Trophy className="w-8 h-8 text-yellow-500" />
-                    </div>
-                  </CardContent>
-                </Card>
-              </SlideInCard>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <Card className="bg-slate-800 border-slate-700">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-400">GAR Score</p>
+                    <p className="text-2xl font-bold text-green-400">{dashboardData.stats.garScore}</p>
+                  </div>
+                  <Trophy className="w-8 h-8 text-yellow-500" />
+                </div>
+              </CardContent>
+            </Card>
 
-            <SlideInCard>
-              <Card className="bg-slate-800 border-slate-700">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-slate-400">Overall Progress</p>
-                      <p className="text-2xl font-bold text-blue-400">{dashboardData.stats.overallProgress}%</p>
-                    </div>
-                    <TrendingUp className="w-8 h-8 text-blue-500" />
+            <Card className="bg-slate-800 border-slate-700">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-400">Overall Progress</p>
+                    <p className="text-2xl font-bold text-blue-400">{dashboardData.stats.overallProgress}%</p>
                   </div>
-                  <div className="mt-3">
-                    <SmoothProgress value={dashboardData.stats.overallProgress} />
-                  </div>
-                </CardContent>
-              </Card>
-            </SlideInCard>
+                  <TrendingUp className="w-8 h-8 text-blue-500" />
+                </div>
+                <div className="mt-3">
+                  <Progress value={dashboardData.stats.overallProgress} className="h-2" />
+                </div>
+              </CardContent>
+            </Card>
 
-            <SlideInCard>
-              <Card className="bg-slate-800 border-slate-700">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-slate-400">Courses</p>
-                      <p className="text-2xl font-bold text-purple-400">{dashboardData.stats.coursesEnrolled}</p>
-                    </div>
-                    <BookOpen className="w-8 h-8 text-purple-500" />
+            <Card className="bg-slate-800 border-slate-700">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-400">Courses</p>
+                    <p className="text-2xl font-bold text-purple-400">{dashboardData.stats.coursesEnrolled}</p>
                   </div>
-                </CardContent>
-              </Card>
-            </SlideInCard>
+                  <BookOpen className="w-8 h-8 text-purple-500" />
+                </div>
+              </CardContent>
+            </Card>
 
-            <SlideInCard>
-              <Card className="bg-slate-800 border-slate-700">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-slate-400">Study Streak</p>
-                      <p className="text-2xl font-bold text-orange-400">{dashboardData.stats.studyStreak} days</p>
-                    </div>
-                    <Activity className="w-8 h-8 text-orange-500" />
+            <Card className="bg-slate-800 border-slate-700">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-400">Study Streak</p>
+                    <p className="text-2xl font-bold text-orange-400">{dashboardData.stats.studyStreak} days</p>
                   </div>
-                </CardContent>
-              </Card>
-            </SlideInCard>
+                  <Activity className="w-8 h-8 text-orange-500" />
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </SmoothTransition>
 
           {/* Main Content */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

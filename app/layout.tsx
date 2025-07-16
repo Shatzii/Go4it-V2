@@ -42,7 +42,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className={`${inter.className} bg-slate-950 text-white antialiased`}>
-        <EnhancedErrorBoundary>
+        <ErrorBoundary>
           <ClientOnly>
             <AppProvider>
               <WebSocketProvider>
@@ -90,7 +90,7 @@ export default function RootLayout({
               </WebSocketProvider>
             </AppProvider>
           </ClientOnly>
-        </EnhancedErrorBoundary>
+        </ErrorBoundary>
       </body>
     </html>
   );
