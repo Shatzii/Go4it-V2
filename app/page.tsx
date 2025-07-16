@@ -62,13 +62,19 @@ export default function Go4ItHomePage() {
             </div>
             <div className="flex items-center space-x-4">
               <SafeLink 
+                href="/pricing" 
+                className="text-slate-300 hover:text-white transition-colors"
+              >
+                Pricing
+              </SafeLink>
+              <SafeLink 
                 href="/auth" 
                 className="text-slate-300 hover:text-white transition-colors"
               >
                 Sign In
               </SafeLink>
               <SafeLink 
-                href="/auth" 
+                href="/pricing" 
                 className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-lg"
               >
                 Get Started
