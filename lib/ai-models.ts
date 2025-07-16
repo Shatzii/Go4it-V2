@@ -268,19 +268,21 @@ export class AIModelManager {
 
 // Factory function to create AI model manager based on configuration
 export function createAIModelManager(): AIModelManager {
-  const useLocal = process.env.USE_LOCAL_MODELS === 'true';
+  // Default to self-hosted models for Go4It Sports Platform
+  // User preference: Use self-hosted AI models instead of external APIs
+  const useLocal = process.env.USE_LOCAL_MODELS !== 'false'; // Default to true
   
   if (useLocal) {
     return new AIModelManager({
       type: 'local',
       provider: 'ollama',
-      model: process.env.LOCAL_SPORTS_MODEL || 'sports-coach-mini',
+      model: process.env.LOCAL_SPORTS_MODEL || 'llama3.1:8b',
       endpoint: process.env.OLLAMA_ENDPOINT || 'http://localhost:11434/api/generate',
       maxTokens: 2000,
       temperature: 0.7
     });
   } else {
-    // Fallback to cloud APIs
+    // Fallback to cloud APIs only when explicitly requested
     if (process.env.OPENAI_API_KEY) {
       return new AIModelManager({
         type: 'cloud',
