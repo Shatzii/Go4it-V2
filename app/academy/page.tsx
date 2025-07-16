@@ -72,6 +72,16 @@ export default function Go4ItAcademy() {
   const [selectedSchool, setSelectedSchool] = useState('go4it-academy')
   const [isAdmin, setIsAdmin] = useState(false)
   const [adminView, setAdminView] = useState('overview')
+  const [enhancedFeatures, setEnhancedFeatures] = useState({
+    curriculum: null,
+    grading: null,
+    lms: null,
+    analytics: null,
+    communication: null,
+    resources: null,
+    security: null,
+    integrations: null
+  })
   
   useEffect(() => {
     // Check admin status to allow full access
@@ -100,7 +110,48 @@ export default function Go4ItAcademy() {
       }
     };
     
+    // Load enhanced academy features
+    const loadEnhancedFeatures = async () => {
+      try {
+        const [curriculumRes, gradingRes, lmsRes, analyticsRes, communicationRes, resourcesRes, securityRes, integrationsRes] = await Promise.all([
+          fetch('/api/academy/curriculum'),
+          fetch('/api/academy/grading'),
+          fetch('/api/academy/lms'),
+          fetch('/api/academy/analytics'),
+          fetch('/api/academy/communication'),
+          fetch('/api/academy/resources'),
+          fetch('/api/academy/security'),
+          fetch('/api/academy/integrations')
+        ]);
+
+        const [curriculum, grading, lms, analytics, communication, resources, security, integrations] = await Promise.all([
+          curriculumRes.json(),
+          gradingRes.json(),
+          lmsRes.json(),
+          analyticsRes.json(),
+          communicationRes.json(),
+          resourcesRes.json(),
+          securityRes.json(),
+          integrationsRes.json()
+        ]);
+
+        setEnhancedFeatures({
+          curriculum,
+          grading,
+          lms,
+          analytics,
+          communication,
+          resources,
+          security,
+          integrations
+        });
+      } catch (error) {
+        console.log('Could not load enhanced features');
+      }
+    };
+    
     checkUserRole();
+    loadEnhancedFeatures();
   }, [])
 
   const courses = [
@@ -715,6 +766,125 @@ export default function Go4ItAcademy() {
         {adminView === 'cms' && <CMSSection />}
         {adminView === 'overview' && (
           <div className="space-y-6">
+            {/* Enhanced Features Summary */}
+            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+              <h3 className="text-xl font-bold text-white mb-4">12 Integrated Academy Features</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-slate-700 rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+                    <BookOpen className="w-5 h-5 text-green-400" />
+                    1. Curriculum Management
+                  </h4>
+                  <p className="text-sm text-slate-300">K-12 standards alignment</p>
+                  <div className="text-xs text-slate-400 mt-1">
+                    {enhancedFeatures.curriculum ? 'Active' : 'Loading...'}
+                  </div>
+                </div>
+                <div className="bg-slate-700 rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+                    <Trophy className="w-5 h-5 text-yellow-400" />
+                    2. Advanced Grading
+                  </h4>
+                  <p className="text-sm text-slate-300">Weighted categories</p>
+                  <div className="text-xs text-slate-400 mt-1">
+                    {enhancedFeatures.grading ? 'Active' : 'Loading...'}
+                  </div>
+                </div>
+                <div className="bg-slate-700 rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+                    <Play className="w-5 h-5 text-purple-400" />
+                    3. LMS Platform
+                  </h4>
+                  <p className="text-sm text-slate-300">Interactive content</p>
+                  <div className="text-xs text-slate-400 mt-1">
+                    {enhancedFeatures.lms ? 'Active' : 'Loading...'}
+                  </div>
+                </div>
+                <div className="bg-slate-700 rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+                    <Target className="w-5 h-5 text-blue-400" />
+                    4. Learning Pathways
+                  </h4>
+                  <p className="text-sm text-slate-300">Personalized learning</p>
+                  <div className="text-xs text-slate-400 mt-1">Active</div>
+                </div>
+                <div className="bg-slate-700 rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-orange-400" />
+                    5. Analytics & Reporting
+                  </h4>
+                  <p className="text-sm text-slate-300">Predictive analytics</p>
+                  <div className="text-xs text-slate-400 mt-1">
+                    {enhancedFeatures.analytics ? 'Active' : 'Loading...'}
+                  </div>
+                </div>
+                <div className="bg-slate-700 rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+                    <User className="w-5 h-5 text-cyan-400" />
+                    6. Student Information
+                  </h4>
+                  <p className="text-sm text-slate-300">SIS management</p>
+                  <div className="text-xs text-slate-400 mt-1">Active</div>
+                </div>
+                <div className="bg-slate-700 rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+                    <MessageCircle className="w-5 h-5 text-green-400" />
+                    7. Communication Hub
+                  </h4>
+                  <p className="text-sm text-slate-300">Messaging platform</p>
+                  <div className="text-xs text-slate-400 mt-1">
+                    {enhancedFeatures.communication ? 'Active' : 'Loading...'}
+                  </div>
+                </div>
+                <div className="bg-slate-700 rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+                    <Brain className="w-5 h-5 text-pink-400" />
+                    8. Sports Science Lab
+                  </h4>
+                  <p className="text-sm text-slate-300">Virtual labs</p>
+                  <div className="text-xs text-slate-400 mt-1">Active</div>
+                </div>
+                <div className="bg-slate-700 rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+                    <GraduationCap className="w-5 h-5 text-indigo-400" />
+                    9. Career Preparation
+                  </h4>
+                  <p className="text-sm text-slate-300">College recruitment</p>
+                  <div className="text-xs text-slate-400 mt-1">Active</div>
+                </div>
+                <div className="bg-slate-700 rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+                    <Settings className="w-5 h-5 text-gray-400" />
+                    10. Resource Management
+                  </h4>
+                  <p className="text-sm text-slate-300">Equipment tracking</p>
+                  <div className="text-xs text-slate-400 mt-1">
+                    {enhancedFeatures.resources ? 'Active' : 'Loading...'}
+                  </div>
+                </div>
+                <div className="bg-slate-700 rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+                    <Star className="w-5 h-5 text-red-400" />
+                    11. Security & Privacy
+                  </h4>
+                  <p className="text-sm text-slate-300">FERPA compliance</p>
+                  <div className="text-xs text-slate-400 mt-1">
+                    {enhancedFeatures.security ? 'Active' : 'Loading...'}
+                  </div>
+                </div>
+                <div className="bg-slate-700 rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+                    <Zap className="w-5 h-5 text-yellow-400" />
+                    12. Integrations
+                  </h4>
+                  <p className="text-sm text-slate-300">LMS & automation</p>
+                  <div className="text-xs text-slate-400 mt-1">
+                    {enhancedFeatures.integrations ? 'Active' : 'Loading...'}
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Card className="bg-slate-800 border-slate-700">
                 <CardContent className="p-4">
