@@ -239,7 +239,10 @@ export class AIModelManager {
 
   private generateLocalSportsAnalysis(prompt: string, context?: any): string {
     // Intelligent sports analysis without external dependencies
-    const sportKeywords = ['basketball', 'football', 'soccer', 'tennis', 'baseball', 'volleyball', 'track', 'swimming'];
+    const sportKeywords = [
+      'basketball', 'football', 'soccer', 'tennis', 'baseball', 'volleyball', 'track', 'swimming',
+      'table tennis', 'badminton', 'golf', 'field hockey', 'cricket', 'rugby', 'ski jumping'
+    ];
     const sport = sportKeywords.find(s => prompt.toLowerCase().includes(s)) || 'general';
     
     // Pattern-based analysis for different sports analysis types
@@ -261,6 +264,16 @@ export class AIModelManager {
       basketball: "Biomechanical Analysis: Good shooting posture with slight forward lean. Balance score: 82/100. Coordination shows efficient energy transfer from legs to arms. Footwork demonstrates proper weight distribution. Recommendation: Focus on core stability and ankle mobility for improved consistency.",
       soccer: "Biomechanical Analysis: Running gait shows good stride length and minimal energy waste. Balance during ball control: 85/100. Kicking mechanics display proper hip rotation and follow-through. Recommendation: Work on single-leg stability and dynamic balance exercises.",
       tennis: "Biomechanical Analysis: Serve motion demonstrates good kinetic chain efficiency. Forehand stroke shows proper weight transfer. Balance and coordination: 80/100. Recommendation: Focus on rotational core strength and shoulder stability.",
+      baseball: "Biomechanical Analysis: Batting swing shows good hip rotation and weight transfer. Pitching mechanics demonstrate proper kinetic chain sequencing. Balance and coordination: 83/100. Recommendation: Work on core rotational strength and shoulder stability.",
+      football: "Biomechanical Analysis: Throwing motion shows efficient energy transfer from legs through torso. Running gait demonstrates good acceleration patterns. Balance and coordination: 81/100. Recommendation: Focus on lateral stability and explosive power development.",
+      volleyball: "Biomechanical Analysis: Jumping mechanics show good takeoff technique and vertical force generation. Spiking motion demonstrates proper arm swing. Balance and coordination: 84/100. Recommendation: Work on ankle stability and shoulder mobility.",
+      'table tennis': "Biomechanical Analysis: Stroke mechanics show efficient wrist and forearm coordination. Footwork demonstrates quick lateral movements. Balance and coordination: 79/100. Recommendation: Focus on reaction time and fine motor control training.",
+      badminton: "Biomechanical Analysis: Overhead clear motion shows good shoulder rotation and timing. Footwork demonstrates efficient court coverage. Balance and coordination: 80/100. Recommendation: Work on explosive leg power and shoulder flexibility.",
+      golf: "Biomechanical Analysis: Swing plane shows good consistency and tempo. Weight transfer demonstrates proper sequencing. Balance and coordination: 82/100. Recommendation: Focus on rotational flexibility and core stability.",
+      'field hockey': "Biomechanical Analysis: Stick handling shows good wrist control and body positioning. Running patterns demonstrate efficient direction changes. Balance and coordination: 78/100. Recommendation: Work on dynamic balance and hand-eye coordination.",
+      cricket: "Biomechanical Analysis: Bowling action shows good arm speed and release consistency. Batting stance demonstrates proper weight distribution. Balance and coordination: 81/100. Recommendation: Focus on rotational power and timing precision.",
+      rugby: "Biomechanical Analysis: Passing motion shows efficient spiral technique and body rotation. Contact skills demonstrate proper body positioning. Balance and coordination: 85/100. Recommendation: Work on core strength and contact stability.",
+      'ski jumping': "Biomechanical Analysis: Takeoff technique shows optimal forward lean and timing. In-flight position demonstrates good aerodynamic efficiency. Balance and coordination: 88/100. Recommendation: Focus on balance training and spatial awareness.",
       general: "Biomechanical Analysis: Movement patterns show good overall efficiency. Balance and coordination within normal ranges. Posture demonstrates proper alignment. Recommendation: Continue with current training approach while focusing on sport-specific movements."
     };
     return analyses[sport] || analyses.general;

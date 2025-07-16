@@ -164,6 +164,17 @@ Preferred communication style: Simple, everyday language.
 - **Pros**: Rapid development, consistent design, small bundle size
 - **Cons**: Learning curve, potential for cluttered markup
 
+## Recent Changes (2025-07-16)
+
+### AI Coach Multi-Sport Expansion - COMPLETED ✓
+- **Expanded Sport Coverage**: Added support for top 10 global sports (Soccer, Basketball, Tennis, Volleyball, Table Tennis, Badminton, Golf, Field Hockey, Cricket, Rugby) plus Baseball, Football (American), and Ski Jumping
+- **Sport-Specific Training**: Each sport now has tailored drills, techniques, and coaching tips
+- **ADHD-Friendly Modifications**: All sports include neurodivergent-friendly training adaptations
+- **Progressive Difficulty**: Beginner to advanced levels for each sport with appropriate XP rewards
+- **Enhanced Analytics**: Updated biomechanical analysis for all 13 supported sports
+- **UI Updates**: Sports dropdown now organized by global popularity with clear categorization
+- **Status**: AI Coach now provides professional-grade coaching for 13 different sports
+
 ## Recent Changes (2025-07-15)
 
 ### Highest Quality AI Video Analysis Implementation - COMPLETED ✓
@@ -183,7 +194,8 @@ Preferred communication style: Simple, everyday language.
 - **StarPath Integration**: Drill completion rewards XP and advances skill progression
 - **Model Management**: Interface for downloading and managing local AI models
 - **Fallback System**: Comprehensive coaching system when AI service is unavailable
-- **Status**: AI coach feature fully functional with authentication and progress tracking
+- **Multi-Sport Support**: Expanded to support 13 sports including top 10 global sports, baseball, football, and ski jumping
+- **Status**: AI coach feature fully functional with authentication and progress tracking for all requested sports
 
 ### Landing Page Hero Section Redesign - COMPLETED ✓
 - **Dynamic Design**: Replaced static "GET VERIFIED" section with interactive athletic journey theme

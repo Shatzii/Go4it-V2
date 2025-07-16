@@ -61,6 +61,14 @@ export function AICoachDashboard() {
     sessionType: 'Skill Development'
   })
 
+  const supportedSports = [
+    // Top 10 global sports
+    'Soccer', 'Basketball', 'Tennis', 'Volleyball', 'Table Tennis', 'Badminton',
+    'Golf', 'Field Hockey', 'Cricket', 'Rugby',
+    // Additional requested sports
+    'Baseball', 'Football', 'Ski Jumping'
+  ]
+
   useEffect(() => {
     fetchStarPathStatus()
   }, [])
@@ -303,11 +311,23 @@ export function AICoachDashboard() {
                   value={sessionConfig.sport}
                   onChange={(e) => setSessionConfig({...sessionConfig, sport: e.target.value})}
                 >
-                  <option value="Basketball">Basketball</option>
-                  <option value="Soccer">Soccer</option>
-                  <option value="Tennis">Tennis</option>
-                  <option value="Baseball">Baseball</option>
-                  <option value="Football">Football</option>
+                  <optgroup label="Top 10 Global Sports">
+                    <option value="Soccer">Soccer</option>
+                    <option value="Basketball">Basketball</option>
+                    <option value="Tennis">Tennis</option>
+                    <option value="Volleyball">Volleyball</option>
+                    <option value="Table Tennis">Table Tennis</option>
+                    <option value="Badminton">Badminton</option>
+                    <option value="Golf">Golf</option>
+                    <option value="Field Hockey">Field Hockey</option>
+                    <option value="Cricket">Cricket</option>
+                    <option value="Rugby">Rugby</option>
+                  </optgroup>
+                  <optgroup label="Additional Sports">
+                    <option value="Baseball">Baseball</option>
+                    <option value="Football">Football (American)</option>
+                    <option value="Ski Jumping">Ski Jumping</option>
+                  </optgroup>
                 </select>
               </div>
               
