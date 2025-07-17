@@ -8,7 +8,11 @@ const nextConfig = {
       allowedOrigins: ['localhost:5000', '*.replit.app', '*.replit.dev'] 
     }
   },
-  // Fix cross-origin issues
+  // Configure for Replit deployment
+  assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
+  trailingSlash: false,
+  
+  // Fix cross-origin issues for Replit
   async headers() {
     return [
       {
@@ -17,18 +21,30 @@ const nextConfig = {
           {
             key: 'Access-Control-Allow-Origin',
             value: '*'
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, POST, PUT, DELETE, OPTIONS'
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'X-Requested-With, Content-Type, Authorization'
           }
         ]
       }
     ]
   },
+  
+  // Configure for development
   env: { 
     PORT: '5000', 
     HOSTNAME: '0.0.0.0' 
   },
+  
+  // Simplified webpack configuration
   webpack: (config, { dev, isServer }) => {
     if (dev && !isServer) {
-      // Fix undefined module calls
+      // Basic optimization for development
       config.optimization.splitChunks = {
         chunks: 'all',
         cacheGroups: {
@@ -40,28 +56,11 @@ const nextConfig = {
         }
       };
       
-      // Increase chunk timeout
+      // Increase timeout for slow connections
       config.output.chunkLoadTimeout = 30000;
-      
-      // Add retry logic for failed chunk loads
-      config.output.crossOriginLoading = 'anonymous';
-      
-      // Ensure proper module resolution
-      config.resolve = {
-        ...config.resolve,
-        fallback: {
-          ...config.resolve.fallback,
-          fs: false,
-          net: false,
-          tls: false
-        }
-      };
     }
     return config;
-  },
-  // Use a static build ID to prevent cache issues
-  generateBuildId: () => 'go4it-sports-platform',
-  // Remove deprecated devIndicators option
+  }
 };
 
 module.exports = nextConfig;
