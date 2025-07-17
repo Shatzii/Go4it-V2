@@ -74,6 +74,24 @@ export default function Go4ItHomePage() {
                 AI Tagging
               </SafeLink>
               <SafeLink 
+                href="/ncaa-eligibility" 
+                className="text-slate-300 hover:text-white transition-colors"
+              >
+                NCAA Eligibility
+              </SafeLink>
+              <SafeLink 
+                href="/athletic-contacts" 
+                className="text-slate-300 hover:text-white transition-colors"
+              >
+                Athletic Contacts
+              </SafeLink>
+              <SafeLink 
+                href="/recruitment-ranking" 
+                className="text-slate-300 hover:text-white transition-colors"
+              >
+                Rankings
+              </SafeLink>
+              <SafeLink 
                 href="/pricing" 
                 className="text-slate-300 hover:text-white transition-colors"
               >
