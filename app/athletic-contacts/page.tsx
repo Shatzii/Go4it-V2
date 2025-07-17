@@ -145,6 +145,17 @@ export default function AthleticContacts() {
           <p className="text-slate-300 text-lg">
             Verified contacts for {schools.length} NCAA schools and athletic departments
           </p>
+          <div className="mt-4 p-3 bg-yellow-500/20 border border-yellow-500/30 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-yellow-500" />
+                <span className="text-yellow-500 font-medium">PRO Tier Feature</span>
+              </div>
+              <a href="/pricing" className="text-sm text-yellow-500 hover:text-yellow-400 underline">
+                Upgrade to PRO for full contact access
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Filters */}
