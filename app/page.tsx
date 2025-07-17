@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { CheckCircle, ExternalLink, Activity, Target, Users, BarChart3, Star, TrendingUp, Award, Calendar, MapPin, ArrowRight, Play } from 'lucide-react'
+import { CheckCircle, ExternalLink, Activity, Target, Users, BarChart3, Star, TrendingUp, Award, Calendar, MapPin, ArrowRight, Play, GraduationCap, Trophy } from 'lucide-react'
 import Image from 'next/image'
 // Using public logo path for Next.js
 const logoImage = '/go4it-logo-new.jpg'
@@ -154,51 +154,63 @@ export default function Go4ItHomePage() {
                 
                 <p className="text-xl text-slate-300 leading-relaxed max-w-xl">
                   The ultimate AI-powered platform designed specifically for neurodivergent student athletes. 
-                  Combine elite athletic training with academic excellence.
+                  From NCAA eligibility to professional recruitment, we have everything you need to excel.
                 </p>
               </div>
               
-              {/* Key Features */}
+              {/* Key Features - New Priority Features */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 backdrop-blur-sm">
-                  <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                    <Activity className="w-5 h-5 text-primary" />
+                <SafeLink 
+                  href="/ncaa-eligibility"
+                  className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 backdrop-blur-sm hover:bg-slate-800/80 transition-all duration-300 group"
+                >
+                  <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center group-hover:bg-primary/30">
+                    <GraduationCap className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-white">NCAA Eligibility</div>
+                    <div className="text-sm text-slate-300">Sliding Scale Calculator</div>
+                  </div>
+                </SafeLink>
+                
+                <SafeLink 
+                  href="/athletic-contacts"
+                  className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 backdrop-blur-sm hover:bg-slate-800/80 transition-all duration-300 group"
+                >
+                  <div className="w-10 h-10 bg-yellow-500/20 rounded-full flex items-center justify-center group-hover:bg-yellow-500/30">
+                    <Users className="w-5 h-5 text-yellow-500" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-white">Athletic Contacts</div>
+                    <div className="text-sm text-slate-300">Verified Coaches</div>
+                  </div>
+                </SafeLink>
+                
+                <SafeLink 
+                  href="/recruitment-ranking"
+                  className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 backdrop-blur-sm hover:bg-slate-800/80 transition-all duration-300 group"
+                >
+                  <div className="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center group-hover:bg-purple-500/30">
+                    <Trophy className="w-5 h-5 text-purple-500" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-white">Rankings</div>
+                    <div className="text-sm text-slate-300">Regional & National</div>
+                  </div>
+                </SafeLink>
+                
+                <SafeLink 
+                  href="/ai-coach"
+                  className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 backdrop-blur-sm hover:bg-slate-800/80 transition-all duration-300 group"
+                >
+                  <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center group-hover:bg-green-500/30">
+                    <Activity className="w-5 h-5 text-green-500" />
                   </div>
                   <div>
                     <div className="font-semibold text-white">AI Coach</div>
-                    <div className="text-sm text-slate-300">Personal Training</div>
+                    <div className="text-sm text-slate-300">Advanced Analysis</div>
                   </div>
-                </div>
-                
-                <div className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 backdrop-blur-sm">
-                  <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                    <BarChart3 className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-white">GAR Rating</div>
-                    <div className="text-sm text-slate-300">Performance Analytics</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 backdrop-blur-sm">
-                  <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                    <Target className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-white">StarPath</div>
-                    <div className="text-sm text-slate-300">Skill Progression</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 backdrop-blur-sm">
-                  <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                    <Users className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-white">Academy</div>
-                    <div className="text-sm text-slate-300">Full Education</div>
-                  </div>
-                </div>
+                </SafeLink>
               </div>
               
               {/* CTA Buttons */}
@@ -304,6 +316,174 @@ export default function Go4ItHomePage() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Comprehensive Features Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-white mb-4">Complete Athletic Development Platform</h2>
+            <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+              Everything you need to excel as a student-athlete, from NCAA eligibility to professional recruitment
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* NCAA Eligibility Tracker */}
+            <SafeLink 
+              href="/ncaa-eligibility"
+              className="group bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-8 rounded-2xl border border-slate-700/50 hover:border-primary/30 transition-all duration-300 hover:shadow-xl"
+            >
+              <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary/30 transition-colors">
+                <GraduationCap className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">NCAA Eligibility Tracker</h3>
+              <p className="text-slate-300 mb-4">
+                Complete sliding scale calculator with 48 GPA/test score combinations, international student support, and real-time core course validation.
+              </p>
+              <div className="flex items-center gap-2 text-primary font-medium">
+                <span>STARTER Tier</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </SafeLink>
+
+            {/* Athletic Department Contacts */}
+            <SafeLink 
+              href="/athletic-contacts"
+              className="group bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-8 rounded-2xl border border-slate-700/50 hover:border-yellow-500/30 transition-all duration-300 hover:shadow-xl"
+            >
+              <div className="w-16 h-16 bg-yellow-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-yellow-500/30 transition-colors">
+                <Users className="w-8 h-8 text-yellow-500" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">Athletic Department Contacts</h3>
+              <p className="text-slate-300 mb-4">
+                12+ verified D1 schools with authentic coaching staff contacts, recruiting coordinators, and sport-specific information.
+              </p>
+              <div className="flex items-center gap-2 text-yellow-500 font-medium">
+                <span>PRO Tier</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </SafeLink>
+
+            {/* Recruitment Rankings */}
+            <SafeLink 
+              href="/recruitment-ranking"
+              className="group bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-8 rounded-2xl border border-slate-700/50 hover:border-purple-500/30 transition-all duration-300 hover:shadow-xl"
+            >
+              <div className="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-500/30 transition-colors">
+                <Trophy className="w-8 h-8 text-purple-500" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">Recruitment Rankings</h3>
+              <p className="text-slate-300 mb-4">
+                National, regional, state, and city rankings with college match algorithms and D1/D2/D3 probability assessments.
+              </p>
+              <div className="flex items-center gap-2 text-purple-500 font-medium">
+                <span>ELITE Tier</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </SafeLink>
+
+            {/* Advanced AI Analysis */}
+            <SafeLink 
+              href="/ai-coach"
+              className="group bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-8 rounded-2xl border border-slate-700/50 hover:border-green-500/30 transition-all duration-300 hover:shadow-xl"
+            >
+              <div className="w-16 h-16 bg-green-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-500/30 transition-colors">
+                <Activity className="w-8 h-8 text-green-500" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">Advanced AI Analysis</h3>
+              <p className="text-slate-300 mb-4">
+                Computer vision analysis, sport-specific models for 10 sports, performance benchmarking, and injury risk assessment.
+              </p>
+              <div className="flex items-center gap-2 text-green-500 font-medium">
+                <span>PRO/ELITE Tier</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </SafeLink>
+
+            {/* GAR Performance System */}
+            <SafeLink 
+              href="/dashboard"
+              className="group bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-8 rounded-2xl border border-slate-700/50 hover:border-blue-500/30 transition-all duration-300 hover:shadow-xl"
+            >
+              <div className="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-500/30 transition-colors">
+                <BarChart3 className="w-8 h-8 text-blue-500" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">GAR Performance System</h3>
+              <p className="text-slate-300 mb-4">
+                Growth and Ability Rating system with 5-component analysis, weighted scoring, and predictive insights for athletic development.
+              </p>
+              <div className="flex items-center gap-2 text-blue-500 font-medium">
+                <span>All Tiers</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </SafeLink>
+
+            {/* Go4It Sports Academy */}
+            <SafeLink 
+              href="/academy"
+              className="group bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-8 rounded-2xl border border-slate-700/50 hover:border-orange-500/30 transition-all duration-300 hover:shadow-xl"
+            >
+              <div className="w-16 h-16 bg-orange-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-orange-500/30 transition-colors">
+                <Target className="w-8 h-8 text-orange-500" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">Go4It Sports Academy</h3>
+              <p className="text-slate-300 mb-4">
+                Complete K-12 educational institution with 847 students, 156 faculty, 234 courses, and full academic infrastructure.
+              </p>
+              <div className="flex items-center gap-2 text-orange-500 font-medium">
+                <span>ELITE Tier</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </SafeLink>
+          </div>
+
+          {/* Additional Features Grid */}
+          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="text-center p-6 bg-slate-800/50 rounded-xl border border-slate-700/50">
+              <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Star className="w-6 h-6 text-primary" />
+              </div>
+              <h4 className="font-semibold text-white mb-2">StarPath System</h4>
+              <p className="text-sm text-slate-300">Gamified skill progression</p>
+            </div>
+            
+            <div className="text-center p-6 bg-slate-800/50 rounded-xl border border-slate-700/50">
+              <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <TrendingUp className="w-6 h-6 text-primary" />
+              </div>
+              <h4 className="font-semibold text-white mb-2">Performance Analytics</h4>
+              <p className="text-sm text-slate-300">Advanced metrics tracking</p>
+            </div>
+            
+            <div className="text-center p-6 bg-slate-800/50 rounded-xl border border-slate-700/50">
+              <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Calendar className="w-6 h-6 text-primary" />
+              </div>
+              <h4 className="font-semibold text-white mb-2">Recruitment Timeline</h4>
+              <p className="text-sm text-slate-300">Contact & visit tracking</p>
+            </div>
+            
+            <div className="text-center p-6 bg-slate-800/50 rounded-xl border border-slate-700/50">
+              <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <MapPin className="w-6 h-6 text-primary" />
+              </div>
+              <h4 className="font-semibold text-white mb-2">Regional Rankings</h4>
+              <p className="text-sm text-slate-300">National & local positioning</p>
+            </div>
+          </div>
+
+          {/* Call to Action */}
+          <div className="text-center mt-16">
+            <SafeLink 
+              href="/pricing"
+              className="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 inline-flex items-center gap-2 shadow-lg hover:shadow-xl"
+            >
+              <Trophy className="w-5 h-5" />
+              Explore All Features
+            </SafeLink>
           </div>
         </div>
       </section>
