@@ -260,6 +260,17 @@ export default function NCAAEligibilityTracker() {
           <p className="text-slate-300 text-lg">
             Complete eligibility checker with sliding scale calculator and international student support
           </p>
+          <div className="mt-4 p-3 bg-primary/20 border border-primary/30 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Target className="w-5 h-5 text-primary" />
+                <span className="text-primary font-medium">STARTER Tier Feature</span>
+              </div>
+              <a href="/pricing" className="text-sm text-primary hover:text-primary/80 underline">
+                Upgrade to unlock full access
+              </a>
+            </div>
+          </div>
         </div>
 
         <Tabs defaultValue="calculator" className="space-y-6">

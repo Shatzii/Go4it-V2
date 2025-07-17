@@ -156,6 +156,17 @@ export default function RecruitmentRanking() {
           <p className="text-slate-300 text-lg">
             National, regional, state, and city athletic rankings with recruitment predictions
           </p>
+          <div className="mt-4 p-3 bg-purple-500/20 border border-purple-500/30 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-purple-500" />
+                <span className="text-purple-500 font-medium">ELITE Tier Feature</span>
+              </div>
+              <a href="/pricing" className="text-sm text-purple-500 hover:text-purple-400 underline">
+                Upgrade to ELITE for full rankings access
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Summary Stats */}
