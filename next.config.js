@@ -28,10 +28,7 @@ const nextConfig = {
   },
   // Use a static build ID to prevent cache issues
   generateBuildId: () => 'go4it-sports-platform',
-  // Disable build indicator that can cause issues
-  devIndicators: {
-    buildActivity: false,
-  },
+  // Remove deprecated devIndicators option
 };
 
 module.exports = nextConfig;

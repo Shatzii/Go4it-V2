@@ -17,6 +17,34 @@ export interface AIResponse {
   model: string
 }
 
+export const AVAILABLE_LOCAL_MODELS = [
+  {
+    name: 'Sports Analysis Model',
+    id: 'sports-analysis-v1',
+    size: '1.2GB',
+    description: 'Specialized model for athletic performance analysis',
+    status: 'available'
+  },
+  {
+    name: 'ADHD-Friendly Educational Model',
+    id: 'adhd-edu-v1',
+    size: '850MB',
+    description: 'Educational model optimized for neurodivergent students',
+    status: 'available'
+  },
+  {
+    name: 'Content Tagging Model',
+    id: 'content-tag-v1',
+    size: '600MB',
+    description: 'Lightweight model for content categorization',
+    status: 'available'
+  }
+]
+
+export function createAIModelManager(config: AIModelConfig): AIModelManager {
+  return new AIModelManager(config)
+}
+
 export class AIModelManager {
   private config: AIModelConfig
   private defaultTimeout = 30000 // 30 seconds
