@@ -122,11 +122,12 @@ export default function RecruitingHubPage() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
+          <TabsList className="grid w-full grid-cols-5 mb-8">
             <TabsTrigger value="matches">AI Matches</TabsTrigger>
             <TabsTrigger value="contacts">Coach Contacts</TabsTrigger>
             <TabsTrigger value="tracker">Recruiting Tracker</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="advanced">Advanced AI</TabsTrigger>
           </TabsList>
 
           {/* AI Matches Tab */}
@@ -395,6 +396,66 @@ export default function RecruitingHubPage() {
                   <Button className="bg-purple-500 hover:bg-purple-600">
                     View Analytics
                   </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Advanced AI Tab */}
+          <TabsContent value="advanced" className="space-y-6">
+            <Card className="bg-slate-800 border-slate-700">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Star className="w-5 h-5" />
+                  Advanced AI Features
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <Card className="bg-slate-700 border-slate-600">
+                    <CardContent className="p-6 text-center">
+                      <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Star className="w-6 h-6 text-white" />
+                      </div>
+                      <h3 className="font-semibold text-white mb-2">Coaching Scheme Analysis</h3>
+                      <p className="text-sm text-slate-400 mb-4">
+                        AI matches players to specific coaching systems and schemes
+                      </p>
+                      <Button size="sm" className="bg-purple-500 hover:bg-purple-600" onClick={() => window.open('/advanced-recruiting', '_blank')}>
+                        Explore
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-slate-700 border-slate-600">
+                    <CardContent className="p-6 text-center">
+                      <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Eye className="w-6 h-6 text-white" />
+                      </div>
+                      <h3 className="font-semibold text-white mb-2">Highlight Tape Analysis</h3>
+                      <p className="text-sm text-slate-400 mb-4">
+                        Advanced AI analysis and comparison of highlight videos
+                      </p>
+                      <Button size="sm" className="bg-blue-500 hover:bg-blue-600" onClick={() => window.open('/advanced-recruiting', '_blank')}>
+                        Analyze
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-slate-700 border-slate-600">
+                    <CardContent className="p-6 text-center">
+                      <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Search className="w-6 h-6 text-white" />
+                      </div>
+                      <h3 className="font-semibold text-white mb-2">Reverse Coach Discovery</h3>
+                      <p className="text-sm text-slate-400 mb-4">
+                        Coaches find players who perfectly fit their systems
+                      </p>
+                      <Button size="sm" className="bg-green-500 hover:bg-green-600" onClick={() => window.open('/advanced-recruiting', '_blank')}>
+                        Discover
+                      </Button>
+                    </CardContent>
+                  </Card>
                 </div>
               </CardContent>
             </Card>
