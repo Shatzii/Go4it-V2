@@ -234,55 +234,6 @@ export default function RankingsPage() {
             </div>
           </div>
         )}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-400">Total Athletes</p>
-                    <p className="text-2xl font-bold text-white">{rankings.totalAthletes.toLocaleString()}</p>
-                  </div>
-                  <Users className="w-8 h-8 text-blue-500" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-slate-800 border-slate-700">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-400">Countries</p>
-                    <p className="text-2xl font-bold text-white">{rankings.countries.length}</p>
-                  </div>
-                  <Globe className="w-8 h-8 text-green-500" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-slate-800 border-slate-700">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-400">Sports</p>
-                    <p className="text-2xl font-bold text-white">{rankings.sports.length}</p>
-                  </div>
-                  <Trophy className="w-8 h-8 text-yellow-500" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-slate-800 border-slate-700">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-400">Last Updated</p>
-                    <p className="text-sm font-medium text-white">
-                      {new Date(rankings.lastUpdated).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <TrendingUp className="w-8 h-8 text-purple-500" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
 
         {/* Filters */}
         <Card className="bg-slate-800 border-slate-700 mb-8">
