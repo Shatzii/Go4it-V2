@@ -65,17 +65,17 @@ export default function ScraperDashboard() {
   const [config, setConfig] = useState<ScrapingConfig>({
     platforms: ['ESPN', 'Sports Reference', 'MaxPreps'],
     sports: ['Basketball'],
-    countries: ['Spain', 'France', 'Germany', 'Italy', 'Greece', 'Lithuania', 'Serbia', 'Turkey'],
+    countries: ['Spain', 'France', 'Germany', 'Italy', 'Greece', 'Lithuania', 'Serbia', 'Turkey', 'Austria', 'Netherlands', 'UK', 'Sweden', 'Norway', 'Denmark', 'Poland', 'Portugal', 'Belgium', 'Czech Republic', 'Hungary', 'Croatia', 'Slovenia', 'Slovakia', 'Bulgaria', 'Romania', 'Finland', 'Estonia', 'Latvia', 'Luxembourg', 'Malta', 'Cyprus', 'Mexico', 'Brazil'],
     minFollowers: 1000,
     maxFollowers: 1000000,
-    hashtags: ['#basketball', '#eurobasket', '#recruit', '#studentathlete'],
-    keywords: ['basketball', 'recruit', 'student athlete', 'college bound'],
+    hashtags: ['#basketball', '#eurobasket', '#recruit', '#studentathlete', '#americanfootball', '#football'],
+    keywords: ['basketball', 'recruit', 'student athlete', 'college bound', 'american football', 'football'],
     maxResults: 50,
     includeVerified: true,
     includeUnverified: true,
     socialMedia: true,
     ageRange: '16-19',
-    locations: ['Europe', 'USA']
+    locations: ['Europe', 'USA', 'Mexico', 'Brazil']
   });
   const [lastScrapeTime, setLastScrapeTime] = useState<string>('');
   const [scrapingStats, setScrapingStats] = useState({
@@ -261,6 +261,55 @@ export default function ScraperDashboard() {
     }
   };
 
+  const handleAmericanFootballScrapingSubmit = async () => {
+    setIsLoading(true);
+    setScrapingResults(null);
+    setLastScrapeTime(new Date().toISOString());
+
+    try {
+      const response = await fetch('/api/recruiting/athletes/american-football-scraper', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          platforms: ['1stLookSports', 'NFL International', 'European American Football Federation'],
+          countries: ['USA', 'Germany', 'UK', 'Mexico', 'Brazil', 'Canada', 'Austria', 'Netherlands', 'Sweden', 'Norway', 'Denmark', 'Poland'],
+          sports: ['American Football'],
+          classYear: '2025',
+          maxResults: config.maxResults,
+          includeInternational: true
+        })
+      });
+
+      const data = await response.json();
+      setScrapingResults(data);
+
+      if (data.success) {
+        toast({
+          title: "American Football Scraping Completed",
+          description: `Found ${data.athletes?.length || 0} American football players from ${data.sources?.length || 0} platforms`,
+        });
+        loadScrapingStats();
+      } else {
+        toast({
+          title: "Scraping Failed",
+          description: data.error || "Unknown error occurred",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('American football scraping error:', error);
+      toast({
+        title: "Scraping Error",
+        description: "Failed to connect to American football scraping service",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleTestAllScrapers = async () => {
     setIsLoading(true);
     setScrapingResults(null);
@@ -271,19 +320,24 @@ export default function ScraperDashboard() {
       const results = [];
       
       // Test US scraper
-      const usResponse = await fetch('/api/recruiting/athletes/test-scraper');
+      const usResponse = await fetch('/api/recruiting/athletes/live-scraper');
       const usData = await usResponse.json();
       results.push({ name: 'US Scraper', ...usData });
       
       // Test European scraper
       const euResponse = await fetch('/api/recruiting/athletes/european-scraper');
       const euData = await euResponse.json();
-      results.push({ name: 'European Scraper', ...euData });
+      results.push({ name: 'International Scraper', ...euData });
       
       // Test Social scraper
       const socialResponse = await fetch('/api/recruiting/athletes/social-scraper');
       const socialData = await socialResponse.json();
       results.push({ name: 'Social Scraper', ...socialData });
+      
+      // Test American Football scraper
+      const footballResponse = await fetch('/api/recruiting/athletes/american-football-scraper');
+      const footballData = await footballResponse.json();
+      results.push({ name: 'American Football Scraper', ...footballData });
       
       setScrapingResults({
         success: true,
@@ -385,8 +439,8 @@ export default function ScraperDashboard() {
         {/* Scraping Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-4 bg-slate-800 border-slate-700">
-            <TabsTrigger value="us-scraper" className="text-white">US Recruiting</TabsTrigger>
-            <TabsTrigger value="european-scraper" className="text-white">European Athletes</TabsTrigger>
+            <TabsTrigger value="us-scraper" className="text-white">US & Football</TabsTrigger>
+            <TabsTrigger value="european-scraper" className="text-white">International</TabsTrigger>
             <TabsTrigger value="social-scraper" className="text-white">Social Media</TabsTrigger>
             <TabsTrigger value="results" className="text-white">Results</TabsTrigger>
           </TabsList>
@@ -410,6 +464,7 @@ export default function ScraperDashboard() {
                         <SelectItem value="247sports">247Sports</SelectItem>
                         <SelectItem value="on3">On3</SelectItem>
                         <SelectItem value="maxpreps">MaxPreps</SelectItem>
+                        <SelectItem value="1stlooksports">1stLookSports</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -422,7 +477,7 @@ export default function ScraperDashboard() {
                       </SelectTrigger>
                       <SelectContent className="bg-slate-700 border-slate-600">
                         <SelectItem value="basketball">Basketball</SelectItem>
-                        <SelectItem value="football">Football</SelectItem>
+                        <SelectItem value="football">American Football</SelectItem>
                         <SelectItem value="baseball">Baseball</SelectItem>
                         <SelectItem value="soccer">Soccer</SelectItem>
                       </SelectContent>
@@ -452,12 +507,53 @@ export default function ScraperDashboard() {
                 </Button>
               </CardContent>
             </Card>
+            
+            <Card className="bg-slate-800 border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-white">American Football Scraping</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="footballCountries" className="text-white">Countries</Label>
+                    <Textarea 
+                      id="footballCountries"
+                      value="USA, Germany, UK, Mexico, Brazil, Canada, Austria, Netherlands, Sweden, Norway, Denmark, Poland"
+                      className="bg-slate-700 border-slate-600 text-white"
+                      placeholder="Countries for American football..."
+                      readOnly
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="footballPositions" className="text-white">Positions</Label>
+                    <Textarea 
+                      id="footballPositions"
+                      value="QB, RB, WR, TE, OL, DL, LB, DB, K, P"
+                      className="bg-slate-700 border-slate-600 text-white"
+                      placeholder="Football positions..."
+                      readOnly
+                    />
+                  </div>
+                </div>
+                
+                <Button 
+                  onClick={handleAmericanFootballScrapingSubmit}
+                  disabled={isLoading}
+                  className="w-full bg-orange-600 hover:bg-orange-700"
+                >
+                  {isLoading ? <Clock className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
+                  Start American Football Scraping
+                </Button>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="european-scraper" className="space-y-6">
             <Card className="bg-slate-800 border-slate-700">
               <CardHeader>
-                <CardTitle className="text-white">European Athletes & Leagues</CardTitle>
+                <CardTitle className="text-white">International Athletes & Leagues</CardTitle>
+                <p className="text-slate-400 text-sm">Covers all EU countries plus Mexico and Brazil</p>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -468,7 +564,7 @@ export default function ScraperDashboard() {
                       value={config.countries.join(', ')}
                       onChange={(e) => setConfig({...config, countries: e.target.value.split(', ')})}
                       className="bg-slate-700 border-slate-600 text-white"
-                      placeholder="Spain, France, Germany, Italy..."
+                      placeholder="Spain, France, Germany, Italy, Austria, Netherlands, UK, Sweden, Norway, Denmark, Poland, Serbia, Portugal, Belgium, Czech Republic, Hungary, Croatia, Slovenia, Slovakia, Bulgaria, Romania, Finland, Estonia, Latvia, Luxembourg, Malta, Cyprus, Mexico, Brazil..."
                     />
                   </div>
                   
@@ -502,7 +598,7 @@ export default function ScraperDashboard() {
                   className="w-full bg-purple-600 hover:bg-purple-700"
                 >
                   {isLoading ? <Clock className="w-4 h-4 mr-2 animate-spin" /> : <Globe className="w-4 h-4 mr-2" />}
-                  Start European Scraping
+                  Start International Scraping
                 </Button>
               </CardContent>
             </Card>
