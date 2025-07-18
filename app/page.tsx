@@ -105,6 +105,12 @@ export default function Go4ItHomePage() {
                 Leaderboard
               </SafeLink>
               <SafeLink 
+                href="/recruiting-improvements" 
+                className="text-slate-300 hover:text-white transition-colors"
+              >
+                Roadmap
+              </SafeLink>
+              <SafeLink 
                 href="/pricing" 
                 className="text-slate-300 hover:text-white transition-colors"
               >
@@ -414,7 +420,7 @@ export default function Go4ItHomePage() {
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Athletic Department Contacts</h3>
               <p className="text-slate-300 mb-4">
-                12+ verified D1 schools with authentic coaching staff contacts, recruiting coordinators, and sport-specific information.
+                Access to college athletic teams with authentic coaching staff contacts, recruiting coordinators, and sport-specific information.
               </p>
               <div className="flex items-center gap-2 text-yellow-500 font-medium">
                 <span>PRO Tier</span>
