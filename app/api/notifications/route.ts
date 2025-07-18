@@ -1,45 +1,43 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getUserFromRequest } from '@/lib/auth'
+import { NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const user = await getUserFromRequest(request)
-    
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-    
-    // Mock notifications data
+    // Mock notifications for now - in a real app, this would fetch from database
     const notifications = [
       {
-        id: 1,
+        id: '1',
         type: 'achievement',
         title: 'New Achievement Unlocked!',
-        message: 'You completed your first video analysis.',
-        timestamp: new Date().toISOString(),
-        read: false
+        message: 'You have successfully completed your first video analysis',
+        timestamp: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
+        read: false,
+        actionUrl: '/dashboard',
+        priority: 'medium'
       },
       {
-        id: 2,
-        type: 'reminder',
-        title: 'Training Session Reminder',
-        message: 'Your training session starts in 30 minutes.',
-        timestamp: new Date(Date.now() - 3600000).toISOString(),
-        read: false
+        id: '2',
+        type: 'video',
+        title: 'Video Analysis Complete',
+        message: 'Your recent training video has been analyzed with a GAR score of 85',
+        timestamp: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
+        read: false,
+        actionUrl: '/video-analysis',
+        priority: 'high'
       },
       {
-        id: 3,
-        type: 'update',
-        title: 'GAR Score Updated',
-        message: 'Your latest GAR score is now available.',
-        timestamp: new Date(Date.now() - 7200000).toISOString(),
-        read: true
+        id: '3',
+        type: 'system',
+        title: 'Platform Update',
+        message: 'New features have been added to the AI coaching system',
+        timestamp: new Date(Date.now() - 60 * 60 * 1000), // 1 hour ago
+        read: true,
+        priority: 'low'
       }
     ]
-    
+
     return NextResponse.json({ notifications })
   } catch (error) {
     console.error('Error fetching notifications:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 })
   }
 }

@@ -1,118 +1,89 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getUserFromRequest } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getUserFromRequest(request)
-    if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+    const { query, filters } = await request.json()
+    
+    if (!query || query.trim().length < 2) {
+      return NextResponse.json({ results: [] })
     }
 
-    const { query, filters } = await request.json()
-
-    // Mock search results - in production, this would search database
-    const allResults = [
+    // Mock search results - in a real app, this would search the database
+    const mockResults = [
       {
         id: '1',
         type: 'video',
-        title: 'Football Training Session - Week 5',
-        description: 'Quarterback practice session with focus on passing accuracy',
+        title: 'Basketball Training Highlights',
+        description: 'High-intensity basketball training session with advanced drills',
         url: '/video-analysis/1',
         metadata: {
-          sport: 'Football',
-          garScore: 87.3,
-          createdAt: '2024-07-15T14:30:00Z'
+          sport: 'Basketball',
+          garScore: 92,
+          createdAt: new Date().toISOString(),
+          graduationYear: 2025,
+          level: 'Elite'
         }
       },
       {
         id: '2',
         type: 'athlete',
-        title: 'John Smith - Quarterback',
-        description: 'Senior quarterback with 3.8 GPA and 87.3 GAR score',
-        url: '/athletes/john-smith',
+        title: 'John Smith - Point Guard',
+        description: 'Elite basketball player with exceptional court vision',
+        url: '/athlete/john-smith',
         metadata: {
-          sport: 'Football',
-          garScore: 87.3,
-          graduationYear: 2024
+          sport: 'Basketball',
+          garScore: 88,
+          graduationYear: 2024,
+          level: 'Elite'
         }
       },
       {
         id: '3',
-        type: 'team',
-        title: 'Varsity Football Team',
-        description: 'Championship-winning team with 12-1 record',
-        url: '/teams/varsity-football',
+        type: 'course',
+        title: 'Advanced Basketball Fundamentals',
+        description: 'Complete training program for advanced basketball skills',
+        url: '/academy/course/basketball-fundamentals',
         metadata: {
-          sport: 'Football',
-          level: 'Varsity'
+          sport: 'Basketball',
+          level: 'Advanced',
+          createdAt: new Date().toISOString()
         }
       },
       {
         id: '4',
         type: 'achievement',
-        title: 'State Championship Winner',
-        description: 'Won state championship game with 21-14 victory',
-        url: '/achievements/state-championship',
-        metadata: {
-          sport: 'Football',
-          createdAt: '2024-06-15T20:00:00Z'
-        }
-      },
-      {
-        id: '5',
-        type: 'course',
-        title: 'Advanced Physics',
-        description: 'Honors physics course with emphasis on mechanics',
-        url: '/academy/courses/advanced-physics',
-        metadata: {
-          level: 'Advanced'
-        }
-      },
-      {
-        id: '6',
-        type: 'video',
-        title: 'Basketball Skills Training',
-        description: 'Shooting drills and defensive techniques',
-        url: '/video-analysis/6',
+        title: 'Elite Shooter Badge',
+        description: 'Achieved 90%+ accuracy in shooting drills',
+        url: '/achievements/elite-shooter',
         metadata: {
           sport: 'Basketball',
-          garScore: 82.1,
-          createdAt: '2024-07-10T11:15:00Z'
+          garScore: 95,
+          createdAt: new Date().toISOString()
         }
       }
     ]
 
-    // Filter results based on query and filters
-    let results = allResults.filter(result => {
-      const matchesQuery = query ? (
-        result.title.toLowerCase().includes(query.toLowerCase()) ||
-        result.description.toLowerCase().includes(query.toLowerCase())
-      ) : true
-
-      const matchesType = filters.type === 'all' || result.type === filters.type
-      const matchesSport = filters.sport === 'all' || result.metadata.sport?.toLowerCase() === filters.sport.toLowerCase()
+    // Filter results based on query
+    const filteredResults = mockResults.filter(result => {
+      const matchesQuery = result.title.toLowerCase().includes(query.toLowerCase()) ||
+                          result.description.toLowerCase().includes(query.toLowerCase())
       
-      return matchesQuery && matchesType && matchesSport
+      if (!matchesQuery) return false
+      
+      // Apply filters
+      if (filters.type !== 'all' && result.type !== filters.type) return false
+      if (filters.sport !== 'all' && result.metadata.sport?.toLowerCase() !== filters.sport.toLowerCase()) return false
+      if (filters.garScore !== 'all' && filters.garScore.includes('-')) {
+        const [min, max] = filters.garScore.split('-').map(Number)
+        if (result.metadata.garScore && (result.metadata.garScore < min || result.metadata.garScore > max)) return false
+      }
+      
+      return true
     })
 
-    // Apply additional filters
-    if (filters.garScore !== 'all') {
-      const [min, max] = filters.garScore.split('-').map(Number)
-      results = results.filter(result => {
-        const score = result.metadata.garScore
-        return score && score >= min && score <= max
-      })
-    }
-
-    if (filters.graduationYear !== 'all') {
-      results = results.filter(result => 
-        result.metadata.graduationYear?.toString() === filters.graduationYear
-      )
-    }
-
-    return NextResponse.json({ results })
+    return NextResponse.json({ results: filteredResults })
   } catch (error) {
-    console.error('Search failed:', error)
+    console.error('Search error:', error)
     return NextResponse.json({ error: 'Search failed' }, { status: 500 })
   }
 }
