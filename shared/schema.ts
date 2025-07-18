@@ -235,6 +235,52 @@ export const teamMemberships = pgTable('team_memberships', {
   position: text('position'),
 });
 
+// Playbooks for team strategies
+export const playbooks = pgTable('playbooks', {
+  id: serial('id').primaryKey(),
+  teamId: integer('team_id').notNull().references(() => teams.id),
+  playName: text('play_name').notNull(),
+  sport: text('sport').notNull(), // flag-football, soccer, basketball
+  playType: text('play_type').notNull(), // offense, defense, special
+  formation: text('formation'),
+  description: text('description'),
+  diagramData: jsonb('diagram_data'), // Visual play diagram
+  playerPositions: jsonb('player_positions'), // Position assignments
+  isActive: boolean('is_active').default(true),
+  createdBy: integer('created_by').references(() => users.id),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+// Team schedules
+export const teamSchedules = pgTable('team_schedules', {
+  id: serial('id').primaryKey(),
+  teamId: integer('team_id').notNull().references(() => teams.id),
+  eventType: text('event_type').notNull(), // game, practice, tournament
+  opponent: text('opponent'),
+  location: text('location').notNull(),
+  eventDate: timestamp('event_date').notNull(),
+  duration: integer('duration').default(90), // minutes
+  notes: text('notes'),
+  isHome: boolean('is_home').default(true),
+  status: text('status').default('scheduled'), // scheduled, completed, cancelled
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+// Player stats tracking
+export const playerStats = pgTable('player_stats', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  teamId: integer('team_id').notNull().references(() => teams.id),
+  gameId: integer('game_id').references(() => teamSchedules.id),
+  statType: text('stat_type').notNull(), // touchdowns, goals, assists, etc
+  value: integer('value').notNull(),
+  sport: text('sport').notNull(),
+  gameDate: timestamp('game_date'),
+  season: text('season'),
+  notes: text('notes'),
+  recordedAt: timestamp('recorded_at').notNull().defaultNow(),
+});
+
 // Zod schemas for validation
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -294,6 +340,21 @@ export const insertTeamSchema = createInsertSchema(teams).omit({
   createdAt: true,
 });
 
+export const insertPlaybookSchema = createInsertSchema(playbooks).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertTeamScheduleSchema = createInsertSchema(teamSchedules).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertPlayerStatsSchema = createInsertSchema(playerStats).omit({
+  id: true,
+  recordedAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -319,3 +380,9 @@ export type TeamMembership = typeof teamMemberships.$inferSelect;
 export type InsertTeamMembership = z.infer<typeof insertTeamMembershipSchema>;
 export type Team = typeof teams.$inferSelect;
 export type InsertTeam = z.infer<typeof insertTeamSchema>;
+export type Playbook = typeof playbooks.$inferSelect;
+export type InsertPlaybook = z.infer<typeof insertPlaybookSchema>;
+export type TeamSchedule = typeof teamSchedules.$inferSelect;
+export type InsertTeamSchedule = z.infer<typeof insertTeamScheduleSchema>;
+export type PlayerStats = typeof playerStats.$inferSelect;
+export type InsertPlayerStats = z.infer<typeof insertPlayerStatsSchema>;
