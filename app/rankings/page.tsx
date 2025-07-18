@@ -65,21 +65,54 @@ export default function RankingsPage() {
   const loadRankings = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      params.append('type', activeTab);
+      // Use GAR-based ranking for better athlete scoring
+      const response = await fetch('/api/rankings/gar-ranking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sport: filters.sport || null,
+          region: activeTab === 'usa' ? 'USA' : activeTab === 'european' ? 'Europe' : null,
+          maxResults: 50
+        })
+      });
       
-      if (filters.sport) params.append('sport', filters.sport);
-      if (filters.country) params.append('country', filters.country);
-      if (filters.position) params.append('position', filters.position);
-      if (filters.minRanking) params.append('minRanking', filters.minRanking);
-      if (filters.maxRanking) params.append('maxRanking', filters.maxRanking);
-      if (filters.searchTerm) params.append('search', filters.searchTerm);
-
-      const response = await fetch(`/api/rankings?${params.toString()}`);
       const data = await response.json();
       
       if (data.success) {
-        setRankings(data.data);
+        let filteredAthletes = data.athletes || [];
+        
+        // Apply additional filters
+        if (filters.country) {
+          filteredAthletes = filteredAthletes.filter(athlete => 
+            athlete.country?.toLowerCase().includes(filters.country.toLowerCase())
+          );
+        }
+        
+        if (filters.position) {
+          filteredAthletes = filteredAthletes.filter(athlete => 
+            athlete.position?.toLowerCase().includes(filters.position.toLowerCase())
+          );
+        }
+        
+        if (filters.searchTerm) {
+          filteredAthletes = filteredAthletes.filter(athlete => 
+            athlete.name?.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
+            athlete.sport?.toLowerCase().includes(filters.searchTerm.toLowerCase())
+          );
+        }
+        
+        if (filters.minRanking || filters.maxRanking) {
+          filteredAthletes = filteredAthletes.filter((athlete, index) => {
+            const rank = index + 1;
+            const min = filters.minRanking ? parseInt(filters.minRanking) : 1;
+            const max = filters.maxRanking ? parseInt(filters.maxRanking) : 1000;
+            return rank >= min && rank <= max;
+          });
+        }
+        
+        setRankings(filteredAthletes);
       }
     } catch (error) {
       console.error('Failed to load rankings:', error);
@@ -298,16 +331,21 @@ export default function RankingsPage() {
           ) : (
             <>
               <TabsContent value="global" className="space-y-4">
-                {rankings?.rankings.map((athlete, index) => (
+                {rankings.map((athlete, index) => (
                   <Card key={athlete.id} className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                           <div className="flex items-center space-x-2">
-                            {getRankingIcon(athlete.ranking.overall)}
-                            <Badge className={`px-3 py-1 text-lg font-bold ${getRankingBadge(athlete.ranking.overall)}`}>
-                              #{athlete.ranking.overall}
+                            {getRankingIcon(index + 1)}
+                            <Badge className={`px-3 py-1 text-lg font-bold ${getRankingBadge(index + 1)}`}>
+                              #{index + 1}
                             </Badge>
+                            {athlete.garScore && (
+                              <Badge variant="outline" className="text-blue-400 border-blue-400 ml-2">
+                                GAR: {athlete.garScore}
+                              </Badge>
+                            )}
                           </div>
                           
                           <div>
@@ -349,27 +387,48 @@ export default function RankingsPage() {
                         </div>
                       </div>
                       
-                      {/* Stats Display */}
-                      <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {Object.entries(athlete.stats).slice(0, 4).map(([key, value]) => (
-                          <div key={key} className="text-center">
-                            <div className="text-lg font-bold text-white">{value}</div>
-                            <div className="text-xs text-slate-400 capitalize">{key.replace(/([A-Z])/g, ' $1')}</div>
+                      {/* GAR Breakdown Display */}
+                      {athlete.garBreakdown && (
+                        <div className="mt-4 grid grid-cols-2 md:grid-cols-5 gap-4">
+                          <div className="text-center">
+                            <div className="text-lg font-bold text-blue-400">{athlete.garBreakdown.technical}</div>
+                            <div className="text-xs text-slate-400">Technical</div>
                           </div>
-                        ))}
-                      </div>
+                          <div className="text-center">
+                            <div className="text-lg font-bold text-green-400">{athlete.garBreakdown.physical}</div>
+                            <div className="text-xs text-slate-400">Physical</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-lg font-bold text-purple-400">{athlete.garBreakdown.tactical}</div>
+                            <div className="text-xs text-slate-400">Tactical</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-lg font-bold text-yellow-400">{athlete.garBreakdown.mental}</div>
+                            <div className="text-xs text-slate-400">Mental</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-lg font-bold text-orange-400">{athlete.garBreakdown.consistency}</div>
+                            <div className="text-xs text-slate-400">Consistency</div>
+                          </div>
+                        </div>
+                      )}
                       
-                      {/* Sources */}
+                      {/* Social Media & Highlights */}
                       <div className="mt-4 flex items-center justify-between">
                         <div className="flex space-x-2">
-                          {athlete.sources.map((source, idx) => (
+                          {athlete.socialMedia && Object.keys(athlete.socialMedia).map((platform, idx) => (
                             <Badge key={idx} variant="outline" className="text-xs border-slate-600 text-slate-400">
-                              {source}
+                              {platform}
                             </Badge>
                           ))}
+                          {athlete.highlights && (
+                            <Badge variant="outline" className="text-xs border-slate-600 text-slate-400">
+                              {athlete.highlights.length} highlights
+                            </Badge>
+                          )}
                         </div>
                         <div className="text-xs text-slate-500">
-                          Updated {new Date(athlete.lastUpdated).toLocaleDateString()}
+                          GAR Ranked
                         </div>
                       </div>
                     </CardContent>

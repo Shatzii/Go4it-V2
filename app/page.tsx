@@ -86,7 +86,7 @@ export default function Go4ItHomePage() {
                 Athletic Contacts
               </SafeLink>
               <SafeLink 
-                href="/recruitment-ranking" 
+                href="/rankings" 
                 className="text-slate-300 hover:text-white transition-colors"
               >
                 Rankings
@@ -125,6 +125,13 @@ export default function Go4ItHomePage() {
               >
                 <Trophy className="w-4 h-4 text-blue-400" />
                 Recruiting
+              </SafeLink>
+              <SafeLink 
+                href="/athlete-comparison" 
+                className="text-slate-300 hover:text-white transition-colors flex items-center gap-1"
+              >
+                <BarChart3 className="w-4 h-4 text-purple-400" />
+                Compare
               </SafeLink>
               <SafeLink 
                 href="/pricing" 
@@ -301,11 +308,11 @@ export default function Go4ItHomePage() {
                 </SafeLink>
                 
                 <SafeLink 
-                  href="/ai-coach" 
-                  className="border border-primary/50 hover:bg-primary/20 text-primary hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center gap-2 backdrop-blur-sm"
+                  href="/rankings" 
+                  className="border border-purple-500/50 hover:bg-purple-500/20 text-purple-400 hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center gap-2 backdrop-blur-sm"
                 >
-                  <Target className="w-5 h-5" />
-                  Try AI Coach
+                  <Trophy className="w-5 h-5" />
+                  View Live Rankings
                 </SafeLink>
               </div>
             </div>
