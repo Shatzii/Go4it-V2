@@ -1,467 +1,307 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { School, Phone, Mail, MapPin, Trophy, Users, Star, Search, Filter, Eye, MessageSquare } from 'lucide-react';
+import React, { useState, useEffect } from 'react'
+import { 
+  Trophy, Users, Star, TrendingUp, Target, Calendar, 
+  CheckCircle, Clock, AlertCircle, DollarSign, GraduationCap,
+  MapPin, Phone, Mail, ArrowRight, Plus, Filter, BarChart3
+} from 'lucide-react'
+import Link from 'next/link'
 
-interface CollegeContact {
-  id: string;
-  school: string;
-  coach: string;
-  position: string;
-  sport: string;
-  division: string;
-  email: string;
-  phone: string;
-  location: string;
-  recentActivity: string;
-  responseRate: number;
-  recruitingFocus: string[];
+interface IntegratedDashboardData {
+  athlete: any
+  scholarships: any
+  collegeMatches: any[]
+  contacts: any
+  ncaaEligibility: any
+  rankings: any
+  timeline: any
+  recommendations: any
 }
 
-interface RecruitingMatch {
-  id: string;
-  athleteId: string;
-  schoolId: string;
-  school: string;
-  division: string;
-  sport: string;
-  matchScore: number;
-  academicFit: number;
-  athleticFit: number;
-  geographicFit: number;
-  scholarshipPotential: number;
-  reasons: string[];
-  timeline: string;
-  nextSteps: string[];
-}
-
-export default function RecruitingHubPage() {
-  const [activeTab, setActiveTab] = useState('matches');
-  const [contacts, setContacts] = useState<CollegeContact[]>([]);
-  const [matches, setMatches] = useState<RecruitingMatch[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({
-    division: '',
-    sport: '',
-    location: '',
-    search: ''
-  });
+export default function RecruitingHub() {
+  const [dashboardData, setDashboardData] = useState<IntegratedDashboardData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [activeSection, setActiveSection] = useState('overview')
 
   useEffect(() => {
-    fetchRecruitingData();
-  }, []);
+    fetchIntegratedData()
+  }, [])
 
-  const fetchRecruitingData = async () => {
+  const fetchIntegratedData = async () => {
     try {
-      const [contactsRes, matchesRes] = await Promise.all([
-        fetch('/api/recruiting/contacts'),
-        fetch('/api/recruiting/matches')
-      ]);
-      
-      const contactsData = await contactsRes.json();
-      const matchesData = await matchesRes.json();
-      
-      if (contactsData.success) setContacts(contactsData.contacts);
-      if (matchesData.success) setMatches(matchesData.matches);
+      const response = await fetch('/api/recruiting/integrated-dashboard')
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success) {
+          setDashboardData(data.data)
+        }
+      }
     } catch (error) {
-      console.error('Error fetching recruiting data:', error);
+      console.error('Failed to fetch integrated data:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
-
-  const getMatchColor = (score: number) => {
-    if (score >= 90) return 'text-green-400';
-    if (score >= 80) return 'text-blue-400';
-    if (score >= 70) return 'text-yellow-400';
-    return 'text-orange-400';
-  };
-
-  const getDivisionColor = (division: string) => {
-    switch (division) {
-      case 'D1': return 'bg-red-500';
-      case 'D2': return 'bg-blue-500';
-      case 'D3': return 'bg-green-500';
-      case 'NAIA': return 'bg-purple-500';
-      default: return 'bg-slate-500';
-    }
-  };
+  }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="text-white text-xl">Loading recruiting data...</div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <div className="text-xl">Loading your recruitment dashboard...</div>
+        </div>
       </div>
-    );
+    )
   }
+
+  if (!dashboardData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
+          <div className="text-xl mb-2">Unable to load dashboard</div>
+          <button 
+            onClick={fetchIntegratedData}
+            className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const { athlete, scholarships, collegeMatches, contacts, ncaaEligibility, rankings, timeline, recommendations } = dashboardData
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 py-16">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="text-center mb-16">
-          <Badge className="mb-6 bg-blue-500 text-white font-bold text-lg px-6 py-2">
-            <Trophy className="w-5 h-5 mr-2" />
-            RECRUITING HUB
-          </Badge>
-          
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            COLLEGE RECRUITING
-          </h1>
-          
-          <p className="text-xl text-slate-300 mb-8 max-w-3xl mx-auto">
-            Advanced recruiting tools with AI-powered college matching and direct coach contacts
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-bold mb-4">Recruiting Command Center</h1>
+          <p className="text-xl text-slate-300 mb-6">
+            Your complete recruitment ecosystem - scholarships, colleges, contacts, and rankings in one place
           </p>
+          <div className="flex justify-center gap-4 text-sm">
+            <div className="flex items-center gap-2">
+              <Trophy className="w-5 h-5 text-yellow-500" />
+              <span className="text-white font-semibold">Rank #{rankings.nationalRank}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <DollarSign className="w-5 h-5 text-green-500" />
+              <span className="text-white font-semibold">${scholarships.totalValue.toLocaleString()} Available</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Users className="w-5 h-5 text-blue-500" />
+              <span className="text-white font-semibold">{contacts.totalContacts} Coach Contacts</span>
+            </div>
+          </div>
         </div>
 
-        {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-8">
-            <TabsTrigger value="matches">AI Matches</TabsTrigger>
-            <TabsTrigger value="contacts">Coach Contacts</TabsTrigger>
-            <TabsTrigger value="tracker">Recruiting Tracker</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="advanced">Advanced AI</TabsTrigger>
-          </TabsList>
+        {/* Navigation Tabs */}
+        <div className="flex justify-center mb-8">
+          <div className="bg-slate-800/50 rounded-xl p-2 flex gap-2">
+            {[
+              { id: 'overview', label: 'Overview', icon: BarChart3 },
+              { id: 'scholarships', label: 'Scholarships', icon: DollarSign },
+              { id: 'colleges', label: 'College Matches', icon: GraduationCap },
+              { id: 'contacts', label: 'Coach Contacts', icon: Users },
+              { id: 'eligibility', label: 'NCAA Status', icon: CheckCircle }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveSection(tab.id)}
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-colors ${
+                  activeSection === tab.id 
+                    ? 'bg-blue-600 text-white' 
+                    : 'text-slate-300 hover:text-white'
+                }`}
+              >
+                <tab.icon className="w-4 h-4" />
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
-          {/* AI Matches Tab */}
-          <TabsContent value="matches" className="space-y-6">
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Star className="w-5 h-5" />
-                  AI-Powered College Matches
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {matches.slice(0, 6).map(match => (
-                    <Card key={match.id} className="bg-slate-700 border-slate-600">
-                      <CardHeader>
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <CardTitle className="text-lg">{match.school}</CardTitle>
-                            <div className="flex items-center gap-2 mt-1">
-                              <Badge className={`${getDivisionColor(match.division)} text-white`}>
-                                {match.division}
-                              </Badge>
-                              <span className="text-sm text-slate-300">{match.sport}</span>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className={`text-2xl font-bold ${getMatchColor(match.matchScore)}`}>
-                              {match.matchScore}%
-                            </div>
-                            <div className="text-xs text-slate-400">Match Score</div>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        {/* Fit Scores */}
-                        <div className="grid grid-cols-2 gap-4 mb-4">
-                          <div className="text-center">
-                            <div className="text-lg font-semibold text-blue-400">{match.academicFit}%</div>
-                            <div className="text-xs text-slate-400">Academic Fit</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-lg font-semibold text-green-400">{match.athleticFit}%</div>
-                            <div className="text-xs text-slate-400">Athletic Fit</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-lg font-semibold text-purple-400">{match.geographicFit}%</div>
-                            <div className="text-xs text-slate-400">Geographic Fit</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-lg font-semibold text-orange-400">{match.scholarshipPotential}%</div>
-                            <div className="text-xs text-slate-400">Scholarship Potential</div>
-                          </div>
-                        </div>
-
-                        {/* Reasons */}
-                        <div className="mb-4">
-                          <h4 className="font-semibold text-white mb-2 text-sm">Why This Match:</h4>
-                          <div className="space-y-1">
-                            {match.reasons.slice(0, 3).map((reason, index) => (
-                              <div key={index} className="flex items-center gap-2 text-xs text-slate-300">
-                                <div className="w-1 h-1 bg-blue-400 rounded-full"></div>
-                                {reason}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Timeline */}
-                        <div className="mb-4">
-                          <div className="flex items-center gap-2 text-xs text-slate-400">
-                            <Badge variant="outline" className="text-xs">
-                              {match.timeline}
-                            </Badge>
-                            <span>Recruiting Timeline</span>
-                          </div>
-                        </div>
-
-                        {/* Actions */}
-                        <div className="flex gap-2">
-                          <Button size="sm" className="flex-1 bg-blue-500 hover:bg-blue-600">
-                            <Eye className="w-3 h-3 mr-1" />
-                            View Details
-                          </Button>
-                          <Button size="sm" variant="outline" className="flex-1">
-                            <MessageSquare className="w-3 h-3 mr-1" />
-                            Contact Coach
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+        {/* Overview Section */}
+        {activeSection === 'overview' && (
+          <div className="space-y-8">
+            {/* Key Metrics */}
+            <div className="grid md:grid-cols-4 gap-6">
+              <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
+                <div className="flex items-center gap-3 mb-3">
+                  <Trophy className="w-8 h-8 text-yellow-500" />
+                  <div>
+                    <div className="text-2xl font-bold text-white">#{rankings.nationalRank}</div>
+                    <div className="text-sm text-slate-400">National Ranking</div>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                <div className="text-green-400 text-sm">{rankings.improvementTrend}</div>
+              </div>
 
-          {/* Coach Contacts Tab */}
-          <TabsContent value="contacts" className="space-y-6">
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Phone className="w-5 h-5" />
-                  Direct Coach Contacts
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {/* Filters */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                  <Input
-                    placeholder="Search coaches or schools..."
-                    value={filters.search}
-                    onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                    className="bg-slate-700 border-slate-600"
-                  />
-                  <Select value={filters.division} onValueChange={(value) => setFilters(prev => ({ ...prev, division: value }))}>
-                    <SelectTrigger className="bg-slate-700 border-slate-600">
-                      <SelectValue placeholder="All Divisions" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">All Divisions</SelectItem>
-                      <SelectItem value="D1">Division 1</SelectItem>
-                      <SelectItem value="D2">Division 2</SelectItem>
-                      <SelectItem value="D3">Division 3</SelectItem>
-                      <SelectItem value="NAIA">NAIA</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select value={filters.sport} onValueChange={(value) => setFilters(prev => ({ ...prev, sport: value }))}>
-                    <SelectTrigger className="bg-slate-700 border-slate-600">
-                      <SelectValue placeholder="All Sports" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">All Sports</SelectItem>
-                      <SelectItem value="Basketball">Basketball</SelectItem>
-                      <SelectItem value="Soccer">Soccer</SelectItem>
-                      <SelectItem value="Baseball">Baseball</SelectItem>
-                      <SelectItem value="Track">Track & Field</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select value={filters.location} onValueChange={(value) => setFilters(prev => ({ ...prev, location: value }))}>
-                    <SelectTrigger className="bg-slate-700 border-slate-600">
-                      <SelectValue placeholder="All Locations" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">All Locations</SelectItem>
-                      <SelectItem value="California">California</SelectItem>
-                      <SelectItem value="Texas">Texas</SelectItem>
-                      <SelectItem value="Florida">Florida</SelectItem>
-                      <SelectItem value="New York">New York</SelectItem>
-                    </SelectContent>
-                  </Select>
+              <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
+                <div className="flex items-center gap-3 mb-3">
+                  <DollarSign className="w-8 h-8 text-green-500" />
+                  <div>
+                    <div className="text-2xl font-bold text-white">{scholarships.applied}</div>
+                    <div className="text-sm text-slate-400">Applications Submitted</div>
+                  </div>
                 </div>
+                <div className="text-blue-400 text-sm">${scholarships.totalValue.toLocaleString()} available</div>
+              </div>
 
-                {/* Contacts List */}
-                <div className="space-y-4">
-                  {contacts.slice(0, 8).map(contact => (
-                    <Card key={contact.id} className="bg-slate-700 border-slate-600">
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <div>
-                                <h3 className="font-semibold text-white">{contact.coach}</h3>
-                                <p className="text-sm text-slate-300">{contact.position}</p>
-                              </div>
-                              <Badge className={`${getDivisionColor(contact.division)} text-white`}>
-                                {contact.division}
-                              </Badge>
-                            </div>
-                            
-                            <div className="flex items-center gap-4 mb-2">
-                              <div className="flex items-center gap-1 text-sm text-slate-300">
-                                <School className="w-4 h-4" />
-                                {contact.school}
-                              </div>
-                              <div className="flex items-center gap-1 text-sm text-slate-300">
-                                <MapPin className="w-4 h-4" />
-                                {contact.location}
-                              </div>
-                            </div>
-
-                            <div className="flex items-center gap-4 text-sm text-slate-400">
-                              <div className="flex items-center gap-1">
-                                <Mail className="w-4 h-4" />
-                                {contact.email}
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <Phone className="w-4 h-4" />
-                                {contact.phone}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="text-right">
-                            <div className="text-lg font-semibold text-green-400 mb-1">
-                              {contact.responseRate}%
-                            </div>
-                            <div className="text-xs text-slate-400 mb-2">Response Rate</div>
-                            <div className="text-xs text-slate-300">{contact.recentActivity}</div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-600">
-                          <div className="flex flex-wrap gap-1">
-                            {contact.recruitingFocus.slice(0, 3).map((focus, index) => (
-                              <Badge key={index} variant="secondary" className="bg-slate-600 text-slate-200 text-xs">
-                                {focus}
-                              </Badge>
-                            ))}
-                          </div>
-                          <div className="flex gap-2">
-                            <Button size="sm" variant="outline">
-                              <Eye className="w-3 h-3 mr-1" />
-                              View Profile
-                            </Button>
-                            <Button size="sm" className="bg-blue-500 hover:bg-blue-600">
-                              <MessageSquare className="w-3 h-3 mr-1" />
-                              Contact
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+              <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
+                <div className="flex items-center gap-3 mb-3">
+                  <Users className="w-8 h-8 text-blue-500" />
+                  <div>
+                    <div className="text-2xl font-bold text-white">{contacts.responseRate}%</div>
+                    <div className="text-sm text-slate-400">Coach Response Rate</div>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                <div className="text-purple-400 text-sm">{contacts.totalContacts} total contacts</div>
+              </div>
 
-          {/* Recruiting Tracker Tab */}
-          <TabsContent value="tracker" className="space-y-6">
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="w-5 h-5" />
-                  Recruiting Pipeline Tracker
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Users className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-4">Track Your Recruiting Progress</h3>
-                  <p className="text-slate-400 mb-6">Monitor contacts, visits, offers, and commitments</p>
-                  <Button className="bg-blue-500 hover:bg-blue-600">
-                    Start Tracking
-                  </Button>
+              <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
+                <div className="flex items-center gap-3 mb-3">
+                  <CheckCircle className="w-8 h-8 text-green-500" />
+                  <div>
+                    <div className="text-2xl font-bold text-white">{ncaaEligibility.status}</div>
+                    <div className="text-sm text-slate-400">NCAA Eligibility</div>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                <div className="text-green-400 text-sm">On track for certification</div>
+              </div>
+            </div>
 
-          {/* Analytics Tab */}
-          <TabsContent value="analytics" className="space-y-6">
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Trophy className="w-5 h-5" />
-                  Recruiting Analytics
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Trophy className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-4">Advanced Recruiting Analytics</h3>
-                  <p className="text-slate-400 mb-6">Performance metrics, success rates, and predictions</p>
-                  <Button className="bg-purple-500 hover:bg-purple-600">
-                    View Analytics
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Advanced AI Tab */}
-          <TabsContent value="advanced" className="space-y-6">
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Star className="w-5 h-5" />
-                  Advanced AI Features
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <Card className="bg-slate-700 border-slate-600">
-                    <CardContent className="p-6 text-center">
-                      <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Star className="w-6 h-6 text-white" />
+            {/* AI Recommendations */}
+            <div className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 rounded-xl p-6 border border-blue-500/30">
+              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                <Star className="w-6 h-6 text-yellow-500" />
+                AI Recruitment Recommendations
+              </h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-blue-400 mb-3">Immediate Actions</h3>
+                  <div className="space-y-2">
+                    {recommendations.immediate.map((rec: string, index: number) => (
+                      <div key={index} className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-orange-400 mt-0.5 flex-shrink-0" />
+                        <span className="text-sm text-slate-300">{rec}</span>
                       </div>
-                      <h3 className="font-semibold text-white mb-2">Coaching Scheme Analysis</h3>
-                      <p className="text-sm text-slate-400 mb-4">
-                        AI matches players to specific coaching systems and schemes
-                      </p>
-                      <Button size="sm" className="bg-purple-500 hover:bg-purple-600" onClick={() => window.open('/advanced-recruiting', '_blank')}>
-                        Explore
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-slate-700 border-slate-600">
-                    <CardContent className="p-6 text-center">
-                      <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Eye className="w-6 h-6 text-white" />
-                      </div>
-                      <h3 className="font-semibold text-white mb-2">Highlight Tape Analysis</h3>
-                      <p className="text-sm text-slate-400 mb-4">
-                        Advanced AI analysis and comparison of highlight videos
-                      </p>
-                      <Button size="sm" className="bg-blue-500 hover:bg-blue-600" onClick={() => window.open('/advanced-recruiting', '_blank')}>
-                        Analyze
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-slate-700 border-slate-600">
-                    <CardContent className="p-6 text-center">
-                      <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Search className="w-6 h-6 text-white" />
-                      </div>
-                      <h3 className="font-semibold text-white mb-2">Reverse Coach Discovery</h3>
-                      <p className="text-sm text-slate-400 mb-4">
-                        Coaches find players who perfectly fit their systems
-                      </p>
-                      <Button size="sm" className="bg-green-500 hover:bg-green-600" onClick={() => window.open('/advanced-recruiting', '_blank')}>
-                        Discover
-                      </Button>
-                    </CardContent>
-                  </Card>
+                    ))}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                <div>
+                  <h3 className="text-lg font-semibold text-green-400 mb-3">Strategic Moves</h3>
+                  <div className="space-y-2">
+                    {recommendations.strategic.map((rec: string, index: number) => (
+                      <div key={index} className="flex items-start gap-2">
+                        <Target className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                        <span className="text-sm text-slate-300">{rec}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Top College Matches */}
+            <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold">Top College Matches</h2>
+                <Link 
+                  href="/college-explorer"
+                  className="text-blue-400 hover:text-blue-300 flex items-center gap-2 text-sm"
+                >
+                  View All <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+              <div className="grid md:grid-cols-3 gap-4">
+                {collegeMatches.slice(0, 3).map((college, index) => (
+                  <div key={college.id} className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/50">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="font-bold text-white">{college.name}</h3>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-blue-400">{college.matchScore}%</div>
+                        <div className="text-xs text-slate-400">Match</div>
+                      </div>
+                    </div>
+                    <p className="text-sm text-slate-400 mb-3">{college.location} • {college.division}</p>
+                    <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+                      <div>Academic: {college.fit.academic}%</div>
+                      <div>Athletic: {college.fit.athletic}%</div>
+                      <div>Geographic: {college.fit.geographic}%</div>
+                      <div>Financial: {college.fit.financial}%</div>
+                    </div>
+                    <div className="flex gap-2">
+                      {college.hasScholarship && (
+                        <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded">
+                          Scholarship Available
+                        </span>
+                      )}
+                      {college.contactMade && (
+                        <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs rounded">
+                          Contact Made
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Quick Action Links */}
+        <div className="mt-12 grid md:grid-cols-5 gap-4">
+          <Link 
+            href="/scholarship-tracker"
+            className="bg-green-600/20 hover:bg-green-600/30 border border-green-500/30 rounded-xl p-4 text-center transition-colors group"
+          >
+            <DollarSign className="w-8 h-8 text-green-400 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+            <div className="font-semibold text-green-400">Scholarships</div>
+            <div className="text-xs text-slate-400">Track & Apply</div>
+          </Link>
+
+          <Link 
+            href="/college-explorer"
+            className="bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 rounded-xl p-4 text-center transition-colors group"
+          >
+            <GraduationCap className="w-8 h-8 text-blue-400 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+            <div className="font-semibold text-blue-400">Colleges</div>
+            <div className="text-xs text-slate-400">Explore & Match</div>
+          </Link>
+
+          <Link 
+            href="/athletic-contacts"
+            className="bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 rounded-xl p-4 text-center transition-colors group"
+          >
+            <Users className="w-8 h-8 text-purple-400 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+            <div className="font-semibold text-purple-400">Contacts</div>
+            <div className="text-xs text-slate-400">Coach Database</div>
+          </Link>
+
+          <Link 
+            href="/rankings/class-2026"
+            className="bg-yellow-600/20 hover:bg-yellow-600/30 border border-yellow-500/30 rounded-xl p-4 text-center transition-colors group"
+          >
+            <Trophy className="w-8 h-8 text-yellow-400 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+            <div className="font-semibold text-yellow-400">Rankings</div>
+            <div className="text-xs text-slate-400">Top 100 Lists</div>
+          </Link>
+
+          <Link 
+            href="/ncaa-eligibility"
+            className="bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 rounded-xl p-4 text-center transition-colors group"
+          >
+            <CheckCircle className="w-8 h-8 text-red-400 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+            <div className="font-semibold text-red-400">NCAA</div>
+            <div className="text-xs text-slate-400">Eligibility Check</div>
+          </Link>
+        </div>
       </div>
     </div>
-  );
+  )
 }
