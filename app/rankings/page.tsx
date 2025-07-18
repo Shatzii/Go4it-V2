@@ -49,7 +49,9 @@ interface RankingData {
 export default function RankingsPage() {
   const [rankings, setRankings] = useState<RankingData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('global');
+  const [activeTab, setActiveTab] = useState('football');
+  const [activeRegion, setActiveRegion] = useState('usa');
+  const [activeGender, setActiveGender] = useState('men');
   const [filters, setFilters] = useState({
     sport: 'all',
     country: 'all',
@@ -61,7 +63,7 @@ export default function RankingsPage() {
 
   useEffect(() => {
     loadRankings();
-  }, [activeTab, filters]);
+  }, [activeTab, activeRegion, activeGender, filters]);
 
   const loadRankings = async () => {
     setLoading(true);
@@ -73,13 +75,11 @@ export default function RankingsPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          sport: activeTab === 'football' ? 'football' : 
-                 activeTab === 'basketball' ? 'basketball' : 
-                 activeTab === 'soccer' ? 'soccer' : 
-                 filters.sport === 'all' ? null : filters.sport,
-          region: activeTab === 'usa' ? 'USA' : 
-                  activeTab === 'europe' ? 'Europe' : 
-                  activeTab === 'global' ? null : null,
+          sport: activeTab,
+          region: activeRegion === 'usa' ? 'USA' : 
+                  activeRegion === 'europe' ? 'Europe' : 
+                  activeRegion === 'global' ? null : null,
+          gender: activeGender,
           maxResults: 100
         })
       });
@@ -405,15 +405,12 @@ export default function RankingsPage() {
           </CardContent>
         </Card>
 
-        {/* Independent Top 100 Rankings */}
+        {/* Comprehensive Top 100 Rankings */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 bg-slate-800 border-slate-700">
-            <TabsTrigger value="football" className="text-white">Football Top 100</TabsTrigger>
-            <TabsTrigger value="basketball" className="text-white">Basketball Top 100</TabsTrigger>
-            <TabsTrigger value="soccer" className="text-white">Soccer Top 100</TabsTrigger>
-            <TabsTrigger value="usa" className="text-white">USA Top 100</TabsTrigger>
-            <TabsTrigger value="europe" className="text-white">Europe Top 100</TabsTrigger>
-            <TabsTrigger value="global" className="text-white">Global Top 100</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 bg-slate-800 border-slate-700">
+            <TabsTrigger value="football" className="text-white">American Football</TabsTrigger>
+            <TabsTrigger value="basketball" className="text-white">Basketball</TabsTrigger>
+            <TabsTrigger value="soccer" className="text-white">Soccer</TabsTrigger>
           </TabsList>
 
           {loading ? (
@@ -425,8 +422,44 @@ export default function RankingsPage() {
             <>
               <TabsContent value="football" className="space-y-4">
                 <div className="mb-4 p-4 bg-green-900/20 rounded-lg border border-green-500/30">
-                  <h3 className="text-lg font-semibold text-green-400 mb-2">Football Top 100</h3>
-                  <p className="text-slate-300">Top 100 American Football players worldwide - completely separate ranking</p>
+                  <h3 className="text-lg font-semibold text-green-400 mb-2">American Football Top 100</h3>
+                  <p className="text-slate-300">Independent rankings: USA Top 100, Europe Top 30, Global Top 100</p>
+                </div>
+                
+                {/* Regional Tabs for Football */}
+                <div className="mb-4">
+                  <div className="flex space-x-2 bg-slate-800 p-1 rounded-lg">
+                    <button
+                      onClick={() => setActiveRegion('usa')}
+                      className={`px-4 py-2 rounded-lg transition-colors ${
+                        activeRegion === 'usa' 
+                          ? 'bg-green-600 text-white' 
+                          : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                      }`}
+                    >
+                      USA Top 100
+                    </button>
+                    <button
+                      onClick={() => setActiveRegion('europe')}
+                      className={`px-4 py-2 rounded-lg transition-colors ${
+                        activeRegion === 'europe' 
+                          ? 'bg-green-600 text-white' 
+                          : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                      }`}
+                    >
+                      Europe Top 30
+                    </button>
+                    <button
+                      onClick={() => setActiveRegion('global')}
+                      className={`px-4 py-2 rounded-lg transition-colors ${
+                        activeRegion === 'global' 
+                          ? 'bg-green-600 text-white' 
+                          : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                      }`}
+                    >
+                      Global Top 100
+                    </button>
+                  </div>
                 </div>
                 {rankings.map((athlete, index) => (
                   <Card key={athlete.id} className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors">
@@ -536,7 +569,69 @@ export default function RankingsPage() {
               <TabsContent value="basketball" className="space-y-4">
                 <div className="mb-4 p-4 bg-orange-900/20 rounded-lg border border-orange-500/30">
                   <h3 className="text-lg font-semibold text-orange-400 mb-2">Basketball Top 100</h3>
-                  <p className="text-slate-300">Top 100 Basketball players worldwide - completely separate ranking</p>
+                  <p className="text-slate-300">Men's and Women's rankings: USA Top 100, Europe Top 100, Global Top 100</p>
+                </div>
+                
+                {/* Gender Tabs for Basketball */}
+                <div className="mb-4">
+                  <div className="flex space-x-2 bg-slate-800 p-1 rounded-lg">
+                    <button
+                      onClick={() => setActiveGender('men')}
+                      className={`px-4 py-2 rounded-lg transition-colors ${
+                        activeGender === 'men' 
+                          ? 'bg-orange-600 text-white' 
+                          : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                      }`}
+                    >
+                      Men's Basketball
+                    </button>
+                    <button
+                      onClick={() => setActiveGender('women')}
+                      className={`px-4 py-2 rounded-lg transition-colors ${
+                        activeGender === 'women' 
+                          ? 'bg-orange-600 text-white' 
+                          : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                      }`}
+                    >
+                      Women's Basketball
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Regional Tabs for Basketball */}
+                <div className="mb-4">
+                  <div className="flex space-x-2 bg-slate-800 p-1 rounded-lg">
+                    <button
+                      onClick={() => setActiveRegion('usa')}
+                      className={`px-4 py-2 rounded-lg transition-colors ${
+                        activeRegion === 'usa' 
+                          ? 'bg-orange-600 text-white' 
+                          : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                      }`}
+                    >
+                      USA Top 100
+                    </button>
+                    <button
+                      onClick={() => setActiveRegion('europe')}
+                      className={`px-4 py-2 rounded-lg transition-colors ${
+                        activeRegion === 'europe' 
+                          ? 'bg-orange-600 text-white' 
+                          : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                      }`}
+                    >
+                      Europe Top 100
+                    </button>
+                    <button
+                      onClick={() => setActiveRegion('global')}
+                      className={`px-4 py-2 rounded-lg transition-colors ${
+                        activeRegion === 'global' 
+                          ? 'bg-orange-600 text-white' 
+                          : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                      }`}
+                    >
+                      Global Top 100
+                    </button>
+                  </div>
                 </div>
                 {rankings.map((athlete, index) => (
                   <Card key={athlete.id} className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors">
@@ -579,7 +674,69 @@ export default function RankingsPage() {
               <TabsContent value="soccer" className="space-y-4">
                 <div className="mb-4 p-4 bg-purple-900/20 rounded-lg border border-purple-500/30">
                   <h3 className="text-lg font-semibold text-purple-400 mb-2">Soccer Top 100</h3>
-                  <p className="text-slate-300">Top 100 Soccer/Football players worldwide - completely separate ranking</p>
+                  <p className="text-slate-300">Men's and Women's rankings: USA Top 100, Europe Top 100, Global Top 100</p>
+                </div>
+                
+                {/* Gender Tabs for Soccer */}
+                <div className="mb-4">
+                  <div className="flex space-x-2 bg-slate-800 p-1 rounded-lg">
+                    <button
+                      onClick={() => setActiveGender('men')}
+                      className={`px-4 py-2 rounded-lg transition-colors ${
+                        activeGender === 'men' 
+                          ? 'bg-purple-600 text-white' 
+                          : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                      }`}
+                    >
+                      Men's Soccer
+                    </button>
+                    <button
+                      onClick={() => setActiveGender('women')}
+                      className={`px-4 py-2 rounded-lg transition-colors ${
+                        activeGender === 'women' 
+                          ? 'bg-purple-600 text-white' 
+                          : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                      }`}
+                    >
+                      Women's Soccer
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Regional Tabs for Soccer */}
+                <div className="mb-4">
+                  <div className="flex space-x-2 bg-slate-800 p-1 rounded-lg">
+                    <button
+                      onClick={() => setActiveRegion('usa')}
+                      className={`px-4 py-2 rounded-lg transition-colors ${
+                        activeRegion === 'usa' 
+                          ? 'bg-purple-600 text-white' 
+                          : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                      }`}
+                    >
+                      USA Top 100
+                    </button>
+                    <button
+                      onClick={() => setActiveRegion('europe')}
+                      className={`px-4 py-2 rounded-lg transition-colors ${
+                        activeRegion === 'europe' 
+                          ? 'bg-purple-600 text-white' 
+                          : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                      }`}
+                    >
+                      Europe Top 100
+                    </button>
+                    <button
+                      onClick={() => setActiveRegion('global')}
+                      className={`px-4 py-2 rounded-lg transition-colors ${
+                        activeRegion === 'global' 
+                          ? 'bg-purple-600 text-white' 
+                          : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                      }`}
+                    >
+                      Global Top 100
+                    </button>
+                  </div>
                 </div>
                 {rankings.map((athlete, index) => (
                   <Card key={athlete.id} className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors">
