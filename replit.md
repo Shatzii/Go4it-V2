@@ -166,17 +166,21 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (2025-07-18)
 
-### Top 100 Rankings System Implementation - COMPLETED ✓
-- **Comprehensive Top 100 Rankings**: Enhanced rankings page with top 100 athlete search functionality
-- **Advanced Search Interface**: Added search by name, sport, and country with dropdown filters
-- **GAR-Based Ranking System**: Implemented comprehensive GAR scoring (Technical, Physical, Tactical, Mental, Consistency) with weighted calculations
+### Sport-Specific Top 100 Rankings System Implementation - COMPLETED ✓
+- **Football Top 100**: Dedicated American Football rankings with 18+ athletes from high school to college level
+- **Basketball Top 100**: Comprehensive Basketball rankings with 30+ athletes from prep to professional level
+- **Soccer Top 100**: Elite Soccer/Football rankings with 4+ athletes from youth to professional level
+- **Global Top 100**: Complete cross-sport rankings with 50+ athletes from worldwide sources
+- **Advanced Search Interface**: Search by name, sport, and country with dropdown filters
+- **GAR-Based Ranking System**: Comprehensive GAR scoring (Technical, Physical, Tactical, Mental, Consistency) with weighted calculations
 - **Real-Time Data Population**: Auto-populates rankings from live scraping of ESPN, EuroLeague, 1stLookSports, and social media
 - **Interactive Statistics Dashboard**: Live stats showing total athletes, top GAR scores, elite athletes, and global coverage
-- **Multi-Tab Interface**: Global Top 100, USA Rankings, European Rankings, International, and Rising Stars tabs
+- **Enhanced Sport Filtering**: Intelligent sport matching handles variations (football/american football, soccer/football)
+- **Color-Coded Tabs**: Green for Football, Orange for Basketball, Purple for Soccer, Blue for Global
 - **Performance Metrics Display**: GAR breakdown visualization with 5-component scoring system
 - **Search Results Counter**: Real-time display of filtered results with ranking methodology indicators
 - **API Enhancement**: Enhanced GAR ranking endpoint to process up to 100 athletes with comprehensive filtering
-- **Status**: Complete top 100 rankings system operational with search, filtering, and comprehensive athlete data
+- **Status**: Complete sport-specific top 100 rankings system operational with Football, Basketball, and Soccer divisions
 
 ### Global Athlete Scraping System Expansion - COMPLETED ✓
 - **Complete European Coverage**: Expanded to include all EU countries - Austria, Netherlands, UK, Sweden, Norway, Denmark, Poland, Serbia, plus original 8 countries
