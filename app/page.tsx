@@ -62,82 +62,10 @@ export default function Go4ItHomePage() {
             </div>
             <div className="flex items-center space-x-4">
               <SafeLink 
-                href="/upload-guide" 
-                className="text-slate-300 hover:text-white transition-colors"
-              >
-                Upload Guide
-              </SafeLink>
-              <SafeLink 
-                href="/content-tagging" 
-                className="text-slate-300 hover:text-white transition-colors"
-              >
-                AI Tagging
-              </SafeLink>
-              <SafeLink 
-                href="/ncaa-eligibility" 
-                className="text-slate-300 hover:text-white transition-colors"
-              >
-                NCAA Eligibility
-              </SafeLink>
-              <SafeLink 
-                href="/athletic-contacts" 
-                className="text-slate-300 hover:text-white transition-colors"
-              >
-                Athletic Contacts
-              </SafeLink>
-              <SafeLink 
-                href="/rankings" 
-                className="text-slate-300 hover:text-white transition-colors"
-              >
-                Rankings
-              </SafeLink>
-              <SafeLink 
                 href="/lifetime" 
                 className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold px-4 py-2 rounded-lg transition-all duration-300 shadow-lg text-sm"
               >
                 VERIFIED 100
-              </SafeLink>
-              <SafeLink 
-                href="/leaderboard" 
-                className="text-slate-300 hover:text-white transition-colors flex items-center gap-1"
-              >
-                <Crown className="w-4 h-4" />
-                Leaderboard
-              </SafeLink>
-
-              <SafeLink 
-                href="/verified-athletes" 
-                className="text-slate-300 hover:text-white transition-colors flex items-center gap-1"
-              >
-                <CheckCircle className="w-4 h-4 text-blue-400" />
-                Verified
-              </SafeLink>
-              <SafeLink 
-                href="/events" 
-                className="text-slate-300 hover:text-white transition-colors flex items-center gap-1"
-              >
-                <Calendar className="w-4 h-4 text-orange-400" />
-                Events
-              </SafeLink>
-              <SafeLink 
-                href="/recruiting-hub" 
-                className="text-slate-300 hover:text-white transition-colors flex items-center gap-1"
-              >
-                <Trophy className="w-4 h-4 text-blue-400" />
-                Recruiting
-              </SafeLink>
-              <SafeLink 
-                href="/athlete-comparison" 
-                className="text-slate-300 hover:text-white transition-colors flex items-center gap-1"
-              >
-                <BarChart3 className="w-4 h-4 text-purple-400" />
-                Compare
-              </SafeLink>
-              <SafeLink 
-                href="/pricing" 
-                className="text-slate-300 hover:text-white transition-colors"
-              >
-                Pricing
               </SafeLink>
               <SafeLink 
                 href="/auth" 
@@ -400,6 +328,100 @@ export default function Go4ItHomePage() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Go4It Sports Academy - Featured Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-slate-900 to-slate-800">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-bold text-white mb-6">Go4It Sports Academy</h2>
+            <p className="text-xl text-slate-300 max-w-3xl mx-auto mb-8">
+              A comprehensive K-12 educational institution designed specifically for student-athletes, 
+              combining world-class academics with elite athletic development.
+            </p>
+            <div className="flex justify-center gap-6 text-sm">
+              <div className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-blue-400" />
+                <span className="text-white font-semibold">847 Students</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <GraduationCap className="w-5 h-5 text-green-400" />
+                <span className="text-white font-semibold">156 Faculty</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-purple-400" />
+                <span className="text-white font-semibold">234 Courses</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Academic Excellence */}
+            <div className="bg-slate-800/80 p-8 rounded-2xl border border-slate-700/50">
+              <div className="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-6">
+                <GraduationCap className="w-8 h-8 text-blue-500" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-4">Academic Excellence</h3>
+              <p className="text-slate-300 mb-4">
+                Complete K-12 curriculum with NCAA-approved core courses, advanced placement programs, 
+                and specialized sports science education.
+              </p>
+              <ul className="space-y-2 text-sm text-slate-400">
+                <li>• NCAA-approved core courses</li>
+                <li>• Advanced Placement programs</li>
+                <li>• Sports science curriculum</li>
+                <li>• Individual learning plans</li>
+              </ul>
+            </div>
+
+            {/* Athletic Development */}
+            <div className="bg-slate-800/80 p-8 rounded-2xl border border-slate-700/50">
+              <div className="w-16 h-16 bg-green-500/20 rounded-2xl flex items-center justify-center mb-6">
+                <Trophy className="w-8 h-8 text-green-500" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-4">Athletic Development</h3>
+              <p className="text-slate-300 mb-4">
+                Professional-grade training facilities and coaching staff for 12+ sports, 
+                with integrated performance analytics and injury prevention.
+              </p>
+              <ul className="space-y-2 text-sm text-slate-400">
+                <li>• 12+ sport programs</li>
+                <li>• Professional coaching staff</li>
+                <li>• Performance analytics</li>
+                <li>• Injury prevention protocols</li>
+              </ul>
+            </div>
+
+            {/* Student Life */}
+            <div className="bg-slate-800/80 p-8 rounded-2xl border border-slate-700/50">
+              <div className="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center mb-6">
+                <Users className="w-8 h-8 text-purple-500" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-4">Student Life</h3>
+              <p className="text-slate-300 mb-4">
+                Comprehensive support services including counseling, college planning, 
+                and neurodivergent student accommodations.
+              </p>
+              <ul className="space-y-2 text-sm text-slate-400">
+                <li>• Academic counseling</li>
+                <li>• College recruitment support</li>
+                <li>• Neurodivergent accommodations</li>
+                <li>• Mental health resources</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="text-center mt-12">
+            <SafeLink 
+              href="/academy" 
+              className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg text-lg"
+            >
+              <GraduationCap className="w-6 h-6" />
+              Explore Academy
+              <ArrowRight className="w-5 h-5" />
+            </SafeLink>
           </div>
         </div>
       </section>
