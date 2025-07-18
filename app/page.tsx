@@ -98,6 +98,13 @@ export default function Go4ItHomePage() {
                 VERIFIED 100
               </SafeLink>
               <SafeLink 
+                href="/leaderboard" 
+                className="text-slate-300 hover:text-white transition-colors flex items-center gap-1"
+              >
+                <Crown className="w-4 h-4" />
+                Leaderboard
+              </SafeLink>
+              <SafeLink 
                 href="/pricing" 
                 className="text-slate-300 hover:text-white transition-colors"
               >
