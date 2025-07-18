@@ -18,6 +18,7 @@ import {
   Clock,
   CheckCircle
 } from 'lucide-react'
+import { VerificationBadge } from '@/components/ui/verification-badge'
 import ClientOnly from '@/components/ClientOnly'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { SmoothProgress } from '@/components/simple-transitions'
@@ -38,14 +39,16 @@ function DashboardComponent() {
         sport: 'Basketball',
         score: 89,
         date: '2024-01-15',
-        improvements: ['Shooting form', 'Footwork']
+        improvements: ['Shooting form', 'Footwork'],
+        verified: true
       },
       {
         id: 2,
         sport: 'Soccer',
         score: 85,
         date: '2024-01-14',
-        improvements: ['First touch', 'Passing accuracy']
+        improvements: ['First touch', 'Passing accuracy'],
+        verified: true
       }
     ],
     achievements: [
@@ -187,7 +190,15 @@ function DashboardComponent() {
                     {dashboardData.recentAnalyses.map((analysis) => (
                       <div key={analysis.id} className="border border-slate-700 rounded-lg p-4">
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-semibold text-white">{analysis.sport}</h3>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold text-white">{analysis.sport}</h3>
+                            {analysis.verified && (
+                              <div className="flex items-center gap-1">
+                                <CheckCircle className="w-4 h-4 text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]" fill="currentColor" />
+                                <span className="text-blue-400 text-xs font-semibold">VERIFIED</span>
+                              </div>
+                            )}
+                          </div>
                           <div className="flex items-center gap-2">
                             <span className="text-2xl font-bold text-green-400">{analysis.score}</span>
                             <span className="text-sm text-slate-400">GAR</span>
