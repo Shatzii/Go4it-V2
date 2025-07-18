@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { CheckCircle, ExternalLink, Activity, Target, Users, BarChart3, Star, TrendingUp, Award, Calendar, MapPin, ArrowRight, Play, GraduationCap, Trophy } from 'lucide-react'
+import { CheckCircle, ExternalLink, Activity, Target, Users, BarChart3, Star, TrendingUp, Award, Calendar, MapPin, ArrowRight, Play, GraduationCap, Trophy, Crown } from 'lucide-react'
 import Image from 'next/image'
 // Using public logo path for Next.js
 const logoImage = '/go4it-logo-new.jpg'
@@ -92,6 +92,12 @@ export default function Go4ItHomePage() {
                 Rankings
               </SafeLink>
               <SafeLink 
+                href="/lifetime" 
+                className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold px-4 py-2 rounded-lg transition-all duration-300 shadow-lg text-sm"
+              >
+                VERIFIED 100
+              </SafeLink>
+              <SafeLink 
                 href="/pricing" 
                 className="text-slate-300 hover:text-white transition-colors"
               >
@@ -113,6 +119,27 @@ export default function Go4ItHomePage() {
           </div>
         </div>
       </nav>
+
+      {/* Vienna Event Announcement Banner */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/90 to-purple-600/90"></div>
+        <div className="relative max-w-7xl mx-auto flex items-center justify-center text-center">
+          <div className="flex items-center gap-4 text-sm md:text-base">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+              <span className="font-bold">FIRST VERIFIED COMBINE</span>
+            </div>
+            <div className="hidden md:block">•</div>
+            <div>
+              <span className="font-medium">Vienna, Austria • July 22-24, 2025</span>
+            </div>
+            <div className="hidden md:block">•</div>
+            <div>
+              <span className="text-yellow-300">Friday Night Lights @ 7PM</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Hero Section - Dynamic Sports Platform */}
       <section className="relative py-20 px-4 sm:px-6 lg:px-8 min-h-screen flex items-center overflow-hidden">
@@ -210,6 +237,27 @@ export default function Go4ItHomePage() {
                     <div className="font-semibold text-white">AI Coach</div>
                     <div className="text-sm text-slate-300">Advanced Analysis</div>
                   </div>
+                </SafeLink>
+              </div>
+              
+              {/* Vienna Event CTA */}
+              <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-xl p-6 backdrop-blur-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+                  <span className="text-yellow-400 font-semibold text-sm">FIRST VERIFIED COMBINE EVENT</span>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">
+                  Vienna, Austria • July 22-24, 2025
+                </h3>
+                <p className="text-slate-300 text-sm mb-4">
+                  Be one of the first 100 verified athletes. Friday Night Lights starts at 7PM.
+                </p>
+                <SafeLink 
+                  href="/lifetime"
+                  className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold px-6 py-3 rounded-lg text-sm transition-all duration-300 inline-flex items-center gap-2 shadow-lg"
+                >
+                  <Crown className="w-4 h-4" />
+                  JOIN THE VERIFIED 100
                 </SafeLink>
               </div>
               
