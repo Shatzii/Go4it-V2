@@ -483,7 +483,7 @@ export default function Go4ItHomePage() {
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Live Rankings</h3>
               <p className="text-slate-300 mb-4">
-                Real-time global athlete rankings from ESPN, 247Sports, EuroLeague, 1stLookSports, and social media platforms.
+                Real-time global athlete rankings and comprehensive performance analytics.
               </p>
               <div className="flex items-center gap-2 text-purple-500 font-medium">
                 <span>ELITE Tier</span>
