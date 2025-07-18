@@ -140,6 +140,57 @@ export const insertHighlightReelSchema = createInsertSchema(highlightReels).omit
   processedAt: true,
 });
 
+// Athlete profiles table for extended profile data
+export const athleteProfiles = pgTable('athlete_profiles', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  height: text('height'), // e.g., "6'2"
+  weight: text('weight'), // e.g., "185 lbs"
+  dominantHand: text('dominant_hand'), // left, right, both
+  yearsPlaying: integer('years_playing'),
+  previousInjuries: text('previous_injuries'),
+  phoneNumber: text('phone_number'),
+  parentContactName: text('parent_contact_name'),
+  parentContactPhone: text('parent_contact_phone'),
+  parentContactEmail: text('parent_contact_email'),
+  coachName: text('coach_name'),
+  coachPhone: text('coach_phone'),
+  coachEmail: text('coach_email'),
+  achievements: text('achievements').array(),
+  specialties: text('specialties').array(),
+  goals: text('goals'),
+  bio: text('bio'),
+  socialMediaLinks: jsonb('social_media_links'),
+  isProfileComplete: boolean('is_profile_complete').notNull().default(false),
+  profileVisibility: text('profile_visibility').notNull().default('public'), // public, private, coaches-only
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+// Quick profile setup table for one-click creation
+export const quickProfileSetup = pgTable('quick_profile_setup', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  setupStep: text('setup_step').notNull().default('basic-info'), // basic-info, athletics, contacts, goals, complete
+  setupData: jsonb('setup_data'),
+  isCompleted: boolean('is_completed').notNull().default(false),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+// Zod schemas for athlete profiles
+export const insertAthleteProfileSchema = createInsertSchema(athleteProfiles).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertQuickProfileSetupSchema = createInsertSchema(quickProfileSetup).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -155,3 +206,7 @@ export type Achievement = typeof achievements.$inferSelect;
 export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
 export type NcaaSchool = typeof ncaaSchools.$inferSelect;
 export type UserSession = typeof userSessions.$inferSelect;
+export type AthleteProfile = typeof athleteProfiles.$inferSelect;
+export type InsertAthleteProfile = z.infer<typeof insertAthleteProfileSchema>;
+export type QuickProfileSetup = typeof quickProfileSetup.$inferSelect;
+export type InsertQuickProfileSetup = z.infer<typeof insertQuickProfileSetupSchema>;

@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { User, Star, Trophy, Calendar, Settings, Mail, Phone, MapPin, School, Edit2, Camera } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { User, Star, Trophy, Calendar, Settings, Mail, Phone, MapPin, School, Edit2, Camera, CheckCircle, Plus } from 'lucide-react';
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState('overview');
