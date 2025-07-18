@@ -111,6 +111,19 @@ export default function Go4ItHomePage() {
                 Roadmap
               </SafeLink>
               <SafeLink 
+                href="/features-audit" 
+                className="text-slate-300 hover:text-white transition-colors"
+              >
+                Features
+              </SafeLink>
+              <SafeLink 
+                href="/verified-athletes" 
+                className="text-slate-300 hover:text-white transition-colors flex items-center gap-1"
+              >
+                <CheckCircle className="w-4 h-4 text-blue-400" />
+                Verified
+              </SafeLink>
+              <SafeLink 
                 href="/pricing" 
                 className="text-slate-300 hover:text-white transition-colors"
               >
@@ -860,8 +873,9 @@ function AthleteCard({
           className="w-full h-48 object-cover"
         />
         {verified && (
-          <div className="absolute top-2 right-2 bg-primary text-primary-foreground px-2 py-1 rounded text-xs font-semibold neon-glow">
-            VERIFIED
+          <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/50 px-2 py-1 rounded backdrop-blur-sm">
+            <CheckCircle className="w-4 h-4 text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]" fill="currentColor" />
+            <span className="text-blue-400 text-xs font-semibold">VERIFIED</span>
           </div>
         )}
         
