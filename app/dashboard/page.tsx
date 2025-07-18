@@ -16,7 +16,10 @@ import {
   Star,
   Activity,
   Clock,
-  CheckCircle
+  CheckCircle,
+  Heart,
+  Brain,
+  Utensils
 } from 'lucide-react'
 import { VerificationBadge } from '@/components/ui/verification-badge'
 import ClientOnly from '@/components/ClientOnly'
@@ -291,16 +294,44 @@ function DashboardComponent() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <Button className="w-full justify-start" variant="outline">
+                    <Button 
+                      className="w-full justify-start" 
+                      variant="outline"
+                      onClick={() => window.location.href = '/upload'}
+                    >
                       <Activity className="w-4 h-4 mr-2" />
                       Upload Video
                     </Button>
-                    <Button className="w-full justify-start" variant="outline">
+                    <Button 
+                      className="w-full justify-start" 
+                      variant="outline"
+                      onClick={() => window.location.href = '/performance-analytics'}
+                    >
+                      <BarChart3 className="w-4 h-4 mr-2" />
+                      Performance Analytics
+                    </Button>
+                    <Button 
+                      className="w-full justify-start" 
+                      variant="outline"
+                      onClick={() => window.location.href = '/wellness-hub'}
+                    >
+                      <Heart className="w-4 h-4 mr-2" />
+                      Wellness Hub
+                    </Button>
+                    <Button 
+                      className="w-full justify-start" 
+                      variant="outline"
+                      onClick={() => window.location.href = '/academy'}
+                    >
                       <BookOpen className="w-4 h-4 mr-2" />
                       View Academy
                     </Button>
-                    <Button className="w-full justify-start" variant="outline">
-                      <Trophy className="w-4 h-4 mr-2" />
+                    <Button 
+                      className="w-full justify-start" 
+                      variant="outline"
+                      onClick={() => window.location.href = '/ai-coach'}
+                    >
+                      <Brain className="w-4 h-4 mr-2" />
                       AI Coach
                     </Button>
                   </div>
