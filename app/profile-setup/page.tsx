@@ -150,7 +150,10 @@ export default function ProfileSetupPage() {
         <div className="bg-slate-800 rounded-lg p-6 mb-6">
           <div className="flex items-center mb-6">
             <div className="bg-blue-500 p-3 rounded-full mr-4">
-              <steps[currentStep].icon className="w-6 h-6 text-white" />
+              {(() => {
+                const IconComponent = steps[currentStep].icon;
+                return <IconComponent className="w-6 h-6 text-white" />;
+              })()}
             </div>
             <div>
               <h2 className="text-xl font-semibold text-white">{steps[currentStep].title}</h2>
