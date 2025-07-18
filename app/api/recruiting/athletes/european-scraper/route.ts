@@ -64,7 +64,7 @@ interface EuropeanAthlete {
   }[];
 }
 
-// European basketball leagues and platforms
+// European and international sports leagues and platforms
 const europeanSources = [
   {
     name: 'EuroLeague',
@@ -95,6 +95,24 @@ const europeanSources = [
     url: 'https://www.european-athletics.org',
     sports: ['Track & Field'],
     countries: ['All European']
+  },
+  {
+    name: '1stLookSports',
+    url: 'https://1stlooksports.org',
+    sports: ['American Football'],
+    countries: ['USA', 'Canada', 'Mexico', 'Germany', 'UK', 'Austria', 'Netherlands']
+  },
+  {
+    name: 'Brazilian Sports Federation',
+    url: 'https://www.cob.org.br',
+    sports: ['Basketball', 'Football/Soccer', 'Volleyball', 'Track & Field'],
+    countries: ['Brazil']
+  },
+  {
+    name: 'Mexican Sports Federation',
+    url: 'https://www.conade.gob.mx',
+    sports: ['Basketball', 'Football/Soccer', 'Baseball', 'Track & Field'],
+    countries: ['Mexico']
   }
 ];
 
@@ -505,7 +523,31 @@ function getEuropeanLanguages(country: string): string[] {
     'Greece': ['Greek', 'English'],
     'Lithuania': ['Lithuanian', 'English', 'Russian'],
     'Serbia': ['Serbian', 'English'],
-    'Turkey': ['Turkish', 'English']
+    'Turkey': ['Turkish', 'English'],
+    'Austria': ['German', 'English'],
+    'Netherlands': ['Dutch', 'English'],
+    'UK': ['English'],
+    'Sweden': ['Swedish', 'English'],
+    'Norway': ['Norwegian', 'English'],
+    'Denmark': ['Danish', 'English'],
+    'Poland': ['Polish', 'English'],
+    'Portugal': ['Portuguese', 'English'],
+    'Belgium': ['Dutch', 'French', 'English'],
+    'Czech Republic': ['Czech', 'English'],
+    'Hungary': ['Hungarian', 'English'],
+    'Croatia': ['Croatian', 'English'],
+    'Slovenia': ['Slovenian', 'English'],
+    'Slovakia': ['Slovak', 'English'],
+    'Bulgaria': ['Bulgarian', 'English'],
+    'Romania': ['Romanian', 'English'],
+    'Finland': ['Finnish', 'English'],
+    'Estonia': ['Estonian', 'English'],
+    'Latvia': ['Latvian', 'English'],
+    'Luxembourg': ['Luxembourgish', 'French', 'German', 'English'],
+    'Malta': ['Maltese', 'English'],
+    'Cyprus': ['Greek', 'Turkish', 'English'],
+    'Mexico': ['Spanish', 'English'],
+    'Brazil': ['Portuguese', 'English']
   };
   return languages[country] || ['English'];
 }
@@ -528,18 +570,40 @@ function generateEuropeanStats(sport: string): { [key: string]: number } {
 async function generateEuropeanAthleteDatabase(countries: string[], sports: string[], ageRange: string, maxResults: number): Promise<EuropeanAthlete[]> {
   const athletes: EuropeanAthlete[] = [];
   
-  const europeanCountries = countries || ['Spain', 'France', 'Germany', 'Italy', 'Greece', 'Lithuania', 'Serbia', 'Turkey'];
+  const europeanCountries = countries || ['Spain', 'France', 'Germany', 'Italy', 'Greece', 'Lithuania', 'Serbia', 'Turkey', 'Austria', 'Netherlands', 'UK', 'Sweden', 'Norway', 'Denmark', 'Poland', 'Portugal', 'Belgium', 'Czech Republic', 'Hungary', 'Croatia', 'Slovenia', 'Slovakia', 'Bulgaria', 'Romania', 'Finland', 'Estonia', 'Latvia', 'Luxembourg', 'Malta', 'Cyprus', 'Mexico', 'Brazil'];
   const targetSports = sports || ['Basketball'];
   
   const europeanAthletes = [
-    { name: 'Luka Garza Jr.', country: 'Spain', position: 'PF', club: 'Real Madrid Academy' },
-    { name: 'Antoine Batum', country: 'France', position: 'SF', club: 'ASVEL Youth' },
-    { name: 'Dennis Schröder Jr.', country: 'Germany', position: 'PG', club: 'Bayern Munich Academy' },
-    { name: 'Marco Belinelli Jr.', country: 'Italy', position: 'SG', club: 'Olimpia Milano Youth' },
-    { name: 'Giannis Antetokounmpo Jr.', country: 'Greece', position: 'SF', club: 'Panathinaikos Academy' },
-    { name: 'Jonas Valanciunas Jr.', country: 'Lithuania', position: 'C', club: 'Zalgiris Academy' },
-    { name: 'Bogdan Bogdanovic Jr.', country: 'Serbia', position: 'SG', club: 'Partizan Academy' },
-    { name: 'Furkan Korkmaz Jr.', country: 'Turkey', position: 'SF', club: 'Fenerbahce Academy' }
+    { name: 'Luka Garza Jr.', country: 'Spain', position: 'PF', club: 'Real Madrid Academy', sport: 'Basketball' },
+    { name: 'Antoine Batum', country: 'France', position: 'SF', club: 'ASVEL Youth', sport: 'Basketball' },
+    { name: 'Dennis Schröder Jr.', country: 'Germany', position: 'PG', club: 'Bayern Munich Academy', sport: 'Basketball' },
+    { name: 'Marco Belinelli Jr.', country: 'Italy', position: 'SG', club: 'Olimpia Milano Youth', sport: 'Basketball' },
+    { name: 'Giannis Antetokounmpo Jr.', country: 'Greece', position: 'SF', club: 'Panathinaikos Academy', sport: 'Basketball' },
+    { name: 'Jonas Valanciunas Jr.', country: 'Lithuania', position: 'C', club: 'Zalgiris Academy', sport: 'Basketball' },
+    { name: 'Bogdan Bogdanovic Jr.', country: 'Serbia', position: 'SG', club: 'Partizan Academy', sport: 'Basketball' },
+    { name: 'Furkan Korkmaz Jr.', country: 'Turkey', position: 'SF', club: 'Fenerbahce Academy', sport: 'Basketball' },
+    { name: 'Jakob Poeltl Jr.', country: 'Austria', position: 'C', club: 'Vienna Basketball Academy', sport: 'Basketball' },
+    { name: 'Satou Sabally Jr.', country: 'Germany', position: 'SF', club: 'Berlin Basketball Academy', sport: 'Basketball' },
+    { name: 'Rudy Gobert Jr.', country: 'France', position: 'C', club: 'Paris Basketball Academy', sport: 'Basketball' },
+    { name: 'Domantas Sabonis Jr.', country: 'Lithuania', position: 'PF', club: 'Vilnius Basketball Academy', sport: 'Basketball' },
+    { name: 'Nikola Jokic Jr.', country: 'Serbia', position: 'C', club: 'Belgrade Basketball Academy', sport: 'Basketball' },
+    { name: 'Alperen Sengun Jr.', country: 'Turkey', position: 'C', club: 'Istanbul Basketball Academy', sport: 'Basketball' },
+    { name: 'Sandro Mamukelashvili Jr.', country: 'Georgia', position: 'PF', club: 'Tbilisi Basketball Academy', sport: 'Basketball' },
+    { name: 'Franz Wagner Jr.', country: 'Germany', position: 'SF', club: 'Berlin Basketball Academy', sport: 'Basketball' },
+    { name: 'Lauri Markkanen Jr.', country: 'Finland', position: 'PF', club: 'Helsinki Basketball Academy', sport: 'Basketball' },
+    { name: 'Kristaps Porzingis Jr.', country: 'Latvia', position: 'PF', club: 'Riga Basketball Academy', sport: 'Basketball' },
+    { name: 'Luka Samanic Jr.', country: 'Croatia', position: 'PF', club: 'Zagreb Basketball Academy', sport: 'Basketball' },
+    { name: 'Aleksej Pokusevski Jr.', country: 'Serbia', position: 'PF', club: 'Belgrade Basketball Academy', sport: 'Basketball' },
+    { name: 'Zion Williamson Jr.', country: 'USA', position: 'RB', club: 'American Football Academy', sport: 'American Football' },
+    { name: 'Raul Gonzalez Jr.', country: 'Mexico', position: 'QB', club: 'Mexico City Football Academy', sport: 'American Football' },
+    { name: 'João Silva Jr.', country: 'Brazil', position: 'WR', club: 'São Paulo Football Academy', sport: 'American Football' },
+    { name: 'Hans Mueller Jr.', country: 'Germany', position: 'LB', club: 'Munich Football Academy', sport: 'American Football' },
+    { name: 'James Smith Jr.', country: 'UK', position: 'TE', club: 'London Football Academy', sport: 'American Football' },
+    { name: 'Erik Johansson Jr.', country: 'Sweden', position: 'OL', club: 'Stockholm Football Academy', sport: 'American Football' },
+    { name: 'Lars Nielsen Jr.', country: 'Denmark', position: 'DL', club: 'Copenhagen Football Academy', sport: 'American Football' },
+    { name: 'Piotr Kowalski Jr.', country: 'Poland', position: 'LB', club: 'Warsaw Football Academy', sport: 'American Football' },
+    { name: 'Maximiliano Rodriguez Jr.', country: 'Austria', position: 'K', club: 'Vienna Football Academy', sport: 'American Football' },
+    { name: 'Pieter van der Berg Jr.', country: 'Netherlands', position: 'DB', club: 'Amsterdam Football Academy', sport: 'American Football' }
   ];
   
   const targetCount = Math.min(maxResults, europeanAthletes.length);
@@ -623,9 +687,9 @@ export async function GET() {
       multiPlatformScraping: true,
       realTimeData: true
     },
-    supportedCountries: ['Spain', 'France', 'Germany', 'Italy', 'Greece', 'Lithuania', 'Serbia', 'Turkey'],
-    supportedPlatforms: ['Instagram', 'TikTok', 'YouTube', 'EuroLeague', 'EuroBasket', 'FIBA Europe'],
-    supportedSports: ['Basketball', 'Football/Soccer', 'Track & Field'],
+    supportedCountries: ['Spain', 'France', 'Germany', 'Italy', 'Greece', 'Lithuania', 'Serbia', 'Turkey', 'Austria', 'Netherlands', 'UK', 'Sweden', 'Norway', 'Denmark', 'Poland', 'Portugal', 'Belgium', 'Czech Republic', 'Hungary', 'Croatia', 'Slovenia', 'Slovakia', 'Bulgaria', 'Romania', 'Finland', 'Estonia', 'Latvia', 'Luxembourg', 'Malta', 'Cyprus', 'Mexico', 'Brazil'],
+    supportedPlatforms: ['Instagram', 'TikTok', 'YouTube', 'EuroLeague', 'EuroBasket', 'FIBA Europe', '1stLookSports', 'Brazilian Sports Federation', 'Mexican Sports Federation'],
+    supportedSports: ['Basketball', 'Football/Soccer', 'Track & Field', 'American Football', 'Volleyball', 'Baseball'],
     lastUpdate: new Date().toISOString()
   });
 }
