@@ -120,6 +120,13 @@ export default function Go4ItHomePage() {
                 Events
               </SafeLink>
               <SafeLink 
+                href="/recruiting-hub" 
+                className="text-slate-300 hover:text-white transition-colors flex items-center gap-1"
+              >
+                <Trophy className="w-4 h-4 text-blue-400" />
+                Recruiting
+              </SafeLink>
+              <SafeLink 
                 href="/pricing" 
                 className="text-slate-300 hover:text-white transition-colors"
               >
