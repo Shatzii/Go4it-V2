@@ -1,21 +1,38 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
-  images: { unoptimized: true },
-  eslint: { ignoreDuringBuilds: true },
-  typescript: { ignoreBuildErrors: true },
-  experimental: { 
-    serverActions: { 
-      allowedOrigins: ['localhost:5000', '*.replit.app', '*.replit.dev'] 
-    } 
+  images: { 
+    unoptimized: true,
+    domains: ['localhost', '*.replit.dev', '*.replit.app']
   },
-  env: { 
-    PORT: '5000', 
-    HOSTNAME: '0.0.0.0' 
+  eslint: { 
+    ignoreDuringBuilds: true 
   },
-  basePath: '',
-  assetPrefix: '',
+  typescript: { 
+    ignoreBuildErrors: true 
+  },
+  // Minimal configuration for stable loading
   trailingSlash: false,
+  poweredByHeader: false,
+  generateEtags: false,
+  
+  // Configure for Replit environment
+  env: {
+    CUSTOM_KEY: 'my-value',
+  },
+  
+  // Simple webpack configuration
+  webpack: (config, { isServer }) => {
+    // Optimize bundle splitting for better loading
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      };
+    }
+    return config;
+  },
 };
 
 module.exports = nextConfig;
