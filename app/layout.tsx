@@ -64,8 +64,8 @@ export default function RootLayout({
                         <a href="/recruiting-hub" className="text-slate-300 hover:text-white transition-colors">
                           Recruiting Hub
                         </a>
-                        <a href="/ai-teachers" className="text-slate-300 hover:text-white transition-colors">
-                          AI Teachers
+                        <a href="/combine-registration" className="text-slate-300 hover:text-white transition-colors">
+                          Register for Combine
                         </a>
                         <a href="/upload" className="text-slate-300 hover:text-white transition-colors">
                           Upload

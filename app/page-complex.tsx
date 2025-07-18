@@ -192,6 +192,15 @@ function OriginalGo4ItHomePage() {
             <div>
               <span className="text-yellow-300">Friday Night Lights @ 7PM</span>
             </div>
+            <div className="hidden md:block">•</div>
+            <div>
+              <SafeLink 
+                href="/combine-registration"
+                className="bg-yellow-500 hover:bg-yellow-400 text-black px-4 py-1 rounded font-bold text-sm transition-colors"
+              >
+                REGISTER NOW
+              </SafeLink>
+            </div>
           </div>
         </div>
       </div>
@@ -1120,9 +1129,12 @@ function CombineEventCard({
         {date}
       </div>
       <p className="text-muted-foreground text-sm mb-4">{description}</p>
-      <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded text-sm font-medium transition-colors">
+      <SafeLink 
+        href="/combine-registration"
+        className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded text-sm font-medium transition-colors inline-block"
+      >
         Register Now
-      </button>
+      </SafeLink>
     </div>
   )
 }
