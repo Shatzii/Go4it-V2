@@ -22,7 +22,7 @@ interface AthleteData {
 
 export async function POST(request: Request) {
   try {
-    const { sport, region, maxResults = 50 } = await request.json();
+    const { sport, region, gender, maxResults = 100 } = await request.json();
     
     console.log('Starting GAR-based ranking calculation...');
     
@@ -147,6 +147,16 @@ export async function POST(request: Request) {
         } else {
           return athleteCountry?.includes(regionFilter) || athlete.region?.toLowerCase().includes(regionFilter);
         }
+      });
+    }
+    
+    // Apply gender filter for basketball and soccer
+    if (gender && (sport === 'basketball' || sport === 'soccer')) {
+      filteredAthletes = filteredAthletes.filter(athlete => {
+        // Check if athlete data includes gender information
+        const athleteGender = athlete.gender?.toLowerCase() || 
+                              athlete.position?.toLowerCase().includes('women') ? 'women' : 'men';
+        return athleteGender === gender;
       });
     }
     
