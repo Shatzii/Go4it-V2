@@ -109,9 +109,21 @@ export async function POST(request: Request) {
     let filteredAthletes = rankedAthletes;
     
     if (sport && sport !== 'all') {
-      filteredAthletes = filteredAthletes.filter(athlete => 
-        athlete.sport?.toLowerCase().includes(sport.toLowerCase())
-      );
+      filteredAthletes = filteredAthletes.filter(athlete => {
+        const athleteSport = athlete.sport?.toLowerCase();
+        const filterSport = sport.toLowerCase();
+        
+        // Handle sport name variations
+        if (filterSport === 'football' || filterSport === 'american football') {
+          return athleteSport?.includes('football') || athleteSport?.includes('american football');
+        } else if (filterSport === 'basketball') {
+          return athleteSport?.includes('basketball');
+        } else if (filterSport === 'soccer') {
+          return athleteSport?.includes('soccer') || (athleteSport?.includes('football') && !athleteSport?.includes('american'));
+        } else {
+          return athleteSport?.includes(filterSport);
+        }
+      });
     }
     
     if (region && region !== 'all') {
