@@ -42,53 +42,55 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} bg-slate-950 text-white antialiased`}>
         <ErrorBoundary>
-          <ClientOnly>
-            <AppProvider>
-              <WebSocketProvider>
-                <ServiceWorkerRegistration />
-                
-                {/* Global Navigation Bar */}
-                <nav className="fixed top-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-sm border-b border-slate-700">
-                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between h-16">
-                      <div className="flex items-center gap-6">
-                        <div className="text-xl font-bold text-white">
-                          Go4It Sports
-                        </div>
-                        <div className="hidden md:flex items-center gap-4">
-                          <a href="/dashboard" className="text-slate-300 hover:text-white transition-colors">
-                            Dashboard
-                          </a>
-                          <a href="/academy" className="text-slate-300 hover:text-white transition-colors">
-                            Academy
-                          </a>
-                          <a href="/ai-teachers" className="text-slate-300 hover:text-white transition-colors">
-                            AI Teachers
-                          </a>
-                          <a href="/upload" className="text-slate-300 hover:text-white transition-colors">
-                            Upload
-                          </a>
-                        </div>
+          <AppProvider>
+            <WebSocketProvider>
+              <ServiceWorkerRegistration />
+              
+              {/* Global Navigation Bar */}
+              <nav className="fixed top-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-sm border-b border-slate-700">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="flex items-center justify-between h-16">
+                    <div className="flex items-center gap-6">
+                      <div className="text-xl font-bold text-white">
+                        Go4It Sports
                       </div>
-                      <div className="flex items-center gap-3">
-                        <GlobalSearch />
-                        <NotificationSystem />
+                      <div className="hidden md:flex items-center gap-4">
+                        <a href="/dashboard" className="text-slate-300 hover:text-white transition-colors">
+                          Dashboard
+                        </a>
+                        <a href="/academy" className="text-slate-300 hover:text-white transition-colors">
+                          Academy
+                        </a>
+                        <a href="/ai-teachers" className="text-slate-300 hover:text-white transition-colors">
+                          AI Teachers
+                        </a>
+                        <a href="/upload" className="text-slate-300 hover:text-white transition-colors">
+                          Upload
+                        </a>
                       </div>
                     </div>
+                    <div className="flex items-center gap-3">
+                      <ClientOnly>
+                        <GlobalSearch />
+                        <NotificationSystem />
+                      </ClientOnly>
+                    </div>
                   </div>
-                </nav>
-
-                {/* Main Content */}
-                <div className="pt-16">
-                  {children}
                 </div>
+              </nav>
 
+              {/* Main Content */}
+              <div className="pt-16">
+                {children}
+              </div>
+
+              <ClientOnly>
                 <MobileNavigation />
                 <PerformanceMonitor />
                 <AccessibilityEnhancements />
-              </WebSocketProvider>
-            </AppProvider>
-          </ClientOnly>
+              </ClientOnly>
+            </WebSocketProvider>
+          </AppProvider>
         </ErrorBoundary>
       </body>
     </html>

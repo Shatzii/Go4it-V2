@@ -1,18 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Minimal configuration that works on Replit
-  output: 'standalone',
+  images: { unoptimized: true },
+  eslint: { ignoreDuringBuilds: true },
+  typescript: { ignoreBuildErrors: true },
+  trailingSlash: false,
   poweredByHeader: false,
-  reactStrictMode: false,
-  images: {
-    unoptimized: true
+  
+  // Minimal configuration for Replit
+  env: { 
+    PORT: '5000', 
+    HOSTNAME: '0.0.0.0' 
   },
-  eslint: {
-    ignoreDuringBuilds: true
+  
+  // Remove complex webpack config
+  webpack: (config) => {
+    return config;
   },
-  typescript: {
-    ignoreBuildErrors: true
-  }
 };
 
 module.exports = nextConfig;
