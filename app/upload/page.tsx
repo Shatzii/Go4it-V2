@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Upload, Camera, FileVideo, Smartphone } from 'lucide-react'
 import { MobileVideoCapture } from '@/components/mobile/MobileVideoCapture'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 function UploadPageComponent() {
   const [showMobileCapture, setShowMobileCapture] = useState(false)
@@ -182,10 +183,10 @@ function UploadPageComponent() {
   )
 }
 
-export default function $1() {
+export default function UploadPage() {
   return (
     <ErrorBoundary>
-      <$1Component />
+      <UploadPageComponent />
     </ErrorBoundary>
   );
 }

@@ -448,7 +448,7 @@ export default function CombineRegistration() {
                         type="text"
                         value={formData.height}
                         onChange={(e) => updateFormData('height', e.target.value)}
-                        placeholder="e.g., 6'2\" or 188cm"
+                        placeholder="e.g., 6'2&quot; or 188cm"
                         className="w-full bg-slate-700 rounded-lg px-4 py-3 text-white border border-slate-600 focus:border-blue-500"
                         required
                       />
