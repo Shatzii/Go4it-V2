@@ -163,7 +163,7 @@ export default function RankingsPage() {
             Global Athlete Rankings
           </h1>
           <p className="text-xl text-slate-400 max-w-3xl mx-auto">
-            Live rankings from major recruiting platforms worldwide including ESPN, 247Sports, EuroLeague, 1stLookSports, and social media
+            Real-time global athlete rankings and performance analytics
           </p>
         </div>
 
