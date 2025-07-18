@@ -104,24 +104,20 @@ export default function Go4ItHomePage() {
                 <Crown className="w-4 h-4" />
                 Leaderboard
               </SafeLink>
-              <SafeLink 
-                href="/recruiting-improvements" 
-                className="text-slate-300 hover:text-white transition-colors"
-              >
-                Roadmap
-              </SafeLink>
-              <SafeLink 
-                href="/features-audit" 
-                className="text-slate-300 hover:text-white transition-colors"
-              >
-                Features
-              </SafeLink>
+
               <SafeLink 
                 href="/verified-athletes" 
                 className="text-slate-300 hover:text-white transition-colors flex items-center gap-1"
               >
                 <CheckCircle className="w-4 h-4 text-blue-400" />
                 Verified
+              </SafeLink>
+              <SafeLink 
+                href="/events" 
+                className="text-slate-300 hover:text-white transition-colors flex items-center gap-1"
+              >
+                <Calendar className="w-4 h-4 text-orange-400" />
+                Events
               </SafeLink>
               <SafeLink 
                 href="/pricing" 

@@ -120,7 +120,7 @@ function DashboardComponent() {
             <p className="text-slate-400">Track your athletic and academic progress</p>
           </div>
 
-          {/* Stats Grid */}
+          {/* Stats Grid - Single Row */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <Card className="bg-slate-800 border-slate-700">
               <CardContent className="p-6">
@@ -129,7 +129,10 @@ function DashboardComponent() {
                     <p className="text-sm text-slate-400">GAR Score</p>
                     <p className="text-2xl font-bold text-green-400">{dashboardData.stats.garScore}</p>
                   </div>
-                  <Trophy className="w-8 h-8 text-yellow-500" />
+                  <div className="flex items-center gap-2">
+                    <Trophy className="w-8 h-8 text-green-400" />
+                    <CheckCircle className="w-5 h-5 text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]" fill="currentColor" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -141,7 +144,7 @@ function DashboardComponent() {
                     <p className="text-sm text-slate-400">Overall Progress</p>
                     <p className="text-2xl font-bold text-blue-400">{dashboardData.stats.overallProgress}%</p>
                   </div>
-                  <TrendingUp className="w-8 h-8 text-blue-500" />
+                  <TrendingUp className="w-8 h-8 text-blue-400" />
                 </div>
                 <div className="mt-3">
                   <SmoothProgress value={dashboardData.stats.overallProgress} />
@@ -153,10 +156,10 @@ function DashboardComponent() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-slate-400">Courses</p>
+                    <p className="text-sm text-slate-400">Academy Courses</p>
                     <p className="text-2xl font-bold text-purple-400">{dashboardData.stats.coursesEnrolled}</p>
                   </div>
-                  <BookOpen className="w-8 h-8 text-purple-500" />
+                  <BookOpen className="w-8 h-8 text-purple-400" />
                 </div>
               </CardContent>
             </Card>
@@ -168,7 +171,7 @@ function DashboardComponent() {
                     <p className="text-sm text-slate-400">Study Streak</p>
                     <p className="text-2xl font-bold text-orange-400">{dashboardData.stats.studyStreak} days</p>
                   </div>
-                  <Activity className="w-8 h-8 text-orange-500" />
+                  <Calendar className="w-8 h-8 text-orange-400" />
                 </div>
               </CardContent>
             </Card>
