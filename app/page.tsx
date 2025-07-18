@@ -22,8 +22,49 @@ function StarRating({ rating, maxRating = 5 }: { rating: number; maxRating?: num
 
 // Go4It Sports Landing Page - Exact match to deployed site styling
 export default function Go4ItHomePage() {
+  // Testing with simple content first
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+      <section className="py-20 px-4 text-center">
+        <h1 className="text-5xl font-bold mb-6">Go4It Sports Platform</h1>
+        <p className="text-xl text-slate-300 mb-8">Testing content load</p>
+      </section>
+      
+      <section className="py-20 px-4 bg-slate-900/50">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl font-bold text-white mb-12">Top Verified Athletes</h2>
+          <div className="grid md:grid-cols-4 gap-6">
+            <div className="bg-slate-800 p-4 rounded-lg">
+              <h3 className="text-white font-semibold">Cooper Flagg</h3>
+              <p className="text-slate-400">Basketball • Small Forward</p>
+              <p className="text-blue-400">GAR: 98/100</p>
+            </div>
+            <div className="bg-slate-800 p-4 rounded-lg">
+              <h3 className="text-white font-semibold">Ace Bailey</h3>
+              <p className="text-slate-400">Basketball • Shooting Guard</p>
+              <p className="text-blue-400">GAR: 96/100</p>
+            </div>
+            <div className="bg-slate-800 p-4 rounded-lg">
+              <h3 className="text-white font-semibold">Dylan Harper</h3>
+              <p className="text-slate-400">Basketball • Point Guard</p>
+              <p className="text-blue-400">GAR: 95/100</p>
+            </div>
+            <div className="bg-slate-800 p-4 rounded-lg">
+              <h3 className="text-white font-semibold">VJ Edgecombe</h3>
+              <p className="text-slate-400">Basketball • Shooting Guard</p>
+              <p className="text-blue-400">GAR: 93/100</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+}
+
+function OriginalGo4ItHomePage() {
   const [platformStatus, setPlatformStatus] = useState('ready')
   const [topAthletes, setTopAthletes] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const checkHealth = async () => {
@@ -46,11 +87,14 @@ export default function Go4ItHomePage() {
         if (response.ok) {
           const data = await response.json()
           if (data.success && data.athletes) {
+            console.log('Fetched athletes:', data.athletes.length)
             setTopAthletes(data.athletes.slice(0, 4)) // Get top 4 athletes
           }
         }
       } catch (error) {
         console.log('Failed to fetch athletes, using fallback')
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -90,9 +134,9 @@ export default function Go4ItHomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-      {/* Navigation */}
-      <nav className="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white -mt-16">
+      {/* Override the layout navigation with homepage navigation */}
+      <nav className="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-50 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
@@ -656,7 +700,19 @@ export default function Go4ItHomePage() {
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {topAthletes.length > 0 ? (
+            {isLoading ? (
+              // Loading state
+              Array.from({ length: 4 }).map((_, index) => (
+                <div key={index} className="bg-slate-800/50 rounded-xl border border-slate-700 overflow-hidden animate-pulse">
+                  <div className="w-full h-48 bg-slate-700"></div>
+                  <div className="p-4">
+                    <div className="h-4 bg-slate-700 rounded mb-2"></div>
+                    <div className="h-3 bg-slate-700 rounded mb-3 w-3/4"></div>
+                    <div className="h-3 bg-slate-700 rounded mb-2 w-1/2"></div>
+                  </div>
+                </div>
+              ))
+            ) : topAthletes.length > 0 ? (
               topAthletes.map((athlete) => (
                 <AthleteCard
                   key={athlete.id}
@@ -673,36 +729,36 @@ export default function Go4ItHomePage() {
               // Fallback to original hardcoded athletes if API fails
               <>
                 <AthleteCard
-                  name="Alonzo Barrett"
+                  name="Cooper Flagg"
                   sport="Basketball"
-                  position="Shooting Guard"
-                  garScore={92}
+                  position="Small Forward"
+                  garScore={98}
                   verified={true}
                   imageUrl="https://images.unsplash.com/photo-1627245076516-93e232cba261?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YmFza2V0YmFsbCUyMHBsYXllcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60"
                 />
                 <AthleteCard
-                  name="Alonzo Barrett"
-                  sport="Track & Field"
-                  position="Sprinter"
-                  garScore={87}
+                  name="Ace Bailey"
+                  sport="Basketball"
+                  position="Shooting Guard"
+                  garScore={96}
                   verified={true}
-                  imageUrl="https://images.unsplash.com/photo-1527334919515-b8dee906a34b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8dHJhY2slMjBmaWVsZHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60"
+                  imageUrl="https://images.unsplash.com/photo-1627245076516-93e232cba261?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YmFza2V0YmFsbCUyMHBsYXllcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60"
                 />
                 <AthleteCard
-                  name="Malik Barrett"
-                  sport="Skiing"
-                  position="Ski Jumper"
-                  garScore={85}
+                  name="Dylan Harper"
+                  sport="Basketball"
+                  position="Point Guard"
+                  garScore={95}
                   verified={true}
-                  imageUrl="https://go4itsports.org/uploads/athletes/IMG_6486.jpeg"
+                  imageUrl="https://images.unsplash.com/photo-1627245076516-93e232cba261?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YmFza2V0YmFsbCUyMHBsYXllcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60"
                 />
                 <AthleteCard
-                  name="Adee Méndez"
-                  sport="Soccer"
-                  position="Center Midfielder"
-                  garScore={94}
+                  name="VJ Edgecombe"
+                  sport="Basketball"
+                  position="Shooting Guard"
+                  garScore={93}
                   verified={true}
-                  imageUrl="https://images.unsplash.com/photo-1511067007398-7e4b9499a637?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=60"
+                  imageUrl="https://images.unsplash.com/photo-1627245076516-93e232cba261?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YmFza2V0YmFsbCUyMHBsYXllcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60"
                 />
               </>
             )}
