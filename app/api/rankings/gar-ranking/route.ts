@@ -127,10 +127,27 @@ export async function POST(request: Request) {
     }
     
     if (region && region !== 'all') {
-      filteredAthletes = filteredAthletes.filter(athlete => 
-        athlete.country?.toLowerCase().includes(region.toLowerCase()) ||
-        athlete.region?.toLowerCase().includes(region.toLowerCase())
-      );
+      filteredAthletes = filteredAthletes.filter(athlete => {
+        const athleteCountry = athlete.country?.toLowerCase();
+        const regionFilter = region.toLowerCase();
+        
+        if (regionFilter === 'usa') {
+          return athleteCountry === 'usa' || athleteCountry === 'united states';
+        } else if (regionFilter === 'europe') {
+          // European countries list
+          const europeanCountries = [
+            'germany', 'france', 'italy', 'spain', 'uk', 'united kingdom', 'england',
+            'netherlands', 'poland', 'greece', 'portugal', 'belgium', 'czech republic',
+            'hungary', 'sweden', 'austria', 'switzerland', 'denmark', 'norway',
+            'finland', 'ireland', 'croatia', 'serbia', 'slovakia', 'slovenia',
+            'bulgaria', 'romania', 'lithuania', 'latvia', 'estonia', 'luxembourg',
+            'malta', 'cyprus'
+          ];
+          return europeanCountries.some(country => athleteCountry?.includes(country));
+        } else {
+          return athleteCountry?.includes(regionFilter) || athlete.region?.toLowerCase().includes(regionFilter);
+        }
+      });
     }
     
     // Limit results to top 100 for comprehensive ranking
