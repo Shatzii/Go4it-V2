@@ -23,6 +23,7 @@ function StarRating({ rating, maxRating = 5 }: { rating: number; maxRating?: num
 // Go4It Sports Landing Page - Exact match to deployed site styling
 export default function Go4ItHomePage() {
   const [platformStatus, setPlatformStatus] = useState('ready')
+  const [topAthletes, setTopAthletes] = useState([])
 
   useEffect(() => {
     const checkHealth = async () => {
@@ -39,8 +40,54 @@ export default function Go4ItHomePage() {
       }
     }
 
+    const fetchTopAthletes = async () => {
+      try {
+        const response = await fetch('/api/recruiting/athletes/database')
+        if (response.ok) {
+          const data = await response.json()
+          if (data.success && data.athletes) {
+            setTopAthletes(data.athletes.slice(0, 4)) // Get top 4 athletes
+          }
+        }
+      } catch (error) {
+        console.log('Failed to fetch athletes, using fallback')
+      }
+    }
+
     checkHealth()
+    fetchTopAthletes()
   }, [])
+
+  // Calculate GAR score based on athlete rankings and stats
+  const calculateGARScore = (athlete) => {
+    if (!athlete) return 75
+    
+    // Base score from composite ranking (lower ranking = higher score)
+    const rankingScore = Math.max(100 - (athlete.rankings.composite * 2), 60)
+    
+    // Academic bonus
+    const academicBonus = athlete.academics.gpa > 3.5 ? 5 : 0
+    
+    // Commitment status bonus
+    const commitmentBonus = athlete.recruiting.status === 'committed' ? 3 : 0
+    
+    return Math.min(rankingScore + academicBonus + commitmentBonus, 100)
+  }
+
+  // Get athlete image URL
+  const getAthleteImage = (athlete) => {
+    if (athlete.highlights.images && athlete.highlights.images.length > 0) {
+      return athlete.highlights.images[0]
+    }
+    // Fallback to sport-specific stock images
+    const sportImages = {
+      'Basketball': 'https://images.unsplash.com/photo-1627245076516-93e232cba261?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YmFza2V0YmFsbCUyMHBsYXllcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60',
+      'Soccer': 'https://images.unsplash.com/photo-1511067007398-7e4b9499a637?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=60',
+      'American Football': 'https://images.unsplash.com/photo-1566577739112-5180d4bf9390?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=60',
+      'Track & Field': 'https://images.unsplash.com/photo-1527334919515-b8dee906a34b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8dHJhY2slMjBmaWVsZHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60'
+    }
+    return sportImages[athlete.sport] || sportImages['Basketball']
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
@@ -609,38 +656,56 @@ export default function Go4ItHomePage() {
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <AthleteCard
-              name="Alonzo Barrett"
-              sport="Basketball"
-              position="Shooting Guard"
-              garScore={92}
-              verified={true}
-              imageUrl="https://images.unsplash.com/photo-1627245076516-93e232cba261?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YmFza2V0YmFsbCUyMHBsYXllcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60"
-            />
-            <AthleteCard
-              name="Alonzo Barrett"
-              sport="Track & Field"
-              position="Sprinter"
-              garScore={87}
-              verified={true}
-              imageUrl="https://images.unsplash.com/photo-1527334919515-b8dee906a34b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8dHJhY2slMjBmaWVsZHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60"
-            />
-            <AthleteCard
-              name="Malik Barrett"
-              sport="Skiing"
-              position="Ski Jumper"
-              garScore={85}
-              verified={true}
-              imageUrl="https://go4itsports.org/uploads/athletes/IMG_6486.jpeg"
-            />
-            <AthleteCard
-              name="Adee Méndez"
-              sport="Soccer"
-              position="Center Midfielder"
-              garScore={94}
-              verified={true}
-              imageUrl="https://images.unsplash.com/photo-1511067007398-7e4b9499a637?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=60"
-            />
+            {topAthletes.length > 0 ? (
+              topAthletes.map((athlete) => (
+                <AthleteCard
+                  key={athlete.id}
+                  name={athlete.name}
+                  sport={athlete.sport}
+                  position={athlete.position}
+                  garScore={calculateGARScore(athlete)}
+                  verified={true}
+                  imageUrl={getAthleteImage(athlete)}
+                  athlete={athlete}
+                />
+              ))
+            ) : (
+              // Fallback to original hardcoded athletes if API fails
+              <>
+                <AthleteCard
+                  name="Alonzo Barrett"
+                  sport="Basketball"
+                  position="Shooting Guard"
+                  garScore={92}
+                  verified={true}
+                  imageUrl="https://images.unsplash.com/photo-1627245076516-93e232cba261?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YmFza2V0YmFsbCUyMHBsYXllcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60"
+                />
+                <AthleteCard
+                  name="Alonzo Barrett"
+                  sport="Track & Field"
+                  position="Sprinter"
+                  garScore={87}
+                  verified={true}
+                  imageUrl="https://images.unsplash.com/photo-1527334919515-b8dee906a34b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8dHJhY2slMjBmaWVsZHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60"
+                />
+                <AthleteCard
+                  name="Malik Barrett"
+                  sport="Skiing"
+                  position="Ski Jumper"
+                  garScore={85}
+                  verified={true}
+                  imageUrl="https://go4itsports.org/uploads/athletes/IMG_6486.jpeg"
+                />
+                <AthleteCard
+                  name="Adee Méndez"
+                  sport="Soccer"
+                  position="Center Midfielder"
+                  garScore={94}
+                  verified={true}
+                  imageUrl="https://images.unsplash.com/photo-1511067007398-7e4b9499a637?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=60"
+                />
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -887,7 +952,8 @@ function AthleteCard({
   position, 
   garScore, 
   verified, 
-  imageUrl 
+  imageUrl,
+  athlete
 }: { 
   name: string; 
   sport: string; 
@@ -895,6 +961,7 @@ function AthleteCard({
   garScore: number; 
   verified: boolean; 
   imageUrl: string;
+  athlete?: any;
 }) {
   return (
     <div className="bg-card rounded-lg border border-border overflow-hidden hover:neon-border transition-all duration-300">
@@ -922,9 +989,16 @@ function AthleteCard({
         
         {/* Match deployed site format exactly */}
         <div className="text-xs text-muted-foreground space-y-1 mb-2">
-          <div>SPORT{sport}</div>
-          <div>POSITION{position}</div>
-          <div>GAR{garScore}/100</div>
+          <div>SPORT • {sport}</div>
+          <div>POSITION • {position}</div>
+          {athlete && (
+            <>
+              <div>CLASS • {athlete.classYear}</div>
+              <div>SCHOOL • {athlete.school.current}</div>
+              <div>RANKING • #{athlete.rankings.composite}</div>
+            </>
+          )}
+          <div>GAR • {garScore}/100</div>
         </div>
         
         {/* Star Rating based on GAR score with neon glow */}
@@ -935,14 +1009,25 @@ function AthleteCard({
         
         <div className="mt-3 flex gap-2">
           <SafeLink 
-            href={`/profile/${encodeURIComponent(name.toLowerCase().replace(' ', '-'))}`}
+            href={athlete ? `/athlete/${athlete.id}` : `/profile/${encodeURIComponent(name.toLowerCase().replace(' ', '-'))}`}
             className="bg-primary text-primary-foreground px-3 py-1 rounded text-xs font-medium hover:bg-primary/90 transition-colors neon-glow"
           >
             View Profile
           </SafeLink>
-          <button className="text-primary border border-primary px-3 py-1 rounded text-xs font-medium hover:neon-border transition-all duration-300">
-            Highlights
-          </button>
+          {athlete && athlete.highlights.videos.length > 0 ? (
+            <a
+              href={athlete.highlights.videos[0].url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary border border-primary px-3 py-1 rounded text-xs font-medium hover:neon-border transition-all duration-300"
+            >
+              Highlights
+            </a>
+          ) : (
+            <button className="text-primary border border-primary px-3 py-1 rounded text-xs font-medium hover:neon-border transition-all duration-300">
+              Highlights
+            </button>
+          )}
         </div>
       </div>
     </div>
