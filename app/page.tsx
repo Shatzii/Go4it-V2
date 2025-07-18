@@ -215,11 +215,11 @@ export default function Go4ItHomePage() {
                 </SafeLink>
                 
                 <SafeLink 
-                  href="/rankings" 
+                  href="/rankings/class-2026" 
                   className="border border-purple-500/50 hover:bg-purple-500/20 text-purple-400 hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center gap-2 backdrop-blur-sm"
                 >
                   <Trophy className="w-5 h-5" />
-                  View Live Rankings
+                  View Top 100 Rankings
                 </SafeLink>
               </div>
             </div>
