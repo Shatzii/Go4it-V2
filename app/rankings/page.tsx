@@ -77,7 +77,9 @@ export default function RankingsPage() {
                  activeTab === 'basketball' ? 'basketball' : 
                  activeTab === 'soccer' ? 'soccer' : 
                  filters.sport === 'all' ? null : filters.sport,
-          region: activeTab === 'usa' ? 'USA' : activeTab === 'european' ? 'Europe' : null,
+          region: activeTab === 'usa' ? 'USA' : 
+                  activeTab === 'europe' ? 'Europe' : 
+                  activeTab === 'global' ? null : null,
           maxResults: 100
         })
       });
@@ -403,15 +405,15 @@ export default function RankingsPage() {
           </CardContent>
         </Card>
 
-        {/* Sport-Specific Top 100 Rankings */}
+        {/* Independent Top 100 Rankings */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-6 bg-slate-800 border-slate-700">
-            <TabsTrigger value="global" className="text-white">Global Top 100</TabsTrigger>
             <TabsTrigger value="football" className="text-white">Football Top 100</TabsTrigger>
             <TabsTrigger value="basketball" className="text-white">Basketball Top 100</TabsTrigger>
             <TabsTrigger value="soccer" className="text-white">Soccer Top 100</TabsTrigger>
-            <TabsTrigger value="usa" className="text-white">USA Rankings</TabsTrigger>
-            <TabsTrigger value="rising" className="text-white">Rising Stars</TabsTrigger>
+            <TabsTrigger value="usa" className="text-white">USA Top 100</TabsTrigger>
+            <TabsTrigger value="europe" className="text-white">Europe Top 100</TabsTrigger>
+            <TabsTrigger value="global" className="text-white">Global Top 100</TabsTrigger>
           </TabsList>
 
           {loading ? (
@@ -421,10 +423,10 @@ export default function RankingsPage() {
             </div>
           ) : (
             <>
-              <TabsContent value="global" className="space-y-4">
-                <div className="mb-4 p-4 bg-blue-900/20 rounded-lg border border-blue-500/30">
-                  <h3 className="text-lg font-semibold text-blue-400 mb-2">Global Top 100 Athletes</h3>
-                  <p className="text-slate-300">Comprehensive rankings across all sports from worldwide sources</p>
+              <TabsContent value="football" className="space-y-4">
+                <div className="mb-4 p-4 bg-green-900/20 rounded-lg border border-green-500/30">
+                  <h3 className="text-lg font-semibold text-green-400 mb-2">Football Top 100</h3>
+                  <p className="text-slate-300">Top 100 American Football players worldwide - completely separate ranking</p>
                 </div>
                 {rankings.map((athlete, index) => (
                   <Card key={athlete.id} className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors">
@@ -531,53 +533,10 @@ export default function RankingsPage() {
                 ))}
               </TabsContent>
 
-              <TabsContent value="football" className="space-y-4">
-                <div className="mb-4 p-4 bg-green-900/20 rounded-lg border border-green-500/30">
-                  <h3 className="text-lg font-semibold text-green-400 mb-2">Football Top 100</h3>
-                  <p className="text-slate-300">Top 100 American Football players from high school to college level</p>
-                </div>
-                {rankings.map((athlete, index) => (
-                  <Card key={athlete.id} className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <div className="flex items-center space-x-2">
-                            {getRankingIcon(index + 1)}
-                            <Badge className={`px-3 py-1 text-lg font-bold ${getRankingBadge(index + 1)}`}>
-                              #{index + 1}
-                            </Badge>
-                            {athlete.garScore && (
-                              <Badge variant="outline" className="text-blue-400 border-blue-400 ml-2">
-                                GAR: {athlete.garScore}
-                              </Badge>
-                            )}
-                          </div>
-                          
-                          <div>
-                            <h3 className="text-xl font-bold text-white">{athlete.name}</h3>
-                            <div className="flex items-center space-x-2 text-sm text-slate-400">
-                              <span>{athlete.position}</span>
-                              <span>•</span>
-                              <span>{athlete.sport}</span>
-                              <span>•</span>
-                              <span className="flex items-center">
-                                <MapPin className="w-4 h-4 mr-1" />
-                                {athlete.city}, {athlete.country}
-                              </span>
-                            </div>
-                            <p className="text-sm text-slate-300 mt-1">{athlete.school}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </TabsContent>
-
               <TabsContent value="basketball" className="space-y-4">
                 <div className="mb-4 p-4 bg-orange-900/20 rounded-lg border border-orange-500/30">
                   <h3 className="text-lg font-semibold text-orange-400 mb-2">Basketball Top 100</h3>
-                  <p className="text-slate-300">Top 100 Basketball players from prep to professional level</p>
+                  <p className="text-slate-300">Top 100 Basketball players worldwide - completely separate ranking</p>
                 </div>
                 {rankings.map((athlete, index) => (
                   <Card key={athlete.id} className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors">
@@ -620,7 +579,50 @@ export default function RankingsPage() {
               <TabsContent value="soccer" className="space-y-4">
                 <div className="mb-4 p-4 bg-purple-900/20 rounded-lg border border-purple-500/30">
                   <h3 className="text-lg font-semibold text-purple-400 mb-2">Soccer Top 100</h3>
-                  <p className="text-slate-300">Top 100 Soccer/Football players from youth to professional level</p>
+                  <p className="text-slate-300">Top 100 Soccer/Football players worldwide - completely separate ranking</p>
+                </div>
+                {rankings.map((athlete, index) => (
+                  <Card key={athlete.id} className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                          <div className="flex items-center space-x-2">
+                            {getRankingIcon(index + 1)}
+                            <Badge className={`px-3 py-1 text-lg font-bold ${getRankingBadge(index + 1)}`}>
+                              #{index + 1}
+                            </Badge>
+                            {athlete.garScore && (
+                              <Badge variant="outline" className="text-blue-400 border-blue-400 ml-2">
+                                GAR: {athlete.garScore}
+                              </Badge>
+                            )}
+                          </div>
+                          
+                          <div>
+                            <h3 className="text-xl font-bold text-white">{athlete.name}</h3>
+                            <div className="flex items-center space-x-2 text-sm text-slate-400">
+                              <span>{athlete.position}</span>
+                              <span>•</span>
+                              <span>{athlete.sport}</span>
+                              <span>•</span>
+                              <span className="flex items-center">
+                                <MapPin className="w-4 h-4 mr-1" />
+                                {athlete.city}, {athlete.country}
+                              </span>
+                            </div>
+                            <p className="text-sm text-slate-300 mt-1">{athlete.school}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </TabsContent>
+
+              <TabsContent value="usa" className="space-y-4">
+                <div className="mb-4 p-4 bg-blue-900/20 rounded-lg border border-blue-500/30">
+                  <h3 className="text-lg font-semibold text-blue-400 mb-2">USA Top 100</h3>
+                  <p className="text-slate-300">Top 100 Athletes from United States - all sports combined</p>
                 </div>
                 {rankings.map((athlete, index) => (
                   <Card key={athlete.id} className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors">
@@ -660,17 +662,69 @@ export default function RankingsPage() {
                 ))}
               </TabsContent>
               
-              <TabsContent value="usa" className="space-y-4">
-                {rankings?.rankings.filter(a => a.country === 'USA').map((athlete, index) => (
+              <TabsContent value="europe" className="space-y-4">
+                <div className="mb-4 p-4 bg-indigo-900/20 rounded-lg border border-indigo-500/30">
+                  <h3 className="text-lg font-semibold text-indigo-400 mb-2">Europe Top 100</h3>
+                  <p className="text-slate-300">Top 100 Athletes from Europe - all sports combined</p>
+                </div>
+                {rankings.map((athlete, index) => (
                   <Card key={athlete.id} className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                           <div className="flex items-center space-x-2">
-                            {getRankingIcon(athlete.ranking.national)}
-                            <Badge className={`px-3 py-1 text-lg font-bold ${getRankingBadge(athlete.ranking.national)}`}>
-                              #{athlete.ranking.national}
+                            {getRankingIcon(index + 1)}
+                            <Badge className={`px-3 py-1 text-lg font-bold ${getRankingBadge(index + 1)}`}>
+                              #{index + 1}
                             </Badge>
+                            {athlete.garScore && (
+                              <Badge variant="outline" className="text-blue-400 border-blue-400 ml-2">
+                                GAR: {athlete.garScore}
+                              </Badge>
+                            )}
+                          </div>
+                          
+                          <div>
+                            <h3 className="text-xl font-bold text-white">{athlete.name}</h3>
+                            <div className="flex items-center space-x-2 text-sm text-slate-400">
+                              <span>{athlete.position}</span>
+                              <span>•</span>
+                              <span>{athlete.sport}</span>
+                              <span>•</span>
+                              <span className="flex items-center">
+                                <MapPin className="w-4 h-4 mr-1" />
+                                {athlete.city}, {athlete.country}
+                              </span>
+                            </div>
+                            <p className="text-sm text-slate-300 mt-1">{athlete.school}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </TabsContent>
+
+              <TabsContent value="global" className="space-y-4">
+                <div className="mb-4 p-4 bg-slate-900/20 rounded-lg border border-slate-500/30">
+                  <h3 className="text-lg font-semibold text-slate-400 mb-2">Global Top 100</h3>
+                  <p className="text-slate-300">Top 100 Athletes worldwide - all sports and regions combined</p>
+                </div>
+                {rankings.map((athlete, index) => (
+                  <Card key={athlete.id} className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                          <div className="flex items-center space-x-2">
+                            {getRankingIcon(index + 1)}
+                            <Badge className={`px-3 py-1 text-lg font-bold ${getRankingBadge(index + 1)}`}>
+                              #{index + 1}
+                            </Badge>
+                            {athlete.garScore && (
+                              <Badge variant="outline" className="text-blue-400 border-blue-400 ml-2">
+                                GAR: {athlete.garScore}
+                              </Badge>
+                            )}
                           </div>
                           
                           <div>
@@ -711,7 +765,11 @@ export default function RankingsPage() {
               </TabsContent>
               
               <TabsContent value="europe" className="space-y-4">
-                {rankings?.rankings.filter(a => a.country !== 'USA' && a.country !== 'Mexico' && a.country !== 'Brazil').map((athlete, index) => (
+                <div className="mb-4 p-4 bg-indigo-900/20 rounded-lg border border-indigo-500/30">
+                  <h3 className="text-lg font-semibold text-indigo-400 mb-2">Europe Top 100</h3>
+                  <p className="text-slate-300">Top 100 Athletes from Europe - all sports combined</p>
+                </div>
+                {rankings.map((athlete, index) => (
                   <Card key={athlete.id} className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
