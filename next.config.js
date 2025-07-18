@@ -24,20 +24,7 @@ const nextConfig = {
     HOSTNAME: '0.0.0.0' 
   },
   
-  // Headers for cross-origin requests
-  async headers() {
-    return [
-      {
-        source: '/_next/(.*)',
-        headers: [
-          {
-            key: 'Access-Control-Allow-Origin',
-            value: '*',
-          },
-        ],
-      },
-    ];
-  }
+  
 };
 
 module.exports = nextConfig;
