@@ -150,10 +150,10 @@ export default function ProfileSetupPage() {
         <div className="bg-slate-800 rounded-lg p-6 mb-6">
           <div className="flex items-center mb-6">
             <div className="bg-blue-500 p-3 rounded-full mr-4">
-              {(() => {
-                const IconComponent = steps[currentStep].icon;
-                return <IconComponent className="w-6 h-6 text-white" />;
-              })()}
+              {currentStep === 0 && <User className="w-6 h-6 text-white" />}
+              {currentStep === 1 && <Star className="w-6 h-6 text-white" />}
+              {currentStep === 2 && <Phone className="w-6 h-6 text-white" />}
+              {currentStep === 3 && <Target className="w-6 h-6 text-white" />}
             </div>
             <div>
               <h2 className="text-xl font-semibold text-white">{steps[currentStep].title}</h2>
