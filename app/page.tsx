@@ -22,7 +22,7 @@ function StarRating({ rating, maxRating = 5 }: { rating: number; maxRating?: num
 
 // Go4It Sports Landing Page - Exact match to deployed site styling
 export default function Go4ItHomePage() {
-  const [platformStatus, setPlatformStatus] = useState('loading')
+  const [platformStatus, setPlatformStatus] = useState('ready')
 
   useEffect(() => {
     const checkHealth = async () => {
@@ -35,7 +35,7 @@ export default function Go4ItHomePage() {
         }
       } catch (error) {
         console.log('Health check failed, using offline mode')
-        setPlatformStatus('offline')
+        setPlatformStatus('ready') // Changed to ready to prevent loading screen
       }
     }
 

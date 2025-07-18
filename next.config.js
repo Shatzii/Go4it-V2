@@ -12,7 +12,7 @@ const nextConfig = {
   trailingSlash: false,
   
   // Fix cross-origin issues for Replit
-  allowedDevOrigins: ['7fd1735e-ab9f-42d2-b097-a1492a69af8c-00-206a96lwblvdm.kirk.replit.dev', '*.replit.dev', '*.replit.app'],
+  allowedDevOrigins: ['7fd1735e-ab9f-42d2-b097-a1492a69af8c-00-206a96lwblvdm.kirk.replit.dev', 'localhost:5000', '*.replit.dev', '*.replit.app'],
   
   // Configure for development
   env: { 
