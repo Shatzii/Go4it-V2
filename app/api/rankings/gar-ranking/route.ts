@@ -121,8 +121,8 @@ export async function POST(request: Request) {
       );
     }
     
-    // Limit results
-    const finalAthletes = filteredAthletes.slice(0, maxResults);
+    // Limit results to top 100 for comprehensive ranking
+    const finalAthletes = filteredAthletes.slice(0, Math.min(maxResults, 100));
     
     // Generate ranking analytics
     const analytics = generateRankingAnalytics(finalAthletes);

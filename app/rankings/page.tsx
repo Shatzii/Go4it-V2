@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Trophy, MapPin, Users, TrendingUp, Star, Award, Globe, Target, Crown, Medal } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Trophy, MapPin, Users, TrendingUp, Star, Award, Globe, Target, Crown, Medal, Search, Filter } from 'lucide-react';
 
 interface RankedAthlete {
   id: string;
@@ -50,8 +51,8 @@ export default function RankingsPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('global');
   const [filters, setFilters] = useState({
-    sport: '',
-    country: '',
+    sport: 'all',
+    country: 'all',
     position: '',
     minRanking: '',
     maxRanking: '',
@@ -72,9 +73,9 @@ export default function RankingsPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          sport: filters.sport || null,
+          sport: filters.sport === 'all' ? null : filters.sport,
           region: activeTab === 'usa' ? 'USA' : activeTab === 'european' ? 'Europe' : null,
-          maxResults: 50
+          maxResults: 100
         })
       });
       
@@ -84,7 +85,7 @@ export default function RankingsPage() {
         let filteredAthletes = data.athletes || [];
         
         // Apply additional filters
-        if (filters.country) {
+        if (filters.country && filters.country !== 'all') {
           filteredAthletes = filteredAthletes.filter(athlete => 
             athlete.country?.toLowerCase().includes(filters.country.toLowerCase())
           );
@@ -162,10 +163,77 @@ export default function RankingsPage() {
         </div>
 
         {/* Stats Overview */}
-        {rankings && (
+        {rankings && rankings.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <Card className="bg-slate-800 border-slate-700">
               <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-slate-400">Total Athletes</p>
+                    <p className="text-2xl font-bold text-white">{rankings.length}</p>
+                  </div>
+                  <Users className="w-8 h-8 text-blue-500" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-slate-800 border-slate-700">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-slate-400">Top GAR Score</p>
+                    <p className="text-2xl font-bold text-white">{Math.max(...rankings.map(r => r.garScore || 0))}</p>
+                  </div>
+                  <Trophy className="w-8 h-8 text-yellow-500" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-slate-800 border-slate-700">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-slate-400">Elite Athletes</p>
+                    <p className="text-2xl font-bold text-white">{rankings.filter(r => (r.garScore || 0) >= 85).length}</p>
+                  </div>
+                  <Star className="w-8 h-8 text-purple-500" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-slate-800 border-slate-700">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-slate-400">Countries</p>
+                    <p className="text-2xl font-bold text-white">{new Set(rankings.map(r => r.country)).size}</p>
+                  </div>
+                  <Globe className="w-8 h-8 text-green-500" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Search Results Count */}
+        {rankings && rankings.length > 0 && (
+          <div className="mb-6 p-4 bg-slate-800 rounded-lg border border-slate-700">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-white font-medium">Showing {rankings.length} athletes</p>
+                <p className="text-sm text-slate-400">Ranked by GAR Score • Last updated: {new Date().toLocaleString()}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-slate-300 border-slate-600">
+                  Global Rankings
+                </Badge>
+                <Badge variant="outline" className="text-blue-400 border-blue-400">
+                  GAR Powered
+                </Badge>
+              </div>
+            </div>
+          </div>
+        )}
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-slate-400">Total Athletes</p>
@@ -305,6 +373,74 @@ export default function RankingsPage() {
               <Button 
                 variant="outline"
                 onClick={() => setFilters({sport: '', country: '', position: '', minRanking: '', maxRanking: '', searchTerm: ''})}
+                className="border-slate-600 text-white hover:bg-slate-700"
+              >
+                Clear Filters
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Top 100 Search */}
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Search className="w-5 h-5" />
+              Top 100 Athletes Search
+            </CardTitle>
+            <p className="text-slate-400">Search through the top 100 ranked athletes worldwide</p>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-4 mb-4">
+              <div className="flex-1">
+                <Input
+                  placeholder="Search by name, sport, or country..."
+                  value={filters.searchTerm}
+                  onChange={(e) => setFilters({...filters, searchTerm: e.target.value})}
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
+              </div>
+              <Select value={filters.sport} onValueChange={(value) => setFilters({...filters, sport: value})}>
+                <SelectTrigger className="w-48 bg-slate-700 border-slate-600 text-white">
+                  <SelectValue placeholder="Filter by sport" />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-800 border-slate-700">
+                  <SelectItem value="all">All Sports</SelectItem>
+                  <SelectItem value="basketball">Basketball</SelectItem>
+                  <SelectItem value="football">Football</SelectItem>
+                  <SelectItem value="soccer">Soccer</SelectItem>
+                  <SelectItem value="baseball">Baseball</SelectItem>
+                  <SelectItem value="track">Track & Field</SelectItem>
+                  <SelectItem value="volleyball">Volleyball</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={filters.country} onValueChange={(value) => setFilters({...filters, country: value})}>
+                <SelectTrigger className="w-48 bg-slate-700 border-slate-600 text-white">
+                  <SelectValue placeholder="Filter by country" />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-800 border-slate-700">
+                  <SelectItem value="all">All Countries</SelectItem>
+                  <SelectItem value="USA">USA</SelectItem>
+                  <SelectItem value="Germany">Germany</SelectItem>
+                  <SelectItem value="France">France</SelectItem>
+                  <SelectItem value="Spain">Spain</SelectItem>
+                  <SelectItem value="UK">United Kingdom</SelectItem>
+                  <SelectItem value="Canada">Canada</SelectItem>
+                  <SelectItem value="Australia">Australia</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex gap-2">
+              <Button 
+                onClick={loadRankings}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Search className="w-4 h-4 mr-2" />
+                Search Top 100
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => setFilters({sport: 'all', country: 'all', position: '', minRanking: '', maxRanking: '', searchTerm: ''})}
                 className="border-slate-600 text-white hover:bg-slate-700"
               >
                 Clear Filters
