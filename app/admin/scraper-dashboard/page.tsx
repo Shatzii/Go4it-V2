@@ -432,7 +432,7 @@ export default function ScraperDashboard() {
               disabled={isLoading}
               className="bg-yellow-600 hover:bg-yellow-700"
             >
-              {isLoading ? <Clock className="w-4 h-4 mr-2 animate-spin" /> : <Trophy className="w-4 h-4 mr-2" />}
+              {isLoading ? <Clock className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
               Populate Rankings
             </Button>
           </div>

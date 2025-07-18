@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TrendingUp, Target, BarChart3, Star, Award } from 'lucide-react';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 interface PerformanceAnalytics {
   overall_progress: number;
@@ -244,10 +245,10 @@ function PerformancePageComponent() {
   );
 }
 
-export default function $1() {
+export default function PerformancePage() {
   return (
     <ErrorBoundary>
-      <$1Component />
+      <PerformancePageComponent />
     </ErrorBoundary>
   );
 }

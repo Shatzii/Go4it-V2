@@ -137,6 +137,51 @@ export const recoveryPlans = pgTable('recovery_plans', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
+// Live Sessions for real-time performance tracking
+export const liveSessions = pgTable('live_sessions', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  sessionName: text('session_name').notNull(),
+  sessionType: text('session_type').notNull(), // training, game, practice
+  sport: text('sport').notNull(),
+  startTime: timestamp('start_time').notNull(),
+  endTime: timestamp('end_time'),
+  status: text('status').default('active'), // active, completed, paused
+  metrics: jsonb('metrics'),
+  location: text('location'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+// Video Recording Sessions for mobile video capture
+export const videoRecordingSessions = pgTable('video_recording_sessions', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  sessionName: text('session_name').notNull(),
+  sessionType: text('session_type').notNull(), // practice, game, drill
+  sport: text('sport').notNull(),
+  recordingPath: text('recording_path'),
+  duration: integer('duration'), // in seconds
+  startTime: timestamp('start_time').notNull(),
+  endTime: timestamp('end_time'),
+  status: text('status').default('recording'), // recording, completed, processing
+  metadata: jsonb('metadata'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+// Team Rosters for managing team compositions
+export const teamRosters = pgTable('team_rosters', {
+  id: serial('id').primaryKey(),
+  teamId: integer('team_id').notNull().references(() => teams.id),
+  userId: integer('user_id').notNull().references(() => users.id),
+  position: text('position'),
+  jerseyNumber: integer('jersey_number'),
+  status: text('status').default('active'), // active, inactive, injured
+  joinDate: timestamp('join_date').notNull(),
+  leaveDate: timestamp('leave_date'),
+  role: text('role').default('player'), // player, captain, vice_captain
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
 
 
 // Create insert schemas
@@ -187,6 +232,21 @@ export const insertRecoveryPlanSchema = createInsertSchema(recoveryPlans).omit({
   createdAt: true,
 });
 
+export const insertLiveSessionSchema = createInsertSchema(liveSessions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertVideoRecordingSessionSchema = createInsertSchema(videoRecordingSessions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertTeamRosterSchema = createInsertSchema(teamRosters).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Export types
 export type AiCoachingProfile = typeof aiCoachingProfiles.$inferSelect;
 export type InsertAiCoachingProfile = z.infer<typeof insertAiCoachingProfileSchema>;
@@ -206,3 +266,9 @@ export type HealthMetric = typeof healthMetrics.$inferSelect;
 export type InsertHealthMetric = z.infer<typeof insertHealthMetricSchema>;
 export type RecoveryPlan = typeof recoveryPlans.$inferSelect;
 export type InsertRecoveryPlan = z.infer<typeof insertRecoveryPlanSchema>;
+export type LiveSession = typeof liveSessions.$inferSelect;
+export type InsertLiveSession = z.infer<typeof insertLiveSessionSchema>;
+export type VideoRecordingSession = typeof videoRecordingSessions.$inferSelect;
+export type InsertVideoRecordingSession = z.infer<typeof insertVideoRecordingSessionSchema>;
+export type TeamRoster = typeof teamRosters.$inferSelect;
+export type InsertTeamRoster = z.infer<typeof insertTeamRosterSchema>;
