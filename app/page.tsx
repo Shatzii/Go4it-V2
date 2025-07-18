@@ -444,17 +444,17 @@ export default function Go4ItHomePage() {
               </div>
             </SafeLink>
 
-            {/* Recruitment Rankings */}
+            {/* Live Rankings */}
             <SafeLink 
-              href="/recruitment-ranking"
+              href="/rankings"
               className="group bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-8 rounded-2xl border border-slate-700/50 hover:border-purple-500/30 transition-all duration-300 hover:shadow-xl"
             >
               <div className="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-500/30 transition-colors">
                 <Trophy className="w-8 h-8 text-purple-500" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-3">Recruitment Rankings</h3>
+              <h3 className="text-xl font-bold text-white mb-3">Live Rankings</h3>
               <p className="text-slate-300 mb-4">
-                National, regional, state, and city rankings with college match algorithms and D1/D2/D3 probability assessments.
+                Real-time global athlete rankings from ESPN, 247Sports, EuroLeague, 1stLookSports, and social media platforms.
               </p>
               <div className="flex items-center gap-2 text-purple-500 font-medium">
                 <span>ELITE Tier</span>

@@ -310,6 +310,50 @@ export default function ScraperDashboard() {
     }
   };
 
+  const handlePopulateRankings = async () => {
+    setIsLoading(true);
+    setScrapingResults(null);
+    setLastScrapeTime(new Date().toISOString());
+
+    try {
+      const response = await fetch('/api/rankings/populate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          forceRefresh: true
+        })
+      });
+
+      const data = await response.json();
+      setScrapingResults(data);
+
+      if (data.success) {
+        toast({
+          title: "Rankings Population Completed",
+          description: `Successfully populated rankings with ${data.analytics?.totalAthletes || 0} athletes from ${data.analytics?.successfulScrapers || 0} scrapers`,
+        });
+        loadScrapingStats();
+      } else {
+        toast({
+          title: "Population Failed",
+          description: data.error || "Unknown error occurred",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Rankings population error:', error);
+      toast({
+        title: "Population Error",
+        description: "Failed to populate rankings",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleTestAllScrapers = async () => {
     setIsLoading(true);
     setScrapingResults(null);
@@ -381,6 +425,15 @@ export default function ScraperDashboard() {
             >
               {isLoading ? <Clock className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
               Test All Scrapers
+            </Button>
+            
+            <Button 
+              onClick={handlePopulateRankings}
+              disabled={isLoading}
+              className="bg-yellow-600 hover:bg-yellow-700"
+            >
+              {isLoading ? <Clock className="w-4 h-4 mr-2 animate-spin" /> : <Trophy className="w-4 h-4 mr-2" />}
+              Populate Rankings
             </Button>
           </div>
         </div>
