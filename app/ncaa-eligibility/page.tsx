@@ -76,12 +76,177 @@ const NCAA_SLIDING_SCALE = {
 
 // International Diploma Recognition Database
 const INTERNATIONAL_DIPLOMAS = {
+  // European Union Countries
+  'Austria': {
+    diplomas: ['Matura', 'Reifeprüfung', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Matura with NCAA-approved subjects',
+    gpaConversion: 'Austrian grades converted to 4.0 scale'
+  },
+  'Belgium': {
+    diplomas: ['Certificat d\'Enseignement Secondaire Supérieur', 'Getuigschrift Secundair Onderwijs', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Secondary education certificate with core subjects',
+    gpaConversion: 'Belgian grades converted to 4.0 scale'
+  },
+  'Bulgaria': {
+    diplomas: ['Diploma za Sredno Obrazovanie', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Secondary education diploma with NCAA subjects',
+    gpaConversion: 'Bulgarian grades converted to 4.0 scale'
+  },
+  'Croatia': {
+    diplomas: ['Matura', 'Svjedodžba o Maturi', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Matura with NCAA-approved core courses',
+    gpaConversion: 'Croatian grades converted to 4.0 scale'
+  },
+  'Cyprus': {
+    diplomas: ['Apolytirio Lykeiou', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Lyceum graduation certificate with core subjects',
+    gpaConversion: 'Cypriot grades converted to 4.0 scale'
+  },
+  'Czech Republic': {
+    diplomas: ['Maturita', 'Vysvědčení o Maturitní Zkoušce', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Maturita with NCAA-approved subjects',
+    gpaConversion: 'Czech grades converted to 4.0 scale'
+  },
+  'Denmark': {
+    diplomas: ['Studentereksamen', 'Højere Forberedelseseksamen', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Upper secondary education completion',
+    gpaConversion: 'Danish grades converted to 4.0 scale'
+  },
+  'Estonia': {
+    diplomas: ['Gümnaasiumi Lõputunnistus', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Gymnasium graduation certificate',
+    gpaConversion: 'Estonian grades converted to 4.0 scale'
+  },
+  'Finland': {
+    diplomas: ['Ylioppilastutkinto', 'Studentexamen', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Matriculation examination with core subjects',
+    gpaConversion: 'Finnish grades converted to 4.0 scale'
+  },
+  'France': {
+    diplomas: ['Baccalauréat', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Baccalauréat with NCAA-approved subjects',
+    gpaConversion: 'French grades converted to 4.0 scale'
+  },
+  'Germany': {
+    diplomas: ['Abitur', 'Fachhochschulreife', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Abitur with minimum grade requirements',
+    gpaConversion: 'German grades converted using WES scale'
+  },
+  'Greece': {
+    diplomas: ['Apolytirio Lykeiou', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Lyceum graduation certificate with core subjects',
+    gpaConversion: 'Greek grades converted to 4.0 scale'
+  },
+  'Hungary': {
+    diplomas: ['Érettségi Bizonyítvány', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Maturity certificate with NCAA subjects',
+    gpaConversion: 'Hungarian grades converted to 4.0 scale'
+  },
+  'Ireland': {
+    diplomas: ['Leaving Certificate', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Leaving Certificate with Higher Level subjects',
+    gpaConversion: 'Irish grades converted to 4.0 scale'
+  },
+  'Italy': {
+    diplomas: ['Diploma di Maturità', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Maturità with NCAA-approved subjects',
+    gpaConversion: 'Italian grades converted to 4.0 scale'
+  },
+  'Latvia': {
+    diplomas: ['Atestāts par Vispārējo Vidējo Izglītību', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'General secondary education certificate',
+    gpaConversion: 'Latvian grades converted to 4.0 scale'
+  },
+  'Lithuania': {
+    diplomas: ['Brandos Atestatas', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Maturity certificate with core subjects',
+    gpaConversion: 'Lithuanian grades converted to 4.0 scale'
+  },
+  'Luxembourg': {
+    diplomas: ['Diplôme de Fin d\'Études Secondaires', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Secondary education diploma with core subjects',
+    gpaConversion: 'Luxembourg grades converted to 4.0 scale'
+  },
+  'Malta': {
+    diplomas: ['Matriculation Certificate', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Matriculation with Advanced Level subjects',
+    gpaConversion: 'Maltese grades converted to 4.0 scale'
+  },
+  'Netherlands': {
+    diplomas: ['VWO Diploma', 'HAVO Diploma', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'VWO diploma with NCAA-approved subjects',
+    gpaConversion: 'Dutch grades converted to 4.0 scale'
+  },
+  'Poland': {
+    diplomas: ['Świadectwo Dojrzałości', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Maturity certificate with core subjects',
+    gpaConversion: 'Polish grades converted to 4.0 scale'
+  },
+  'Portugal': {
+    diplomas: ['Diploma de Ensino Secundário', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Secondary education diploma with NCAA subjects',
+    gpaConversion: 'Portuguese grades converted to 4.0 scale'
+  },
+  'Romania': {
+    diplomas: ['Diploma de Bacalaureat', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Baccalaureate diploma with core subjects',
+    gpaConversion: 'Romanian grades converted to 4.0 scale'
+  },
+  'Slovakia': {
+    diplomas: ['Maturita', 'Vysvedčenie o Maturitnej Skúške', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Maturita with NCAA-approved subjects',
+    gpaConversion: 'Slovak grades converted to 4.0 scale'
+  },
+  'Slovenia': {
+    diplomas: ['Matura', 'Spričevalo o Splošni Maturi', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Matura with NCAA-approved core courses',
+    gpaConversion: 'Slovenian grades converted to 4.0 scale'
+  },
+  'Spain': {
+    diplomas: ['Bachillerato', 'Título de Bachiller', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Bachillerato with NCAA-approved subjects',
+    gpaConversion: 'Spanish grades converted to 4.0 scale'
+  },
+  'Sweden': {
+    diplomas: ['Gymnasieexamen', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Upper secondary school certificate',
+    gpaConversion: 'Swedish grades converted to 4.0 scale'
+  },
   'United Kingdom': {
     diplomas: ['A-Levels', 'GCSE', 'International Baccalaureate', 'BTEC'],
     recognized: true,
     requirements: 'Must complete NCAA-approved core courses or equivalent',
     gpaConversion: 'UK grades converted using NCAA approved scale'
   },
+
+  // Other International Countries
   'Canada': {
     diplomas: ['High School Diploma', 'Ontario Secondary School Diploma', 'Diplôme d\'études secondaires'],
     recognized: true,
@@ -93,18 +258,6 @@ const INTERNATIONAL_DIPLOMAS = {
     recognized: true,
     requirements: 'Year 12 completion with NCAA-approved subjects',
     gpaConversion: 'ATAR scores converted to 4.0 scale'
-  },
-  'Germany': {
-    diplomas: ['Abitur', 'Fachhochschulreife', 'International Baccalaureate'],
-    recognized: true,
-    requirements: 'Abitur with minimum grade requirements',
-    gpaConversion: 'German grades converted using WES scale'
-  },
-  'France': {
-    diplomas: ['Baccalauréat', 'International Baccalaureate'],
-    recognized: true,
-    requirements: 'Baccalauréat with NCAA-approved subjects',
-    gpaConversion: 'French grades converted to 4.0 scale'
   },
   'India': {
     diplomas: ['CBSE Class XII', 'ICSE Class XII', 'State Board Class XII'],
@@ -135,6 +288,24 @@ const INTERNATIONAL_DIPLOMAS = {
     recognized: true,
     requirements: 'Japanese high school completion with NCAA subjects',
     gpaConversion: 'Japanese grades converted to 4.0 scale'
+  },
+  'Switzerland': {
+    diplomas: ['Maturité', 'Maturità', 'Matur', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Maturité with NCAA-approved subjects',
+    gpaConversion: 'Swiss grades converted to 4.0 scale'
+  },
+  'Norway': {
+    diplomas: ['Vitnemål fra Videregående Skole', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Upper secondary education certificate',
+    gpaConversion: 'Norwegian grades converted to 4.0 scale'
+  },
+  'Iceland': {
+    diplomas: ['Stúdentspróf', 'International Baccalaureate'],
+    recognized: true,
+    requirements: 'Student examination with core subjects',
+    gpaConversion: 'Icelandic grades converted to 4.0 scale'
   }
 };
 
