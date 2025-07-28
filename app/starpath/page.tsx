@@ -124,9 +124,9 @@ export default function StarPathPage() {
 
   const loadStarPathProgress = async () => {
     try {
-      const token = localStorage.getItem('auth-token');
+      const token = localStorage.getItem('authToken') || localStorage.getItem('auth-token');
       if (!token) {
-        router.push('/auth');
+        console.log('No token found, using sample data');
         return;
       }
 
@@ -138,27 +138,65 @@ export default function StarPathPage() {
 
       if (response.ok) {
         const data = await response.json();
-        // Update with real data from backend
-        setUserProgress({
-          totalXp: data.stats.totalXp,
-          completedNodes: data.stats.completedNodes,
-          currentTier: data.stats.currentTier,
-          achievements: data.stats.activeNodes
-        });
+        if (data.success) {
+          // Transform API data to match UI format
+          const transformedData = data.progress.map(item => ({
+            id: item.id,
+            name: item.skillName,
+            description: getSkillDescription(item.skillName),
+            currentLevel: item.currentLevel,
+            maxLevel: item.maxLevel,
+            totalXp: item.totalXp,
+            requiredXp: item.requiredXp,
+            isUnlocked: item.isUnlocked,
+            category: item.category,
+            prerequisites: getSkillPrerequisites(item.id),
+            rewards: getSkillRewards(item.skillName, item.currentLevel)
+          }));
+          
+          setStarPathData(transformedData);
+          setUserProgress({
+            totalXp: data.stats.totalXp,
+            completedNodes: data.stats.completedNodes,
+            currentTier: data.stats.currentTier,
+            achievements: data.stats.achievements
+          });
+        }
       }
     } catch (error) {
-      console.error('Failed to load StarPath progress:', error);
+      console.error('Failed to load StarPath data:', error);
     }
-    try {
-      const response = await fetch('/api/starpath/progress');
-      if (response.ok) {
-        const data = await response.json();
-        // In a real implementation, this would update with server data
-        console.log('StarPath progress loaded:', data);
-      }
-    } catch (error) {
-      console.error('Failed to load StarPath progress:', error);
-    }
+  };
+
+  // Helper functions for skill data
+  const getSkillDescription = (skillName: string): string => {
+    const descriptions = {
+      'Ball Control Mastery': 'Master fundamental ball handling and control techniques',
+      'Agility & Speed': 'Develop explosive movement and directional changes',
+      'Game Vision': 'Enhance field awareness and decision-making',
+      'Mental Resilience': 'Build confidence and focus under pressure',
+      'Advanced Techniques': 'Master complex sport-specific movements'
+    };
+    return descriptions[skillName] || 'Develop advanced athletic skills';
+  };
+
+  const getSkillPrerequisites = (skillId: string): string[] => {
+    const prereqs = {
+      'mental_toughness': ['game_vision'],
+      'advanced_techniques': ['ball_control', 'agility_training']
+    };
+    return prereqs[skillId] || [];
+  };
+
+  const getSkillRewards = (skillName: string, level: number): string[] => {
+    const baseRewards = {
+      'Ball Control Mastery': [`First Touch Badge Level ${level}`, `+${level * 2} Technical Rating`],
+      'Agility & Speed': [`Speed Demon Badge Level ${level}`, `+${level * 2} Athleticism Rating`],
+      'Game Vision': [`Visionary Badge Level ${level}`, `+${level * 3} Game Awareness`],
+      'Mental Resilience': [`Unshakeable Badge Level ${level}`, `+${level * 3} Consistency`],
+      'Advanced Techniques': [`Master Badge Level ${level}`, `+${level * 4} Overall Rating`]
+    };
+    return baseRewards[skillName] || [`Achievement Badge Level ${level}`, `+${level * 2} Skill Points`];
   };
 
   const startTraining = async (nodeId: string) => {
