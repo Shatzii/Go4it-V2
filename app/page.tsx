@@ -43,12 +43,21 @@ function StarRating({ rating, maxRating = 5 }: { rating: number; maxRating?: num
 export default function Go4ItHomePage() {
   const [platformStatus, setPlatformStatus] = useState('ready')
   const [topAthletes, setTopAthletes] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const checkHealth = async () => {
       try {
-        const response = await fetch('/api/health')
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 3000) // 3 second timeout
+        
+        const response = await fetch('/api/health', { 
+          signal: controller.signal,
+          cache: 'no-cache'
+        })
+        
+        clearTimeout(timeoutId)
+        
         if (response.ok) {
           setPlatformStatus('ready')
         } else {
@@ -56,13 +65,22 @@ export default function Go4ItHomePage() {
         }
       } catch (error) {
         console.log('Health check failed, using offline mode')
-        setPlatformStatus('ready') // Changed to ready to prevent loading screen
+        setPlatformStatus('ready') // Always set to ready to show content
       }
     }
 
     const fetchTopAthletes = async () => {
       try {
-        const response = await fetch('/api/recruiting/athletes/database')
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
+        
+        const response = await fetch('/api/recruiting/athletes/database', {
+          signal: controller.signal,
+          cache: 'no-cache'
+        })
+        
+        clearTimeout(timeoutId)
+        
         if (response.ok) {
           const data = await response.json()
           if (data.success && data.athletes) {
@@ -77,8 +95,17 @@ export default function Go4ItHomePage() {
       }
     }
 
+    // Run health check but don't wait for it
     checkHealth()
     fetchTopAthletes()
+    
+    // Ensure content shows after maximum 2 seconds regardless of API status
+    const fallbackTimer = setTimeout(() => {
+      setIsLoading(false)
+      setPlatformStatus('ready')
+    }, 2000)
+    
+    return () => clearTimeout(fallbackTimer)
   }, [])
 
   // Calculate GAR score based on athlete rankings and stats
