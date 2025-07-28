@@ -123,6 +123,57 @@ function DashboardComponent() {
             <p className="text-slate-400">Track your athletic and academic progress</p>
           </div>
 
+          {/* StarPath Quick Overview */}
+          <div className="mb-8">
+            <Card className="bg-gradient-to-r from-slate-800 to-slate-700 border-slate-600">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/20 rounded-lg">
+                    <Star className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <div className="text-white">StarPath Progress</div>
+                    <div className="text-slate-400 text-sm font-normal">Level 3 • 2,450 XP</div>
+                  </div>
+                  <div className="ml-auto">
+                    <Button 
+                      className="bg-primary hover:bg-primary/90"
+                      onClick={() => window.location.href = '/starpath'}
+                    >
+                      View Full StarPath
+                    </Button>
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-300 text-sm">Overall Progress</span>
+                      <span className="text-primary text-sm font-medium">82%</span>
+                    </div>
+                    <Progress value={82} className="h-2" />
+                  </div>
+                  
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-400">4</div>
+                    <div className="text-slate-400 text-sm">Technical Level</div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-400">3</div>
+                    <div className="text-slate-400 text-sm">Physical Level</div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-400">7</div>
+                    <div className="text-slate-400 text-sm">Achievements</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           {/* Stats Grid - Single Row */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <Card className="bg-slate-800 border-slate-700">

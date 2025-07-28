@@ -158,7 +158,8 @@ export default function StudentDashboardPage() {
                     <Progress value={(studentData.starPathProgress.completedChallenges / studentData.starPathProgress.totalChallenges) * 100} />
                   </div>
                   
-                  <Button className="w-full">
+                  <Button className="w-full bg-primary hover:bg-primary/90" onClick={() => window.location.href = '/starpath'}>
+                    <Star className="w-4 h-4 mr-2" />
                     View Full StarPath
                   </Button>
                 </div>
