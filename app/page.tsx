@@ -40,7 +40,9 @@ function StarRating({ rating, maxRating = 5 }: { rating: number; maxRating?: num
 }
 
 // Go4It Sports Landing Page - Complete Original Content Restored
-export default function Go4ItHomePage() {
+export { default } from './page-simple'
+
+function Go4ItHomePage() {
   const [platformStatus, setPlatformStatus] = useState('ready')
   const [topAthletes, setTopAthletes] = useState([])
   const [isLoading, setIsLoading] = useState(false)
