@@ -191,22 +191,34 @@ export const insertQuickProfileSetupSchema = createInsertSchema(quickProfileSetu
   updatedAt: true,
 });
 
+// Add missing insert schemas
+export const insertUserSessionSchema = createInsertSchema(userSessions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertNcaaSchoolSchema = createInsertSchema(ncaaSchools).omit({
+  id: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
-export type InsertUser = z.infer<typeof insertUserSchema>;
+export type InsertUser = typeof users.$inferInsert;
 export type VideoAnalysis = typeof videoAnalysis.$inferSelect;
-export type InsertVideoAnalysis = z.infer<typeof insertVideoAnalysisSchema>;
+export type InsertVideoAnalysis = typeof videoAnalysis.$inferInsert;
 export type Video = typeof videos.$inferSelect;
-export type InsertVideo = z.infer<typeof insertVideoSchema>;
+export type InsertVideo = typeof videos.$inferInsert;
 export type HighlightReel = typeof highlightReels.$inferSelect;
-export type InsertHighlightReel = z.infer<typeof insertHighlightReelSchema>;
+export type InsertHighlightReel = typeof highlightReels.$inferInsert;
 export type StarPathProgress = typeof starPathProgress.$inferSelect;
-export type InsertStarPathProgress = z.infer<typeof insertStarPathProgressSchema>;
+export type InsertStarPathProgress = typeof starPathProgress.$inferInsert;
 export type Achievement = typeof achievements.$inferSelect;
-export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
+export type InsertAchievement = typeof achievements.$inferInsert;
 export type NcaaSchool = typeof ncaaSchools.$inferSelect;
+export type InsertNcaaSchool = typeof ncaaSchools.$inferInsert;
 export type UserSession = typeof userSessions.$inferSelect;
+export type InsertUserSession = typeof userSessions.$inferInsert;
 export type AthleteProfile = typeof athleteProfiles.$inferSelect;
-export type InsertAthleteProfile = z.infer<typeof insertAthleteProfileSchema>;
+export type InsertAthleteProfile = typeof athleteProfiles.$inferInsert;
 export type QuickProfileSetup = typeof quickProfileSetup.$inferSelect;
-export type InsertQuickProfileSetup = z.infer<typeof insertQuickProfileSetupSchema>;
+export type InsertQuickProfileSetup = typeof quickProfileSetup.$inferInsert;
