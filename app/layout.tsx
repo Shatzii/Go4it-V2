@@ -64,6 +64,9 @@ export default function RootLayout({
                         <a href="/recruiting-hub" className="text-slate-300 hover:text-white transition-colors">
                           Recruiting Hub
                         </a>
+                        <a href="/coupons" className="text-slate-300 hover:text-white transition-colors">
+                          Coupons
+                        </a>
                         <a href="/team-sports" className="text-slate-300 hover:text-white transition-colors">
                           Team Sports
                         </a>
