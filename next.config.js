@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Minimal configuration for Replit preview compatibility
+  // Optimized configuration for Replit deployment and .replit.dev preview
   output: 'standalone',
   
   // Disable image optimization for Replit
@@ -11,12 +11,39 @@ const nextConfig = {
   // Remove powered by header
   poweredByHeader: false,
   
+  // Replit deployment optimizations
+  compress: true,
+  generateEtags: false,
+  
+  // Configure for .replit.dev domain preview
+  assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
+  trailingSlash: false,
+  
   // Build error handling
   eslint: { 
     ignoreDuringBuilds: true 
   },
   typescript: { 
     ignoreBuildErrors: true 
+  },
+  
+  // Headers for cross-origin compatibility
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+        ],
+      },
+    ];
   },
   
   // Essential webpack configuration for dependencies
