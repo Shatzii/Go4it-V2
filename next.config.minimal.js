@@ -1,20 +1,25 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: { unoptimized: true },
-  eslint: { ignoreDuringBuilds: true },
-  typescript: { ignoreBuildErrors: true },
-  trailingSlash: false,
-  poweredByHeader: false,
+  // Essential production settings only
+  output: 'standalone',
   
-  // Minimal configuration for Replit
-  env: { 
-    PORT: '5000', 
-    HOSTNAME: '0.0.0.0' 
+  // Basic image config 
+  images: { 
+    unoptimized: true,
   },
   
-  // Remove complex webpack config
-  webpack: (config) => {
-    return config;
+  // Error handling for deployment
+  eslint: { 
+    ignoreDuringBuilds: true 
+  },
+  typescript: { 
+    ignoreBuildErrors: true 
+  },
+  
+  // Environment variables
+  env: { 
+    PORT: process.env.PORT || '5000',
+    HOSTNAME: process.env.HOSTNAME || '0.0.0.0',
   },
 };
 

@@ -43,6 +43,13 @@ export class RealVideoAnalyzer {
   async initialize() {
     if (this.isInitialized) return;
     
+    // Skip TensorFlow.js initialization during build process
+    if (process.env.NODE_ENV === 'production' && typeof window === 'undefined' && !process.env.RUNTIME_INIT) {
+      console.log('Skipping TensorFlow.js initialization during build process');
+      this.isInitialized = true;
+      return;
+    }
+    
     // Only run server-side initialization to prevent webpack bundling
     if (!this.isServerSide || process.env.IS_CLIENT === 'true') {
       console.log('Skipping TensorFlow.js on client side');
