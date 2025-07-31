@@ -12,7 +12,23 @@ export async function POST(request: NextRequest) {
     let user = await getUserFromRequest(request);
     if (!user) {
       // Create demo user for testing
-      user = { id: 1, email: 'demo@example.com', name: 'Demo User' };
+      user = { 
+        id: 1, 
+        username: 'demo_user',
+        email: 'demo@example.com', 
+        password: '',
+        role: 'athlete',
+        firstName: 'Demo',
+        lastName: 'User',
+        dateOfBirth: new Date(),
+        sport: 'basketball',
+        position: 'player',
+        graduationYear: 2025,
+        gpa: '3.5',
+        isActive: true,
+        createdAt: new Date(),
+        lastLoginAt: new Date()
+      };
     }
 
     const formData = await request.formData();
