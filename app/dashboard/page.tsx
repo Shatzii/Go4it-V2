@@ -19,7 +19,10 @@ import {
   CheckCircle,
   Heart,
   Brain,
-  Utensils
+  Utensils,
+  Zap,
+  ArrowRight,
+  Smartphone
 } from 'lucide-react'
 import { VerificationBadge } from '@/components/ui/verification-badge'
 import ClientOnly from '@/components/ClientOnly'
@@ -121,6 +124,23 @@ function DashboardComponent() {
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Athletic Dashboard</h1>
             <p className="text-slate-400">Track your athletic and academic progress</p>
+            <div className="flex items-center gap-2 mt-3">
+              <Badge variant="outline" className="text-green-400 border-green-400">
+                <Brain className="w-3 h-3 mr-1" />
+                AI Enhanced
+              </Badge>
+              <Badge variant="outline" className="text-blue-400 border-blue-400">
+                <Activity className="w-3 h-3 mr-1" />
+                Real-time Analytics
+              </Badge>
+              <Button 
+                size="sm" 
+                onClick={() => window.location.href = '/dashboard/next-gen-dashboard'}
+                className="ml-4"
+              >
+                Try Next-Gen Dashboard
+              </Button>
+            </div>
           </div>
 
           {/* StarPath Quick Overview */}
@@ -226,6 +246,70 @@ function DashboardComponent() {
                     <p className="text-2xl font-bold text-orange-400">{dashboardData.stats.studyStreak} days</p>
                   </div>
                   <Calendar className="w-8 h-8 text-orange-400" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Next-Gen Features Showcase */}
+          <div className="mb-8">
+            <Card className="bg-gradient-to-r from-primary/10 to-blue-500/10 border-primary/30">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3">
+                  <Zap className="w-5 h-5 text-primary" />
+                  Next-Generation Platform Features
+                  <Badge variant="outline" className="text-primary border-primary">NEW</Badge>
+                </CardTitle>
+                <p className="text-slate-400">Access cutting-edge AI technology and professional-grade analytics</p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <Button 
+                    className="h-24 flex flex-col gap-2 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/50 text-left"
+                    onClick={() => window.location.href = '/test-video-analysis'}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Brain className="w-5 h-5 text-purple-400" />
+                      <span className="font-medium">AI Video Analysis</span>
+                    </div>
+                    <span className="text-xs text-slate-400">25+ body points • Sub-100ms</span>
+                  </Button>
+                  
+                  <Button 
+                    className="h-24 flex flex-col gap-2 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/50 text-left"
+                    onClick={() => window.location.href = '/mobile-analysis'}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Smartphone className="w-5 h-5 text-blue-400" />
+                      <span className="font-medium">Mobile Edge AI</span>
+                    </div>
+                    <span className="text-xs text-slate-400">Real-time • Offline capable</span>
+                  </Button>
+                  
+                  <Button 
+                    className="h-24 flex flex-col gap-2 bg-green-500/20 hover:bg-green-500/30 border border-green-500/50 text-left"
+                    onClick={() => window.location.href = '/recruiting-hub'}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Target className="w-5 h-5 text-green-400" />
+                      <span className="font-medium">Smart Recruiting</span>
+                    </div>
+                    <span className="text-xs text-slate-400">500+ coaches • AI matching</span>
+                  </Button>
+                </div>
+                
+                <div className="mt-4 flex items-center justify-between">
+                  <div className="text-sm text-slate-400">
+                    Powered by TensorFlow.js, MediaPipe, and edge computing
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => window.location.href = '/dashboard/next-gen-dashboard'}
+                  >
+                    Full Next-Gen Dashboard
+                    <ArrowRight className="w-3 h-3 ml-1" />
+                  </Button>
                 </div>
               </CardContent>
             </Card>

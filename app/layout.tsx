@@ -73,6 +73,9 @@ export default function RootLayout({
                         <a href="/mobile-analysis" className="text-slate-300 hover:text-white transition-colors">
                           Mobile Analysis
                         </a>
+                        <a href="/landing-optimized" className="text-slate-300 hover:text-white transition-colors">
+                          Optimized Landing
+                        </a>
                         <a href="/team-sports" className="text-slate-300 hover:text-white transition-colors">
                           Team Sports
                         </a>
