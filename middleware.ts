@@ -2,13 +2,20 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  // Allow all requests to pass through without interference
-  return NextResponse.next()
+  // Add headers for Replit preview compatibility
+  const response = NextResponse.next()
+  
+  // Add CORS headers for cross-origin requests
+  response.headers.set('Access-Control-Allow-Origin', '*')
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  
+  return response
 }
 
 export const config = {
   matcher: [
-    // Only run middleware on pages, exclude all static assets and API routes
-    '/((?!api|_next/static|_next/image|_next/webpack-hmr|favicon.ico|manifest.json|robots.txt|sitemap.xml).*)',
+    // Apply to all routes except static assets
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 }
