@@ -58,6 +58,37 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview')
   const [isLoading, setIsLoading] = useState(true)
   const [adminUser, setAdminUser] = useState(null)
+  const [demoLoading, setDemoLoading] = useState(false)
+  const [verificationResults, setVerificationResults] = useState(null)
+
+  const populateDemoUsers = async () => {
+    setDemoLoading(true)
+    try {
+      const response = await fetch('/api/admin/populate-demo', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${AuthClient.getToken()}`
+        }
+      })
+      
+      if (!response.ok) {
+        throw new Error('Demo population failed')
+      }
+      
+      const data = await response.json()
+      
+      if (data.success) {
+        alert(`Successfully created ${data.users?.length || 0} demo users! Password: demo123`)
+      } else {
+        alert(`Demo population failed: ${data.message}`)
+      }
+    } catch (error) {
+      console.error('Demo population error:', error)
+      alert('Failed to populate demo users')
+    } finally {
+      setDemoLoading(false)
+    }
+  }
 
   useEffect(() => {
     // Check admin authentication
@@ -164,6 +195,54 @@ export default function AdminDashboard() {
               </div>
               <Server className="w-8 h-8 text-orange-500" />
             </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Admin Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="p-4">
+            <Button 
+              onClick={populateDemoUsers}
+              disabled={demoLoading}
+              className="w-full bg-green-600 hover:bg-green-700"
+            >
+              {demoLoading ? 'Creating...' : 'Add Demo Users'}
+            </Button>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="p-4">
+            <Button 
+              onClick={() => window.open('/admin-verification', '_blank')}
+              className="w-full bg-blue-600 hover:bg-blue-700"
+            >
+              Verify Features
+            </Button>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="p-4">
+            <Button 
+              onClick={() => window.open('/dashboard', '_blank')}
+              className="w-full bg-purple-600 hover:bg-purple-700"
+            >
+              User Dashboard
+            </Button>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="p-4">
+            <Button 
+              onClick={() => window.open('/academy', '_blank')}
+              className="w-full bg-orange-600 hover:bg-orange-700"
+            >
+              Academy System
+            </Button>
           </CardContent>
         </Card>
       </div>
