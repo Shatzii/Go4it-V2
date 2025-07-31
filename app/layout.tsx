@@ -54,16 +54,13 @@ export default function RootLayout({
                       <div className="text-xl font-bold text-white">
                         Go4It Sports
                       </div>
-                      <div className="hidden md:flex items-center gap-4">
-                        <a href="/starpath" className="text-slate-300 hover:text-white transition-colors flex items-center gap-1">
+                      <div className="hidden md:flex items-center gap-6">
+                        <a href="/starpath" className="text-slate-300 hover:text-white transition-colors flex items-center gap-2 font-medium">
                           <span className="text-yellow-400">⭐</span>
-                          StarPath
+                          StarPath Hub
                         </a>
                         <a href="/gar-upload" className="text-slate-300 hover:text-white transition-colors">
-                          GAR Analysis
-                        </a>
-                        <a href="/academy-plus" className="text-slate-300 hover:text-white transition-colors">
-                          College Path
+                          Get GAR Score
                         </a>
                         <a href="/pricing" className="text-slate-300 hover:text-white transition-colors">
                           Pricing
