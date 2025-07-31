@@ -382,29 +382,29 @@ class SpacePharaohAuthSystem {
   getLoginCredentials() {
     return {
       master_admin: {
-        username: 'spacepharaoh',
-        password: 'SpacePharaoh_Master_2025!',
+        username: process.env.MASTER_ADMIN_USERNAME || 'spacepharaoh',
+        password: process.env.MASTER_ADMIN_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
         access: 'Full platform control'
       },
       school_admins: {
         superhero_school: {
-          username: 'hero_admin',
-          password: 'HeroAdmin_2025!',
+          username: process.env.SUPERHERO_ADMIN_USERNAME || 'hero_admin',
+          password: process.env.SUPERHERO_ADMIN_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
           access: 'SuperHero School (K-6) management'
         },
         stage_prep_school: {
-          username: 'stage_admin',
-          password: 'StageAdmin_2025!',
+          username: process.env.STAGE_ADMIN_USERNAME || 'stage_admin',
+          password: process.env.STAGE_ADMIN_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
           access: 'Stage Prep School (7-12) management'
         },
         lawyer_makers: {
-          username: 'law_admin',
-          password: 'LawAdmin_2025!',
+          username: process.env.LAW_ADMIN_USERNAME || 'law_admin',
+          password: process.env.LAW_ADMIN_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
           access: 'Law School management'
         },
         global_language_academy: {
-          username: 'language_admin',
-          password: 'LinguaAdmin_2025!',
+          username: process.env.LANGUAGE_ADMIN_USERNAME || 'language_admin',
+          password: process.env.LANGUAGE_ADMIN_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
           access: 'Language Academy management'
         }
       }

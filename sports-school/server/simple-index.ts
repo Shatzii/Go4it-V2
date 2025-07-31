@@ -77,17 +77,17 @@ app.get('/api/schools', (req, res) => {
   res.json(schools);
 });
 
-// Demo credentials endpoint
+// Demo credentials endpoint with secure environment variables
 app.get('/api/demo-credentials', (req, res) => {
   const credentials = {
     admin: {
-      username: 'admin',
-      password: 'admin123',
+      username: process.env.DEMO_ADMIN_USERNAME || 'admin',
+      password: process.env.DEMO_ADMIN_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
       note: 'Use these credentials for admin access to all schools'
     },
     student: {
-      username: 'student',
-      password: 'student123',
+      username: process.env.DEMO_STUDENT_USERNAME || 'student',
+      password: process.env.DEMO_STUDENT_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
       note: 'Use these credentials for student demo access to all schools'
     }
   };

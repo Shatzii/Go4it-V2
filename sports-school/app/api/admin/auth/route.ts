@@ -1,39 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// SpacePharaoh Admin Credentials (In production, these would be stored securely)
+// Admin Credentials using secure environment variables
 const ADMIN_CREDENTIALS = {
   master_admin: {
-    username: 'spacepharaoh',
-    password: 'SpacePharaoh_Master_2025!',
+    username: process.env.MASTER_ADMIN_USERNAME || 'spacepharaoh',
+    password: process.env.MASTER_ADMIN_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
     access: 'Full platform control',
     role: 'super_admin',
     permissions: ['platform_management', 'all_schools_access', 'user_management']
   },
   school_admins: {
     superhero_school: {
-      username: 'hero_admin',
-      password: 'HeroAdmin_2025!',
+      username: process.env.SUPERHERO_ADMIN_USERNAME || 'hero_admin',
+      password: process.env.SUPERHERO_ADMIN_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
       access: 'SuperHero School (K-6) management',
       role: 'school_admin',
       school: 'superhero_school'
     },
     stage_prep_school: {
-      username: 'stage_admin',
-      password: 'StageAdmin_2025!',
+      username: process.env.STAGE_ADMIN_USERNAME || 'stage_admin',
+      password: process.env.STAGE_ADMIN_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
       access: 'Stage Prep School (7-12) management',
       role: 'school_admin',
       school: 'stage_prep_school'
     },
     lawyer_makers: {
-      username: 'law_admin',
-      password: 'LawAdmin_2025!',
+      username: process.env.LAW_ADMIN_USERNAME || 'law_admin',
+      password: process.env.LAW_ADMIN_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
       access: 'Law School management',
       role: 'school_admin',
       school: 'lawyer_makers'
     },
     global_language_academy: {
-      username: 'language_admin',
-      password: 'LinguaAdmin_2025!',
+      username: process.env.LANGUAGE_ADMIN_USERNAME || 'language_admin',
+      password: process.env.LANGUAGE_ADMIN_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
       access: 'Language Academy management',
       role: 'school_admin',
       school: 'global_language_academy'

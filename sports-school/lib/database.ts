@@ -5,8 +5,10 @@ let client: any = null;
 try {
   const { drizzle } = require('drizzle-orm/postgres-js');
   const postgres = require('postgres');
+  const { getDatabaseConfig } = require('./env-validation');
   
-  const connectionString = process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/universal_one_school';
+  const dbConfig = getDatabaseConfig();
+  const connectionString = dbConfig.url;
   
   // Create connection pool
   client = postgres(connectionString, {

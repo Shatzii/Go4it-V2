@@ -8,19 +8,26 @@
 import express from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import dotenv from 'dotenv';
+import { getAIConfig } from '../../lib/env-validation.js';
 
 // Load environment variables
 dotenv.config();
 
 const router = express.Router();
 
-// Initialize Anthropic client
+// Initialize Anthropic client with secure environment variables
 let anthropicClient = null;
 try {
-  anthropicClient = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-  });
-  console.log('✅ Anthropic client initialized successfully');
+  const aiConfig = getAIConfig();
+  
+  if (!aiConfig.anthropicApiKey) {
+    console.warn('⚠️ ANTHROPIC_API_KEY not configured - AI features disabled');
+  } else {
+    anthropicClient = new Anthropic({
+      apiKey: aiConfig.anthropicApiKey,
+    });
+    console.log('✅ Anthropic client initialized successfully');
+  }
 } catch (error) {
   console.error('❌ Error initializing Anthropic client:', error);
 }
