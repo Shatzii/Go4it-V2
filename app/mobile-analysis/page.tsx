@@ -390,7 +390,7 @@ export default function MobileAnalysisPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Storage Required</span>
-                    <span className="text-green-400">< 50MB</span>
+                    <span className="text-green-400">&lt; 50MB</span>
                   </div>
                 </div>
               </div>
