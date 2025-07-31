@@ -474,6 +474,35 @@ export const insertPlayerStatsSchema = createInsertSchema(playerStats).omit({
   recordedAt: true,
 });
 
+export const insertInstitutionSchema = createInsertSchema(institutions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertCurriculumSchema = createInsertSchema(curriculum).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertCourseContentSchema = createInsertSchema(courseContent).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertEnrollmentSchema = createInsertSchema(enrollments).omit({
+  id: true,
+  enrollmentDate: true,
+});
+
+export const insertAssignmentSchema = createInsertSchema(assignments).omit({
+  id: true,
+});
+
+export const insertTeamRosterSchema = createInsertSchema(teamRosters).omit({
+  id: true,
+  joinDate: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
@@ -505,3 +534,15 @@ export type TeamSchedule = typeof teamSchedules.$inferSelect;
 export type InsertTeamSchedule = typeof teamSchedules.$inferInsert;
 export type PlayerStats = typeof playerStats.$inferSelect;
 export type InsertPlayerStats = typeof playerStats.$inferInsert;
+export type Institution = typeof institutions.$inferSelect;
+export type InsertInstitution = typeof institutions.$inferInsert;
+export type Curriculum = typeof curriculum.$inferSelect;
+export type InsertCurriculum = typeof curriculum.$inferInsert;
+export type CourseContent = typeof courseContent.$inferSelect;
+export type InsertCourseContent = typeof courseContent.$inferInsert;
+export type Enrollment = typeof enrollments.$inferSelect;
+export type InsertEnrollment = typeof enrollments.$inferInsert;
+export type Assignment = typeof assignments.$inferSelect;
+export type InsertAssignment = typeof assignments.$inferInsert;
+export type TeamRoster = typeof teamRosters.$inferSelect;
+export type InsertTeamRoster = typeof teamRosters.$inferInsert;
