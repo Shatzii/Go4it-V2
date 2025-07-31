@@ -6,7 +6,7 @@
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { spawn } from 'child_process';
-import * as ffmpegStatic from 'ffmpeg-static';
+// import * as ffmpegStatic from 'ffmpeg-static'; // Optional dependency
 
 interface VideoFrame {
   data: Buffer;
@@ -26,7 +26,12 @@ interface SportMetrics {
   athleticism: number;
   consistency: number;
   gameAwareness: number;
+  biomechanics: number;
   overallScore: number;
+  strengths: string[];
+  weaknesses: string[];
+  recommendations: string[];
+  detailedMetrics: any;
 }
 
 export class RealVideoAnalyzer {

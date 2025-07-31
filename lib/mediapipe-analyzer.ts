@@ -119,7 +119,15 @@ export class MediaPipeAnalyzer {
   }
 
   private calculate3DJointAngles(pose: any[]): any {
-    const angles = {};
+    const angles: any = {
+      leftKnee: 0,
+      rightKnee: 0,
+      leftElbow: 0,
+      rightElbow: 0,
+      torsoAngle: 0,
+      hipFlexion: 0,
+      ankleFlexion: 0
+    };
     
     // Calculate key joint angles for biomechanical analysis
     angles.leftKnee = this.calculateJointAngle(
