@@ -263,7 +263,7 @@ export default function StarPathPage() {
               >
                 ← Back to Dashboard
               </button>
-              <h1 className="text-2xl font-bold text-foreground neon-text">StarPath Development</h1>
+              <h1 className="text-2xl font-bold text-foreground neon-text">StarPath Hub</h1>
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-right">
@@ -279,8 +279,131 @@ export default function StarPathPage() {
         </div>
       </header>
 
-      {/* Progress Overview */}
+      {/* StarPath Journey Overview */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-foreground mb-4">Your Athletic Journey</h2>
+          <p className="text-muted-foreground max-w-3xl mx-auto">
+            Complete your GAR analysis to determine your StarPath level, then progress through AI-generated training 
+            to unlock College Path features for NCAA eligibility and recruitment.
+          </p>
+        </div>
+
+        {/* Three Main Pathways */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          {/* Athletic Development */}
+          <div className="bg-card rounded-lg p-6 border border-border neon-border">
+            <div className="text-center mb-4">
+              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Zap className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-foreground">Athletic Development</h3>
+              <p className="text-sm text-muted-foreground">AI-powered training and performance analysis</p>
+            </div>
+            <div className="space-y-3">
+              <button 
+                onClick={() => router.push('/gar-upload')}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                Get GAR Analysis
+              </button>
+              <button 
+                onClick={() => router.push('/ai-coach')}
+                className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                AI Coach Training
+              </button>
+              <button 
+                onClick={() => router.push('/performance-analytics')}
+                className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                Performance Analytics
+              </button>
+              <button 
+                onClick={() => router.push('/team-sports')}
+                className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                Team Training
+              </button>
+            </div>
+          </div>
+
+          {/* College Path */}
+          <div className="bg-card rounded-lg p-6 border border-border neon-border">
+            <div className="text-center mb-4">
+              <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Trophy className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-foreground">College Path</h3>
+              <p className="text-sm text-muted-foreground">NCAA eligibility and recruitment tools</p>
+            </div>
+            <div className="space-y-3">
+              <button 
+                onClick={() => router.push('/academy')}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                Academy Courses
+              </button>
+              <button 
+                onClick={() => router.push('/ncaa-eligibility')}
+                className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                NCAA Eligibility
+              </button>
+              <button 
+                onClick={() => router.push('/athletic-contacts')}
+                className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                Coach Contacts
+              </button>
+              <button 
+                onClick={() => router.push('/scholarship-tracker')}
+                className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                Scholarship Tracker
+              </button>
+            </div>
+          </div>
+
+          {/* Progress Tracking */}
+          <div className="bg-card rounded-lg p-6 border border-border neon-border">
+            <div className="text-center mb-4">
+              <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Target className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-foreground">Progress Tracking</h3>
+              <p className="text-sm text-muted-foreground">Monitor your development and achievements</p>
+            </div>
+            <div className="space-y-3">
+              <button 
+                onClick={() => router.push('/student-dashboard')}
+                className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                Student Dashboard
+              </button>
+              <button 
+                onClick={() => router.push('/rankings')}
+                className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                Athlete Rankings
+              </button>
+              <button 
+                onClick={() => router.push('/verified-athletes')}
+                className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                Verified Athletes
+              </button>
+              <button 
+                onClick={() => router.push('/wellness-hub')}
+                className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                Wellness Hub
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Current Progress Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-card rounded-lg p-4 border border-border neon-border text-center">
             <Star className="h-8 w-8 text-primary mx-auto mb-2 neon-glow" />

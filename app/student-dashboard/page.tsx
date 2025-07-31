@@ -63,12 +63,20 @@ export default function StudentDashboardPage() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, {studentData.name}! 👋
-          </h1>
-          <p className="text-gray-600">
-            {studentData.position} • {studentData.sport} • {studentData.level}
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Welcome back, {studentData.name}! 👋
+              </h1>
+              <p className="text-gray-600">
+                {studentData.position} • {studentData.sport} • {studentData.level}
+              </p>
+            </div>
+            <Button onClick={() => window.location.href = '/starpath'} className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+              <Star className="w-4 h-4 mr-2" />
+              StarPath Hub
+            </Button>
+          </div>
         </div>
 
         {/* Quick Stats */}
@@ -273,28 +281,31 @@ export default function StudentDashboardPage() {
               </CardContent>
             </Card>
 
-            {/* Quick Actions */}
+            {/* StarPath Quick Actions */}
             <Card>
               <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Star className="w-5 h-5 text-yellow-500" />
+                  StarPath Hub
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <Button className="w-full justify-start" variant="outline">
-                    <PlayCircle className="w-4 h-4 mr-2" />
-                    Upload Video
+                  <Button className="w-full justify-start" variant="outline" onClick={() => window.location.href = '/starpath'}>
+                    <Star className="w-4 h-4 mr-2" />
+                    View StarPath Hub
                   </Button>
-                  <Button className="w-full justify-start" variant="outline">
+                  <Button className="w-full justify-start" variant="outline" onClick={() => window.location.href = '/gar-upload'}>
+                    <Target className="w-4 h-4 mr-2" />
+                    Get GAR Analysis
+                  </Button>
+                  <Button className="w-full justify-start" variant="outline" onClick={() => window.location.href = '/ai-coach'}>
+                    <Trophy className="w-4 h-4 mr-2" />
+                    AI Coach Training
+                  </Button>
+                  <Button className="w-full justify-start" variant="outline" onClick={() => window.location.href = '/academy'}>
                     <BookOpen className="w-4 h-4 mr-2" />
-                    View Courses
-                  </Button>
-                  <Button className="w-full justify-start" variant="outline">
-                    <TrendingUp className="w-4 h-4 mr-2" />
-                    Performance Analytics
-                  </Button>
-                  <Button className="w-full justify-start" variant="outline">
-                    <Bell className="w-4 h-4 mr-2" />
-                    Notifications
+                    Academy Courses
                   </Button>
                 </div>
               </CardContent>

@@ -246,8 +246,8 @@ function Go4ItHomePage() {
                 </h1>
                 
                 <p className="text-xl text-slate-300 leading-relaxed max-w-xl">
-                  The ultimate AI-powered platform designed specifically for neurodivergent student athletes. 
-                  From NCAA eligibility to professional recruitment, we have everything you need to excel.
+                  Your complete StarPath journey from GAR analysis to college recruitment. 
+                  Progress through 5 star levels with AI-powered training and unlock College Path features.
                 </p>
               </div>
               
@@ -265,7 +265,7 @@ function Go4ItHomePage() {
                   className="border border-primary/50 hover:bg-primary/20 text-primary hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center gap-2 backdrop-blur-sm"
                 >
                   <Star className="w-5 h-5" />
-                  Explore StarPath
+                  Enter StarPath Hub
                 </SafeLink>
               </div>
             </div>
