@@ -55,35 +55,18 @@ export default function RootLayout({
                         Go4It Sports
                       </div>
                       <div className="hidden md:flex items-center gap-4">
-                        <a href="/dashboard" className="text-slate-300 hover:text-white transition-colors">
-                          Dashboard
-                        </a>
-                        <a href="/academy" className="text-slate-300 hover:text-white transition-colors">
-                          Academy
-                        </a>
-                        <a href="/recruiting-hub" className="text-slate-300 hover:text-white transition-colors">
-                          Recruiting Hub
-                        </a>
-                        <a href="/coupons" className="text-slate-300 hover:text-white transition-colors">
-                          Coupons
-                        </a>
-                        <a href="/test-video-analysis" className="text-slate-300 hover:text-white transition-colors">
-                          AI Analysis Demo
-                        </a>
-                        <a href="/mobile-analysis" className="text-slate-300 hover:text-white transition-colors">
-                          Mobile Analysis
-                        </a>
-                        <a href="/landing-optimized" className="text-slate-300 hover:text-white transition-colors">
-                          Optimized Landing
-                        </a>
-                        <a href="/team-sports" className="text-slate-300 hover:text-white transition-colors">
-                          Team Sports
+                        <a href="/starpath" className="text-slate-300 hover:text-white transition-colors flex items-center gap-1">
+                          <span className="text-yellow-400">⭐</span>
+                          StarPath
                         </a>
                         <a href="/gar-upload" className="text-slate-300 hover:text-white transition-colors">
-                          GAR Upload
+                          GAR Analysis
                         </a>
-                        <a href="/local-models" className="text-slate-300 hover:text-white transition-colors">
-                          Local Models
+                        <a href="/academy-plus" className="text-slate-300 hover:text-white transition-colors">
+                          College Path
+                        </a>
+                        <a href="/pricing" className="text-slate-300 hover:text-white transition-colors">
+                          Pricing
                         </a>
                       </div>
                     </div>
