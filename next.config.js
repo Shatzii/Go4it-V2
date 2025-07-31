@@ -98,6 +98,66 @@ const nextConfig = {
   
   // Webpack optimizations
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // Fix for TensorFlow.js and problematic node modules
+    if (!isServer) {
+      // Externalize problematic dependencies to prevent bundling
+      config.externals = config.externals || [];
+      config.externals.push({
+        '@mapbox/node-pre-gyp': 'commonjs @mapbox/node-pre-gyp',
+        'mock-aws-s3': 'commonjs mock-aws-s3',
+        'aws-sdk': 'commonjs aws-sdk',
+        'nock': 'commonjs nock',
+        'puppeteer': 'commonjs puppeteer',
+        'canvas': 'commonjs canvas',
+        'fs': 'commonjs fs',
+        'path': 'commonjs path',
+        'child_process': 'commonjs child_process'
+      });
+
+      // Ignore HTML files from node-pre-gyp
+      config.module.rules.push({
+        test: /\.html$/,
+        include: /node_modules\/@mapbox\/node-pre-gyp/,
+        use: 'ignore-loader'
+      });
+
+      // Handle TensorFlow.js dynamic imports
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        crypto: false,
+        stream: false,
+        buffer: false,
+        util: false,
+        assert: false,
+        http: false,
+        https: false,
+        os: false,
+        url: false,
+        zlib: false,
+        querystring: false,
+        child_process: false,
+        worker_threads: false
+      };
+
+      // Conditional imports for TensorFlow.js
+      config.plugins.push(
+        new webpack.DefinePlugin({
+          'process.env.IS_CLIENT': JSON.stringify(true),
+          'process.env.IS_SERVER': JSON.stringify(false)
+        })
+      );
+    } else {
+      // Server-side configuration
+      config.plugins.push(
+        new webpack.DefinePlugin({
+          'process.env.IS_CLIENT': JSON.stringify(false),
+          'process.env.IS_SERVER': JSON.stringify(true)
+        })
+      );
+    }
+
     // Production optimizations
     if (isProduction && !isServer) {
       config.optimization.splitChunks = {
@@ -107,6 +167,12 @@ const nextConfig = {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendors',
             chunks: 'all',
+          },
+          tensorflow: {
+            test: /[\\/]node_modules[\\/]@tensorflow/,
+            name: 'tensorflow',
+            chunks: 'all',
+            priority: 10,
           },
         },
       };

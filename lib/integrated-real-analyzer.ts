@@ -3,6 +3,7 @@
 
 import { realTensorFlowAnalyzer } from './real-tensorflow-analyzer';
 import { ollamaLocalAI } from './ollama-local-ai';
+import { lightweightVideoAnalyzer } from './lightweight-video-analyzer';
 
 interface ComprehensiveAnalysisResult {
   success: boolean;
@@ -39,17 +40,32 @@ interface ComprehensiveAnalysisResult {
 
 export class IntegratedRealAnalyzer {
   private isInitialized = false;
+  private useLightweight = false;
 
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
     
     console.log('Initializing integrated real analysis system...');
     
-    // Initialize all analysis components
-    await Promise.all([
-      realTensorFlowAnalyzer.initialize(),
-      ollamaLocalAI.initialize()
-    ]);
+    // Check if we're on client side or TensorFlow.js is not available
+    if (typeof window !== 'undefined' || process.env.IS_CLIENT === 'true') {
+      console.log('Using lightweight analysis for client-side');
+      this.useLightweight = true;
+      await lightweightVideoAnalyzer.initialize();
+    } else {
+      // Initialize all analysis components
+      try {
+        await Promise.all([
+          realTensorFlowAnalyzer.initialize(),
+          ollamaLocalAI.initialize()
+        ]);
+        console.log('Full analysis system ready');
+      } catch (error) {
+        console.log('Falling back to lightweight analysis:', error.message);
+        this.useLightweight = true;
+        await lightweightVideoAnalyzer.initialize();
+      }
+    }
     
     console.log('Integrated real analysis system ready');
     this.isInitialized = true;
@@ -62,40 +78,56 @@ export class IntegratedRealAnalyzer {
     console.log(`Starting comprehensive real analysis of ${videoPath} for ${sport}`);
     
     try {
-      // 1. Computer Vision Analysis with TensorFlow.js
-      console.log('Performing computer vision analysis...');
-      const cvAnalysis = await realTensorFlowAnalyzer.analyzeVideo(videoPath, sport);
+      let cvAnalysis: any;
+      let professionalFeedback: string;
+      let injuryPreventionPlan: string;
+      let performanceComparison: string;
       
-      // 2. Generate professional AI feedback
-      console.log('Generating AI coaching feedback...');
-      const professionalFeedback = await ollamaLocalAI.generateDetailedCoachingFeedback({
-        technique: cvAnalysis.technique * 100,
-        athleticism: cvAnalysis.athleticism * 100,
-        consistency: cvAnalysis.consistency * 100,
-        gameAwareness: cvAnalysis.gameAwareness * 100,
-        biomechanics: cvAnalysis.biomechanics * 100,
-        poseData: cvAnalysis.poses,
-        metrics: cvAnalysis.detailedMetrics
-      }, sport);
-      
-      // 3. Generate injury prevention plan
-      console.log('Creating injury prevention analysis...');
-      const injuryPreventionPlan = await ollamaLocalAI.generateInjuryPreventionPlan({
-        jointAngles: cvAnalysis.detailedMetrics.jointAngles,
-        movementPatterns: cvAnalysis.detailedMetrics.movementVelocity,
-        balanceData: cvAnalysis.detailedMetrics.balanceStability
-      }, sport);
-      
-      // 4. Performance benchmarking
-      console.log('Generating performance comparison...');
-      const performanceComparison = await ollamaLocalAI.generatePerformanceComparison({
-        overallScore: cvAnalysis.overallScore,
-        technique: cvAnalysis.technique,
-        athleticism: cvAnalysis.athleticism,
-        consistency: cvAnalysis.consistency,
-        gameAwareness: cvAnalysis.gameAwareness,
-        biomechanics: cvAnalysis.biomechanics
-      }, options.benchmarkLevel || 'high_school', sport);
+      if (this.useLightweight) {
+        // Use lightweight analysis
+        console.log('Performing lightweight computer vision analysis...');
+        cvAnalysis = await lightweightVideoAnalyzer.analyzeVideo(videoPath, sport);
+        
+        // Generate simplified feedback without AI services
+        professionalFeedback = this.generateBasicFeedback(cvAnalysis, sport);
+        injuryPreventionPlan = this.generateBasicInjuryPrevention(cvAnalysis, sport);
+        performanceComparison = this.generateBasicComparison(cvAnalysis, sport);
+      } else {
+        // Use full TensorFlow.js analysis
+        console.log('Performing computer vision analysis...');
+        cvAnalysis = await realTensorFlowAnalyzer.analyzeVideo(videoPath, sport);
+        
+        // 2. Generate professional AI feedback
+        console.log('Generating AI coaching feedback...');
+        professionalFeedback = await ollamaLocalAI.generateDetailedCoachingFeedback({
+          technique: cvAnalysis.technique * 100,
+          athleticism: cvAnalysis.athleticism * 100,
+          consistency: cvAnalysis.consistency * 100,
+          gameAwareness: cvAnalysis.gameAwareness * 100,
+          biomechanics: cvAnalysis.biomechanics * 100,
+          poseData: cvAnalysis.poses,
+          metrics: cvAnalysis.detailedMetrics
+        }, sport);
+        
+        // 3. Generate injury prevention plan
+        console.log('Creating injury prevention analysis...');
+        injuryPreventionPlan = await ollamaLocalAI.generateInjuryPreventionPlan({
+          jointAngles: cvAnalysis.detailedMetrics.jointAngles,
+          movementPatterns: cvAnalysis.detailedMetrics.movementVelocity,
+          balanceData: cvAnalysis.detailedMetrics.balanceStability
+        }, sport);
+        
+        // 4. Performance benchmarking
+        console.log('Generating performance comparison...');
+        performanceComparison = await ollamaLocalAI.generatePerformanceComparison({
+          overallScore: cvAnalysis.overallScore,
+          technique: cvAnalysis.technique,
+          athleticism: cvAnalysis.athleticism,
+          consistency: cvAnalysis.consistency,
+          gameAwareness: cvAnalysis.gameAwareness,
+          biomechanics: cvAnalysis.biomechanics
+        }, options.benchmarkLevel || 'high_school', sport);
+      }
       
       const processingTime = Date.now() - startTime;
       
@@ -217,6 +249,40 @@ export class IntegratedRealAnalyzer {
       'Performance benchmarking',
       'Professional-grade reporting'
     ];
+  }
+
+  private generateBasicFeedback(analysis: any, sport: string): string {
+    const score = analysis.overallScore * 100;
+    
+    if (score >= 85) {
+      return `Excellent performance in ${sport}! Your technique shows strong fundamentals with an overall score of ${score.toFixed(1)}%. Continue maintaining this level and focus on consistency.`;
+    } else if (score >= 70) {
+      return `Good performance in ${sport} with room for improvement. Score: ${score.toFixed(1)}%. Focus on the areas scoring below 75% for the biggest improvements.`;
+    } else {
+      return `Performance shows potential in ${sport}. Score: ${score.toFixed(1)}%. Focus on fundamental technique work and consistent practice to see significant improvements.`;
+    }
+  }
+
+  private generateBasicInjuryPrevention(analysis: any, sport: string): string {
+    const biomechanics = analysis.biomechanics * 100;
+    
+    if (biomechanics < 70) {
+      return `Monitor biomechanics closely. Consider working with a coach on proper form and technique. Focus on warm-up routines and strength training.`;
+    } else {
+      return `Biomechanics look good overall. Continue proper warm-up routines and maintain current training intensity.`;
+    }
+  }
+
+  private generateBasicComparison(analysis: any, sport: string): string {
+    const score = analysis.overallScore * 100;
+    
+    if (score >= 80) {
+      return `Performance is above average for recreational level in ${sport}. Shows potential for competitive play.`;
+    } else if (score >= 60) {
+      return `Performance is at average recreational level for ${sport}. With focused training, significant improvement is achievable.`;
+    } else {
+      return `Performance is developing in ${sport}. Focus on fundamentals and consistent practice for improvement.`;
+    }
   }
 
   private generateInstantFeedback(analysis: any): string {

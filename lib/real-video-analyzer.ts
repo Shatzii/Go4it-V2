@@ -2,11 +2,7 @@
 // Multi-model stack for genuine computer vision analysis
 // Uses TensorFlow.js + MediaPipe + OpenCV for comprehensive video processing
 
-// TensorFlow.js will be loaded dynamically to avoid webpack issues
-import { promises as fs } from 'fs';
-import * as path from 'path';
-import { spawn } from 'child_process';
-// import * as ffmpegStatic from 'ffmpeg-static'; // Optional dependency
+// Conditional imports to prevent webpack bundling issues
 
 interface VideoFrame {
   data: Buffer;
@@ -39,28 +35,49 @@ export class RealVideoAnalyzer {
   private movementModel: any = null;
   private sportModels: Map<string, any> = new Map();
   private isInitialized = false;
+  private isServerSide = typeof window === 'undefined';
+  private fs: any = null;
+  private path: any = null;
+  private spawn: any = null;
 
   async initialize() {
     if (this.isInitialized) return;
     
+    // Only run server-side initialization to prevent webpack bundling
+    if (!this.isServerSide || process.env.IS_CLIENT === 'true') {
+      console.log('Skipping TensorFlow.js on client side');
+      await this.initializeLightweightAnalysis();
+      return;
+    }
+    
     console.log('Initializing real computer vision analysis stack...');
     
     try {
-      // Dynamically import TensorFlow.js to avoid webpack issues
-      const tf = await import('@tensorflow/tfjs-node');
-      await tf.ready();
-      console.log('TensorFlow.js backend ready');
+      // Dynamically import Node.js modules only on server
+      if (process.env.IS_SERVER === 'true') {
+        this.fs = (await import('fs')).promises;
+        this.path = await import('path');
+        this.spawn = (await import('child_process')).spawn;
+        
+        // Dynamically import TensorFlow.js to avoid webpack issues
+        const tf = await import('@tensorflow/tfjs-node');
+        await tf.ready();
+        console.log('TensorFlow.js backend ready');
+        
+        // Load pose detection model (PoseNet or BlazePose)
+        await this.loadPoseModel();
+        
+        // Load movement analysis model
+        await this.loadMovementModel();
+        
+        // Load sport-specific models
+        await this.loadSportModels();
+        
+        console.log('Real AI video analysis system initialized');
+      } else {
+        await this.initializeLightweightAnalysis();
+      }
       
-      // Load pose detection model (PoseNet or BlazePose)
-      await this.loadPoseModel();
-      
-      // Load movement analysis model
-      await this.loadMovementModel();
-      
-      // Load sport-specific models
-      await this.loadSportModels();
-      
-      console.log('Real AI video analysis system initialized');
       this.isInitialized = true;
     } catch (error) {
       console.log('TensorFlow.js initialization failed, using lightweight analysis');
@@ -221,8 +238,9 @@ export class RealVideoAnalyzer {
   }
 
   private async videoExists(videoPath: string): Promise<boolean> {
+    if (!this.fs) return false;
     try {
-      await fs.access(videoPath);
+      await this.fs.access(videoPath);
       return true;
     } catch {
       return false;
@@ -230,8 +248,9 @@ export class RealVideoAnalyzer {
   }
 
   private async getVideoInfo(videoPath: string): Promise<any> {
+    if (!this.fs) return { error: 'File system not available' };
     try {
-      const stats = await fs.stat(videoPath);
+      const stats = await this.fs.stat(videoPath);
       return {
         size: stats.size,
         created: stats.birthtime,
@@ -972,12 +991,12 @@ export class RealVideoAnalyzer {
     let count = 0;
     
     if (jointAngles.leftKnee) {
-      score += this.isInRange(jointAngles.leftKnee, optimalRanges.knee) ? 1 : 0.5;
+      score += this.isInRange(jointAngles.leftKnee, [optimalRanges.knee[0], optimalRanges.knee[1]]) ? 1 : 0.5;
       count++;
     }
     
     if (jointAngles.rightKnee) {
-      score += this.isInRange(jointAngles.rightKnee, optimalRanges.knee) ? 1 : 0.5;
+      score += this.isInRange(jointAngles.rightKnee, [optimalRanges.knee[0], optimalRanges.knee[1]]) ? 1 : 0.5;
       count++;
     }
     
