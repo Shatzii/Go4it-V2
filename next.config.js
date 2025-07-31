@@ -8,14 +8,8 @@ const nextConfig = {
     unoptimized: true,
   },
   
-  // Fix cross-origin issues for Replit
-  allowedDevOrigins: [
-    '7fd1735e-ab9f-42d2-b097-a1492a69af8c-00-206a96lwblvdm.kirk.replit.dev',
-    '127.0.0.1',
-    'localhost',
-    '.replit.dev',
-    '.repl.co'
-  ],
+  // Production optimization
+  poweredByHeader: false,
   
   // Error handling for deployment
   eslint: { 
