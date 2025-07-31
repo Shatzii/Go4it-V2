@@ -234,6 +234,30 @@ function generateFallbackAnalysis(sport: string, filePath: string): GARAnalysis 
   };
 }
 
+// Check if local models are available as primary option
+async function tryLocalAnalysisFirst(filePath: string, sport: string, userId: number): Promise<GARAnalysis | null> {
+  try {
+    const { localVideoAnalyzer } = await import('@/lib/local-models');
+    const localAnalysis = await localVideoAnalyzer.analyzeVideoLocal(filePath, sport);
+    
+    // Convert local analysis to GAR format
+    return {
+      overallScore: localAnalysis.overallScore,
+      technicalSkills: localAnalysis.technicalSkills,
+      athleticism: localAnalysis.athleticism,
+      gameAwareness: localAnalysis.gameAwareness,
+      consistency: localAnalysis.consistency,
+      improvement: localAnalysis.improvement,
+      breakdown: localAnalysis.breakdown,
+      coachingInsights: localAnalysis.coachingInsights,
+      comparison: localAnalysis.comparison
+    };
+  } catch (error) {
+    console.log('Local analysis not available, falling back to cloud analysis');
+    return null;
+  }
+}
+
 function parseAIResponse(aiResponse: string, sport: string): GARAnalysis {
   // Parse AI response and structure into GAR format
   // This would normally extract structured data from AI response
@@ -410,8 +434,13 @@ export async function POST(request: NextRequest) {
       await writeFile(filePath, buffer);
     }
 
-    // Perform AI analysis
-    const analysis = await analyzeVideoWithAI(filePath, sport, user.id);
+    // Try local analysis first, then fallback to cloud AI
+    let analysis = await tryLocalAnalysisFirst(filePath, sport, user.id);
+    
+    if (!analysis) {
+      // Fallback to cloud AI analysis
+      analysis = await analyzeVideoWithAI(filePath, sport, user.id);
+    }
 
     // Save analysis to database
     const [savedAnalysis] = await db
