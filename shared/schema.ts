@@ -24,8 +24,14 @@ export const users = pgTable('users', {
   stripeCustomerId: text('stripe_customer_id'),
   stripeSubscriptionId: text('stripe_subscription_id'),
   subscriptionPlan: text('subscription_plan').default('free'), // free, starter, pro, elite
+  academicAddOn: boolean('academic_add_on').default(false), // +Academy subscription
   subscriptionStatus: text('subscription_status').default('active'), // active, canceled, past_due
   subscriptionEndDate: timestamp('subscription_end_date'),
+  
+  // Team/Institution fields
+  institutionId: integer('institution_id'),
+  institutionRole: text('institution_role'), // student, coach, admin, athletic_director
+  teamIds: text('team_ids').array(), // Multiple teams for multi-sport athletes
 });
 
 // Video analysis table
@@ -279,6 +285,119 @@ export const playerStats = pgTable('player_stats', {
   season: text('season'),
   notes: text('notes'),
   recordedAt: timestamp('recorded_at').notNull().defaultNow(),
+});
+
+// Athletic Institutions table (High Schools, Universities)
+export const institutions = pgTable('institutions', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  type: text('type').notNull(), // high_school, college, university, club
+  state: text('state').notNull(),
+  city: text('city').notNull(),
+  conference: text('conference'),
+  division: text('division'), // D1, D2, D3, NAIA, JUCO
+  website: text('website'),
+  logoUrl: text('logo_url'),
+  athleticDirector: text('athletic_director'),
+  contactEmail: text('contact_email'),
+  contactPhone: text('contact_phone'),
+  subscriptionPlan: text('subscription_plan').default('basic'), // basic, premium, enterprise
+  maxAthletes: integer('max_athletes').default(100),
+  currentAthletes: integer('current_athletes').default(0),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+// Curriculum table for real academic content
+export const curriculum = pgTable('curriculum', {
+  id: serial('id').primaryKey(),
+  courseId: text('course_id').notNull().unique(),
+  title: text('title').notNull(),
+  description: text('description'),
+  subject: text('subject').notNull(), // math, english, science, history, etc.
+  gradeLevel: text('grade_level').notNull(), // 9, 10, 11, 12, college
+  creditHours: decimal('credit_hours', { precision: 3, scale: 2 }).default('1.0'),
+  prerequisites: text('prerequisites').array(),
+  learningObjectives: text('learning_objectives').array(),
+  assessmentMethods: text('assessment_methods').array(),
+  standardsAlignment: jsonb('standards_alignment'), // Common Core, state standards
+  isNcaaApproved: boolean('is_ncaa_approved').default(false),
+  difficulty: text('difficulty').default('standard'), // remedial, standard, honors, ap
+  estimatedHours: integer('estimated_hours').default(120),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+// Course Content table for lessons and materials
+export const courseContent = pgTable('course_content', {
+  id: serial('id').primaryKey(),
+  courseId: text('course_id').notNull().references(() => curriculum.courseId),
+  unit: integer('unit').notNull(),
+  lesson: integer('lesson').notNull(),
+  title: text('title').notNull(),
+  contentType: text('content_type').notNull(), // video, text, quiz, assignment, lab
+  content: text('content'), // HTML content or video URL
+  resources: jsonb('resources'), // Additional resources, links, files
+  estimatedTime: integer('estimated_time').default(50), // minutes
+  isRequired: boolean('is_required').default(true),
+  prerequisites: text('prerequisites').array(),
+  learningObjectives: text('learning_objectives').array(),
+  assessmentCriteria: jsonb('assessment_criteria'),
+  order: integer('order').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+// Student Enrollments table
+export const enrollments = pgTable('enrollments', {
+  id: serial('id').primaryKey(),
+  studentId: integer('student_id').notNull().references(() => users.id),
+  courseId: text('course_id').notNull().references(() => curriculum.courseId),
+  institutionId: integer('institution_id').references(() => institutions.id),
+  enrollmentDate: timestamp('enrollment_date').notNull().defaultNow(),
+  completionDate: timestamp('completion_date'),
+  currentGrade: decimal('current_grade', { precision: 5, scale: 2 }),
+  finalGrade: decimal('final_grade', { precision: 5, scale: 2 }),
+  gradePoints: decimal('grade_points', { precision: 3, scale: 2 }),
+  status: text('status').default('enrolled'), // enrolled, completed, dropped, withdrawn
+  semester: text('semester'), // fall_2024, spring_2025, etc.
+  progressPercentage: integer('progress_percentage').default(0),
+  lastAccessedAt: timestamp('last_accessed_at'),
+  isNcaaEligible: boolean('is_ncaa_eligible').default(true),
+});
+
+// Assignment Submissions table
+export const assignments = pgTable('assignments', {
+  id: serial('id').primaryKey(),
+  enrollmentId: integer('enrollment_id').notNull().references(() => enrollments.id),
+  contentId: integer('content_id').notNull().references(() => courseContent.id),
+  studentId: integer('student_id').notNull().references(() => users.id),
+  submissionContent: text('submission_content'),
+  submissionFiles: text('submission_files').array(),
+  submittedAt: timestamp('submitted_at'),
+  dueDate: timestamp('due_date').notNull(),
+  gradeReceived: decimal('grade_received', { precision: 5, scale: 2 }),
+  feedback: text('feedback'),
+  gradedAt: timestamp('graded_at'),
+  gradedBy: integer('graded_by').references(() => users.id),
+  status: text('status').default('assigned'), // assigned, submitted, graded, late
+  attempts: integer('attempts').default(0),
+  maxAttempts: integer('max_attempts').default(3),
+});
+
+// Team Roster Management with Academic Tracking
+export const teamRosters = pgTable('team_rosters', {
+  id: serial('id').primaryKey(),
+  teamId: integer('team_id').notNull().references(() => teams.id),
+  athleteId: integer('athlete_id').notNull().references(() => users.id),
+  position: text('position'),
+  jerseyNumber: integer('jersey_number'),
+  status: text('status').default('active'), // active, inactive, injured, suspended
+  eligibilityStatus: text('eligibility_status').default('eligible'), // eligible, ineligible, pending
+  gpa: decimal('gpa', { precision: 3, scale: 2 }),
+  creditHours: decimal('credit_hours', { precision: 3, scale: 1 }),
+  joinDate: timestamp('join_date').notNull().defaultNow(),
+  graduationDate: timestamp('graduation_date'),
+  scholarshipAmount: decimal('scholarship_amount', { precision: 10, scale: 2 }),
+  scholarshipType: text('scholarship_type'), // full, partial, academic, athletic
 });
 
 // Zod schemas for validation
