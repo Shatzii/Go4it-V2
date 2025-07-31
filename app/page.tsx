@@ -221,53 +221,158 @@ function Go4ItHomePage() {
         </div>
       </div>
 
-      {/* Hero Section */}
+      {/* Neon Gaming Dashboard Hero */}
       <section className="relative py-20 px-4 sm:px-6 lg:px-8 min-h-screen flex items-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-800/90 to-slate-900/90">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent"></div>
-          <div className="absolute top-20 left-20 w-20 h-20 bg-primary/20 rounded-full blur-xl animate-pulse"></div>
-          <div className="absolute bottom-40 right-32 w-32 h-32 bg-secondary/20 rounded-full blur-xl animate-pulse delay-300"></div>
+        {/* Animated Neon Grid Background */}
+        <div className="absolute inset-0 bg-black">
+          <div className="absolute inset-0 opacity-20" 
+               style={{
+                 backgroundImage: `
+                   linear-gradient(rgba(0, 191, 255, 0.1) 1px, transparent 1px),
+                   linear-gradient(90deg, rgba(0, 191, 255, 0.1) 1px, transparent 1px)
+                 `,
+                 backgroundSize: '50px 50px'
+               }}>
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-transparent to-black/60"></div>
+          
+          {/* Floating Neon Elements */}
+          <div className="absolute top-20 left-20 w-32 h-32 border-2 border-cyan-400/30 rounded-full animate-pulse">
+            <div className="w-full h-full border-2 border-cyan-400/50 rounded-full animate-spin" style={{animationDuration: '8s'}}></div>
+          </div>
+          <div className="absolute bottom-40 right-32 w-24 h-24 border-2 border-blue-400/40 rounded-full animate-pulse delay-300">
+            <div className="w-full h-full border-2 border-blue-400/60 rounded-full animate-spin" style={{animationDuration: '6s'}}></div>
+          </div>
+          <div className="absolute top-1/2 left-10 w-16 h-16 border-2 border-cyan-300/20 rounded-full animate-pulse delay-700"></div>
         </div>
         
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="text-center space-y-12">
+            {/* Central Verification Hub */}
             <div className="space-y-8">
-              <div className="space-y-6">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 rounded-full border border-primary/30">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-primary-foreground">Platform Status: {platformStatus.charAt(0).toUpperCase() + platformStatus.slice(1)}</span>
+              {/* Pulsing Verification Badge */}
+              <div className="inline-flex items-center justify-center relative">
+                <div className="absolute w-40 h-40 border-4 border-cyan-400/30 rounded-full animate-pulse"></div>
+                <div className="absolute w-32 h-32 border-2 border-cyan-400/50 rounded-full animate-pulse delay-300"></div>
+                <div className="relative w-24 h-24 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center shadow-2xl shadow-cyan-400/50">
+                  <CheckCircle className="w-12 h-12 text-white" fill="currentColor" />
                 </div>
-                
-                <h1 className="text-5xl lg:text-7xl font-bold text-white leading-tight">
-                  Elevate Your
-                  <span className="block text-primary bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                    Athletic Journey
-                  </span>
-                </h1>
-                
-                <p className="text-xl text-slate-300 leading-relaxed max-w-xl">
-                  Your complete StarPath journey from GAR analysis to college recruitment. 
-                  Progress through 5 star levels with AI-powered training and unlock College Path features.
-                </p>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-4">
-                <SafeLink 
-                  href="/auth" 
-                  className="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
-                >
-                  <Play className="w-5 h-5" />
-                  Start Your Journey
-                </SafeLink>
+              {/* Main Gaming-Style Title */}
+              <div className="space-y-4">
+                <h1 className="text-6xl lg:text-8xl font-black text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text leading-tight tracking-wider">
+                  VERIFICATION
+                  <span className="block text-5xl lg:text-7xl">HUB</span>
+                </h1>
                 
-                <SafeLink 
-                  href="/starpath" 
-                  className="border border-primary/50 hover:bg-primary/20 text-primary hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 inline-flex items-center justify-center gap-2 backdrop-blur-sm"
-                >
-                  <Star className="w-5 h-5" />
-                  Enter StarPath Hub
-                </SafeLink>
+                <div className="inline-flex items-center gap-3 px-6 py-3 bg-cyan-400/20 rounded-full border border-cyan-400/50 backdrop-blur-sm">
+                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-cyan-400 font-bold text-lg">SYSTEM ONLINE</span>
+                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse delay-500"></div>
+                </div>
               </div>
+              
+              <p className="text-2xl text-slate-300 font-medium max-w-4xl mx-auto leading-relaxed">
+                <span className="text-cyan-400 font-bold">UNLOCK YOUR ATHLETIC POTENTIAL</span> - Join the elite ranks of verified student athletes and dominate the recruitment game
+              </p>
+            </div>
+
+            {/* Gaming Level Progression */}
+            <div className="grid md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+              {/* Level 1: Rookie */}
+              <div className="group relative bg-gradient-to-b from-slate-800/80 to-slate-900/80 rounded-2xl border-2 border-slate-600/50 p-6 hover:border-cyan-400/50 transition-all duration-500 hover:scale-105">
+                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-slate-700 px-4 py-1 rounded-full">
+                  <span className="text-slate-300 text-sm font-bold">LEVEL 1</span>
+                </div>
+                <div className="text-center space-y-4">
+                  <div className="w-16 h-16 mx-auto bg-slate-600 rounded-full flex items-center justify-center">
+                    <Users className="w-8 h-8 text-slate-300" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white">ROOKIE</h3>
+                  <div className="text-3xl font-black text-green-400">FREE</div>
+                  <p className="text-slate-400 text-sm">Create profile, upload highlights, basic features</p>
+                </div>
+              </div>
+
+              {/* Level 2: Verified */}
+              <div className="group relative bg-gradient-to-b from-cyan-900/40 to-blue-900/40 rounded-2xl border-2 border-cyan-400/50 p-6 hover:border-cyan-400 transition-all duration-500 hover:scale-105 shadow-lg shadow-cyan-400/20">
+                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-cyan-400 px-4 py-1 rounded-full">
+                  <span className="text-black text-sm font-bold">LEVEL 2</span>
+                </div>
+                <div className="text-center space-y-4">
+                  <div className="w-16 h-16 mx-auto bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-cyan-400/50">
+                    <CheckCircle className="w-8 h-8 text-white" fill="currentColor" />
+                  </div>
+                  <h3 className="text-xl font-bold text-cyan-400">VERIFIED</h3>
+                  <div className="text-3xl font-black text-cyan-400">$49</div>
+                  <p className="text-cyan-200 text-sm">Official GAR Analysis + Verification Badge</p>
+                </div>
+              </div>
+
+              {/* Level 3: Elite */}
+              <div className="group relative bg-gradient-to-b from-purple-900/40 to-violet-900/40 rounded-2xl border-2 border-purple-400/50 p-6 hover:border-purple-400 transition-all duration-500 hover:scale-105">
+                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-purple-400 px-4 py-1 rounded-full">
+                  <span className="text-white text-sm font-bold">LEVEL 3</span>
+                </div>
+                <div className="text-center space-y-4">
+                  <div className="w-16 h-16 mx-auto bg-gradient-to-br from-purple-400 to-violet-500 rounded-full flex items-center justify-center">
+                    <Star className="w-8 h-8 text-white" fill="currentColor" />
+                  </div>
+                  <h3 className="text-xl font-bold text-purple-400">ELITE</h3>
+                  <div className="text-3xl font-black text-purple-400">$19<span className="text-lg">/mo</span></div>
+                  <p className="text-purple-200 text-sm">StarPath Training + AI Coach + Analytics</p>
+                </div>
+              </div>
+
+              {/* Level 4: Academy */}
+              <div className="group relative bg-gradient-to-b from-yellow-900/40 to-orange-900/40 rounded-2xl border-2 border-yellow-400/50 p-6 hover:border-yellow-400 transition-all duration-500 hover:scale-105">
+                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-yellow-400 px-4 py-1 rounded-full">
+                  <span className="text-black text-sm font-bold">LEVEL 4</span>
+                </div>
+                <div className="text-center space-y-4">
+                  <div className="w-16 h-16 mx-auto bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                    <Trophy className="w-8 h-8 text-white" fill="currentColor" />
+                  </div>
+                  <h3 className="text-xl font-bold text-yellow-400">ACADEMY</h3>
+                  <div className="text-3xl font-black text-yellow-400">$49<span className="text-lg">/mo</span></div>
+                  <p className="text-yellow-200 text-sm">Full Academic + NCAA Eligibility + Recruiting</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Live Stats Counter */}
+            <div className="flex justify-center items-center gap-8 text-center">
+              <div className="space-y-2">
+                <div className="text-4xl font-black text-cyan-400 font-mono">847</div>
+                <div className="text-sm text-slate-400 uppercase tracking-wider">Verified Athletes</div>
+              </div>
+              <div className="w-px h-12 bg-slate-600"></div>
+              <div className="space-y-2">
+                <div className="text-4xl font-black text-purple-400 font-mono">156</div>
+                <div className="text-sm text-slate-400 uppercase tracking-wider">Elite Members</div>
+              </div>
+              <div className="w-px h-12 bg-slate-600"></div>
+              <div className="space-y-2">
+                <div className="text-4xl font-black text-yellow-400 font-mono">67</div>
+                <div className="text-sm text-slate-400 uppercase tracking-wider">Academy Students</div>
+              </div>
+            </div>
+
+            {/* Primary CTA */}
+            <div className="space-y-6">
+              <SafeLink 
+                href="/auth" 
+                className="inline-flex items-center gap-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white px-12 py-6 rounded-2xl text-2xl font-black uppercase tracking-wider transition-all duration-300 shadow-2xl shadow-cyan-400/30 hover:shadow-cyan-400/50 hover:scale-105 border-2 border-cyan-400/50"
+              >
+                <CheckCircle className="w-8 h-8" fill="currentColor" />
+                START VERIFICATION
+                <ArrowRight className="w-8 h-8" />
+              </SafeLink>
+              
+              <p className="text-slate-400 text-sm">
+                <span className="text-green-400 font-semibold">LIMITED TIME:</span> First 100 athletes get lifetime verification badges
+              </p>
             </div>
           </div>
         </div>

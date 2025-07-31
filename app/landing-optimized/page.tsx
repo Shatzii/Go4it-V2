@@ -247,82 +247,306 @@ export default function OptimizedLandingPage() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
-      {/* Hero Section */}
-      <section className="relative py-20 px-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="mb-8">
-            <Badge variant="outline" className="text-primary border-primary mb-4">
-              Next-Generation Sports Technology
-            </Badge>
-            <h1 className="text-5xl md:text-7xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-primary via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                The Future of
-              </span>
-              <br />
-              <span className="text-white">Athletic Development</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-slate-400 max-w-4xl mx-auto mb-8">
-              AI-powered sports analysis, intelligent recruitment, and neurodivergent-optimized learning. 
-              The only platform designed specifically for the unique needs of every athlete.
+      {/* Neon Gaming Dashboard Hero */}
+      <section className="relative py-20 px-6 min-h-screen flex items-center overflow-hidden">
+        {/* Animated Neon Grid Background */}
+        <div className="absolute inset-0 bg-black">
+          <div className="absolute inset-0 opacity-30" 
+               style={{
+                 backgroundImage: `
+                   linear-gradient(rgba(0, 191, 255, 0.15) 1px, transparent 1px),
+                   linear-gradient(90deg, rgba(0, 191, 255, 0.15) 1px, transparent 1px)
+                 `,
+                 backgroundSize: '40px 40px',
+                 animation: 'grid-move 20s linear infinite'
+               }}>
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/30 via-black to-blue-900/20"></div>
+          
+          {/* Floating Neon Elements */}
+          <div className="absolute top-20 left-20 w-32 h-32 border-4 border-cyan-400/40 rounded-full animate-pulse">
+            <div className="w-full h-full border-2 border-cyan-400/60 rounded-full animate-spin" style={{animationDuration: '12s'}}></div>
+            <div className="absolute inset-4 border border-cyan-300/30 rounded-full animate-ping"></div>
+          </div>
+          <div className="absolute bottom-32 right-20 w-24 h-24 border-3 border-blue-400/50 rounded-full animate-pulse delay-500">
+            <div className="w-full h-full border-2 border-blue-400/70 rounded-full animate-spin" style={{animationDuration: '8s'}}></div>
+          </div>
+          <div className="absolute top-1/3 right-1/4 w-16 h-16 border-2 border-cyan-300/30 rounded-full animate-pulse delay-1000"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-20 h-20 border border-blue-300/20 rounded-full animate-pulse delay-1500"></div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto relative z-10 text-center">
+          <div className="space-y-16">
+            {/* Central Verification Hub */}
+            <div className="space-y-12">
+              {/* Pulsing Verification Badge */}
+              <div className="inline-flex items-center justify-center relative">
+                <div className="absolute w-48 h-48 border-4 border-cyan-400/20 rounded-full animate-pulse" style={{animationDuration: '3s'}}></div>
+                <div className="absolute w-40 h-40 border-3 border-cyan-400/40 rounded-full animate-pulse delay-700" style={{animationDuration: '2.5s'}}></div>
+                <div className="absolute w-32 h-32 border-2 border-cyan-400/60 rounded-full animate-pulse delay-1000" style={{animationDuration: '2s'}}></div>
+                <div className="relative w-28 h-28 bg-gradient-to-br from-cyan-400 via-blue-500 to-cyan-500 rounded-full flex items-center justify-center shadow-2xl shadow-cyan-400/50 animate-pulse">
+                  <CheckCircle className="w-16 h-16 text-white drop-shadow-lg" fill="currentColor" />
+                </div>
+              </div>
+              
+              {/* Main Gaming-Style Title */}
+              <div className="space-y-6">
+                <div className="inline-flex items-center gap-4 px-8 py-3 bg-cyan-400/20 rounded-full border-2 border-cyan-400/50 backdrop-blur-sm">
+                  <div className="w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-cyan-400 font-black text-xl uppercase tracking-widest">VERIFICATION HUB</span>
+                  <div className="w-4 h-4 bg-green-400 rounded-full animate-pulse delay-500"></div>
+                </div>
+                
+                <h1 className="text-7xl lg:text-9xl font-black text-transparent bg-gradient-to-r from-cyan-400 via-blue-300 to-cyan-400 bg-clip-text leading-tight tracking-wider drop-shadow-2xl">
+                  GET
+                  <span className="block text-6xl lg:text-8xl animate-pulse" style={{animationDuration: '2s'}}>VERIFIED</span>
+                </h1>
+                
+                <p className="text-3xl text-slate-200 font-bold max-w-4xl mx-auto leading-tight">
+                  <span className="text-cyan-400 font-black text-4xl">UNLOCK YOUR ATHLETIC DOMINANCE</span>
+                  <br />
+                  Join elite verified student athletes worldwide and level up your recruitment game
+                </p>
+              </div>
+            </div>
+
+            {/* Gaming Level Progression Cards */}
+            <div className="grid md:grid-cols-4 gap-8 max-w-7xl mx-auto">
+              {/* Level 1: Rookie (Free) */}
+              <div className="group relative bg-gradient-to-b from-slate-800/90 to-slate-900/90 rounded-3xl border-3 border-slate-600/50 p-8 hover:border-cyan-400/60 transition-all duration-500 hover:scale-110 hover:rotate-1">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-slate-700 px-6 py-2 rounded-full border-2 border-slate-600">
+                  <span className="text-slate-300 text-sm font-black uppercase">LEVEL 1</span>
+                </div>
+                <div className="text-center space-y-6">
+                  <div className="w-20 h-20 mx-auto bg-gradient-to-br from-slate-600 to-slate-700 rounded-full flex items-center justify-center shadow-lg">
+                    <Users className="w-10 h-10 text-slate-300" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-black text-white mb-2">ROOKIE</h3>
+                    <div className="text-4xl font-black text-green-400 mb-3">FREE</div>
+                    <p className="text-slate-400 text-sm font-medium">Create profile • Upload highlights • Basic features</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Level 2: Verified ($49) */}
+              <div className="group relative bg-gradient-to-b from-cyan-900/50 to-blue-900/60 rounded-3xl border-3 border-cyan-400/60 p-8 hover:border-cyan-400 transition-all duration-500 hover:scale-110 hover:rotate-1 shadow-2xl shadow-cyan-400/30">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-cyan-400 px-6 py-2 rounded-full border-2 border-cyan-300">
+                  <span className="text-black text-sm font-black uppercase">LEVEL 2</span>
+                </div>
+                <div className="text-center space-y-6">
+                  <div className="w-20 h-20 mx-auto bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center shadow-2xl shadow-cyan-400/60 animate-pulse">
+                    <CheckCircle className="w-10 h-10 text-white drop-shadow-md" fill="currentColor" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-black text-cyan-300 mb-2">VERIFIED</h3>
+                    <div className="text-4xl font-black text-cyan-400 mb-3">$49</div>
+                    <p className="text-cyan-200 text-sm font-medium">Official GAR Analysis • Verification Badge • Elite Status</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Level 3: Elite ($19/mo) */}
+              <div className="group relative bg-gradient-to-b from-purple-900/50 to-violet-900/60 rounded-3xl border-3 border-purple-400/60 p-8 hover:border-purple-400 transition-all duration-500 hover:scale-110 hover:rotate-1 shadow-xl shadow-purple-400/20">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-400 px-6 py-2 rounded-full border-2 border-purple-300">
+                  <span className="text-white text-sm font-black uppercase">LEVEL 3</span>
+                </div>
+                <div className="text-center space-y-6">
+                  <div className="w-20 h-20 mx-auto bg-gradient-to-br from-purple-400 to-violet-500 rounded-full flex items-center justify-center shadow-xl shadow-purple-400/50">
+                    <Star className="w-10 h-10 text-white" fill="currentColor" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-black text-purple-300 mb-2">ELITE</h3>
+                    <div className="text-4xl font-black text-purple-400 mb-3">$19<span className="text-xl">/mo</span></div>
+                    <p className="text-purple-200 text-sm font-medium">StarPath Training • AI Coach • Performance Analytics</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Level 4: Academy ($49/mo) */}
+              <div className="group relative bg-gradient-to-b from-yellow-900/50 to-orange-900/60 rounded-3xl border-3 border-yellow-400/60 p-8 hover:border-yellow-400 transition-all duration-500 hover:scale-110 hover:rotate-1 shadow-xl shadow-yellow-400/20">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-400 px-6 py-2 rounded-full border-2 border-yellow-300">
+                  <span className="text-black text-sm font-black uppercase">LEVEL 4</span>
+                </div>
+                <div className="text-center space-y-6">
+                  <div className="w-20 h-20 mx-auto bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-xl shadow-yellow-400/50">
+                    <Trophy className="w-10 h-10 text-white" fill="currentColor" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-black text-yellow-300 mb-2">ACADEMY</h3>
+                    <div className="text-4xl font-black text-yellow-400 mb-3">$49<span className="text-xl">/mo</span></div>
+                    <p className="text-yellow-200 text-sm font-medium">Full Academic • NCAA Eligibility • Recruiting Network</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Live Global Stats */}
+            <div className="bg-black/60 backdrop-blur-sm rounded-3xl border-2 border-cyan-400/30 p-8 max-w-5xl mx-auto">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div className="space-y-3">
+                  <div className="text-5xl font-black text-cyan-400 font-mono animate-pulse">{stats.athletes.toLocaleString()}</div>
+                  <div className="text-sm text-slate-400 uppercase tracking-wider font-bold">Global Athletes</div>
+                  <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full animate-pulse" style={{width: '78%'}}></div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="text-5xl font-black text-purple-400 font-mono animate-pulse delay-300">{(stats.athletes * 0.18).toFixed(0)}</div>
+                  <div className="text-sm text-slate-400 uppercase tracking-wider font-bold">Verified Elite</div>
+                  <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-purple-400 to-violet-500 rounded-full animate-pulse delay-300" style={{width: '65%'}}></div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="text-5xl font-black text-yellow-400 font-mono animate-pulse delay-700">{(stats.athletes * 0.09).toFixed(0)}</div>
+                  <div className="text-sm text-slate-400 uppercase tracking-wider font-bold">Academy Students</div>
+                  <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-pulse delay-700" style={{width: '52%'}}></div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="text-5xl font-black text-green-400 font-mono animate-pulse delay-1000">{stats.success.toFixed(1)}%</div>
+                  <div className="text-sm text-slate-400 uppercase tracking-wider font-bold">Success Rate</div>
+                  <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-pulse delay-1000" style={{width: '96%'}}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Ultra Dynamic CTA */}
+            <div className="space-y-8">
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-cyan-500 via-blue-600 to-cyan-500 hover:from-cyan-400 hover:via-blue-500 hover:to-cyan-400 text-white px-16 py-8 rounded-3xl text-3xl font-black uppercase tracking-widest transition-all duration-500 shadow-2xl shadow-cyan-400/40 hover:shadow-cyan-400/60 hover:scale-110 border-3 border-cyan-400/60 animate-pulse"
+                onClick={() => window.location.href = '/auth'}
+              >
+                <CheckCircle className="w-10 h-10 mr-4" fill="currentColor" />
+                START VERIFICATION
+                <ArrowRight className="w-10 h-10 ml-4" />
+              </Button>
+              
+              <div className="flex items-center justify-center gap-6 text-lg">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-green-400 font-bold">LIVE</span>
+                </div>
+                <span className="text-slate-400">•</span>
+                <span className="text-cyan-400 font-semibold">LIMITED TIME: First 100 athletes get lifetime verification</span>
+                <span className="text-slate-400">•</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse delay-500"></div>
+                  <span className="text-yellow-400 font-bold">GLOBAL</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <style jsx>{`
+          @keyframes grid-move {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(40px, 40px); }
+          }
+        `}</style>
+      </section>
+
+      {/* Dynamic Verified Athletes Carousel */}
+      <section className="py-20 px-6 bg-gradient-to-br from-black via-slate-900/50 to-black">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-3 px-8 py-4 bg-cyan-400/20 rounded-full border-2 border-cyan-400/50 backdrop-blur-sm mb-8">
+              <CheckCircle className="w-6 h-6 text-cyan-400" fill="currentColor" />
+              <span className="text-cyan-400 font-black text-2xl uppercase tracking-widest">VERIFIED ELITE</span>
+              <CheckCircle className="w-6 h-6 text-cyan-400" fill="currentColor" />
+            </div>
+            
+            <h2 className="text-5xl font-black text-transparent bg-gradient-to-r from-cyan-400 via-blue-300 to-cyan-400 bg-clip-text mb-6">
+              TOP VERIFIED ATHLETES
+            </h2>
+            <p className="text-2xl text-slate-300 max-w-4xl mx-auto font-medium">
+              Join the <span className="text-cyan-400 font-bold">verified elite</span> - athletes who've earned their place through official GAR analysis
             </p>
           </div>
 
-          {/* Hero Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-primary mb-2">
-                {stats.athletes.toLocaleString()}+
-              </div>
-              <div className="text-slate-400">Athletes Analyzed</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-blue-400 mb-2">
-                {stats.analyses.toLocaleString()}+
-              </div>
-              <div className="text-slate-400">AI Analyses</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-green-400 mb-2">
-                {stats.colleges.toLocaleString()}+
-              </div>
-              <div className="text-slate-400">College Connections</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-purple-400 mb-2">
-                {stats.success.toFixed(1)}%
-              </div>
-              <div className="text-slate-400">Success Rate</div>
-            </div>
-          </div>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-lg px-8 py-4">
-              Start Free Trial
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-4">
-              <Play className="w-5 h-5 mr-2" />
-              Watch Demo
-            </Button>
-          </div>
-
-          {/* Platform Differentiators */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {platformAdvantages.map((advantage, index) => (
-              <Card key={index} className="bg-slate-800/50 border-slate-700 hover:border-primary/50 transition-colors">
-                <CardContent className="p-6 text-center">
-                  <advantage.icon className={`w-12 h-12 ${advantage.color} mx-auto mb-4`} />
-                  <h3 className="font-semibold text-white mb-2">{advantage.title}</h3>
-                  <p className="text-sm text-slate-400 mb-3">{advantage.description}</p>
-                  <div className="space-y-1">
-                    {advantage.features.map((feature, i) => (
-                      <div key={i} className="text-xs text-slate-500">• {feature}</div>
-                    ))}
+          {/* Live Athlete Cards */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            {[
+              { name: "Marcus Johnson", sport: "Basketball", position: "PG", score: 94, level: "D1 Commit", school: "Duke", year: "2026" },
+              { name: "Sofia Rodriguez", sport: "Soccer", position: "MF", score: 91, level: "Elite", school: "Stanford", year: "2027" },
+              { name: "Tyler Chen", sport: "Football", position: "QB", score: 88, level: "Elite", school: "Alabama", year: "2025" },
+              { name: "Emma Williams", sport: "Track", position: "Sprinter", score: 96, level: "Elite", school: "Oregon", year: "2026" }
+            ].map((athlete, index) => (
+              <div key={index} className="group relative bg-gradient-to-b from-slate-800/90 to-black/90 rounded-3xl border-2 border-cyan-400/30 overflow-hidden hover:border-cyan-400/60 transition-all duration-500 hover:scale-105 shadow-2xl shadow-cyan-400/20">
+                {/* Neon Glow Effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 via-transparent to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                {/* Avatar/Image Area */}
+                <div className="relative h-48 bg-gradient-to-br from-cyan-900/50 to-blue-900/50 flex items-center justify-center">
+                  <div className="w-24 h-24 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center shadow-2xl shadow-cyan-400/50">
+                    <span className="text-3xl font-black text-white">{athlete.name.split(' ').map(n => n[0]).join('')}</span>
                   </div>
-                </CardContent>
-              </Card>
+                  
+                  {/* Verification Badge */}
+                  <div className="absolute top-4 right-4 flex items-center gap-2 bg-black/60 px-3 py-2 rounded-full backdrop-blur-sm border border-cyan-400/50">
+                    <CheckCircle className="w-4 h-4 text-cyan-400" fill="currentColor" />
+                    <span className="text-cyan-400 text-xs font-black">VERIFIED</span>
+                  </div>
+                  
+                  {/* GAR Score */}
+                  <div className="absolute bottom-4 left-4 bg-gradient-to-br from-cyan-500 to-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-xl font-black shadow-lg shadow-cyan-400/50 animate-pulse">
+                    {athlete.score}
+                  </div>
+                </div>
+                
+                {/* Athlete Info */}
+                <div className="p-6 relative z-10">
+                  <h3 className="font-black text-xl text-white mb-2">{athlete.name}</h3>
+                  <p className="text-cyan-400 font-bold mb-3">{athlete.sport} • {athlete.position}</p>
+                  
+                  <div className="text-sm text-slate-400 space-y-2 mb-4">
+                    <div className="flex justify-between">
+                      <span>CLASS</span>
+                      <span className="text-cyan-400 font-bold">{athlete.year}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>SCHOOL</span>
+                      <span className="text-purple-400 font-bold">{athlete.school}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>STATUS</span>
+                      <span className="text-yellow-400 font-bold">{athlete.level}</span>
+                    </div>
+                    <div className="flex justify-between border-t border-slate-700 pt-2">
+                      <span>GAR SCORE</span>
+                      <span className="text-cyan-400 font-black text-lg">{athlete.score}/100</span>
+                    </div>
+                  </div>
+                  
+                  {/* Progress Bar */}
+                  <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full animate-pulse"
+                      style={{width: `${athlete.score}%`}}
+                    ></div>
+                  </div>
+                </div>
+              </div>
             ))}
+          </div>
+
+          {/* Call to Action */}
+          <div className="text-center">
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white px-12 py-6 rounded-2xl text-xl font-black uppercase tracking-wider transition-all duration-300 shadow-xl shadow-cyan-400/30 hover:shadow-cyan-400/50 hover:scale-105 border-2 border-cyan-400/50"
+              onClick={() => window.location.href = '/verified-athletes'}
+            >
+              <Trophy className="w-6 h-6 mr-3" />
+              VIEW ALL VERIFIED ATHLETES
+              <ArrowRight className="w-6 h-6 ml-3" />
+            </Button>
           </div>
         </div>
       </section>
