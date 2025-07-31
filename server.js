@@ -1,43 +1,42 @@
-#!/usr/bin/env node
+// Simple server wrapper to ensure Replit preview access
+const { createServer } = require('http');
+const next = require('next');
 
-const { spawn } = require('child_process');
-const path = require('path');
+const dev = process.env.NODE_ENV !== 'production';
+const hostname = '0.0.0.0';
+const port = parseInt(process.env.PORT || '5000', 10);
 
-// Set environment variables
-process.env.NODE_ENV = process.env.NODE_ENV || 'development';
-process.env.PORT = process.env.PORT || '5000';
-process.env.HOSTNAME = process.env.HOSTNAME || '0.0.0.0';
+const app = next({ dev, hostname, port });
+const handle = app.getRequestHandler();
 
-console.log('🚀 Starting Go4It Sports Platform');
-console.log('📍 Environment:', process.env.NODE_ENV);
-console.log('🌐 Port:', process.env.PORT);
-console.log('🔧 Mode: Development');
-console.log('🔄 Preparing Next.js application...');
+app.prepare().then(() => {
+  createServer(async (req, res) => {
+    try {
+      // Enable CORS for Replit preview
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+      
+      // Handle preflight requests
+      if (req.method === 'OPTIONS') {
+        res.writeHead(200);
+        res.end();
+        return;
+      }
 
-// Start Next.js development server
-const nextArgs = ['dev', '-p', process.env.PORT, '-H', process.env.HOSTNAME];
-const nextProcess = spawn('npx', ['next', ...nextArgs], {
-  stdio: 'inherit',
-  env: process.env
-});
-
-nextProcess.on('error', (err) => {
-  console.error('❌ Failed to start Next.js:', err);
-  process.exit(1);
-});
-
-nextProcess.on('exit', (code) => {
-  console.log(`Next.js process exited with code ${code}`);
-  process.exit(code);
-});
-
-// Handle graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('🔄 Received SIGTERM, shutting down gracefully...');
-  nextProcess.kill('SIGTERM');
-});
-
-process.on('SIGINT', () => {
-  console.log('🔄 Received SIGINT, shutting down gracefully...');
-  nextProcess.kill('SIGINT');
+      await handle(req, res);
+    } catch (err) {
+      console.error('Error occurred handling', req.url, err);
+      res.statusCode = 500;
+      res.end('internal server error');
+    }
+  })
+    .once('error', (err) => {
+      console.error(err);
+      process.exit(1);
+    })
+    .listen(port, hostname, () => {
+      console.log(`> Ready on http://${hostname}:${port}`);
+      console.log(`> Replit domain: ${process.env.REPLIT_DEV_DOMAIN || 'Not set'}`);
+    });
 });

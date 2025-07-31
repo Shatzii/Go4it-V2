@@ -31,7 +31,7 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/:path*',
+        source: '/(.*)',
         headers: [
           {
             key: 'X-Frame-Options',
@@ -41,10 +41,30 @@ const nextConfig = {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
           },
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, POST, PUT, DELETE, OPTIONS',
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type, Authorization',
+          },
         ],
       },
     ];
   },
+
+  // Configure allowed dev origins for Replit
+  allowedDevOrigins: [
+    '*.replit.dev',
+    '*.replit.app', 
+    'localhost:5000',
+    '127.0.0.1:5000'
+  ],
   
   // Essential webpack configuration for dependencies
   webpack: (config, { isServer }) => {
