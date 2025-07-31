@@ -268,57 +268,107 @@ export class UIEnhancer {
     
     switch (type) {
       case 'card':
-        skeleton.innerHTML = `
-          <div class="bg-slate-700 rounded-lg p-6 space-y-4">
-            <div class="h-4 bg-slate-600 rounded w-3/4"></div>
-            <div class="space-y-2">
-              <div class="h-3 bg-slate-600 rounded"></div>
-              <div class="h-3 bg-slate-600 rounded w-5/6"></div>
-            </div>
-          </div>
-        `
+        this.createCardSkeleton(skeleton)
         break
       case 'list':
-        skeleton.innerHTML = `
-          <div class="space-y-3">
-            ${Array.from({ length: 5 }, () => `
-              <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-slate-600 rounded-full"></div>
-                <div class="flex-1 space-y-1">
-                  <div class="h-4 bg-slate-600 rounded w-1/2"></div>
-                  <div class="h-3 bg-slate-600 rounded w-1/4"></div>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        `
+        this.createListSkeleton(skeleton)
         break
       case 'table':
-        skeleton.innerHTML = `
-          <div class="space-y-3">
-            ${Array.from({ length: 3 }, () => `
-              <div class="flex space-x-4">
-                <div class="h-4 bg-slate-600 rounded w-1/4"></div>
-                <div class="h-4 bg-slate-600 rounded w-1/4"></div>
-                <div class="h-4 bg-slate-600 rounded w-1/4"></div>
-                <div class="h-4 bg-slate-600 rounded w-1/4"></div>
-              </div>
-            `).join('')}
-          </div>
-        `
+        this.createTableSkeleton(skeleton)
         break
       case 'text':
-        skeleton.innerHTML = `
-          <div class="space-y-2">
-            <div class="h-4 bg-slate-600 rounded w-full"></div>
-            <div class="h-4 bg-slate-600 rounded w-11/12"></div>
-            <div class="h-4 bg-slate-600 rounded w-4/5"></div>
-          </div>
-        `
+        this.createTextSkeleton(skeleton)
         break
     }
     
     return skeleton
+  }
+
+  private createCardSkeleton(container: HTMLElement) {
+    const card = document.createElement('div')
+    card.className = 'bg-slate-700 rounded-lg p-6 space-y-4'
+    
+    const title = document.createElement('div')
+    title.className = 'h-4 bg-slate-600 rounded w-3/4'
+    
+    const content = document.createElement('div')
+    content.className = 'space-y-2'
+    
+    const line1 = document.createElement('div')
+    line1.className = 'h-3 bg-slate-600 rounded'
+    
+    const line2 = document.createElement('div')
+    line2.className = 'h-3 bg-slate-600 rounded w-5/6'
+    
+    content.appendChild(line1)
+    content.appendChild(line2)
+    card.appendChild(title)
+    card.appendChild(content)
+    container.appendChild(card)
+  }
+
+  private createListSkeleton(container: HTMLElement) {
+    const list = document.createElement('div')
+    list.className = 'space-y-3'
+    
+    for (let i = 0; i < 5; i++) {
+      const item = document.createElement('div')
+      item.className = 'flex items-center space-x-3'
+      
+      const avatar = document.createElement('div')
+      avatar.className = 'w-10 h-10 bg-slate-600 rounded-full'
+      
+      const content = document.createElement('div')
+      content.className = 'flex-1 space-y-1'
+      
+      const title = document.createElement('div')
+      title.className = 'h-4 bg-slate-600 rounded w-1/2'
+      
+      const subtitle = document.createElement('div')
+      subtitle.className = 'h-3 bg-slate-600 rounded w-1/4'
+      
+      content.appendChild(title)
+      content.appendChild(subtitle)
+      item.appendChild(avatar)
+      item.appendChild(content)
+      list.appendChild(item)
+    }
+    
+    container.appendChild(list)
+  }
+
+  private createTableSkeleton(container: HTMLElement) {
+    const table = document.createElement('div')
+    table.className = 'space-y-3'
+    
+    for (let i = 0; i < 3; i++) {
+      const row = document.createElement('div')
+      row.className = 'flex space-x-4'
+      
+      for (let j = 0; j < 4; j++) {
+        const cell = document.createElement('div')
+        cell.className = 'h-4 bg-slate-600 rounded w-1/4'
+        row.appendChild(cell)
+      }
+      
+      table.appendChild(row)
+    }
+    
+    container.appendChild(table)
+  }
+
+  private createTextSkeleton(container: HTMLElement) {
+    const text = document.createElement('div')
+    text.className = 'space-y-2'
+    
+    const widths = ['w-full', 'w-11/12', 'w-4/5']
+    widths.forEach(width => {
+      const line = document.createElement('div')
+      line.className = `h-4 bg-slate-600 rounded ${width}`
+      text.appendChild(line)
+    })
+    
+    container.appendChild(text)
   }
 
   // Keyboard navigation enhancement
