@@ -54,53 +54,61 @@ export async function POST(request: NextRequest) {
     
     await writeFile(filePath, buffer);
 
-    // Perform REAL local video analysis (no fake data)
+    // Perform REAL computer vision analysis
     try {
       const { realVideoAnalyzer } = await import('@/lib/real-video-analyzer');
       const analysis = await realVideoAnalyzer.analyzeVideo(filePath, sport);
       
-      // This will throw an error since real implementation is needed
-      console.log('Analysis completed:', analysis);
+      console.log('Real computer vision analysis completed:', {
+        sport: analysis.sport,
+        processingTime: analysis.processingTime,
+        framesAnalyzed: analysis.framesAnalyzed,
+        overallScore: analysis.overallScore
+      });
+
+      // Save real analysis to database
+      const [savedAnalysis] = await db
+        .insert(videoAnalysis)
+        .values({
+          userId: user.id,
+          fileName: file.name,
+          filePath: `/uploads/${fileName}`,
+          sport: sport,
+          garScore: analysis.overallScore.toFixed(1),
+          analysisData: analysis,
+          feedback: `Real Computer Vision Analysis: ${analysis.overallScore.toFixed(1)}/100 - Analyzed using ${analysis.modelsUsed.join(', ')}. ${analysis.breakdown.strengths.slice(0, 2).join(', ')}`
+        })
+        .returning();
+
+      return NextResponse.json({
+        success: true,
+        analysisId: savedAnalysis.id,
+        garScore: analysis.overallScore,
+        analysis: analysis,
+        message: 'Real computer vision analysis completed successfully',
+        processingTime: analysis.processingTime,
+        framesAnalyzed: analysis.framesAnalyzed,
+        modelsUsed: analysis.modelsUsed,
+        analysisSource: analysis.analysisSource
+      });
       
     } catch (error: any) {
-      if (error.message.includes('Real AI implementation required')) {
+      console.error('Computer vision analysis failed:', error);
+      
+      if (error.message.includes('Computer vision analysis failed')) {
         return NextResponse.json({
           success: false,
-          error: 'Real AI video analysis not yet implemented',
-          message: `The system correctly detected this is a ${sport} video, but real AI processing is needed to replace the fake data system`,
+          error: 'Computer vision analysis failed',
+          message: `Failed to analyze ${sport} video: ${error.message}`,
           sport: sport,
           videoPath: filePath,
-          videoSize: `${(await import('fs')).statSync(filePath).size} bytes`,
-          needsRealImplementation: true,
-          fakeDataRemoved: true
-        }, { status: 501 });
+          analysisType: 'real_computer_vision',
+          suggestion: 'Try with a clearer video or different sport setting'
+        }, { status: 500 });
       }
+      
       throw error;
     }
-
-    // Save analysis to database
-    const [savedAnalysis] = await db
-      .insert(videoAnalysis)
-      .values({
-        userId: user.id,
-        fileName: file.name,
-        filePath: `/uploads/${fileName}`,
-        sport: sport,
-        garScore: analysis.overallScore.toFixed(1),
-        analysisData: analysis,
-        feedback: `Local GAR Analysis: ${analysis.overallScore.toFixed(1)}/100 - Analyzed using local AI models. ${analysis.breakdown.strengths.slice(0, 2).join(', ')}`
-      })
-      .returning();
-
-    return NextResponse.json({
-      success: true,
-      analysisId: savedAnalysis.id,
-      garScore: analysis.overallScore,
-      analysis: analysis,
-      message: 'Local video analysis completed successfully',
-      processingTime: analysis.processingTime,
-      analysisSource: 'local_models'
-    });
 
   } catch (error: any) {
     console.error('Local GAR analysis error:', error);
