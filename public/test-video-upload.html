@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Video Upload - Local AI Analysis</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        .upload-area { border: 2px dashed #ccc; padding: 20px; text-align: center; margin: 20px 0; }
+        .button { background: #007cba; color: white; padding: 10px 20px; border: none; cursor: pointer; margin: 10px; }
+        .result { background: #f5f5f5; padding: 15px; margin: 20px 0; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>Go4It Sports - Local AI Video Analysis Test</h1>
+    <p>Testing the local AI model system with real sports video analysis.</p>
+    
+    <form id="uploadForm" enctype="multipart/form-data">
+        <div class="upload-area">
+            <input type="file" id="videoFile" name="video" accept="video/*" required>
+            <p>Select your sports video file</p>
+        </div>
+        
+        <div>
+            <label>Sport: </label>
+            <select name="sport" id="sport">
+                <option value="basketball">Basketball</option>
+                <option value="soccer">Soccer</option>
+                <option value="football">Football</option>
+                <option value="tennis">Tennis</option>
+                <option value="baseball">Baseball</option>
+            </select>
+        </div>
+        
+        <div>
+            <button type="button" onclick="analyzeLocal()" class="button">Analyze with Local AI Models</button>
+            <button type="button" onclick="analyzeCloud()" class="button">Analyze with Cloud AI</button>
+        </div>
+    </form>
+    
+    <div id="result" class="result" style="display: none;"></div>
+    
+    <script>
+        async function analyzeLocal() {
+            const formData = new FormData();
+            const videoFile = document.getElementById('videoFile').files[0];
+            const sport = document.getElementById('sport').value;
+            
+            if (!videoFile) {
+                alert('Please select a video file');
+                return;
+            }
+            
+            formData.append('video', videoFile);
+            formData.append('sport', sport);
+            
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').textContent = 'Analyzing with local AI models...';
+            
+            try {
+                const response = await fetch('/api/gar/analyze-local', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                document.getElementById('result').textContent = 'LOCAL AI ANALYSIS RESULTS:\n\n' + JSON.stringify(result, null, 2);
+            } catch (error) {
+                document.getElementById('result').textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        async function analyzeCloud() {
+            const sport = document.getElementById('sport').value;
+            
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').textContent = 'Analyzing with cloud AI...';
+            
+            try {
+                const response = await fetch('/api/gar/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sport: sport, testMode: true })
+                });
+                
+                const result = await response.json();
+                document.getElementById('result').textContent = 'CLOUD AI ANALYSIS RESULTS:\n\n' + JSON.stringify(result, null, 2);
+            } catch (error) {
+                document.getElementById('result').textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
