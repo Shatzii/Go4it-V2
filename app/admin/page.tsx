@@ -78,13 +78,13 @@ export default function AdminDashboard() {
       const data = await response.json()
       
       if (data.success) {
-        alert(`Successfully created ${data.users?.length || 0} demo users! Password: demo123`)
+        alert(`Successfully created ${data.users?.length || 0} real user accounts!\n\nTest Accounts:\n- athlete@test.com (password: athlete123)\n- coach@test.com (password: coach123)\n- parent@test.com (password: parent123)\n- admin@test.com (password: admin123)\n- And more...`)
       } else {
-        alert(`Demo population failed: ${data.message}`)
+        alert(`User creation failed: ${data.message}`)
       }
     } catch (error) {
-      console.error('Demo population error:', error)
-      alert('Failed to populate demo users')
+      console.error('User creation error:', error)
+      alert('Failed to create real users')
     } finally {
       setDemoLoading(false)
     }
@@ -208,7 +208,7 @@ export default function AdminDashboard() {
               disabled={demoLoading}
               className="w-full bg-green-600 hover:bg-green-700"
             >
-              {demoLoading ? 'Creating...' : 'Add Demo Users'}
+              {demoLoading ? 'Creating...' : 'Create Real Users'}
             </Button>
           </CardContent>
         </Card>

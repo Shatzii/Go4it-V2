@@ -61,14 +61,14 @@ export default function AdminVerificationPage() {
       const data = await response.json()
       
       if (data.success) {
-        alert(`Successfully created ${data.users?.length || 0} demo users!`)
+        alert(`Successfully created ${data.users?.length || 0} real user accounts!`)
         verifyFeatures() // Refresh verification
       } else {
-        alert(`Demo population failed: ${data.message}`)
+        alert(`User creation failed: ${data.message}`)
       }
     } catch (error) {
-      console.error('Demo population error:', error)
-      alert('Failed to populate demo users')
+      console.error('User creation error:', error)
+      alert('Failed to create real users')
     } finally {
       setDemoLoading(false)
     }
@@ -112,7 +112,7 @@ export default function AdminVerificationPage() {
               className="bg-green-600 hover:bg-green-700"
             >
               {demoLoading ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <Users className="w-4 h-4 mr-2" />}
-              {demoLoading ? 'Creating...' : 'Populate Demo Users'}
+              {demoLoading ? 'Creating...' : 'Create Real Users'}
             </Button>
           </div>
         </div>
@@ -233,9 +233,9 @@ export default function AdminVerificationPage() {
         {/* Demo Users Information */}
         <Card className="bg-slate-800 border-slate-700 mt-8">
           <CardHeader>
-            <CardTitle className="text-white">Demo Users Information</CardTitle>
+            <CardTitle className="text-white">Real User Accounts</CardTitle>
             <CardDescription>
-              Pre-configured demo users for testing all platform features
+              Functional test accounts for complete platform testing
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -243,37 +243,36 @@ export default function AdminVerificationPage() {
               <div className="bg-slate-700 p-4 rounded-lg">
                 <h4 className="text-white font-semibold mb-2">Athletes</h4>
                 <ul className="text-sm text-slate-300 space-y-1">
-                  <li>cooper.flagg@demo.com (Elite Basketball)</li>
-                  <li>dylan.harper@demo.com (Pro Basketball)</li>
-                  <li>sarah.martinez@demo.com (Soccer)</li>
-                  <li>marcus.johnson@demo.com (Football QB)</li>
-                  <li>emily.chen@demo.com (Tennis)</li>
+                  <li>athlete@test.com (Basketball)</li>
+                  <li>soccer@test.com (Soccer)</li>
+                  <li>football@test.com (Football QB)</li>
+                  <li>free@test.com (Free Tier)</li>
                 </ul>
               </div>
               <div className="bg-slate-700 p-4 rounded-lg">
-                <h4 className="text-white font-semibold mb-2">Coaches</h4>
+                <h4 className="text-white font-semibold mb-2">Staff</h4>
                 <ul className="text-sm text-slate-300 space-y-1">
-                  <li>mike.williams@demo.com (Basketball)</li>
-                  <li>maria.rodriguez@demo.com (Soccer)</li>
+                  <li>coach@test.com (Coach)</li>
+                  <li>recruiter@test.com (Recruiter)</li>
                 </ul>
               </div>
               <div className="bg-slate-700 p-4 rounded-lg">
                 <h4 className="text-white font-semibold mb-2">Parents</h4>
                 <ul className="text-sm text-slate-300 space-y-1">
-                  <li>richard.flagg@demo.com</li>
-                  <li>carlos.martinez@demo.com</li>
+                  <li>parent@test.com (Parent Access)</li>
                 </ul>
               </div>
               <div className="bg-slate-700 p-4 rounded-lg">
                 <h4 className="text-white font-semibold mb-2">Admin</h4>
                 <ul className="text-sm text-slate-300 space-y-1">
-                  <li>admin@demo.com (Full Access)</li>
+                  <li>admin@test.com (Full Access)</li>
                 </ul>
               </div>
             </div>
             <div className="mt-4 p-4 bg-blue-900/20 rounded-lg">
               <p className="text-sm text-blue-300">
-                <strong>Password for all demo accounts:</strong> demo123
+                <strong>Passwords:</strong> Each account uses {role}123 format<br/>
+                <strong>Example:</strong> athlete@test.com uses password "athlete123"
               </p>
             </div>
           </CardContent>

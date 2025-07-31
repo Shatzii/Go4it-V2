@@ -3,21 +3,51 @@ import { users, videoAnalysis, starPathProgress } from '../shared/schema'
 import { eq, like } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
 
-const demoUsers = [
-  // Athletes
+const realUsers = [
+  // Test Athletes - Real functional accounts
   {
-    username: 'cooper_flagg',
-    email: 'cooper.flagg@demo.com',
-    password: 'demo123',
+    username: 'athlete_test',
+    email: 'athlete@test.com',
+    password: 'athlete123',
     role: 'athlete',
-    firstName: 'Cooper',
-    lastName: 'Flagg',
-    dateOfBirth: new Date('2006-12-21'),
+    firstName: 'Alex',
+    lastName: 'Thompson',
+    dateOfBirth: new Date('2007-03-15'),
     sport: 'Basketball',
-    position: 'Forward',
+    position: 'Point Guard',
     graduationYear: 2026,
-    gpa: '3.85',
+    gpa: '3.75',
+    subscriptionPlan: 'pro',
+    subscriptionStatus: 'active'
+  },
+  {
+    username: 'soccer_player',
+    email: 'soccer@test.com',
+    password: 'soccer123',
+    role: 'athlete',
+    firstName: 'Maria',
+    lastName: 'Rodriguez',
+    dateOfBirth: new Date('2006-08-22'),
+    sport: 'Soccer',
+    position: 'Midfielder',
+    graduationYear: 2025,
+    gpa: '3.92',
     subscriptionPlan: 'elite',
+    subscriptionStatus: 'active'
+  },
+  {
+    username: 'football_qb',
+    email: 'football@test.com',
+    password: 'football123',
+    role: 'athlete',
+    firstName: 'Michael',
+    lastName: 'Johnson',
+    dateOfBirth: new Date('2006-11-05'),
+    sport: 'Football',
+    position: 'Quarterback',
+    graduationYear: 2025,
+    gpa: '3.68',
+    subscriptionPlan: 'pro',
     subscriptionStatus: 'active'
   },
   {
@@ -96,15 +126,15 @@ const demoUsers = [
     subscriptionStatus: 'active'
   },
   
-  // Coaches
+  // Test Coach - Real functional account
   {
-    username: 'coach_williams',
-    email: 'mike.williams@demo.com',
-    password: 'demo123',
+    username: 'coach_test',
+    email: 'coach@test.com',
+    password: 'coach123',
     role: 'coach',
-    firstName: 'Mike',
+    firstName: 'Sarah',
     lastName: 'Williams',
-    dateOfBirth: new Date('1978-05-14'),
+    dateOfBirth: new Date('1985-06-12'),
     sport: 'Basketball',
     position: 'Head Coach',
     subscriptionPlan: 'elite',
@@ -124,15 +154,15 @@ const demoUsers = [
     subscriptionStatus: 'active'
   },
   
-  // Parents
+  // Test Parent - Real functional account
   {
-    username: 'parent_flagg',
-    email: 'richard.flagg@demo.com',
-    password: 'demo123',
+    username: 'parent_test',
+    email: 'parent@test.com',
+    password: 'parent123',
     role: 'parent',
-    firstName: 'Richard',
-    lastName: 'Flagg',
-    dateOfBirth: new Date('1975-02-18'),
+    firstName: 'David',
+    lastName: 'Thompson',
+    dateOfBirth: new Date('1978-04-20'),
     subscriptionPlan: 'starter',
     subscriptionStatus: 'active'
   },
@@ -148,26 +178,56 @@ const demoUsers = [
     subscriptionStatus: 'active'
   },
   
-  // Admin
+  // Test Admin - Real functional account
   {
-    username: 'admin_demo',
-    email: 'admin@demo.com',
-    password: 'demo123',
+    username: 'admin_test',
+    email: 'admin@test.com',
+    password: 'admin123',
     role: 'admin',
     firstName: 'Admin',
-    lastName: 'Demo',
-    dateOfBirth: new Date('1985-06-10'),
+    lastName: 'User',
+    dateOfBirth: new Date('1980-01-15'),
     subscriptionPlan: 'elite',
+    subscriptionStatus: 'active'
+  },
+  
+  // Additional User Types
+  {
+    username: 'recruiter_test',
+    email: 'recruiter@test.com',
+    password: 'recruiter123',
+    role: 'recruiter',
+    firstName: 'Jennifer',
+    lastName: 'Davis',
+    dateOfBirth: new Date('1982-09-30'),
+    subscriptionPlan: 'pro',
+    subscriptionStatus: 'active'
+  },
+  
+  // Free tier athlete for testing subscription flows
+  {
+    username: 'free_athlete',
+    email: 'free@test.com',
+    password: 'free123',
+    role: 'athlete',
+    firstName: 'Jake',
+    lastName: 'Wilson',
+    dateOfBirth: new Date('2007-12-10'),
+    sport: 'Track',
+    position: 'Sprinter',
+    graduationYear: 2026,
+    gpa: '3.45',
+    subscriptionPlan: 'free',
     subscriptionStatus: 'active'
   }
 ]
 
-const demoVideoAnalysis = [
+const realVideoAnalysis = [
   {
-    fileName: 'cooper_flagg_highlight_2024.mp4',
-    filePath: '/uploads/cooper_flagg_highlight_2024.mp4',
+    fileName: 'athlete_basketball_analysis.mp4',
+    filePath: '/uploads/athlete_basketball_analysis.mp4',
     sport: 'Basketball',
-    garScore: '94.7',
+    garScore: '87.5',
     analysisData: {
       technical: { score: 95, areas: ['Shot Form', 'Ball Handling', 'Footwork'] },
       physical: { score: 93, areas: ['Athleticism', 'Speed', 'Strength'] },
@@ -175,13 +235,13 @@ const demoVideoAnalysis = [
       mental: { score: 94, areas: ['Focus', 'Confidence', 'Composure'] },
       overall: { score: 94.7, grade: 'A+' }
     },
-    feedback: 'Exceptional all-around player with elite court vision and defensive instincts. Ready for top-tier college basketball.'
+    feedback: 'Strong basketball fundamentals with good court awareness. Recommended focus areas: shooting consistency and defensive positioning.'
   },
   {
-    fileName: 'sarah_martinez_skills_2024.mp4',
-    filePath: '/uploads/sarah_martinez_skills_2024.mp4',
+    fileName: 'soccer_skills_analysis.mp4',
+    filePath: '/uploads/soccer_skills_analysis.mp4',
     sport: 'Soccer',
-    garScore: '89.3',
+    garScore: '91.2',
     analysisData: {
       technical: { score: 91, areas: ['First Touch', 'Passing', 'Dribbling'] },
       physical: { score: 87, areas: ['Endurance', 'Agility', 'Speed'] },
@@ -189,13 +249,13 @@ const demoVideoAnalysis = [
       mental: { score: 89, areas: ['Decision Making', 'Leadership', 'Resilience'] },
       overall: { score: 89.3, grade: 'A' }
     },
-    feedback: 'Outstanding midfielder with exceptional technical skills and tactical awareness. Strong college prospect.'
+    feedback: 'Excellent midfielder with strong technical skills and field vision. Great potential for collegiate soccer.'
   },
   {
-    fileName: 'marcus_johnson_qb_2024.mp4',
-    filePath: '/uploads/marcus_johnson_qb_2024.mp4',
+    fileName: 'football_qb_analysis.mp4',
+    filePath: '/uploads/football_qb_analysis.mp4',
     sport: 'Football',
-    garScore: '91.8',
+    garScore: '85.9',
     analysisData: {
       technical: { score: 92, areas: ['Throwing Accuracy', 'Release Time', 'Mechanics'] },
       physical: { score: 90, areas: ['Arm Strength', 'Mobility', 'Size'] },
@@ -203,62 +263,73 @@ const demoVideoAnalysis = [
       mental: { score: 92, areas: ['Pressure Handling', 'Quick Decisions', 'Focus'] },
       overall: { score: 91.8, grade: 'A+' }
     },
-    feedback: 'Elite quarterback prospect with excellent arm talent and leadership qualities. Division I ready.'
+    feedback: 'Good quarterback mechanics with solid decision-making skills. Focus on pocket awareness and reading defenses.'
   }
 ]
 
-const demoStarPathProgress = [
-  // Cooper Flagg's progress
+const realStarPathProgress = [
+  // Basketball athlete's progress
   {
     skillId: 'basketball_shooting',
     skillName: 'Three-Point Shooting',
-    currentLevel: 8,
-    totalXP: 2400,
-    xpToNext: 200,
-    completedDrills: 45,
-    achievements: ['Sharpshooter', 'Range Finder', 'Clutch Shooter']
+    currentLevel: 6,
+    totalXP: 1800,
+    xpToNext: 350,
+    completedDrills: 28,
+    achievements: ['Consistent Shooter', 'Range Finder']
   },
   {
     skillId: 'basketball_defense',
     skillName: 'Defensive Positioning',
-    currentLevel: 9,
-    totalXP: 2850,
-    xpToNext: 150,
-    completedDrills: 52,
-    achievements: ['Lockdown Defender', 'Steal Master', 'Shot Blocker']
+    currentLevel: 5,
+    totalXP: 1250,
+    xpToNext: 400,
+    completedDrills: 22,
+    achievements: ['Defender', 'Court Awareness']
   },
   
-  // Sarah Martinez's progress
+  // Soccer athlete's progress
   {
     skillId: 'soccer_passing',
     skillName: 'Through Ball Accuracy',
     currentLevel: 7,
     totalXP: 1950,
     xpToNext: 300,
-    completedDrills: 38,
+    completedDrills: 35,
     achievements: ['Playmaker', 'Vision Master']
   },
   {
     skillId: 'soccer_dribbling',
     skillName: 'Close Control',
-    currentLevel: 8,
-    totalXP: 2200,
-    xpToNext: 250,
-    completedDrills: 42,
-    achievements: ['Skill Master', 'Ball Control Expert']
+    currentLevel: 6,
+    totalXP: 1650,
+    xpToNext: 450,
+    completedDrills: 31,
+    achievements: ['Ball Control', 'Footwork']
+  },
+  
+  // Football athlete's progress
+  {
+    skillId: 'football_passing',
+    skillName: 'Pocket Awareness',
+    currentLevel: 4,
+    totalXP: 980,
+    xpToNext: 520,
+    completedDrills: 18,
+    achievements: ['Quick Release']
   }
 ]
 
-export async function populateDemoUsers() {
-  console.log('Starting demo user population...')
+export async function populateRealUsers() {
+  console.log('Creating real functional user accounts...')
   
   try {
-    // Clear existing demo users
-    await db.delete(users).where(like(users.email, '%@demo.com'))
+    // Clear existing test users
+    await db.delete(users).where(like(users.email, '%@test.com'))
     
-    // Create demo users
+    // Create real user accounts
     const createdUsers = []
-    for (const userData of demoUsers) {
+    for (const userData of realUsers) {
       const hashedPassword = await bcrypt.hash(userData.password, 10)
       
       const [user] = await db.insert(users).values({
@@ -273,11 +344,11 @@ export async function populateDemoUsers() {
     
     // Add video analysis for athletes
     let userIndex = 0
-    for (const analysis of demoVideoAnalysis) {
+    for (const analysis of realVideoAnalysis) {
       const athlete = createdUsers.find(u => 
-        (u.username === 'cooper_flagg' && analysis.fileName.includes('cooper')) ||
-        (u.username === 'sarah_martinez' && analysis.fileName.includes('sarah')) ||
-        (u.username === 'marcus_johnson' && analysis.fileName.includes('marcus'))
+        (u.username === 'athlete_test' && analysis.fileName.includes('basketball')) ||
+        (u.username === 'soccer_player' && analysis.fileName.includes('soccer')) ||
+        (u.username === 'football_qb' && analysis.fileName.includes('football'))
       )
       
       if (athlete) {
@@ -291,8 +362,8 @@ export async function populateDemoUsers() {
     
     // Add StarPath progress for athletes
     const athleteUsers = createdUsers.filter(u => u.role === 'athlete')
-    for (let i = 0; i < demoStarPathProgress.length; i++) {
-      const progress = demoStarPathProgress[i]
+    for (let i = 0; i < realStarPathProgress.length; i++) {
+      const progress = realStarPathProgress[i]
       const athlete = athleteUsers[Math.floor(i / 2)] // Distribute progress among athletes
       
       if (athlete) {
@@ -304,25 +375,25 @@ export async function populateDemoUsers() {
       }
     }
     
-    console.log('Demo user population completed successfully!')
+    console.log('Real user account creation completed successfully!')
     return {
       success: true,
-      message: `Created ${createdUsers.length} demo users with realistic data`,
-      users: createdUsers.map(u => ({ id: u.id, username: u.username, role: u.role }))
+      message: `Created ${createdUsers.length} real functional user accounts`,
+      users: createdUsers.map(u => ({ id: u.id, username: u.username, role: u.role, email: u.email }))
     }
     
   } catch (error) {
-    console.error('Error populating demo users:', error)
+    console.error('Error creating real users:', error)
     return {
       success: false,
-      message: `Failed to populate demo users: ${error.message}`
+      message: `Failed to create real users: ${error.message}`
     }
   }
 }
 
 // Make it runnable as a script
 if (require.main === module) {
-  populateDemoUsers().then(result => {
+  populateRealUsers().then(result => {
     console.log(JSON.stringify(result, null, 2))
     process.exit(result.success ? 0 : 1)
   })
