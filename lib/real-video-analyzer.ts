@@ -151,7 +151,12 @@ export class RealVideoAnalyzer {
       console.log('Calculating enhanced GAR score...');
       const garScore = await this.calculateGARScore(movementAnalysis, techniqueAnalysis, sport);
       
-      // 6. Advanced deep analysis
+      // 6. MediaPipe enhanced analysis
+      console.log('Performing MediaPipe enhanced analysis...');
+      const { mediaPipeAnalyzer } = await import('./mediapipe-analyzer');
+      const mediaPipeAnalysis = await mediaPipeAnalyzer.analyzePoseSequence(frames);
+      
+      // 7. Advanced deep analysis
       console.log('Performing advanced deep analysis...');
       const deepAnalysis = await advancedAnalysisEngine.performDeepAnalysis(videoPath, sport, athleteProfile);
       
@@ -182,6 +187,9 @@ export class RealVideoAnalyzer {
           biomechanics: garScore.biomechanics
         },
         
+        // MediaPipe Enhanced Analysis
+        mediaPipeAnalysis: mediaPipeAnalysis,
+        
         // Advanced Analysis Results
         deepAnalysis: deepAnalysis,
         
@@ -194,10 +202,11 @@ export class RealVideoAnalyzer {
         },
         
         // Analysis Metadata
-        analysisSource: 'advanced_computer_vision',
-        modelsUsed: ['TensorFlow.js', 'PoseNet', `${sport}_specific_model`, 'Advanced_Analysis_Engine'],
+        analysisSource: 'mediapipe_enhanced_computer_vision',
+        modelsUsed: ['MediaPipe', 'TensorFlow.js', 'PoseNet', `${sport}_specific_model`, 'Advanced_Analysis_Engine'],
         confidenceScore: deepAnalysis.confidenceScore,
-        analysisDepth: 'comprehensive_multi_layer'
+        analysisDepth: 'comprehensive_multi_dimensional_3d',
+        enhancedFeatures: ['3d_joint_angles', 'biomechanical_analysis', 'injury_risk_assessment', 'movement_quality']
       };
       
     } catch (error) {
