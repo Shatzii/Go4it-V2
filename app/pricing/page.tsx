@@ -52,6 +52,15 @@ const pricingTiers = [
       'Recruiting timeline tracking',
       'Profile optimization tips'
     ],
+    academyAddOn: {
+      price: 20,
+      features: [
+        'Access to Academy curriculum',
+        'Basic course enrollment',
+        'Progress tracking',
+        'Study materials access'
+      ]
+    },
     icon: Target,
     color: 'bg-blue-600',
     textColor: 'text-white'
@@ -74,6 +83,16 @@ const pricingTiers = [
       'Direct coach messaging',
       'Video analysis tools'
     ],
+    academyAddOn: {
+      price: 35,
+      features: [
+        'Complete Academy curriculum',
+        'Advanced course enrollment',
+        'Personalized learning paths',
+        'Grade tracking & GPA calculation',
+        'NCAA compliance monitoring'
+      ]
+    },
     icon: Trophy,
     color: 'bg-purple-600',
     textColor: 'text-white'
@@ -97,6 +116,17 @@ const pricingTiers = [
       'Live coaching calls',
       'Priority customer success'
     ],
+    academyAddOn: {
+      price: 50,
+      features: [
+        'Premium Academy experience',
+        'All curriculum subjects',
+        'Personal academic advisor',
+        'College-prep coursework',
+        'Advanced NCAA compliance',
+        'Family academic dashboard'
+      ]
+    },
     icon: Crown,
     color: 'bg-gradient-to-r from-yellow-500 to-orange-500',
     textColor: 'text-white'
@@ -591,6 +621,41 @@ export default function PricingPage() {
                           <span className="text-xs text-slate-500">{limitation}</span>
                         </div>
                       ))}
+                    </div>
+                  )}
+
+                  {/* Academy Add-On Section */}
+                  {tier.academyAddOn && (
+                    <div className="mt-4 pt-4 border-t border-slate-700">
+                      <div className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 p-4 rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="text-sm font-semibold text-white flex items-center">
+                            <BookOpen className="w-4 h-4 mr-1 text-blue-400" />
+                            +Academy Add-On
+                          </h4>
+                          <span className="text-lg font-bold text-blue-400">
+                            +${tier.academyAddOn.price}/mo
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-300 mb-3">
+                          Complete 7th-12th grade curriculum from CK-12 Foundation & OER Commons
+                        </p>
+                        <div className="space-y-1">
+                          {tier.academyAddOn.features.map((feature, index) => (
+                            <div key={index} className="flex items-start gap-2">
+                              <Check className="w-3 h-3 text-blue-400 flex-shrink-0 mt-0.5" />
+                              <span className="text-xs text-slate-300">{feature}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <Button
+                          size="sm"
+                          className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-xs"
+                          onClick={() => router.push('/academy-plus')}
+                        >
+                          View Academy Features
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </CardContent>
