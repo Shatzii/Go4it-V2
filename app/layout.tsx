@@ -67,6 +67,12 @@ export default function RootLayout({
                         <a href="/coupons" className="text-slate-300 hover:text-white transition-colors">
                           Coupons
                         </a>
+                        <a href="/test-video-analysis" className="text-slate-300 hover:text-white transition-colors">
+                          AI Analysis Demo
+                        </a>
+                        <a href="/mobile-analysis" className="text-slate-300 hover:text-white transition-colors">
+                          Mobile Analysis
+                        </a>
                         <a href="/team-sports" className="text-slate-300 hover:text-white transition-colors">
                           Team Sports
                         </a>
