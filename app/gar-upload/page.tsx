@@ -1,556 +1,342 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { Upload, FileVideo, AlertCircle, CheckCircle, TrendingUp, Target, Trophy, BarChart3 } from 'lucide-react';
-
-interface UploadProgress {
-  progress: number;
-  status: 'idle' | 'uploading' | 'analyzing' | 'complete' | 'error';
-  message: string;
-}
-
-interface GARResults {
-  analysisId: number;
-  garScore: number;
-  analysis: {
-    overallScore: number;
-    technicalSkills: number;
-    athleticism: number;
-    gameAwareness: number;
-    consistency: number;
-    improvement: number;
-    breakdown: {
-      strengths: string[];
-      weaknesses: string[];
-      recommendations: string[];
-      keyMoments: Array<{
-        timestamp: string;
-        description: string;
-        score: number;
-      }>;
-    };
-    coachingInsights: {
-      focus_areas: string[];
-      drill_recommendations: string[];
-      mental_game: string[];
-      physical_development: string[];
-    };
-    comparison: {
-      peer_percentile: number;
-      grade_level_ranking: string;
-      college_readiness: number;
-    };
-  };
-}
-
-const SPORTS_OPTIONS = [
-  'Football', 'Basketball', 'Soccer', 'Baseball', 'Softball',
-  'Tennis', 'Track & Field', 'Swimming', 'Volleyball', 'Wrestling',
-  'Golf', 'Cross Country', 'Lacrosse', 'Hockey', 'Other'
-];
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Upload, BarChart3, Target, TrendingUp, Clock, Medal, Cpu, Zap } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function GARUploadPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [selectedSport, setSelectedSport] = useState<string>('');
-  const [uploadProgress, setUploadProgress] = useState<UploadProgress>({
-    progress: 0,
-    status: 'idle',
-    message: ''
-  });
-  const [results, setResults] = useState<GARResults | null>(null);
-  const [dragActive, setDragActive] = useState(false);
-  const router = useRouter();
+  const [sport, setSport] = useState<string>('');
+  const [analysisProgress, setAnalysisProgress] = useState(0);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<any>(null);
+  const [useLocalModels, setUseLocalModels] = useState(true);
 
-  const handleDrag = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  }, []);
+  const sports = [
+    'basketball', 'soccer', 'football', 'baseball', 'tennis', 'volleyball',
+    'track', 'swimming', 'golf', 'softball', 'lacrosse', 'wrestling'
+  ];
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const file = e.dataTransfer.files[0];
-      if (file.type.startsWith('video/')) {
-        setSelectedFile(file);
-      } else {
-        setUploadProgress({
-          progress: 0,
-          status: 'error',
-          message: 'Please select a valid video file'
-        });
-      }
-    }
-  }, []);
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      if (file.type.startsWith('video/')) {
-        setSelectedFile(file);
-        setUploadProgress({ progress: 0, status: 'idle', message: '' });
-      } else {
-        setUploadProgress({
-          progress: 0,
-          status: 'error',
-          message: 'Please select a valid video file'
-        });
-      }
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
     }
   };
 
-  const handleUpload = async () => {
-    if (!selectedFile || !selectedSport) {
-      setUploadProgress({
-        progress: 0,
-        status: 'error',
-        message: 'Please select a video file and sport'
-      });
+  const handleAnalysis = async () => {
+    if (!selectedFile || !sport) {
+      alert('Please select a video file and sport');
       return;
     }
 
-    const formData = new FormData();
-    formData.append('video', selectedFile);
-    formData.append('sport', selectedSport);
+    setIsAnalyzing(true);
+    setAnalysisProgress(0);
+    setAnalysisResult(null);
 
     try {
-      setUploadProgress({
-        progress: 20,
-        status: 'uploading',
-        message: 'Uploading video...'
-      });
+      const formData = new FormData();
+      formData.append('video', selectedFile);
+      formData.append('sport', sport);
 
-      const response = await fetch('/api/gar/analyze', {
+      // Progress simulation
+      const progressInterval = setInterval(() => {
+        setAnalysisProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 500);
+
+      const endpoint = useLocalModels ? '/api/gar/analyze-local' : '/api/gar/analyze';
+      const response = await fetch(endpoint, {
         method: 'POST',
-        body: formData,
+        body: formData
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Upload failed');
-      }
-
-      setUploadProgress({
-        progress: 60,
-        status: 'analyzing',
-        message: 'AI analyzing performance...'
-      });
+      clearInterval(progressInterval);
+      setAnalysisProgress(100);
 
       const result = await response.json();
 
-      setUploadProgress({
-        progress: 100,
-        status: 'complete',
-        message: 'Analysis complete!'
-      });
-
-      setResults(result);
-
-    } catch (error: any) {
-      console.error('Upload error:', error);
-      setUploadProgress({
-        progress: 0,
-        status: 'error',
-        message: error.message || 'Upload failed. Please try again.'
-      });
+      if (response.ok) {
+        setAnalysisResult(result);
+      } else {
+        if (result.needsModels) {
+          alert('Local AI models not installed. Redirecting to model download page...');
+          window.location.href = '/local-models';
+        } else {
+          alert(`Analysis failed: ${result.error}`);
+        }
+      }
+    } catch (error) {
+      console.error('Analysis error:', error);
+      alert('Analysis failed. Please try again.');
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
-  const resetUpload = () => {
+  const resetAnalysis = () => {
     setSelectedFile(null);
-    setSelectedSport('');
-    setUploadProgress({ progress: 0, status: 'idle', message: '' });
-    setResults(null);
+    setSport('');
+    setAnalysisProgress(0);
+    setAnalysisResult(null);
   };
 
-  if (results) {
-    return <GARResultsView results={results} onNewAnalysis={resetUpload} />;
-  }
-
   return (
-    <div className="min-h-screen bg-background text-foreground hero-bg">
-      {/* Header */}
-      <header className="bg-card border-b border-border">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => router.push('/dashboard')}
-                className="text-primary hover:text-primary/80 transition-colors"
-              >
-                ← Back to Dashboard
-              </button>
-              <h1 className="text-2xl font-bold text-foreground neon-text">GAR Video Analysis</h1>
-            </div>
-          </div>
+    <div className="min-h-screen bg-slate-900 p-4">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">GAR Score Video Analysis</h1>
+          <p className="text-slate-300">Upload your athletic performance video for comprehensive AI analysis</p>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-card rounded-lg p-8 border border-border neon-border">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-foreground neon-text mb-4">
-              Upload Your Performance Video
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Get your Growth and Ability Rating (GAR) with AI-powered analysis. 
-              Our system provides detailed feedback on technique, athleticism, and improvement areas.
-            </p>
-          </div>
-
-          {/* Sport Selection */}
-          <div className="mb-8">
-            <label className="block text-sm font-medium text-foreground mb-3">
-              Select Your Sport
-            </label>
-            <select
-              value={selectedSport}
-              onChange={(e) => setSelectedSport(e.target.value)}
-              className="w-full px-4 py-3 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              disabled={uploadProgress.status === 'uploading' || uploadProgress.status === 'analyzing'}
-            >
-              <option value="">Choose a sport...</option>
-              {SPORTS_OPTIONS.map((sport) => (
-                <option key={sport} value={sport}>
-                  {sport}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* File Upload Area */}
-          <div
-            className={`border-2 border-dashed rounded-lg p-12 text-center transition-all ${
-              dragActive
-                ? 'border-primary bg-primary/10'
-                : selectedFile
-                ? 'border-primary bg-primary/10'
-                : 'border-border hover:border-primary/50'
-            }`}
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-          >
-            {selectedFile ? (
-              <div className="space-y-4">
-                <FileVideo className="h-16 w-16 text-green-400 mx-auto" />
-                <div>
-                  <p className="text-lg font-medium text-white">{selectedFile.name}</p>
-                  <p className="text-slate-400">
-                    {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
-                  </p>
+        {/* Analysis Method Selection */}
+        <Card className="bg-slate-800 border-slate-700 mb-8">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Cpu className="w-5 h-5" />
+              Analysis Method
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div 
+                className={`p-4 rounded-lg border-2 cursor-pointer ${
+                  useLocalModels ? 'border-blue-500 bg-blue-900/20' : 'border-slate-600'
+                }`}
+                onClick={() => setUseLocalModels(true)}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="w-5 h-5 text-yellow-400" />
+                  <h3 className="text-white font-semibold">Local AI Models</h3>
+                  <Badge variant="secondary">Recommended</Badge>
                 </div>
-                <button
-                  onClick={() => setSelectedFile(null)}
-                  className="text-slate-400 hover:text-white transition-colors"
-                >
-                  Choose different file
-                </button>
+                <p className="text-sm text-slate-300">2-4 second analysis, privacy-first, works offline</p>
               </div>
-            ) : (
-              <div className="space-y-4">
-                <Upload className="h-16 w-16 text-slate-400 mx-auto" />
-                <div>
-                  <p className="text-lg font-medium text-white mb-2">
-                    Drag and drop your video here
-                  </p>
-                  <p className="text-slate-400 mb-4">
-                    or click to browse files
-                  </p>
+              <div 
+                className={`p-4 rounded-lg border-2 cursor-pointer ${
+                  !useLocalModels ? 'border-blue-500 bg-blue-900/20' : 'border-slate-600'
+                }`}
+                onClick={() => setUseLocalModels(false)}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <BarChart3 className="w-5 h-5 text-green-400" />
+                  <h3 className="text-white font-semibold">Cloud AI Analysis</h3>
+                  <Badge variant="outline">Backup</Badge>
+                </div>
+                <p className="text-sm text-slate-300">OpenAI/Anthropic powered, requires internet</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Upload Section */}
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Upload className="w-5 h-5" />
+                Video Upload
+              </CardTitle>
+              <CardDescription>
+                Upload your athletic performance video for GAR analysis
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Sport Selection */}
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">Sport</label>
+                <Select value={sport} onValueChange={setSport}>
+                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                    <SelectValue placeholder="Select your sport" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sports.map((sportOption) => (
+                      <SelectItem key={sportOption} value={sportOption}>
+                        {sportOption.charAt(0).toUpperCase() + sportOption.slice(1)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* File Upload */}
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">Video File</label>
+                <div className="border-2 border-dashed border-slate-600 rounded-lg p-8 text-center">
                   <input
                     type="file"
                     accept="video/*"
                     onChange={handleFileSelect}
                     className="hidden"
                     id="video-upload"
-                    disabled={uploadProgress.status === 'uploading' || uploadProgress.status === 'analyzing'}
                   />
-                  <label
-                    htmlFor="video-upload"
-                    className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg cursor-pointer transition-colors"
-                  >
-                    Choose Video File
+                  <label htmlFor="video-upload" className="cursor-pointer">
+                    <Upload className="w-12 h-12 mx-auto text-slate-400 mb-4" />
+                    {selectedFile ? (
+                      <div>
+                        <p className="text-lg font-medium text-green-400 mb-2">{selectedFile.name}</p>
+                        <p className="text-sm text-slate-300">{(selectedFile.size / 1024 / 1024).toFixed(1)} MB</p>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="text-lg font-medium text-white mb-2">Drop your video here</p>
+                        <p className="text-sm text-slate-300 mb-4">or click to browse files</p>
+                        <p className="text-xs text-slate-400">Supports MP4, MOV, AVI (max 500MB)</p>
+                      </div>
+                    )}
                   </label>
                 </div>
-                <p className="text-sm text-slate-500">
-                  Supported formats: MP4, AVI, MOV, WMV (Max 100MB)
-                </p>
               </div>
-            )}
-          </div>
 
-          {/* Upload Progress */}
-          {uploadProgress.status !== 'idle' && (
-            <div className="mt-8">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-slate-300">{uploadProgress.message}</span>
-                <span className="text-sm text-slate-300">{uploadProgress.progress}%</span>
-              </div>
-              <div className="w-full bg-slate-700 rounded-full h-2">
-                <div
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    uploadProgress.status === 'error'
-                      ? 'bg-red-500'
-                      : uploadProgress.status === 'complete'
-                      ? 'bg-green-500'
-                      : 'bg-blue-500'
-                  }`}
-                  style={{ width: `${uploadProgress.progress}%` }}
-                ></div>
-              </div>
-              {uploadProgress.status === 'error' && (
-                <div className="flex items-center mt-3 text-red-400">
-                  <AlertCircle className="h-4 w-4 mr-2" />
-                  <span className="text-sm">{uploadProgress.message}</span>
+              {/* Analysis Progress */}
+              {isAnalyzing && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-white font-medium">Analyzing Video...</span>
+                    <span className="text-blue-400">{analysisProgress}%</span>
+                  </div>
+                  <Progress value={analysisProgress} className="h-2" />
+                  <p className="text-sm text-slate-300">
+                    {useLocalModels ? 'Processing with local AI models...' : 'Processing with cloud AI...'}
+                  </p>
                 </div>
               )}
-            </div>
-          )}
 
-          {/* Upload Button */}
-          <div className="mt-8 text-center">
-            <button
-              onClick={handleUpload}
-              disabled={
-                !selectedFile || 
-                !selectedSport || 
-                uploadProgress.status === 'uploading' || 
-                uploadProgress.status === 'analyzing'
-              }
-              className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 disabled:cursor-not-allowed text-white px-8 py-3 rounded-lg font-medium transition-colors"
-            >
-              {uploadProgress.status === 'uploading' || uploadProgress.status === 'analyzing'
-                ? 'Analyzing...'
-                : 'Start GAR Analysis'
-              }
-            </button>
-          </div>
-        </div>
-      </main>
-    </div>
-  );
-}
-
-function GARResultsView({ results, onNewAnalysis }: {
-  results: GARResults;
-  onNewAnalysis: () => void;
-}) {
-  const router = useRouter();
-  const { analysis } = results;
-
-  return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      {/* Header */}
-      <header className="bg-slate-900 border-b border-slate-800">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-white">GAR Analysis Results</h1>
-              <div className="flex items-center space-x-2 bg-blue-600 px-3 py-1 rounded-full">
-                <Trophy className="h-4 w-4" />
-                <span className="font-bold">GAR Score: {analysis.overallScore}/100</span>
+              {/* Action Buttons */}
+              <div className="flex gap-4">
+                <Button 
+                  onClick={handleAnalysis}
+                  disabled={!selectedFile || !sport || isAnalyzing}
+                  className="bg-blue-600 hover:bg-blue-700 flex-1"
+                >
+                  {isAnalyzing ? 'Analyzing...' : 'Start GAR Analysis'}
+                </Button>
+                {(selectedFile || analysisResult) && (
+                  <Button 
+                    onClick={resetAnalysis}
+                    variant="outline"
+                    disabled={isAnalyzing}
+                  >
+                    Reset
+                  </Button>
+                )}
               </div>
-            </div>
-            <div className="flex space-x-3">
-              <button
-                onClick={onNewAnalysis}
-                className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-md transition-colors"
-              >
-                New Analysis
-              </button>
-              <button
-                onClick={() => router.push('/dashboard')}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
-              >
-                Dashboard
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+            </CardContent>
+          </Card>
 
-      {/* Results Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Score Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-          <ScoreCard
-            title="Technical Skills"
-            score={analysis.technicalSkills}
-            icon={<Target className="h-6 w-6" />}
-            color="blue"
-          />
-          <ScoreCard
-            title="Athleticism"
-            score={analysis.athleticism}
-            icon={<TrendingUp className="h-6 w-6" />}
-            color="green"
-          />
-          <ScoreCard
-            title="Game Awareness"
-            score={analysis.gameAwareness}
-            icon={<BarChart3 className="h-6 w-6" />}
-            color="purple"
-          />
-          <ScoreCard
-            title="Consistency"
-            score={analysis.consistency}
-            icon={<CheckCircle className="h-6 w-6" />}
-            color="orange"
-          />
-          <ScoreCard
-            title="Improvement"
-            score={analysis.improvement}
-            icon={<Trophy className="h-6 w-6" />}
-            color="yellow"
-          />
-        </div>
-
-        {/* Detailed Analysis */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Strengths & Weaknesses */}
-          <div className="bg-slate-900 rounded-lg p-6 border border-slate-800">
-            <h3 className="text-xl font-semibold mb-4 text-white">Performance Breakdown</h3>
-            
-            <div className="mb-6">
-              <h4 className="text-green-400 font-medium mb-3">Strengths</h4>
-              <ul className="space-y-2">
-                {analysis.breakdown.strengths.map((strength, index) => (
-                  <li key={index} className="flex items-start space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
-                    <span className="text-slate-300">{strength}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-orange-400 font-medium mb-3">Areas for Improvement</h4>
-              <ul className="space-y-2">
-                {analysis.breakdown.weaknesses.map((weakness, index) => (
-                  <li key={index} className="flex items-start space-x-2">
-                    <AlertCircle className="h-4 w-4 text-orange-400 mt-0.5 flex-shrink-0" />
-                    <span className="text-slate-300">{weakness}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Key Moments */}
-          <div className="bg-slate-900 rounded-lg p-6 border border-slate-800">
-            <h3 className="text-xl font-semibold mb-4 text-white">Key Moments</h3>
-            <div className="space-y-4">
-              {analysis.breakdown.keyMoments.map((moment, index) => (
-                <div key={index} className="flex justify-between items-start p-3 bg-slate-800 rounded-lg">
-                  <div>
-                    <div className="flex items-center space-x-2 mb-1">
-                      <span className="text-blue-400 font-mono text-sm">{moment.timestamp}</span>
-                      <span className="text-xs text-slate-500">•</span>
-                      <span className="text-white font-medium">{moment.score}/100</span>
+          {/* Results Section */}
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <BarChart3 className="w-5 h-5" />
+                Analysis Results
+              </CardTitle>
+              <CardDescription>
+                Comprehensive GAR scoring and performance insights
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {analysisResult ? (
+                <div className="space-y-6">
+                  {/* GAR Score */}
+                  <div className="text-center">
+                    <div className="text-4xl font-bold text-blue-400 mb-2">
+                      {analysisResult.garScore.toFixed(1)}
                     </div>
-                    <p className="text-slate-300 text-sm">{moment.description}</p>
+                    <p className="text-slate-300">GAR Score out of 100</p>
+                    <Badge className="mt-2">
+                      {analysisResult.analysisSource === 'local_models' ? 'Local AI Analysis' : 'Cloud AI Analysis'}
+                    </Badge>
+                  </div>
+
+                  {/* Component Scores */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center">
+                      <div className="text-xl font-semibold text-green-400">
+                        {analysisResult.analysis.technicalSkills.toFixed(0)}
+                      </div>
+                      <p className="text-sm text-slate-300">Technical</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xl font-semibold text-yellow-400">
+                        {analysisResult.analysis.athleticism.toFixed(0)}
+                      </div>
+                      <p className="text-sm text-slate-300">Athletic</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xl font-semibold text-purple-400">
+                        {analysisResult.analysis.gameAwareness.toFixed(0)}
+                      </div>
+                      <p className="text-sm text-slate-300">Awareness</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xl font-semibold text-orange-400">
+                        {analysisResult.analysis.consistency.toFixed(0)}
+                      </div>
+                      <p className="text-sm text-slate-300">Consistency</p>
+                    </div>
+                  </div>
+
+                  {/* Strengths */}
+                  <div>
+                    <h4 className="text-white font-semibold mb-2">Strengths</h4>
+                    <div className="space-y-1">
+                      {analysisResult.analysis.breakdown.strengths.slice(0, 3).map((strength: string, index: number) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <Medal className="w-4 h-4 text-green-400" />
+                          <span className="text-sm text-slate-300">{strength}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Processing Time */}
+                  <div className="flex items-center justify-between text-sm text-slate-400">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4" />
+                      <span>Processing time: {analysisResult.processingTime}ms</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Target className="w-4 h-4" />
+                      <span>Analysis ID: #{analysisResult.analysisId}</span>
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Coaching Insights */}
-          <div className="bg-slate-900 rounded-lg p-6 border border-slate-800">
-            <h3 className="text-xl font-semibold mb-4 text-white">Coaching Insights</h3>
-            
-            <div className="space-y-4">
-              <div>
-                <h4 className="text-blue-400 font-medium mb-2">Focus Areas</h4>
-                <ul className="list-disc list-inside space-y-1 text-slate-300 text-sm">
-                  {analysis.coachingInsights.focus_areas.map((area, index) => (
-                    <li key={index}>{area}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="text-green-400 font-medium mb-2">Recommended Drills</h4>
-                <ul className="list-disc list-inside space-y-1 text-slate-300 text-sm">
-                  {analysis.coachingInsights.drill_recommendations.map((drill, index) => (
-                    <li key={index}>{drill}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Comparison & Development */}
-          <div className="bg-slate-900 rounded-lg p-6 border border-slate-800">
-            <h3 className="text-xl font-semibold mb-4 text-white">Performance Comparison</h3>
-            
-            <div className="space-y-4">
-              <div className="flex justify-between items-center p-3 bg-slate-800 rounded">
-                <span className="text-slate-300">Peer Percentile</span>
-                <span className="text-white font-bold">{analysis.comparison.peer_percentile}th</span>
-              </div>
-              
-              <div className="flex justify-between items-center p-3 bg-slate-800 rounded">
-                <span className="text-slate-300">Grade Level Ranking</span>
-                <span className="text-white font-bold">{analysis.comparison.grade_level_ranking}</span>
-              </div>
-              
-              <div className="flex justify-between items-center p-3 bg-slate-800 rounded">
-                <span className="text-slate-300">College Readiness</span>
-                <span className="text-white font-bold">{analysis.comparison.college_readiness}%</span>
-              </div>
-            </div>
-          </div>
+              ) : (
+                <div className="text-center text-slate-400 py-12">
+                  <BarChart3 className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                  <p className="text-lg mb-2">No analysis yet</p>
+                  <p className="text-sm">Upload a video and select your sport to get started</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Recommendations */}
-        <div className="mt-8 bg-slate-900 rounded-lg p-6 border border-slate-800">
-          <h3 className="text-xl font-semibold mb-4 text-white">Personalized Recommendations</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {analysis.breakdown.recommendations.map((recommendation, index) => (
-              <div key={index} className="flex items-start space-x-3 p-4 bg-slate-800 rounded-lg">
-                <Target className="h-5 w-5 text-blue-400 mt-0.5 flex-shrink-0" />
-                <span className="text-slate-300">{recommendation}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </main>
-    </div>
-  );
-}
-
-function ScoreCard({ title, score, icon, color }: {
-  title: string;
-  score: number;
-  icon: React.ReactNode;
-  color: string;
-}) {
-  const colorClasses = {
-    blue: 'text-blue-400',
-    green: 'text-green-400',
-    purple: 'text-purple-400',
-    orange: 'text-orange-400',
-    yellow: 'text-yellow-400'
-  };
-
-  return (
-    <div className="bg-slate-900 rounded-lg p-4 border border-slate-800 text-center">
-      <div className={`${colorClasses[color]} mb-2 flex justify-center`}>
-        {icon}
+        {/* Info Card */}
+        <Card className="bg-slate-800 border-slate-700 mt-8">
+          <CardContent className="p-6">
+            <Alert className="bg-blue-900/20 border-blue-500/50">
+              <TrendingUp className="h-4 w-4" />
+              <AlertDescription className="text-blue-200">
+                <strong>Local vs Cloud Analysis:</strong> Local models provide faster analysis (2-4 seconds) and 
+                complete privacy since your video never leaves the server. Cloud analysis uses OpenAI/Anthropic 
+                for advanced insights. Both provide the same GAR scoring accuracy.
+              </AlertDescription>
+            </Alert>
+          </CardContent>
+        </Card>
       </div>
-      <div className="text-2xl font-bold text-white mb-1">{score}</div>
-      <div className="text-sm text-slate-400">{title}</div>
     </div>
   );
 }

@@ -79,8 +79,11 @@ export default function RootLayout({
                         <a href="/team-sports" className="text-slate-300 hover:text-white transition-colors">
                           Team Sports
                         </a>
-                        <a href="/upload" className="text-slate-300 hover:text-white transition-colors">
-                          Upload
+                        <a href="/gar-upload" className="text-slate-300 hover:text-white transition-colors">
+                          GAR Upload
+                        </a>
+                        <a href="/local-models" className="text-slate-300 hover:text-white transition-colors">
+                          Local Models
                         </a>
                       </div>
                     </div>
