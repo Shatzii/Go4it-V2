@@ -7,7 +7,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
 }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2023-10-16',
+  apiVersion: '2025-06-30.basil',
 })
 
 // Service pricing configuration
@@ -41,8 +41,8 @@ export async function POST(request: NextRequest) {
 
     // Get or create Stripe customer
     let customer
-    if (user.stripeCustomerId) {
-      customer = await stripe.customers.retrieve(user.stripeCustomerId)
+    if ((user as any).stripeCustomerId) {
+      customer = await stripe.customers.retrieve((user as any).stripeCustomerId)
     } else {
       customer = await stripe.customers.create({
         email: user.email,
