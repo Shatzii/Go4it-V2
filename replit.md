@@ -257,6 +257,27 @@ Preferred communication style: Simple, everyday language.
 - **Real-time Data Processing**: GAR ranking API processing 14+ athlete sources successfully
 - **Status**: Site fully operational with comprehensive ranking system working correctly
 
+### Deployment Webpack Bundling Fixes - COMPLETED ✓
+- **Issue**: Deployment failing due to webpack bundling issues with TensorFlow.js and problematic node modules
+- **Root Cause**: Webpack trying to bundle HTML files from @mapbox/node-pre-gyp, missing dependencies, and TensorFlow.js client-side bundling
+- **Solutions Implemented**:
+  - **Webpack Externals**: Added externals for problematic dependencies (@mapbox/node-pre-gyp, mock-aws-s3, aws-sdk, nock)
+  - **HTML File Ignore**: Added ignore-loader to prevent bundling of HTML files from node modules
+  - **Node.js Fallbacks**: Configured webpack resolve fallbacks for Node.js modules on client side
+  - **TensorFlow.js Conditional Loading**: Moved TensorFlow.js to server-side only with conditional imports
+  - **Missing Dependencies**: Installed mock-aws-s3, nock, and ignore-loader packages
+  - **Lightweight Analyzer**: Created client-side lightweight video analyzer without TensorFlow.js dependencies
+  - **Server-only Utils**: Created separate server-only TensorFlow.js utilities to prevent client bundling
+  - **Environment Variables**: Added IS_CLIENT and IS_SERVER environment variables for conditional loading
+- **Files Modified**: 
+  - next.config.js: Enhanced webpack configuration with externals and fallbacks
+  - lib/real-tensorflow-analyzer.ts: Added conditional imports and server-side checks
+  - lib/real-video-analyzer.ts: Updated to use dynamic imports and prevent client-side bundling
+  - lib/integrated-real-analyzer.ts: Added fallback to lightweight analysis when TensorFlow.js unavailable
+  - lib/lightweight-video-analyzer.ts: New client-side analyzer without ML dependencies
+  - lib/server-only-tensorflow.ts: New server-only TensorFlow.js utilities
+- **Status**: Deployment bundling issues resolved, TensorFlow.js properly isolated to server-side
+
 ### Comprehensive Top 100 Rankings System Implementation - COMPLETED ✓
 **American Football Rankings:**
 - **USA Top 100**: 10+ American Football players from United States

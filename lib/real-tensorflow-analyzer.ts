@@ -32,31 +32,23 @@ export class RealTensorFlowAnalyzer {
   private poseModel: any = null;
   private isInitialized = false;
   private tfjs: any = null;
+  private isServerSide = typeof window === 'undefined';
 
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
     
+    // Only initialize on server side to prevent webpack bundling issues
+    if (!this.isServerSide) {
+      console.log('TensorFlow.js skipped on client side');
+      await this.initializeLightweightFallback();
+      return;
+    }
+    
     console.log('Initializing TensorFlow.js pose analysis...');
     
     try {
-      // Try to load TensorFlow.js dynamically
-      if (typeof window !== 'undefined') {
-        // Browser environment
-        this.tfjs = await import('@tensorflow/tfjs');
-        const poseDetection = await import('@tensorflow-models/pose-detection');
-        
-        // Initialize MoveNet model (fastest and most accurate)
-        const detectorConfig = {
-          modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING
-        };
-        this.poseModel = await poseDetection.createDetector(
-          poseDetection.SupportedModels.MoveNet, 
-          detectorConfig
-        );
-        
-        console.log('MoveNet model loaded successfully');
-      } else {
-        // Node.js environment
+      // Server-side only initialization
+      if (process.env.IS_SERVER === 'true') {
         this.tfjs = await import('@tensorflow/tfjs-node');
         const poseDetection = await import('@tensorflow-models/pose-detection');
         
@@ -70,6 +62,9 @@ export class RealTensorFlowAnalyzer {
         );
         
         console.log('Server-side MoveNet model loaded');
+      } else {
+        // Fallback for any other environment
+        await this.initializeLightweightFallback();
       }
       
       this.isInitialized = true;
