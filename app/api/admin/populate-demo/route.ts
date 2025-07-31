@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserFromRequest } from '@/lib/auth'
-import { populateDemoUsers } from '@/scripts/populate-demo-users'
+import { populateRealUsers } from '@/scripts/populate-demo-users'
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,13 +10,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
 
-    const result = await populateDemoUsers()
+    const result = await populateRealUsers()
     
     return NextResponse.json(result)
   } catch (error: any) {
     console.error('Demo population error:', error)
     return NextResponse.json(
-      { error: 'Failed to populate demo users' },
+      { error: 'Failed to create real users' },
       { status: 500 }
     )
   }
