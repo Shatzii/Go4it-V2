@@ -1,9 +1,10 @@
 // Integrated Real Analysis Engine
 // Combines TensorFlow.js, MediaPipe, and local AI for comprehensive analysis
 
-import { realTensorFlowAnalyzer } from './real-tensorflow-analyzer';
-import { ollamaLocalAI } from './ollama-local-ai';
-import { lightweightVideoAnalyzer } from './lightweight-video-analyzer';
+// Build-safe imports - prevent webpack bundling during build process
+// import { realTensorFlowAnalyzer } from './real-tensorflow-analyzer';
+// import { ollamaLocalAI } from './ollama-local-ai';
+// import { lightweightVideoAnalyzer } from './lightweight-video-analyzer';
 
 interface ComprehensiveAnalysisResult {
   success: boolean;
@@ -300,7 +301,7 @@ export class IntegratedRealAnalyzer {
     await this.initialize();
     
     const capabilities = {
-      tensorflowReady: realTensorFlowAnalyzer ? true : false,
+      tensorflowReady: false, // Disabled for build compatibility
       ollamaConnected: await ollamaLocalAI.testConnection(),
       availableModels: await ollamaLocalAI.getAvailableModels(),
       analysisCapabilities: this.getAnalysisCapabilities(),

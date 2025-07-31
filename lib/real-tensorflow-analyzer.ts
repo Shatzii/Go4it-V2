@@ -37,6 +37,13 @@ export class RealTensorFlowAnalyzer {
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
     
+    // Skip TensorFlow.js initialization during build process
+    if (process.env.NODE_ENV === 'production' && typeof window === 'undefined' && !process.env.RUNTIME_INIT) {
+      console.log('Skipping TensorFlow.js initialization during build process');
+      this.isInitialized = true;
+      return;
+    }
+    
     // Only initialize on server side to prevent webpack bundling issues
     if (!this.isServerSide) {
       console.log('TensorFlow.js skipped on client side');

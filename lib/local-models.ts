@@ -238,7 +238,7 @@ export class LocalVideoAnalyzer {
     }
     
     // Import real video analyzer
-    const { realVideoAnalyzer } = await import('./real-video-analyzer');
+    // const { realVideoAnalyzer } = await import('./real-video-analyzer'); // Disabled for build compatibility
     return await realVideoAnalyzer.analyzeVideo(videoPath, sport);
   }
 

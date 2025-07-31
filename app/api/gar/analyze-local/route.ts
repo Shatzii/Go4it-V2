@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { videoAnalysis } from '@/lib/schema';
-import { localVideoAnalyzer } from '@/lib/local-models';
+import { productionAnalyzer } from '@/lib/production-analyzer';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 
@@ -56,14 +56,11 @@ export async function POST(request: NextRequest) {
 
     // Perform REAL computer vision analysis
     try {
-      const { realVideoAnalyzer } = await import('@/lib/real-video-analyzer');
-      const analysis = await realVideoAnalyzer.analyzeVideo(filePath, sport);
+      const analysis = await productionAnalyzer.analyzeVideo(filePath, sport);
       
       console.log('Real computer vision analysis completed:', {
-        sport: analysis.sport,
-        processingTime: analysis.processingTime,
-        framesAnalyzed: analysis.framesAnalyzed,
-        overallScore: analysis.overallScore
+        sport: sport,
+        garScore: analysis.garScore
       });
 
       // Save real analysis to database
@@ -74,22 +71,18 @@ export async function POST(request: NextRequest) {
           fileName: file.name,
           filePath: `/uploads/${fileName}`,
           sport: sport,
-          garScore: analysis.overallScore.toFixed(1),
+          garScore: analysis.garScore.toString(),
           analysisData: analysis,
-          feedback: `Real Computer Vision Analysis: ${analysis.overallScore.toFixed(1)}/100 - Analyzed using ${analysis.modelsUsed.join(', ')}. ${analysis.breakdown.strengths.slice(0, 2).join(', ')}`
+          feedback: analysis.feedback.join('. ')
         })
         .returning();
 
       return NextResponse.json({
         success: true,
         analysisId: savedAnalysis.id,
-        garScore: analysis.overallScore,
+        garScore: analysis.garScore,
         analysis: analysis,
-        message: 'Real computer vision analysis completed successfully',
-        processingTime: analysis.processingTime,
-        framesAnalyzed: analysis.framesAnalyzed,
-        modelsUsed: analysis.modelsUsed,
-        analysisSource: analysis.analysisSource
+        message: 'Computer vision analysis completed successfully'
       });
       
     } catch (error: any) {

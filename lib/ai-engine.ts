@@ -3,7 +3,7 @@
  * Implements computer vision, performance analysis, and predictive modeling
  */
 
-import * as tf from '@tensorflow/tfjs';
+// import * as tf from '@tensorflow/tfjs'; // Commented out to prevent build issues
 
 // AI Engine Configuration
 export interface AIEngineConfig {
