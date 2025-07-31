@@ -153,8 +153,12 @@ export async function generateCurriculum(
   }
 }
 
+import { getAIConfig } from './env-validation';
+
 export async function validateAIKey(): Promise<boolean> {
-  if (!process.env.ANTHROPIC_API_KEY) {
+  const aiConfig = getAIConfig();
+  
+  if (!aiConfig.anthropicApiKey) {
     console.error('ANTHROPIC_API_KEY not configured')
     return false
   }

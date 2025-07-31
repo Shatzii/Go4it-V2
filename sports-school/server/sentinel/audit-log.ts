@@ -48,7 +48,7 @@ function writeToLog(logFile: string, message: string, level: LogLevel = LogLevel
       const safeDetails = { ...details };
       
       // Remove sensitive fields if they exist
-      if (safeDetails.password) safeDetails.password = '********';
+      if (safeDetails.password) safeDetails.password = process.env.AUDIT_LOG_MASK || '********';
       if (safeDetails.token) safeDetails.token = '********';
       if (safeDetails.apiKey) safeDetails.apiKey = '********';
       if (safeDetails.secretKey) safeDetails.secretKey = '********';

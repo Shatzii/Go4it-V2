@@ -37,11 +37,25 @@ const generalLimiter = rateLimit({
 });
 
 // Mock database functions - replace with actual database calls
+// Note: These are demo users with environment-based passwords for security
+const bcrypt = require('bcrypt');
+
+// Generate demo password hash from environment variable
+const getDemoPasswordHash = async () => {
+  const demoPassword = process.env.DEMO_USER_PASSWORD || 'CHANGE_ME_IN_PRODUCTION';
+  if (demoPassword === 'CHANGE_ME_IN_PRODUCTION') {
+    console.warn('⚠️ Using default demo password - set DEMO_USER_PASSWORD in production');
+  }
+  // In production, this should be pre-hashed and stored securely
+  const salt = await bcrypt.genSalt(12);
+  return await bcrypt.hash(demoPassword, salt);
+};
+
 const mockUsers = new Map([
   ['admin@demo-school.com', {
     id: 'user_001',
     email: 'admin@demo-school.com',
-    passwordHash: '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewqyA1m7FJ3ESdru', // 'password123'
+    passwordHash: getDemoPasswordHash(),
     firstName: 'Jane',
     lastName: 'Administrator',
     role: 'school_admin',
@@ -51,7 +65,7 @@ const mockUsers = new Map([
   ['teacher@demo-school.com', {
     id: 'user_002',
     email: 'teacher@demo-school.com',
-    passwordHash: '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewqyA1m7FJ3ESdru', // 'password123'
+    passwordHash: getDemoPasswordHash(),
     firstName: 'John',
     lastName: 'Teacher',
     role: 'teacher',
@@ -61,7 +75,7 @@ const mockUsers = new Map([
   ['student@demo-school.com', {
     id: 'user_003',
     email: 'student@demo-school.com',
-    passwordHash: '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewqyA1m7FJ3ESdru', // 'password123'
+    passwordHash: getDemoPasswordHash(),
     firstName: 'Alice',
     lastName: 'Student',
     role: 'student',

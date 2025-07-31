@@ -8,13 +8,7 @@ import { IStorage } from '../storage';
 import { applyCMSMethods } from './cms-storage';
 import { db } from '../db';
 import { 
-  schools, 
-  neurodivergentSchools, 
-  lawSchools, 
-  languageSchools, 
-  pages, 
-  aiTeachers, 
-  resources 
+  schools
 } from '../../shared/cms-schema';
 
 /**

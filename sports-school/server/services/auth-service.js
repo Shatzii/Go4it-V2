@@ -17,11 +17,15 @@ const crypto = require('crypto');
 
 class AuthenticationService {
   constructor() {
-    this.jwtSecret = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
+    // Import secure environment configuration
+    const { getAuthConfig } = require('../../lib/env-validation');
+    const authConfig = getAuthConfig();
+    
+    this.jwtSecret = authConfig.jwtSecret;
     this.refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || crypto.randomBytes(64).toString('hex');
     this.tokenExpiry = '15m'; // Access token expires in 15 minutes
     this.refreshTokenExpiry = '7d'; // Refresh token expires in 7 days
-    this.saltRounds = 12; // bcrypt salt rounds for password hashing
+    this.saltRounds = authConfig.bcryptRounds; // bcrypt salt rounds for password hashing
     this.maxLoginAttempts = 5; // Maximum failed login attempts before lockout
     this.lockoutDuration = 30 * 60 * 1000; // 30 minutes lockout duration
     
