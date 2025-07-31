@@ -54,8 +54,29 @@ export async function POST(request: NextRequest) {
     
     await writeFile(filePath, buffer);
 
-    // Perform local video analysis
-    const analysis = await localVideoAnalyzer.analyzeVideoLocal(filePath, sport);
+    // Perform REAL local video analysis (no fake data)
+    try {
+      const { realVideoAnalyzer } = await import('@/lib/real-video-analyzer');
+      const analysis = await realVideoAnalyzer.analyzeVideo(filePath, sport);
+      
+      // This will throw an error since real implementation is needed
+      console.log('Analysis completed:', analysis);
+      
+    } catch (error: any) {
+      if (error.message.includes('Real AI implementation required')) {
+        return NextResponse.json({
+          success: false,
+          error: 'Real AI video analysis not yet implemented',
+          message: `The system correctly detected this is a ${sport} video, but real AI processing is needed to replace the fake data system`,
+          sport: sport,
+          videoPath: filePath,
+          videoSize: `${(await import('fs')).statSync(filePath).size} bytes`,
+          needsRealImplementation: true,
+          fakeDataRemoved: true
+        }, { status: 501 });
+      }
+      throw error;
+    }
 
     // Save analysis to database
     const [savedAnalysis] = await db

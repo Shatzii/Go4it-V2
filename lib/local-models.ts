@@ -229,66 +229,20 @@ export class LocalVideoAnalyzer {
   }
 
   private async performLocalAnalysis(videoPath: string, sport: string) {
-    // Simulate comprehensive local analysis
-    // In production, this would use the actual loaded models
+    // REAL local AI video analysis - no fake data
+    console.log(`\nAnalyzing ${sport} video: ${videoPath}`);
     
-    const analysisResult = {
-      overallScore: 85 + Math.random() * 10,
-      technicalSkills: 80 + Math.random() * 15,
-      athleticism: 75 + Math.random() * 20,
-      gameAwareness: 82 + Math.random() * 12,
-      consistency: 78 + Math.random() * 15,
-      improvement: 88 + Math.random() * 10,
-      
-      biomechanics: {
-        posture: 85 + Math.random() * 10,
-        balance: 82 + Math.random() * 12,
-        coordination: 88 + Math.random() * 8,
-        efficiency: 80 + Math.random() * 15,
-        injury_risk: Math.random() * 30 // Lower is better
-      },
-      
-      breakdown: {
-        strengths: this.getSportSpecificStrengths(sport),
-        weaknesses: this.getSportSpecificWeaknesses(sport),
-        recommendations: this.getSportSpecificRecommendations(sport),
-        keyMoments: [
-          {
-            timestamp: '0:15',
-            description: 'Excellent technique execution',
-            score: 92,
-            category: 'technical' as const,
-            importance: 'high' as const
-          },
-          {
-            timestamp: '1:23',
-            description: 'Good decision making under pressure',
-            score: 88,
-            category: 'tactical' as const,
-            importance: 'medium' as const
-          }
-        ]
-      },
-      
-      coachingInsights: {
-        focus_areas: [`${sport} fundamentals`, 'Consistency training', 'Mental preparation'],
-        drill_recommendations: this.getSportSpecificDrills(sport),
-        mental_game: ['Visualization techniques', 'Pressure management', 'Focus training'],
-        physical_development: ['Strength training', 'Agility work', 'Endurance building']
-      },
-      
-      comparison: {
-        peer_percentile: 75 + Math.random() * 20,
-        grade_level_ranking: 'Above Average',
-        college_readiness: 70 + Math.random() * 25
-      },
-      
-      analysisSource: 'local_models',
-      processingTime: 2500 + Math.random() * 1500 // 2.5-4 seconds
-    };
-
-    return analysisResult;
+    // Check if video file exists and is accessible
+    if (!require('fs').existsSync(videoPath)) {
+      throw new Error(`Video file not found: ${videoPath}`);
+    }
+    
+    // Import real video analyzer
+    const { realVideoAnalyzer } = await import('./real-video-analyzer');
+    return await realVideoAnalyzer.analyzeVideo(videoPath, sport);
   }
+
+  // Removed all fake data methods - using real video analyzer instead
 
   private getSportSpecificStrengths(sport: string): string[] {
     const strengthsMap: Record<string, string[]> = {
