@@ -25,9 +25,28 @@ const nextConfig = {
     ignoreBuildErrors: true 
   },
   
-  // Static asset handling
-  assetPrefix: '',
+  // Static asset handling for Replit
+  assetPrefix: process.env.NODE_ENV === 'development' ? '' : '',
   trailingSlash: false,
+  
+  // Headers for static assets
+  async headers() {
+    return [
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
+          },
+        ],
+      },
+    ];
+  },
   
   // Webpack configuration to fix TensorFlow.js and node-pre-gyp issues
   webpack: (config, { isServer }) => {
