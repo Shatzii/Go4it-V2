@@ -73,6 +73,50 @@ export const highlightReels = pgTable('highlight_reels', {
   processedAt: timestamp('processed_at'),
 });
 
+// Camp registrations table
+export const campRegistrations = pgTable('camp_registrations', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id), // null if guest registration
+  campId: text('camp_id').notNull(), // merida-summer-2025, etc.
+  campName: text('camp_name').notNull(),
+  campDates: text('camp_dates').notNull(),
+  campLocation: text('camp_location').notNull(),
+  
+  // Personal information (for guest registrations)
+  firstName: text('first_name').notNull(),
+  lastName: text('last_name').notNull(),
+  email: text('email').notNull(),
+  phone: text('phone').notNull(),
+  dateOfBirth: timestamp('date_of_birth').notNull(),
+  
+  // Parent/Guardian information
+  parentName: text('parent_name').notNull(),
+  parentEmail: text('parent_email').notNull(),
+  emergencyContact: text('emergency_contact').notNull(),
+  emergencyPhone: text('emergency_phone').notNull(),
+  
+  // Football information
+  position: text('position'),
+  experience: text('experience'),
+  
+  // Benefits and services
+  garAnalysis: boolean('gar_analysis').default(true),
+  usaFootballMembership: boolean('usa_football_membership').default(true),
+  actionNetworkOptIn: boolean('action_network_opt_in').default(true),
+  
+  // Action Network integration
+  actionNetworkId: text('action_network_id'), // From Action Network API
+  actionNetworkStatus: text('action_network_status'), // submitted, confirmed, etc.
+  
+  // Registration status
+  status: text('status').notNull().default('pending'), // pending, confirmed, cancelled
+  paymentStatus: text('payment_status').default('pending'), // pending, paid, refunded
+  registrationFee: decimal('registration_fee', { precision: 8, scale: 2 }),
+  
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
 // StarPath progress table
 export const starPathProgress = pgTable('starpath_progress', {
   id: serial('id').primaryKey(),
@@ -546,3 +590,13 @@ export type Assignment = typeof assignments.$inferSelect;
 export type InsertAssignment = typeof assignments.$inferInsert;
 export type TeamRoster = typeof teamRosters.$inferSelect;
 export type InsertTeamRoster = typeof teamRosters.$inferInsert;
+
+// Camp registration types
+export type CampRegistration = typeof campRegistrations.$inferSelect;
+export type InsertCampRegistration = typeof campRegistrations.$inferInsert;
+export const insertCampRegistrationSchema = createInsertSchema(campRegistrations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertCampRegistrationType = z.infer<typeof insertCampRegistrationSchema>;
