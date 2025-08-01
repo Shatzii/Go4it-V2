@@ -18,9 +18,9 @@ export default function Go4ItHomePage() {
             <a href="/camp-registration" className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg font-semibold transition-colors">
               Register for Merida Camps
             </a>
-            <button className="border border-slate-600 hover:border-slate-500 px-8 py-3 rounded-lg font-semibold transition-colors">
-              Watch Demo
-            </button>
+            <a href="/register" className="border border-slate-600 hover:border-slate-500 px-8 py-3 rounded-lg font-semibold transition-colors">
+              Create Account
+            </a>
           </div>
         </div>
       </section>
