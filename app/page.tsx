@@ -15,9 +15,9 @@ export default function Go4ItHomePage() {
             Combine cutting-edge performance analysis with comprehensive academic and recruitment tools.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <button className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg font-semibold transition-colors">
-              Start Free Trial
-            </button>
+            <a href="/camp-registration" className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg font-semibold transition-colors">
+              Register for Merida Camps
+            </a>
             <button className="border border-slate-600 hover:border-slate-500 px-8 py-3 rounded-lg font-semibold transition-colors">
               Watch Demo
             </button>
@@ -161,9 +161,9 @@ export default function Go4ItHomePage() {
             Join thousands of athletes using AI to unlock their potential. Start your journey today.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <button className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-lg font-semibold text-lg transition-colors">
-              Get Started Free
-            </button>
+            <a href="/camp-registration" className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-lg font-semibold text-lg transition-colors">
+              Register for Merida Camps
+            </a>
             <button className="border border-slate-500 hover:border-slate-400 px-8 py-4 rounded-lg font-semibold text-lg transition-colors">
               Schedule Demo
             </button>

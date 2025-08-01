@@ -1,10 +1,12 @@
 'use client'
 
-import React, { useState } from 'react'
-import { MapPin, Calendar, Users, Shield, Trophy, CheckCircle, Star, ArrowRight } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { MapPin, Calendar, Users, Shield, Trophy, CheckCircle, Star, ArrowRight, User } from 'lucide-react'
 
 export default function CampRegistrationPage() {
   const [selectedCamp, setSelectedCamp] = useState('')
+  const [currentUser, setCurrentUser] = useState(null)
+  const [isNewUser, setIsNewUser] = useState(false)
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -19,8 +21,32 @@ export default function CampRegistrationPage() {
     experience: '',
     garAnalysis: false,
     usaFootballMembership: false,
-    actionNetworkOptIn: true
+    actionNetworkOptIn: true,
+    createAccount: false,
+    username: '',
+    password: ''
   })
+
+  // Check if user is logged in
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then(res => res.ok ? res.json() : null)
+      .then(user => {
+        if (user) {
+          setCurrentUser(user)
+          // Pre-fill form with user data
+          setFormData(prev => ({
+            ...prev,
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+            email: user.email || '',
+            dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '',
+            position: user.position || ''
+          }))
+        }
+      })
+      .catch(() => {}) // Ignore errors, user not logged in
+  }, [])
 
   const camps = [
     {
@@ -44,12 +70,32 @@ export default function CampRegistrationPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    // This will integrate with Action Network API
+    const selectedCampData = camps.find(c => c.id === selectedCamp)
+    if (!selectedCampData) return
+    
     const registrationData = {
-      ...formData,
-      camp: selectedCamp,
-      timestamp: new Date().toISOString(),
-      source: 'go4it-platform'
+      campId: selectedCamp,
+      campName: selectedCampData.name,
+      campDates: selectedCampData.dates,
+      campLocation: selectedCampData.location,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      phone: formData.phone,
+      dateOfBirth: formData.dateOfBirth,
+      parentName: formData.parentName,
+      parentEmail: formData.parentEmail,
+      emergencyContact: formData.emergencyContact,
+      emergencyPhone: formData.emergencyPhone,
+      position: formData.position,
+      experience: formData.experience,
+      garAnalysis: formData.garAnalysis,
+      usaFootballMembership: formData.usaFootballMembership,
+      actionNetworkOptIn: formData.actionNetworkOptIn,
+      registrationFee: parseFloat(selectedCampData.price.replace('$', '')),
+      createAccount: !currentUser && formData.createAccount,
+      username: formData.username,
+      password: formData.password
     }
 
     try {
@@ -59,11 +105,16 @@ export default function CampRegistrationPage() {
         body: JSON.stringify(registrationData)
       })
 
+      const result = await response.json()
+
       if (response.ok) {
-        alert('Registration submitted successfully! You will receive a confirmation email shortly.')
-        // Reset form or redirect
+        alert(`Registration submitted successfully! ${result.accountCreated ? 'Your Go4It account has been created. ' : ''}You will receive a confirmation email shortly.`)
+        // Redirect to user dashboard or confirmation page
+        if (result.accountCreated) {
+          window.location.href = '/dashboard'
+        }
       } else {
-        alert('Registration failed. Please try again.')
+        alert(result.error || 'Registration failed. Please try again.')
       }
     } catch (error) {
       console.error('Registration error:', error)
@@ -325,6 +376,62 @@ export default function CampRegistrationPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Account Creation for Non-Members */}
+                {!currentUser && (
+                  <div className="border-t border-slate-600 pt-6">
+                    <h3 className="text-lg font-semibold mb-4 text-white">Go4It Membership</h3>
+                    
+                    <div className="p-4 bg-blue-900/20 border border-blue-700 rounded-lg mb-4">
+                      <div className="flex items-center mb-3">
+                        <User className="w-5 h-5 text-blue-400 mr-2" />
+                        <span className="font-semibold text-blue-400">Create Go4It Account</span>
+                      </div>
+                      <p className="text-sm text-slate-300 mb-4">
+                        Join Go4It to access exclusive features, track your progress, and connect with coaches and recruiters.
+                      </p>
+                      
+                      <div className="flex items-center mb-4">
+                        <input
+                          type="checkbox"
+                          checked={formData.createAccount}
+                          onChange={(e) => setFormData({...formData, createAccount: e.target.checked})}
+                          className="mr-3"
+                        />
+                        <span className="text-white">Create Go4It account (recommended)</span>
+                      </div>
+                      
+                      {formData.createAccount && (
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-slate-300 mb-2">
+                              Username *
+                            </label>
+                            <input
+                              type="text"
+                              required={formData.createAccount}
+                              value={formData.username}
+                              onChange={(e) => setFormData({...formData, username: e.target.value})}
+                              className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:border-blue-500 focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-slate-300 mb-2">
+                              Password *
+                            </label>
+                            <input
+                              type="password"
+                              required={formData.createAccount}
+                              value={formData.password}
+                              onChange={(e) => setFormData({...formData, password: e.target.value})}
+                              className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:border-blue-500 focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Add-ons and Benefits */}
                 <div className="border-t border-slate-600 pt-6">
