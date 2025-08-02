@@ -6,42 +6,26 @@ export async function GET(req: NextRequest) {
     const { db } = await import('@/server/db');
     const { sql } = await import('drizzle-orm');
 
-    // Get all users with their verification status
-    const users = await db.execute(sql`
-      SELECT 
-        id,
-        username,
-        email,
-        COALESCE(first_name || ' ' || last_name, username) as name,
-        sport,
-        position,
-        role,
-        is_verified,
-        gar_score,
-        created_at,
-        last_login_at,
-        verified_at,
-        verified_by
-      FROM users 
-      ORDER BY created_at DESC
-    `);
+    // Get all users with their verification status using Drizzle ORM
+    const { users } = await import('@/shared/schema');
+    const users_result = await db.select().from(users).orderBy(users.createdAt);
 
     return NextResponse.json({
       success: true,
-      users: users.map(user => ({
+      users: users_result.map(user => ({
         id: user.id,
-        username: user.username,
+        username: user.username || user.email?.split('@')[0] || 'User',
         email: user.email,
-        name: user.name,
-        sport: user.sport,
-        position: user.position,
-        role: user.role,
-        isVerified: user.is_verified,
-        garScore: user.gar_score,
-        createdAt: user.created_at,
-        lastLogin: user.last_login_at,
-        verifiedAt: user.verified_at,
-        verifiedBy: user.verified_by
+        name: (user.firstName && user.lastName) ? `${user.firstName} ${user.lastName}` : user.username || user.email?.split('@')[0] || 'User',
+        sport: user.sport || 'Multi-Sport',
+        position: user.position || 'Athlete',
+        role: user.role || 'athlete',
+        isVerified: user.isVerified || false,
+        garScore: user.garScore || null,
+        createdAt: user.createdAt,
+        lastLogin: user.lastLoginAt,
+        verifiedAt: user.verifiedAt,
+        verifiedBy: user.verifiedBy
       }))
     });
 

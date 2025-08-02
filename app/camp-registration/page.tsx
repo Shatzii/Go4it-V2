@@ -72,6 +72,23 @@ export default function CampRegistrationPage() {
     
     const selectedCampData = camps.find(c => c.id === selectedCamp)
     if (!selectedCampData) return
+
+    // If user wants to create account or is not logged in, redirect to registration
+    if (formData.createAccount || !currentUser) {
+      const registrationData = {
+        ...formData,
+        campId: selectedCamp,
+        campName: selectedCampData.name,
+        campPrice: selectedCampData.price
+      }
+      
+      // Store camp registration data in sessionStorage
+      sessionStorage.setItem('campRegistration', JSON.stringify(registrationData))
+      
+      // Redirect to registration with camp context
+      window.location.href = `/register?camp=${selectedCamp}&redirect=camp-registration`
+      return
+    }
     
     const registrationData = {
       campId: selectedCamp,
