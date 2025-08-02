@@ -62,6 +62,19 @@ export type InsertCouponUsage = z.infer<typeof insertCouponUsageSchema>;
 // Predefined coupon codes
 export const PREDEFINED_COUPONS: InsertCoupon[] = [
   {
+    code: 'FULLACCESS2025',
+    name: 'Full Access Pass',
+    description: 'Complete access to all Go4It features - unlimited everything!',
+    discountType: 'free',
+    discountValue: '100',
+    maxUses: 100,
+    isActive: true,
+    validFrom: new Date(),
+    validUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
+    applicablePlans: ['starter', 'pro', 'elite'],
+    minimumAmount: '0',
+  },
+  {
     code: 'FREEMONTH',
     name: 'Free Month Access',
     description: 'Get one month completely free on any plan',

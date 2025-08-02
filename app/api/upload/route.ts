@@ -1,41 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest } from '@/server/routes';
+import { writeFile } from 'fs/promises';
+import { join } from 'path';
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const user = await getUserFromRequest(request);
-    
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    
-    const formData = await request.formData();
-    const file = formData.get('file') as File;
-    const sport = formData.get('sport') as string;
+    const data = await req.formData();
+    const file: File | null = data.get('image') as unknown as File;
     
     if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+      return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }
+
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    // Create unique filename
+    const filename = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+    const filepath = join(process.cwd(), 'public/uploads', filename);
+
+    // Save file
+    await writeFile(filepath, buffer);
     
-    if (!sport) {
-      return NextResponse.json({ error: 'Sport is required' }, { status: 400 });
-    }
+    const url = `/uploads/${filename}`;
     
-    // Mock file upload success - in production, this would save to storage
-    const uploadResult = {
-      success: true,
-      fileId: `file_${Date.now()}`,
-      fileName: file.name,
-      fileSize: file.size,
-      filePath: `/uploads/${user.id}/${file.name}`,
-      sport,
-      uploadedAt: new Date().toISOString(),
-      processingStatus: 'queued'
-    };
-    
-    return NextResponse.json(uploadResult);
+    return NextResponse.json({ 
+      success: true, 
+      url,
+      message: 'File uploaded successfully' 
+    });
   } catch (error) {
-    console.error('Upload error:', error);
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
+    console.error('Upload failed:', error);
+    return NextResponse.json(
+      { error: 'Upload failed' },
+      { status: 500 }
+    );
   }
 }
