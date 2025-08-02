@@ -63,7 +63,7 @@ export default function Go4ItHomePage() {
                 </li>
               </ul>
               <p className="text-blue-400 font-bold text-lg mb-6">No commitment. No fluff. All fire.</p>
-              <a href="/register" className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg font-bold text-lg transition-colors inline-block">
+              <a href="/register" className="glow-button text-lg px-8 py-3">
                 Create Your Free Account
               </a>
             </div>
@@ -463,7 +463,7 @@ export default function Go4ItHomePage() {
               </div>
             ))}
           </div>
-          <a href="/register" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-12 py-4 rounded-lg font-bold text-xl transition-colors inline-block shadow-lg hover:shadow-xl neon-glow">
+          <a href="/register" className="glow-button text-xl px-12 py-4">
             Start Free. Get Ranked. Go4It.
           </a>
         </div>
@@ -496,6 +496,25 @@ export default function Go4ItHomePage() {
               Become Unstoppable
             </a>
           </div>
+        </div>
+      </section>
+
+      {/* CTA Banner */}
+      <section className="py-16 px-4 hero-bg relative overflow-hidden">
+        <div className="absolute inset-0 neon-border opacity-20"></div>
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <h2 className="text-4xl md:text-6xl font-bold mb-6">
+            <span className="glow-text">One Platform. One Mission. Go D1.</span>
+          </h2>
+          <a href="/register" className="glow-button text-xl px-12 py-4">
+            Get Verified Today
+          </a>
+        </div>
+        
+        {/* Background Effects */}
+        <div className="absolute inset-0 z-0 opacity-10">
+          <div className="absolute top-10 left-1/4 w-32 h-32 bg-blue-500 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 right-1/4 w-40 h-40 bg-purple-500 rounded-full blur-3xl"></div>
         </div>
       </section>
     </div>
