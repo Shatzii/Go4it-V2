@@ -1,5 +1,5 @@
 // Go4It Sports Landing Page - StarPath Enhanced 
-import { Star, TrendingUp, GraduationCap, Trophy, CheckCircle, Target, Zap, Crown, Award } from 'lucide-react'
+import { Star, TrendingUp, GraduationCap, Trophy, CheckCircle, Target, Zap, Crown, Award, MapPin, Calendar, Users } from 'lucide-react'
 
 export default function Go4ItHomePage() {
   return (
@@ -439,6 +439,119 @@ export default function Go4ItHomePage() {
               )
               return <PlayerCard key={player.id} />
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* Upcoming Events */}
+      <section className="py-16 px-4">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-4xl font-bold text-center neon-text mb-4">UPCOMING EVENTS</h2>
+          <p className="text-center text-slate-400 mb-12">Elite training camps and competitions to elevate your game</p>
+          
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            {/* Merida Summer Camp */}
+            <div className="hero-bg neon-border rounded-xl p-8 relative overflow-hidden">
+              <div className="absolute top-4 right-4">
+                <div className="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold">ELITE</div>
+              </div>
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-white mb-2">Merida Summer Elite Camp</h3>
+                <div className="flex items-center text-slate-400 mb-2">
+                  <MapPin className="w-4 h-4 mr-2" />
+                  <span>Merida, Mexico</span>
+                </div>
+                <div className="flex items-center text-slate-400 mb-4">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  <span>July 15-20, 2025</span>
+                </div>
+              </div>
+              
+              <div className="space-y-3 mb-6">
+                {[
+                  "Professional GAR video analysis",
+                  "Elite coaching from D1 staff", 
+                  "USA Football membership included",
+                  "Action Network recruiting profile"
+                ].map((feature, index) => (
+                  <div key={index} className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-blue-400 mr-3 flex-shrink-0" />
+                    <span className="text-slate-300">{feature}</span>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="flex items-center justify-between mb-6">
+                <div className="text-3xl font-bold text-blue-400">$899</div>
+                <div className="flex items-center text-slate-400">
+                  <Users className="w-4 h-4 mr-2" />
+                  <span>Limited to 32 athletes</span>
+                </div>
+              </div>
+              
+              <a href="/camp-registration" className="w-full glow-button text-center py-3 inline-block">
+                Join Elite Camp - Create Profile Required
+              </a>
+              
+              <div className="absolute inset-0 opacity-5 pointer-events-none">
+                <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500 rounded-full blur-2xl"></div>
+                <div className="absolute bottom-0 left-0 w-16 h-16 bg-purple-500 rounded-full blur-2xl"></div>
+              </div>
+            </div>
+
+            {/* Winter Skills Camp */}
+            <div className="hero-bg neon-border rounded-xl p-8 relative overflow-hidden">
+              <div className="absolute top-4 right-4">
+                <div className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-bold">SKILLS</div>
+              </div>
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-white mb-2">Merida Winter Skills Camp</h3>
+                <div className="flex items-center text-slate-400 mb-2">
+                  <MapPin className="w-4 h-4 mr-2" />
+                  <span>Merida, Mexico</span>
+                </div>
+                <div className="flex items-center text-slate-400 mb-4">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  <span>December 20-23, 2025</span>
+                </div>
+              </div>
+              
+              <div className="space-y-3 mb-6">
+                {[
+                  "Intensive skills development",
+                  "Position-specific training",
+                  "Mental performance coaching",
+                  "Nutrition and wellness sessions"
+                ].map((feature, index) => (
+                  <div key={index} className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-purple-400 mr-3 flex-shrink-0" />
+                    <span className="text-slate-300">{feature}</span>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="flex items-center justify-between mb-6">
+                <div className="text-3xl font-bold text-purple-400">$699</div>
+                <div className="flex items-center text-slate-400">
+                  <Users className="w-4 h-4 mr-2" />
+                  <span>Limited to 24 athletes</span>
+                </div>
+              </div>
+              
+              <a href="/camp-registration" className="w-full bg-purple-600 hover:bg-purple-700 text-white text-center py-3 rounded-lg font-bold transition-colors inline-block">
+                Register for Skills Camp - Profile Required
+              </a>
+              
+              <div className="absolute inset-0 opacity-5 pointer-events-none">
+                <div className="absolute top-0 right-0 w-20 h-20 bg-purple-500 rounded-full blur-2xl"></div>
+                <div className="absolute bottom-0 left-0 w-16 h-16 bg-blue-500 rounded-full blur-2xl"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="text-center">
+            <p className="text-slate-400 mb-4">Registration requires creating your Go4It athlete profile</p>
+            <p className="text-blue-400 font-semibold">Get verified. Get ranked. Get recruited.</p>
           </div>
         </div>
       </section>
