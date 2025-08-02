@@ -15,25 +15,15 @@ export default function Go4ItHomePage() {
           <div className="mb-4">
             <span className="neon-text text-lg font-semibold tracking-wider uppercase">Go4It Sports</span>
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight">
-            <span className="neon-text">Get Verified. Get Ranked.</span> <br />
-            <span className="gradient-text text-6xl md:text-7xl">
-              Get Recruited.
-            </span>
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+            <span className="glow-text">Unlock Your 5-Star Potential</span>
           </h1>
-          <p className="text-2xl text-slate-300 mb-6 font-medium">
-            You've Got Talent. We've Got the System.
-          </p>
-          <p className="text-lg text-slate-400 mb-12 max-w-4xl mx-auto leading-relaxed">
-            This is <strong>Go4It Sports</strong> — the world's first platform built to take you from raw potential to 5-star recruit. 
-            We don't guess. We measure. We don't hope. We plan. You bring the work — we'll bring the future.
+          <p className="text-xl md:text-2xl text-slate-300 mb-8 max-w-4xl mx-auto leading-relaxed font-medium">
+            Your journey from student athlete to college recruit starts now.
           </p>
           <div className="flex gap-4 justify-center flex-wrap mb-8">
-            <a href="/register" className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-lg font-bold text-lg transition-colors shadow-lg hover:shadow-xl">
-              Create Your Free Account
-            </a>
-            <a href="/camp-registration" className="border-2 border-blue-400 hover:bg-blue-400/10 px-8 py-4 rounded-lg font-semibold text-lg transition-colors">
-              Register for Merida Camps
+            <a href="/register" className="glow-button text-lg">
+              Start Your Free Profile
             </a>
           </div>
           <p className="text-slate-500 text-sm font-medium">
