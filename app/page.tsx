@@ -39,7 +39,7 @@ export default function Go4ItHomePage() {
       </section>
 
       {/* Step 1: Start Free */}
-      <section className="py-16 px-4 bg-slate-900/50">
+      <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -139,7 +139,7 @@ export default function Go4ItHomePage() {
               <div className="bg-slate-800 p-4 rounded-lg mb-6">
                 <p className="text-green-400 font-bold text-lg">$49 one-time — or unlimited with PRO/ELITE</p>
               </div>
-              <a href="/gar-analysis" className="bg-green-600 hover:bg-green-700 px-8 py-3 rounded-lg font-bold text-lg transition-colors inline-block mb-4">
+              <a href="/gar-analysis" className="glow-button text-lg px-8 py-3 mb-4 inline-block">
                 Get My GAR Score
               </a>
               <blockquote className="border-l-4 border-blue-400 pl-4 italic text-slate-300 mt-6">
@@ -151,7 +151,7 @@ export default function Go4ItHomePage() {
       </section>
 
       {/* Step 3: Enter the StarPath */}
-      <section className="py-16 px-4 bg-slate-900/50">
+      <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -181,7 +181,7 @@ export default function Go4ItHomePage() {
                 <p className="text-purple-400 font-bold text-lg">Starter Plan: $19/month</p>
                 <p className="text-slate-400">because average isn't in your vocabulary.</p>
               </div>
-              <a href="/starpath" className="bg-purple-600 hover:bg-purple-700 px-8 py-3 rounded-lg font-bold text-lg transition-colors inline-block">
+              <a href="/starpath" className="glow-button text-lg px-8 py-3 inline-block">
                 Start My StarPath Journey
               </a>
             </div>
@@ -262,7 +262,7 @@ export default function Go4ItHomePage() {
       </section>
 
       {/* Why Go4It Wins */}
-      <section className="py-16 px-4 bg-slate-900/50">
+      <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-4xl font-bold neon-text mb-4">WHY GO4IT WINS</h2>
           <p className="text-2xl text-slate-300 mb-12 font-medium">Because you don't just want to play. You want to rise.</p>
@@ -304,7 +304,7 @@ export default function Go4ItHomePage() {
       </section>
 
       {/* Featured Athletes */}
-      <section className="py-16 px-4 bg-slate-900/50">
+      <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl font-bold text-center neon-text mb-4">VERIFIED ATHLETES</h2>
           <p className="text-center text-slate-400 mb-12">See how our top performers stack up</p>
@@ -470,7 +470,7 @@ export default function Go4ItHomePage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 px-4 bg-gradient-to-r from-blue-900/50 to-purple-900/50 text-center">
+      <section className="py-20 px-4 text-center">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             THIS ISN'T JUST TRAINING —<br />
