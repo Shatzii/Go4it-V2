@@ -2,13 +2,19 @@ import { pgTable, text, integer, timestamp, boolean, decimal, jsonb, serial } fr
 import { createInsertSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
-// Users table
+// Users table - Updated to match actual database schema
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
   username: text('username').notNull().unique(),
-  email: text('email').notNull().unique(),
   password: text('password').notNull(),
+  email: text('email').notNull().unique(),
+  name: text('name'),
   role: text('role').notNull().default('athlete'), // athlete, coach, parent, admin
+  profileImage: text('profile_image'),
+  bio: text('bio'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  measurementSystem: text('measurement_system'),
+  phoneNumber: text('phone_number'),
   firstName: text('first_name'),
   lastName: text('last_name'),
   dateOfBirth: timestamp('date_of_birth'),
@@ -17,21 +23,12 @@ export const users = pgTable('users', {
   graduationYear: integer('graduation_year'),
   gpa: decimal('gpa', { precision: 3, scale: 2 }),
   isActive: boolean('is_active').notNull().default(true),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
   lastLoginAt: timestamp('last_login_at'),
-  
-  // Subscription fields
-  stripeCustomerId: text('stripe_customer_id'),
-  stripeSubscriptionId: text('stripe_subscription_id'),
-  subscriptionPlan: text('subscription_plan').default('free'), // free, starter, pro, elite
-  academicAddOn: boolean('academic_add_on').default(false), // +Academy subscription
-  subscriptionStatus: text('subscription_status').default('active'), // active, canceled, past_due
-  subscriptionEndDate: timestamp('subscription_end_date'),
-  
-  // Team/Institution fields
-  institutionId: integer('institution_id'),
-  institutionRole: text('institution_role'), // student, coach, admin, athletic_director
-  teamIds: text('team_ids').array(), // Multiple teams for multi-sport athletes
+  isVerified: boolean('is_verified').default(false),
+  verifiedAt: timestamp('verified_at'),
+  verifiedBy: text('verified_by'),
+  garScore: decimal('gar_score', { precision: 5, scale: 2 }),
+  lastGarAnalysis: timestamp('last_gar_analysis'),
 });
 
 // Video analysis table

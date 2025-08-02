@@ -21,6 +21,7 @@ User wants approval before any design or content changes.
 - **Database Enhancement**: Added verification columns, GAR scores, and logging system
 - **Authentication System**: Created comprehensive user registration and camp registration integration
 - **Database Integration**: 64 existing users confirmed, camp registration system ready
+- **Storage Layer Update**: Aligned database schema with storage layer to fix authentication (January 2, 2025)
 
 ## System Architecture
 

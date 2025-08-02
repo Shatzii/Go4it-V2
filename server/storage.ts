@@ -145,8 +145,14 @@ export class DatabaseStorage implements IStorage {
       .from(users)
       .leftJoin(videoAnalysis, eq(users.id, videoAnalysis.userId));
 
+    let whereConditions = [];
+    
     if (sport) {
-      baseQuery = baseQuery.where(eq(users.sport, sport));
+      whereConditions.push(eq(users.sport, sport));
+    }
+    
+    if (whereConditions.length > 0) {
+      baseQuery = baseQuery.where(and(...whereConditions));
     }
 
     const results = await baseQuery;
@@ -234,17 +240,22 @@ export class DatabaseStorage implements IStorage {
       .from(videoAnalysis);
 
     // Get recent analyses (user-specific or global)
-    let recentQuery = db
-      .select()
-      .from(videoAnalysis)
-      .orderBy(desc(videoAnalysis.createdAt))
-      .limit(10);
-
+    let recentAnalyses;
+    
     if (userId) {
-      recentQuery = recentQuery.where(eq(videoAnalysis.userId, userId));
+      recentAnalyses = await db
+        .select()
+        .from(videoAnalysis)
+        .where(eq(videoAnalysis.userId, userId))
+        .orderBy(desc(videoAnalysis.createdAt))
+        .limit(10);
+    } else {
+      recentAnalyses = await db
+        .select()
+        .from(videoAnalysis)
+        .orderBy(desc(videoAnalysis.createdAt))
+        .limit(10);
     }
-
-    const recentAnalyses = await recentQuery;
 
     return {
       totalAthletes: athleteCount.count,
