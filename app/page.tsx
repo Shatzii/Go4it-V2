@@ -216,10 +216,10 @@ export default function Go4ItHomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="order-2 lg:order-1">
-              <div className="bg-gradient-to-br from-yellow-900/30 to-orange-900/30 p-8 rounded-xl border border-yellow-500/30 shadow-2xl">
+              <div className="hero-bg neon-border rounded-xl p-8 shadow-2xl">
                 <div className="text-center mb-6">
-                  <Crown className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
-                  <h3 className="text-2xl font-bold text-yellow-400">NCAA STARPATH ELITE</h3>
+                  <Crown className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+                  <h3 className="text-2xl font-bold neon-text">NCAA STARPATH ELITE</h3>
                   <p className="text-slate-300">For athletes who mean business</p>
                 </div>
                 <div className="space-y-3">
@@ -230,7 +230,7 @@ export default function Go4ItHomePage() {
                     "Access to 500+ recruiter contacts"
                   ].map((feature, index) => (
                     <div key={index} className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-yellow-400 mr-3 flex-shrink-0" />
+                      <CheckCircle className="w-5 h-5 text-blue-400 mr-3 flex-shrink-0" />
                       <span className="text-slate-300">{feature}</span>
                     </div>
                   ))}
@@ -239,7 +239,7 @@ export default function Go4ItHomePage() {
             </div>
             <div className="order-1 lg:order-2">
               <div className="flex items-center mb-4">
-                <div className="w-8 h-8 bg-yellow-600 rounded-full flex items-center justify-center text-white font-bold mr-4">4</div>
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold mr-4">4</div>
                 <h2 className="text-3xl font-bold text-white">GO NEXT-LEVEL WITH NCAA STARPATH ELITE</h2>
               </div>
               <p className="text-xl text-slate-300 mb-6">
@@ -250,10 +250,10 @@ export default function Go4ItHomePage() {
                 <strong>NCAA StarPath ELITE gives you:</strong>
               </p>
               <div className="bg-slate-800 p-4 rounded-lg mb-6">
-                <p className="text-yellow-400 font-bold text-lg">Elite Plan: $99/month</p>
+                <p className="text-blue-400 font-bold text-lg">Elite Plan: $99/month</p>
                 <p className="text-slate-400">for athletes who mean business.</p>
               </div>
-              <a href="/elite-upgrade" className="bg-yellow-600 hover:bg-yellow-700 px-8 py-3 rounded-lg font-bold text-lg transition-colors inline-block">
+              <a href="/elite-upgrade" className="glow-button text-lg px-8 py-3 inline-block">
                 Upgrade to NCAA StarPath ELITE
               </a>
             </div>
