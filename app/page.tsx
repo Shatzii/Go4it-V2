@@ -5,19 +5,19 @@ export default function Go4ItHomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       {/* Hero Section */}
-      <section className="py-20 px-4 text-center relative overflow-hidden">
+      <section className="hero-bg py-20 px-4 text-center relative overflow-hidden">
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="mb-6 flex justify-center">
-            <div className="h-16 w-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+            <div className="h-16 w-20 neon-border rounded-lg flex items-center justify-center text-white font-bold text-xl neon-glow">
               GO4IT
             </div>
           </div>
           <div className="mb-4">
-            <span className="text-blue-400 text-lg font-semibold tracking-wider uppercase">Go4It Sports</span>
+            <span className="neon-text text-lg font-semibold tracking-wider uppercase">Go4It Sports</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight">
-            Get Verified. Get Ranked. <br />
-            <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+            <span className="neon-text">Get Verified. Get Ranked.</span> <br />
+            <span className="gradient-text text-6xl md:text-7xl">
               Get Recruited.
             </span>
           </h1>
@@ -106,12 +106,12 @@ export default function Go4ItHomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="order-2 lg:order-1 relative">
-              <div className="w-full max-w-md mx-auto bg-gradient-to-br from-blue-900 to-purple-900 rounded-xl shadow-2xl p-12 text-center">
+              <div className="w-full max-w-md mx-auto hero-bg neon-border rounded-xl shadow-2xl p-12 text-center relative">
                 <div className="relative">
-                  <div className="w-32 h-32 mx-auto mb-6 bg-gradient-to-r from-blue-400 to-cyan-300 rounded-full flex items-center justify-center text-slate-900 font-bold text-2xl shadow-lg">
+                  <div className="w-32 h-32 mx-auto mb-6 neon-border rounded-full flex items-center justify-center text-slate-900 font-bold text-2xl neon-glow bg-gradient-to-r from-blue-400 to-cyan-300">
                     ✓
                   </div>
-                  <h3 className="text-4xl font-bold text-transparent bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text mb-4">
+                  <h3 className="text-4xl font-bold neon-text mb-4">
                     GET VERIFIED
                   </h3>
                   <p className="text-slate-300 text-lg">
@@ -274,12 +274,12 @@ export default function Go4ItHomePage() {
       {/* Why Go4It Wins */}
       <section className="py-16 px-4 bg-slate-900/50">
         <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-white mb-4">WHY GO4IT WINS</h2>
+          <h2 className="text-4xl font-bold neon-text mb-4">WHY GO4IT WINS</h2>
           <p className="text-2xl text-slate-300 mb-12 font-medium">Because you don't just want to play. You want to rise.</p>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 neon-border rounded-full flex items-center justify-center mx-auto mb-4 neon-glow bg-gradient-to-r from-blue-600 to-cyan-400">
                 <Trophy className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold mb-2 text-white">Built for Athletes</h3>
@@ -287,7 +287,7 @@ export default function Go4ItHomePage() {
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 neon-border rounded-full flex items-center justify-center mx-auto mb-4 neon-glow bg-gradient-to-r from-purple-600 to-blue-400">
                 <Star className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold mb-2 text-white">AI-Powered Evaluation</h3>
@@ -295,7 +295,7 @@ export default function Go4ItHomePage() {
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 neon-border rounded-full flex items-center justify-center mx-auto mb-4 neon-glow bg-gradient-to-r from-green-600 to-blue-400">
                 <GraduationCap className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold mb-2 text-white">Recruitment Ready</h3>
@@ -303,7 +303,7 @@ export default function Go4ItHomePage() {
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 neon-border rounded-full flex items-center justify-center mx-auto mb-4 neon-glow bg-gradient-to-r from-yellow-600 to-cyan-400">
                 <Zap className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold mb-2 text-white">Gamified Growth</h3>
@@ -313,10 +313,150 @@ export default function Go4ItHomePage() {
         </div>
       </section>
 
+      {/* Featured Athletes */}
+      <section className="py-16 px-4 bg-slate-900/50">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-4xl font-bold text-center neon-text mb-4">VERIFIED ATHLETES</h2>
+          <p className="text-center text-slate-400 mb-12">See how our top performers stack up</p>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {/* Demo Player Cards */}
+            {[
+              {
+                id: '1',
+                name: 'Marcus Johnson',
+                position: 'Quarterback',
+                sport: 'Football',
+                garScore: 9.2,
+                isVerified: true,
+                year: '2025',
+                stats: {
+                  speed: 8.7,
+                  agility: 9.1,
+                  strength: 8.4,
+                  technique: 9.3,
+                  gameIQ: 9.5
+                }
+              },
+              {
+                id: '2',
+                name: 'Sarah Chen',
+                position: 'Point Guard',
+                sport: 'Basketball',
+                garScore: 8.8,
+                isVerified: true,
+                year: '2026',
+                stats: {
+                  speed: 9.2,
+                  agility: 9.4,
+                  strength: 7.8,
+                  technique: 8.9,
+                  gameIQ: 9.1
+                }
+              },
+              {
+                id: '3',
+                name: 'Diego Rodriguez',
+                position: 'Midfielder',
+                sport: 'Soccer',
+                garScore: 8.5,
+                isVerified: true,
+                year: '2025',
+                stats: {
+                  speed: 8.9,
+                  agility: 8.8,
+                  strength: 8.1,
+                  technique: 8.7,
+                  gameIQ: 8.3
+                }
+              }
+            ].map((player) => {
+              const PlayerCard = () => (
+                <div key={player.id} className="hero-bg neon-border rounded-xl p-6 card-hover relative overflow-hidden">
+                  {/* Verification Badge */}
+                  {player.isVerified && (
+                    <div className="absolute top-4 right-4 w-8 h-8 neon-border rounded-full flex items-center justify-center neon-glow bg-gradient-to-r from-blue-400 to-cyan-300">
+                      <span className="text-slate-900 font-bold text-sm">✓</span>
+                    </div>
+                  )}
+
+                  {/* Player Info */}
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+                      {player.name.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-white mb-1">{player.name}</h3>
+                      <p className="text-slate-400 text-sm">{player.position} • {player.sport}</p>
+                      <p className="text-slate-500 text-xs">Class of {player.year}</p>
+                    </div>
+                  </div>
+
+                  {/* GAR Score */}
+                  <div className="mb-4 text-center">
+                    <div className={`text-3xl font-bold ${player.garScore >= 8 ? 'neon-text neon-glow' : 'text-blue-400'}`}>
+                      {player.garScore.toFixed(1)}
+                    </div>
+                    <p className="text-slate-400 text-sm">GAR Score</p>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="space-y-2">
+                    <div className="text-sm text-slate-300 font-medium mb-2">Performance Metrics</div>
+                    {Object.entries(player.stats).map(([key, value]) => (
+                      <div key={key} className="flex justify-between items-center">
+                        <span className="text-slate-400 text-sm capitalize">{key}</span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-16 bg-slate-700 rounded-full h-1.5">
+                            <div 
+                              className={`h-1.5 rounded-full ${value >= 8 ? 'bg-gradient-to-r from-blue-400 to-cyan-300 neon-glow' : value >= 6 ? 'bg-blue-400' : value >= 4 ? 'bg-yellow-400' : 'bg-red-400'}`}
+                              style={{ width: `${(value / 10) * 100}%` }}
+                            ></div>
+                          </div>
+                          <span className={`text-sm font-medium ${value >= 8 ? 'neon-text' : value >= 6 ? 'text-blue-400' : value >= 4 ? 'text-yellow-400' : 'text-red-400'}`}>
+                            {value.toFixed(1)}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Star Rating */}
+                  <div className="flex justify-center mt-4 gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => {
+                      const isActive = player.garScore >= star * 2
+                      return (
+                        <Star
+                          key={star}
+                          className={`w-4 h-4 ${
+                            isActive 
+                              ? player.garScore >= 8 
+                                ? 'text-cyan-400 neon-glow' 
+                                : 'text-blue-400'
+                              : 'text-slate-600'
+                          } ${isActive ? 'fill-current' : ''}`}
+                        />
+                      )
+                    })}
+                  </div>
+
+                  {/* Background Effect */}
+                  <div className="absolute inset-0 opacity-5 pointer-events-none">
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500 rounded-full blur-2xl"></div>
+                    <div className="absolute bottom-0 left-0 w-16 h-16 bg-purple-500 rounded-full blur-2xl"></div>
+                  </div>
+                </div>
+              )
+              return <PlayerCard key={player.id} />
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* Complete Stack */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-white mb-8">YOUR COMPLETE STACK</h2>
+          <h2 className="text-4xl font-bold neon-text mb-8">YOUR COMPLETE STACK</h2>
           <div className="grid md:grid-cols-2 gap-4 mb-12">
             {[
               "GAR Score Analysis (13 sports)",
@@ -328,12 +468,12 @@ export default function Go4ItHomePage() {
               "Athlete Dashboard + Mobile Access"
             ].map((feature, index) => (
               <div key={index} className="flex items-center text-slate-300 text-lg">
-                <CheckCircle className="w-6 h-6 text-blue-400 mr-3 flex-shrink-0" />
+                <CheckCircle className="w-6 h-6 neon-text mr-3 flex-shrink-0" />
                 <span>{feature}</span>
               </div>
             ))}
           </div>
-          <a href="/register" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-12 py-4 rounded-lg font-bold text-xl transition-colors inline-block shadow-lg hover:shadow-xl">
+          <a href="/register" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-12 py-4 rounded-lg font-bold text-xl transition-colors inline-block shadow-lg hover:shadow-xl neon-glow">
             Start Free. Get Ranked. Go4It.
           </a>
         </div>
