@@ -7,21 +7,24 @@ export async function GET(req: NextRequest) {
       {
         id: '1',
         type: 'camp',
-        title: 'Merida Summer Elite Camp',
-        description: 'Elite football training in beautiful Merida with professional coaches and GAR analysis',
-        price: '$899',
-        image: '/camps/merida-summer.jpg',
+        title: 'English With Sports Camp',
+        description: 'Learn English through sports & games with native English-speaking coaches',
+        price: '$275USD',
+        image: '/camps/merida-english.jpg',
         content: {
-          location: 'Merida, Mexico',
-          dates: 'July 15-20, 2025',
+          location: 'Unidad Deportiva del Sur Henry Martín, Mérida',
+          dates: 'August 4-8 & August 11-15, 2025',
           features: [
-            'Professional GAR video analysis',
-            'Elite coaching from D1 staff',
-            'USA Football membership included',
-            'Action Network recruiting profile'
+            'Learn English through sports & games',
+            'Native English-speaking coaches',
+            'Flag football, basketball, soccer, tennis',
+            'Daily lunch and snacks included',
+            'Ages 5-17 years welcome'
           ],
-          maxParticipants: 32,
-          category: 'ELITE'
+          maxParticipants: 60,
+          category: 'BILINGUAL',
+          schedule: '8:00 AM - 4:00 PM',
+          additionalInfo: 'Where language and movement connect. Learn English through games, sports and mentorship from international coaches and American athletes.'
         },
         isActive: true,
         updatedAt: new Date().toISOString()
@@ -29,21 +32,29 @@ export async function GET(req: NextRequest) {
       {
         id: '2',
         type: 'camp',
-        title: 'Merida Winter Skills Camp',
-        description: 'Intensive skills development camp with personalized coaching',
-        price: '$699',
-        image: '/camps/merida-winter.jpg',
+        title: 'Team Camps & Coaching Clinics',
+        description: 'Elite training with USA Football coaches and potential Dallas program qualification',
+        price: '$725USD / $225USD',
+        image: '/camps/merida-team.jpg',
         content: {
-          location: 'Merida, Mexico',
-          dates: 'December 20-23, 2025',
+          location: 'Unidad Deportiva del Sur Henry Martín, Mérida',
+          dates: 'August 6-16, 2025',
           features: [
-            'Intensive skills development',
-            'Position-specific training',
-            'Mental performance coaching',
-            'Nutrition and wellness sessions'
+            'Work with USA Football coaches',
+            'Develop winning strategies',
+            'Individual players welcome',
+            'USA Football membership included',
+            '3 days = 6 practices = 9 total sessions'
           ],
-          maxParticipants: 24,
-          category: 'SKILLS'
+          maxParticipants: 16,
+          category: 'ELITE',
+          schedule: 'Day Camp: 8AM-4PM / Overnight Camp: 6PM-10PM',
+          additionalInfo: 'Only 4 teams per session. Elite participants may qualify for exclusive 10-week S.T.A.g.e. program in Dallas, Texas with 2x Super Bowl Champion Derrick Martin.',
+          featuredStaff: [
+            '2x Super Bowl Champion Derrick Martin',
+            'NFL alumnus Talib Wise (Spanish National Team coach)',
+            'USA Football certified coaches'
+          ]
         },
         isActive: true,
         updatedAt: new Date().toISOString()

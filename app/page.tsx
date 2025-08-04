@@ -450,29 +450,30 @@ export default function Go4ItHomePage() {
           <p className="text-center text-slate-400 mb-12">Elite training camps and competitions to elevate your game</p>
           
           <div className="grid md:grid-cols-2 gap-8 mb-12">
-            {/* Merida Summer Camp */}
+            {/* English With Sports Camp */}
             <div className="hero-bg neon-border rounded-xl p-8 relative overflow-hidden">
               <div className="absolute top-4 right-4">
-                <div className="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold">ELITE</div>
+                <div className="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold">BILINGUAL</div>
               </div>
               <div className="mb-6">
-                <h3 className="text-2xl font-bold text-white mb-2">Merida Summer Elite Camp</h3>
+                <h3 className="text-2xl font-bold text-white mb-2">English With Sports Camp</h3>
                 <div className="flex items-center text-slate-400 mb-2">
                   <MapPin className="w-4 h-4 mr-2" />
-                  <span>Merida, Mexico</span>
+                  <span>Unidad Deportiva del Sur Henry Martín, Mérida</span>
                 </div>
                 <div className="flex items-center text-slate-400 mb-4">
                   <Calendar className="w-4 h-4 mr-2" />
-                  <span>July 15-20, 2025</span>
+                  <span>August 4-8 & August 11-15, 2025</span>
                 </div>
               </div>
               
               <div className="space-y-3 mb-6">
                 {[
-                  "Professional GAR video analysis",
-                  "Elite coaching from D1 staff", 
-                  "USA Football membership included",
-                  "Action Network recruiting profile"
+                  "Learn English through sports & games",
+                  "Native English-speaking coaches",
+                  "Flag football, basketball, soccer, tennis",
+                  "Daily lunch and snacks included",
+                  "Ages 5-17 years welcome"
                 ].map((feature, index) => (
                   <div key={index} className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-blue-400 mr-3 flex-shrink-0" />
@@ -482,15 +483,15 @@ export default function Go4ItHomePage() {
               </div>
               
               <div className="flex items-center justify-between mb-6">
-                <div className="text-3xl font-bold text-blue-400">$899</div>
+                <div className="text-3xl font-bold text-blue-400">$275USD</div>
                 <div className="flex items-center text-slate-400">
                   <Users className="w-4 h-4 mr-2" />
-                  <span>Limited to 32 athletes</span>
+                  <span>8:00 AM - 4:00 PM</span>
                 </div>
               </div>
               
               <a href="/camp-registration" className="w-full glow-button text-center py-3 inline-block">
-                Join Elite Camp - Create Profile Required
+                Join Bilingual Camp - Create Profile Required
               </a>
               
               <div className="absolute inset-0 opacity-5 pointer-events-none">
@@ -499,29 +500,30 @@ export default function Go4ItHomePage() {
               </div>
             </div>
 
-            {/* Winter Skills Camp */}
+            {/* Team Camps & Coaching Clinics */}
             <div className="hero-bg neon-border rounded-xl p-8 relative overflow-hidden">
               <div className="absolute top-4 right-4">
-                <div className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-bold">SKILLS</div>
+                <div className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-bold">ELITE</div>
               </div>
               <div className="mb-6">
-                <h3 className="text-2xl font-bold text-white mb-2">Merida Winter Skills Camp</h3>
+                <h3 className="text-2xl font-bold text-white mb-2">Team Camps & Coaching Clinics</h3>
                 <div className="flex items-center text-slate-400 mb-2">
                   <MapPin className="w-4 h-4 mr-2" />
-                  <span>Merida, Mexico</span>
+                  <span>Unidad Deportiva del Sur Henry Martín, Mérida</span>
                 </div>
                 <div className="flex items-center text-slate-400 mb-4">
                   <Calendar className="w-4 h-4 mr-2" />
-                  <span>December 20-23, 2025</span>
+                  <span>August 6-16, 2025</span>
                 </div>
               </div>
               
               <div className="space-y-3 mb-6">
                 {[
-                  "Intensive skills development",
-                  "Position-specific training",
-                  "Mental performance coaching",
-                  "Nutrition and wellness sessions"
+                  "Work with USA Football coaches",
+                  "Develop winning strategies",
+                  "Individual players welcome",
+                  "USA Football membership included",
+                  "3 days = 6 practices = 9 total sessions"
                 ].map((feature, index) => (
                   <div key={index} className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-purple-400 mr-3 flex-shrink-0" />
@@ -531,15 +533,20 @@ export default function Go4ItHomePage() {
               </div>
               
               <div className="flex items-center justify-between mb-6">
-                <div className="text-3xl font-bold text-purple-400">$699</div>
+                <div>
+                  <div className="text-2xl font-bold text-purple-400">$725USD</div>
+                  <div className="text-sm text-slate-400">Day Camp (8AM-4PM)</div>
+                  <div className="text-xl font-bold text-purple-300 mt-1">$225USD</div>
+                  <div className="text-sm text-slate-400">Overnight Camp</div>
+                </div>
                 <div className="flex items-center text-slate-400">
                   <Users className="w-4 h-4 mr-2" />
-                  <span>Limited to 24 athletes</span>
+                  <span>Only 4 teams per session</span>
                 </div>
               </div>
               
               <a href="/camp-registration" className="w-full bg-purple-600 hover:bg-purple-700 text-white text-center py-3 rounded-lg font-bold transition-colors inline-block">
-                Register for Skills Camp - Profile Required
+                Register for Elite Training - Profile Required
               </a>
               
               <div className="absolute inset-0 opacity-5 pointer-events-none">
@@ -551,7 +558,8 @@ export default function Go4ItHomePage() {
           
           <div className="text-center">
             <p className="text-slate-400 mb-4">Registration requires creating your Go4It athlete profile</p>
-            <p className="text-blue-400 font-semibold">Get verified. Get ranked. Get recruited.</p>
+            <p className="text-blue-400 font-semibold">Featured: 2x Super Bowl Champion Derrick Martin & NFL alumnus Talib Wise</p>
+            <p className="text-slate-500 text-sm mt-2">Elite participants may qualify for exclusive 10-week S.T.A.g.e. program in Dallas, Texas</p>
           </div>
         </div>
       </section>
