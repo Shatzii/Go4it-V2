@@ -33,21 +33,22 @@ export default function AdminContentManagement() {
       {
         id: '1',
         type: 'camp',
-        title: 'Merida Summer Elite Camp',
-        description: 'Elite football training in beautiful Merida with professional coaches and GAR analysis',
-        price: '$899',
-        image: '/camps/merida-summer.jpg',
+        title: 'English With Sports Camp',
+        description: 'Learn English through sports & games with native English-speaking coaches',
+        price: '$275USD',
+        image: '/camps/merida-english.jpg',
         content: {
-          location: 'Merida, Mexico',
-          dates: 'July 15-20, 2025',
+          location: 'Unidad Deportiva del Sur Henry Martín, Mérida',
+          dates: 'August 4-8 & August 11-15, 2025',
           features: [
-            'Professional GAR video analysis',
-            'Elite coaching from D1 staff',
-            'USA Football membership included',
-            'Action Network recruiting profile'
+            'Learn English through sports & games',
+            'Native English-speaking coaches',
+            'Flag football, basketball, soccer, tennis',
+            'Daily lunch and snacks included',
+            'Ages 5-17 years welcome'
           ],
-          maxParticipants: 32,
-          category: 'ELITE'
+          maxParticipants: 60,
+          category: 'BILINGUAL'
         },
         isActive: true,
         updatedAt: new Date().toISOString()
@@ -55,21 +56,22 @@ export default function AdminContentManagement() {
       {
         id: '2',
         type: 'camp',
-        title: 'Merida Winter Skills Camp',
-        description: 'Intensive skills development camp with personalized coaching',
-        price: '$699',
-        image: '/camps/merida-winter.jpg',
+        title: 'Team Camps & Coaching Clinics',
+        description: 'Elite training with USA Football coaches and potential Dallas program qualification',
+        price: '$725USD / $225USD',
+        image: '/camps/merida-team.jpg',
         content: {
-          location: 'Merida, Mexico',
-          dates: 'December 20-23, 2025',
+          location: 'Unidad Deportiva del Sur Henry Martín, Mérida',
+          dates: 'August 6-16, 2025',
           features: [
-            'Intensive skills development',
-            'Position-specific training',
-            'Mental performance coaching',
-            'Nutrition and wellness sessions'
+            'Work with USA Football coaches',
+            'Develop winning strategies',
+            'Individual players welcome',
+            'USA Football membership included',
+            '3 days = 6 practices = 9 total sessions'
           ],
-          maxParticipants: 24,
-          category: 'SKILLS'
+          maxParticipants: 16,
+          category: 'ELITE'
         },
         isActive: true,
         updatedAt: new Date().toISOString()
@@ -240,12 +242,56 @@ export default function AdminContentManagement() {
             } : null)}
             className="form-input"
           >
+            <option value="">Select Category</option>
             <option value="ELITE">ELITE</option>
             <option value="SKILLS">SKILLS</option>
+            <option value="BILINGUAL">BILINGUAL</option>
             <option value="TRAINING">TRAINING</option>
             <option value="CAMP">CAMP</option>
           </select>
         </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-300 mb-2">Schedule</label>
+        <input
+          type="text"
+          value={editForm?.content?.schedule || ''}
+          onChange={(e) => setEditForm(editForm ? { 
+            ...editForm, 
+            content: { ...editForm.content, schedule: e.target.value }
+          } : null)}
+          className="form-input"
+          placeholder="8:00 AM - 4:00 PM"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-300 mb-2">Additional Information</label>
+        <textarea
+          value={editForm?.content?.additionalInfo || ''}
+          onChange={(e) => setEditForm(editForm ? { 
+            ...editForm, 
+            content: { ...editForm.content, additionalInfo: e.target.value }
+          } : null)}
+          className="form-input"
+          rows={3}
+          placeholder="Extra details about the camp, qualifications, etc."
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-300 mb-2">Featured Staff (one per line)</label>
+        <textarea
+          value={editForm?.content?.featuredStaff?.join('\n') || ''}
+          onChange={(e) => setEditForm(editForm ? { 
+            ...editForm, 
+            content: { ...editForm.content, featuredStaff: e.target.value.split('\n').filter(s => s.trim()) }
+          } : null)}
+          className="form-input"
+          rows={4}
+          placeholder="2x Super Bowl Champion Derrick Martin&#10;NFL alumnus Talib Wise"
+        />
       </div>
 
       <div>
