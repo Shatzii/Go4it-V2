@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { 
   Trophy, Star, Users, Target, Zap, Award,
   TrendingUp, Calendar, FileText, Camera,
-  Brain, Dumbbell, Eye, Heart, Sync, Crown,
+  Brain, Dumbbell, Eye, Heart, RotateCw, Crown,
   ArrowRight, CheckCircle, Play, Upload
 } from 'lucide-react';
 
@@ -26,7 +26,7 @@ const featureCategories = [
       {
         name: "Multi-Angle Analysis",
         path: "/multi-angle-upload",
-        icon: <Sync className="w-5 h-5" />,
+        icon: <RotateCw className="w-5 h-5" />,
         description: "360-degree comprehensive analysis from multiple cameras",
         status: "enhanced"
       },
