@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromToken } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { videoAnalysis } from '@/lib/schema';
+import { videoAnalysis, users } from '@/lib/schema';
+import { eq } from 'drizzle-orm';
 import { analyzeVideoWithAI } from '@/lib/ai-analysis';
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getUserFromToken(request);
+    const user = await getUserFromRequest(request);
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -124,30 +125,18 @@ export async function POST(request: NextRequest) {
     const [savedAnalysis] = await db
       .insert(videoAnalysis)
       .values({
-        userId: user.id,
+        userId: parseInt(user.id),
         sport: sport,
         fileName: `multi-angle-${videoFiles.length}-cameras`,
         filePath: 'multi-angle-analysis',
-        garScore: finalGarScore,
+        garScore: finalGarScore.toString(),
         analysisData: multiAngleReport,
-        feedback: generateMultiAngleFeedback(multiAngleReport),
-        analysisType: 'multi-angle',
-        createdAt: new Date(),
+        feedback: generateMultiAngleFeedback(multiAngleReport)
       })
       .returning();
 
-    // Update user's GAR score if this is their best
-    if (finalGarScore > (user.garScore || 0)) {
-      await db
-        .update(users)
-        .set({ 
-          garScore: finalGarScore,
-          lastGarAnalysis: new Date(),
-          isVerified: true,
-          verifiedAt: new Date()
-        })
-        .where(eq(users.id, user.id));
-    }
+    // Note: User GAR score update would need additional schema fields
+    // Skipping user update for now as those fields don't exist in current schema
 
     return NextResponse.json({
       success: true,
@@ -198,7 +187,7 @@ function identifyStrengths(angleAnalyses: any, overallMetrics: any): string[] {
   const topMetrics = metrics.slice(0, 2);
   
   topMetrics.forEach(([metric, score]) => {
-    if (score >= 80) {
+    if ((score as number) >= 80) {
       const strengthDescriptions = {
         technicalSkills: 'Excellent technical execution across multiple angles',
         athleticism: 'Strong athletic performance visible from all perspectives',
@@ -231,7 +220,7 @@ function identifyImprovements(angleAnalyses: any, overallMetrics: any): string[]
   const bottomMetrics = metrics.slice(0, 2);
   
   bottomMetrics.forEach(([metric, score]) => {
-    if (score < 75) {
+    if ((score as number) < 75) {
       const improvementDescriptions = {
         technicalSkills: 'Focus on technical fundamentals with targeted practice',
         athleticism: 'Enhance physical conditioning and athletic development',
@@ -312,7 +301,7 @@ function generateMultiAngleRecommendations(angleAnalyses: any, overallMetrics: a
   
   // Technical recommendations based on weakest areas
   const weakestMetric = Object.entries(overallMetrics).reduce((min, [key, value]) => 
-    value < min.value ? { key, value } : min, { key: '', value: 100 });
+    (value as number) < min.value ? { key, value: value as number } : min, { key: '', value: 100 });
   
   if (weakestMetric.value < 75) {
     const techRecommendations = {

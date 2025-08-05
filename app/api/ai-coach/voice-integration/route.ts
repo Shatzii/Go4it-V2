@@ -98,7 +98,7 @@ async function handleGarDataProcessing(user: any, data: any) {
   // Analyze game awareness
   if (analysisData?.gameAwareness >= 80) {
     coachingInsights.strengths.push('Excellent game intelligence');
-    coachingInsights.voice_coaching_points.push('Your game awareness is impressive. Tell me about your decision-making process.');');
+    coachingInsights.voice_coaching_points.push('Your game awareness is impressive. Tell me about your decision-making process.');
   } else if (analysisData?.gameAwareness < 70) {
     coachingInsights.improvements.push('Game awareness development');
     coachingInsights.voice_coaching_points.push('I want to help you read the game better. What situations challenge you most?');
@@ -185,7 +185,7 @@ export async function GET(request: NextRequest) {
       userId: user.id,
       status: 'active',
       startTime: new Date().toISOString(),
-      currentContext: `Coaching ${user.firstName} - GAR Score: ${user.garScore}`
+      currentContext: `Coaching ${user.firstName} - Skill Level: ${user.skillLevel}`
     };
 
     return NextResponse.json({
