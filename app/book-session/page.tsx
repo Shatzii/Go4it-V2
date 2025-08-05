@@ -8,11 +8,15 @@ import { Calendar, Clock, CreditCard, User, Star, CheckCircle } from 'lucide-rea
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
-if (!process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY) {
-  throw new Error('Missing Stripe public key');
-}
+// Initialize Stripe with runtime check to prevent build-time errors
+const getStripePublicKey = () => {
+  if (typeof window === 'undefined') return ''; // Server-side rendering
+  return process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '';
+};
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
+const stripePromise = typeof window !== 'undefined' 
+  ? loadStripe(getStripePublicKey()) 
+  : Promise.resolve(null);
 
 const BookingForm = ({ sessionData }: { sessionData: any }) => {
   const stripe = useStripe();
@@ -88,6 +92,12 @@ export default function BookSessionPage() {
   }, []);
 
   const createPaymentIntent = async (data: any) => {
+    // Check if Stripe is properly configured
+    if (!getStripePublicKey()) {
+      console.error('Stripe public key not configured');
+      return;
+    }
+    
     try {
       const response = await fetch('/api/payments/class', {
         method: 'POST',
@@ -234,10 +244,14 @@ export default function BookSessionPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {clientSecret ? (
+              {clientSecret && getStripePublicKey() ? (
                 <Elements stripe={stripePromise} options={{ clientSecret }}>
                   <BookingForm sessionData={sessionData} />
                 </Elements>
+              ) : !getStripePublicKey() ? (
+                <div className="p-4 bg-red-500/20 border border-red-500/30 rounded-lg">
+                  <p className="text-red-400 text-sm">Payment system not configured. Please contact support.</p>
+                </div>
               ) : (
                 <div className="flex items-center justify-center py-8">
                   <div className="animate-spin w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full"></div>

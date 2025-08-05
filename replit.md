@@ -11,6 +11,14 @@ User wants approval before any design or content changes.
 
 ## Recent Changes (August 2025)
 
+### Stripe Deployment Fixes Applied (January 2025)
+- **Environment Variable Updates**: Changed from `VITE_STRIPE_PUBLIC_KEY` to `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` for Next.js compatibility
+- **Runtime Environment Check**: Added client-side checks to prevent build-time errors during static generation  
+- **Error Handling**: Implemented proper fallbacks for missing Stripe configuration in production
+- **API Version Update**: Updated Stripe API version to `2025-07-30.basil` for compatibility
+- **Documentation Updates**: Updated `PRODUCTION_DEPLOYMENT_GUIDE.md` with correct environment variable names
+- **Environment Template**: Created `.env.example` with proper Stripe variable naming convention
+
 ### AI Football Coach Integration (January 2025)
 - **Complete Phase 1 & 2 Implementation**: Built comprehensive AI voice coaching system integrated across all platform features
 - **ElevenLabs Voice Integration**: Connected real ElevenLabs agent (tb80F0KNyKEjO8IymYOU) for authentic voice coaching experience
