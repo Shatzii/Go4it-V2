@@ -36,7 +36,7 @@ const cameraAngles = [
   { value: 'right', label: 'Right Side', description: 'Opposite perspective' }
 ];
 
-function MultiAngleUploadPage() {
+export default function MultiAngleUploadPage() {
   const [videos, setVideos] = useState<VideoUpload[]>([]);
   const [selectedSport, setSelectedSport] = useState('football');
   const [syncedAnalysis, setSyncedAnalysis] = useState<any>(null);
@@ -445,13 +445,5 @@ function MultiAngleUploadPage() {
         </Card>
       </div>
     </div>
-  );
-}
-
-export default function Page() {
-  return (
-    <ErrorBoundary>
-      <MultiAngleUploadPage />
-    </ErrorBoundary>
   );
 }

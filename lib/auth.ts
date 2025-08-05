@@ -1,7 +1,7 @@
 // Auth helper functions
 import { NextRequest } from 'next/server';
 
-export async function getUserFromRequest(request: NextRequest) {
+export async function getUserFromRequest(request?: NextRequest) {
   // Mock user for development - in production this would check JWT/session
   return {
     id: 'user_123',
@@ -13,5 +13,7 @@ export async function getUserFromRequest(request: NextRequest) {
   };
 }
 
-// Alias for API compatibility
-export const getCurrentUser = getUserFromRequest;
+// Export for API compatibility
+export async function getCurrentUser(request?: NextRequest) {
+  return getUserFromRequest(request);
+}
