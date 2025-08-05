@@ -107,7 +107,7 @@ export function useCMS() {
               id: '1',
               title: 'English With Sports Camp',
               description: 'Learn English through sports & games with native English-speaking coaches',
-              price: '$275USD',
+              price: '$125USD',
               location: 'Unidad Deportiva del Sur Henry Martín, Mérida',
               dates: 'August 4-8 & August 11-15, 2025',
               category: 'BILINGUAL',

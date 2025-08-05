@@ -76,7 +76,7 @@ export default function USAFootballMarketingPage() {
                   <MapPin className="w-5 h-5 mr-2" />
                   <span>Mérida, Mexico • August 4-15, 2025</span>
                 </div>
-                <div className="text-4xl font-bold text-blue-400 mb-2">$275USD</div>
+                <div className="text-4xl font-bold text-blue-400 mb-2">$125USD</div>
                 <div className="text-lg text-slate-300">+ $35 USA Football Membership (normally $119)</div>
               </div>
 
