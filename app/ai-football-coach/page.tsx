@@ -4,536 +4,265 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  MessageCircle, Video, Upload, Trophy, Star, 
-  Mic, Camera, FileText, Brain, Target, Users,
-  Play, Pause, Send, Image, Zap, Crown, Check
+  Brain, MessageCircle, Video, Play, Mic, 
+  Trophy, Target, Star, Users, Crown, Zap
 } from 'lucide-react';
 
-interface SubscriptionTier {
-  id: string;
-  name: string;
-  price: number;
-  features: string[];
-  recommended?: boolean;
-  userType: 'player' | 'coach' | 'parent';
-}
-
-const subscriptionTiers: SubscriptionTier[] = [
-  {
-    id: 'player-basic',
-    name: 'Player Coach',
-    price: 8.95,
-    userType: 'player',
-    features: [
-      'Voice conversations with AI Football Coach',
-      'Flag football & tackle football support',
-      'Personalized training advice',
-      'Technique analysis through chat',
-      'Position-specific guidance (QB, RB, WR, Defense)',
-      'Basic performance tracking',
-      '50 AI conversations per month',
-      'Flag football rules & strategy coaching'
-    ]
-  },
-  {
-    id: 'coach-premium',
-    name: 'Coach & Parent Pro',
-    price: 12.95,
-    userType: 'coach',
-    recommended: true,
-    features: [
-      'Everything in Player Coach',
-      'Flag football league management',
-      'Team management tools',
-      'Parent communication features',
-      'Advanced analytics dashboard',
-      'Video analysis integration',
-      'Unlimited AI conversations',
-      'Custom training plan generation',
-      'Multi-player coaching sessions',
-      'Flag football playbook creation',
-      'Youth development tracking'
-    ]
-  },
-  {
-    id: 'elite-package',
-    name: 'Elite Integration',
-    price: 24.95,
-    userType: 'coach',
-    features: [
-      'Everything in Coach & Parent Pro',
-      'Visual GAR analysis integration',
-      'Real-time video coaching',
-      'AI-powered recruiting reports',
-      'Advanced biomechanical analysis',
-      'Custom drill library creation',
-      'Priority support',
-      'Beta feature access',
-      'Flag football tournament planning',
-      'Advanced game film analysis',
-      'College pathway guidance (flag to tackle)'
-    ]
-  }
-];
-
 export default function AIFootballCoachPage() {
-  const [selectedTier, setSelectedTier] = useState<string>('coach-premium');
-  const [activeTab, setActiveTab] = useState('overview');
   const [isVoiceActive, setIsVoiceActive] = useState(false);
-  const [conversation, setConversation] = useState<any[]>([]);
 
-  const startVoiceConversation = () => {
+  const startVoiceCoaching = () => {
+    const context = encodeURIComponent("Welcome to your personal AI Football Coach! I'm here to help you improve your game with personalized coaching, technique analysis, and strategic guidance. What would you like to work on today?");
+    const voiceUrl = `https://elevenlabs.io/app/talk-to?agent_id=tb80F0KNyKEjO8IymYOU&context=${context}`;
+    
+    window.open(voiceUrl, '_blank', 'width=800,height=600');
     setIsVoiceActive(true);
-    // Initialize ElevenLabs agent
-    const agentUrl = 'https://elevenlabs.io/app/talk-to?agent_id=Ayif0LPWGdrZglfWInx0';
-    window.open(agentUrl, '_blank', 'width=800,height=600');
   };
 
-  const handleSubscribe = async (tierId: string) => {
-    try {
-      const response = await fetch('/api/subscribe/ai-coach', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tierId })
-      });
-
-      if (response.ok) {
-        const { checkoutUrl } = await response.json();
-        window.location.href = checkoutUrl;
-      }
-    } catch (error) {
-      console.error('Subscription error:', error);
+  const coachingAreas = [
+    {
+      title: 'Technique Analysis',
+      description: 'Get voice feedback on your form and mechanics',
+      icon: Video,
+      color: 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+    },
+    {
+      title: 'Game Strategy',
+      description: 'Learn advanced football strategies and tactics',
+      icon: Brain,
+      color: 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+    },
+    {
+      title: 'Performance Review',
+      description: 'Comprehensive analysis of your athletic progress',
+      icon: Trophy,
+      color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+    },
+    {
+      title: 'Skill Development',
+      description: 'Personalized training plans for improvement',
+      icon: Target,
+      color: 'bg-green-500/20 text-green-400 border-green-500/30'
+    },
+    {
+      title: 'Recruiting Guidance',
+      description: 'College recruitment advice and planning',
+      icon: Star,
+      color: 'bg-red-500/20 text-red-400 border-red-500/30'
+    },
+    {
+      title: 'Team Leadership',
+      description: 'Develop leadership skills and team dynamics',
+      icon: Users,
+      color: 'bg-orange-500/20 text-orange-400 border-orange-500/30'
     }
-  };
+  ];
+
+  const quickStartTopics = [
+    "How can I improve my GAR score?",
+    "What are the best drills for my position?", 
+    "Help me understand college recruiting",
+    "Analyze my recent game performance",
+    "Create a training plan for me",
+    "Explain flag football strategies"
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 py-16">
+      <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-6">
             <Brain className="w-12 h-12 text-green-400" />
-            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
-              AI FOOTBALL COACH
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+              AI Football Coach
             </h1>
           </div>
-          <p className="text-xl text-slate-300 mb-8">
-            Advanced AI-powered football coaching with voice, visual, and text integration
+          <p className="text-xl text-slate-300 mb-6">
+            Your personal AI-powered football coaching assistant with voice interaction
           </p>
           
-          {/* Quick Demo */}
-          <Card className="bg-slate-800 border-slate-700 max-w-4xl mx-auto mb-8">
-            <CardContent className="p-8">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Mic className="w-8 h-8 text-green-400" />
-                  </div>
-                  <h3 className="font-bold text-white mb-2">Voice Coaching</h3>
-                  <p className="text-slate-300 text-sm">Natural voice conversations with AI coach</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Camera className="w-8 h-8 text-blue-400" />
-                  </div>
-                  <h3 className="font-bold text-white mb-2">Visual Analysis</h3>
-                  <p className="text-slate-300 text-sm">GAR integration with video analysis</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <MessageCircle className="w-8 h-8 text-purple-400" />
-                  </div>
-                  <h3 className="font-bold text-white mb-2">Text Chat</h3>
-                  <p className="text-slate-300 text-sm">Detailed text-based coaching sessions</p>
-                </div>
-              </div>
-              
-              <Button 
-                onClick={startVoiceConversation}
-                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-bold px-8 py-3"
-              >
-                <Mic className="w-5 h-5 mr-2" />
-                Try Voice Coach Demo
-              </Button>
-            </CardContent>
-          </Card>
+          {/* Main Voice Coaching Button */}
+          <div className="mb-8">
+            <Button 
+              onClick={startVoiceCoaching}
+              className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg font-semibold rounded-lg shadow-lg"
+            >
+              <Mic className="w-6 h-6 mr-3" />
+              Start Voice Coaching Session
+            </Button>
+            <p className="text-sm text-slate-400 mt-2">
+              Click to open your personal AI coach in a new window
+            </p>
+          </div>
+
+          <div className="flex items-center justify-center gap-4">
+            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+              Voice Powered
+            </Badge>
+            <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
+              Personalized
+            </Badge>
+            <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+              Real-time
+            </Badge>
+          </div>
         </div>
 
-        {/* Subscription Tiers */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center text-white mb-8">Choose Your Coaching Plan</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {subscriptionTiers.map((tier) => (
-              <Card 
-                key={tier.id} 
-                className={`relative transition-all duration-300 ${
-                  tier.recommended 
-                    ? 'bg-gradient-to-br from-blue-500/20 to-green-500/20 border-blue-500 scale-105' 
-                    : 'bg-slate-800 border-slate-700 hover:border-blue-500/50'
-                }`}
-              >
-                {tier.recommended && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-4 py-1">
-                      RECOMMENDED
-                    </Badge>
+        {/* Coaching Areas */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {coachingAreas.map((area, index) => {
+            const IconComponent = area.icon;
+            return (
+              <Card key={index} className="bg-slate-800 border-slate-700 hover:border-green-500/50 transition-all duration-300">
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-lg ${area.color} flex items-center justify-center`}>
+                      <IconComponent className="w-5 h-5" />
+                    </div>
+                    <CardTitle className="text-white text-lg">{area.title}</CardTitle>
                   </div>
-                )}
-                
-                <CardHeader className="text-center pb-4">
-                  <div className="mb-4">
-                    {tier.userType === 'player' && <Trophy className="w-12 h-12 text-green-400 mx-auto" />}
-                    {tier.userType === 'coach' && <Users className="w-12 h-12 text-blue-400 mx-auto" />}
-                  </div>
-                  <CardTitle className="text-2xl text-white mb-2">{tier.name}</CardTitle>
-                  <div className="text-4xl font-bold text-white mb-2">
-                    ${tier.price}
-                    <span className="text-lg text-slate-400">/month</span>
-                  </div>
-                  <p className="text-slate-300 text-sm capitalize">
-                    For {tier.userType}s {tier.userType === 'coach' && '& Parents'}
-                  </p>
                 </CardHeader>
-                
                 <CardContent>
-                  <ul className="space-y-3 mb-8">
-                    {tier.features.map((feature, index) => (
-                      <li key={index} className="flex items-start gap-2 text-slate-300">
-                        <Check className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  
+                  <p className="text-slate-300 text-sm mb-4">{area.description}</p>
                   <Button 
-                    onClick={() => handleSubscribe(tier.id)}
-                    className={`w-full ${
-                      tier.recommended
-                        ? 'bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600'
-                        : 'bg-slate-700 hover:bg-slate-600'
-                    }`}
+                    onClick={startVoiceCoaching}
+                    variant="outline" 
+                    className="w-full border-slate-600 hover:bg-slate-700"
                   >
-                    Get Started
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Ask Coach
                   </Button>
                 </CardContent>
               </Card>
-            ))}
-          </div>
+            );
+          })}
         </div>
 
-        {/* Flag Football Features */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center text-white mb-8">
-            Flag Football Coaching Excellence
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            <Card className="bg-gradient-to-br from-green-500/20 to-blue-500/20 border-green-500/30">
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Trophy className="w-6 h-6 text-green-400" />
-                </div>
-                <h3 className="font-bold text-white mb-2">Youth Development</h3>
-                <p className="text-slate-300 text-sm">Specialized coaching for flag football fundamentals and skill progression</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 border-blue-500/30">
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-6 h-6 text-blue-400" />
-                </div>
-                <h3 className="font-bold text-white mb-2">Team Strategy</h3>
-                <p className="text-slate-300 text-sm">Flag football formations, plays, and game management tactics</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-purple-500/30">
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Target className="w-6 h-6 text-purple-400" />
-                </div>
-                <h3 className="font-bold text-white mb-2">Skills Training</h3>
-                <p className="text-slate-300 text-sm">Flag pulling, route running, and quarterback mechanics</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border-yellow-500/30">
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Star className="w-6 h-6 text-yellow-400" />
-                </div>
-                <h3 className="font-bold text-white mb-2">Tournament Prep</h3>
-                <p className="text-slate-300 text-sm">Competition strategies and mental preparation for flag football tournaments</p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Advanced AI Features */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center text-white mb-12">
-            Advanced AI Coaching Features
-          </h2>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Option 1: Voice + Visual */}
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
-                    <Mic className="w-6 h-6 text-green-400" />
-                  </div>
-                  <CardTitle className="text-xl text-white">Voice + Visual Integration</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-slate-300">
-                  Connect ElevenLabs voice agent with GAR video analysis system
-                </p>
-                
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm text-slate-300">
-                    <Check className="w-4 h-4 text-green-400" />
-                    <span>Upload video, get voice coaching feedback</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-slate-300">
-                    <Check className="w-4 h-4 text-green-400" />
-                    <span>Real-time technique corrections via voice</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-slate-300">
-                    <Check className="w-4 h-4 text-green-400" />
-                    <span>GAR scores explained through conversation</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-slate-300">
-                    <Check className="w-4 h-4 text-green-400" />
-                    <span>Voice-guided video replay analysis</span>
-                  </div>
-                </div>
-
-                <div className="bg-slate-700/50 rounded-lg p-4">
-                  <h4 className="font-semibold text-white mb-2">Technical Implementation:</h4>
-                  <ul className="text-xs text-slate-400 space-y-1">
-                    <li>• ElevenLabs API integration</li>
-                    <li>• GAR analysis pipeline connection</li>
-                    <li>• WebRTC for real-time video</li>
-                    <li>• Custom webhook handlers</li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Option 2: Multi-Modal AI */}
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                    <Brain className="w-6 h-6 text-blue-400" />
-                  </div>
-                  <CardTitle className="text-xl text-white">Multi-Modal AI Coach</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-slate-300">
-                  Advanced AI that processes voice, video, and text simultaneously
-                </p>
-                
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm text-slate-300">
-                    <Check className="w-4 h-4 text-blue-400" />
-                    <span>OpenAI GPT-4 Vision for video analysis</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-slate-300">
-                    <Check className="w-4 h-4 text-blue-400" />
-                    <span>Context-aware coaching across all inputs</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-slate-300">
-                    <Check className="w-4 h-4 text-blue-400" />
-                    <span>Personalized training plan generation</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-slate-300">
-                    <Check className="w-4 h-4 text-blue-400" />
-                    <span>Progress tracking with voice updates</span>
-                  </div>
-                </div>
-
-                <div className="bg-slate-700/50 rounded-lg p-4">
-                  <h4 className="font-semibold text-white mb-2">Technical Implementation:</h4>
-                  <ul className="text-xs text-slate-400 space-y-1">
-                    <li>• OpenAI GPT-4 Vision API</li>
-                    <li>• Multi-modal prompt engineering</li>
-                    <li>• Context memory management</li>
-                    <li>• Real-time data fusion</li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Option 3: Complete Platform */}
-            <Card className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-purple-500">
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                    <Crown className="w-6 h-6 text-purple-400" />
-                  </div>
-                  <CardTitle className="text-xl text-white">Complete AI Ecosystem</CardTitle>
-                </div>
-                <Badge className="bg-purple-500 text-white w-fit">PREMIUM</Badge>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-slate-300">
-                  Full integration with recruiting, team management, and parent communication
-                </p>
-                
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm text-slate-300">
-                    <Check className="w-4 h-4 text-purple-400" />
-                    <span>AI recruiting report generation</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-slate-300">
-                    <Check className="w-4 h-4 text-purple-400" />
-                    <span>Team performance analytics</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-slate-300">
-                    <Check className="w-4 h-4 text-purple-400" />
-                    <span>Parent progress notifications</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-slate-300">
-                    <Check className="w-4 h-4 text-purple-400" />
-                    <span>College coach outreach automation</span>
-                  </div>
-                </div>
-
-                <div className="bg-slate-700/50 rounded-lg p-4">
-                  <h4 className="font-semibold text-white mb-2">Technical Implementation:</h4>
-                  <ul className="text-xs text-slate-400 space-y-1">
-                    <li>• Complete platform integration</li>
-                    <li>• Automated workflow triggers</li>
-                    <li>• Advanced analytics pipeline</li>
-                    <li>• Multi-user collaboration tools</li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Demo Interface */}
+        {/* Quick Start Topics */}
         <Card className="bg-slate-800 border-slate-700 mb-8">
           <CardHeader>
-            <CardTitle className="text-2xl text-white flex items-center gap-2">
-              <MessageCircle className="w-6 h-6 text-blue-400" />
-              AI Coach Interface
+            <CardTitle className="text-white flex items-center gap-2">
+              <Zap className="w-5 h-5 text-yellow-400" />
+              Quick Start Topics
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-3 bg-slate-700">
-                <TabsTrigger value="voice">Voice Coach</TabsTrigger>
-                <TabsTrigger value="visual">Visual Analysis</TabsTrigger>
-                <TabsTrigger value="chat">Text Chat</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="voice" className="mt-6">
-                <div className="text-center py-8">
-                  <div className="w-32 h-32 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Mic className="w-16 h-16 text-green-400" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-4">Voice Coaching Session</h3>
-                  <p className="text-slate-300 mb-6">
-                    Click below to start a voice conversation with your AI Football Coach
-                  </p>
-                  <Button 
-                    onClick={startVoiceConversation}
-                    className="bg-green-600 hover:bg-green-700 text-white px-8 py-3"
-                  >
-                    <Play className="w-5 h-5 mr-2" />
-                    Start Voice Session
-                  </Button>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="visual" className="mt-6">
-                <div className="text-center py-8">
-                  <div className="w-32 h-32 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Video className="w-16 h-16 text-blue-400" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-4">Video Analysis + Voice Feedback</h3>
-                  <p className="text-slate-300 mb-6">
-                    Upload your training video and get instant AI coaching through voice
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Button 
-                      onClick={() => window.location.href = '/gar-upload'}
-                      className="bg-blue-600 hover:bg-blue-700"
-                    >
-                      <Upload className="w-5 h-5 mr-2" />
-                      Upload Video
-                    </Button>
-                    <Button 
-                      onClick={() => window.location.href = '/multi-angle-upload'}
-                      variant="outline"
-                      className="border-slate-600"
-                    >
-                      <Camera className="w-5 h-5 mr-2" />
-                      Multi-Angle Analysis
-                    </Button>
-                  </div>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="chat" className="mt-6">
-                <div className="bg-slate-700/50 rounded-lg p-4 h-64 flex items-center justify-center">
-                  <div className="text-center">
-                    <MessageCircle className="w-12 h-12 text-purple-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-bold text-white mb-2">Text-Based Coaching</h3>
-                    <p className="text-slate-300 text-sm mb-4">
-                      Subscribe to unlock detailed text conversations with your AI coach
-                    </p>
-                    <Button 
-                      onClick={() => handleSubscribe('player-basic')}
-                      className="bg-purple-600 hover:bg-purple-700"
-                    >
-                      Subscribe to Chat
-                    </Button>
-                  </div>
-                </div>
-              </TabsContent>
-            </Tabs>
+            <p className="text-slate-300 mb-4">
+              Not sure what to ask? Try one of these popular coaching topics:
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {quickStartTopics.map((topic, index) => (
+                <Button
+                  key={index}
+                  onClick={() => {
+                    const context = encodeURIComponent(`The athlete is asking: "${topic}". Please provide detailed, personalized coaching advice on this topic.`);
+                    const voiceUrl = `https://elevenlabs.io/app/talk-to?agent_id=tb80F0KNyKEjO8IymYOU&context=${context}`;
+                    window.open(voiceUrl, '_blank', 'width=800,height=600');
+                  }}
+                  variant="outline"
+                  className="justify-start text-left border-slate-600 hover:bg-slate-700 h-auto py-3 px-4"
+                >
+                  <Play className="w-4 h-4 mr-3 text-green-400 flex-shrink-0" />
+                  <span className="text-sm">{topic}</span>
+                </Button>
+              ))}
+            </div>
           </CardContent>
         </Card>
 
-        {/* CTA Section */}
-        <div className="text-center">
-          <Card className="bg-gradient-to-r from-green-500/20 to-blue-500/20 border-green-500/30 max-w-4xl mx-auto">
-            <CardContent className="p-8">
-              <h3 className="text-3xl font-bold text-white mb-4">Ready to Transform Your Football Training?</h3>
-              <p className="text-slate-300 text-lg mb-8">
-                Get personalized AI coaching through voice, visual analysis, and text - all integrated with your GAR performance data.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
-                  onClick={() => handleSubscribe('coach-premium')}
-                  className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-bold px-8 py-3"
-                >
-                  <Crown className="w-5 h-5 mr-2" />
-                  Start Free Trial
-                </Button>
-                <Button 
-                  onClick={startVoiceConversation}
-                  variant="outline"
-                  className="border-slate-600 text-slate-300 px-8 py-3"
-                >
-                  <Mic className="w-5 h-5 mr-2" />
-                  Try Voice Demo
-                </Button>
+        {/* Integration Features */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Crown className="w-5 h-5 text-yellow-400" />
+                Integrated Platform Features
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
+                <span className="text-slate-300">GAR Video Analysis</span>
+                <Badge className="bg-green-500/20 text-green-400">Active</Badge>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
+                <span className="text-slate-300">StarPath Progression</span>
+                <Badge className="bg-green-500/20 text-green-400">Active</Badge>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
+                <span className="text-slate-300">Challenge Coaching</span>
+                <Badge className="bg-green-500/20 text-green-400">Active</Badge>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
+                <span className="text-slate-300">Recruiting Reports</span>
+                <Badge className="bg-green-500/20 text-green-400">Active</Badge>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
+                <span className="text-slate-300">Flag Football Academy</span>
+                <Badge className="bg-green-500/20 text-green-400">Active</Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-blue-400" />
+                Advanced Coaching Tools
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
+                <span className="text-slate-300">AI Playbook Creator</span>
+                <Badge className="bg-blue-500/20 text-blue-400">Phase 2</Badge>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
+                <span className="text-slate-300">Tournament Management</span>
+                <Badge className="bg-blue-500/20 text-blue-400">Phase 2</Badge>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
+                <span className="text-slate-300">Mobile Analysis</span>
+                <Badge className="bg-blue-500/20 text-blue-400">Phase 2</Badge>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
+                <span className="text-slate-300">Multi-Sport Coaching</span>
+                <Badge className="bg-blue-500/20 text-blue-400">Phase 2</Badge>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-slate-700/50 rounded">
+                <span className="text-slate-300">Parent Dashboard</span>
+                <Badge className="bg-blue-500/20 text-blue-400">Phase 2</Badge>
               </div>
             </CardContent>
           </Card>
         </div>
+
+        {/* Call to Action */}
+        <Card className="bg-gradient-to-r from-green-500/20 to-blue-500/20 border-green-500/30">
+          <CardContent className="p-8 text-center">
+            <h3 className="text-2xl font-bold text-white mb-4">Ready to Elevate Your Game?</h3>
+            <p className="text-slate-300 text-lg mb-6">
+              Experience personalized AI coaching that adapts to your unique needs and goals.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button 
+                onClick={startVoiceCoaching}
+                className="bg-green-600 hover:bg-green-700 px-8 py-3"
+              >
+                <Mic className="w-5 h-5 mr-2" />
+                Start Coaching Now
+              </Button>
+              <Button 
+                onClick={() => window.location.href = '/ai-coach-dashboard'}
+                variant="outline"
+                className="border-slate-600 text-slate-300 px-8 py-3"
+              >
+                <Crown className="w-5 h-5 mr-2" />
+                View Full Dashboard
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
