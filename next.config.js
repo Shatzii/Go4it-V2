@@ -3,6 +3,9 @@ const nextConfig = {
   // Optimized configuration for Replit deployment and .replit.dev preview
   output: 'standalone',
   
+  // Force server-side rendering for payment pages to handle runtime env vars
+  pageExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  
   // Disable image optimization for Replit
   images: { 
     unoptimized: true,
@@ -25,6 +28,12 @@ const nextConfig = {
   },
   typescript: { 
     ignoreBuildErrors: true 
+  },
+  
+  // Environment variables configuration
+  env: {
+    // Ensure runtime environment variables are accessible
+    CUSTOM_KEY: process.env.CUSTOM_KEY,
   },
   
   // Headers for cross-origin compatibility

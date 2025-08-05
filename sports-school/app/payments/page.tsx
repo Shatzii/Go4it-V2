@@ -15,7 +15,15 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '')
+// Initialize Stripe with runtime check to prevent build-time errors
+const getStripePublicKey = () => {
+  if (typeof window === 'undefined') return ''; // Server-side rendering
+  return process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '';
+};
+
+const stripePromise = typeof window !== 'undefined' 
+  ? loadStripe(getStripePublicKey()) 
+  : Promise.resolve(null);
 
 interface PaymentFormProps {
   amount: number
