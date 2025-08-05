@@ -265,7 +265,9 @@ export async function PUT(req: NextRequest) {
 // GET sections for live website
 export async function POST(req: NextRequest) {
   try {
-    const { action } = await req.json();
+    const body = await req.text();
+    const data = body ? JSON.parse(body) : {};
+    const { action } = data;
     
     if (action === 'getPublicContent') {
       // Return only visible sections for the public website
