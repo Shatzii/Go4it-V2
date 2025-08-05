@@ -12,3 +12,6 @@ export async function getUserFromRequest(request: NextRequest) {
     coachingLevel: 'intermediate'
   };
 }
+
+// Alias for API compatibility
+export const getCurrentUser = getUserFromRequest;

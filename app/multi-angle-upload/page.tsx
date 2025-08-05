@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { ErrorBoundary } from '@/components/error-boundary';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { 
   Upload, Camera, Play, Trash2, CheckCircle, 
   AlertCircle, RotateCcw, Zap, Target, Video,
-  Sync, Clock, Award, Star
+  RotateCw, Clock, Award, Star
 } from 'lucide-react';
 
 interface VideoUpload {
@@ -35,7 +36,7 @@ const cameraAngles = [
   { value: 'right', label: 'Right Side', description: 'Opposite perspective' }
 ];
 
-export default function MultiAngleUploadPage() {
+function MultiAngleUploadPage() {
   const [videos, setVideos] = useState<VideoUpload[]>([]);
   const [selectedSport, setSelectedSport] = useState('football');
   const [syncedAnalysis, setSyncedAnalysis] = useState<any>(null);
@@ -200,7 +201,7 @@ export default function MultiAngleUploadPage() {
     switch (status) {
       case 'uploading': return <Upload className="w-4 h-4 text-blue-400 animate-pulse" />;
       case 'ready': return <CheckCircle className="w-4 h-4 text-green-400" />;
-      case 'syncing': return <Sync className="w-4 h-4 text-yellow-400 animate-spin" />;
+      case 'syncing': return <RotateCw className="w-4 h-4 text-yellow-400 animate-spin" />;
       case 'analyzed': return <Award className="w-4 h-4 text-purple-400" />;
       default: return <Clock className="w-4 h-4 text-slate-400" />;
     }
@@ -212,7 +213,7 @@ export default function MultiAngleUploadPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-6">
-            <Sync className="w-12 h-12 text-blue-400" />
+            <RotateCw className="w-12 h-12 text-blue-400" />
             <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
               MULTI-ANGLE ANALYSIS
             </h1>
@@ -389,7 +390,7 @@ export default function MultiAngleUploadPage() {
                         className="bg-yellow-600 hover:bg-yellow-700"
                         disabled={isAnalyzing}
                       >
-                        <Sync className="w-4 h-4 mr-2" />
+                        <RotateCw className="w-4 h-4 mr-2" />
                         Synchronize Videos
                       </Button>
                       <Button
@@ -444,5 +445,13 @@ export default function MultiAngleUploadPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <ErrorBoundary>
+      <MultiAngleUploadPage />
+    </ErrorBoundary>
   );
 }
