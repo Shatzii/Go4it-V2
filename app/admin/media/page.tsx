@@ -6,9 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { 
-  Upload, Image, FileText, Video, Trash2, 
+  Upload, FileText, Video, Trash2, 
   Search, Filter, Grid, List, Download,
-  Plus, Folder, Copy, Edit, Eye
+  Plus, Folder, Copy, Edit, Eye, ImageIcon
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -136,7 +136,7 @@ export default function MediaLibraryPage() {
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'image': return <Image className="w-4 h-4" />;
+      case 'image': return <ImageIcon className="w-4 h-4" />;
       case 'video': return <Video className="w-4 h-4" />;
       case 'document': return <FileText className="w-4 h-4" />;
       default: return <FileText className="w-4 h-4" />;
