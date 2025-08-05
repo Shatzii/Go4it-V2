@@ -1,3 +1,5 @@
+'use client';
+
 // Go4It Sports Landing Page - StarPath Enhanced 
 import { Star, TrendingUp, GraduationCap, Trophy, CheckCircle, Target, Zap, Crown, Award, MapPin, Calendar, Users } from 'lucide-react'
 import { useCMS } from '../hooks/useCMS'
