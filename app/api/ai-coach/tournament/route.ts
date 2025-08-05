@@ -327,12 +327,12 @@ function estimateTournamentDuration(teamCount: number, format: string) {
 
 function generateTournamentVoiceCoaching(tournamentId: string, userId: string) {
   const context = `Tournament coaching session for tournament ${tournamentId}. Provide strategic advice, team management, and motivational coaching.`;
-  return `https://elevenlabs.io/app/talk-to?agent_id=Ayif0LPWGdrZglfWInx0&context=${encodeURIComponent(context)}`;
+  return `https://elevenlabs.io/app/talk-to?agent_id=tb80F0KNyKEjO8IymYOU&context=${encodeURIComponent(context)}`;
 }
 
 function generateGameVoiceAnalysis(gameId: string, userId: string) {
   const context = `Post-game analysis for game ${gameId}. Provide detailed performance review and improvement recommendations.`;
-  return `https://elevenlabs.io/app/talk-to?agent_id=Ayif0LPWGdrZglfWInx0&context=${encodeURIComponent(context)}`;
+  return `https://elevenlabs.io/app/talk-to?agent_id=tb80F0KNyKEjO8IymYOU&context=${encodeURIComponent(context)}`;
 }
 
 // Additional helper functions would be implemented here...

@@ -262,7 +262,7 @@ function generateSpecialSituations(sport: string) {
 
 function generateVoiceCoachingUrl(playbookId: string, userId: string) {
   const context = `Playbook coaching session for playbook ${playbookId}. Provide detailed explanations of plays, formations, and coaching points.`;
-  return `https://elevenlabs.io/app/talk-to?agent_id=Ayif0LPWGdrZglfWInx0&context=${encodeURIComponent(context)}`;
+  return `https://elevenlabs.io/app/talk-to?agent_id=tb80F0KNyKEjO8IymYOU&context=${encodeURIComponent(context)}`;
 }
 
 // GET endpoint for retrieving existing playbooks

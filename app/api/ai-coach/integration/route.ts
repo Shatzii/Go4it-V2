@@ -78,7 +78,7 @@ async function handleGarIntegration(user: any, action: string, data: any) {
       return NextResponse.json({
         success: true,
         voiceFeedback,
-        elevenlabsUrl: `https://elevenlabs.io/app/talk-to?agent_id=Ayif0LPWGdrZglfWInx0&context=${encodeURIComponent(voiceFeedback.context)}`,
+        elevenlabsUrl: `https://elevenlabs.io/app/talk-to?agent_id=tb80F0KNyKEjO8IymYOU&context=${encodeURIComponent(voiceFeedback.context)}`,
         improvements: generateImprovementPlan(analysisData),
         nextSteps: generateNextSteps(garScore, analysisData)
       });
@@ -120,7 +120,7 @@ async function handleStarPathIntegration(user: any, action: string, data: any) {
         progressionGuide,
         nextMilestones: generateNextMilestones(currentLevel, skills),
         motivationalMessage: generateMotivationalMessage(achievements),
-        elevenlabsUrl: `https://elevenlabs.io/app/talk-to?agent_id=Ayif0LPWGdrZglfWInx0&context=${encodeURIComponent(progressionGuide.context)}`
+        elevenlabsUrl: `https://elevenlabs.io/app/talk-to?agent_id=tb80F0KNyKEjO8IymYOU&context=${encodeURIComponent(progressionGuide.context)}`
       });
 
     case 'celebrate_achievement':
