@@ -62,6 +62,12 @@ export default function RootLayout({
                         <a href="/gar-upload" className="text-slate-300 hover:text-white transition-colors">
                           Get GAR Score
                         </a>
+                        <a href="/challenges" className="text-slate-300 hover:text-white transition-colors">
+                          Challenges
+                        </a>
+                        <a href="/navigation" className="text-slate-300 hover:text-white transition-colors">
+                          Features
+                        </a>
                         <a href="/pricing" className="text-slate-300 hover:text-white transition-colors">
                           Pricing
                         </a>
