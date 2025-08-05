@@ -1,7 +1,34 @@
 // Go4It Sports Landing Page - StarPath Enhanced 
 import { Star, TrendingUp, GraduationCap, Trophy, CheckCircle, Target, Zap, Crown, Award, MapPin, Calendar, Users } from 'lucide-react'
+import { useCMS } from '../hooks/useCMS'
 
 export default function Go4ItHomePage() {
+  const { getSectionContent, getGlobalSettings, isLoaded } = useCMS();
+  
+  // Get content from CMS or use fallback
+  const heroContent = getSectionContent('hero') || {
+    headline: 'Get Verified. Get Ranked. Get Recruited.',
+    subheadline: 'The first AI-powered platform built for neurodivergent student athletes',
+    ctaText: 'Start Free. Get Ranked. Go4It.',
+    ctaLink: '/register',
+    features: [
+      'GAR Score Analysis (13 sports)',
+      'StarPath XP Progression System', 
+      '24/7 AI Coaching Engine'
+    ]
+  };
+  
+  const eventsContent = getSectionContent('events') || {
+    title: 'UPCOMING EVENTS',
+    subtitle: 'Elite training camps and competitions to elevate your game',
+    events: []
+  };
+  
+  const globalSettings = getGlobalSettings() || {
+    siteName: 'Go4It Sports',
+    tagline: 'Get Verified. Get Ranked. Get Recruited.'
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       {/* Hero Section */}
@@ -16,14 +43,14 @@ export default function Go4ItHomePage() {
             <span className="neon-text text-lg font-semibold tracking-wider uppercase">Go4It Sports</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            <span className="glow-text">Unlock Your 5-Star Potential</span>
+            <span className="glow-text">{heroContent.headline}</span>
           </h1>
           <p className="text-xl md:text-2xl text-slate-300 mb-8 max-w-4xl mx-auto leading-relaxed font-medium">
-            Your journey from student athlete to college recruit starts now.
+            {heroContent.subheadline}
           </p>
           <div className="flex gap-4 justify-center flex-wrap mb-8">
-            <a href="/register" className="glow-button text-lg">
-              Start Your Free Profile
+            <a href={heroContent.ctaLink || '/register'} className="glow-button text-lg">
+              {heroContent.ctaText}
             </a>
           </div>
           <p className="text-slate-500 text-sm font-medium">
@@ -446,114 +473,74 @@ export default function Go4ItHomePage() {
       {/* Upcoming Events */}
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-center neon-text mb-4">UPCOMING EVENTS</h2>
-          <p className="text-center text-slate-400 mb-12">Elite training camps and competitions to elevate your game</p>
+          <h2 className="text-4xl font-bold text-center neon-text mb-4">{eventsContent.title}</h2>
+          <p className="text-center text-slate-400 mb-12">{eventsContent.subtitle}</p>
           
           <div className="grid md:grid-cols-2 gap-8 mb-12">
-            {/* English With Sports Camp */}
-            <div className="hero-bg neon-border rounded-xl p-8 relative overflow-hidden">
-              <div className="absolute top-4 right-4">
-                <div className="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold">BILINGUAL</div>
-              </div>
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-white mb-2">English With Sports Camp</h3>
-                <div className="flex items-center text-slate-400 mb-2">
-                  <MapPin className="w-4 h-4 mr-2" />
-                  <span>Unidad Deportiva del Sur Henry Martín, Mérida</span>
-                </div>
-                <div className="flex items-center text-slate-400 mb-4">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  <span>August 4-8 & August 11-15, 2025</span>
-                </div>
-              </div>
-              
-              <div className="space-y-3 mb-6">
-                {[
-                  "Learn English through sports & games",
-                  "Native English-speaking coaches",
-                  "Flag football, basketball, soccer, tennis",
-                  "Daily lunch and snacks included",
-                  "Ages 5-17 years welcome"
-                ].map((feature, index) => (
-                  <div key={index} className="flex items-center">
-                    <CheckCircle className="w-5 h-5 text-blue-400 mr-3 flex-shrink-0" />
-                    <span className="text-slate-300">{feature}</span>
+            {eventsContent.events?.map((event: any, index: number) => (
+              <div key={event.id || index} className="hero-bg neon-border rounded-xl p-8 relative overflow-hidden">
+                <div className="absolute top-4 right-4">
+                  <div className={`text-white px-3 py-1 rounded-full text-sm font-bold ${
+                    event.category === 'BILINGUAL' ? 'bg-red-600' :
+                    event.category === 'ELITE' ? 'bg-purple-600' :
+                    'bg-blue-600'
+                  }`}>
+                    {event.category}
                   </div>
-                ))}
-              </div>
-              
-              <div className="flex items-center justify-between mb-6">
-                <div className="text-3xl font-bold text-blue-400">$275USD</div>
-                <div className="flex items-center text-slate-400">
-                  <Users className="w-4 h-4 mr-2" />
-                  <span>8:00 AM - 4:00 PM</span>
                 </div>
-              </div>
-              
-              <a href="/camp-registration" className="w-full glow-button text-center py-3 inline-block">
-                Join Bilingual Camp - Create Profile Required
-              </a>
-              
-              <div className="absolute inset-0 opacity-5 pointer-events-none">
-                <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500 rounded-full blur-2xl"></div>
-                <div className="absolute bottom-0 left-0 w-16 h-16 bg-purple-500 rounded-full blur-2xl"></div>
-              </div>
-            </div>
-
-            {/* Team Camps & Coaching Clinics */}
-            <div className="hero-bg neon-border rounded-xl p-8 relative overflow-hidden">
-              <div className="absolute top-4 right-4">
-                <div className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-bold">ELITE</div>
-              </div>
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-white mb-2">Team Camps & Coaching Clinics</h3>
-                <div className="flex items-center text-slate-400 mb-2">
-                  <MapPin className="w-4 h-4 mr-2" />
-                  <span>Unidad Deportiva del Sur Henry Martín, Mérida</span>
-                </div>
-                <div className="flex items-center text-slate-400 mb-4">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  <span>August 6-16, 2025</span>
-                </div>
-              </div>
-              
-              <div className="space-y-3 mb-6">
-                {[
-                  "Work with USA Football coaches",
-                  "Develop winning strategies",
-                  "Individual players welcome",
-                  "USA Football membership included",
-                  "3 days = 6 practices = 9 total sessions"
-                ].map((feature, index) => (
-                  <div key={index} className="flex items-center">
-                    <CheckCircle className="w-5 h-5 text-purple-400 mr-3 flex-shrink-0" />
-                    <span className="text-slate-300">{feature}</span>
+                <div className="mb-6">
+                  <h3 className="text-2xl font-bold text-white mb-2">{event.title}</h3>
+                  <div className="flex items-center text-slate-400 mb-2">
+                    <MapPin className="w-4 h-4 mr-2" />
+                    <span>{event.location}</span>
                   </div>
-                ))}
-              </div>
-              
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <div className="text-2xl font-bold text-purple-400">$725USD</div>
-                  <div className="text-sm text-slate-400">Day Camp (8AM-4PM)</div>
-                  <div className="text-xl font-bold text-purple-300 mt-1">$225USD</div>
-                  <div className="text-sm text-slate-400">Overnight Camp</div>
+                  <div className="flex items-center text-slate-400 mb-4">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    <span>{event.dates}</span>
+                  </div>
                 </div>
-                <div className="flex items-center text-slate-400">
-                  <Users className="w-4 h-4 mr-2" />
-                  <span>Only 4 teams per session</span>
+                
+                <div className="space-y-3 mb-6">
+                  {event.features?.map((feature: string, featureIndex: number) => (
+                    <div key={featureIndex} className="flex items-center">
+                      <CheckCircle className={`w-5 h-5 mr-3 flex-shrink-0 ${
+                        event.category === 'BILINGUAL' ? 'text-blue-400' :
+                        event.category === 'ELITE' ? 'text-purple-400' :
+                        'text-blue-400'
+                      }`} />
+                      <span className="text-slate-300">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="flex items-center justify-between mb-6">
+                  <div className={`text-3xl font-bold ${
+                    event.category === 'BILINGUAL' ? 'text-blue-400' :
+                    event.category === 'ELITE' ? 'text-purple-400' :
+                    'text-blue-400'
+                  }`}>
+                    {event.price}
+                  </div>
+                  <div className="flex items-center text-slate-400">
+                    <Users className="w-4 h-4 mr-2" />
+                    <span>{event.schedule || `Max ${event.maxParticipants} athletes`}</span>
+                  </div>
+                </div>
+                
+                <a href="/camp-registration" className={`w-full text-center py-3 inline-block font-bold transition-colors rounded-lg ${
+                  event.category === 'BILINGUAL' ? 'glow-button' :
+                  event.category === 'ELITE' ? 'bg-purple-600 hover:bg-purple-700 text-white' :
+                  'glow-button'
+                }`}>
+                  Register - Profile Required
+                </a>
+                
+                <div className="absolute inset-0 opacity-5 pointer-events-none">
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500 rounded-full blur-2xl"></div>
+                  <div className="absolute bottom-0 left-0 w-16 h-16 bg-purple-500 rounded-full blur-2xl"></div>
                 </div>
               </div>
-              
-              <a href="/camp-registration" className="w-full bg-purple-600 hover:bg-purple-700 text-white text-center py-3 rounded-lg font-bold transition-colors inline-block">
-                Register for Elite Training - Profile Required
-              </a>
-              
-              <div className="absolute inset-0 opacity-5 pointer-events-none">
-                <div className="absolute top-0 right-0 w-20 h-20 bg-purple-500 rounded-full blur-2xl"></div>
-                <div className="absolute bottom-0 left-0 w-16 h-16 bg-blue-500 rounded-full blur-2xl"></div>
-              </div>
-            </div>
+            ))}
           </div>
           
           <div className="text-center">
