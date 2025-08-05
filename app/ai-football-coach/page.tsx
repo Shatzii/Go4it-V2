@@ -13,7 +13,7 @@ export default function AIFootballCoachPage() {
   const [isVoiceActive, setIsVoiceActive] = useState(false);
 
   const startVoiceCoaching = () => {
-    const context = encodeURIComponent("Welcome to your personal AI Football Coach! I'm here to help you improve your game with personalized coaching, technique analysis, and strategic guidance. What would you like to work on today?");
+    const context = encodeURIComponent("Welcome to your personal AI Strength & Conditioning Coach! I'm here to help you build strength, improve conditioning, develop proper form, and create personalized training programs. What aspect of your fitness would you like to work on today?");
     const voiceUrl = `https://elevenlabs.io/app/talk-to?agent_id=tb80F0KNyKEjO8IymYOU&context=${context}`;
     
     window.open(voiceUrl, '_blank', 'width=800,height=600');
@@ -76,11 +76,11 @@ export default function AIFootballCoachPage() {
           <div className="flex items-center justify-center gap-3 mb-6">
             <Brain className="w-12 h-12 text-green-400" />
             <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
-              AI Football Coach
+              AI Strength & Conditioning Coach
             </h1>
           </div>
           <p className="text-xl text-slate-300 mb-6">
-            Your personal AI-powered football coaching assistant with voice interaction
+            Your personal AI-powered strength & conditioning coach with voice interaction
           </p>
           
           {/* Main Voice Coaching Button */}
