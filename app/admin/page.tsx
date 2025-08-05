@@ -1,707 +1,237 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { AuthClient } from '@/lib/auth-client'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useState } from 'react';
+import Link from 'next/link';
 import { 
-  Users, 
   Settings, 
-  BarChart3, 
+  Users, 
   FileText, 
-  Database, 
-  Shield, 
-  Bell, 
-  Upload, 
-  Download,
-  Activity,
-  Server,
+  BarChart3, 
+  DollarSign, 
+  Image,
   Globe,
-  UserCheck,
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-  TrendingUp,
-  Video,
-  GraduationCap,
-  Target,
-  Brain,
-  Search,
-  Filter,
-  Edit,
-  Trash2,
-  Eye,
-  Plus,
-  Save,
-  Calendar,
-  Clock,
-  Star,
-  Trophy,
-  Zap,
-  MessageSquare,
-  Mail,
-  Phone,
-  MapPin,
-  Link,
-  Copy,
-  ExternalLink
-} from 'lucide-react'
+  Shield,
+  Bell,
+  Edit3,
+  Eye
+} from 'lucide-react';
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('overview')
-  const [isLoading, setIsLoading] = useState(true)
-  const [adminUser, setAdminUser] = useState(null)
-  const [demoLoading, setDemoLoading] = useState(false)
-  const [verificationResults, setVerificationResults] = useState(null)
-
-  const populateDemoUsers = async () => {
-    setDemoLoading(true)
-    try {
-      const response = await fetch('/api/admin/populate-demo', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${AuthClient.getToken()}`
-        }
-      })
-      
-      if (!response.ok) {
-        throw new Error('Demo population failed')
-      }
-      
-      const data = await response.json()
-      
-      if (data.success) {
-        alert(`Successfully created ${data.users?.length || 0} real user accounts!\n\nTest Accounts:\n- athlete@test.com (password: athlete123)\n- coach@test.com (password: coach123)\n- parent@test.com (password: parent123)\n- admin@test.com (password: admin123)\n- And more...`)
-      } else {
-        alert(`User creation failed: ${data.message}`)
-      }
-    } catch (error) {
-      console.error('User creation error:', error)
-      alert('Failed to create real users')
-    } finally {
-      setDemoLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    // Check admin authentication
-    const checkAdminAuth = async () => {
-      try {
-        // Add a small delay to ensure localStorage is available
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        const token = AuthClient.getToken();
-        console.log('Admin auth check - Token:', token ? 'Present' : 'Missing');
-        
-        if (!token) {
-          console.log('No token found, redirecting to auth');
-          alert('Please log in to access the admin dashboard');
-          window.location.href = '/auth';
-          return;
-        }
-        
-        const userData = await AuthClient.checkAuthStatus();
-        console.log('Admin auth check - User data:', userData);
-        
-        if (userData && userData.role === 'admin') {
-          setAdminUser(userData);
-          setIsLoading(false);
-          AuthClient.clearTokenFresh(); // Clear the fresh token flag
-        } else {
-          console.log('User is not admin or auth failed, redirecting to auth');
-          alert(userData ? 'Admin access required' : 'Authentication failed. Please log in again.');
-          AuthClient.removeToken();
-          window.location.href = '/auth';
-        }
-      } catch (error) {
-        console.error('Admin auth check failed:', error);
-        alert('Error accessing admin dashboard. Please try logging in again.');
-        AuthClient.removeToken();
-        window.location.href = '/auth';
-      }
-    };
-
-    checkAdminAuth();
-  }, []);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-white">Loading Admin Dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
-  const OverviewTab = () => (
-    <div className="space-y-6">
-      {/* System Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-slate-800 border-slate-700">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-slate-400">Total Users</p>
-                <p className="text-2xl font-bold text-white">2,847</p>
-                <p className="text-xs text-green-400">+12% from last month</p>
-              </div>
-              <Users className="w-8 h-8 text-blue-500" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-slate-800 border-slate-700">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-slate-400">Active Sessions</p>
-                <p className="text-2xl font-bold text-white">1,234</p>
-                <p className="text-xs text-green-400">+8% from yesterday</p>
-              </div>
-              <Activity className="w-8 h-8 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-slate-800 border-slate-700">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-slate-400">Video Analyses</p>
-                <p className="text-2xl font-bold text-white">15,678</p>
-                <p className="text-xs text-green-400">+23% from last week</p>
-              </div>
-              <Video className="w-8 h-8 text-purple-500" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-slate-800 border-slate-700">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-slate-400">System Health</p>
-                <p className="text-2xl font-bold text-white">98.7%</p>
-                <p className="text-xs text-green-400">All systems operational</p>
-              </div>
-              <Server className="w-8 h-8 text-orange-500" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Admin Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Card className="bg-slate-800 border-slate-700">
-          <CardContent className="p-4">
-            <Button 
-              onClick={populateDemoUsers}
-              disabled={demoLoading}
-              className="w-full bg-green-600 hover:bg-green-700"
-            >
-              {demoLoading ? 'Creating...' : 'Create Real Users'}
-            </Button>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-slate-800 border-slate-700">
-          <CardContent className="p-4">
-            <Button 
-              onClick={() => window.open('/admin-verification', '_blank')}
-              className="w-full bg-blue-600 hover:bg-blue-700"
-            >
-              Verify Features
-            </Button>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-slate-800 border-slate-700">
-          <CardContent className="p-4">
-            <Button 
-              onClick={() => window.open('/dashboard', '_blank')}
-              className="w-full bg-purple-600 hover:bg-purple-700"
-            >
-              User Dashboard
-            </Button>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-slate-800 border-slate-700">
-          <CardContent className="p-4">
-            <Button 
-              onClick={() => window.open('/academy', '_blank')}
-              className="w-full bg-orange-600 hover:bg-orange-700"
-            >
-              Academy System
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Recent Activity & System Status */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-slate-800 border-slate-700">
-          <CardHeader>
-            <CardTitle className="text-white">Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[
-                { user: 'john.doe@email.com', action: 'Video Analysis Completed', time: '2 minutes ago', type: 'success' },
-                { user: 'sarah.smith@email.com', action: 'Account Registration', time: '5 minutes ago', type: 'info' },
-                { user: 'mike.johnson@email.com', action: 'Academy Enrollment', time: '12 minutes ago', type: 'success' },
-                { user: 'admin@goforit.com', action: 'System Settings Updated', time: '1 hour ago', type: 'warning' },
-                { user: 'emma.davis@email.com', action: 'GAR Score: 87/100', time: '2 hours ago', type: 'success' }
-              ].map((activity, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-slate-700 rounded">
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-2 h-2 rounded-full ${
-                      activity.type === 'success' ? 'bg-green-500' : 
-                      activity.type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
-                    }`}></div>
-                    <div>
-                      <p className="text-sm font-medium text-white">{activity.action}</p>
-                      <p className="text-xs text-slate-400">{activity.user}</p>
-                    </div>
-                  </div>
-                  <span className="text-xs text-slate-500">{activity.time}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-slate-800 border-slate-700">
-          <CardHeader>
-            <CardTitle className="text-white">System Status</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span className="text-sm text-white">Web Server</span>
-                </div>
-                <Badge className="bg-green-500">Online</Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span className="text-sm text-white">Database</span>
-                </div>
-                <Badge className="bg-green-500">Online</Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span className="text-sm text-white">AI Engine</span>
-                </div>
-                <Badge className="bg-green-500">Online</Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span className="text-sm text-white">Video Processing</span>
-                </div>
-                <Badge className="bg-green-500">Online</Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <AlertTriangle className="w-4 h-4 text-yellow-500" />
-                  <span className="text-sm text-white">Email Service</span>
-                </div>
-                <Badge className="bg-yellow-500">Maintenance</Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  )
-
-  const UsersTab = () => (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-white">User Management</h2>
-        <Button className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="w-4 h-4 mr-2" />
-          Add User
-        </Button>
-      </div>
-
-      <Card className="bg-slate-800 border-slate-700">
-        <CardHeader>
-          <CardTitle className="text-white">User Statistics</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-white">2,847</p>
-              <p className="text-sm text-slate-400">Total Users</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-white">1,234</p>
-              <p className="text-sm text-slate-400">Active Today</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-white">567</p>
-              <p className="text-sm text-slate-400">Academy Students</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-white">89</p>
-              <p className="text-sm text-slate-400">Coaches</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-slate-800 border-slate-700">
-        <CardHeader>
-          <CardTitle className="text-white">Recent Users</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {[
-              { name: 'John Doe', email: 'john.doe@email.com', role: 'athlete', status: 'active', joined: '2 hours ago' },
-              { name: 'Sarah Smith', email: 'sarah.smith@email.com', role: 'coach', status: 'active', joined: '1 day ago' },
-              { name: 'Mike Johnson', email: 'mike.johnson@email.com', role: 'athlete', status: 'active', joined: '3 days ago' },
-              { name: 'Emma Davis', email: 'emma.davis@email.com', role: 'parent', status: 'active', joined: '1 week ago' }
-            ].map((user, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-slate-700 rounded">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
-                    <span className="text-xs font-medium text-white">{user.name.split(' ').map(n => n[0]).join('')}</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-white">{user.name}</p>
-                    <p className="text-xs text-slate-400">{user.email}</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Badge variant="secondary" className="bg-blue-500">{user.role}</Badge>
-                  <span className="text-xs text-slate-500">{user.joined}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  )
-
-  const ContentTab = () => (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-white">Content Management</h2>
-        <Button className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="w-4 h-4 mr-2" />
-          Create Content
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-slate-800 border-slate-700">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-white">
-              <FileText className="w-5 h-5" />
-              Blog Posts
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-400">Published</span>
-                <span className="font-semibold text-white">47</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-400">Drafts</span>
-                <span className="font-semibold text-white">12</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-400">Total Views</span>
-                <span className="font-semibold text-white">23,456</span>
-              </div>
-              <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
-                <FileText className="w-4 h-4 mr-2" />
-                Manage Posts
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-slate-800 border-slate-700">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-white">
-              <Video className="w-5 h-5" />
-              Training Videos
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-400">Total Videos</span>
-                <span className="font-semibold text-white">234</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-400">Hours Watched</span>
-                <span className="font-semibold text-white">1,234</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-400">New This Week</span>
-                <span className="font-semibold text-white">8</span>
-              </div>
-              <Button size="sm" className="w-full bg-green-600 hover:bg-green-700">
-                <Upload className="w-4 h-4 mr-2" />
-                Upload Video
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-slate-800 border-slate-700">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-white">
-              <Bell className="w-5 h-5" />
-              Announcements
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-400">Active</span>
-                <span className="font-semibold text-white">3</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-400">Scheduled</span>
-                <span className="font-semibold text-white">2</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-400">Total Sent</span>
-                <span className="font-semibold text-white">156</span>
-              </div>
-              <Button size="sm" className="w-full bg-purple-600 hover:bg-purple-700">
-                <Bell className="w-4 h-4 mr-2" />
-                New Announcement
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  )
-
-  const SystemTab = () => (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-white">System Settings</h2>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-slate-800 border-slate-700">
-          <CardHeader>
-            <CardTitle className="text-white">General Settings</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label className="text-white">Platform Name</Label>
-              <Input defaultValue="Go4It Sports Platform" className="bg-slate-700 border-slate-600 text-white" />
-            </div>
-            <div>
-              <Label className="text-white">Support Email</Label>
-              <Input defaultValue="support@go4itsports.com" className="bg-slate-700 border-slate-600 text-white" />
-            </div>
-            <div>
-              <Label className="text-white">Maintenance Mode</Label>
-              <Select defaultValue="disabled">
-                <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="enabled">Enabled</SelectItem>
-                  <SelectItem value="disabled">Disabled</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-slate-800 border-slate-700">
-          <CardHeader>
-            <CardTitle className="text-white">AI Settings</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label className="text-white">AI Model Provider</Label>
-              <Select defaultValue="self-hosted">
-                <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="self-hosted">Self-Hosted</SelectItem>
-                  <SelectItem value="openai">OpenAI</SelectItem>
-                  <SelectItem value="anthropic">Anthropic</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label className="text-white">Video Analysis Quality</Label>
-              <Select defaultValue="high">
-                <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="performance">Performance</SelectItem>
-                  <SelectItem value="balanced">Balanced</SelectItem>
-                  <SelectItem value="high">High Quality</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label className="text-white">Max Upload Size (MB)</Label>
-              <Input defaultValue="500" className="bg-slate-700 border-slate-600 text-white" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  )
-
   return (
-    <div className="min-h-screen bg-slate-900">
-      {/* Standalone Admin Header */}
-      <div className="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <img
-                src="/go4it-logo-new.jpg"
-                alt="Go4It Sports Logo"
-                className="w-8 h-8 rounded-lg object-cover"
-              />
-              <div>
-                <h1 className="text-xl font-bold text-white">Go4It Sports Admin</h1>
-                <p className="text-sm text-slate-400">Platform Administration</p>
-              </div>
+    <div className="min-h-screen bg-slate-900 text-white">
+      {/* Header */}
+      <div className="bg-slate-800 border-b border-slate-700 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="h-8 w-10 neon-border rounded flex items-center justify-center text-white font-bold text-sm neon-glow">
+              GO4IT
             </div>
-            <div className="flex items-center space-x-4">
-              <Button 
-                onClick={() => window.location.href = '/'}
-                variant="ghost"
-                size="sm"
-                className="text-slate-400 hover:text-white hover:bg-slate-700"
-              >
-                <ExternalLink className="w-4 h-4 mr-2" />
-                Back to Site
-              </Button>
-              <div className="text-right">
-                <p className="text-sm text-slate-400">Logged in as</p>
-                <p className="font-medium text-white">{adminUser?.email}</p>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
-                <span className="text-sm font-medium text-white">
-                  {adminUser?.firstName?.[0] || 'A'}{adminUser?.lastName?.[0] || 'D'}
-                </span>
-              </div>
-              <Button 
-                onClick={() => {
-                  AuthClient.removeToken();
-                  window.location.href = '/auth';
-                }}
-                variant="outline"
-                size="sm"
-                className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
-              >
-                Logout
-              </Button>
-            </div>
+            <h1 className="text-xl font-bold">Admin Dashboard</h1>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link 
+              href="/" 
+              className="bg-slate-600 hover:bg-slate-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+            >
+              <Eye className="w-4 h-4" />
+              View Site
+            </Link>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Breadcrumb Navigation */}
-        <div className="mb-6">
-          <nav className="flex items-center space-x-2 text-sm text-slate-400">
-            <span>Admin</span>
-            <span>/</span>
-            <span className="text-white font-medium">
-              {activeTab === 'overview' && 'Dashboard Overview'}
-              {activeTab === 'users' && 'User Management'}
-              {activeTab === 'content' && 'Content Management'}
-              {activeTab === 'system' && 'System Settings'}
-            </span>
+      <div className="flex">
+        {/* Sidebar */}
+        <div className="w-64 bg-slate-800 border-r border-slate-700 min-h-[calc(100vh-73px)]">
+          <nav className="p-6">
+            <div className="space-y-2">
+              <Link
+                href="/admin/cms"
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-700 transition-colors text-slate-300 hover:text-white"
+              >
+                <Edit3 className="w-5 h-5" />
+                <span>Seamless CMS</span>
+                <div className="ml-auto bg-blue-600 text-xs px-2 py-1 rounded">NEW</div>
+              </Link>
+              
+              <Link
+                href="/admin/content"
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-700 transition-colors text-slate-300 hover:text-white"
+              >
+                <FileText className="w-5 h-5" />
+                <span>Content Management</span>
+              </Link>
+              
+              <Link
+                href="/admin/users"
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-700 transition-colors text-slate-300 hover:text-white"
+              >
+                <Users className="w-5 h-5" />
+                <span>User Management</span>
+              </Link>
+              
+              <Link
+                href="/admin/coupons"
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-700 transition-colors text-slate-300 hover:text-white"
+              >
+                <DollarSign className="w-5 h-5" />
+                <span>Coupons</span>
+              </Link>
+              
+              <Link
+                href="/admin/analytics"
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-700 transition-colors text-slate-300 hover:text-white"
+              >
+                <BarChart3 className="w-5 h-5" />
+                <span>Analytics</span>
+              </Link>
+              
+              <Link
+                href="/admin/settings"
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-700 transition-colors text-slate-300 hover:text-white"
+              >
+                <Settings className="w-5 h-5" />
+                <span>Settings</span>
+              </Link>
+            </div>
           </nav>
         </div>
 
-        {/* Quick Stats Banner */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 text-white p-6 rounded-lg">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-400">1,247</div>
-                <div className="text-sm text-slate-400">Active Users</div>
+        {/* Main Content */}
+        <div className="flex-1 p-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold mb-2">Welcome to Admin Dashboard</h2>
+              <p className="text-slate-400">Manage your Go4It Sports platform with full control</p>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="grid md:grid-cols-4 gap-6 mb-8">
+              <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-slate-400">Total Users</div>
+                  <Users className="w-5 h-5 text-blue-400" />
+                </div>
+                <div className="text-2xl font-bold text-white">1,247</div>
+                <div className="text-sm text-green-400">+18% this month</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-400">98.5%</div>
-                <div className="text-sm text-slate-400">System Uptime</div>
+              
+              <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-slate-400">Active Camps</div>
+                  <Globe className="w-5 h-5 text-purple-400" />
+                </div>
+                <div className="text-2xl font-bold text-white">2</div>
+                <div className="text-sm text-blue-400">Mexico Launch</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-400">2,439</div>
-                <div className="text-sm text-slate-400">Videos Analyzed</div>
+              
+              <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-slate-400">Revenue</div>
+                  <DollarSign className="w-5 h-5 text-green-400" />
+                </div>
+                <div className="text-2xl font-bold text-white">$47,329</div>
+                <div className="text-sm text-green-400">+24% this month</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-orange-400">156</div>
-                <div className="text-sm text-slate-400">Academy Students</div>
+              
+              <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-slate-400">Coupons Used</div>
+                  <Shield className="w-5 h-5 text-yellow-400" />
+                </div>
+                <div className="text-2xl font-bold text-white">89</div>
+                <div className="text-sm text-yellow-400">FULLACCESS2025 popular</div>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
+                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                  <Edit3 className="w-5 h-5 text-blue-400" />
+                  Content Management
+                </h3>
+                <p className="text-slate-400 mb-4">
+                  Use the new Seamless CMS to update all website content, events, pricing, and global settings in real-time.
+                </p>
+                <div className="space-y-2">
+                  <Link
+                    href="/admin/cms"
+                    className="block w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center transition-colors"
+                  >
+                    Open Seamless CMS
+                  </Link>
+                  <Link
+                    href="/admin/content"
+                    className="block w-full bg-slate-600 hover:bg-slate-500 text-white px-4 py-2 rounded-lg text-center transition-colors"
+                  >
+                    Legacy Content Editor
+                  </Link>
+                </div>
+              </div>
+              
+              <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
+                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                  <Globe className="w-5 h-5 text-purple-400" />
+                  Mexico Launch Status
+                </h3>
+                <p className="text-slate-400 mb-4">
+                  Monitor and manage the Mexico camp events with authentic content from your provided documents.
+                </p>
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between">
+                    <span className="text-slate-300">English With Sports Camp</span>
+                    <span className="text-green-400">Active</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-300">Team Camps & Clinics</span>
+                    <span className="text-green-400">Active</span>
+                  </div>
+                </div>
+                <Link
+                  href="/admin/cms?section=events"
+                  className="block w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-center transition-colors"
+                >
+                  Edit Mexico Events
+                </Link>
+              </div>
+            </div>
+
+            {/* Recent Activity */}
+            <div className="mt-8 bg-slate-800 border border-slate-700 rounded-lg p-6">
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <Bell className="w-5 h-5 text-yellow-400" />
+                Recent Activity
+              </h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                    <span className="text-white">Mexico events content updated with authentic camp information</span>
+                  </div>
+                  <span className="text-slate-400 text-sm">2 min ago</span>
+                </div>
+                
+                <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                    <span className="text-white">New user registered: Alex Rodriguez</span>
+                  </div>
+                  <span className="text-slate-400 text-sm">15 min ago</span>
+                </div>
+                
+                <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                    <span className="text-white">Coupon FULLACCESS2025 used by Maria Garcia</span>
+                  </div>
+                  <span className="text-slate-400 text-sm">1 hour ago</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-        {/* Navigation Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4 bg-slate-800 border-slate-700">
-            <TabsTrigger value="overview" className="text-white data-[state=active]:bg-blue-600">
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Overview
-            </TabsTrigger>
-            <TabsTrigger value="users" className="text-white data-[state=active]:bg-blue-600">
-              <Users className="w-4 h-4 mr-2" />
-              Users
-            </TabsTrigger>
-            <TabsTrigger value="content" className="text-white data-[state=active]:bg-blue-600">
-              <FileText className="w-4 h-4 mr-2" />
-              Content
-            </TabsTrigger>
-            <TabsTrigger value="system" className="text-white data-[state=active]:bg-blue-600">
-              <Settings className="w-4 h-4 mr-2" />
-              System
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="overview" className="mt-6">
-            <OverviewTab />
-          </TabsContent>
-
-          <TabsContent value="users" className="mt-6">
-            <UsersTab />
-          </TabsContent>
-
-          <TabsContent value="content" className="mt-6">
-            <ContentTab />
-          </TabsContent>
-
-          <TabsContent value="system" className="mt-6">
-            <SystemTab />
-          </TabsContent>
-        </Tabs>
       </div>
     </div>
-  )
+  );
 }
