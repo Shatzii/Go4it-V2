@@ -1,7 +1,7 @@
 'use client';
 
 // Go4It Sports Landing Page - StarPath Enhanced 
-import { Star, TrendingUp, GraduationCap, Trophy, CheckCircle, Target, Zap, Crown, Award, MapPin, Calendar, Users } from 'lucide-react'
+import { Star, TrendingUp, GraduationCap, Trophy, CheckCircle, Target, Zap, Crown, Award, MapPin, Calendar, Users, Shield } from 'lucide-react'
 import { useCMS } from '../hooks/useCMS'
 
 export default function Go4ItHomePage() {
@@ -528,6 +528,22 @@ export default function Go4ItHomePage() {
                     <span>{event.schedule || `Max ${event.maxParticipants} athletes`}</span>
                   </div>
                 </div>
+                
+                {/* USA Football Benefits */}
+                {event.usaFootballBenefits && (
+                  <div className="bg-slate-800/50 backdrop-blur rounded-lg p-4 mb-6">
+                    <div className="flex items-center mb-2">
+                      <Shield className="w-5 h-5 text-yellow-400 mr-2" />
+                      <span className="text-yellow-400 font-bold text-sm">USA FOOTBALL INCLUDED</span>
+                    </div>
+                    <div className="text-sm text-slate-300 mb-2">
+                      {event.usaFootballBenefits.membershipType} • {event.usaFootballBenefits.discount}
+                    </div>
+                    <div className="text-xs text-slate-400">
+                      + 6-month Go4It platform access • Official credentials • $100K insurance
+                    </div>
+                  </div>
+                )}
                 
                 <a href="/camp-registration" className={`w-full text-center py-3 inline-block font-bold transition-colors rounded-lg ${
                   event.category === 'BILINGUAL' ? 'glow-button' :

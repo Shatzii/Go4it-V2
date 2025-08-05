@@ -66,7 +66,20 @@ export async function GET(req: NextRequest) {
                     '2x Super Bowl Champion Derrick Martin',
                     'NFL alumnus Talib Wise'
                   ],
-                  additionalInfo: 'Where language and movement connect. Learn English through games, sports and mentorship from international coaches and American athletes.'
+                  additionalInfo: 'Where language and movement connect. Learn English through games, sports and mentorship from international coaches and American athletes.',
+                  usaFootballBenefits: {
+                    membershipType: 'Standard Edition',
+                    price: '$35 (normally $119)',
+                    discount: '70% OFF',
+                    includes: [
+                      '6-month Go4It Sports platform access',
+                      'Digital USA Football Athlete ID Card',
+                      '$100,000 accident medical coverage',
+                      'USA Football age verification',
+                      'Access to sanctioned tournaments',
+                      'National Team Development eligibility'
+                    ]
+                  }
                 },
                 {
                   id: '2',
@@ -90,7 +103,21 @@ export async function GET(req: NextRequest) {
                     'NFL alumnus Talib Wise (Spanish National Team coach)',
                     'USA Football certified coaches'
                   ],
-                  additionalInfo: 'Only 4 teams per session. Elite participants may qualify for exclusive 10-week S.T.A.g.e. program in Dallas, Texas.'
+                  additionalInfo: 'Only 4 teams per session. Elite participants may qualify for exclusive 10-week S.T.A.g.e. program in Dallas, Texas.',
+                  usaFootballBenefits: {
+                    membershipType: 'Pathway to America Package',
+                    price: '$40 Coach + $35 Athlete',
+                    discount: '77% OFF Combined',
+                    includes: [
+                      '6-month Go4It Sports platform access',
+                      'USA Football Coach & Athlete Certification',
+                      '$100,000 comprehensive insurance coverage',
+                      'Tournament eligibility nationwide',
+                      'College recruiting pipeline access',
+                      'S.T.A.g.e. Dallas program qualification',
+                      'Direct NFL network connections'
+                    ]
+                  }
                 }
               ]
             },
