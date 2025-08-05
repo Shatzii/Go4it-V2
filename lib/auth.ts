@@ -1,81 +1,74 @@
+// Authentication utilities for the Go4It Sports platform
 import { NextRequest } from 'next/server';
-import bcrypt from 'bcryptjs';
-import { SignJWT, jwtVerify } from 'jose';
-import { db } from './db';
-import { users, userSessions } from './schema';
-import { eq } from 'drizzle-orm';
+import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'your-secret-key-change-in-production'
-);
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-export async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, 12);
+export interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  sport?: string;
+  position?: string;
+  garScore?: number;
+  subscriptionTier?: string;
+  subscriptionStatus?: 'active' | 'inactive' | 'trial';
 }
 
-export async function comparePasswords(password: string, hashedPassword: string): Promise<boolean> {
-  return bcrypt.compare(password, hashedPassword);
-}
-
-export async function createJWT(userId: number): Promise<string> {
-  return new SignJWT({ userId })
-    .setProtectedHeader({ alg: 'HS256' })
-    .setIssuedAt()
-    .setExpirationTime('24h')
-    .sign(JWT_SECRET);
-}
-
-export async function verifyJWT(token: string): Promise<{ userId: number } | null> {
+export async function getUserFromRequest(request: NextRequest): Promise<User | null> {
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET);
-    return payload as { userId: number };
-  } catch {
+    const authHeader = request.headers.get('authorization');
+    const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+
+    if (!token) {
+      // Check for token in cookies as fallback
+      const cookieToken = request.cookies.get('auth-token')?.value;
+      if (!cookieToken) {
+        return null;
+      }
+      return verifyToken(cookieToken);
+    }
+
+    return verifyToken(token);
+  } catch (error) {
+    console.error('Auth error:', error);
     return null;
   }
 }
 
-export async function getUserFromRequest(request: NextRequest) {
+export function verifyToken(token: string): User | null {
   try {
-    // Try to get token from Authorization header first
-    const authHeader = request.headers.get('authorization')
-    let token = null
-    
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      token = authHeader.replace('Bearer ', '')
-    }
-    
-    // If no token in header, try cookies
-    if (!token) {
-      token = request.cookies.get('auth-token')?.value
-    }
-    
-    if (!token) {
-      return null
-    }
-
-    const payload = await verifyJWT(token)
-    if (!payload) {
-      return null
-    }
-
-    const [user] = await db.select().from(users).where(eq(users.id, payload.userId))
-    return user || null
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    return {
+      id: decoded.id,
+      email: decoded.email,
+      firstName: decoded.firstName,
+      lastName: decoded.lastName,
+      sport: decoded.sport,
+      position: decoded.position,
+      garScore: decoded.garScore,
+      subscriptionTier: decoded.subscriptionTier,
+      subscriptionStatus: decoded.subscriptionStatus
+    };
   } catch (error) {
-    console.error('Error getting user from request:', error)
-    return null
+    return null;
   }
 }
 
-export async function createSession(userId: number): Promise<string> {
-  const token = await createJWT(userId);
-  const sessionId = Math.random().toString(36).substr(2, 9);
-  
-  await db.insert(userSessions).values({
-    id: sessionId,
-    userId,
-    token,
-    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-  });
+export function generateToken(user: User): string {
+  return jwt.sign(user, JWT_SECRET, { expiresIn: '7d' });
+}
 
-  return token;
+export function requireAuth(handler: (request: NextRequest, user: User) => Promise<Response>) {
+  return async (request: NextRequest) => {
+    const user = await getUserFromRequest(request);
+    if (!user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    return handler(request, user);
+  };
 }

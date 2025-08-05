@@ -65,6 +65,9 @@ export default function RootLayout({
                         <a href="/challenges" className="text-slate-300 hover:text-white transition-colors">
                           Challenges
                         </a>
+                        <a href="/ai-football-coach" className="text-slate-300 hover:text-white transition-colors">
+                          AI Coach
+                        </a>
                         <a href="/navigation" className="text-slate-300 hover:text-white transition-colors">
                           Features
                         </a>
