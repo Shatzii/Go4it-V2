@@ -18,7 +18,9 @@ export async function POST(request: NextRequest) {
       coach, 
       price, 
       userId,
-      userEmail 
+      userEmail,
+      userPhone,
+      userName 
     } = data;
 
     // Create Stripe payment intent
@@ -31,7 +33,9 @@ export async function POST(request: NextRequest) {
         className,
         coach,
         userId: userId || 'anonymous',
-        type: 'live_class_payment'
+        type: 'live_class_payment',
+        customerPhone: userPhone || '',
+        customerName: userName || ''
       },
       description: `Live class: ${className} with ${coach}`,
       ...(userEmail && { receipt_email: userEmail })
