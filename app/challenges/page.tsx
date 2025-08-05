@@ -6,351 +6,503 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AICoachWidget } from '@/components/ai-coach/AICoachWidget';
 import { 
   Trophy, Target, Clock, Star, Zap, Award, 
-  Calendar, Users, TrendingUp, CheckCircle,
-  Play, Pause, RotateCcw, Medal
+  PlayCircle, CheckCircle, Lock, TrendingUp,
+  Flame, Crown, Shield, Mic, Brain, Timer
 } from 'lucide-react';
 
 interface Challenge {
   id: string;
   title: string;
   description: string;
-  type: 'daily' | 'weekly' | 'monthly' | 'special';
-  sport: string;
-  difficulty: 'easy' | 'medium' | 'hard';
+  category: 'speed' | 'agility' | 'accuracy' | 'endurance' | 'technique' | 'game_awareness';
+  difficulty: 'beginner' | 'intermediate' | 'advanced' | 'elite';
+  duration: number; // minutes
   xpReward: number;
-  requirements: any;
-  isActive: boolean;
-  startDate: string;
-  endDate: string;
-  status: 'active' | 'completed' | 'failed' | 'expired';
-  progress: number;
-  maxProgress: number;
-  timeRemaining?: string;
+  requirements: string[];
+  completed: boolean;
+  locked: boolean;
+  bestScore?: number;
+  currentAttempt?: number;
+  totalAttempts?: number;
 }
 
-const mockChallenges: Challenge[] = [
-  {
-    id: '1',
-    title: 'Perfect Form Week',
-    description: 'Upload 5 videos showing perfect technique form for GAR analysis',
-    type: 'weekly',
-    sport: 'all',
-    difficulty: 'medium',
-    xpReward: 500,
-    requirements: { videoUploads: 5, minGarScore: 75 },
-    isActive: true,
-    startDate: '2025-01-01',
-    endDate: '2025-01-07',
-    status: 'active',
-    progress: 3,
-    maxProgress: 5,
-    timeRemaining: '2 days'
-  },
-  {
-    id: '2',
-    title: 'Daily Grind',
-    description: 'Log into the platform and check your StarPath progress',
-    type: 'daily',
-    sport: 'all',
-    difficulty: 'easy',
-    xpReward: 50,
-    requirements: { login: true, starpathCheck: true },
-    isActive: true,
-    startDate: '2025-01-05',
-    endDate: '2025-01-05',
-    status: 'completed',
-    progress: 1,
-    maxProgress: 1
-  },
-  {
-    id: '3',
-    title: 'Recruitment Ready',
-    description: 'Achieve GAR score of 85+ and get verified for college recruitment',
-    type: 'monthly',
-    sport: 'football',
-    difficulty: 'hard',
-    xpReward: 1000,
-    requirements: { garScore: 85, verification: true },
-    isActive: true,
-    startDate: '2025-01-01',
-    endDate: '2025-01-31',
-    status: 'active',
-    progress: 1,
-    maxProgress: 2,
-    timeRemaining: '26 days'
-  },
-  {
-    id: '4',
-    title: 'Team Player',
-    description: 'Join a team and participate in group analysis session',
-    type: 'special',
-    sport: 'all',
-    difficulty: 'medium',
-    xpReward: 750,
-    requirements: { teamJoin: true, groupSession: true },
-    isActive: true,
-    startDate: '2025-01-05',
-    endDate: '2025-02-05',
-    status: 'active',
-    progress: 0,
-    maxProgress: 2,
-    timeRemaining: '31 days'
-  }
-];
-
 export default function ChallengesPage() {
-  const [challenges, setChallenges] = useState<Challenge[]>(mockChallenges);
-  const [activeTab, setActiveTab] = useState('active');
-  const [loading, setLoading] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [activeChallenge, setActiveChallenge] = useState<Challenge | null>(null);
+  const [challengeProgress, setChallengeProgress] = useState(0);
+  const [isCoachingActive, setIsCoachingActive] = useState(false);
+
+  const challenges: Challenge[] = [
+    {
+      id: 'speed_burst',
+      title: '40-Yard Dash Challenge',
+      description: 'Sprint 40 yards as fast as possible with perfect form',
+      category: 'speed',
+      difficulty: 'intermediate',
+      duration: 10,
+      xpReward: 150,
+      requirements: ['Basic running form', 'Proper warm-up'],
+      completed: true,
+      locked: false,
+      bestScore: 4.8,
+      currentAttempt: 3,
+      totalAttempts: 5
+    },
+    {
+      id: 'agility_cone',
+      title: 'Cone Weave Mastery',
+      description: 'Navigate through 10 cones with perfect technique and speed',
+      category: 'agility',
+      difficulty: 'beginner',
+      duration: 8,
+      xpReward: 100,
+      requirements: ['Basic footwork'],
+      completed: true,
+      locked: false,
+      bestScore: 12.3,
+      currentAttempt: 1,
+      totalAttempts: 3
+    },
+    {
+      id: 'accuracy_target',
+      title: 'Precision Passing',
+      description: 'Hit 8 out of 10 targets from various distances',
+      category: 'accuracy',
+      difficulty: 'intermediate',
+      duration: 15,
+      xpReward: 200,
+      requirements: ['Basic throwing mechanics', 'Target practice level 1'],
+      completed: false,
+      locked: false,
+      currentAttempt: 0,
+      totalAttempts: 0
+    },
+    {
+      id: 'endurance_circuit',
+      title: 'Stamina Circuit',
+      description: 'Complete 5-station circuit maintaining intensity',
+      category: 'endurance',
+      difficulty: 'advanced',
+      duration: 20,
+      xpReward: 300,
+      requirements: ['Intermediate fitness level', 'Circuit training basics'],
+      completed: false,
+      locked: false,
+      currentAttempt: 0,
+      totalAttempts: 0
+    },
+    {
+      id: 'technique_form',
+      title: 'Form Perfect Challenge',
+      description: 'Demonstrate perfect technique across 5 key movements',
+      category: 'technique',
+      difficulty: 'advanced',
+      duration: 25,
+      xpReward: 350,
+      requirements: ['Advanced technical skills', 'Form analysis completion'],
+      completed: false,
+      locked: true,
+      currentAttempt: 0,
+      totalAttempts: 0
+    },
+    {
+      id: 'game_awareness',
+      title: 'Field Vision Test',
+      description: 'Make correct decisions in 10 game scenarios',
+      category: 'game_awareness',
+      difficulty: 'elite',
+      duration: 30,
+      xpReward: 500,
+      requirements: ['Advanced game knowledge', 'Situational awareness training'],
+      completed: false,
+      locked: true,
+      currentAttempt: 0,
+      totalAttempts: 0
+    }
+  ];
+
+  const categories = [
+    { value: 'all', label: 'All Challenges', icon: Trophy, color: 'text-yellow-400' },
+    { value: 'speed', label: 'Speed', icon: Zap, color: 'text-blue-400' },
+    { value: 'agility', label: 'Agility', icon: Target, color: 'text-green-400' },
+    { value: 'accuracy', label: 'Accuracy', icon: Target, color: 'text-red-400' },
+    { value: 'endurance', label: 'Endurance', icon: Shield, color: 'text-purple-400' },
+    { value: 'technique', label: 'Technique', icon: Crown, color: 'text-orange-400' },
+    { value: 'game_awareness', label: 'Game IQ', icon: Brain, color: 'text-pink-400' }
+  ];
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return 'bg-green-500 text-white';
-      case 'medium': return 'bg-yellow-500 text-black';
-      case 'hard': return 'bg-red-500 text-white';
-      default: return 'bg-slate-500 text-white';
+      case 'beginner': return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'intermediate': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'advanced': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
+      case 'elite': return 'bg-red-500/20 text-red-400 border-red-500/30';
+      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
     }
   };
 
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'daily': return <Clock className="w-4 h-4" />;
-      case 'weekly': return <Calendar className="w-4 h-4" />;
-      case 'monthly': return <Target className="w-4 h-4" />;
-      case 'special': return <Star className="w-4 h-4" />;
-      default: return <Trophy className="w-4 h-4" />;
+  const getCategoryColor = (category: string) => {
+    const categoryData = categories.find(c => c.value === category);
+    return categoryData?.color || 'text-gray-400';
+  };
+
+  const filteredChallenges = selectedCategory === 'all' 
+    ? challenges 
+    : challenges.filter(c => c.category === selectedCategory);
+
+  const startChallenge = (challenge: Challenge) => {
+    if (challenge.locked) return;
+    
+    setActiveChallenge(challenge);
+    setChallengeProgress(0);
+    setIsCoachingActive(true);
+  };
+
+  const completeChallenge = () => {
+    if (activeChallenge) {
+      // Update challenge completion status
+      setChallengeProgress(100);
+      setActiveChallenge(null);
+      setIsCoachingActive(false);
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed': return <CheckCircle className="w-5 h-5 text-green-400" />;
-      case 'active': return <Play className="w-5 h-5 text-blue-400" />;
-      case 'failed': return <RotateCcw className="w-5 h-5 text-red-400" />;
-      case 'expired': return <Pause className="w-5 h-5 text-slate-400" />;
-      default: return <Clock className="w-5 h-5 text-slate-400" />;
-    }
+  const stopChallenge = () => {
+    setActiveChallenge(null);
+    setChallengeProgress(0);
+    setIsCoachingActive(false);
   };
-
-  const joinChallenge = async (challengeId: string) => {
-    setLoading(true);
-    try {
-      // In a real implementation, this would call the API
-      const response = await fetch('/api/challenges/join', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ challengeId })
-      });
-      
-      if (response.ok) {
-        // Update UI to show challenge joined
-        setChallenges(prev => prev.map(c => 
-          c.id === challengeId ? { ...c, status: 'active' as const } : c
-        ));
-      }
-    } catch (error) {
-      console.error('Failed to join challenge:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filteredChallenges = challenges.filter(challenge => {
-    switch (activeTab) {
-      case 'active': return challenge.status === 'active';
-      case 'completed': return challenge.status === 'completed';
-      case 'available': return challenge.isActive && challenge.status !== 'active' && challenge.status !== 'completed';
-      default: return true;
-    }
-  });
-
-  const totalXpEarned = challenges
-    .filter(c => c.status === 'completed')
-    .reduce((sum, c) => sum + c.xpReward, 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 py-16">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-6">
             <Trophy className="w-12 h-12 text-yellow-400" />
-            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-              CHALLENGES
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+              Athletic Challenges
             </h1>
           </div>
-          <p className="text-xl text-slate-300 mb-8">
-            Complete challenges to earn XP, unlock StarPath skills, and dominate the leaderboards
+          <p className="text-xl text-slate-300 mb-4">
+            Push your limits with AI-coached challenges
           </p>
-          
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
-            <Card className="bg-slate-800 border-slate-700">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
-                    <Zap className="w-6 h-6 text-yellow-400" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-white">{totalXpEarned}</p>
-                    <p className="text-slate-400 text-sm">Total XP Earned</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-slate-800 border-slate-700">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
-                    <CheckCircle className="w-6 h-6 text-green-400" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-white">
-                      {challenges.filter(c => c.status === 'completed').length}
-                    </p>
-                    <p className="text-slate-400 text-sm">Completed</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-slate-800 border-slate-700">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                    <Target className="w-6 h-6 text-blue-400" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-white">
-                      {challenges.filter(c => c.status === 'active').length}
-                    </p>
-                    <p className="text-slate-400 text-sm">Active</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <div className="flex items-center justify-center gap-4">
+            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+              Real-time Coaching
+            </Badge>
+            <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
+              Performance Tracking
+            </Badge>
+            <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+              Technique Analysis
+            </Badge>
           </div>
         </div>
 
-        {/* Challenge Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 bg-slate-800">
-            <TabsTrigger value="active">Active ({challenges.filter(c => c.status === 'active').length})</TabsTrigger>
-            <TabsTrigger value="completed">Completed ({challenges.filter(c => c.status === 'completed').length})</TabsTrigger>
-            <TabsTrigger value="available">Available ({challenges.filter(c => c.isActive && c.status !== 'active' && c.status !== 'completed').length})</TabsTrigger>
-          </TabsList>
+        {/* Active Challenge Banner */}
+        {activeChallenge && (
+          <Card className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-500/30 mb-8">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    Active Challenge: {activeChallenge.title}
+                  </h3>
+                  <p className="text-slate-300">{activeChallenge.description}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Mic className="w-5 h-5 text-green-400" />
+                  <span className="text-green-400 font-medium">AI Coach Active</span>
+                </div>
+              </div>
+              
+              <div className="mb-4">
+                <div className="flex items-center justify-between text-sm mb-2">
+                  <span className="text-slate-300">Progress</span>
+                  <span className="text-white">{challengeProgress}%</span>
+                </div>
+                <Progress value={challengeProgress} className="h-2" />
+              </div>
 
-          <div className="mt-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredChallenges.map((challenge) => (
-                <Card key={challenge.id} className="bg-slate-800 border-slate-700 hover:border-yellow-500/50 transition-all duration-300">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-2">
-                        {getTypeIcon(challenge.type)}
-                        <CardTitle className="text-lg text-white">{challenge.title}</CardTitle>
-                      </div>
-                      {getStatusIcon(challenge.status)}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge className={getDifficultyColor(challenge.difficulty)}>
-                        {challenge.difficulty.toUpperCase()}
-                      </Badge>
-                      <Badge variant="outline" className="text-slate-300">
-                        {challenge.sport === 'all' ? 'All Sports' : challenge.sport}
-                      </Badge>
-                      <Badge className="bg-yellow-500/20 text-yellow-400">
-                        {challenge.xpReward} XP
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent>
-                    <p className="text-slate-300 text-sm mb-4">{challenge.description}</p>
-                    
-                    {challenge.status === 'active' && (
-                      <div className="mb-4">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-sm text-slate-400">Progress</span>
-                          <span className="text-sm text-white">{challenge.progress}/{challenge.maxProgress}</span>
-                        </div>
-                        <Progress 
-                          value={(challenge.progress / challenge.maxProgress) * 100} 
-                          className="h-2"
-                        />
-                        {challenge.timeRemaining && (
-                          <p className="text-xs text-slate-400 mt-2">
-                            Time remaining: {challenge.timeRemaining}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                    
-                    {challenge.status === 'completed' && (
-                      <div className="flex items-center gap-2 text-green-400 text-sm mb-4">
-                        <Medal className="w-4 h-4" />
-                        <span>Challenge completed! +{challenge.xpReward} XP earned</span>
-                      </div>
-                    )}
-
-                    {activeTab === 'available' && (
-                      <Button 
-                        onClick={() => joinChallenge(challenge.id)}
-                        disabled={loading}
-                        className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold"
-                      >
-                        <Trophy className="w-4 h-4 mr-2" />
-                        Join Challenge
-                      </Button>
-                    )}
-                    
-                    {challenge.status === 'active' && (
-                      <Button 
-                        onClick={() => window.location.href = '/gar-upload'}
-                        className="w-full bg-blue-600 hover:bg-blue-700"
-                      >
-                        <Play className="w-4 h-4 mr-2" />
-                        Continue Challenge
-                      </Button>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </Tabs>
-
-        {/* CTA Section */}
-        <div className="mt-16 text-center">
-          <Card className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-purple-500/30 max-w-2xl mx-auto">
-            <CardContent className="p-8">
-              <h3 className="text-2xl font-bold text-white mb-4">Ready to Level Up?</h3>
-              <p className="text-slate-300 mb-6">
-                Complete challenges to earn XP, unlock new StarPath skills, and climb the leaderboards.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex gap-3">
                 <Button 
-                  onClick={() => window.location.href = '/starpath'}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                  onClick={completeChallenge}
+                  className="bg-green-600 hover:bg-green-700"
                 >
-                  <Star className="w-5 h-5 mr-2" />
-                  View StarPath Progress
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Complete Challenge
                 </Button>
                 <Button 
-                  onClick={() => window.location.href = '/leaderboard'}
+                  onClick={stopChallenge}
                   variant="outline"
-                  className="border-slate-600 text-slate-300"
+                  className="border-slate-600"
                 >
-                  <TrendingUp className="w-5 h-5 mr-2" />
-                  Check Leaderboards
+                  Stop Challenge
                 </Button>
               </div>
             </CardContent>
           </Card>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* AI Coach Integration */}
+          <div className="lg:col-span-1">
+            <AICoachWidget 
+              feature="challenges"
+              context={{
+                activeChallenge,
+                challengeType: activeChallenge?.category || 'general',
+                difficulty: activeChallenge?.difficulty || 'intermediate',
+                sport: 'football',
+                isActive: isCoachingActive
+              }}
+              className="mb-6"
+            />
+
+            {/* Challenge Statistics */}
+            <Card className="bg-slate-800 border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-green-400" />
+                  Your Stats
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="text-center p-3 bg-green-500/10 rounded-lg">
+                    <div className="text-2xl font-bold text-green-400 mb-1">
+                      {challenges.filter(c => c.completed).length}
+                    </div>
+                    <p className="text-sm text-slate-300">Completed</p>
+                  </div>
+                  
+                  <div className="text-center p-3 bg-blue-500/10 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-400 mb-1">
+                      {challenges.reduce((sum, c) => sum + (c.completed ? c.xpReward : 0), 0)}
+                    </div>
+                    <p className="text-sm text-slate-300">XP Earned</p>
+                  </div>
+
+                  <div className="text-center p-3 bg-yellow-500/10 rounded-lg">
+                    <div className="text-2xl font-bold text-yellow-400 mb-1">
+                      {Math.round(challenges.filter(c => c.completed).length / challenges.length * 100)}%
+                    </div>
+                    <p className="text-sm text-slate-300">Completion</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Main Challenge Area */}
+          <div className="lg:col-span-3">
+            {/* Category Filter */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              {categories.map((category) => {
+                const IconComponent = category.icon;
+                return (
+                  <Button
+                    key={category.value}
+                    onClick={() => setSelectedCategory(category.value)}
+                    variant={selectedCategory === category.value ? "default" : "outline"}
+                    className={`flex items-center gap-2 ${
+                      selectedCategory === category.value 
+                        ? 'bg-blue-600 hover:bg-blue-700' 
+                        : 'border-slate-600 hover:bg-slate-700'
+                    }`}
+                  >
+                    <IconComponent className={`w-4 h-4 ${category.color}`} />
+                    {category.label}
+                  </Button>
+                );
+              })}
+            </div>
+
+            {/* Challenges Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {filteredChallenges.map((challenge) => {
+                const CategoryIcon = categories.find(c => c.value === challenge.category)?.icon || Trophy;
+                
+                return (
+                  <Card 
+                    key={challenge.id} 
+                    className={`bg-slate-800 border-slate-700 transition-all duration-300 ${
+                      challenge.locked ? 'opacity-50' : 'hover:border-blue-500/50'
+                    } ${activeChallenge?.id === challenge.id ? 'border-blue-500 shadow-lg shadow-blue-500/20' : ''}`}
+                  >
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-lg bg-slate-700 flex items-center justify-center`}>
+                            {challenge.locked ? (
+                              <Lock className="w-5 h-5 text-slate-400" />
+                            ) : challenge.completed ? (
+                              <CheckCircle className="w-5 h-5 text-green-400" />
+                            ) : (
+                              <CategoryIcon className={`w-5 h-5 ${getCategoryColor(challenge.category)}`} />
+                            )}
+                          </div>
+                          <div>
+                            <CardTitle className={`text-lg ${challenge.locked ? 'text-slate-400' : 'text-white'}`}>
+                              {challenge.title}
+                            </CardTitle>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Badge className={getDifficultyColor(challenge.difficulty)}>
+                                {challenge.difficulty}
+                              </Badge>
+                              <div className="flex items-center gap-1 text-xs text-slate-400">
+                                <Timer className="w-3 h-3" />
+                                <span>{challenge.duration}min</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {challenge.completed && (
+                          <div className="text-right">
+                            <div className="text-sm text-green-400 font-medium">
+                              Best: {challenge.bestScore}
+                            </div>
+                            <div className="text-xs text-slate-400">
+                              {challenge.currentAttempt}/{challenge.totalAttempts} attempts
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="space-y-4">
+                      <p className={`text-sm ${challenge.locked ? 'text-slate-500' : 'text-slate-300'}`}>
+                        {challenge.description}
+                      </p>
+
+                      {challenge.requirements.length > 0 && (
+                        <div>
+                          <h5 className="font-medium text-white text-sm mb-2">Requirements:</h5>
+                          <ul className="text-xs text-slate-400 space-y-1">
+                            {challenge.requirements.map((req, index) => (
+                              <li key={index} className="flex items-center gap-2">
+                                <CheckCircle className="w-3 h-3 text-green-400" />
+                                {req}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      <div className="flex items-center justify-between pt-2 border-t border-slate-600">
+                        <div className="flex items-center gap-2">
+                          <Star className="w-4 h-4 text-yellow-400" />
+                          <span className="text-sm text-yellow-400 font-medium">
+                            +{challenge.xpReward} XP
+                          </span>
+                        </div>
+
+                        <Button 
+                          onClick={() => startChallenge(challenge)}
+                          disabled={challenge.locked || activeChallenge !== null}
+                          className={
+                            challenge.completed 
+                              ? "bg-green-600 hover:bg-green-700" 
+                              : "bg-blue-600 hover:bg-blue-700"
+                          }
+                        >
+                          {challenge.locked ? (
+                            <>
+                              <Lock className="w-4 h-4 mr-2" />
+                              Locked
+                            </>
+                          ) : challenge.completed ? (
+                            <>
+                              <Award className="w-4 h-4 mr-2" />
+                              Retry
+                            </>
+                          ) : (
+                            <>
+                              <PlayCircle className="w-4 h-4 mr-2" />
+                              Start
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
         </div>
+
+        {/* Leaderboard Section */}
+        <Card className="bg-slate-800 border-slate-700 mt-8">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Crown className="w-5 h-5 text-yellow-400" />
+              Challenge Leaderboard
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <h4 className="font-semibold text-white mb-3">Speed Champions</h4>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between p-2 bg-yellow-500/10 rounded">
+                    <span className="text-sm text-slate-300">1. Alex Johnson</span>
+                    <span className="text-sm text-yellow-400">4.2s</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                    <span className="text-sm text-slate-300">2. Sarah Lee</span>
+                    <span className="text-sm text-slate-400">4.5s</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-orange-500/10 rounded">
+                    <span className="text-sm text-slate-300">3. You</span>
+                    <span className="text-sm text-orange-400">4.8s</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-white mb-3">Agility Masters</h4>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between p-2 bg-yellow-500/10 rounded">
+                    <span className="text-sm text-slate-300">1. Maria Garcia</span>
+                    <span className="text-sm text-yellow-400">11.2s</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-green-500/10 rounded">
+                    <span className="text-sm text-slate-300">2. You</span>
+                    <span className="text-sm text-green-400">12.3s</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                    <span className="text-sm text-slate-300">3. Jake Smith</span>
+                    <span className="text-sm text-slate-400">12.8s</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-white mb-3">Most XP Earned</h4>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between p-2 bg-yellow-500/10 rounded">
+                    <span className="text-sm text-slate-300">1. Chris Wong</span>
+                    <span className="text-sm text-yellow-400">2,450 XP</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                    <span className="text-sm text-slate-300">2. Emma Davis</span>
+                    <span className="text-sm text-slate-400">1,890 XP</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                    <span className="text-sm text-slate-300">3. Ryan Kim</span>
+                    <span className="text-sm text-slate-400">1,650 XP</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
