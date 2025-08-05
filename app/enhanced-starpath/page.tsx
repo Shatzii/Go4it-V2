@@ -9,8 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Star, Zap, Target, Trophy, Lock, CheckCircle,
   ArrowRight, TrendingUp, Award, Brain, Dumbbell,
-  Eye, Heart, BookOpen, Users, Crown, Sparkles
+  Eye, Heart, BookOpen, Users, Crown, Sparkles, Mic
 } from 'lucide-react';
+import { AICoachWidget } from '@/components/ai-coach/AICoachWidget';
 
 interface SkillNode {
   id: string;

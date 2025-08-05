@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, BarChart3, Target, TrendingUp, Clock, Medal, Cpu, Zap } from 'lucide-react';
+import { Upload, BarChart3, Target, TrendingUp, Clock, Medal, Cpu, Zap, Mic, MessageCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AICoachWidget } from '@/components/ai-coach/AICoachWidget';
 
 export default function GARUploadPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -257,6 +258,24 @@ export default function GARUploadPage() {
                     <Badge className="mt-2">
                       {analysisResult.analysisSource === 'local_models' ? 'Local AI Analysis' : 'Cloud AI Analysis'}
                     </Badge>
+                  </div>
+
+                  {/* AI Coach Integration */}
+                  <div className="border-t border-slate-600 pt-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Mic className="w-4 h-4 text-green-400" />
+                      <span className="text-sm font-medium text-white">AI Coach Available</span>
+                    </div>
+                    <AICoachWidget 
+                      feature="gar_analysis"
+                      context={{
+                        garScore: analysisResult.garScore,
+                        analysisData: analysisResult.analysis,
+                        sport: sport,
+                        improvementAreas: analysisResult.suggestions
+                      }}
+                      className="bg-slate-700/50"
+                    />
                   </div>
 
                   {/* Component Scores */}
