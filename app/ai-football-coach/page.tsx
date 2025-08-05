@@ -28,11 +28,13 @@ const subscriptionTiers: SubscriptionTier[] = [
     userType: 'player',
     features: [
       'Voice conversations with AI Football Coach',
+      'Flag football & tackle football support',
       'Personalized training advice',
       'Technique analysis through chat',
-      'Position-specific guidance',
+      'Position-specific guidance (QB, RB, WR, Defense)',
       'Basic performance tracking',
-      '50 AI conversations per month'
+      '50 AI conversations per month',
+      'Flag football rules & strategy coaching'
     ]
   },
   {
@@ -43,13 +45,16 @@ const subscriptionTiers: SubscriptionTier[] = [
     recommended: true,
     features: [
       'Everything in Player Coach',
+      'Flag football league management',
       'Team management tools',
       'Parent communication features',
       'Advanced analytics dashboard',
       'Video analysis integration',
       'Unlimited AI conversations',
       'Custom training plan generation',
-      'Multi-player coaching sessions'
+      'Multi-player coaching sessions',
+      'Flag football playbook creation',
+      'Youth development tracking'
     ]
   },
   {
@@ -65,7 +70,10 @@ const subscriptionTiers: SubscriptionTier[] = [
       'Advanced biomechanical analysis',
       'Custom drill library creation',
       'Priority support',
-      'Beta feature access'
+      'Beta feature access',
+      'Flag football tournament planning',
+      'Advanced game film analysis',
+      'College pathway guidance (flag to tackle)'
     ]
   }
 ];
@@ -216,10 +224,59 @@ export default function AIFootballCoachPage() {
           </div>
         </div>
 
-        {/* Integration Features */}
+        {/* Flag Football Features */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-center text-white mb-8">
+            Flag Football Coaching Excellence
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <Card className="bg-gradient-to-br from-green-500/20 to-blue-500/20 border-green-500/30">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Trophy className="w-6 h-6 text-green-400" />
+                </div>
+                <h3 className="font-bold text-white mb-2">Youth Development</h3>
+                <p className="text-slate-300 text-sm">Specialized coaching for flag football fundamentals and skill progression</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 border-blue-500/30">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Users className="w-6 h-6 text-blue-400" />
+                </div>
+                <h3 className="font-bold text-white mb-2">Team Strategy</h3>
+                <p className="text-slate-300 text-sm">Flag football formations, plays, and game management tactics</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-purple-500/30">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Target className="w-6 h-6 text-purple-400" />
+                </div>
+                <h3 className="font-bold text-white mb-2">Skills Training</h3>
+                <p className="text-slate-300 text-sm">Flag pulling, route running, and quarterback mechanics</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border-yellow-500/30">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Star className="w-6 h-6 text-yellow-400" />
+                </div>
+                <h3 className="font-bold text-white mb-2">Tournament Prep</h3>
+                <p className="text-slate-300 text-sm">Competition strategies and mental preparation for flag football tournaments</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Advanced AI Features */}
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-center text-white mb-12">
-            Three Integration Upgrade Options
+            Advanced AI Coaching Features
           </h2>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
