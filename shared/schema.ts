@@ -598,15 +598,3 @@ export const insertCampRegistrationSchema = createInsertSchema(campRegistrations
 });
 export type InsertCampRegistrationType = z.infer<typeof insertCampRegistrationSchema>;
 
-// Teams integration schema fixes
-export const insertTeamSchema = createInsertSchema(teams).omit({
-  id: true,
-  createdAt: true,
-});
-export const insertTeamRosterSchema = createInsertSchema(teamRosters).omit({
-  id: true,
-  createdAt: true,
-});
-
-export type InsertTeamType = z.infer<typeof insertTeamSchema>;
-export type InsertTeamRosterType = z.infer<typeof insertTeamRosterSchema>;
