@@ -67,7 +67,104 @@ export default function Go4ItHomePage() {
         </div>
       </section>
 
-      {/* Step 1: Start Free */}
+      {/* Upcoming Events - Now Featured at Top */}
+      <section className="py-16 px-4">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-4xl font-bold text-center neon-text mb-4">{eventsContent.title}</h2>
+          <p className="text-center text-slate-400 mb-12">{eventsContent.subtitle}</p>
+          
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            {eventsContent.events?.map((event: any, index: number) => (
+              <div key={event.id || index} className="hero-bg neon-border rounded-xl p-8 relative overflow-hidden">
+                <div className="absolute top-4 right-4">
+                  <div className={`text-white px-3 py-1 rounded-full text-sm font-bold ${
+                    event.category === 'BILINGUAL' ? 'bg-red-600' :
+                    event.category === 'ELITE' ? 'bg-purple-600' :
+                    'bg-blue-600'
+                  }`}>
+                    {event.category}
+                  </div>
+                </div>
+                <div className="mb-6">
+                  <h3 className="text-2xl font-bold text-white mb-2">{event.title}</h3>
+                  <div className="flex items-center text-slate-400 mb-2">
+                    <MapPin className="w-4 h-4 mr-2" />
+                    <span>{event.location}</span>
+                  </div>
+                  <div className="flex items-center text-slate-400 mb-4">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    <span>{event.dates}</span>
+                  </div>
+                </div>
+                
+                <div className="space-y-3 mb-6">
+                  {event.features?.map((feature: string, featureIndex: number) => (
+                    <div key={featureIndex} className="flex items-center">
+                      <CheckCircle className={`w-5 h-5 mr-3 flex-shrink-0 ${
+                        event.category === 'BILINGUAL' ? 'text-blue-400' :
+                        event.category === 'ELITE' ? 'text-purple-400' :
+                        'text-blue-400'
+                      }`} />
+                      <span className="text-slate-300">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="flex items-center justify-between mb-6">
+                  <div className={`text-3xl font-bold ${
+                    event.category === 'BILINGUAL' ? 'text-blue-400' :
+                    event.category === 'ELITE' ? 'text-purple-400' :
+                    'text-blue-400'
+                  }`}>
+                    {event.price}
+                  </div>
+                  <div className="flex items-center text-slate-400">
+                    <Users className="w-4 h-4 mr-2" />
+                    <span>{event.schedule || `Max ${event.maxParticipants} athletes`}</span>
+                  </div>
+                </div>
+                
+                {/* USA Football Benefits */}
+                {event.usaFootballBenefits && (
+                  <div className="bg-slate-800/50 backdrop-blur rounded-lg p-4 mb-6">
+                    <div className="flex items-center mb-2">
+                      <Shield className="w-5 h-5 text-yellow-400 mr-2" />
+                      <span className="text-yellow-400 font-bold text-sm">USA FOOTBALL INCLUDED</span>
+                    </div>
+                    <div className="text-sm text-slate-300 mb-2">
+                      {event.usaFootballBenefits.membershipType} • {event.usaFootballBenefits.discount}
+                    </div>
+                    <div className="text-xs text-slate-400">
+                      + 6-month Go4It platform access • Official credentials • $100K insurance
+                    </div>
+                  </div>
+                )}
+                
+                <a href="/camp-registration" className={`w-full text-center py-3 inline-block font-bold transition-colors rounded-lg ${
+                  event.category === 'BILINGUAL' ? 'glow-button' :
+                  event.category === 'ELITE' ? 'bg-purple-600 hover:bg-purple-700 text-white' :
+                  'glow-button'
+                }`}>
+                  Register - Profile Required
+                </a>
+                
+                <div className="absolute inset-0 opacity-5 pointer-events-none">
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500 rounded-full blur-2xl"></div>
+                  <div className="absolute bottom-0 left-0 w-16 h-16 bg-purple-500 rounded-full blur-2xl"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="text-center">
+            <p className="text-slate-400 mb-4">Registration requires creating your Go4It athlete profile</p>
+            <p className="text-blue-400 font-semibold">Featured: 2x Super Bowl Champion Derrick Martin & NFL alumnus Talib Wise</p>
+            <p className="text-slate-500 text-sm mt-2">Elite participants may qualify for exclusive 10-week S.T.A.g.e. program in Dallas, Texas</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Step 1: Start Free - Now After Events */}
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -332,242 +429,185 @@ export default function Go4ItHomePage() {
         </div>
       </section>
 
-      {/* Featured Athletes */}
+      {/* Featured Athletes - Horizontal Carousel */}
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl font-bold text-center neon-text mb-4">VERIFIED ATHLETES</h2>
           <p className="text-center text-slate-400 mb-12">See how our top performers stack up</p>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {/* Demo Player Cards */}
-            {[
-              {
-                id: '1',
-                name: 'Marcus Johnson',
-                position: 'Quarterback',
-                sport: 'Football',
-                garScore: 9.2,
-                isVerified: true,
-                year: '2025',
-                stats: {
-                  speed: 8.7,
-                  agility: 9.1,
-                  strength: 8.4,
-                  technique: 9.3,
-                  gameIQ: 9.5
-                }
-              },
-              {
-                id: '2',
-                name: 'Sarah Chen',
-                position: 'Point Guard',
-                sport: 'Basketball',
-                garScore: 8.8,
-                isVerified: true,
-                year: '2026',
-                stats: {
-                  speed: 9.2,
-                  agility: 9.4,
-                  strength: 7.8,
-                  technique: 8.9,
-                  gameIQ: 9.1
-                }
-              },
-              {
-                id: '3',
-                name: 'Diego Rodriguez',
-                position: 'Midfielder',
-                sport: 'Soccer',
-                garScore: 8.5,
-                isVerified: true,
-                year: '2025',
-                stats: {
-                  speed: 8.9,
-                  agility: 8.8,
-                  strength: 8.1,
-                  technique: 8.7,
-                  gameIQ: 8.3
-                }
-              }
-            ].map((player) => {
-              const PlayerCard = () => (
-                <div key={player.id} className="hero-bg neon-border rounded-xl p-6 card-hover relative overflow-hidden">
-                  {/* Verification Badge */}
-                  {player.isVerified && (
-                    <div className="absolute top-4 right-4 w-8 h-8 neon-border rounded-full flex items-center justify-center neon-glow bg-gradient-to-r from-blue-400 to-cyan-300">
-                      <span className="text-slate-900 font-bold text-sm">✓</span>
-                    </div>
-                  )}
-
-                  {/* Player Info */}
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
-                      {player.name.split(' ').map(n => n[0]).join('')}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-white mb-1">{player.name}</h3>
-                      <p className="text-slate-400 text-sm">{player.position} • {player.sport}</p>
-                      <p className="text-slate-500 text-xs">Class of {player.year}</p>
-                    </div>
-                  </div>
-
-                  {/* GAR Score */}
-                  <div className="mb-4 text-center">
-                    <div className={`text-3xl font-bold ${player.garScore >= 8 ? 'neon-text neon-glow' : 'text-blue-400'}`}>
-                      {player.garScore.toFixed(1)}
-                    </div>
-                    <p className="text-slate-400 text-sm">GAR Score</p>
-                  </div>
-
-                  {/* Stats */}
-                  <div className="space-y-2">
-                    <div className="text-sm text-slate-300 font-medium mb-2">Performance Metrics</div>
-                    {Object.entries(player.stats).map(([key, value]) => (
-                      <div key={key} className="flex justify-between items-center">
-                        <span className="text-slate-400 text-sm capitalize">{key}</span>
-                        <div className="flex items-center gap-2">
-                          <div className="w-16 bg-slate-700 rounded-full h-1.5">
-                            <div 
-                              className={`h-1.5 rounded-full ${value >= 8 ? 'bg-gradient-to-r from-blue-400 to-cyan-300 neon-glow' : value >= 6 ? 'bg-blue-400' : value >= 4 ? 'bg-yellow-400' : 'bg-red-400'}`}
-                              style={{ width: `${(value / 10) * 100}%` }}
-                            ></div>
-                          </div>
-                          <span className={`text-sm font-medium ${value >= 8 ? 'neon-text' : value >= 6 ? 'text-blue-400' : value >= 4 ? 'text-yellow-400' : 'text-red-400'}`}>
-                            {value.toFixed(1)}
-                          </span>
-                        </div>
+          {/* Horizontal Carousel */}
+          <div className="relative">
+            <div className="overflow-x-auto pb-4">
+              <div className="flex gap-6 w-max">
+                {[
+                  {
+                    id: '1',
+                    name: 'Marcus Johnson',
+                    position: 'Quarterback',
+                    sport: 'Football',
+                    garScore: 9.2,
+                    isVerified: true,
+                    year: '2025',
+                    stats: {
+                      speed: 8.7,
+                      agility: 9.1,
+                      strength: 8.4,
+                      technique: 9.3,
+                      gameIQ: 9.5
+                    }
+                  },
+                  {
+                    id: '2',
+                    name: 'Sarah Chen',
+                    position: 'Point Guard',
+                    sport: 'Basketball',
+                    garScore: 8.8,
+                    isVerified: true,
+                    year: '2026',
+                    stats: {
+                      speed: 9.2,
+                      agility: 9.4,
+                      strength: 7.8,
+                      technique: 8.9,
+                      gameIQ: 9.1
+                    }
+                  },
+                  {
+                    id: '3',
+                    name: 'Diego Rodriguez',
+                    position: 'Midfielder',
+                    sport: 'Soccer',
+                    garScore: 8.5,
+                    isVerified: true,
+                    year: '2025',
+                    stats: {
+                      speed: 8.9,
+                      agility: 8.8,
+                      strength: 8.1,
+                      technique: 8.7,
+                      gameIQ: 8.3
+                    }
+                  },
+                  {
+                    id: '4',
+                    name: 'Alex Thompson',
+                    position: 'Sprinter',
+                    sport: 'Track & Field',
+                    garScore: 9.0,
+                    isVerified: true,
+                    year: '2024',
+                    stats: {
+                      speed: 9.5,
+                      agility: 8.6,
+                      strength: 8.8,
+                      technique: 9.1,
+                      gameIQ: 8.4
+                    }
+                  },
+                  {
+                    id: '5',
+                    name: 'Maya Patel',
+                    position: 'Defender',
+                    sport: 'Soccer',
+                    garScore: 8.7,
+                    isVerified: true,
+                    year: '2025',
+                    stats: {
+                      speed: 8.3,
+                      agility: 8.9,
+                      strength: 8.5,
+                      technique: 8.8,
+                      gameIQ: 9.2
+                    }
+                  }
+                ].map((player) => (
+                  <div key={player.id} className="w-80 flex-shrink-0 hero-bg neon-border rounded-xl p-6 card-hover relative overflow-hidden">
+                    {/* Verification Badge */}
+                    {player.isVerified && (
+                      <div className="absolute top-4 right-4 w-8 h-8 neon-border rounded-full flex items-center justify-center neon-glow bg-gradient-to-r from-blue-400 to-cyan-300">
+                        <span className="text-slate-900 font-bold text-sm">✓</span>
                       </div>
-                    ))}
-                  </div>
+                    )}
 
-                  {/* Star Rating */}
-                  <div className="flex justify-center mt-4 gap-1">
-                    {[1, 2, 3, 4, 5].map((star) => {
-                      const isActive = player.garScore >= star * 2
-                      return (
-                        <Star
-                          key={star}
-                          className={`w-4 h-4 ${
-                            isActive 
-                              ? player.garScore >= 8 
-                                ? 'text-cyan-400 neon-glow' 
-                                : 'text-blue-400'
-                              : 'text-slate-600'
-                          } ${isActive ? 'fill-current' : ''}`}
-                        />
-                      )
-                    })}
-                  </div>
+                    {/* Player Info */}
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+                        {player.name.split(' ').map(n => n[0]).join('')}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-bold text-white mb-1">{player.name}</h3>
+                        <p className="text-slate-400 text-sm">{player.position} • {player.sport}</p>
+                        <p className="text-slate-500 text-xs">Class of {player.year}</p>
+                      </div>
+                    </div>
 
-                  {/* Background Effect */}
-                  <div className="absolute inset-0 opacity-5 pointer-events-none">
-                    <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500 rounded-full blur-2xl"></div>
-                    <div className="absolute bottom-0 left-0 w-16 h-16 bg-purple-500 rounded-full blur-2xl"></div>
-                  </div>
-                </div>
-              )
-              return <PlayerCard key={player.id} />
-            })}
-          </div>
-        </div>
-      </section>
+                    {/* GAR Score */}
+                    <div className="mb-4 text-center">
+                      <div className={`text-3xl font-bold ${player.garScore >= 8 ? 'neon-text neon-glow' : 'text-blue-400'}`}>
+                        {player.garScore.toFixed(1)}
+                      </div>
+                      <p className="text-slate-400 text-sm">GAR Score</p>
+                    </div>
 
-      {/* Upcoming Events */}
-      <section className="py-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-center neon-text mb-4">{eventsContent.title}</h2>
-          <p className="text-center text-slate-400 mb-12">{eventsContent.subtitle}</p>
-          
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
-            {eventsContent.events?.map((event: any, index: number) => (
-              <div key={event.id || index} className="hero-bg neon-border rounded-xl p-8 relative overflow-hidden">
-                <div className="absolute top-4 right-4">
-                  <div className={`text-white px-3 py-1 rounded-full text-sm font-bold ${
-                    event.category === 'BILINGUAL' ? 'bg-red-600' :
-                    event.category === 'ELITE' ? 'bg-purple-600' :
-                    'bg-blue-600'
-                  }`}>
-                    {event.category}
-                  </div>
-                </div>
-                <div className="mb-6">
-                  <h3 className="text-2xl font-bold text-white mb-2">{event.title}</h3>
-                  <div className="flex items-center text-slate-400 mb-2">
-                    <MapPin className="w-4 h-4 mr-2" />
-                    <span>{event.location}</span>
-                  </div>
-                  <div className="flex items-center text-slate-400 mb-4">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    <span>{event.dates}</span>
-                  </div>
-                </div>
-                
-                <div className="space-y-3 mb-6">
-                  {event.features?.map((feature: string, featureIndex: number) => (
-                    <div key={featureIndex} className="flex items-center">
-                      <CheckCircle className={`w-5 h-5 mr-3 flex-shrink-0 ${
-                        event.category === 'BILINGUAL' ? 'text-blue-400' :
-                        event.category === 'ELITE' ? 'text-purple-400' :
-                        'text-blue-400'
-                      }`} />
-                      <span className="text-slate-300">{feature}</span>
+                    {/* Stats */}
+                    <div className="space-y-2">
+                      <div className="text-sm text-slate-300 font-medium mb-2">Performance Metrics</div>
+                      {Object.entries(player.stats).map(([key, value]) => (
+                        <div key={key} className="flex justify-between items-center">
+                          <span className="text-slate-400 text-sm capitalize">{key}</span>
+                          <div className="flex items-center gap-2">
+                            <div className="w-16 bg-slate-700 rounded-full h-1.5">
+                              <div 
+                                className={`h-1.5 rounded-full ${value >= 8 ? 'bg-gradient-to-r from-blue-400 to-cyan-300 neon-glow' : value >= 6 ? 'bg-blue-400' : value >= 4 ? 'bg-yellow-400' : 'bg-red-400'}`}
+                                style={{ width: `${(value / 10) * 100}%` }}
+                              ></div>
+                            </div>
+                            <span className={`text-sm font-medium ${value >= 8 ? 'neon-text' : value >= 6 ? 'text-blue-400' : value >= 4 ? 'text-yellow-400' : 'text-red-400'}`}>
+                              {value.toFixed(1)}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-                
-                <div className="flex items-center justify-between mb-6">
-                  <div className={`text-3xl font-bold ${
-                    event.category === 'BILINGUAL' ? 'text-blue-400' :
-                    event.category === 'ELITE' ? 'text-purple-400' :
-                    'text-blue-400'
-                  }`}>
-                    {event.price}
-                  </div>
-                  <div className="flex items-center text-slate-400">
-                    <Users className="w-4 h-4 mr-2" />
-                    <span>{event.schedule || `Max ${event.maxParticipants} athletes`}</span>
-                  </div>
-                </div>
-                
-                {/* USA Football Benefits */}
-                {event.usaFootballBenefits && (
-                  <div className="bg-slate-800/50 backdrop-blur rounded-lg p-4 mb-6">
-                    <div className="flex items-center mb-2">
-                      <Shield className="w-5 h-5 text-yellow-400 mr-2" />
-                      <span className="text-yellow-400 font-bold text-sm">USA FOOTBALL INCLUDED</span>
+
+                    {/* Star Rating */}
+                    <div className="flex justify-center mt-4 gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => {
+                        const isActive = player.garScore >= star * 2
+                        return (
+                          <Star
+                            key={star}
+                            className={`w-4 h-4 ${
+                              isActive 
+                                ? player.garScore >= 8 
+                                  ? 'text-cyan-400 neon-glow' 
+                                  : 'text-blue-400'
+                                : 'text-slate-600'
+                            } ${isActive ? 'fill-current' : ''}`}
+                          />
+                        )
+                      })}
                     </div>
-                    <div className="text-sm text-slate-300 mb-2">
-                      {event.usaFootballBenefits.membershipType} • {event.usaFootballBenefits.discount}
-                    </div>
-                    <div className="text-xs text-slate-400">
-                      + 6-month Go4It platform access • Official credentials • $100K insurance
+
+                    {/* Background Effect */}
+                    <div className="absolute inset-0 opacity-5 pointer-events-none">
+                      <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500 rounded-full blur-2xl"></div>
+                      <div className="absolute bottom-0 left-0 w-16 h-16 bg-purple-500 rounded-full blur-2xl"></div>
                     </div>
                   </div>
-                )}
-                
-                <a href="/camp-registration" className={`w-full text-center py-3 inline-block font-bold transition-colors rounded-lg ${
-                  event.category === 'BILINGUAL' ? 'glow-button' :
-                  event.category === 'ELITE' ? 'bg-purple-600 hover:bg-purple-700 text-white' :
-                  'glow-button'
-                }`}>
-                  Register - Profile Required
-                </a>
-                
-                <div className="absolute inset-0 opacity-5 pointer-events-none">
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500 rounded-full blur-2xl"></div>
-                  <div className="absolute bottom-0 left-0 w-16 h-16 bg-purple-500 rounded-full blur-2xl"></div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-          
-          <div className="text-center">
-            <p className="text-slate-400 mb-4">Registration requires creating your Go4It athlete profile</p>
-            <p className="text-blue-400 font-semibold">Featured: 2x Super Bowl Champion Derrick Martin & NFL alumnus Talib Wise</p>
-            <p className="text-slate-500 text-sm mt-2">Elite participants may qualify for exclusive 10-week S.T.A.g.e. program in Dallas, Texas</p>
+            </div>
+            
+            {/* Scroll Indicator */}
+            <div className="text-center mt-4">
+              <p className="text-slate-400 text-sm">← Scroll to view more verified athletes →</p>
+            </div>
           </div>
         </div>
       </section>
+
+
 
       {/* Complete Stack */}
       <section className="py-16 px-4">
