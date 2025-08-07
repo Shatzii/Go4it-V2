@@ -21,7 +21,8 @@ export async function POST(req: NextRequest) {
     // Save file
     await writeFile(filepath, buffer);
     
-    const url = `/uploads/${filename}`;
+    // Use the new media API endpoint for serving
+    const url = `/api/media/${filename}`;
     
     return NextResponse.json({ 
       success: true, 
