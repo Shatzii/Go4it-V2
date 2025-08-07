@@ -598,3 +598,7 @@ export const insertCampRegistrationSchema = createInsertSchema(campRegistrations
 });
 export type InsertCampRegistrationType = z.infer<typeof insertCampRegistrationSchema>;
 
+// Additional team types for forms
+export type InsertTeamType = z.infer<typeof insertTeamSchema>;
+export type InsertTeamRosterType = z.infer<typeof insertTeamRosterSchema>;
+
