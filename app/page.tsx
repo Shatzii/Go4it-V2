@@ -1,11 +1,17 @@
 'use client';
 
-// Go4It Sports Landing Page - StarPath Enhanced 
-import { Star, TrendingUp, GraduationCap, Trophy, CheckCircle, Target, Zap, Crown, Award, MapPin, Calendar, Users, Shield } from 'lucide-react'
+// Go4It Sports Landing Page - StarPath Enhanced with Media Integration
+import { Star, TrendingUp, GraduationCap, Trophy, CheckCircle, Target, Zap, Crown, Award, MapPin, Calendar, Users, Shield, Play, Image as ImageIcon } from 'lucide-react'
 import { useCMS } from '../hooks/useCMS'
+import { useState, useEffect } from 'react'
 
 export default function Go4ItHomePage() {
   const { getSectionContent, getGlobalSettings, isLoaded } = useCMS();
+  const [featuredMedia, setFeaturedMedia] = useState<any>({
+    hero: {},
+    gallery: [],
+    videos: []
+  });
   
   // Get content from CMS or use fallback
   const heroContent = getSectionContent('hero') || {
@@ -30,6 +36,27 @@ export default function Go4ItHomePage() {
     siteName: 'Go4It Sports',
     tagline: 'Get Verified. Get Ranked. Get Recruited.'
   };
+
+  // Load featured media for homepage
+  useEffect(() => {
+    const loadFeaturedMedia = async () => {
+      try {
+        const response = await fetch('/api/admin/media', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'getFeaturedForHomepage' })
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setFeaturedMedia(data);
+        }
+      } catch (error) {
+        console.error('Failed to load featured media:', error);
+      }
+    };
+
+    loadFeaturedMedia();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
@@ -66,6 +93,134 @@ export default function Go4ItHomePage() {
           <div className="absolute bottom-20 left-10 w-40 h-40 bg-purple-500 rounded-full blur-3xl"></div>
         </div>
       </section>
+
+      {/* Featured Media Gallery */}
+      {featuredMedia.gallery && featuredMedia.gallery.length > 0 && (
+        <section className="py-16 px-4 bg-slate-900/50">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold neon-text mb-4">Featured Content</h2>
+              <p className="text-slate-400">See our athletes in action and discover what makes Go4It special</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featuredMedia.gallery.slice(0, 6).map((asset: any) => (
+                <div key={asset.id} className="group relative overflow-hidden rounded-xl bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all duration-300">
+                  <div className="aspect-video relative">
+                    {asset.type === 'video' ? (
+                      <div className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center">
+                        <div className="relative">
+                          <Play className="w-16 h-16 text-blue-400 group-hover:scale-110 transition-transform duration-300" />
+                          <div className="absolute inset-0 rounded-full bg-blue-500/20 group-hover:bg-blue-500/30 transition-colors duration-300"></div>
+                        </div>
+                        <div className="absolute top-4 left-4">
+                          <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-medium">
+                            VIDEO
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="relative w-full h-full">
+                        <img 
+                          src={asset.url} 
+                          alt={asset.originalName}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className="absolute top-4 left-4">
+                          <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full font-medium">
+                            {asset.type.toUpperCase()}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="p-6">
+                    <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors duration-300">
+                      {asset.originalName}
+                    </h3>
+                    <p className="text-slate-400 text-sm mb-3">
+                      {asset.description || 'Featured content from our training programs'}
+                    </p>
+                    <div className="flex flex-wrap gap-1">
+                      {asset.tags && asset.tags.slice(0, 3).map((tag: string) => (
+                        <span 
+                          key={tag}
+                          className="px-2 py-1 bg-slate-700 text-slate-300 text-xs rounded-md"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* View More Button */}
+            {featuredMedia.gallery.length > 6 && (
+              <div className="text-center mt-12">
+                <button className="glow-button">
+                  View More Content
+                </button>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Video Spotlight Section */}
+      {featuredMedia.videos && featuredMedia.videos.length > 0 && (
+        <section className="py-16 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold neon-text mb-4">Training in Action</h2>
+              <p className="text-slate-400">Watch our athletes develop their skills with Go4It Sports</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {featuredMedia.videos.slice(0, 2).map((video: any) => (
+                <div key={video.id} className="group relative">
+                  <div className="aspect-video bg-slate-800 rounded-xl overflow-hidden border border-slate-700 hover:border-blue-500/50 transition-all duration-300">
+                    <div className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center relative">
+                      {/* Video Thumbnail or Placeholder */}
+                      {video.thumbnailUrl ? (
+                        <img 
+                          src={video.thumbnailUrl} 
+                          alt={video.originalName}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="text-center">
+                          <Play className="w-20 h-20 text-blue-400 mx-auto mb-4 group-hover:scale-110 transition-transform duration-300" />
+                          <p className="text-slate-300 font-medium">{video.originalName}</p>
+                        </div>
+                      )}
+                      
+                      {/* Play Overlay */}
+                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-500 transition-colors duration-300">
+                          <Play className="w-8 h-8 text-white ml-1" fill="currentColor" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4">
+                    <h3 className="text-xl font-semibold text-white mb-2">
+                      {video.originalName}
+                    </h3>
+                    <p className="text-slate-400">
+                      {video.description || 'Training footage showcasing athletic development and technique improvement'}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Upcoming Events - Now Featured at Top */}
       <section className="py-16 px-4">

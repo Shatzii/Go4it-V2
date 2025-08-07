@@ -21,8 +21,11 @@ import {
   DollarSign,
   Star,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Video,
+  Play
 } from 'lucide-react';
+import { MediaIntegration, FeaturedMediaSection } from '../../../components/cms/media-integration';
 
 interface CMSSection {
   id: string;
@@ -61,9 +64,13 @@ export default function SeamlessCMS() {
   const [saving, setSaving] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
+  const [mediaAssets, setMediaAssets] = useState<any[]>([]);
+  const [showMediaBrowser, setShowMediaBrowser] = useState(false);
+  const [featuredAssets, setFeaturedAssets] = useState<string[]>([]);
 
   useEffect(() => {
     loadCMSContent();
+    loadMediaAssets();
   }, []);
 
   const loadCMSContent = async () => {
@@ -189,6 +196,43 @@ export default function SeamlessCMS() {
       console.error('Failed to load CMS content:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadMediaAssets = async () => {
+    try {
+      const response = await fetch('/api/admin/media', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'getForCMS' })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setMediaAssets(data.assets || []);
+        setFeaturedAssets(data.featured?.map((asset: any) => asset.id) || []);
+      }
+    } catch (error) {
+      console.error('Failed to load media assets:', error);
+    }
+  };
+
+  const updateFeaturedAssets = async (assetIds: string[]) => {
+    try {
+      const response = await fetch('/api/admin/media', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          action: 'updateFeatured',
+          featuredAssets: assetIds 
+        })
+      });
+      
+      if (response.ok) {
+        setFeaturedAssets(assetIds);
+        console.log('Featured assets updated successfully');
+      }
+    } catch (error) {
+      console.error('Failed to update featured assets:', error);
     }
   };
 
@@ -696,6 +740,18 @@ export default function SeamlessCMS() {
             
             <div className="border-t border-slate-700 pt-4 mt-6">
               <button
+                onClick={() => setActiveSection('media')}
+                className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors text-left ${
+                  activeSection === 'media'
+                    ? 'bg-blue-600 text-white'
+                    : 'hover:bg-slate-700 text-slate-300'
+                }`}
+              >
+                <Video className="w-4 h-4" />
+                Featured Media
+              </button>
+              
+              <button
                 onClick={() => setActiveSection('global')}
                 className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors text-left ${
                   activeSection === 'global'
@@ -731,6 +787,21 @@ export default function SeamlessCMS() {
               <div>
                 <h2 className="text-2xl font-bold mb-6">Events & Camps</h2>
                 {renderEventsEditor()}
+              </div>
+            )}
+            
+            {activeSection === 'media' && (
+              <div>
+                <h2 className="text-2xl font-bold mb-6">Featured Media Management</h2>
+                <p className="text-slate-400 mb-6">
+                  Select up to 6 media assets to feature on the homepage. These will be displayed in the Featured Content and Training in Action sections.
+                </p>
+                
+                <FeaturedMediaSection
+                  mediaAssets={mediaAssets}
+                  featuredAssets={featuredAssets}
+                  onUpdateFeatured={updateFeaturedAssets}
+                />
               </div>
             )}
           </div>
