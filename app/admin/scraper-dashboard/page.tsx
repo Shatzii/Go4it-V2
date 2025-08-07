@@ -62,6 +62,12 @@ export default function ScraperDashboard() {
   const [activeTab, setActiveTab] = useState('us-scraper');
   const [isLoading, setIsLoading] = useState(false);
   const [scrapingResults, setScrapingResults] = useState<ScrapingResult | null>(null);
+  const [enhancedMode, setEnhancedMode] = useState(true);
+  const [apiKeys, setApiKeys] = useState({
+    sportsDataIO: '',
+    espnAPI: '',
+    rapidAPI: ''
+  });
   const [config, setConfig] = useState<ScrapingConfig>({
     platforms: ['ESPN', 'Sports Reference', 'MaxPreps'],
     sports: ['Basketball'],
@@ -115,26 +121,42 @@ export default function ScraperDashboard() {
     setLastScrapeTime(new Date().toISOString());
 
     try {
-      const response = await fetch('/api/recruiting/athletes/live-scraper', {
+      const endpoint = enhancedMode ? '/api/scraper/production' : '/api/recruiting/athletes/live-scraper';
+      
+      const requestBody = enhancedMode ? {
+        sport: config.sports[0] || 'Basketball',
+        region: 'US',
+        maxResults: config.maxResults,
+        classYear: '2025',
+        filters: {
+          state: config.targetStates?.[0],
+          position: config.positions?.[0]
+        }
+      } : {
+        platforms: config.platforms,
+        sports: config.sports,
+        classYear: '2025',
+        maxResults: config.maxResults
+      };
+
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          platforms: config.platforms,
-          sports: config.sports,
-          classYear: '2025',
-          maxResults: config.maxResults
-        })
+        body: JSON.stringify(requestBody)
       });
 
       const data = await response.json();
       setScrapingResults(data);
 
       if (data.success) {
+        const athleteCount = enhancedMode ? data.data?.length : data.athletes?.length;
+        const sourceCount = enhancedMode ? data.metadata?.successfulSources : data.sources?.length;
+        
         toast({
-          title: "US Scraping Completed",
-          description: `Found ${data.athletes?.length || 0} athletes from ${data.sources?.length || 0} platforms`,
+          title: enhancedMode ? "Enhanced Scraping Completed" : "US Scraping Completed",
+          description: `Found ${athleteCount || 0} ${enhancedMode ? 'records' : 'athletes'} from ${sourceCount || 0} sources`,
         });
         loadScrapingStats();
       } else {
@@ -145,7 +167,7 @@ export default function ScraperDashboard() {
         });
       }
     } catch (error) {
-      console.error('US scraping error:', error);
+      console.error('Scraping error:', error);
       toast({
         title: "Scraping Error",
         description: "Failed to connect to scraping service",
@@ -499,6 +521,63 @@ export default function ScraperDashboard() {
           </TabsList>
 
           <TabsContent value="us-scraper" className="space-y-6">
+            {/* Enhanced Scraping Controls */}
+            <Card className="bg-slate-800 border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center justify-between">
+                  Enhanced Scraper Configuration
+                  <div className="flex items-center space-x-2">
+                    <Label htmlFor="enhanced-mode" className="text-sm text-slate-300">Enhanced Mode</Label>
+                    <Switch
+                      id="enhanced-mode"
+                      checked={enhancedMode}
+                      onCheckedChange={setEnhancedMode}
+                    />
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {enhancedMode && (
+                  <div className="space-y-4 p-4 bg-slate-900 rounded-lg border border-slate-600">
+                    <h3 className="text-lg font-semibold text-blue-400">API Configuration</h3>
+                    <p className="text-sm text-slate-400">
+                      Enhanced mode uses authenticated APIs for more reliable and comprehensive data collection.
+                    </p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="sportsdata-key" className="text-sm text-slate-300">SportsData.io API Key</Label>
+                        <Input
+                          id="sportsdata-key"
+                          type="password"
+                          placeholder="Enter SportsData.io API key (optional)"
+                          value={apiKeys.sportsDataIO}
+                          onChange={(e) => setApiKeys(prev => ({ ...prev, sportsDataIO: e.target.value }))}
+                          className="bg-slate-700 border-slate-600 text-white"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="rapidapi-key" className="text-sm text-slate-300">RapidAPI Key</Label>
+                        <Input
+                          id="rapidapi-key"
+                          type="password"
+                          placeholder="Enter RapidAPI key (optional)"
+                          value={apiKeys.rapidAPI}
+                          onChange={(e) => setApiKeys(prev => ({ ...prev, rapidAPI: e.target.value }))}
+                          className="bg-slate-700 border-slate-600 text-white"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2 text-sm text-slate-400">
+                      <CheckCircle className="w-4 h-4 text-green-400" />
+                      <span>ESPN API and TheSportsDB are free and will be used automatically</span>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+            
             <Card className="bg-slate-800 border-slate-700">
               <CardHeader>
                 <CardTitle className="text-white">US Recruiting Platforms</CardTitle>
