@@ -106,17 +106,17 @@ export function useCMS() {
             {
               id: '1',
               title: 'Friday Night Lights',
-              description: 'Elite football training experience under the lights in Mexico',
+              description: 'UniversalOne School open house with tryouts for basketball, soccer, and flag football',
               price: '$20USD',
               location: 'Conkal, Mexico',
               dates: 'August 15th, 2025',
-              category: 'ELITE',
+              category: 'OPEN HOUSE',
               features: [
-                'Elite Friday night football experience',
-                'Professional training under the lights',
-                'Expert coaching staff',
-                'Limited exclusive spots',
-                'Application-based selection'
+                'UniversalOne School open house event',
+                'Tryouts for basketball, soccer, and flag football',
+                'Boys and girls welcome',
+                'USA Football flag football season',
+                'Professional coaching evaluation'
               ],
               maxParticipants: 50,
               schedule: 'Evening Training Session - Times TBA',
@@ -124,15 +124,17 @@ export function useCMS() {
                 '2x Super Bowl Champion Derrick Martin',
                 'NFL alumnus Talib Wise'
               ],
-              applicationInfo: {
-                fee: '$20 USD',
-                spots: '50 available',
-                process: 'Application-based selection',
-                requirements: [
-                  'Complete application form',
-                  'Pay $20 USD application fee',
-                  'Football experience preferred',
-                  'Commitment to training excellence'
+              usaFootballBenefits: {
+                membershipType: 'Standard Edition',
+                price: '$35 (normally $119)',
+                discount: '70% OFF',
+                includes: [
+                  '6-month Go4It Sports platform access',
+                  'Digital USA Football Athlete ID Card',
+                  '$100,000 accident medical coverage',
+                  'USA Football age verification',
+                  'Access to sanctioned tournaments',
+                  'National Team Development eligibility'
                 ]
               }
             }

@@ -78,7 +78,8 @@ User wants approval before any design or content changes.
 - **Live Content Updates**: Admin can update hero sections, events, pricing, and global settings in real-time
 - **USA Football Integration**: Implemented "Pathway to America" marketing strategy with official membership benefits
 - **6-Month Platform Access**: Added Go4It site pass integration for standard edition participants
-- **Pricing Update**: English Sports Camp updated to $125 per child with flag football included (January 2, 2025)
+- **Event Update**: "Friday Night Lights" event updated for August 15th, 2025 in Conkal, Mexico - $20 USD application fee, 50 spots available (August 2025)
+- **UniversalOne School Integration**: Friday Night Lights is now UniversalOne School open house with tryouts for basketball, soccer, and flag football for boys and girls
 - **Visual Integration**: Incorporated real site images including "GET VERIFIED" graphic and Go4It logo
 - **Neon Styling Integration**: Applied original site's glow effects, glass cards, and neon aesthetic from provided HTML
 - **Sales Funnel Optimization**: Added "One Platform. One Mission. Go D1." CTA banner matching original content structure
