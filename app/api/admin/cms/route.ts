@@ -47,37 +47,35 @@ export async function GET(req: NextRequest) {
               events: [
                 {
                   id: '1',
-                  title: 'English With Sports Camp',
-                  description: 'Learn English through sports & games with native English-speaking coaches',
-                  price: '$125USD',
-                  location: 'Unidad Deportiva del Sur Henry Martín, Mérida',
-                  dates: 'August 4-8 & August 11-15, 2025',
-                  category: 'BILINGUAL',
+                  title: 'Friday Night Lights',
+                  description: 'Elite football training experience under the lights in Mexico',
+                  price: '$20USD',
+                  location: 'Conkal, Mexico',
+                  dates: 'August 15th, 2025',
+                  category: 'ELITE',
                   features: [
-                    'Learn English through sports & games',
-                    'Native English-speaking coaches',
-                    'Flag football, basketball, soccer, tennis',
-                    'Daily lunch and snacks included',
-                    'Ages 5-17 years welcome'
+                    'Elite Friday night football experience',
+                    'Professional training under the lights',
+                    'Expert coaching staff',
+                    'Limited exclusive spots',
+                    'Application-based selection'
                   ],
-                  maxParticipants: 60,
-                  schedule: '8:00 AM - 4:00 PM',
+                  maxParticipants: 50,
+                  schedule: 'Evening Training Session - Times TBA',
                   featuredStaff: [
                     '2x Super Bowl Champion Derrick Martin',
                     'NFL alumnus Talib Wise'
                   ],
-                  additionalInfo: 'Where language and movement connect. Learn English through games, sports and mentorship from international coaches and American athletes.',
-                  usaFootballBenefits: {
-                    membershipType: 'Standard Edition',
-                    price: '$35 (normally $119)',
-                    discount: '70% OFF',
-                    includes: [
-                      '6-month Go4It Sports platform access',
-                      'Digital USA Football Athlete ID Card',
-                      '$100,000 accident medical coverage',
-                      'USA Football age verification',
-                      'Access to sanctioned tournaments',
-                      'National Team Development eligibility'
+                  additionalInfo: 'An exclusive Friday night football experience in Mexico. Only 50 spots available with a $20 USD application fee. Elite training under the lights with professional coaching staff.',
+                  applicationInfo: {
+                    fee: '$20 USD',
+                    spots: '50 available',
+                    process: 'Application-based selection',
+                    requirements: [
+                      'Complete application form',
+                      'Pay $20 USD application fee',
+                      'Football experience preferred',
+                      'Commitment to training excellence'
                     ]
                   }
                 },
