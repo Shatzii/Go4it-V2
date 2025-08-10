@@ -29,6 +29,12 @@ export const users = pgTable('users', {
   verifiedBy: text('verified_by'),
   garScore: decimal('gar_score', { precision: 5, scale: 2 }),
   lastGarAnalysis: timestamp('last_gar_analysis'),
+  // Subscription fields
+  stripeCustomerId: text('stripe_customer_id'),
+  stripeSubscriptionId: text('stripe_subscription_id'),
+  subscriptionPlan: text('subscription_plan').default('free'),
+  subscriptionStatus: text('subscription_status').default('active'),
+  subscriptionEndDate: timestamp('subscription_end_date'),
 });
 
 // Video analysis table
@@ -597,7 +603,7 @@ export const insertCampRegistrationSchema = createInsertSchema(campRegistrations
   updatedAt: true,
 });
 
-// Additional team types for forms
+// Additional team types for forms  
 export type InsertTeamType = z.infer<typeof insertTeamSchema>;
 export type InsertTeamRosterType = z.infer<typeof insertTeamRosterSchema>;
 
