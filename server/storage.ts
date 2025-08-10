@@ -140,20 +140,22 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUsersByGARScore(minScore?: number, maxScore?: number, sport?: string): Promise<User[]> {
-    let baseQuery = db
-      .select()
-      .from(users)
-      .leftJoin(videoAnalysis, eq(users.id, videoAnalysis.userId));
-
     let whereConditions = [];
     
     if (sport) {
       whereConditions.push(eq(users.sport, sport));
     }
     
-    if (whereConditions.length > 0) {
-      baseQuery = baseQuery.where(and(...whereConditions));
-    }
+    const baseQuery = whereConditions.length > 0
+      ? db
+          .select()
+          .from(users)
+          .leftJoin(videoAnalysis, eq(users.id, videoAnalysis.userId))
+          .where(and(...whereConditions))
+      : db
+          .select()
+          .from(users)
+          .leftJoin(videoAnalysis, eq(users.id, videoAnalysis.userId));
 
     const results = await baseQuery;
     
