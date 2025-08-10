@@ -11,6 +11,12 @@ User wants approval before any design or content changes.
 
 ## Recent Changes (August 2025)
 
+### Teams API Deployment Fix (August 2025)
+- **Import Error Resolution**: Fixed incorrect database import paths in teams API routes - changed from `@/server/storage` to `@/server/db`
+- **Schema Field Alignment**: Corrected user profile field reference from `profileImageUrl` to `profileImage` in team roster API
+- **TypeScript Query Optimization**: Simplified Drizzle query structure in teams route to resolve compilation errors
+- **Build Process Stabilization**: Resolved TypeScript compilation issues preventing successful deployment builds
+
 ### Enhanced Scraper System Implementation (January 2025)
 - **Production-Ready Scraper System**: Implemented comprehensive scraper architecture with multiple data collection layers
 - **Multi-Source Data Collection**: Created advanced scraper core with ESPN, MaxPreps, Rivals, and European sports site integration

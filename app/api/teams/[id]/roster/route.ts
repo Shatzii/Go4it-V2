@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/server/storage';
+import { db } from '@/server/db';
 import { teams, teamRosters, users, videoAnalysis, enrollments } from '@/shared/schema';
 import { eq, desc } from 'drizzle-orm';
 
@@ -43,7 +43,7 @@ export async function GET(
         garScore: users.garScore,
         sport: users.sport,
         graduationYear: users.graduationYear,
-        profileImageUrl: users.profileImageUrl,
+        profileImage: users.profileImage,
         isVerified: users.isVerified,
       })
       .from(teamRosters)
