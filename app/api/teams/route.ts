@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/server/storage';
+import { db } from '@/server/db';
 import { teams, teamRosters, users } from '@/shared/schema';
 import { eq } from 'drizzle-orm';
 
@@ -9,7 +9,9 @@ export async function GET(request: NextRequest) {
     const sport = searchParams.get('sport');
 
     // Get teams with roster counts
-    let query = db
+    const whereCondition = sport && sport !== 'all' ? eq(teams.sport, sport) : undefined;
+    
+    const teamsData = await db
       .select({
         id: teams.id,
         name: teams.name,
@@ -23,13 +25,8 @@ export async function GET(request: NextRequest) {
         isActive: teams.isActive,
         createdAt: teams.createdAt,
       })
-      .from(teams);
-
-    if (sport && sport !== 'all') {
-      query = query.where(eq(teams.sport, sport));
-    }
-
-    const teamsData = await query;
+      .from(teams)
+      .where(whereCondition);
 
     // Get roster counts for each team
     const teamsWithCounts = await Promise.all(
