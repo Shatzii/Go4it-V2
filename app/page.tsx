@@ -245,7 +245,7 @@ export default function Go4ItHomePage() {
           
           <div className="mb-16">
             <img 
-              src="/attached_assets/F29318E4-70D2-4A43-A255-0E7DB9354C3B_1754955763780.png"
+              src="/assets/verified-athletes.png"
               alt="Top Verified Athletes with GAR Scores - showcasing elite performers across multiple sports"
               className="w-full max-w-4xl mx-auto rounded-xl shadow-2xl border border-slate-700"
               loading="lazy"
@@ -260,7 +260,7 @@ export default function Go4ItHomePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="order-2 lg:order-1 relative">
               <img 
-                src="/attached_assets/Navy Blue and Gray Modern Baseball Camp Promotion Flyer_1754955763780.png"
+                src="/assets/gar-system-breakdown.png"
                 alt="GAR Rating System Breakdown - comprehensive explanation of our 3-part evaluation system"
                 className="w-full rounded-xl shadow-2xl border border-slate-700"
                 loading="lazy"
