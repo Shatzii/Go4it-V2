@@ -269,8 +269,11 @@ export default function EventsPage() {
                 Be part of the next generation of verified athletes. Follow us for upcoming events and showcases.
               </p>
               <div className="flex gap-4 justify-center">
-                <Button className="bg-orange-500 hover:bg-orange-600">
-                  Get Notified
+                <Button 
+                  className="bg-orange-500 hover:bg-orange-600"
+                  onClick={() => window.location.href = '/friday-night-lights'}
+                >
+                  Register for Friday Night Lights
                 </Button>
                 <Button variant="outline">
                   View Calendar
