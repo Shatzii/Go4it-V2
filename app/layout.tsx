@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { AppProvider } from '@/components/providers/AppProviders';
 import { WebSocketProvider } from '@/components/realtime/WebSocketProvider';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ErrorBoundaryEnhanced } from '@/components/error/ErrorBoundaryEnhanced';
 import { PerformanceMonitor } from '@/components/performance/PerformanceMonitor';
 import { MobileNavigation } from '@/components/mobile/MobileNavigation';
 import { ServiceWorkerRegistration } from '@/components/pwa/ServiceWorkerRegistration';
@@ -41,7 +41,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className={`${inter.className} bg-slate-950 text-white antialiased`}>
-        <ErrorBoundary>
+        <ErrorBoundaryEnhanced>
           <AppProvider>
             <WebSocketProvider>
               <ServiceWorkerRegistration />
@@ -88,7 +88,9 @@ export default function RootLayout({
 
               {/* Main Content */}
               <div className="pt-16">
-                {children}
+                <ClientOnly>
+                  {children}
+                </ClientOnly>
               </div>
 
               <ClientOnly>
@@ -98,7 +100,7 @@ export default function RootLayout({
               </ClientOnly>
             </WebSocketProvider>
           </AppProvider>
-        </ErrorBoundary>
+        </ErrorBoundaryEnhanced>
       </body>
     </html>
   );
