@@ -235,26 +235,36 @@ export default function Go4ItHomePage() {
         </div>
       </section>
 
+      {/* Top Verified Athletes Showcase */}
+      <section className="py-16 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold neon-text mb-4">TOP VERIFIED ATHLETES</h2>
+            <p className="text-xl text-slate-300">Elite performers setting the standard with their GAR scores</p>
+          </div>
+          
+          <div className="mb-16">
+            <img 
+              src="/attached_assets/F29318E4-70D2-4A43-A255-0E7DB9354C3B_1754955763780.png"
+              alt="Top Verified Athletes with GAR Scores - showcasing elite performers across multiple sports"
+              className="w-full max-w-4xl mx-auto rounded-xl shadow-2xl border border-slate-700"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Step 2: Get Your GAR */}
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="order-2 lg:order-1 relative">
-              <div className="w-full max-w-md mx-auto hero-bg neon-border rounded-xl shadow-2xl p-12 text-center relative">
-                <div className="relative">
-                  <div className="w-32 h-32 mx-auto mb-6 neon-border rounded-full flex items-center justify-center text-slate-900 font-bold text-2xl neon-glow bg-gradient-to-r from-blue-400 to-cyan-300">
-                    ✓
-                  </div>
-                  <h3 className="text-4xl font-bold neon-text mb-4">
-                    GET VERIFIED
-                  </h3>
-                  <p className="text-slate-300 text-lg">
-                    Your official athletic rating
-                  </p>
-                  <div className="absolute -top-4 -right-4 w-16 h-16 bg-blue-500/20 rounded-full blur-xl"></div>
-                  <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-purple-500/20 rounded-full blur-xl"></div>
-                </div>
-              </div>
+              <img 
+                src="/attached_assets/Navy Blue and Gray Modern Baseball Camp Promotion Flyer_1754955763780.png"
+                alt="GAR Rating System Breakdown - comprehensive explanation of our 3-part evaluation system"
+                className="w-full rounded-xl shadow-2xl border border-slate-700"
+                loading="lazy"
+              />
             </div>
             <div className="order-1 lg:order-2">
               <div className="flex items-center mb-4">
@@ -265,19 +275,19 @@ export default function Go4ItHomePage() {
               <ul className="space-y-3 mb-8">
                 <li className="flex items-center text-slate-300">
                   <Star className="w-5 h-5 text-yellow-400 mr-3" />
-                  AI-driven breakdown of your movement and mechanics
+                  <strong>Physical (60%)</strong> - Sprint, agility, strength, coordination
                 </li>
                 <li className="flex items-center text-slate-300">
                   <Target className="w-5 h-5 text-red-400 mr-3" />
-                  Full-body analysis across 5 game-changing categories
+                  <strong>Cognitive (20%)</strong> - Decision-making, memory, learning style
                 </li>
                 <li className="flex items-center text-slate-300">
                   <TrendingUp className="w-5 h-5 text-green-400 mr-3" />
-                  Real injury-risk prediction and performance trajectory
+                  <strong>Psychological (20%)</strong> - Confidence, coachability, resilience
                 </li>
                 <li className="flex items-center text-slate-300">
                   <Award className="w-5 h-5 text-purple-400 mr-3" />
-                  Compare yourself to college athletes and beyond
+                  Complete holistic rating system for total athlete development
                 </li>
               </ul>
               <div className="bg-slate-800 p-4 rounded-lg mb-6">
@@ -286,9 +296,13 @@ export default function Go4ItHomePage() {
               <a href="/gar-analysis" className="glow-button text-lg px-8 py-3 mb-4 inline-block">
                 Get My GAR Score
               </a>
-              <blockquote className="border-l-4 border-blue-400 pl-4 italic text-slate-300 mt-6">
-                "The GAR score didn't just improve my game — it got me in front of real recruiters. This is different."
-              </blockquote>
+              <div className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 p-6 rounded-lg border border-blue-500/30 mt-6">
+                <h4 className="text-lg font-bold text-blue-400 mb-2">The Go4It Athletic Rating (GAR)</h4>
+                <p className="text-slate-300 text-sm leading-relaxed">
+                  A dynamic scientifically backed multi-dimensional wholistic system that scores more than physical stats. 
+                  Our system captures mental, emotional and learning traits to provide the most complete rating known to date.
+                </p>
+              </div>
             </div>
           </div>
         </div>
