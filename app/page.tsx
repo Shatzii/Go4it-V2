@@ -98,6 +98,8 @@ export default function Go4ItHomePage() {
                       src={event.image} 
                       alt={event.title}
                       className="w-full h-48 object-cover rounded-lg"
+                      loading="lazy"
+                      decoding="async"
                     />
                   </div>
                 )}
