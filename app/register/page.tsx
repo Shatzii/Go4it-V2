@@ -23,7 +23,7 @@ export default function RegisterPage() {
     setMessage('')
 
     try {
-      const response = await fetch('/api/test-registration', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -32,7 +32,7 @@ export default function RegisterPage() {
       const result = await response.json()
 
       if (response.ok) {
-        setMessage('Registration successful! You can now use the platform.')
+        setMessage('Registration successful! Redirecting to dashboard...')
         // Reset form
         setFormData({
           username: '',
@@ -44,6 +44,10 @@ export default function RegisterPage() {
           sport: 'football',
           position: ''
         })
+        // Redirect to dashboard after 2 seconds
+        setTimeout(() => {
+          window.location.href = '/dashboard'
+        }, 2000)
       } else {
         setMessage(`Registration failed: ${result.error}`)
       }
