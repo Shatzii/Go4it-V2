@@ -53,6 +53,7 @@ export async function GET(req: NextRequest) {
                   location: 'Conkal, Mexico',
                   dates: 'August 15th, 2025',
                   category: 'OPEN HOUSE',
+                  image: '/images/friday-night-lights.jpeg',
                   features: [
                     'UniversalOne School open house event',
                     'Tryouts for basketball, soccer, and flag football',
