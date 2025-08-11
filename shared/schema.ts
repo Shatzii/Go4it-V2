@@ -76,6 +76,62 @@ export const highlightReels = pgTable('highlight_reels', {
   processedAt: timestamp('processed_at'),
 });
 
+// Friday Night Lights registrations table
+export const fridayNightLightsRegistrations = pgTable('friday_night_lights_registrations', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id), // null if guest registration
+  
+  // Event selection
+  eventType: text('event_type').notNull(), // 'open-house', 'tryout', 'both'
+  
+  // Personal information
+  firstName: text('first_name').notNull(),
+  lastName: text('last_name').notNull(),
+  email: text('email').notNull(),
+  phone: text('phone').notNull(),
+  dateOfBirth: timestamp('date_of_birth').notNull(),
+  
+  // Parent/Guardian information
+  parentName: text('parent_name').notNull(),
+  parentEmail: text('parent_email').notNull(),
+  emergencyContact: text('emergency_contact').notNull(),
+  emergencyPhone: text('emergency_phone').notNull(),
+  
+  // Universal One Academy interest
+  universalOneInterest: boolean('universal_one_interest').default(false),
+  academicPrograms: text('academic_programs'), // JSON string
+  needsAcademicSupport: boolean('needs_academic_support').default(false),
+  
+  // Sports tryout information
+  primarySport: text('primary_sport'),
+  secondarySports: text('secondary_sports'), // JSON string
+  position: text('position'),
+  experience: text('experience'),
+  previousTeams: text('previous_teams'),
+  
+  // Specific sport tryouts
+  flagFootballTryout: boolean('flag_football_tryout').default(false),
+  basketballTryout: boolean('basketball_tryout').default(false),
+  soccerTryout: boolean('soccer_tryout').default(false),
+  
+  // Service opt-ins
+  garAnalysisOptIn: boolean('gar_analysis_opt_in').default(true),
+  aiCoachingOptIn: boolean('ai_coaching_opt_in').default(true),
+  recruitmentOptIn: boolean('recruitment_opt_in').default(true),
+  
+  // Additional needs
+  transportationNeeds: boolean('transportation_needs').default(false),
+  dietaryRestrictions: text('dietary_restrictions'),
+  specialAccommodations: text('special_accommodations'),
+  
+  // Registration metadata
+  status: text('status').notNull().default('confirmed'),
+  registrationDate: text('registration_date').notNull(),
+  
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
 // Camp registrations table
 export const campRegistrations = pgTable('camp_registrations', {
   id: serial('id').primaryKey(),
@@ -598,6 +654,15 @@ export type InsertTeamRoster = typeof teamRosters.$inferInsert;
 export type CampRegistration = typeof campRegistrations.$inferSelect;
 export type InsertCampRegistration = typeof campRegistrations.$inferInsert;
 export const insertCampRegistrationSchema = createInsertSchema(campRegistrations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Friday Night Lights registration types
+export type FridayNightLightsRegistration = typeof fridayNightLightsRegistrations.$inferSelect;
+export type InsertFridayNightLightsRegistration = typeof fridayNightLightsRegistrations.$inferInsert;
+export const insertFridayNightLightsRegistrationSchema = createInsertSchema(fridayNightLightsRegistrations).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
