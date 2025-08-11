@@ -86,11 +86,21 @@ export default function Go4ItHomePage() {
                   <div className={`text-white px-3 py-1 rounded-full text-sm font-bold ${
                     event.category === 'BILINGUAL' ? 'bg-red-600' :
                     event.category === 'ELITE' ? 'bg-purple-600' :
+                    event.category === 'OPEN HOUSE' ? 'bg-green-600' :
                     'bg-blue-600'
                   }`}>
                     {event.category}
                   </div>
                 </div>
+                {event.image && (
+                  <div className="mb-6">
+                    <img 
+                      src={event.image} 
+                      alt={event.title}
+                      className="w-full h-48 object-cover rounded-lg"
+                    />
+                  </div>
+                )}
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold text-white mb-2">{event.title}</h3>
                   <div className="flex items-center text-slate-400 mb-2">
