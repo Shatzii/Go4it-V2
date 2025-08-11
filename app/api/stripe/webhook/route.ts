@@ -148,7 +148,8 @@ async function handleSubscriptionPayment(invoice: Stripe.Invoice) {
     // Handle subscription renewal SMS notifications
     const customer = invoice.customer;
     const amount = invoice.amount_paid;
-    const subscriptionId = invoice.subscription as string;
+    // Get subscription ID from the lines array if available
+    const subscriptionId = invoice.lines?.data?.[0]?.subscription || 'N/A';
 
     console.log(`Subscription payment succeeded: ${subscriptionId} - $${amount / 100}`);
 

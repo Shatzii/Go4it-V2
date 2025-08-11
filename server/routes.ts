@@ -1,20 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { storage } from './storage';
-import { createInsertSchema } from 'drizzle-zod';
-import { users, videoAnalysis } from '../shared/schema';
+import { insertUserSchema, insertVideoAnalysisSchema } from '../shared/schema';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 // Zod schemas for validation
-const insertUserSchema = createInsertSchema(users);
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
 });
-
-const insertVideoAnalysisSchema = createInsertSchema(videoAnalysis);
 
 // Helper function to get user from JWT token
 export async function getUserFromRequest(request: NextRequest) {
@@ -69,7 +65,7 @@ export async function authLogin(request: NextRequest) {
 export async function authRegister(request: NextRequest) {
   try {
     const body = await request.json();
-    const userData = insertUserSchema.parse(body);
+    const userData = insertUserSchema.parse(body) as any;
 
     // Check if user already exists
     const existingUser = await storage.getUserByEmail(userData.email);
@@ -166,7 +162,7 @@ export async function createVideoAnalysis(request: NextRequest) {
     const data = insertVideoAnalysisSchema.parse({
       ...body,
       userId: user.id
-    });
+    }) as any;
 
     const analysis = await storage.createVideoAnalysis(data);
     return NextResponse.json(analysis, { status: 201 });
