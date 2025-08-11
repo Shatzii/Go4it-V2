@@ -1,16 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserFromRequest } from '@/lib/auth'
-import { AIModelManager } from '@/lib/ai-models'
-
-// Use self-hosted AI models for coaching
-const aiModelManager = new AIModelManager({
-  type: 'local',
-  provider: 'ollama',
-  model: 'llama3.1:8b',
-  endpoint: 'http://localhost:11434',
-  temperature: 0.7,
-  maxTokens: 2000
-});
+import { go4itAI } from '@/lib/openai-integration'
 
 export async function POST(request: NextRequest) {
   try {
@@ -58,20 +48,25 @@ Return a JSON object with:
 
 Focus on practical, actionable advice that a student athlete can implement immediately.`
 
-    // Use self-hosted AI model for coaching with fallback
+    // Use OpenAI GPT-4o for authentic AI coaching
     let aiResponse;
     try {
-      const systemPrompt = "You are an expert athletic coach with deep knowledge of sports training, skill development, and student athlete psychology. Always provide practical, safe, and progressive training advice.";
-      const fullPrompt = `${systemPrompt}\n\n${prompt}`;
-      
-      aiResponse = await aiModelManager.generateResponse(fullPrompt, {
+      const analysisRequest = {
         sport,
-        currentLevel,
-        goals,
-        sessionType
-      });
+        analysisType: 'coaching' as const,
+        context: {
+          currentLevel,
+          goals,
+          weaknesses,
+          strengths,
+          sessionType,
+          userId: user.id
+        }
+      };
+      
+      aiResponse = await go4itAI.generateCoachingAdvice(analysisRequest);
     } catch (aiError) {
-      console.log('AI service unavailable, using fallback coaching system');
+      console.log('OpenAI service error:', aiError);
       
       // Fallback coaching system with sport-specific drills
       aiResponse = JSON.stringify({

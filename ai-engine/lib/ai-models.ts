@@ -391,6 +391,20 @@ export function createAIModelManager(): AIModelManager {
     });
   }
   
+  // Check for OpenAI API key - prioritize authentic AI over local models
+  const openaiKey = process.env.OPENAI_API_KEY;
+  
+  if (openaiKey) {
+    return new AIModelManager({
+      type: 'cloud',
+      provider: 'openai',
+      model: 'gpt-4o', // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      apiKey: openaiKey,
+      maxTokens: 2000,
+      temperature: 0.7
+    });
+  }
+  
   // Default to self-hosted models for Go4It Sports Platform
   // User preference: Use self-hosted AI models instead of external APIs
   const useLocal = process.env.USE_LOCAL_MODELS !== 'false'; // Default to true

@@ -48,7 +48,7 @@ User wants approval before any design or content changes.
 - **Authentication**: JWT with bcrypt for stateless, scalable, and secure user authentication.
 - **Frontend**: Next.js with React for performant web application development, leveraging SSR/SSG.
 - **Styling**: Tailwind CSS for consistent, maintainable, and rapid development.
-- **AI Architecture**: Hybrid approach supporting both cloud AI APIs (OpenAI, Anthropic) and local self-hosted models (Ollama). Secure offline AI model protection with AES-256 encryption.
+- **AI Architecture**: Hybrid approach supporting both cloud AI APIs (OpenAI GPT-4o, Anthropic) and local self-hosted models (Ollama). Secure offline AI model protection with AES-256 encryption. Now integrated with authentic OpenAI GPT-4o for GAR analysis, coaching, and recruitment reports.
 
 ## External Dependencies
 

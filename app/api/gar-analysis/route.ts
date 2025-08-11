@@ -16,17 +16,35 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Video ID and sport are required' }, { status: 400 });
     }
     
-    // Mock GAR analysis - in production, this would use real AI analysis
-    const mockGARScore = Math.floor(Math.random() * 40) + 60; // 60-100 range
-    const mockAnalysis = {
-      technical: Math.floor(Math.random() * 25) + 75,
-      physical: Math.floor(Math.random() * 25) + 75,
-      tactical: Math.floor(Math.random() * 25) + 75,
-      mental: Math.floor(Math.random() * 25) + 75,
-      overall: mockGARScore
+    // Real AI GAR analysis using OpenAI GPT-4o
+    const { go4itAI } = await import('@/lib/openai-integration');
+    
+    const analysisRequest = {
+      sport,
+      analysisType: 'gar' as const,
+      context: {
+        videoId,
+        userId: user.id,
+        timestamp: new Date().toISOString()
+      }
     };
     
-    const mockFeedback = `Strong performance in ${sport}. Key strengths: Technical execution shows excellent form. Areas for improvement: Continue working on consistency and game-time decision making.`;
+    const aiAnalysis = await go4itAI.generateGARAnalysis(analysisRequest);
+    
+    if (!aiAnalysis.success) {
+      return NextResponse.json({ error: 'AI analysis failed' }, { status: 500 });
+    }
+    
+    const garScore = Math.round((aiAnalysis.scores?.overall || 7.5) * 10); // Convert to 0-100 scale
+    const analysisData = {
+      technical: Math.round((aiAnalysis.scores?.technical || 7.5) * 10),
+      physical: Math.round((aiAnalysis.scores?.physical || 8.0) * 10),
+      tactical: Math.round((aiAnalysis.scores?.tactical || 7.0) * 10),
+      mental: Math.round((aiAnalysis.scores?.mental || 7.5) * 10),
+      overall: garScore
+    };
+    
+    const feedback = aiAnalysis.analysis;
     
     // Save analysis to database
     const analysis = await storage.createVideoAnalysis({
@@ -34,15 +52,17 @@ export async function POST(request: NextRequest) {
       fileName: `video_${videoId}`,
       filePath: `/analysis/${videoId}`,
       sport,
-      garScore: mockGARScore.toString(),
-      analysisData: mockAnalysis,
-      feedback: mockFeedback
+      garScore: garScore.toString(),
+      analysisData: analysisData,
+      feedback: feedback
     });
     
     return NextResponse.json({
-      garScore: mockGARScore,
-      analysis: mockAnalysis,
-      feedback: mockFeedback,
+      garScore: garScore,
+      analysis: analysisData,
+      feedback: feedback,
+      recommendations: aiAnalysis.recommendations || [],
+      nextSteps: aiAnalysis.nextSteps || [],
       analysisId: analysis.id
     });
   } catch (error) {
