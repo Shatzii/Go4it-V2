@@ -4,8 +4,10 @@ import { db } from '@/server/db';
 import { users } from '@/shared/schema';
 import { eq } from 'drizzle-orm';
 import { logger } from '@/lib/logger';
+import * as Sentry from '@sentry/nextjs';
 
 export async function GET(req: NextRequest) {
+  const t0 = Date.now();
   try {
     const token = req.cookies.get('token')?.value;
     
@@ -34,10 +36,11 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-  logger.info('auth.me.success', { userId: user.id });
+  logger.info('auth.me.success', { userId: user.id, durationMs: Date.now() - t0 });
   return NextResponse.json(user);
   } catch (error) {
-  logger.error('auth.me.error', { err: (error as Error)?.message });
+  logger.error('auth.me.error', { err: (error as Error)?.message, durationMs: Date.now() - t0 });
+  try { if (process.env.SENTRY_DSN) Sentry.captureException(error); } catch {}
     return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
   }
 }

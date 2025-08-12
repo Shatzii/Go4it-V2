@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import * as Sentry from '@sentry/nextjs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { AlertTriangle, RefreshCw, Home, Bug } from 'lucide-react'
@@ -66,9 +67,13 @@ export class EnhancedErrorBoundary extends React.Component<ErrorBoundaryProps, E
     }
 
     console.error('Error Report:', errorReport)
-    
-    // You could send this to services like Sentry, LogRocket, etc.
-    // Example: Sentry.captureException(error, { extra: errorReport })
+
+    // Send to Sentry when configured
+    try {
+      if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+        Sentry.captureException(error, { extra: errorReport })
+      }
+    } catch {}
   }
 
   private handleRetry = () => {
@@ -248,13 +253,13 @@ export function withErrorBoundary<P extends object>(
 }
 
 // Simple error fallback component
-export function SimpleErrorFallback({ error, retry }: { error: Error; retry: () => void }) {
+export function SimpleErrorFallback({ error, retryAction }: { error: Error; retryAction: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center p-8 text-center">
       <AlertTriangle className="w-12 h-12 text-red-400 mb-4" />
       <h2 className="text-xl font-semibold text-white mb-2">Something went wrong</h2>
       <p className="text-slate-400 mb-4">{error.message}</p>
-      <Button onClick={retry} className="bg-blue-600 hover:bg-blue-700 text-white">
+  <Button onClick={retryAction} className="bg-blue-600 hover:bg-blue-700 text-white">
         Try Again
       </Button>
     </div>

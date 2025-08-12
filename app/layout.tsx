@@ -60,6 +60,22 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/favicon.ico" />
+        {/* JSON-LD: Organization */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'Go4It Sports',
+              url: (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000').replace(/\/$/, ''),
+              logo: '/og-image.png',
+              sameAs: [
+                'https://twitter.com/go4itsports',
+              ],
+            }),
+          }}
+        />
       </head>
       <body className={`${inter.className} bg-slate-950 text-white antialiased`}>
         <ErrorBoundaryEnhanced>

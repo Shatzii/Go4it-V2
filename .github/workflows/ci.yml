@@ -33,13 +33,27 @@ jobs:
           NODE_OPTIONS: --max_old_space_size=4096
         run: npm run build --if-present
 
+      - name: Start server
+        env:
+          NODE_ENV: production
+        run: |
+          nohup npm start >/dev/null 2>&1 &
+
+      - name: Wait for health
+        env:
+          BASE_URL: http://localhost:5000
+        run: |
+          for i in {1..60}; do
+            if curl -fsS "$BASE_URL/api/health" >/dev/null; then echo "Server healthy"; exit 0; fi
+            sleep 2
+          done
+          echo "Server did not become healthy in time" && exit 1
+
       - name: Smoke test registration API
         env:
           BASE_URL: http://localhost:5000
           JWT_SECRET: testsecret
         run: |
-          nohup npm start >/dev/null 2>&1 &
-          sleep 8
           node scripts/test-register.js || (echo "Registration test failed" && exit 1)
 
       - name: Smoke test auth flow (register -> me -> logout -> login -> me)
@@ -48,3 +62,11 @@ jobs:
           JWT_SECRET: testsecret
         run: |
           node scripts/test-auth-flow.js || (echo "Auth flow test failed" && exit 1)
+
+      - name: Smoke test health and verify endpoint
+        env:
+          BASE_URL: http://localhost:5000
+          JWT_SECRET: testsecret
+          CI: 'true'
+        run: |
+          node scripts/test-health-and-verify.js || (echo "Health/Verify test failed" && exit 1)
