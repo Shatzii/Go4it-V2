@@ -7,8 +7,10 @@ export async function POST(req: NextRequest) {
     // Clear the authentication cookie
     response.cookies.set('token', '', {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
+      domain: process.env.COOKIE_DOMAIN || undefined,
+      path: '/',
       maxAge: 0
     });
 
