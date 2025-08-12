@@ -41,3 +41,10 @@ jobs:
           nohup npm start >/dev/null 2>&1 &
           sleep 8
           node scripts/test-register.js || (echo "Registration test failed" && exit 1)
+
+      - name: Smoke test auth flow (register -> me -> logout -> login -> me)
+        env:
+          BASE_URL: http://localhost:5000
+          JWT_SECRET: testsecret
+        run: |
+          node scripts/test-auth-flow.js || (echo "Auth flow test failed" && exit 1)

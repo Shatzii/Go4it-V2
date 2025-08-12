@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verify as jwtVerify } from 'jsonwebtoken';
 import { storage } from '@/server/storage';
+import { logger } from '@/lib/logger';
 
 export async function GET(req: NextRequest) {
   try {
     const token = req.nextUrl.searchParams.get('token');
     if (!token) {
+      logger.warn('auth.verify.missing_token');
       return NextResponse.json({ error: 'Missing token' }, { status: 400 });
     }
 
@@ -17,6 +19,7 @@ export async function GET(req: NextRequest) {
     const userId = Number(decoded.userId);
     const user = await storage.getUser(userId);
     if (!user) {
+      logger.warn('auth.verify.user_not_found', { userId });
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
@@ -28,9 +31,10 @@ export async function GET(req: NextRequest) {
 
     // Redirect to a success page or dashboard
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000';
-    return NextResponse.redirect(`${appUrl}/dashboard?verified=1`);
+  logger.info('auth.verify.success', { userId });
+  return NextResponse.redirect(`${appUrl}/dashboard?verified=1`);
   } catch (err) {
-    console.error('Verify error:', err);
+  logger.error('auth.verify.error', { err: (err as Error)?.message });
     return NextResponse.json({ error: 'Verification failed' }, { status: 400 });
   }
 }
