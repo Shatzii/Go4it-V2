@@ -139,7 +139,7 @@ async function fallbackToStandardAnalysis(filePath: string, sport: string, userI
 
   try {
     // Use the AI model manager to handle both local and cloud models
-    const aiManager = createAIModelManager();
+    const aiManager = createAIModelManager({});
     
     // Generate AI response with fallback
     let response: string;
@@ -357,6 +357,9 @@ export async function POST(request: NextRequest) {
       // Create demo user for testing
       user = { id: 1, email: 'demo@example.com', name: 'Demo User' };
     }
+    
+    // Ensure user ID is an integer for database compatibility
+    const userId = typeof user.id === 'string' ? parseInt(user.id) || 1 : user.id;
 
     const contentType = request.headers.get('content-type');
     let file: File | null = null;
@@ -371,7 +374,7 @@ export async function POST(request: NextRequest) {
       
       if (testMode) {
         // Skip file processing for test mode
-        const testAnalysis = await analyzeVideoWithAI('test_video.mp4', sport, user.id);
+        const testAnalysis = await analyzeVideoWithAI('test_video.mp4', sport, userId);
         return NextResponse.json({
           success: true,
           analysis: testAnalysis,
@@ -435,18 +438,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Try local analysis first, then fallback to cloud AI
-    let analysis = await tryLocalAnalysisFirst(filePath, sport, user.id);
+    let analysis = await tryLocalAnalysisFirst(filePath, sport, userId);
     
     if (!analysis) {
       // Fallback to cloud AI analysis
-      analysis = await analyzeVideoWithAI(filePath, sport, user.id);
+      analysis = await analyzeVideoWithAI(filePath, sport, userId);
     }
 
     // Save analysis to database
     const [savedAnalysis] = await db
       .insert(videoAnalysis)
       .values({
-        userId: user.id,
+        userId: userId, // Use parsed integer userId
         fileName: file?.name || 'test_video.mp4',
         filePath: filePath,
         sport: sport,
