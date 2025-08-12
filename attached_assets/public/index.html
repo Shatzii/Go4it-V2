@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal One School - AI-Powered Education Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
+        
+        .logo::before {
+            content: "🎓";
+            margin-right: 0.5rem;
+        }
+        
+        nav {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: #2563eb;
+        }
+        
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Stats Section */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            padding: 3rem 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        /* Schools Section */
+        .schools {
+            background: white;
+            padding: 4rem 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #1f2937;
+        }
+        
+        .schools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .school-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .school-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .school-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .school-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+        }
+        
+        .school-stats {
+            background: #f8fafc;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+        
+        .school-description {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+        
+        .school-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+        
+        .school-features li {
+            padding: 0.25rem 0;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .school-features li::before {
+            content: "⚡";
+            margin-right: 0.5rem;
+        }
+        
+        /* Go4it Sports Academy Highlight */
+        .sports-highlight {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+        }
+        
+        .sports-highlight .school-name {
+            color: white;
+        }
+        
+        .sports-highlight .school-stats {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .sports-highlight .school-description {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .sports-highlight .school-features li {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .sports-highlight .btn {
+            background: white;
+            color: #dc2626;
+        }
+        
+        .sports-highlight .btn:hover {
+            background: #f1f5f9;
+        }
+        
+        /* Footer */
+        footer {
+            background: #1f2937;
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h4 {
+            margin-bottom: 1rem;
+            color: #f9fafb;
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section ul li {
+            padding: 0.25rem 0;
+            color: #9ca3af;
+        }
+        
+        .footer-section ul li a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-section ul li a:hover {
+            color: white;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .schools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            nav {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">Universal One School</div>
+                <nav>
+                    <a href="#schools">Schools</a>
+                    <a href="#features">Features</a>
+                    <a href="#contact">Contact</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Universal One School</h1>
+            <p>AI-Powered Education Platform with 5 Specialized Schools</p>
+            <div class="cta-buttons">
+                <a href="#schools" class="btn btn-primary">Explore Schools</a>
+                <a href="#features" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="container">
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">6,950+</div>
+                <div class="stat-label">Total Students</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">5</div>
+                <div class="stat-label">Specialized Schools</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">23</div>
+                <div class="stat-label">Olympic Athletes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">4.8</div>
+                <div class="stat-label">Average Rating</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Schools Section -->
+    <section class="schools" id="schools">
+        <div class="container">
+            <h2 class="section-title">Our Specialized Schools</h2>
+            <div class="schools-grid">
+                <!-- Primary School -->
+                <div class="school-card">
+                    <div class="school-icon">🦸</div>
+                    <h3 class="school-name">Primary School</h3>
+                    <div class="school-stats">2,500+ Students</div>
+                    <p class="school-description">K-6 superhero-themed learning with personalized AI support and comprehensive neurodivergent accommodations.</p>
+                    <ul class="school-features">
+                        <li>Superhero-themed curriculum</li>
+                        <li>AI-powered personalized learning</li>
+                        <li>ADHD & dyslexia support</li>
+                        <li>Interactive progress tracking</li>
+                    </ul>
+                    <a href="/schools/primary" class="btn btn-primary">Explore Primary School</a>
+                </div>
+
+                <!-- S.T.A.G.E Prep Global Academy -->
+                <div class="school-card">
+                    <div class="school-icon">🎯</div>
+                    <h3 class="school-name">S.T.A.G.E Prep Global Academy</h3>
+                    <div class="school-stats">1,800+ Students</div>
+                    <p class="school-description">Grades 7-12 global academy with 5 specialized career preparation programs.</p>
+                    <ul class="school-features">
+                        <li>Sports Science Program</li>
+                        <li>Technology & Engineering</li>
+                        <li>Agriculture & Sustainability</li>
+                        <li>Gaming & Digital Arts</li>
+                        <li>Entrepreneurship & Business</li>
+                    </ul>
+                    <a href="/schools/secondary" class="btn btn-primary">Explore S.T.A.G.E Prep</a>
+                </div>
+
+                <!-- Law School -->
+                <div class="school-card">
+                    <div class="school-icon">⚖️</div>
+                    <h3 class="school-name">Law School</h3>
+                    <div class="school-stats">650+ Students</div>
+                    <p class="school-description">Professional legal education with case-based learning and expert faculty including Mason Barrett.</p>
+                    <ul class="school-features">
+                        <li>Case study methodology</li>
+                        <li>Mock trial competitions</li>
+                        <li>Legal research training</li>
+                        <li>Bar exam preparation</li>
+                    </ul>
+                    <a href="/schools/law" class="btn btn-primary">Explore Law School</a>
+                </div>
+
+                <!-- Language School -->
+                <div class="school-card">
+                    <div class="school-icon">🌍</div>
+                    <h3 class="school-name">Language School</h3>
+                    <div class="school-stats">1,200+ Students</div>
+                    <p class="school-description">Multilingual education with cultural immersion programs and native speaker instruction.</p>
+                    <ul class="school-features">
+                        <li>15+ languages available</li>
+                        <li>Cultural exchange programs</li>
+                        <li>Native speaker instructors</li>
+                        <li>International certification</li>
+                    </ul>
+                    <a href="/schools/language" class="btn btn-primary">Explore Language School</a>
+                </div>
+
+                <!-- Go4it Sports Academy - Highlighted -->
+                <div class="school-card sports-highlight">
+                    <div class="school-icon">🏆</div>
+                    <h3 class="school-name">Go4it Sports Academy</h3>
+                    <div class="school-stats">800+ Elite Athletes</div>
+                    <p class="school-description">Elite athletic training with $95M Vienna campus facilities and comprehensive sports programs.</p>
+                    <ul class="school-features">
+                        <li>🏀 Basketball Excellence Program</li>
+                        <li>⚽ Soccer Development Academy</li>
+                        <li>🏐 Volleyball Elite Training</li>
+                        <li>🏈 American Football Program</li>
+                        <li>🎾 Tennis Championship Track</li>
+                        <li>🏃 Track & Field Olympics Prep</li>
+                    </ul>
+                    <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <strong>🏆 Achievement Highlights:</strong><br>
+                        • 23 Olympic Athletes Graduated<br>
+                        • 156 Division I Scholarships<br>
+                        • $95M Vienna Training Complex<br>
+                        • 87% College Placement Rate
+                    </div>
+                    <a href="/schools/go4it-sports-academy" class="btn">Explore Sports Academy</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Platform</h4>
+                    <ul>
+                        <li><a href="#schools">All Schools</a></li>
+                        <li><a href="#ai-features">AI Features</a></li>
+                        <li><a href="#accessibility">Accessibility</a></li>
+                        <li><a href="#mobile">Mobile App</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#help">Help Center</a></li>
+                        <li><a href="#contact">Contact Us</a></li>
+                        <li><a href="#training">Training</a></li>
+                        <li><a href="#resources">Resources</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul>
+                        <li>Dallas, TX (Headquarters)</li>
+                        <li>Vienna, Austria (Sports Campus)</li>
+                        <li>support@universaloneschool.com</li>
+                        <li>+1 (555) 123-4567</li>
+                    </ul>
+                </div>
+            </div>
+            <p>&copy; 2025 Universal One School. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
