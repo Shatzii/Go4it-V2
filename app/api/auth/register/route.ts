@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { storage } from '@/server/storage';
 import { sign } from 'jsonwebtoken';
 import { logger, mask } from '@/lib/logger';
+import * as Sentry from '@sentry/nextjs';
 
 // Simple in-memory rate limiter (per-process) keyed by IP
 // Note: For multi-instance deployments, use a shared store (Redis/Upstash).
@@ -16,6 +17,7 @@ if (!globalAny.__registerRateLimit) {
 }
 
 export async function POST(req: NextRequest) {
+  const t0 = Date.now();
   try {
     // Rate limit by client IP (prefer Redis if configured)
     const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0]?.trim() || 'unknown';
@@ -217,11 +219,12 @@ export async function POST(req: NextRequest) {
       maxAge: 7 * 24 * 60 * 60 // 7 days
     });
 
-  logger.info('auth.register.success', { userId: newUser.id, email: mask.email(newUser.email) });
+  logger.info('auth.register.success', { userId: newUser.id, email: mask.email(newUser.email), durationMs: Date.now() - t0 });
   return response;
 
   } catch (error) {
-  logger.error('auth.register.error', { err: (error as Error)?.message });
+  logger.error('auth.register.error', { err: (error as Error)?.message, durationMs: Date.now() - t0 });
+  try { if (process.env.SENTRY_DSN) Sentry.captureException(error); } catch {}
     return NextResponse.json(
       { error: 'Registration failed. Please try again.' },
       { status: 500 }

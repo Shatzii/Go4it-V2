@@ -6,7 +6,8 @@ This repository hosts the Go4It Sports platform (Next.js + TypeScript + Drizzle 
 - SEO: `/sitemap.xml` and `/robots.txt` via Next.js metadata routes
 - Headers: Security and caching headers in `middleware.ts` and `next.config.js`
 - Logging: Request ID header (X-Request-Id) and minimal request logs
-- CI: GitHub Actions workflow that builds and smoke-tests registration
+- Structured logs: `lib/logger.ts` wired into auth and health routes
+- CI: Workflow builds and runs smoke tests (register, full auth flow, health+verify)
 
 ## Quick Start
 - Dev: `npm run dev` (port 5000)
@@ -22,10 +23,24 @@ node scripts/test-register.js
 BASE_URL=http://localhost:5001 node scripts/test-register.js
 ```
 
+## Additional Smoke Tests
+- Full auth flow (register → me → logout → login → me)
+
+```bash
+node scripts/test-auth-flow.js
+```
+
+- Health and email verify (verify step is skipped in prod where verifyUrl isn’t exposed):
+
+```bash
+node scripts/test-health-and-verify.js
+```
+
 ## Environment
 - NEXT_PUBLIC_APP_URL: public base URL (e.g., https://app.example.com)
 - JWT_SECRET: required for auth
 - Optional: COOKIE_DOMAIN, UPSTASH_REDIS_REST_URL/TOKEN, RESEND_API_KEY, FROM_EMAIL, RECAPTCHA_SECRET_KEY
+- Monitoring (optional): SENTRY_DSN, NEXT_PUBLIC_SENTRY_DSN, SENTRY_ORG, SENTRY_PROJECT
 
 ## Deployment
 - Preferred: git pull on server then build/start

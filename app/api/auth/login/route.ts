@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { storage } from '@/server/storage';
 import { sign } from 'jsonwebtoken';
 import { logger, mask } from '@/lib/logger';
+import * as Sentry from '@sentry/nextjs';
 
 // Simple (or Redis-backed) rate limiter for login brute-force protection
 const RATE_WINDOW_MS = 60_000; // 1 minute
@@ -11,6 +12,7 @@ const globalAny = globalThis as unknown as { __loginRateLimit?: Map<string, Buck
 if (!globalAny.__loginRateLimit) globalAny.__loginRateLimit = new Map<string, Bucket>();
 
 export async function POST(req: NextRequest) {
+  const t0 = Date.now();
   try {
     // Rate limit by IP
     const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0]?.trim() || 'unknown';
@@ -100,11 +102,12 @@ export async function POST(req: NextRequest) {
       maxAge: 7 * 24 * 60 * 60 // 7 days
     });
 
-  logger.info('auth.login.success', { userId: user.id, email: mask.email(user.email) });
+  logger.info('auth.login.success', { userId: user.id, email: mask.email(user.email), durationMs: Date.now() - t0 });
   return response;
 
   } catch (error) {
-  logger.error('auth.login.error', { err: (error as Error)?.message });
+  logger.error('auth.login.error', { err: (error as Error)?.message, durationMs: Date.now() - t0 });
+  try { if (process.env.SENTRY_DSN) Sentry.captureException(error); } catch {}
     return NextResponse.json(
       { error: 'Login failed. Please try again.' },
       { status: 500 }

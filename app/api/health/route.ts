@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { productionConfig } from '@/lib/production-config';
 import { logger } from '@/lib/logger';
+import * as Sentry from '@sentry/nextjs';
 
 export async function GET(request: NextRequest) {
+  const started = Date.now();
   try {
     // Validate production configuration
     if (productionConfig.isProduction) {
@@ -56,7 +58,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    return NextResponse.json(healthData, { 
+  const res = NextResponse.json(healthData, { 
       status: 200,
       headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -64,9 +66,13 @@ export async function GET(request: NextRequest) {
         'Expires': '0'
       }
     });
+  const dur = Date.now() - started;
+  if (dur > 500) logger.warn('health.slow', { durationMs: dur });
+  return res;
 
   } catch (error) {
     logger.error('health.fail', { err: (error as Error)?.message });
+  try { if (process.env.SENTRY_DSN) Sentry.captureException(error); } catch {}
     
     return NextResponse.json({
       status: 'unhealthy',

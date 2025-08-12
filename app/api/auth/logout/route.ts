@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
+import * as Sentry from '@sentry/nextjs';
 
 export async function POST(req: NextRequest) {
+  const t0 = Date.now();
   try {
     const response = NextResponse.json({ success: true, message: 'Logged out successfully' });
     
@@ -15,10 +17,11 @@ export async function POST(req: NextRequest) {
       maxAge: 0
     });
 
-  logger.info('auth.logout.success');
+  logger.info('auth.logout.success', { durationMs: Date.now() - t0 });
   return response;
   } catch (error) {
-  logger.error('auth.logout.error', { err: (error as Error)?.message });
+  logger.error('auth.logout.error', { err: (error as Error)?.message, durationMs: Date.now() - t0 });
+  try { if (process.env.SENTRY_DSN) Sentry.captureException(error); } catch {}
     return NextResponse.json(
       { error: 'Logout failed' },
       { status: 500 }
