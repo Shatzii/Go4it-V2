@@ -12,7 +12,9 @@ export default function RegisterPage() {
     lastName: '',
     dateOfBirth: '',
     sport: 'football',
-    position: ''
+  position: '',
+  acceptTerms: false,
+  captchaToken: ''
   })
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -23,7 +25,7 @@ export default function RegisterPage() {
     setMessage('')
 
     try {
-      const response = await fetch('/api/auth/register', {
+  const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -42,7 +44,9 @@ export default function RegisterPage() {
           lastName: '',
           dateOfBirth: '',
           sport: 'football',
-          position: ''
+          position: '',
+          acceptTerms: false,
+          captchaToken: ''
         })
         // Redirect to dashboard after 2 seconds
         setTimeout(() => {
@@ -194,6 +198,22 @@ export default function RegisterPage() {
                 />
               </div>
             </div>
+
+              <div className="mt-2">
+                <label className="inline-flex items-center gap-2 text-slate-300">
+                  <input
+                    type="checkbox"
+                    checked={formData.acceptTerms}
+                    onChange={(e) => setFormData({ ...formData, acceptTerms: e.target.checked })}
+                    className="h-4 w-4"
+                    required
+                  />
+                  <span>
+                    I agree to the <a href="/terms" className="text-blue-400 hover:text-blue-300">Terms of Service</a> and
+                    {' '}<a href="/privacy" className="text-blue-400 hover:text-blue-300">Privacy Policy</a>.
+                  </span>
+                </label>
+              </div>
 
             <button
               type="submit"

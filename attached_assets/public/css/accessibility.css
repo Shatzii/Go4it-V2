@@ -1,0 +1,376 @@
+/**
+ * ShatziiOS Accessibility Styles
+ * 
+ * This file contains styles specifically designed to improve accessibility
+ * for neurodivergent users, including those with dyslexia, ADHD, and autism.
+ */
+
+/* Base accessibility variables */
+:root {
+  /* Default text settings */
+  --text-spacing: normal;
+  --letter-spacing: normal;
+  --line-height: 1.5;
+  --paragraph-spacing: 1.5rem;
+  --word-spacing: normal;
+  
+  /* Font variables */
+  --font-dyslexic: 'OpenDyslexic', 'Comic Sans MS', sans-serif;
+  --font-standard: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --font-serif: 'Georgia', 'Times New Roman', serif;
+  --font-mono: 'Courier New', monospace;
+  
+  /* Color schemes */
+  --bg-standard: #ffffff;
+  --text-standard: #333333;
+  --link-standard: #1a73e8;
+  
+  --bg-dyslexia: #f8f8f8;
+  --text-dyslexia: #333333;
+  --link-dyslexia: #1a5fb4;
+  
+  --bg-contrast: #000000;
+  --text-contrast: #ffffff;
+  --link-contrast: #3498db;
+  
+  --bg-soft: #f0f4f8;
+  --text-soft: #4a5568;
+  --link-soft: #2b6cb0;
+  
+  --bg-sepia: #f8f2e4;
+  --text-sepia: #5f4b32;
+  --link-sepia: #a05a2c;
+  
+  --bg-autism-friendly: #f0f7ff;
+  --text-autism-friendly: #2d3748;
+  --link-autism-friendly: #2c5282;
+  
+  /* Focus states */
+  --focus-outline-width: 3px;
+  --focus-outline-style: solid;
+  --focus-outline-color: #4299e1;
+  
+  /* Animation control */
+  --transition-speed: 0.3s;
+  --reduced-motion: none;
+}
+
+/* 
+ * Dyslexia-friendly styles
+ * Based on research and best practices for dyslexic readers
+ */
+body.dyslexia-friendly {
+  font-family: var(--font-dyslexic);
+  background-color: var(--bg-dyslexia);
+  color: var(--text-dyslexia);
+  letter-spacing: 0.05em;
+  word-spacing: 0.1em;
+  line-height: 1.8;
+}
+
+.dyslexia-friendly p {
+  margin-bottom: var(--paragraph-spacing);
+  max-width: 70ch; /* Optimal reading width */
+}
+
+.dyslexia-friendly h1, 
+.dyslexia-friendly h2, 
+.dyslexia-friendly h3, 
+.dyslexia-friendly h4, 
+.dyslexia-friendly h5, 
+.dyslexia-friendly h6 {
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+  line-height: 1.4;
+}
+
+.dyslexia-friendly a {
+  color: var(--link-dyslexia);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  font-weight: bold;
+}
+
+.dyslexia-friendly blockquote {
+  border-left: 4px solid #ccc;
+  padding-left: 1.2em;
+  font-style: italic;
+}
+
+.dyslexia-friendly ul, 
+.dyslexia-friendly ol {
+  padding-left: 2em;
+  margin-bottom: 1.5em;
+}
+
+.dyslexia-friendly li {
+  margin-bottom: 0.5em;
+}
+
+/* 
+ * High contrast styles 
+ * Helps users with visual processing issues
+ */
+body.high-contrast {
+  background-color: var(--bg-contrast);
+  color: var(--text-contrast);
+}
+
+.high-contrast a {
+  color: var(--link-contrast);
+  font-weight: bold;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.high-contrast button, 
+.high-contrast .button {
+  border: 2px solid white;
+  background-color: black;
+  color: white;
+  font-weight: bold;
+}
+
+.high-contrast img {
+  filter: grayscale(100%) contrast(150%);
+}
+
+.high-contrast input, 
+.high-contrast textarea, 
+.high-contrast select {
+  background-color: black;
+  color: white;
+  border: 2px solid white;
+  padding: 0.5em;
+}
+
+/* 
+ * ADHD-friendly styles
+ * Reduces distractions and helps with focus
+ */
+body.adhd-friendly {
+  font-family: var(--font-standard);
+  background-color: var(--bg-soft);
+  color: var(--text-soft);
+  line-height: 1.7;
+}
+
+.adhd-friendly section, 
+.adhd-friendly article {
+  max-width: 650px;
+  margin: 0 auto;
+  padding: 1.5em;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2em;
+}
+
+.adhd-friendly h1, 
+.adhd-friendly h2, 
+.adhd-friendly h3 {
+  color: #2c5282;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0.3em;
+}
+
+.adhd-friendly p {
+  margin-bottom: 1.5em;
+}
+
+.adhd-friendly .sidebar, 
+.adhd-friendly aside {
+  opacity: 0.8;
+  transition: opacity var(--transition-speed) ease;
+}
+
+.adhd-friendly .sidebar:hover, 
+.adhd-friendly aside:hover {
+  opacity: 1;
+}
+
+.adhd-friendly a {
+  color: var(--link-soft);
+  transition: color var(--transition-speed) ease;
+}
+
+.adhd-friendly a:hover {
+  color: #1a365d;
+}
+
+/* 
+ * Autism-friendly styles
+ * Predictable, clear layouts with sensory considerations
+ */
+body.autism-friendly {
+  font-family: var(--font-standard);
+  background-color: var(--bg-autism-friendly);
+  color: var(--text-autism-friendly);
+  line-height: 1.6;
+}
+
+.autism-friendly * {
+  animation: none !important;
+  transition: color var(--transition-speed) ease, background-color var(--transition-speed) ease !important;
+}
+
+.autism-friendly h1, 
+.autism-friendly h2, 
+.autism-friendly h3, 
+.autism-friendly h4, 
+.autism-friendly h5, 
+.autism-friendly h6 {
+  margin-top: 1.5em;
+  margin-bottom: 1em;
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.autism-friendly nav {
+  background-color: #edf2f7;
+  border-bottom: 3px solid #e2e8f0;
+}
+
+.autism-friendly section {
+  margin-bottom: 2em;
+  padding: 1.5em;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+}
+
+.autism-friendly button, 
+.autism-friendly .button {
+  background-color: #edf2f7;
+  color: #2d3748;
+  border: 2px solid #cbd5e0;
+  border-radius: 4px;
+  padding: 0.5em 1em;
+  font-weight: 600;
+  transition: background-color var(--transition-speed) ease;
+}
+
+.autism-friendly button:hover, 
+.autism-friendly .button:hover {
+  background-color: #e2e8f0;
+}
+
+/* 
+ * Reading ruler - helps users track text lines
+ */
+.reading-ruler {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 2em;
+  background-color: rgba(255, 255, 100, 0.2);
+  pointer-events: none;
+  z-index: 9999;
+  display: none;
+}
+
+body.use-reading-ruler .reading-ruler {
+  display: block;
+}
+
+/* 
+ * Focus styles for all accessibility modes
+ */
+.dyslexia-friendly a:focus,
+.high-contrast a:focus,
+.adhd-friendly a:focus,
+.autism-friendly a:focus,
+.dyslexia-friendly button:focus,
+.high-contrast button:focus,
+.adhd-friendly button:focus,
+.autism-friendly button:focus,
+.dyslexia-friendly input:focus,
+.high-contrast input:focus,
+.adhd-friendly input:focus,
+.autism-friendly input:focus,
+.dyslexia-friendly select:focus,
+.high-contrast select:focus,
+.adhd-friendly select:focus,
+.autism-friendly select:focus,
+.dyslexia-friendly textarea:focus,
+.high-contrast textarea:focus,
+.adhd-friendly textarea:focus,
+.autism-friendly textarea:focus {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: 2px;
+}
+
+/* 
+ * Print styles for all accessibility modes
+ */
+@media print {
+  body, 
+  body.dyslexia-friendly, 
+  body.high-contrast, 
+  body.adhd-friendly, 
+  body.autism-friendly {
+    font-family: var(--font-serif);
+    background-color: white !important;
+    color: black !important;
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+  
+  a, 
+  .dyslexia-friendly a, 
+  .high-contrast a, 
+  .adhd-friendly a, 
+  .autism-friendly a {
+    color: black !important;
+    text-decoration: underline;
+  }
+  
+  .reading-ruler {
+    display: none !important;
+  }
+}
+
+/* 
+ * Font face for OpenDyslexic 
+ * Note: The actual font files need to be hosted or linked
+ */
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/OpenDyslexic-Regular.woff2') format('woff2'),
+       url('/fonts/OpenDyslexic-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/OpenDyslexic-Bold.woff2') format('woff2'),
+       url('/fonts/OpenDyslexic-Bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 
+ * Responsive adaptations for accessibility features
+ */
+@media (max-width: 768px) {
+  body.dyslexia-friendly,
+  body.adhd-friendly,
+  body.autism-friendly {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  
+  .dyslexia-friendly p,
+  .adhd-friendly p,
+  .autism-friendly p {
+    margin-bottom: 1.2em;
+  }
+  
+  .adhd-friendly section, 
+  .adhd-friendly article {
+    padding: 1em;
+    margin-bottom: 1.5em;
+  }
+}

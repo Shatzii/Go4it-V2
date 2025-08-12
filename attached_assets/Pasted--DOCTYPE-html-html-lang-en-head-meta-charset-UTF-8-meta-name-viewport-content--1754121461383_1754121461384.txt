@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Go4It Sports | The Road to D1 Starts Here</title>
+  <link rel="stylesheet" href="/styles/globals.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1 class="glow-text">Unlock Your 5-Star Potential</h1>
+    <p class="tagline">Your journey from student athlete to college recruit starts now.</p>
+    <button class="glow-button">Start Your Free Profile</button>
+  </section>
+
+  <!-- Feature Breakdown -->
+  <section class="features">
+    <div class="glass-card animate-fade-up">
+      <h2>🎯 GAR Score Analysis</h2>
+      <p>AI-Powered breakdown of your movement, speed, and power using real-time video analysis. Instantly see how you stack up against high school, college, and pro athletes. This is the data coaches trust.</p>
+    </div>
+
+    <div class="glass-card animate-fade-up">
+      <h2>🌟 StarPath Progression System</h2>
+      <p>Train like a gamer. Earn XP. Unlock levels. Every drill, every rep, every course moves you forward. Track your growth in real time with milestones, skill badges, and position-specific achievements.</p>
+    </div>
+
+    <div class="glass-card animate-fade-up">
+      <h2>🤖 AI Coach + Skills Hub</h2>
+      <p>24/7 personalized training plan that adapts to your game. Choose your sport. Watch demos. Upload video. Your AI Coach breaks it down and delivers custom feedback and next-step drills. Train smarter, not harder.</p>
+    </div>
+
+    <div class="glass-card animate-fade-up">
+      <h2>🎓 NCAA Eligibility Tracker</h2>
+      <p>Never miss a requirement again. Whether you're in Texas, Toronto, or Tokyo — our global NCAA tracker keeps your GPA, courses, and compliance up-to-date. Get alerts, get eligible, get recruited.</p>
+    </div>
+
+    <div class="glass-card animate-fade-up">
+      <h2>📍 Recruiting Command Center</h2>
+      <p>Search 500+ NCAA programs. Build your recruiting list. Message coaches. Track interest. Upload highlights. This is your launchpad to D1 exposure, right inside your dashboard.</p>
+    </div>
+  </section>
+
+  <!-- CTA Banner -->
+  <section class="cta-banner">
+    One Platform. One Mission. Go D1.
+    <button class="glow-button">Get Verified Today</button>
+  </section>
+
+  <script src="/script.js"></script>
+</body>
+</html>

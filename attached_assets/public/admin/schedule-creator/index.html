@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Creator - Admin Dashboard | The Universal One School</title>
+    <link rel="stylesheet" href="/css/school-navigation.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #1e40af;
+            --accent-color: #60a5fa;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-bg: #f8fafc;
+            --white: #ffffff;
+            --text-color: #1f2937;
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--light-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .admin-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .admin-nav h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-tab {
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .nav-tab:hover,
+        .nav-tab.active {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .creator-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .content-area {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .school-selector {
+            margin-bottom: 2rem;
+        }
+
+        .school-button {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0.75rem;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .school-button:hover {
+            border-color: var(--primary-color);
+            background: var(--light-bg);
+        }
+
+        .school-button.active {
+            border-color: var(--primary-color);
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-color);
+        }
+
+        .school-icon {
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-secondary {
+            background: var(--border-color);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 100px repeat(5, 1fr);
+            gap: 1px;
+            background: var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+
+        .schedule-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .time-slot {
+            background: var(--light-bg);
+            padding: 1rem;
+            font-weight: 500;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .schedule-cell {
+            background: white;
+            padding: 0.5rem;
+            min-height: 80px;
+            border: 2px dashed var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .schedule-cell:hover {
+            background: var(--light-bg);
+            border-color: var(--primary-color);
+        }
+
+        .schedule-cell.occupied {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid var(--primary-color);
+            border-style: solid;
+        }
+
+        .course-card {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            cursor: grab;
+            transition: all 0.3s ease;
+        }
+
+        .course-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .course-card.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+
+        .course-info {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .course-details h4 {
+            margin-bottom: 0.25rem;
+            color: var(--primary-color);
+        }
+
+        .course-meta {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .block-info {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .actions-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .creator-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .schedule-grid {
+                font-size: 0.8rem;
+            }
+
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <div class="admin-nav">
+            <h1><i class="fas fa-calendar-alt"></i> Schedule Creator</h1>
+            <div class="nav-tabs">
+                <a href="/admin/" class="nav-tab">Dashboard</a>
+                <a href="/admin/schedule-creator/" class="nav-tab active">Schedules</a>
+                <a href="/admin/curriculum/" class="nav-tab">Curriculum</a>
+                <a href="/admin/students/" class="nav-tab">Students</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalSchedules">0</div>
+                <div class="stat-label">Active Schedules</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalStudents">0</div>
+                <div class="stat-label">Enrolled Students</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalCourses">0</div>
+                <div class="stat-label">Available Courses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="pendingApproval">0</div>
+                <div class="stat-label">Pending Approval</div>
+            </div>
+        </div>
+
+        <!-- Actions Bar -->
+        <div class="actions-bar">
+            <div>
+                <h2>Schedule Management</h2>
+                <p>Create and manage block schedules for students</p>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn btn-secondary" onclick="loadTemplates()">
+                    <i class="fas fa-file-import"></i> Load Template
+                </button>
+                <button class="btn btn-primary" onclick="createNewSchedule()">
+                    <i class="fas fa-plus"></i> New Schedule
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Creator Grid -->
+        <div class="creator-grid">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="school-selector">
+                    <h3 style="margin-bottom: 1rem;">Select School</h3>
+                    <button class="school-button" onclick="selectSchool('primary')" id="primaryBtn">
+                        <span class="school-icon">🦸</span>
+                        <div>
+                            <div style="font-weight: 600;">Primary School</div>
+                            <div style="font-size: 0.8rem; color: #6b7280;">K-6 Block Schedule</div>
+                        </div>
+                    </button>
+                    <button class="school-button" onclick="selectSchool('secondary')" id="secondaryBtn">
+                        <span class="school-icon">🎓</span>
+                        <div>
+                            <div style="font-weight: 600;">S.T.A.G.E Prep</div>
+                            <div style="font-size: 0.8rem; color: #6b7280;">7-12 Block Schedule</div>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Student/Class</label>
+                    <select class="form-select" id="studentSelect">
+                        <option value="">Select student or class</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Schedule Type</label>
+                    <select class="form-select" id="scheduleType">
+                        <option value="individual">Individual Student</option>
+                        <option value="class">Class Group</option>
+                        <option value="grade">Grade Level</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Academic Year</label>
+                    <select class="form-select" id="academicYear">
+                        <option value="2024-2025">2024-2025</option>
+                        <option value="2025-2026">2025-2026</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Semester</label>
+                    <select class="form-select" id="semester">
+                        <option value="fall">Fall Semester</option>
+                        <option value="spring">Spring Semester</option>
+                        <option value="full">Full Year</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" style="width: 100%;" onclick="generateSchedule()">
+                    <i class="fas fa-magic"></i> Generate Schedule
+                </button>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <div id="scheduleContent">
+                    <!-- Available Courses -->
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">Available Courses</h3>
+                        <div id="courseList">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-info-circle"></i>
+                                Select a school to view available courses and create schedules.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Schedule Grid -->
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">Block Schedule Grid</h3>
+                        <div id="scheduleGrid">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-calendar-times"></i>
+                                No schedule loaded. Select a school and generate a schedule to begin.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Schedule Actions -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border-color);">
+                        <div>
+                            <button class="btn btn-secondary" onclick="previewSchedule()">
+                                <i class="fas fa-eye"></i> Preview
+                            </button>
+                            <button class="btn btn-secondary" onclick="saveAsDraft()" style="margin-left: 0.5rem;">
+                                <i class="fas fa-save"></i> Save Draft
+                            </button>
+                        </div>
+                        <div>
+                            <button class="btn btn-success" onclick="finalizeSchedule()">
+                                <i class="fas fa-check"></i> Finalize & Approve
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Schedule Creator System
+        class ScheduleCreator {
+            constructor() {
+                this.currentSchool = null;
+                this.currentSchedule = null;
+                this.courses = {};
+                this.schedules = [];
+                this.initializeData();
+                this.updateStats();
+            }
+
+            initializeData() {
+                // Primary School Courses (Block Schedule - 4-5 classes per day)
+                this.courses.primary = [
+                    {
+                        id: 'primary-ela',
+                        name: 'Language Arts Heroes',
+                        description: 'Reading, writing, and communication skills',
+                        duration: 90,
+                        credits: 1.0,
+                        prerequisites: [],
+                        blocks: 2,
+                        subjects: ['Reading', 'Writing', 'Speaking', 'Listening']
+                    },
+                    {
+                        id: 'primary-math',
+                        name: 'Math Champions',
+                        description: 'Mathematical concepts and problem solving',
+                        duration: 90,
+                        credits: 1.0,
+                        blocks: 2,
+                        subjects: ['Numbers', 'Operations', 'Geometry', 'Data']
+                    },
+                    {
+                        id: 'primary-science',
+                        name: 'Science Explorers',
+                        description: 'Scientific inquiry and discovery',
+                        duration: 60,
+                        credits: 0.5,
+                        blocks: 1,
+                        subjects: ['Life Science', 'Physical Science', 'Earth Science']
+                    },
+                    {
+                        id: 'primary-social',
+                        name: 'Social Studies Adventures',
+                        description: 'History, geography, and citizenship',
+                        duration: 60,
+                        credits: 0.5,
+                        blocks: 1,
+                        subjects: ['History', 'Geography', 'Civics', 'Culture']
+                    },
+                    {
+                        id: 'primary-arts',
+                        name: 'Creative Arts Studio',
+                        description: 'Visual and performing arts',
+                        duration: 60,
+                        credits: 0.5,
+                        blocks: 1,
+                        subjects: ['Visual Arts', 'Music', 'Drama', 'Movement']
+                    },
+                    {
+                        id: 'primary-pe',
+                        name: 'Physical Education & Health',
+                        description: 'Physical fitness and health education',
+                        duration: 60,
+                        credits: 0.5,
+                        blocks: 1,
+                        subjects: ['Fitness', 'Sports', 'Health', 'Nutrition']
+                    }
+                ];
+
+                // S.T.A.G.E Prep Courses (Block Schedule - 4 classes per day, full year in one semester)
+                this.courses.secondary = [
+                    {
+                        id: 'stage-english',
+                        name: 'Advanced English Literature',
+                        description: 'College-prep English and literature analysis',
+                        duration: 90,
+                        credits: 1.0,
+                        blocks: 2,
+                        subjects: ['Literature', 'Composition', 'Rhetoric', 'Research']
+                    },
+                    {
+                        id: 'stage-math-alg',
+                        name: 'Algebra II',
+                        description: 'Advanced algebraic concepts and functions',
+                        duration: 90,
+                        credits: 1.0,
+                        blocks: 2,
+                        subjects: ['Functions', 'Polynomials', 'Logarithms', 'Trigonometry']
+                    },
+                    {
+                        id: 'stage-math-calc',
+                        name: 'AP Calculus AB',
+                        description: 'College-level calculus',
+                        duration: 90,
+                        credits: 1.0,
+                        blocks: 2,
+                        prerequisites: ['stage-math-alg'],
+                        subjects: ['Limits', 'Derivatives', 'Integrals', 'Applications']
+                    },
+                    {
+                        id: 'stage-bio',
+                        name: 'AP Biology',
+                        description: 'Advanced placement biology',
+                        duration: 90,
+                        credits: 1.0,
+                        blocks: 2,
+                        subjects: ['Molecular Biology', 'Genetics', 'Evolution', 'Ecology']
+                    },
+                    {
+                        id: 'stage-chem',
+                        name: 'Chemistry',
+                        description: 'General chemistry principles',
+                        duration: 90,
+                        credits: 1.0,
+                        blocks: 2,
+                        subjects: ['Atomic Structure', 'Bonding', 'Reactions', 'Stoichiometry']
+                    },
+                    {
+                        id: 'stage-physics',
+                        name: 'AP Physics 1',
+                        description: 'Algebra-based physics',
+                        duration: 90,
+                        credits: 1.0,
+                        blocks: 2,
+                        subjects: ['Mechanics', 'Waves', 'Electricity', 'Magnetism']
+                    },
+                    {
+                        id: 'stage-history',
+                        name: 'AP US History',
+                        description: 'Advanced placement US history',
+                        duration: 90,
+                        credits: 1.0,
+                        blocks: 2,
+                        subjects: ['Colonial Period', 'Revolution', 'Civil War', 'Modern Era']
+                    },
+                    {
+                        id: 'stage-gov',
+                        name: 'AP Government & Politics',
+                        description: 'American government and political systems',
+                        duration: 90,
+                        credits: 1.0,
+                        blocks: 2,
+                        subjects: ['Constitution', 'Institutions', 'Civil Rights', 'Policy']
+                    },
+                    {
+                        id: 'stage-cs',
+                        name: 'AP Computer Science A',
+                        description: 'Java programming and computer science principles',
+                        duration: 90,
+                        credits: 1.0,
+                        blocks: 2,
+                        subjects: ['Programming', 'Data Structures', 'Algorithms', 'OOP']
+                    },
+                    {
+                        id: 'stage-spanish',
+                        name: 'AP Spanish Language',
+                        description: 'Advanced Spanish language and culture',
+                        duration: 90,
+                        credits: 1.0,
+                        blocks: 2,
+                        subjects: ['Speaking', 'Listening', 'Reading', 'Writing', 'Culture']
+                    }
+                ];
+
+                // Load existing schedules from localStorage
+                const savedSchedules = localStorage.getItem('schedules');
+                if (savedSchedules) {
+                    this.schedules = JSON.parse(savedSchedules);
+                }
+            }
+
+            selectSchool(school) {
+                this.currentSchool = school;
+                
+                // Update UI
+                document.querySelectorAll('.school-button').forEach(btn => btn.classList.remove('active'));
+                document.getElementById(school + 'Btn').classList.add('active');
+                
+                // Load courses for selected school
+                this.loadCourses(school);
+                
+                // Update student/class options
+                this.updateStudentOptions(school);
+            }
+
+            loadCourses(school) {
+                const courseList = document.getElementById('courseList');
+                const courses = this.courses[school] || [];
+                
+                if (courses.length === 0) {
+                    courseList.innerHTML = '<div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> No courses available for this school.</div>';
+                    return;
+                }
+
+                courseList.innerHTML = courses.map(course => `
+                    <div class="course-card" draggable="true" data-course-id="${course.id}">
+                        <div class="course-info">
+                            <div class="course-details">
+                                <h4>${course.name}</h4>
+                                <p class="course-meta">${course.description}</p>
+                                <div style="margin-top: 0.5rem;">
+                                    <span class="block-info">${course.blocks} Block${course.blocks > 1 ? 's' : ''}</span>
+                                    <span class="block-info" style="margin-left: 0.5rem;">${course.duration} min</span>
+                                    <span class="block-info" style="margin-left: 0.5rem;">${course.credits} Credit${course.credits > 1 ? 's' : ''}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Add drag event listeners
+                this.setupDragAndDrop();
+            }
+
+            updateStudentOptions(school) {
+                const studentSelect = document.getElementById('studentSelect');
+                const options = school === 'primary' ? [
+                    { value: 'k-class-a', text: 'Kindergarten - Class A' },
+                    { value: '1st-class-a', text: '1st Grade - Class A' },
+                    { value: '2nd-class-a', text: '2nd Grade - Class A' },
+                    { value: '3rd-class-a', text: '3rd Grade - Class A' },
+                    { value: '4th-class-a', text: '4th Grade - Class A' },
+                    { value: '5th-class-a', text: '5th Grade - Class A' },
+                    { value: '6th-class-a', text: '6th Grade - Class A' }
+                ] : [
+                    { value: '7th-honors', text: '7th Grade - Honors Track' },
+                    { value: '8th-honors', text: '8th Grade - Honors Track' },
+                    { value: '9th-college-prep', text: '9th Grade - College Prep' },
+                    { value: '10th-college-prep', text: '10th Grade - College Prep' },
+                    { value: '11th-ap', text: '11th Grade - AP Track' },
+                    { value: '12th-ap', text: '12th Grade - AP Track' }
+                ];
+
+                studentSelect.innerHTML = '<option value="">Select student or class</option>' + 
+                    options.map(opt => `<option value="${opt.value}">${opt.text}</option>`).join('');
+            }
+
+            generateSchedule() {
+                if (!this.currentSchool) {
+                    alert('Please select a school first.');
+                    return;
+                }
+
+                const studentSelect = document.getElementById('studentSelect').value;
+                const scheduleType = document.getElementById('scheduleType').value;
+                const semester = document.getElementById('semester').value;
+
+                if (!studentSelect) {
+                    alert('Please select a student or class.');
+                    return;
+                }
+
+                // Create schedule grid
+                this.createScheduleGrid();
+                
+                // Show success message
+                const scheduleGrid = document.getElementById('scheduleGrid');
+                scheduleGrid.insertAdjacentHTML('beforebegin', `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        Schedule grid created for ${studentSelect}. Drag courses from the left to assign them to time blocks.
+                    </div>
+                `);
+            }
+
+            createScheduleGrid() {
+                const scheduleGrid = document.getElementById('scheduleGrid');
+                const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+                const timeSlots = this.currentSchool === 'primary' ? 
+                    ['8:00-9:30', '9:45-11:15', '11:30-1:00', '1:45-3:15'] :
+                    ['8:00-9:30', '9:45-11:15', '12:00-1:30', '1:45-3:15'];
+
+                let gridHTML = '<div class="schedule-grid">';
+                
+                // Header row
+                gridHTML += '<div class="schedule-header">Time</div>';
+                days.forEach(day => {
+                    gridHTML += `<div class="schedule-header">${day}</div>`;
+                });
+
+                // Time slot rows
+                timeSlots.forEach(time => {
+                    gridHTML += `<div class="time-slot">${time}</div>`;
+                    days.forEach(day => {
+                        gridHTML += `<div class="schedule-cell" data-day="${day}" data-time="${time}">
+                            <div style="font-size: 0.8rem; color: #9ca3af;">Drop course here</div>
+                        </div>`;
+                    });
+                });
+
+                gridHTML += '</div>';
+                scheduleGrid.innerHTML = gridHTML;
+
+                // Setup drop zones
+                this.setupDropZones();
+            }
+
+            setupDragAndDrop() {
+                document.querySelectorAll('.course-card').forEach(card => {
+                    card.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/plain', e.target.dataset.courseId);
+                        e.target.classList.add('dragging');
+                    });
+
+                    card.addEventListener('dragend', (e) => {
+                        e.target.classList.remove('dragging');
+                    });
+                });
+            }
+
+            setupDropZones() {
+                document.querySelectorAll('.schedule-cell').forEach(cell => {
+                    cell.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        cell.style.background = 'rgba(59, 130, 246, 0.1)';
+                    });
+
+                    cell.addEventListener('dragleave', (e) => {
+                        if (!cell.classList.contains('occupied')) {
+                            cell.style.background = 'white';
+                        }
+                    });
+
+                    cell.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        const courseId = e.dataTransfer.getData('text/plain');
+                        const course = this.courses[this.currentSchool].find(c => c.id === courseId);
+                        
+                        if (course && !cell.classList.contains('occupied')) {
+                            this.assignCourseToCell(cell, course);
+                        }
+                        
+                        cell.style.background = '';
+                    });
+                });
+            }
+
+            assignCourseToCell(cell, course) {
+                cell.classList.add('occupied');
+                cell.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-weight: 600; color: var(--primary-color); font-size: 0.9rem;">${course.name}</div>
+                        <div style="font-size: 0.7rem; color: #6b7280; margin-top: 0.25rem;">${course.blocks} Block${course.blocks > 1 ? 's' : ''}</div>
+                        <button onclick="this.parentElement.parentElement.classList.remove('occupied'); this.parentElement.parentElement.innerHTML='<div style=&quot;font-size: 0.8rem; color: #9ca3af;&quot;>Drop course here</div>'" 
+                                style="background: var(--danger-color); color: white; border: none; border-radius: 4px; padding: 0.25rem 0.5rem; font-size: 0.7rem; margin-top: 0.25rem; cursor: pointer;">
+                            Remove
+                        </button>
+                    </div>
+                `;
+            }
+
+            previewSchedule() {
+                // Collect current schedule data
+                const scheduleData = this.collectScheduleData();
+                
+                if (scheduleData.assignments.length === 0) {
+                    alert('No courses assigned to schedule. Please drag courses to time slots first.');
+                    return;
+                }
+
+                // Open preview in new window
+                const previewWindow = window.open('', '_blank', 'width=800,height=600');
+                previewWindow.document.write(this.generatePreviewHTML(scheduleData));
+            }
+
+            collectScheduleData() {
+                const assignments = [];
+                document.querySelectorAll('.schedule-cell.occupied').forEach(cell => {
+                    const day = cell.dataset.day;
+                    const time = cell.dataset.time;
+                    const courseName = cell.querySelector('div div').textContent;
+                    
+                    assignments.push({ day, time, courseName });
+                });
+
+                return {
+                    school: this.currentSchool,
+                    student: document.getElementById('studentSelect').value,
+                    semester: document.getElementById('semester').value,
+                    academicYear: document.getElementById('academicYear').value,
+                    assignments
+                };
+            }
+
+            generatePreviewHTML(data) {
+                return `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Schedule Preview</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; padding: 2rem; }
+                            .header { text-align: center; margin-bottom: 2rem; }
+                            .schedule-table { width: 100%; border-collapse: collapse; }
+                            .schedule-table th, .schedule-table td { border: 1px solid #ddd; padding: 1rem; text-align: center; }
+                            .schedule-table th { background: #3b82f6; color: white; }
+                            .course-cell { background: #f0f9ff; font-weight: 600; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>Student Schedule Preview</h1>
+                            <p><strong>Student/Class:</strong> ${data.student}</p>
+                            <p><strong>School:</strong> ${data.school === 'primary' ? 'Primary School' : 'S.T.A.G.E Prep'}</p>
+                            <p><strong>Academic Year:</strong> ${data.academicYear}</p>
+                            <p><strong>Semester:</strong> ${data.semester}</p>
+                        </div>
+                        
+                        <table class="schedule-table">
+                            <tr>
+                                <th>Time</th>
+                                <th>Monday</th>
+                                <th>Tuesday</th>
+                                <th>Wednesday</th>
+                                <th>Thursday</th>
+                                <th>Friday</th>
+                            </tr>
+                            ${this.generatePreviewRows(data.assignments)}
+                        </table>
+                        
+                        <div style="margin-top: 2rem; text-align: center;">
+                            <button onclick="window.print()" style="background: #3b82f6; color: white; padding: 1rem 2rem; border: none; border-radius: 6px; cursor: pointer;">Print Schedule</button>
+                        </div>
+                    </body>
+                    </html>
+                `;
+            }
+
+            generatePreviewRows(assignments) {
+                const timeSlots = this.currentSchool === 'primary' ? 
+                    ['8:00-9:30', '9:45-11:15', '11:30-1:00', '1:45-3:15'] :
+                    ['8:00-9:30', '9:45-11:15', '12:00-1:30', '1:45-3:15'];
+                const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+                
+                return timeSlots.map(time => {
+                    let row = `<tr><td><strong>${time}</strong></td>`;
+                    days.forEach(day => {
+                        const assignment = assignments.find(a => a.day === day && a.time === time);
+                        row += `<td class="${assignment ? 'course-cell' : ''}">${assignment ? assignment.courseName : ''}</td>`;
+                    });
+                    row += '</tr>';
+                    return row;
+                }).join('');
+            }
+
+            saveAsDraft() {
+                const scheduleData = this.collectScheduleData();
+                scheduleData.status = 'draft';
+                scheduleData.id = Date.now().toString();
+                scheduleData.createdAt = new Date().toISOString();
+                
+                this.schedules.push(scheduleData);
+                localStorage.setItem('schedules', JSON.stringify(this.schedules));
+                
+                alert('Schedule saved as draft successfully!');
+                this.updateStats();
+            }
+
+            finalizeSchedule() {
+                const scheduleData = this.collectScheduleData();
+                
+                if (scheduleData.assignments.length === 0) {
+                    alert('Cannot finalize empty schedule. Please assign courses first.');
+                    return;
+                }
+
+                if (confirm('Are you sure you want to finalize this schedule? This will make it active for the student.')) {
+                    scheduleData.status = 'finalized';
+                    scheduleData.id = Date.now().toString();
+                    scheduleData.createdAt = new Date().toISOString();
+                    scheduleData.finalizedAt = new Date().toISOString();
+                    
+                    this.schedules.push(scheduleData);
+                    localStorage.setItem('schedules', JSON.stringify(this.schedules));
+                    
+                    alert('Schedule finalized and approved successfully!');
+                    this.updateStats();
+                    
+                    // Clear current schedule
+                    this.createScheduleGrid();
+                }
+            }
+
+            updateStats() {
+                const totalSchedules = this.schedules.filter(s => s.status === 'finalized').length;
+                const pendingApproval = this.schedules.filter(s => s.status === 'draft').length;
+                const totalCourses = Object.values(this.courses).flat().length;
+                const totalStudents = 150;
+                
+                document.getElementById('totalSchedules').textContent = totalSchedules;
+                document.getElementById('pendingApproval').textContent = pendingApproval;
+                document.getElementById('totalCourses').textContent = totalCourses;
+                document.getElementById('totalStudents').textContent = totalStudents;
+            }
+        }
+
+        // Global functions
+        function selectSchool(school) {
+            window.scheduleCreator.selectSchool(school);
+        }
+
+        function generateSchedule() {
+            window.scheduleCreator.generateSchedule();
+        }
+
+        function previewSchedule() {
+            window.scheduleCreator.previewSchedule();
+        }
+
+        function saveAsDraft() {
+            window.scheduleCreator.saveAsDraft();
+        }
+
+        function finalizeSchedule() {
+            window.scheduleCreator.finalizeSchedule();
+        }
+
+        function createNewSchedule() {
+            location.reload();
+        }
+
+        function loadTemplates() {
+            alert('Template loading feature coming soon!');
+        }
+
+        // Initialize the schedule creator
+        document.addEventListener('DOMContentLoaded', function() {
+            window.scheduleCreator = new ScheduleCreator();
+        });
+    </script>
+</body>
+</html>
