@@ -6,9 +6,12 @@ const nextConfig = {
   // Force server-side rendering for payment pages to handle runtime env vars
   pageExtensions: ['ts', 'tsx', 'js', 'jsx'],
   
-  // Disable image optimization for Replit
-  images: { 
-    unoptimized: true,
+  images: {
+    // In dev/Replit, disable optimization; in prod, allow AVIF/WebP
+    unoptimized: process.env.NODE_ENV !== 'production',
+    formats: ['image/avif', 'image/webp'],
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   
   // Remove powered by header
@@ -42,27 +45,24 @@ const nextConfig = {
       {
         source: '/(.*)',
         headers: [
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'Access-Control-Allow-Origin',
-            value: '*',
-          },
-          {
-            key: 'Access-Control-Allow-Methods',
-            value: 'GET, POST, PUT, DELETE, OPTIONS',
-          },
-          {
-            key: 'Access-Control-Allow-Headers',
-            value: 'Content-Type, Authorization',
-          },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, DELETE, OPTIONS' },
+          { key: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization' },
         ],
+      },
+      {
+        source: '/_next/:path*',
+        headers: [ { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' } ],
+      },
+      {
+        source: '/(.*)\.(svg|png|jpg|jpeg|gif|ico|webp|avif)$',
+        headers: [ { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' } ],
+      },
+      {
+        source: '/api/:path*',
+        headers: [ { key: 'Cache-Control', value: 'no-store' } ],
       },
     ];
   },
@@ -113,4 +113,15 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+// Conditionally wrap with Sentry config if available
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { withSentryConfig } = require('@sentry/nextjs');
+  module.exports = withSentryConfig(nextConfig, {
+    silent: true,
+    org: process.env.SENTRY_ORG,
+    project: process.env.SENTRY_PROJECT,
+  });
+} catch (e) {
+  module.exports = nextConfig;
+}

@@ -9,7 +9,8 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
     email: `user${ts}@example.com`,
     password: 'StrongPassw0rd!',
     firstName: 'Test',
-    lastName: 'User'
+  lastName: 'User',
+  acceptTerms: true
   };
 
   console.log('> POST /api/auth/register');
