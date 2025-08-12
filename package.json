@@ -12,8 +12,8 @@
     "dev:replit": "next dev -p 5000 --hostname 0.0.0.0",
     "build:replit": "next build",
     "start:replit": "next start -p 5000 --hostname 0.0.0.0",
-  "deploy:replit": "node replit-deploy.js",
-  "test:register": "node scripts/test-register.js"
+    "deploy:replit": "node replit-deploy.js",
+    "test:register": "node scripts/test-register.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.37.0",
@@ -103,7 +103,7 @@
     "nock": "^14.0.7",
     "node-fetch": "^3.3.2",
     "openai": "^5.12.2",
-    "openid-client": "^6.6.2",
+    "openid-client": "^6.6.4",
     "postcss": "^8.5.6",
     "puppeteer": "^24.14.0",
     "react": "^19.1.0",

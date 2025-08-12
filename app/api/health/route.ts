@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { productionConfig } from '@/lib/production-config';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -45,6 +46,16 @@ export async function GET(request: NextRequest) {
       }
     };
 
+    // Structured success log (sampled)
+    if (Math.random() < 0.01) {
+      logger.info('health.ok', {
+        env: process.env.NODE_ENV,
+        db: dbStatus.status,
+        memUsedMB: healthData.memory.used,
+        memTotalMB: healthData.memory.total,
+      });
+    }
+
     return NextResponse.json(healthData, { 
       status: 200,
       headers: {
@@ -55,7 +66,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Health check failed:', error);
+    logger.error('health.fail', { err: (error as Error)?.message });
     
     return NextResponse.json({
       status: 'unhealthy',

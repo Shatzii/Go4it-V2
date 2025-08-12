@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { storage } from '@/server/storage';
 import { sign } from 'jsonwebtoken';
+import { logger, mask } from '@/lib/logger';
 
 // Simple in-memory rate limiter (per-process) keyed by IP
 // Note: For multi-instance deployments, use a shared store (Redis/Upstash).
@@ -168,7 +169,7 @@ export async function POST(req: NextRequest) {
     );
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000';
     const verifyUrl = `${appUrl}/api/auth/verify?token=${encodeURIComponent(verifyToken)}`;
-    console.info('[register] Email verification URL:', verifyUrl);
+  logger.info('auth.register.verify_link', { dev: process.env.NODE_ENV !== 'production', verifyUrl });
     // Optional: send verification email via Resend
     if (process.env.RESEND_API_KEY && process.env.FROM_EMAIL) {
       try {
@@ -202,8 +203,8 @@ export async function POST(req: NextRequest) {
         role: newUser.role,
         sport: newUser.sport
       },
-      // In development, expose verifyUrl for easier testing
-      verifyUrl: process.env.NODE_ENV === 'development' ? verifyUrl : undefined
+      // In development or CI, expose verifyUrl for easier testing
+      verifyUrl: (process.env.NODE_ENV === 'development' || process.env.CI === 'true') ? verifyUrl : undefined
     }, { status: 201 });
 
     response.cookies.set('token', token, {
@@ -216,10 +217,11 @@ export async function POST(req: NextRequest) {
       maxAge: 7 * 24 * 60 * 60 // 7 days
     });
 
-    return response;
+  logger.info('auth.register.success', { userId: newUser.id, email: mask.email(newUser.email) });
+  return response;
 
   } catch (error) {
-    console.error('Registration error:', error);
+  logger.error('auth.register.error', { err: (error as Error)?.message });
     return NextResponse.json(
       { error: 'Registration failed. Please try again.' },
       { status: 500 }

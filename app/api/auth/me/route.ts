@@ -3,12 +3,14 @@ import { verify } from 'jsonwebtoken';
 import { db } from '@/server/db';
 import { users } from '@/shared/schema';
 import { eq } from 'drizzle-orm';
+import { logger } from '@/lib/logger';
 
 export async function GET(req: NextRequest) {
   try {
     const token = req.cookies.get('token')?.value;
     
     if (!token) {
+      logger.warn('auth.me.no_token');
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
@@ -32,9 +34,10 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json(user);
+  logger.info('auth.me.success', { userId: user.id });
+  return NextResponse.json(user);
   } catch (error) {
-    console.error('Auth error:', error);
+  logger.error('auth.me.error', { err: (error as Error)?.message });
     return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
   }
 }

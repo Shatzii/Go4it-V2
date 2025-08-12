@@ -13,3 +13,14 @@ export const logger = {
   warn: (msg: string, meta?: Record<string, unknown>) => log('warn', msg, meta),
   error: (msg: string, meta?: Record<string, unknown>) => log('error', msg, meta),
 };
+
+// Helpers
+export const mask = {
+  email(e?: string | null) {
+    if (!e) return e as any;
+    const [user, domain] = String(e).split('@');
+    if (!domain) return e;
+    const u = user.length <= 2 ? user[0] + '*' : user[0] + '*'.repeat(Math.max(1, user.length - 2)) + user[user.length - 1];
+    return `${u}@${domain}`;
+  }
+};

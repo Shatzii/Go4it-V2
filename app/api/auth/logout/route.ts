@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,9 +15,10 @@ export async function POST(req: NextRequest) {
       maxAge: 0
     });
 
-    return response;
+  logger.info('auth.logout.success');
+  return response;
   } catch (error) {
-    console.error('Logout error:', error);
+  logger.error('auth.logout.error', { err: (error as Error)?.message });
     return NextResponse.json(
       { error: 'Logout failed' },
       { status: 500 }

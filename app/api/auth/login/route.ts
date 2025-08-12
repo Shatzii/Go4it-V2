@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { storage } from '@/server/storage';
 import { sign } from 'jsonwebtoken';
+import { logger, mask } from '@/lib/logger';
 
 // Simple (or Redis-backed) rate limiter for login brute-force protection
 const RATE_WINDOW_MS = 60_000; // 1 minute
@@ -49,7 +50,7 @@ export async function POST(req: NextRequest) {
 
     const { email, password } = await req.json();
 
-    if (!email || !password) {
+  if (!email || !password) {
       return NextResponse.json(
         { error: 'Email and password are required' },
         { status: 400 }
@@ -59,6 +60,7 @@ export async function POST(req: NextRequest) {
     // Validate credentials
     const user = await storage.validateUserCredentials(email, password);
     if (!user) {
+  logger.warn('auth.login.invalid_credentials', { email: mask.email(email) });
       return NextResponse.json(
         { error: 'Invalid email or password' },
         { status: 401 }
@@ -98,10 +100,11 @@ export async function POST(req: NextRequest) {
       maxAge: 7 * 24 * 60 * 60 // 7 days
     });
 
-    return response;
+  logger.info('auth.login.success', { userId: user.id, email: mask.email(user.email) });
+  return response;
 
   } catch (error) {
-    console.error('Login error:', error);
+  logger.error('auth.login.error', { err: (error as Error)?.message });
     return NextResponse.json(
       { error: 'Login failed. Please try again.' },
       { status: 500 }
