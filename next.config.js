@@ -3,6 +3,12 @@ const nextConfig = {
   // Optimized configuration for Replit deployment and .replit.dev preview
   output: 'standalone',
   
+  // Environment variables to suppress Sentry warnings
+  env: {
+    SENTRY_SUPPRESS_INSTRUMENTATION_FILE_WARNING: '1',
+    SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING: '1',
+  },
+  
   // Force server-side rendering for payment pages to handle runtime env vars
   pageExtensions: ['ts', 'tsx', 'js', 'jsx'],
   
