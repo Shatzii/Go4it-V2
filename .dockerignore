@@ -1,0 +1,95 @@
+# Next.js build outputs
+.next/
+.vercel/
+out/
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Development files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+lerna-debug.log*
+
+# Testing
+coverage/
+.nyc_output
+*.lcov
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Cache directories
+.cache/
+.npm/
+.yarn/cache/
+.pnpm-store/
+
+# Build artifacts
+build/
+dist/
+*.tsbuildinfo
+
+# Documentation and non-essential files
+README.md
+CHANGELOG.md
+docs/
+examples/
+demo/
+
+# Large assets and media (if any)
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.mkv
+*.webm
+*.flv
+
+# Backup files
+*.backup
+*.bak
+*.tmp
+
+# Git files
+.git/
+.gitignore
+
+# Replit specific
+.replit
+replit.nix
+.breakpoints
+.upm/
+
+# Development scripts
+build-fallback.js
+simple-build.js
+auto-deploy.js
+
+# Large packages that can be reinstalled
+.next/cache/
+.next/static/chunks/
+.next/standalone/node_modules/

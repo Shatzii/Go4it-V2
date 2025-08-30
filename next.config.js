@@ -24,6 +24,14 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   
+  // Optimize for deployment size
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error']
+    } : false,
+  },
+  
   images: {
     // In dev/Replit, disable optimization; in prod, allow AVIF/WebP
     unoptimized: process.env.NODE_ENV !== 'production',
