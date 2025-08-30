@@ -3,10 +3,14 @@ const nextConfig = {
   // Optimized configuration for Replit deployment and .replit.dev preview
   output: 'standalone',
   
-  // Environment variables to suppress Sentry warnings
+  // Consolidated environment variables
   env: {
     SENTRY_SUPPRESS_INSTRUMENTATION_FILE_WARNING: '1',
     SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING: '1',
+    CUSTOM_KEY: process.env.CUSTOM_KEY,
+    DATABASE_URL: process.env.DATABASE_URL,
+    STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
   },
   
   // Force server-side rendering for payment pages to handle runtime env vars
@@ -31,19 +35,6 @@ const nextConfig = {
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
   trailingSlash: false,
   
-  // Build error handling
-  eslint: { 
-    ignoreDuringBuilds: true 
-  },
-  typescript: { 
-    ignoreBuildErrors: true 
-  },
-  
-  // Environment variables configuration
-  env: {
-    // Ensure runtime environment variables are accessible
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
-  },
   
   // Headers for cross-origin compatibility
   async headers() {
