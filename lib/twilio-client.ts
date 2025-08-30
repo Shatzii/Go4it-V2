@@ -1,12 +1,9 @@
-import twilio from 'twilio';
+// Legacy Twilio import removed - using unified messaging service
 
-if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
-  console.warn('Twilio credentials not configured. SMS functionality will be disabled.');
-}
+// Twilio replaced with unified messaging service (AWS SNS + Discord + WhatsApp)
+// This maintains backward compatibility for existing code
 
-export const twilioClient = process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN 
-  ? twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
-  : null;
+export const twilioClient = null; // Always null now - using unified messaging
 
 export const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER || '';
 
