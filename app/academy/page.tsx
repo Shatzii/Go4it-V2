@@ -505,7 +505,7 @@ export default function Go4ItAcademy() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
                 <Target className="w-5 h-5" />
-                Today's Goals
+                Today&apos;s Goals
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -585,7 +585,7 @@ export default function Go4ItAcademy() {
     <div className="space-y-6">
       <div className="bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 text-white p-6 rounded-lg">
         <h1 className="text-3xl font-bold mb-2">Parent Portal</h1>
-        <p className="text-lg text-slate-300">Monitor your child's academic and athletic progress</p>
+        <p className="text-lg text-slate-300">Monitor your child&apos;s academic and athletic progress</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

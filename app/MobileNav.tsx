@@ -1,5 +1,6 @@
 "use client";
 import { useState } from 'react';
+import Link from 'next/link';
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -22,15 +23,15 @@ export default function MobileNav() {
       </div>
       <div className={`md:hidden ${open ? '' : 'hidden'}`} id="mobile-menu">
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-slate-900 border-t border-slate-700">
-          <a href="/dashboard" className="block text-slate-300 hover:text-white px-3 py-2 rounded-md">Dashboard</a>
-          <a href="/video-analysis" className="block text-slate-300 hover:text-white px-3 py-2 rounded-md">GAR Analysis</a>
-          <a href="/starpath" className="block text-slate-300 hover:text-white px-3 py-2 rounded-md">StarPath</a>
-          <a href="/academy" className="block text-slate-300 hover:text-white px-3 py-2 rounded-md">Academy</a>
-          <a href="/challenges" className="block text-slate-300 hover:text-white px-3 py-2 rounded-md">Challenges</a>
-          <a href="/recruiting-hub" className="block text-slate-300 hover:text-white px-3 py-2 rounded-md">Recruiting</a>
-          <a href="/ai-football-coach" className="block text-slate-300 hover:text-white px-3 py-2 rounded-md">AI Coach</a>
-          <a href="/pricing" className="block text-slate-300 hover:text-white px-3 py-2 rounded-md">Pricing</a>
-          <a href="/user/settings" className="block text-slate-300 hover:text-white px-3 py-2 rounded-md">Settings</a>
+          <Link href="/dashboard" className="block text-slate-300 hover:text-white px-3 py-2 rounded-md">Dashboard</Link>
+          <Link href="/video-analysis" className="block text-slate-300 hover:text-white px-3 py-2 rounded-md">GAR Analysis</Link>
+          <Link href="/starpath" className="block text-slate-300 hover:text-white px-3 py-2 rounded-md">StarPath</Link>
+          <Link href="/academy" className="block text-slate-300 hover:text-white px-3 py-2 rounded-md">Academy</Link>
+          <Link href="/challenges" className="block text-slate-300 hover:text-white px-3 py-2 rounded-md">Challenges</Link>
+          <Link href="/recruiting-hub" className="block text-slate-300 hover:text-white px-3 py-2 rounded-md">Recruiting</Link>
+          <Link href="/ai-football-coach" className="block text-slate-300 hover:text-white px-3 py-2 rounded-md">AI Coach</Link>
+          <Link href="/pricing" className="block text-slate-300 hover:text-white px-3 py-2 rounded-md">Pricing</Link>
+          <Link href="/user/settings" className="block text-slate-300 hover:text-white px-3 py-2 rounded-md">Settings</Link>
         </div>
       </div>
     </>

@@ -154,7 +154,7 @@ function ProfileStep() {
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-white">Quick Profile Setup</h3>
       <p className="text-slate-300">
-        We'll help you create your athlete profile in just a few minutes. 
+        We&apos;ll help you create your athlete profile in just a few minutes. 
         You can always update this information later.
       </p>
       <div className="space-y-3">

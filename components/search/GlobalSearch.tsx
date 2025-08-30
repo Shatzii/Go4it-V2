@@ -323,7 +323,7 @@ export function GlobalSearch() {
             </div>
           ) : query.trim().length > 1 ? (
             <div className="p-8 text-center text-slate-400">
-              No results found for "{query}"
+              No results found for &quot;{query}&quot;
             </div>
           ) : (
             <div className="p-4">

@@ -293,7 +293,7 @@ export default function AITeachers() {
             <h3 className="text-xl font-semibold text-white mb-2">Need Help Getting Started?</h3>
             <p className="text-slate-400 mb-6">
               Our AI teachers are designed to adapt to your learning style and provide personalized support. 
-              Simply click "Start Chat" with any teacher that matches your subject needs.
+              Simply click &quot;Start Chat&quot; with any teacher that matches your subject needs.
             </p>
             <div className="flex justify-center space-x-4">
               <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors">

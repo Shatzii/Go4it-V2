@@ -147,7 +147,7 @@ Additional Information:
                   <div>
                     <p className="mb-2">A loading error occurred. This usually resolves with a page refresh.</p>
                     <p className="text-sm text-slate-400">
-                      This can happen when the application is updated while you're using it.
+                      This can happen when the application is updated while you&apos;re using it.
                     </p>
                   </div>
                 ) : (
@@ -163,7 +163,7 @@ Additional Information:
               <div className="bg-slate-700 rounded-lg p-4">
                 <h4 className="font-semibold text-white mb-2">What you can do:</h4>
                 <ul className="space-y-1 text-sm text-slate-300">
-                  <li>• Try refreshing the page or clicking "Try Again" below</li>
+                  <li>• Try refreshing the page or clicking &quot;Try Again&quot; below</li>
                   <li>• Check your internet connection</li>
                   <li>• Clear your browser cache and cookies</li>
                   <li>• Try again in a few minutes</li>
