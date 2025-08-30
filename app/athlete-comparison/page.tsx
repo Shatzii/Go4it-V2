@@ -181,7 +181,7 @@ export default function AthleteComparisonPage() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold mb-2">Athlete Skill Comparison</h1>
-            <p className="text-slate-400">Compare multiple athletes' skills using interactive radar charts</p>
+            <p className="text-slate-400">Compare multiple athletes&apos; skills using interactive radar charts</p>
           </div>
           <div className="flex items-center gap-2">
             <Users className="w-6 h-6 text-blue-400" />

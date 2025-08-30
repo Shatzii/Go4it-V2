@@ -11,9 +11,11 @@ export const createLazyComponent = (
 ) => {
   const LazyComponent = lazy(importFn);
 
-  return memo((props: any) => (
+  const WrappedComponent = memo((props: any) => (
     <LazyComponent {...props} />
   ));
+  WrappedComponent.displayName = 'LazyComponent';
+  return WrappedComponent;
 };
 
 // Cache for API responses

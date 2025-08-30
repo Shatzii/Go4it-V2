@@ -272,7 +272,7 @@ export default function AdminVerificationPage() {
             <div className="mt-4 p-4 bg-blue-900/20 rounded-lg">
               <p className="text-sm text-blue-300">
                 <strong>Passwords:</strong> Each account uses [username]123 format<br/>
-                <strong>Example:</strong> athlete@test.com uses password "athlete123"
+                <strong>Example:</strong> athlete@test.com uses password &quot;athlete123&quot;
               </p>
             </div>
           </CardContent>

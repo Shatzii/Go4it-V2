@@ -518,7 +518,7 @@ export default function AcademyImprovements() {
         <div className="container mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6">Ready to Transform Student-Athlete Education?</h2>
           <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
-            These revolutionary improvements will position Go4it Academy as the world's leading 
+            These revolutionary improvements will position Go4it Academy as the world&apos;s leading 
             student-athlete development institution.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
