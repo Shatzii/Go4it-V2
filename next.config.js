@@ -24,8 +24,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   
-  // Optimize for deployment size
-  swcMinify: true,
+  // Optimize for deployment size  
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production' ? {
       exclude: ['error']

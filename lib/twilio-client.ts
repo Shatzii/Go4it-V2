@@ -96,9 +96,17 @@ export class SMSService {
   private fromNumber = TWILIO_PHONE_NUMBER;
 
   async sendSMS({ to, message, mediaUrl, scheduleTime }: SMSOptions) {
+    // Fallback to unified messaging service if Twilio not available
     if (!this.client || !this.fromNumber) {
-      console.error('Twilio not configured. SMS not sent:', { to, message });
-      return { success: false, error: 'SMS service not configured' };
+      console.warn('Twilio not configured, using unified messaging service');
+      try {
+        const { messagingService } = await import('./messaging-service');
+        const result = await messagingService.sendSMS(to, message);
+        return { success: result, error: result ? null : 'Unified messaging failed' };
+      } catch (error) {
+        console.error('Both Twilio and unified messaging failed:', { to, message });
+        return { success: false, error: 'All SMS services unavailable' };
+      }
     }
 
     try {
