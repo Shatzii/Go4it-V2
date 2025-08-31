@@ -20,7 +20,10 @@ export const mask = {
     if (!e) return e as any;
     const [user, domain] = String(e).split('@');
     if (!domain) return e;
-    const u = user.length <= 2 ? user[0] + '*' : user[0] + '*'.repeat(Math.max(1, user.length - 2)) + user[user.length - 1];
+    const u =
+      user.length <= 2
+        ? user[0] + '*'
+        : user[0] + '*'.repeat(Math.max(1, user.length - 2)) + user[user.length - 1];
     return `${u}@${domain}`;
-  }
+  },
 };

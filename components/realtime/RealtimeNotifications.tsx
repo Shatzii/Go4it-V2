@@ -20,11 +20,23 @@ export function RealtimeNotifications() {
     const generateNotification = () => {
       const notificationTypes = ['success', 'warning', 'info'];
       const messages = [
-        { type: 'success', title: 'Analysis Complete', message: 'Your GAR score has been updated!' },
+        {
+          type: 'success',
+          title: 'Analysis Complete',
+          message: 'Your GAR score has been updated!',
+        },
         { type: 'info', title: 'New Achievement', message: 'You unlocked a new skill badge!' },
-        { type: 'warning', title: 'Training Reminder', message: 'Don\'t forget your daily training session!' },
-        { type: 'success', title: 'Ranking Update', message: 'You moved up 2 positions in your region!' },
-        { type: 'info', title: 'StarPath Progress', message: 'You gained 50 XP in Ball Control!' }
+        {
+          type: 'warning',
+          title: 'Training Reminder',
+          message: "Don't forget your daily training session!",
+        },
+        {
+          type: 'success',
+          title: 'Ranking Update',
+          message: 'You moved up 2 positions in your region!',
+        },
+        { type: 'info', title: 'StarPath Progress', message: 'You gained 50 XP in Ball Control!' },
       ];
 
       const randomMessage = messages[Math.floor(Math.random() * messages.length)];
@@ -34,14 +46,14 @@ export function RealtimeNotifications() {
         title: randomMessage.title,
         message: randomMessage.message,
         timestamp: Date.now(),
-        duration: 5000
+        duration: 5000,
       };
 
-      setNotifications(prev => [newNotification, ...prev].slice(0, 5)); // Keep only last 5
+      setNotifications((prev) => [newNotification, ...prev].slice(0, 5)); // Keep only last 5
 
       // Auto-remove after duration
       setTimeout(() => {
-        setNotifications(prev => prev.filter(n => n.id !== newNotification.id));
+        setNotifications((prev) => prev.filter((n) => n.id !== newNotification.id));
       }, newNotification.duration || 5000);
     };
 
@@ -50,7 +62,8 @@ export function RealtimeNotifications() {
 
     // Generate notifications every 10-15 seconds
     const interval = setInterval(() => {
-      if (Math.random() > 0.3) { // 70% chance
+      if (Math.random() > 0.3) {
+        // 70% chance
         generateNotification();
       }
     }, 12000);
@@ -59,7 +72,7 @@ export function RealtimeNotifications() {
   }, []);
 
   const removeNotification = (id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
   };
 
   const getIcon = (type: string) => {
@@ -127,16 +140,16 @@ export function useRealtimeNotifications() {
   useEffect(() => {
     // Simulate WebSocket connection
     setIsConnected(true);
-    
+
     // Simulate receiving messages
     const interval = setInterval(() => {
       const messages = [
         'GAR analysis completed for your latest video',
         'New skill unlocked: Advanced Ball Control',
         'You gained 50 XP in technical skills',
-        'Ranking updated: You moved up 3 positions'
+        'Ranking updated: You moved up 3 positions',
       ];
-      
+
       const randomMessage = messages[Math.floor(Math.random() * messages.length)];
       setLastMessage(randomMessage);
     }, 15000);

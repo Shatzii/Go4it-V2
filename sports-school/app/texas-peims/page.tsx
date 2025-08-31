@@ -1,5 +1,5 @@
-import React from 'react'
-import Link from 'next/link'
+import React from 'react';
+import Link from 'next/link';
 
 export default function TexasPeimsPage() {
   return (
@@ -7,12 +7,13 @@ export default function TexasPeimsPage() {
       <header className="relative z-10 bg-black/20 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-6">
           <nav className="flex justify-between items-center">
-            <Link href="/" className="text-white font-bold text-2xl hover:text-orange-300 transition-colors">
+            <Link
+              href="/"
+              className="text-white font-bold text-2xl hover:text-orange-300 transition-colors"
+            >
               ← The Universal One School
             </Link>
-            <div className="text-white font-bold text-xl">
-              PEIMS Data Management
-            </div>
+            <div className="text-white font-bold text-xl">PEIMS Data Management</div>
           </nav>
         </div>
       </header>
@@ -28,7 +29,8 @@ export default function TexasPeimsPage() {
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
-            Public Education Information Management System integration with automated data collection and TEA submission protocols.
+            Public Education Information Management System integration with automated data
+            collection and TEA submission protocols.
           </p>
         </div>
       </section>
@@ -38,13 +40,14 @@ export default function TexasPeimsPage() {
           <h2 className="text-4xl font-bold text-white text-center mb-16">
             PEIMS Data Collections
           </h2>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/20 transition-all duration-300">
               <div className="text-4xl mb-4">👥</div>
               <h3 className="text-2xl font-bold text-white mb-2">Student Enrollment</h3>
               <p className="text-white/80 mb-4">
-                Comprehensive student demographic data, enrollment status, and attendance tracking for TEA reporting.
+                Comprehensive student demographic data, enrollment status, and attendance tracking
+                for TEA reporting.
               </p>
               <div className="space-y-2 text-white/70 text-sm">
                 <div>• Student demographic information</div>
@@ -58,7 +61,8 @@ export default function TexasPeimsPage() {
               <div className="text-4xl mb-4">🎓</div>
               <h3 className="text-2xl font-bold text-white mb-2">Academic Performance</h3>
               <p className="text-white/80 mb-4">
-                STAAR test results, course completion, and academic achievement data with neurodivergent accommodations.
+                STAAR test results, course completion, and academic achievement data with
+                neurodivergent accommodations.
               </p>
               <div className="space-y-2 text-white/70 text-sm">
                 <div>• STAAR assessment results</div>
@@ -72,7 +76,8 @@ export default function TexasPeimsPage() {
               <div className="text-4xl mb-4">👨‍🏫</div>
               <h3 className="text-2xl font-bold text-white mb-2">Staff Information</h3>
               <p className="text-white/80 mb-4">
-                Teacher credentials, assignments, and professional development tracking for compliance verification.
+                Teacher credentials, assignments, and professional development tracking for
+                compliance verification.
               </p>
               <div className="space-y-2 text-white/70 text-sm">
                 <div>• Teacher certification status</div>
@@ -86,7 +91,8 @@ export default function TexasPeimsPage() {
               <div className="text-4xl mb-4">💰</div>
               <h3 className="text-2xl font-bold text-white mb-2">Financial Data</h3>
               <p className="text-white/80 mb-4">
-                Budget allocation, expenditures, and funding source tracking for state accountability measures.
+                Budget allocation, expenditures, and funding source tracking for state
+                accountability measures.
               </p>
               <div className="space-y-2 text-white/70 text-sm">
                 <div>• Revenue by funding source</div>
@@ -100,7 +106,8 @@ export default function TexasPeimsPage() {
               <div className="text-4xl mb-4">🏫</div>
               <h3 className="text-2xl font-bold text-white mb-2">Organizational Data</h3>
               <p className="text-white/80 mb-4">
-                School organizational structure, programs offered, and facility information for state records.
+                School organizational structure, programs offered, and facility information for
+                state records.
               </p>
               <div className="space-y-2 text-white/70 text-sm">
                 <div>• School organization details</div>
@@ -114,7 +121,8 @@ export default function TexasPeimsPage() {
               <div className="text-4xl mb-4">♿</div>
               <h3 className="text-2xl font-bold text-white mb-2">Special Services</h3>
               <p className="text-white/80 mb-4">
-                Special education, 504 plans, and neurodivergent support services data for compliance tracking.
+                Special education, 504 plans, and neurodivergent support services data for
+                compliance tracking.
               </p>
               <div className="space-y-2 text-white/70 text-sm">
                 <div>• IEP and 504 plan data</div>
@@ -154,7 +162,7 @@ export default function TexasPeimsPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
               <h4 className="text-xl font-bold text-white mb-4">Data Quality Metrics</h4>
               <div className="space-y-3">
@@ -180,5 +188,5 @@ export default function TexasPeimsPage() {
         </div>
       </section>
     </div>
-  )
+  );
 }

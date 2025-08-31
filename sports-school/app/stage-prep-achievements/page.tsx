@@ -1,22 +1,35 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { 
-  BookOpen, 
-  Calculator, 
-  Microscope, 
-  Brain, 
-  School, 
-  Calendar, 
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  BookOpen,
+  Calculator,
+  Microscope,
+  Brain,
+  School,
+  Calendar,
   GraduationCap,
   Target,
   TrendingUp,
@@ -29,50 +42,52 @@ import {
   Eye,
   Star,
   Trophy,
-  Users
-} from 'lucide-react'
+  Users,
+} from 'lucide-react';
 
-type AchievementTier = 'bronze' | 'silver' | 'gold' | 'platinum' | 'master'
-type Grade = '9th' | '10th' | '11th' | '12th'
-type Semester = 'Fall' | 'Spring'
+type AchievementTier = 'bronze' | 'silver' | 'gold' | 'platinum' | 'master';
+type Grade = '9th' | '10th' | '11th' | '12th';
+type Semester = 'Fall' | 'Spring';
 
 interface Achievement {
-  id: string
-  title: string
-  description: string
-  tier: AchievementTier
-  points: number
-  icon: React.ReactNode
-  unlocked: boolean
-  progress: number
-  maxProgress: number
-  category: 'academic' | 'research' | 'leadership' | 'service' | 'excellence'
+  id: string;
+  title: string;
+  description: string;
+  tier: AchievementTier;
+  points: number;
+  icon: React.ReactNode;
+  unlocked: boolean;
+  progress: number;
+  maxProgress: number;
+  category: 'academic' | 'research' | 'leadership' | 'service' | 'excellence';
 }
 
 interface ScheduleSlot {
-  period: number
-  subject: string
-  teacher: string
-  room: string
-  credits: number
-  isElective: boolean
-  isAdvanced: boolean
-  trackSpecific: boolean
+  period: number;
+  subject: string;
+  teacher: string;
+  room: string;
+  credits: number;
+  isElective: boolean;
+  isAdvanced: boolean;
+  trackSpecific: boolean;
 }
 
 interface GraduationRequirement {
-  subject: string
-  required: number
-  earned: number
-  inProgress: number
-  trackFocus: boolean
+  subject: string;
+  required: number;
+  earned: number;
+  inProgress: number;
+  trackFocus: boolean;
 }
 
 export default function StagePrepAchievements() {
-  const [selectedGrade, setSelectedGrade] = useState<Grade>('9th')
-  const [selectedSemester, setSelectedSemester] = useState<Semester>('Fall')
-  const [schedule, setSchedule] = useState<ScheduleSlot[]>([])
-  const [viewMode, setViewMode] = useState<'achievements' | 'schedule' | 'graduation' | 'career'>('achievements')
+  const [selectedGrade, setSelectedGrade] = useState<Grade>('9th');
+  const [selectedSemester, setSelectedSemester] = useState<Semester>('Fall');
+  const [schedule, setSchedule] = useState<ScheduleSlot[]>([]);
+  const [viewMode, setViewMode] = useState<'achievements' | 'schedule' | 'graduation' | 'career'>(
+    'achievements',
+  );
 
   const achievements: Achievement[] = [
     {
@@ -85,7 +100,7 @@ export default function StagePrepAchievements() {
       unlocked: true,
       progress: 1,
       maxProgress: 1,
-      category: 'academic'
+      category: 'academic',
     },
     {
       id: '2',
@@ -97,7 +112,7 @@ export default function StagePrepAchievements() {
       unlocked: false,
       progress: 1,
       maxProgress: 3,
-      category: 'leadership'
+      category: 'leadership',
     },
     {
       id: '3',
@@ -109,7 +124,7 @@ export default function StagePrepAchievements() {
       unlocked: false,
       progress: 2,
       maxProgress: 3,
-      category: 'research'
+      category: 'research',
     },
     {
       id: '4',
@@ -121,7 +136,7 @@ export default function StagePrepAchievements() {
       unlocked: false,
       progress: 0,
       maxProgress: 1,
-      category: 'excellence'
+      category: 'excellence',
     },
     {
       id: '5',
@@ -133,7 +148,7 @@ export default function StagePrepAchievements() {
       unlocked: false,
       progress: 3,
       maxProgress: 4,
-      category: 'academic'
+      category: 'academic',
     },
     {
       id: '6',
@@ -145,23 +160,35 @@ export default function StagePrepAchievements() {
       unlocked: false,
       progress: 1,
       maxProgress: 2,
-      category: 'service'
-    }
-  ]
+      category: 'service',
+    },
+  ];
 
   const graduationRequirements: GraduationRequirement[] = [
     { subject: 'English/Language Arts', required: 4, earned: 2, inProgress: 1, trackFocus: false },
     { subject: 'Mathematics', required: 4, earned: 2, inProgress: 1, trackFocus: false },
     { subject: 'Science', required: 4, earned: 1, inProgress: 1, trackFocus: false },
     { subject: 'Social Studies', required: 3, earned: 1, inProgress: 1, trackFocus: false },
-    { subject: 'Advanced Placement Courses', required: 4, earned: 2, inProgress: 1, trackFocus: true },
+    {
+      subject: 'Advanced Placement Courses',
+      required: 4,
+      earned: 2,
+      inProgress: 1,
+      trackFocus: true,
+    },
     { subject: 'Research & Analysis', required: 3, earned: 1, inProgress: 1, trackFocus: true },
-    { subject: 'Academic Writing & Communication', required: 2, earned: 0, inProgress: 1, trackFocus: true },
+    {
+      subject: 'Academic Writing & Communication',
+      required: 2,
+      earned: 0,
+      inProgress: 1,
+      trackFocus: true,
+    },
     { subject: 'Fine Arts (Additional)', required: 1, earned: 1, inProgress: 0, trackFocus: false },
     { subject: 'Health/PE', required: 2, earned: 1, inProgress: 0, trackFocus: false },
     { subject: 'World Languages', required: 2, earned: 0, inProgress: 1, trackFocus: false },
-    { subject: 'Career/Technology', required: 1, earned: 0, inProgress: 0, trackFocus: false }
-  ]
+    { subject: 'Career/Technology', required: 1, earned: 0, inProgress: 0, trackFocus: false },
+  ];
 
   const stagePreparatoryElectives = [
     'Advanced Placement Mathematics',
@@ -183,55 +210,84 @@ export default function StagePrepAchievements() {
     'College Application Prep',
     'Critical Thinking & Logic',
     'Academic Mentorship',
-    'Independent Study Programs'
-  ]
+    'Independent Study Programs',
+  ];
 
   const careerPaths = [
     {
       name: 'Research Scientist',
       description: 'Conduct advanced research in STEM fields',
-      requirements: ['Research Experience', 'Advanced Mathematics', 'Laboratory Skills', 'Scientific Method'],
+      requirements: [
+        'Research Experience',
+        'Advanced Mathematics',
+        'Laboratory Skills',
+        'Scientific Method',
+      ],
       colleges: ['MIT', 'Stanford', 'Harvard', 'CalTech', 'Princeton'],
       progress: 78,
-      skills: ['Research Design', 'Data Analysis', 'Critical Thinking', 'Innovation']
+      skills: ['Research Design', 'Data Analysis', 'Critical Thinking', 'Innovation'],
     },
     {
       name: 'Academic Leader',
       description: 'Lead educational institutions and academic programs',
-      requirements: ['Leadership Experience', 'Educational Excellence', 'Management Skills', 'Vision Development'],
+      requirements: [
+        'Leadership Experience',
+        'Educational Excellence',
+        'Management Skills',
+        'Vision Development',
+      ],
       colleges: ['Harvard', 'Columbia Teachers College', 'Stanford', 'Yale', 'Northwestern'],
       progress: 65,
-      skills: ['Leadership', 'Educational Vision', 'Communication', 'Program Management']
+      skills: ['Leadership', 'Educational Vision', 'Communication', 'Program Management'],
     },
     {
       name: 'Technology Specialist',
       description: 'Develop innovative solutions in computer science and engineering',
-      requirements: ['Programming Mastery', 'Engineering Skills', 'Problem-solving', 'Technical Design'],
+      requirements: [
+        'Programming Mastery',
+        'Engineering Skills',
+        'Problem-solving',
+        'Technical Design',
+      ],
       colleges: ['MIT', 'Stanford', 'Carnegie Mellon', 'UC Berkeley', 'Georgia Tech'],
       progress: 55,
-      skills: ['Technical Design', 'Programming', 'Systems Analysis', 'Innovation']
+      skills: ['Technical Design', 'Programming', 'Systems Analysis', 'Innovation'],
     },
     {
       name: 'Academic Writer/Researcher',
       description: 'Conduct scholarly research and publish academic works',
-      requirements: ['Research Portfolio', 'Academic Writing', 'Literature Analysis', 'Critical Analysis'],
+      requirements: [
+        'Research Portfolio',
+        'Academic Writing',
+        'Literature Analysis',
+        'Critical Analysis',
+      ],
       colleges: ['Yale', 'Columbia', 'University of Chicago', 'Harvard', 'Northwestern'],
       progress: 45,
-      skills: ['Academic Writing', 'Research', 'Critical Analysis', 'Scholarly Communication']
-    }
-  ]
+      skills: ['Academic Writing', 'Research', 'Critical Analysis', 'Scholarly Communication'],
+    },
+  ];
 
   const getTierColor = (tier: AchievementTier) => {
     switch (tier) {
-      case 'bronze': return 'bg-amber-100 text-amber-800 border-amber-300'
-      case 'silver': return 'bg-gray-100 text-gray-800 border-gray-300'
-      case 'gold': return 'bg-yellow-100 text-yellow-800 border-yellow-300'
-      case 'platinum': return 'bg-purple-100 text-purple-800 border-purple-300'
-      case 'master': return 'bg-red-100 text-red-800 border-red-300'
+      case 'bronze':
+        return 'bg-amber-100 text-amber-800 border-amber-300';
+      case 'silver':
+        return 'bg-gray-100 text-gray-800 border-gray-300';
+      case 'gold':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+      case 'platinum':
+        return 'bg-purple-100 text-purple-800 border-purple-300';
+      case 'master':
+        return 'bg-red-100 text-red-800 border-red-300';
     }
-  }
+  };
 
-  const addToSchedule = (subject: string, isElective: boolean = false, trackSpecific: boolean = false) => {
+  const addToSchedule = (
+    subject: string,
+    isElective: boolean = false,
+    trackSpecific: boolean = false,
+  ) => {
     const newSlot: ScheduleSlot = {
       period: schedule.length + 1,
       subject,
@@ -240,14 +296,16 @@ export default function StagePrepAchievements() {
       credits: 1,
       isElective,
       isAdvanced: false,
-      trackSpecific
-    }
-    setSchedule([...schedule, newSlot])
-  }
+      trackSpecific,
+    };
+    setSchedule([...schedule, newSlot]);
+  };
 
-  const totalCredits = schedule.reduce((sum, slot) => sum + slot.credits, 0)
-  const totalPoints = achievements.filter(a => a.unlocked).reduce((sum, a) => sum + a.points, 0)
-  const trackCredits = graduationRequirements.filter(req => req.trackFocus).reduce((sum, req) => sum + req.required, 0)
+  const totalCredits = schedule.reduce((sum, slot) => sum + slot.credits, 0);
+  const totalPoints = achievements.filter((a) => a.unlocked).reduce((sum, a) => sum + a.points, 0);
+  const trackCredits = graduationRequirements
+    .filter((req) => req.trackFocus)
+    .reduce((sum, req) => sum + req.required, 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-black text-white p-6">
@@ -258,7 +316,8 @@ export default function StagePrepAchievements() {
             🎓 S.T.A.G.E Preparatory Track
           </h1>
           <p className="text-gray-300 text-lg">
-            Strategic Teaching for Academic Growth & Excellence • {totalPoints.toLocaleString()} Achievement Points • {trackCredits} Track Credits Required
+            Strategic Teaching for Academic Growth & Excellence • {totalPoints.toLocaleString()}{' '}
+            Achievement Points • {trackCredits} Track Credits Required
           </p>
         </div>
 
@@ -269,14 +328,14 @@ export default function StagePrepAchievements() {
               { id: 'achievements', label: 'Academic Achievements', icon: Trophy },
               { id: 'schedule', label: 'Block Schedule', icon: Calendar },
               { id: 'graduation', label: 'Track Requirements', icon: GraduationCap },
-              { id: 'career', label: 'Career Pathways', icon: Target }
+              { id: 'career', label: 'Career Pathways', icon: Target },
             ].map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
                 onClick={() => setViewMode(id as any)}
                 className={`px-4 py-2 rounded-md flex items-center gap-2 transition-all ${
-                  viewMode === id 
-                    ? 'bg-purple-600 text-white' 
+                  viewMode === id
+                    ? 'bg-purple-600 text-white'
                     : 'text-gray-300 hover:text-white hover:bg-gray-700'
                 }`}
               >
@@ -291,9 +350,9 @@ export default function StagePrepAchievements() {
         {viewMode === 'achievements' && (
           <div className="space-y-6">
             <div className="grid md:grid-cols-5 gap-4 mb-8">
-              {['academic', 'research', 'leadership', 'service', 'excellence'].map(category => {
-                const categoryAchievements = achievements.filter(a => a.category === category)
-                const unlockedCount = categoryAchievements.filter(a => a.unlocked).length
+              {['academic', 'research', 'leadership', 'service', 'excellence'].map((category) => {
+                const categoryAchievements = achievements.filter((a) => a.category === category);
+                const unlockedCount = categoryAchievements.filter((a) => a.unlocked).length;
                 return (
                   <Card key={category} className="bg-gray-800 border-gray-700">
                     <CardHeader className="pb-4">
@@ -310,25 +369,35 @@ export default function StagePrepAchievements() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Progress value={(unlockedCount / categoryAchievements.length) * 100} className="h-2" />
+                      <Progress
+                        value={(unlockedCount / categoryAchievements.length) * 100}
+                        className="h-2"
+                      />
                     </CardContent>
                   </Card>
-                )
+                );
               })}
             </div>
 
             <div className="grid lg:grid-cols-2 gap-6">
-              {achievements.map(achievement => (
-                <Card key={achievement.id} className={`bg-gray-800 border-gray-700 ${achievement.unlocked ? 'ring-2 ring-purple-500' : ''}`}>
+              {achievements.map((achievement) => (
+                <Card
+                  key={achievement.id}
+                  className={`bg-gray-800 border-gray-700 ${achievement.unlocked ? 'ring-2 ring-purple-500' : ''}`}
+                >
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg ${achievement.unlocked ? 'bg-purple-600' : 'bg-gray-700'}`}>
+                        <div
+                          className={`p-2 rounded-lg ${achievement.unlocked ? 'bg-purple-600' : 'bg-gray-700'}`}
+                        >
                           {achievement.icon}
                         </div>
                         <div>
                           <CardTitle className="text-white">{achievement.title}</CardTitle>
-                          <CardDescription className="text-gray-400">{achievement.description}</CardDescription>
+                          <CardDescription className="text-gray-400">
+                            {achievement.description}
+                          </CardDescription>
                         </div>
                       </div>
                       <Badge className={getTierColor(achievement.tier)}>
@@ -340,11 +409,15 @@ export default function StagePrepAchievements() {
                     <div className="space-y-3">
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-400">Progress</span>
-                        <span className="text-white">{achievement.progress} / {achievement.maxProgress}</span>
+                        <span className="text-white">
+                          {achievement.progress} / {achievement.maxProgress}
+                        </span>
                       </div>
                       <Progress value={(achievement.progress / achievement.maxProgress) * 100} />
                       <div className="flex justify-between items-center">
-                        <span className="text-purple-400 font-semibold">{achievement.points} points</span>
+                        <span className="text-purple-400 font-semibold">
+                          {achievement.points} points
+                        </span>
                         {achievement.unlocked && (
                           <Badge className="bg-green-600 text-white">EARNED</Badge>
                         )}
@@ -367,14 +440,18 @@ export default function StagePrepAchievements() {
                   S.T.A.G.E Prep 4×4 Block Schedule Builder
                 </CardTitle>
                 <CardDescription className="text-gray-400">
-                  Design your semester schedule with 4 year-long courses per semester (8 total annually)
+                  Design your semester schedule with 4 year-long courses per semester (8 total
+                  annually)
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-2 gap-4 mb-6">
                   <div>
                     <Label className="text-white">Grade Level</Label>
-                    <Select value={selectedGrade} onValueChange={(value) => setSelectedGrade(value as Grade)}>
+                    <Select
+                      value={selectedGrade}
+                      onValueChange={(value) => setSelectedGrade(value as Grade)}
+                    >
                       <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                         <SelectValue />
                       </SelectTrigger>
@@ -388,7 +465,10 @@ export default function StagePrepAchievements() {
                   </div>
                   <div>
                     <Label className="text-white">Semester</Label>
-                    <Select value={selectedSemester} onValueChange={(value) => setSelectedSemester(value as Semester)}>
+                    <Select
+                      value={selectedSemester}
+                      onValueChange={(value) => setSelectedSemester(value as Semester)}
+                    >
                       <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                         <SelectValue />
                       </SelectTrigger>
@@ -411,15 +491,22 @@ export default function StagePrepAchievements() {
                         <p className="text-gray-400 text-center py-8">No courses scheduled yet</p>
                       ) : (
                         schedule.map((slot, index) => (
-                          <div key={index} className="bg-gray-700 p-3 rounded-lg flex justify-between items-center">
+                          <div
+                            key={index}
+                            className="bg-gray-700 p-3 rounded-lg flex justify-between items-center"
+                          >
                             <div>
-                              <div className="text-white font-medium">Block {slot.period}: {slot.subject}</div>
+                              <div className="text-white font-medium">
+                                Block {slot.period}: {slot.subject}
+                              </div>
                               <div className="text-gray-400 text-sm">
                                 {slot.credits} credit • {slot.room}
                               </div>
                             </div>
                             <div className="flex gap-2">
-                              {slot.trackSpecific && <Badge className="bg-purple-600">Track Focus</Badge>}
+                              {slot.trackSpecific && (
+                                <Badge className="bg-purple-600">Track Focus</Badge>
+                              )}
                               {slot.isElective && <Badge className="bg-blue-600">Elective</Badge>}
                               {slot.isAdvanced && <Badge className="bg-orange-600">Advanced</Badge>}
                             </div>
@@ -431,13 +518,18 @@ export default function StagePrepAchievements() {
 
                   {/* Available Theater Courses */}
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-4">Stage Preparatory Courses</h3>
+                    <h3 className="text-lg font-semibold text-white mb-4">
+                      Stage Preparatory Courses
+                    </h3>
                     <div className="space-y-2 max-h-96 overflow-y-auto">
                       {stagePreparatoryElectives.map((course, index) => (
-                        <div key={index} className="bg-gray-700 p-3 rounded-lg flex justify-between items-center">
+                        <div
+                          key={index}
+                          className="bg-gray-700 p-3 rounded-lg flex justify-between items-center"
+                        >
                           <span className="text-white text-sm">{course}</span>
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             onClick={() => addToSchedule(course, true, true)}
                             className="bg-purple-600 hover:bg-purple-700"
                           >
@@ -463,35 +555,45 @@ export default function StagePrepAchievements() {
                   Stage Preparatory Track Requirements
                 </CardTitle>
                 <CardDescription className="text-gray-400">
-                  26-credit Foundation Program with Arts & Humanities Endorsement focused on Theater Arts
+                  26-credit Foundation Program with Arts & Humanities Endorsement focused on Theater
+                  Arts
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4">
                   {graduationRequirements.map((req, index) => {
-                    const totalEarned = req.earned + req.inProgress
-                    const progressPercent = (totalEarned / req.required) * 100
-                    const isComplete = req.earned >= req.required
-                    
+                    const totalEarned = req.earned + req.inProgress;
+                    const progressPercent = (totalEarned / req.required) * 100;
+                    const isComplete = req.earned >= req.required;
+
                     return (
-                      <div key={index} className={`p-4 rounded-lg ${req.trackFocus ? 'bg-purple-900 border border-purple-600' : 'bg-gray-700'}`}>
+                      <div
+                        key={index}
+                        className={`p-4 rounded-lg ${req.trackFocus ? 'bg-purple-900 border border-purple-600' : 'bg-gray-700'}`}
+                      >
                         <div className="flex justify-between items-center mb-2">
                           <h4 className="text-white font-medium flex items-center gap-2">
                             {req.subject}
-                            {req.trackFocus && <Badge className="bg-purple-600 text-xs">Track Focus</Badge>}
+                            {req.trackFocus && (
+                              <Badge className="bg-purple-600 text-xs">Track Focus</Badge>
+                            )}
                           </h4>
                           <div className="flex items-center gap-2">
-                            <span className="text-gray-300">{req.earned + req.inProgress} / {req.required}</span>
+                            <span className="text-gray-300">
+                              {req.earned + req.inProgress} / {req.required}
+                            </span>
                             {isComplete && <Badge className="bg-green-600">Complete</Badge>}
                           </div>
                         </div>
                         <Progress value={Math.min(progressPercent, 100)} className="h-2 mb-2" />
                         <div className="flex justify-between text-sm text-gray-400">
-                          <span>Earned: {req.earned} • In Progress: {req.inProgress}</span>
+                          <span>
+                            Earned: {req.earned} • In Progress: {req.inProgress}
+                          </span>
                           <span>Remaining: {Math.max(0, req.required - totalEarned)}</span>
                         </div>
                       </div>
-                    )
+                    );
                   })}
                 </div>
               </CardContent>
@@ -510,7 +612,9 @@ export default function StagePrepAchievements() {
                       <span>{career.name}</span>
                       <Badge className="bg-purple-600">{career.progress}% Ready</Badge>
                     </CardTitle>
-                    <CardDescription className="text-gray-400">{career.description}</CardDescription>
+                    <CardDescription className="text-gray-400">
+                      {career.description}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -518,7 +622,9 @@ export default function StagePrepAchievements() {
                         <h4 className="text-white font-medium mb-2">Key Requirements</h4>
                         <div className="flex flex-wrap gap-2">
                           {career.requirements.map((req, i) => (
-                            <Badge key={i} className="bg-gray-600 text-white">{req}</Badge>
+                            <Badge key={i} className="bg-gray-600 text-white">
+                              {req}
+                            </Badge>
                           ))}
                         </div>
                       </div>
@@ -526,7 +632,9 @@ export default function StagePrepAchievements() {
                         <h4 className="text-white font-medium mb-2">Essential Skills</h4>
                         <div className="flex flex-wrap gap-2">
                           {career.skills.map((skill, i) => (
-                            <Badge key={i} className="bg-indigo-600 text-white">{skill}</Badge>
+                            <Badge key={i} className="bg-indigo-600 text-white">
+                              {skill}
+                            </Badge>
                           ))}
                         </div>
                       </div>
@@ -534,7 +642,9 @@ export default function StagePrepAchievements() {
                         <h4 className="text-white font-medium mb-2">Target Programs</h4>
                         <div className="flex flex-wrap gap-2">
                           {career.colleges.map((college, i) => (
-                            <Badge key={i} className="bg-blue-600 text-white">{college}</Badge>
+                            <Badge key={i} className="bg-blue-600 text-white">
+                              {college}
+                            </Badge>
                           ))}
                         </div>
                       </div>
@@ -554,5 +664,5 @@ export default function StagePrepAchievements() {
         )}
       </div>
     </div>
-  )
+  );
 }

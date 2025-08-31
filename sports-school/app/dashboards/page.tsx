@@ -1,18 +1,18 @@
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { 
-  Users, 
-  GraduationCap, 
-  BookOpen, 
-  Settings, 
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  Users,
+  GraduationCap,
+  BookOpen,
+  Settings,
   Heart,
   Brain,
   Shield,
   Target,
-  Zap
-} from 'lucide-react'
-import Link from 'next/link'
+  Zap,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function DashboardsPage() {
   return (
@@ -40,11 +40,10 @@ export default function DashboardsPage() {
               <Zap className="w-4 h-4 mr-2" />
               All Features Preserved in Optimized Deployment
             </Badge>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Dashboard Access Center
-            </h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Dashboard Access Center</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Access all dashboards and features. Every component has been preserved during the Docker optimization process.
+              Access all dashboards and features. Every component has been preserved during the
+              Docker optimization process.
             </p>
           </div>
 
@@ -175,7 +174,8 @@ export default function DashboardsPage() {
                   All Features Preserved During Optimization
                 </h4>
                 <p className="text-green-800 mb-3">
-                  The Docker image optimization reduced size from 8+ GiB to under 1 GiB while preserving all dashboards and functionality.
+                  The Docker image optimization reduced size from 8+ GiB to under 1 GiB while
+                  preserving all dashboards and functionality.
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-green-700">
                   <div>✓ Student Dashboard</div>
@@ -193,5 +193,5 @@ export default function DashboardsPage() {
         </div>
       </section>
     </div>
-  )
+  );
 }

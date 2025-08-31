@@ -1,7 +1,10 @@
 import { Router } from 'express';
 import { storage } from '../storage';
 import { z } from 'zod';
-import { insertOpenEducationalResourceSchema, insertOerIntegrationSchema } from '../../shared/schema';
+import {
+  insertOpenEducationalResourceSchema,
+  insertOerIntegrationSchema,
+} from '../../shared/schema';
 
 export const router = Router();
 
@@ -23,7 +26,7 @@ router.get('/resources', async (req, res) => {
         subject,
         gradeLevel,
         resourceType,
-        neurotypeFocus
+        neurotypeFocus,
       });
     } else {
       resources = await storage.getOERResources();
@@ -57,14 +60,14 @@ router.get('/resources/:id', async (req, res) => {
 router.post('/resources', async (req, res) => {
   try {
     const parseResult = insertOpenEducationalResourceSchema.safeParse(req.body);
-    
+
     if (!parseResult.success) {
-      return res.status(400).json({ 
-        message: 'Invalid resource data', 
-        errors: parseResult.error.format() 
+      return res.status(400).json({
+        message: 'Invalid resource data',
+        errors: parseResult.error.format(),
       });
     }
-    
+
     const newResource = await storage.createOERResource(parseResult.data);
     res.status(201).json(newResource);
   } catch (error) {
@@ -82,7 +85,7 @@ router.put('/resources/:id', async (req, res) => {
     if (!resource) {
       return res.status(404).json({ message: 'Educational resource not found' });
     }
-    
+
     const updatedResource = await storage.updateOERResource(id, req.body);
     res.json(updatedResource);
   } catch (error) {
@@ -122,7 +125,7 @@ router.get('/integrations', async (req, res) => {
       integrations = await storage.getFilteredOERIntegrations({
         schoolType,
         moduleType,
-        moduleId
+        moduleId,
       });
     } else {
       integrations = await storage.getOERIntegrations();
@@ -156,14 +159,14 @@ router.get('/integrations/:id', async (req, res) => {
 router.post('/integrations', async (req, res) => {
   try {
     const parseResult = insertOerIntegrationSchema.safeParse(req.body);
-    
+
     if (!parseResult.success) {
-      return res.status(400).json({ 
-        message: 'Invalid integration data', 
-        errors: parseResult.error.format() 
+      return res.status(400).json({
+        message: 'Invalid integration data',
+        errors: parseResult.error.format(),
       });
     }
-    
+
     const newIntegration = await storage.createOERIntegration(parseResult.data);
     res.status(201).json(newIntegration);
   } catch (error) {
@@ -181,7 +184,7 @@ router.put('/integrations/:id', async (req, res) => {
     if (!integration) {
       return res.status(404).json({ message: 'Educational resource integration not found' });
     }
-    
+
     const updatedIntegration = await storage.updateOERIntegration(id, req.body);
     res.json(updatedIntegration);
   } catch (error) {

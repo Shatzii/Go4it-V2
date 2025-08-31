@@ -1,6 +1,6 @@
 /**
  * National Compliance Engine
- * 
+ *
  * Comprehensive compliance system for all 50 US states plus international
  * operations (Austria). Handles educational standards, reporting, and
  * regulatory requirements for online school operations.
@@ -29,27 +29,32 @@ class NationalComplianceEngine {
           graduation: '24 credits minimum',
           assessment: 'ACAP required grades 3-8, high school end-of-course',
           teacher_certification: 'Alabama teaching certificate required',
-          homeschool_regulation: 'Church school or private tutor options'
+          homeschool_regulation: 'Church school or private tutor options',
         },
-        reporting: ['Student enrollment', 'Attendance records', 'Assessment scores', 'Graduation rates'],
-        onlineSchoolLaws: 'Alabama Virtual Academy authorized, charter schools permitted'
+        reporting: [
+          'Student enrollment',
+          'Attendance records',
+          'Assessment scores',
+          'Graduation rates',
+        ],
+        onlineSchoolLaws: 'Alabama Virtual Academy authorized, charter schools permitted',
       },
       alaska: {
         name: 'Alaska',
         region: 'West',
         department: 'Alaska Department of Education & Early Development',
         standards: 'Alaska Cultural Standards, Alaska Content Standards',
-        testing: 'PEAKS (Performance Evaluation for Alaska\'s Schools)',
+        testing: "PEAKS (Performance Evaluation for Alaska's Schools)",
         requirements: {
           attendance: 'Minimum 180 days or equivalent hours',
           subjects: 'English, Math, Science, Social Studies, Health, PE, Alaska Studies',
           graduation: '20 credits minimum',
           assessment: 'PEAKS testing grades 3-10',
           teacher_certification: 'Alaska teaching certificate',
-          homeschool_regulation: 'Correspondence study or private/religious school'
+          homeschool_regulation: 'Correspondence study or private/religious school',
         },
         reporting: ['Student data', 'Teacher qualifications', 'Curriculum compliance'],
-        onlineSchoolLaws: 'Correspondence programs established, virtual schools permitted'
+        onlineSchoolLaws: 'Correspondence programs established, virtual schools permitted',
       },
       arizona: {
         name: 'Arizona',
@@ -63,10 +68,10 @@ class NationalComplianceEngine {
           graduation: '22 credits minimum',
           assessment: 'State testing grades 3-8, high school assessments',
           teacher_certification: 'Arizona teaching certificate',
-          homeschool_regulation: 'Home school affidavit required'
+          homeschool_regulation: 'Home school affidavit required',
         },
         reporting: ['Student achievement', 'School accountability', 'Teacher effectiveness'],
-        onlineSchoolLaws: 'Arizona Online Instruction programs, charter schools active'
+        onlineSchoolLaws: 'Arizona Online Instruction programs, charter schools active',
       },
       arkansas: {
         name: 'Arkansas',
@@ -80,10 +85,10 @@ class NationalComplianceEngine {
           graduation: '22 units minimum',
           assessment: 'ACT Aspire grades 3-10, end-of-course exams',
           teacher_certification: 'Arkansas teaching license',
-          homeschool_regulation: 'Notice of intent required'
+          homeschool_regulation: 'Notice of intent required',
         },
         reporting: ['Student performance', 'School report cards', 'Teacher evaluations'],
-        onlineSchoolLaws: 'Arkansas Virtual Academy, digital learning initiatives'
+        onlineSchoolLaws: 'Arkansas Virtual Academy, digital learning initiatives',
       },
       california: {
         name: 'California',
@@ -97,10 +102,10 @@ class NationalComplianceEngine {
           graduation: '13 subject area requirements (230 credits)',
           assessment: 'CAASPP grades 3-8 and 11, CAST science assessment',
           teacher_certification: 'California teaching credential',
-          homeschool_regulation: 'Private school affidavit or public school independent study'
+          homeschool_regulation: 'Private school affidavit or public school independent study',
         },
         reporting: ['CALPADS data system', 'School accountability', 'Student outcomes'],
-        onlineSchoolLaws: 'Extensive online learning programs, charter schools common'
+        onlineSchoolLaws: 'Extensive online learning programs, charter schools common',
       },
       colorado: {
         name: 'Colorado',
@@ -114,10 +119,10 @@ class NationalComplianceEngine {
           graduation: '23.5 credits minimum',
           assessment: 'CMAS grades 3-8, PSAT 9, SAT, PSAT 10',
           teacher_certification: 'Colorado teaching license',
-          homeschool_regulation: 'Notice of intent, testing or portfolio required'
+          homeschool_regulation: 'Notice of intent, testing or portfolio required',
         },
         reporting: ['Student growth', 'School performance', 'District accountability'],
-        onlineSchoolLaws: 'Colorado Virtual Academy, supplemental online programs'
+        onlineSchoolLaws: 'Colorado Virtual Academy, supplemental online programs',
       },
       connecticut: {
         name: 'Connecticut',
@@ -131,10 +136,10 @@ class NationalComplianceEngine {
           graduation: '20 credits minimum',
           assessment: 'Next Generation Assessments grades 3-8',
           teacher_certification: 'Connecticut teaching certificate',
-          homeschool_regulation: 'Equivalent instruction in approved subjects'
+          homeschool_regulation: 'Equivalent instruction in approved subjects',
         },
         reporting: ['Student data collection', 'School report cards', 'Educator evaluation'],
-        onlineSchoolLaws: 'Connecticut Virtual Learning Center, distance learning approved'
+        onlineSchoolLaws: 'Connecticut Virtual Learning Center, distance learning approved',
       },
       delaware: {
         name: 'Delaware',
@@ -148,10 +153,10 @@ class NationalComplianceEngine {
           graduation: '24 credits minimum',
           assessment: 'DeSSA grades 3-8, SAT school day grade 11',
           teacher_certification: 'Delaware teaching license',
-          homeschool_regulation: 'Enrollment and attendance reporting required'
+          homeschool_regulation: 'Enrollment and attendance reporting required',
         },
         reporting: ['Student information system', 'School profiles', 'Assessment results'],
-        onlineSchoolLaws: 'Delaware Virtual Academy, blended learning initiatives'
+        onlineSchoolLaws: 'Delaware Virtual Academy, blended learning initiatives',
       },
       florida: {
         name: 'Florida',
@@ -165,10 +170,10 @@ class NationalComplianceEngine {
           graduation: '24 credits minimum',
           assessment: 'FAST grades 3-10, End-of-Course assessments',
           teacher_certification: 'Florida teaching certificate',
-          homeschool_regulation: 'Portfolio evaluation or testing required'
+          homeschool_regulation: 'Portfolio evaluation or testing required',
         },
         reporting: ['Student data portal', 'School grades', 'District accountability'],
-        onlineSchoolLaws: 'Florida Virtual School (largest in nation), extensive online options'
+        onlineSchoolLaws: 'Florida Virtual School (largest in nation), extensive online options',
       },
       georgia: {
         name: 'Georgia',
@@ -182,10 +187,10 @@ class NationalComplianceEngine {
           graduation: '23 units minimum',
           assessment: 'Georgia Milestones grades 3-8, End-of-Course tests',
           teacher_certification: 'Georgia teaching certificate',
-          homeschool_regulation: 'Declaration of intent, testing or portfolio required'
+          homeschool_regulation: 'Declaration of intent, testing or portfolio required',
         },
         reporting: ['Student information system', 'School report cards', 'Teacher keys'],
-        onlineSchoolLaws: 'Georgia Virtual School, Georgia Connections Academy'
+        onlineSchoolLaws: 'Georgia Virtual School, Georgia Connections Academy',
       },
       hawaii: {
         name: 'Hawaii',
@@ -199,10 +204,10 @@ class NationalComplianceEngine {
           graduation: '24 credits minimum',
           assessment: 'Smarter Balanced grades 3-8, HSA high school',
           teacher_certification: 'Hawaii teaching license',
-          homeschool_regulation: 'Notification and curriculum requirements'
+          homeschool_regulation: 'Notification and curriculum requirements',
         },
         reporting: ['Longitudinal data system', 'School status reports', 'ESSA compliance'],
-        onlineSchoolLaws: 'Hawaii Virtual Learning Network, distance learning programs'
+        onlineSchoolLaws: 'Hawaii Virtual Learning Network, distance learning programs',
       },
       idaho: {
         name: 'Idaho',
@@ -216,10 +221,10 @@ class NationalComplianceEngine {
           graduation: '46 credits minimum',
           assessment: 'ISAT grades 3-8, Idaho Reading Indicator',
           teacher_certification: 'Idaho teaching certificate',
-          homeschool_regulation: 'Comparable instruction in required subjects'
+          homeschool_regulation: 'Comparable instruction in required subjects',
         },
         reporting: ['Student information system', 'School report cards', 'Accountability measures'],
-        onlineSchoolLaws: 'Idaho Digital Learning Academy, supplemental courses available'
+        onlineSchoolLaws: 'Idaho Digital Learning Academy, supplemental courses available',
       },
       illinois: {
         name: 'Illinois',
@@ -233,10 +238,10 @@ class NationalComplianceEngine {
           graduation: 'Local district requirements, typically 20+ credits',
           assessment: 'IAR grades 3-8, SAT grade 11, ISA science',
           teacher_certification: 'Illinois teaching license',
-          homeschool_regulation: 'Comparable instruction in required subjects'
+          homeschool_regulation: 'Comparable instruction in required subjects',
         },
         reporting: ['Student information system', 'School report cards', 'Educator effectiveness'],
-        onlineSchoolLaws: 'Illinois Virtual School, blended and online learning authorized'
+        onlineSchoolLaws: 'Illinois Virtual School, blended and online learning authorized',
       },
       indiana: {
         name: 'Indiana',
@@ -250,10 +255,10 @@ class NationalComplianceEngine {
           graduation: '40 credits minimum (Core 40 diploma)',
           assessment: 'ILEARN grades 3-8, ISTEP+ alternative assessments',
           teacher_certification: 'Indiana teaching license',
-          homeschool_regulation: 'Equivalent instruction in required subjects'
+          homeschool_regulation: 'Equivalent instruction in required subjects',
         },
         reporting: ['Student test performance', 'School accountability', 'A-F letter grades'],
-        onlineSchoolLaws: 'Indiana Connections Academy, Hoosier Academy Virtual'
+        onlineSchoolLaws: 'Indiana Connections Academy, Hoosier Academy Virtual',
       },
       iowa: {
         name: 'Iowa',
@@ -267,10 +272,10 @@ class NationalComplianceEngine {
           graduation: 'Local requirements, typically 21+ units',
           assessment: 'ISASP grades 3-11',
           teacher_certification: 'Iowa teaching license',
-          homeschool_regulation: 'Competent private instruction or dual enrollment'
+          homeschool_regulation: 'Competent private instruction or dual enrollment',
         },
         reporting: ['Student achievement data', 'School performance', 'Educator quality'],
-        onlineSchoolLaws: 'Iowa Learning Online, supplemental online courses'
+        onlineSchoolLaws: 'Iowa Learning Online, supplemental online courses',
       },
       kansas: {
         name: 'Kansas',
@@ -284,10 +289,10 @@ class NationalComplianceEngine {
           graduation: 'Local requirements, state recommendations',
           assessment: 'Kansas assessments grades 3-8, end-of-course tests',
           teacher_certification: 'Kansas teaching license',
-          homeschool_regulation: 'Non-accredited private school option'
+          homeschool_regulation: 'Non-accredited private school option',
         },
         reporting: ['Student performance', 'School report cards', 'Accountability systems'],
-        onlineSchoolLaws: 'Kansas Virtual Academy, virtual course offerings'
+        onlineSchoolLaws: 'Kansas Virtual Academy, virtual course offerings',
       },
       kentucky: {
         name: 'Kentucky',
@@ -301,10 +306,10 @@ class NationalComplianceEngine {
           graduation: '22 credits minimum',
           assessment: 'KSA grades 3-8, end-of-course assessments',
           teacher_certification: 'Kentucky teaching certificate',
-          homeschool_regulation: 'Scholarship, attendance, and curriculum requirements'
+          homeschool_regulation: 'Scholarship, attendance, and curriculum requirements',
         },
         reporting: ['Infinite Campus', 'School report cards', 'MUNIS accountability'],
-        onlineSchoolLaws: 'Kentucky Virtual Academy, Kentucky Virtual Library'
+        onlineSchoolLaws: 'Kentucky Virtual Academy, Kentucky Virtual Library',
       },
       louisiana: {
         name: 'Louisiana',
@@ -318,10 +323,14 @@ class NationalComplianceEngine {
           graduation: '23 units minimum',
           assessment: 'LEAP grades 3-8, end-of-course tests',
           teacher_certification: 'Louisiana teaching certificate',
-          homeschool_regulation: 'Home study program approval required'
+          homeschool_regulation: 'Home study program approval required',
         },
-        reporting: ['Student information system', 'School performance scores', 'Teacher preparation'],
-        onlineSchoolLaws: 'Louisiana Virtual School, supplemental digital courses'
+        reporting: [
+          'Student information system',
+          'School performance scores',
+          'Teacher preparation',
+        ],
+        onlineSchoolLaws: 'Louisiana Virtual School, supplemental digital courses',
       },
       maine: {
         name: 'Maine',
@@ -335,10 +344,14 @@ class NationalComplianceEngine {
           graduation: 'Proficiency-based diplomas, local requirements',
           assessment: 'eMPowerME grades 3-8, SAT school day',
           teacher_certification: 'Maine teaching certificate',
-          homeschool_regulation: 'Equivalent instruction approval required'
+          homeschool_regulation: 'Equivalent instruction approval required',
         },
-        reporting: ['Student achievement', 'School and district profiles', 'Educator effectiveness'],
-        onlineSchoolLaws: 'Maine Virtual Academy, online course catalog'
+        reporting: [
+          'Student achievement',
+          'School and district profiles',
+          'Educator effectiveness',
+        ],
+        onlineSchoolLaws: 'Maine Virtual Academy, online course catalog',
       },
       maryland: {
         name: 'Maryland',
@@ -352,10 +365,10 @@ class NationalComplianceEngine {
           graduation: '21 credits minimum',
           assessment: 'MCAP grades 3-8, high school assessments',
           teacher_certification: 'Maryland teaching certificate',
-          homeschool_regulation: 'Portfolio review or testing required'
+          homeschool_regulation: 'Portfolio review or testing required',
         },
         reporting: ['Maryland Report Card', 'Student data collection', 'ESSA compliance'],
-        onlineSchoolLaws: 'Maryland Virtual Learning Opportunities, supplemental programs'
+        onlineSchoolLaws: 'Maryland Virtual Learning Opportunities, supplemental programs',
       },
       massachusetts: {
         name: 'Massachusetts',
@@ -369,10 +382,10 @@ class NationalComplianceEngine {
           graduation: 'MCAS competency determination, local requirements',
           assessment: 'MCAS grades 3-10',
           teacher_certification: 'Massachusetts teaching license',
-          homeschool_regulation: 'Approval by school committee required'
+          homeschool_regulation: 'Approval by school committee required',
         },
         reporting: ['Student information management system', 'School and district profiles'],
-        onlineSchoolLaws: 'Massachusetts Virtual Academy, course offerings available'
+        onlineSchoolLaws: 'Massachusetts Virtual Academy, course offerings available',
       },
       michigan: {
         name: 'Michigan',
@@ -386,10 +399,10 @@ class NationalComplianceEngine {
           graduation: 'Michigan Merit Curriculum requirements',
           assessment: 'M-STEP grades 3-8, PSAT 8/9, PSAT 10, SAT',
           teacher_certification: 'Michigan teaching certificate',
-          homeschool_regulation: 'Comparable instruction in required subjects'
+          homeschool_regulation: 'Comparable instruction in required subjects',
         },
         reporting: ['Student data system', 'School report cards', 'MI School Data'],
-        onlineSchoolLaws: 'Michigan Virtual University, Michigan Connections Academy'
+        onlineSchoolLaws: 'Michigan Virtual University, Michigan Connections Academy',
       },
       minnesota: {
         name: 'Minnesota',
@@ -403,10 +416,10 @@ class NationalComplianceEngine {
           graduation: 'State and local credit requirements',
           assessment: 'MCA grades 3-8, high school assessments',
           teacher_certification: 'Minnesota teaching license',
-          homeschool_regulation: 'Annual testing or portfolio review required'
+          homeschool_regulation: 'Annual testing or portfolio review required',
         },
         reporting: ['Minnesota Report Card', 'Data submissions', 'ESSA accountability'],
-        onlineSchoolLaws: 'Minnesota Virtual Academy, online learning options'
+        onlineSchoolLaws: 'Minnesota Virtual Academy, online learning options',
       },
       mississippi: {
         name: 'Mississippi',
@@ -420,10 +433,10 @@ class NationalComplianceEngine {
           graduation: '24 units minimum',
           assessment: 'MAAP grades 3-8, subject area tests',
           teacher_certification: 'Mississippi teaching license',
-          homeschool_regulation: 'Certificate of enrollment required'
+          homeschool_regulation: 'Certificate of enrollment required',
         },
         reporting: ['Student information system', 'School accountability', 'Report cards'],
-        onlineSchoolLaws: 'Mississippi Virtual Public School, online course access'
+        onlineSchoolLaws: 'Mississippi Virtual Public School, online course access',
       },
       missouri: {
         name: 'Missouri',
@@ -437,10 +450,10 @@ class NationalComplianceEngine {
           graduation: '24 units minimum',
           assessment: 'MAP grades 3-8, end-of-course exams',
           teacher_certification: 'Missouri teaching certificate',
-          homeschool_regulation: 'Record keeping and assessment requirements'
+          homeschool_regulation: 'Record keeping and assessment requirements',
         },
         reporting: ['Core data collection', 'Annual performance reports', 'MSIP 6'],
-        onlineSchoolLaws: 'Missouri Virtual Academy, Missouri Digital Academy'
+        onlineSchoolLaws: 'Missouri Virtual Academy, Missouri Digital Academy',
       },
       montana: {
         name: 'Montana',
@@ -454,10 +467,10 @@ class NationalComplianceEngine {
           graduation: '20 units minimum',
           assessment: 'MontCAS grades 3-8, ACT grade 11',
           teacher_certification: 'Montana teaching license',
-          homeschool_regulation: 'Notification and record keeping required'
+          homeschool_regulation: 'Notification and record keeping required',
         },
         reporting: ['Student achievement data', 'School report cards', 'AIM system'],
-        onlineSchoolLaws: 'Montana Digital Academy, rural technology initiatives'
+        onlineSchoolLaws: 'Montana Digital Academy, rural technology initiatives',
       },
       nebraska: {
         name: 'Nebraska',
@@ -471,10 +484,10 @@ class NationalComplianceEngine {
           graduation: 'Local district requirements',
           assessment: 'NSCAS grades 3-8, ACT grade 11',
           teacher_certification: 'Nebraska teaching certificate',
-          homeschool_regulation: 'Equivalent education in required subjects'
+          homeschool_regulation: 'Equivalent education in required subjects',
         },
         reporting: ['NDE data collection', 'School report cards', 'District profiles'],
-        onlineSchoolLaws: 'Nebraska Virtual Academy, distance education authorization'
+        onlineSchoolLaws: 'Nebraska Virtual Academy, distance education authorization',
       },
       nevada: {
         name: 'Nevada',
@@ -488,10 +501,10 @@ class NationalComplianceEngine {
           graduation: '22.5 credits minimum',
           assessment: 'SBAC grades 3-8, end-of-course tests',
           teacher_certification: 'Nevada teaching license',
-          homeschool_regulation: 'Educational program equivalent to public school'
+          homeschool_regulation: 'Educational program equivalent to public school',
         },
         reporting: ['Nevada School Performance Framework', 'Infinite Campus', 'ESSA data'],
-        onlineSchoolLaws: 'Nevada Virtual Academy, distance education programs'
+        onlineSchoolLaws: 'Nevada Virtual Academy, distance education programs',
       },
       new_hampshire: {
         name: 'New Hampshire',
@@ -505,10 +518,10 @@ class NationalComplianceEngine {
           graduation: 'Competency-based education, local requirements',
           assessment: 'NH SAS grades 3-8, SAT school day',
           teacher_certification: 'New Hampshire teaching credential',
-          homeschool_regulation: 'Notification and educational program approval'
+          homeschool_regulation: 'Notification and educational program approval',
         },
         reporting: ['i4see data system', 'School report cards', 'Educator effectiveness'],
-        onlineSchoolLaws: 'New Hampshire Virtual Learning Academy Charter School'
+        onlineSchoolLaws: 'New Hampshire Virtual Learning Academy Charter School',
       },
       new_jersey: {
         name: 'New Jersey',
@@ -522,10 +535,10 @@ class NationalComplianceEngine {
           graduation: '120 credits minimum',
           assessment: 'NJSLA grades 3-9, NJGPA graduation assessment',
           teacher_certification: 'New Jersey teaching certificate',
-          homeschool_regulation: 'Equivalent education that is thorough and efficient'
+          homeschool_regulation: 'Equivalent education that is thorough and efficient',
         },
         reporting: ['NJ SMART', 'School performance reports', 'ESSA accountability'],
-        onlineSchoolLaws: 'New Jersey Virtual Academy, approved online programs'
+        onlineSchoolLaws: 'New Jersey Virtual Academy, approved online programs',
       },
       new_mexico: {
         name: 'New Mexico',
@@ -539,10 +552,10 @@ class NationalComplianceEngine {
           graduation: '24 units minimum',
           assessment: 'NM-MSSA grades 3-8, end-of-course tests',
           teacher_certification: 'New Mexico teaching license',
-          homeschool_regulation: 'Compulsory attendance alternatives available'
+          homeschool_regulation: 'Compulsory attendance alternatives available',
         },
         reporting: ['STARS student system', 'School report cards', 'A-F accountability'],
-        onlineSchoolLaws: 'New Mexico Connections Academy, virtual charter schools'
+        onlineSchoolLaws: 'New Mexico Connections Academy, virtual charter schools',
       },
       new_york: {
         name: 'New York',
@@ -556,10 +569,10 @@ class NationalComplianceEngine {
           graduation: 'Regents diploma requirements, 22 units minimum',
           assessment: 'NYS grades 3-8 tests, Regents examinations',
           teacher_certification: 'New York State teaching certificate',
-          homeschool_regulation: 'Individualized home instruction plan required'
+          homeschool_regulation: 'Individualized home instruction plan required',
         },
         reporting: ['Student Information Repository System', 'School report cards'],
-        onlineSchoolLaws: 'New York Virtual Academy, BOCES distance learning'
+        onlineSchoolLaws: 'New York Virtual Academy, BOCES distance learning',
       },
       north_carolina: {
         name: 'North Carolina',
@@ -573,10 +586,10 @@ class NationalComplianceEngine {
           graduation: '22 units minimum (Future Ready Core)',
           assessment: 'EOG grades 3-8, EOC high school courses',
           teacher_certification: 'North Carolina teaching license',
-          homeschool_regulation: 'Notice of intent and annual testing required'
+          homeschool_regulation: 'Notice of intent and annual testing required',
         },
         reporting: ['PowerSchool', 'School report cards', 'ESSA accountability'],
-        onlineSchoolLaws: 'North Carolina Virtual Public School, NCVPS courses'
+        onlineSchoolLaws: 'North Carolina Virtual Public School, NCVPS courses',
       },
       north_dakota: {
         name: 'North Dakota',
@@ -590,10 +603,10 @@ class NationalComplianceEngine {
           graduation: '22 units minimum',
           assessment: 'NDSA grades 3-8, ACT grade 11',
           teacher_certification: 'North Dakota teaching license',
-          homeschool_regulation: 'Annual testing or evaluation required'
+          homeschool_regulation: 'Annual testing or evaluation required',
         },
         reporting: ['PowerSchool', 'School report cards', 'Data collection'],
-        onlineSchoolLaws: 'North Dakota Center for Distance Education'
+        onlineSchoolLaws: 'North Dakota Center for Distance Education',
       },
       ohio: {
         name: 'Ohio',
@@ -607,10 +620,10 @@ class NationalComplianceEngine {
           graduation: '20 units minimum',
           assessment: 'Ohio State Tests grades 3-8, end-of-course tests',
           teacher_certification: 'Ohio teaching license',
-          homeschool_regulation: 'Annual assessment or portfolio review'
+          homeschool_regulation: 'Annual assessment or portfolio review',
         },
         reporting: ['EMIS data system', 'Local report cards', 'Value-added measures'],
-        onlineSchoolLaws: 'Ohio Virtual Academy, Electronic Classroom of Tomorrow (ECOT)'
+        onlineSchoolLaws: 'Ohio Virtual Academy, Electronic Classroom of Tomorrow (ECOT)',
       },
       oklahoma: {
         name: 'Oklahoma',
@@ -624,10 +637,10 @@ class NationalComplianceEngine {
           graduation: '23 units minimum',
           assessment: 'OSTP grades 3-8, end-of-instruction tests',
           teacher_certification: 'Oklahoma teaching certificate',
-          homeschool_regulation: 'Good faith compliance with compulsory attendance'
+          homeschool_regulation: 'Good faith compliance with compulsory attendance',
         },
         reporting: ['Wave student information system', 'School report cards'],
-        onlineSchoolLaws: 'Oklahoma Virtual Charter Academy, supplemental online courses'
+        onlineSchoolLaws: 'Oklahoma Virtual Charter Academy, supplemental online courses',
       },
       oregon: {
         name: 'Oregon',
@@ -641,10 +654,10 @@ class NationalComplianceEngine {
           graduation: 'Essential skills demonstrations, 24 credits',
           assessment: 'OSAS grades 3-8, 11',
           teacher_certification: 'Oregon teaching license',
-          homeschool_regulation: 'Registration and annual testing required'
+          homeschool_regulation: 'Registration and annual testing required',
         },
         reporting: ['Oregon ESSA Plan', 'School and district report cards'],
-        onlineSchoolLaws: 'Oregon Connections Academy, Oregon Virtual Academy'
+        onlineSchoolLaws: 'Oregon Connections Academy, Oregon Virtual Academy',
       },
       pennsylvania: {
         name: 'Pennsylvania',
@@ -658,10 +671,10 @@ class NationalComplianceEngine {
           graduation: 'Local requirements, typically 21+ credits',
           assessment: 'PSSA grades 3-8, Keystone Exams high school',
           teacher_certification: 'Pennsylvania teaching certificate',
-          homeschool_regulation: 'Portfolio review and annual evaluation required'
+          homeschool_regulation: 'Portfolio review and annual evaluation required',
         },
         reporting: ['Pennsylvania Information Management System', 'School performance profiles'],
-        onlineSchoolLaws: 'Pennsylvania Cyber Charter Schools, Act 88 provisions'
+        onlineSchoolLaws: 'Pennsylvania Cyber Charter Schools, Act 88 provisions',
       },
       rhode_island: {
         name: 'Rhode Island',
@@ -675,10 +688,10 @@ class NationalComplianceEngine {
           graduation: 'Proficiency-based graduation requirements',
           assessment: 'RICAS grades 3-8, SAT school day',
           teacher_certification: 'Rhode Island teaching certificate',
-          homeschool_regulation: 'Approval and annual review by local school committee'
+          homeschool_regulation: 'Approval and annual review by local school committee',
         },
         reporting: ['eRIDE data system', 'School and district report cards'],
-        onlineSchoolLaws: 'Rhode Island Virtual Learning, supplemental online programs'
+        onlineSchoolLaws: 'Rhode Island Virtual Learning, supplemental online programs',
       },
       south_carolina: {
         name: 'South Carolina',
@@ -692,10 +705,10 @@ class NationalComplianceEngine {
           graduation: '24 units minimum',
           assessment: 'SC READY grades 3-8, EOC assessments',
           teacher_certification: 'South Carolina teaching certificate',
-          homeschool_regulation: 'Option of accountability association membership'
+          homeschool_regulation: 'Option of accountability association membership',
         },
         reporting: ['PowerSchool', 'School report cards', 'AdvancED accreditation'],
-        onlineSchoolLaws: 'South Carolina Connections Academy, VirtualSC'
+        onlineSchoolLaws: 'South Carolina Connections Academy, VirtualSC',
       },
       south_dakota: {
         name: 'South Dakota',
@@ -709,10 +722,10 @@ class NationalComplianceEngine {
           graduation: '22 credits minimum',
           assessment: 'Smarter Balanced grades 3-8, ACT grade 11',
           teacher_certification: 'South Dakota teaching certificate',
-          homeschool_regulation: 'Excusal from compulsory attendance available'
+          homeschool_regulation: 'Excusal from compulsory attendance available',
         },
         reporting: ['Student information system', 'School report cards'],
-        onlineSchoolLaws: 'South Dakota Virtual School, distance learning options'
+        onlineSchoolLaws: 'South Dakota Virtual School, distance learning options',
       },
       tennessee: {
         name: 'Tennessee',
@@ -726,10 +739,10 @@ class NationalComplianceEngine {
           graduation: '22 credits minimum',
           assessment: 'TNReady grades 3-8, end-of-course tests',
           teacher_certification: 'Tennessee teaching license',
-          homeschool_regulation: 'Church-related school or home school registration'
+          homeschool_regulation: 'Church-related school or home school registration',
         },
         reporting: ['Student information system', 'School report cards', 'ESSA accountability'],
-        onlineSchoolLaws: 'Tennessee Virtual Academy, Tennessee Online Public School'
+        onlineSchoolLaws: 'Tennessee Virtual Academy, Tennessee Online Public School',
       },
       texas: {
         name: 'Texas',
@@ -739,14 +752,15 @@ class NationalComplianceEngine {
         testing: 'STAAR (State of Texas Assessments of Academic Readiness)',
         requirements: {
           attendance: 'Minimum 180 days',
-          subjects: 'English, Math, Science, Social Studies, Health, PE, Fine Arts, Career/Technical',
+          subjects:
+            'English, Math, Science, Social Studies, Health, PE, Fine Arts, Career/Technical',
           graduation: '26 credits minimum (Foundation + Endorsement)',
           assessment: 'STAAR grades 3-8, End-of-Course assessments',
           teacher_certification: 'Texas teaching certificate',
-          homeschool_regulation: 'Good faith effort to teach required curriculum'
+          homeschool_regulation: 'Good faith effort to teach required curriculum',
         },
         reporting: ['PEIMS data collection', 'Texas School Report Cards', 'Accountability ratings'],
-        onlineSchoolLaws: 'Texas Virtual School Network, extensive online course catalog'
+        onlineSchoolLaws: 'Texas Virtual School Network, extensive online course catalog',
       },
       utah: {
         name: 'Utah',
@@ -756,14 +770,15 @@ class NationalComplianceEngine {
         testing: 'Utah Aspire Plus, Utah Comprehensive Assessment',
         requirements: {
           attendance: 'Minimum 180 days',
-          subjects: 'English, Math, Science, Social Studies, Health, PE, Fine Arts, Career/Technical',
+          subjects:
+            'English, Math, Science, Social Studies, Health, PE, Fine Arts, Career/Technical',
           graduation: '24 credits minimum',
           assessment: 'Utah assessments grades 3-8, USBE requirements',
           teacher_certification: 'Utah teaching license',
-          homeschool_regulation: 'Comparable instruction in required subjects'
+          homeschool_regulation: 'Comparable instruction in required subjects',
         },
         reporting: ['UTREx system', 'School report cards', 'Utah Schools data'],
-        onlineSchoolLaws: 'Utah Virtual Academy, Electronic High School'
+        onlineSchoolLaws: 'Utah Virtual Academy, Electronic High School',
       },
       vermont: {
         name: 'Vermont',
@@ -777,10 +792,10 @@ class NationalComplianceEngine {
           graduation: 'Proficiency-based graduation requirements',
           assessment: 'Smarter Balanced grades 3-8, SAT school day',
           teacher_certification: 'Vermont teaching license',
-          homeschool_regulation: 'Home study program approval required'
+          homeschool_regulation: 'Home study program approval required',
         },
         reporting: ['Student information system', 'School quality profiles'],
-        onlineSchoolLaws: 'Vermont Virtual Learning Cooperative, course access'
+        onlineSchoolLaws: 'Vermont Virtual Learning Cooperative, course access',
       },
       virginia: {
         name: 'Virginia',
@@ -794,10 +809,10 @@ class NationalComplianceEngine {
           graduation: '26 standard units, 22 verified credits',
           assessment: 'SOL tests grades 3-8, end-of-course tests',
           teacher_certification: 'Virginia teaching license',
-          homeschool_regulation: 'Evidence of academic progress required annually'
+          homeschool_regulation: 'Evidence of academic progress required annually',
         },
         reporting: ['VDOE data collection', 'School quality profiles', 'Accountability'],
-        onlineSchoolLaws: 'Virginia Virtual Academy, Virtual Virginia courses'
+        onlineSchoolLaws: 'Virginia Virtual Academy, Virtual Virginia courses',
       },
       washington: {
         name: 'Washington',
@@ -811,10 +826,10 @@ class NationalComplianceEngine {
           graduation: '24 credits minimum, state graduation requirements',
           assessment: 'Smarter Balanced grades 3-8, WCAS science',
           teacher_certification: 'Washington teaching certificate',
-          homeschool_regulation: 'Annual assessment or portfolio review required'
+          homeschool_regulation: 'Annual assessment or portfolio review required',
         },
         reporting: ['CEDARS data system', 'Washington State Report Card'],
-        onlineSchoolLaws: 'Washington Virtual Academy, extensive online programs'
+        onlineSchoolLaws: 'Washington Virtual Academy, extensive online programs',
       },
       west_virginia: {
         name: 'West Virginia',
@@ -828,10 +843,10 @@ class NationalComplianceEngine {
           graduation: '24 units minimum',
           assessment: 'WV assessments grades 3-8, end-of-course tests',
           teacher_certification: 'West Virginia teaching certificate',
-          homeschool_regulation: 'Notice of intent and annual assessment required'
+          homeschool_regulation: 'Notice of intent and annual assessment required',
         },
         reporting: ['WVEIS system', 'School report cards', 'Accountability measures'],
-        onlineSchoolLaws: 'West Virginia Virtual School, distance learning authorization'
+        onlineSchoolLaws: 'West Virginia Virtual School, distance learning authorization',
       },
       wisconsin: {
         name: 'Wisconsin',
@@ -845,10 +860,10 @@ class NationalComplianceEngine {
           graduation: '13 credits minimum, local requirements vary',
           assessment: 'Forward Exam grades 3-8, ACT Plus Writing',
           teacher_certification: 'Wisconsin teaching license',
-          homeschool_regulation: 'Private school or home-based private educational program'
+          homeschool_regulation: 'Private school or home-based private educational program',
         },
         reporting: ['Student information system', 'School and district report cards'],
-        onlineSchoolLaws: 'Wisconsin Virtual Academy, online course access'
+        onlineSchoolLaws: 'Wisconsin Virtual Academy, online course access',
       },
       wyoming: {
         name: 'Wyoming',
@@ -862,11 +877,11 @@ class NationalComplianceEngine {
           graduation: '13 units minimum',
           assessment: 'WY-TOPP grades 3-8, ACT grade 11',
           teacher_certification: 'Wyoming teaching certificate',
-          homeschool_regulation: 'Equivalent education in required subjects'
+          homeschool_regulation: 'Equivalent education in required subjects',
         },
         reporting: ['Wyoming Student Information System', 'School report cards'],
-        onlineSchoolLaws: 'Wyoming Virtual Academy, distance education services'
-      }
+        onlineSchoolLaws: 'Wyoming Virtual Academy, distance education services',
+      },
     };
   }
 
@@ -881,37 +896,40 @@ class NationalComplianceEngine {
         gradeLevels: {
           primary: 'Volksschule (ages 6-10, grades 1-4)',
           lowerSecondary: 'Mittelschule or Gymnasium (ages 10-14, grades 5-8)',
-          upperSecondary: 'Gymnasium, HAK, HTL, or other (ages 14-18, grades 9-12)'
+          upperSecondary: 'Gymnasium, HAK, HTL, or other (ages 14-18, grades 9-12)',
         },
         requirements: {
           attendance: 'Compulsory education ages 6-15',
           subjects: {
-            primary: 'German, Mathematics, Environmental Studies, Music, Art, Physical Education, Religion/Ethics',
-            secondary: 'German, Mathematics, English, Sciences, History, Geography, Arts, Physical Education, Religion/Ethics'
+            primary:
+              'German, Mathematics, Environmental Studies, Music, Art, Physical Education, Religion/Ethics',
+            secondary:
+              'German, Mathematics, English, Sciences, History, Geography, Arts, Physical Education, Religion/Ethics',
           },
-          assessment: 'Standardized testing (BIST) at grades 4 and 8, Matura (final exam) for graduation',
+          assessment:
+            'Standardized testing (BIST) at grades 4 and 8, Matura (final exam) for graduation',
           teacherQualification: 'University degree and teacher training program',
-          languageRequirements: 'German language proficiency required'
+          languageRequirements: 'German language proficiency required',
         },
         internationalSchools: {
           authorization: 'Private school license required',
           curriculum: 'Austrian curriculum or internationally recognized programs (IB, Cambridge)',
           languagePolicy: 'German required, additional languages permitted',
-          accreditation: 'Ministry of Education approval needed'
+          accreditation: 'Ministry of Education approval needed',
         },
         onlineLearning: {
           regulations: 'Distance learning permitted with restrictions',
           requirements: 'Must meet Austrian curriculum standards',
           supervision: 'Regular assessment and monitoring required',
-          technology: 'Digital competence framework implementation'
+          technology: 'Digital competence framework implementation',
         },
         compliance: {
           dataProtection: 'GDPR compliance mandatory',
           studentRights: 'UN Convention on Rights of the Child',
           qualityAssurance: 'QualitätsRahmen für Schulen (Quality Framework)',
-          reporting: 'Annual statistical reports to BMBWF'
-        }
-      }
+          reporting: 'Annual statistical reports to BMBWF',
+        },
+      },
     };
   }
 
@@ -925,8 +943,8 @@ class NationalComplianceEngine {
             'Science assessments (once each in elementary, middle, and high school)',
             'English learner assessment of language proficiency',
             'School accountability and improvement plans',
-            'Teacher qualifications and effectiveness measures'
-          ]
+            'Teacher qualifications and effectiveness measures',
+          ],
         },
         IDEA: {
           name: 'Individuals with Disabilities Education Act',
@@ -935,8 +953,8 @@ class NationalComplianceEngine {
             'Individualized Education Programs (IEPs)',
             'Least Restrictive Environment (LRE)',
             'Procedural safeguards and due process',
-            'Transition services for students with disabilities'
-          ]
+            'Transition services for students with disabilities',
+          ],
         },
         FERPA: {
           name: 'Family Educational Rights and Privacy Act',
@@ -945,8 +963,8 @@ class NationalComplianceEngine {
             'Parental access to student records',
             'Consent requirements for disclosure',
             'Directory information policies',
-            'Record retention and destruction procedures'
-          ]
+            'Record retention and destruction procedures',
+          ],
         },
         TitleI: {
           name: 'Title I Federal Funding Requirements',
@@ -955,8 +973,8 @@ class NationalComplianceEngine {
             'Parental involvement policies',
             'Highly qualified teacher requirements',
             'Student achievement accountability',
-            'School improvement interventions'
-          ]
+            'School improvement interventions',
+          ],
         },
         civilRights: {
           name: 'Civil Rights Compliance',
@@ -965,10 +983,10 @@ class NationalComplianceEngine {
             'Title IX - Sex discrimination prohibition',
             'Section 504 - Disability discrimination prohibition',
             'ADA - Americans with Disabilities Act compliance',
-            'Equal educational opportunity assurance'
-          ]
-        }
-      }
+            'Equal educational opportunity assurance',
+          ],
+        },
+      },
     };
   }
 
@@ -986,7 +1004,7 @@ class NationalComplianceEngine {
       requirements: await this.validateStateRequirements(stateReqs, schoolType),
       federal: await this.validateFederalRequirements(),
       recommendations: this.generateComplianceRecommendations(stateReqs, schoolType),
-      status: 'pending_review'
+      status: 'pending_review',
     };
 
     // Store compliance history
@@ -1007,7 +1025,7 @@ class NationalComplianceEngine {
       checkedAt: new Date().toISOString(),
       requirements: await this.validateInternationalRequirements(countryReqs, schoolType),
       recommendations: this.generateInternationalRecommendations(countryReqs, schoolType),
-      status: 'pending_review'
+      status: 'pending_review',
     };
   }
 
@@ -1016,9 +1034,12 @@ class NationalComplianceEngine {
       attendance: this.validateAttendance(stateReqs.requirements.attendance, schoolType),
       curriculum: this.validateCurriculum(stateReqs.requirements.subjects, schoolType),
       assessment: this.validateAssessment(stateReqs.requirements.assessment, schoolType),
-      teacherCert: this.validateTeacherCertification(stateReqs.requirements.teacher_certification, schoolType),
+      teacherCert: this.validateTeacherCertification(
+        stateReqs.requirements.teacher_certification,
+        schoolType,
+      ),
       graduation: this.validateGraduation(stateReqs.requirements.graduation, schoolType),
-      reporting: this.validateReporting(stateReqs.reporting, schoolType)
+      reporting: this.validateReporting(stateReqs.reporting, schoolType),
     };
 
     return validation;
@@ -1026,23 +1047,32 @@ class NationalComplianceEngine {
 
   async validateFederalRequirements() {
     const federal = this.federalRequirements.usa;
-    
+
     return {
       ESSA: this.validateESSA(federal.ESSA.requirements),
       IDEA: this.validateIDEA(federal.IDEA.requirements),
       FERPA: this.validateFERPA(federal.FERPA.requirements),
       TitleI: this.validateTitleI(federal.TitleI.requirements),
-      civilRights: this.validateCivilRights(federal.civilRights.requirements)
+      civilRights: this.validateCivilRights(federal.civilRights.requirements),
     };
   }
 
   async validateInternationalRequirements(countryReqs, schoolType) {
     return {
       curriculum: this.validateInternationalCurriculum(countryReqs.curriculum, schoolType),
-      assessment: this.validateInternationalAssessment(countryReqs.requirements.assessment, schoolType),
-      language: this.validateLanguageRequirements(countryReqs.requirements.languageRequirements, schoolType),
-      authorization: this.validateInternationalAuthorization(countryReqs.internationalSchools.authorization, schoolType),
-      dataProtection: this.validateGDPR(countryReqs.compliance.dataProtection, schoolType)
+      assessment: this.validateInternationalAssessment(
+        countryReqs.requirements.assessment,
+        schoolType,
+      ),
+      language: this.validateLanguageRequirements(
+        countryReqs.requirements.languageRequirements,
+        schoolType,
+      ),
+      authorization: this.validateInternationalAuthorization(
+        countryReqs.internationalSchools.authorization,
+        schoolType,
+      ),
+      dataProtection: this.validateGDPR(countryReqs.compliance.dataProtection, schoolType),
     };
   }
 
@@ -1052,7 +1082,10 @@ class NationalComplianceEngine {
       requirement,
       schoolType,
       compliance: schoolType === 'online' ? 'adapted_for_online' : 'standard',
-      notes: schoolType === 'online' ? 'Online schools track engagement time and completed coursework' : 'Standard attendance tracking'
+      notes:
+        schoolType === 'online'
+          ? 'Online schools track engagement time and completed coursework'
+          : 'Standard attendance tracking',
     };
   }
 
@@ -1060,7 +1093,8 @@ class NationalComplianceEngine {
     return {
       requirement: subjects,
       compliance: 'fully_compliant',
-      notes: 'Platform provides comprehensive curriculum for all required subjects with state standard alignment'
+      notes:
+        'Platform provides comprehensive curriculum for all required subjects with state standard alignment',
     };
   }
 
@@ -1068,7 +1102,8 @@ class NationalComplianceEngine {
     return {
       requirement,
       compliance: 'compliant_with_accommodations',
-      notes: 'Platform supports state assessments with online proctoring and accessibility accommodations'
+      notes:
+        'Platform supports state assessments with online proctoring and accessibility accommodations',
     };
   }
 
@@ -1076,7 +1111,8 @@ class NationalComplianceEngine {
     return {
       requirement,
       compliance: 'requires_certified_teachers',
-      notes: 'All teaching staff must hold valid state teaching certificates in their subject areas'
+      notes:
+        'All teaching staff must hold valid state teaching certificates in their subject areas',
     };
   }
 
@@ -1084,7 +1120,7 @@ class NationalComplianceEngine {
     return {
       requirement,
       compliance: 'fully_compliant',
-      notes: 'Platform tracks credit requirements and provides comprehensive transcript management'
+      notes: 'Platform tracks credit requirements and provides comprehensive transcript management',
     };
   }
 
@@ -1092,7 +1128,7 @@ class NationalComplianceEngine {
     return {
       requirements,
       compliance: 'automated_reporting_available',
-      notes: 'Platform provides automated data collection and reporting for all state requirements'
+      notes: 'Platform provides automated data collection and reporting for all state requirements',
     };
   }
 
@@ -1100,7 +1136,7 @@ class NationalComplianceEngine {
     return {
       requirements,
       compliance: 'fully_compliant',
-      notes: 'Platform includes comprehensive assessment system and accountability measures'
+      notes: 'Platform includes comprehensive assessment system and accountability measures',
     };
   }
 
@@ -1108,7 +1144,7 @@ class NationalComplianceEngine {
     return {
       requirements,
       compliance: 'fully_compliant',
-      notes: 'Platform provides comprehensive special education support and IEP management'
+      notes: 'Platform provides comprehensive special education support and IEP management',
     };
   }
 
@@ -1116,7 +1152,7 @@ class NationalComplianceEngine {
     return {
       requirements,
       compliance: 'fully_compliant',
-      notes: 'Platform includes robust data privacy protections and parental access controls'
+      notes: 'Platform includes robust data privacy protections and parental access controls',
     };
   }
 
@@ -1124,7 +1160,7 @@ class NationalComplianceEngine {
     return {
       requirements,
       compliance: 'eligible_for_title_i',
-      notes: 'Platform supports Title I programming and parental involvement requirements'
+      notes: 'Platform supports Title I programming and parental involvement requirements',
     };
   }
 
@@ -1132,7 +1168,7 @@ class NationalComplianceEngine {
     return {
       requirements,
       compliance: 'fully_compliant',
-      notes: 'Platform designed with accessibility and non-discrimination principles'
+      notes: 'Platform designed with accessibility and non-discrimination principles',
     };
   }
 
@@ -1140,7 +1176,8 @@ class NationalComplianceEngine {
     return {
       requirement: curriculum,
       compliance: 'adaptable_curriculum',
-      notes: 'Platform curriculum can be adapted to meet international standards while maintaining quality'
+      notes:
+        'Platform curriculum can be adapted to meet international standards while maintaining quality',
     };
   }
 
@@ -1148,7 +1185,7 @@ class NationalComplianceEngine {
     return {
       requirement: assessment,
       compliance: 'internationally_compatible',
-      notes: 'Assessment system compatible with international testing standards and frameworks'
+      notes: 'Assessment system compatible with international testing standards and frameworks',
     };
   }
 
@@ -1156,7 +1193,8 @@ class NationalComplianceEngine {
     return {
       requirement,
       compliance: 'multilingual_support',
-      notes: 'Platform supports multiple languages and can provide instruction in required languages'
+      notes:
+        'Platform supports multiple languages and can provide instruction in required languages',
     };
   }
 
@@ -1164,7 +1202,8 @@ class NationalComplianceEngine {
     return {
       requirement,
       compliance: 'authorization_support',
-      notes: 'Platform provides documentation and support for international school authorization processes'
+      notes:
+        'Platform provides documentation and support for international school authorization processes',
     };
   }
 
@@ -1172,7 +1211,7 @@ class NationalComplianceEngine {
     return {
       requirement,
       compliance: 'gdpr_compliant',
-      notes: 'Platform fully compliant with GDPR data protection requirements'
+      notes: 'Platform fully compliant with GDPR data protection requirements',
     };
   }
 
@@ -1185,7 +1224,7 @@ class NationalComplianceEngine {
         category: 'Online Learning Authorization',
         recommendation: `Apply for online school authorization in ${stateReqs.name}`,
         priority: 'high',
-        timeline: '3-6 months'
+        timeline: '3-6 months',
       });
     }
 
@@ -1193,28 +1232,28 @@ class NationalComplianceEngine {
       category: 'Teacher Certification',
       recommendation: `Ensure all teachers hold valid ${stateReqs.name} teaching certificates`,
       priority: 'high',
-      timeline: 'Before school start'
+      timeline: 'Before school start',
     });
 
     recommendations.push({
       category: 'Curriculum Alignment',
       recommendation: `Align curriculum with ${stateReqs.standards}`,
       priority: 'high',
-      timeline: '2-3 months'
+      timeline: '2-3 months',
     });
 
     recommendations.push({
       category: 'Assessment Preparation',
       recommendation: `Prepare for ${stateReqs.testing} administration`,
       priority: 'medium',
-      timeline: 'Before testing season'
+      timeline: 'Before testing season',
     });
 
     recommendations.push({
       category: 'Data Reporting',
       recommendation: `Set up automated reporting for ${stateReqs.name} requirements`,
       priority: 'medium',
-      timeline: '1-2 months'
+      timeline: '1-2 months',
     });
 
     return recommendations;
@@ -1227,28 +1266,28 @@ class NationalComplianceEngine {
       category: 'International Authorization',
       recommendation: `Obtain private school license from ${countryReqs.department}`,
       priority: 'high',
-      timeline: '6-12 months'
+      timeline: '6-12 months',
     });
 
     recommendations.push({
       category: 'Curriculum Adaptation',
       recommendation: `Adapt curriculum to meet ${countryReqs.curriculum} requirements`,
       priority: 'high',
-      timeline: '3-6 months'
+      timeline: '3-6 months',
     });
 
     recommendations.push({
       category: 'Language Compliance',
       recommendation: `Ensure German language instruction and proficiency requirements are met`,
       priority: 'high',
-      timeline: 'Ongoing'
+      timeline: 'Ongoing',
     });
 
     recommendations.push({
       category: 'Data Protection',
       recommendation: `Implement GDPR compliance measures`,
       priority: 'high',
-      timeline: '1-2 months'
+      timeline: '1-2 months',
     });
 
     return recommendations;
@@ -1256,10 +1295,10 @@ class NationalComplianceEngine {
 
   // Utility methods
   getAllStates() {
-    return Object.keys(this.stateCompliance).map(key => ({
+    return Object.keys(this.stateCompliance).map((key) => ({
       code: key,
       name: this.stateCompliance[key].name,
-      region: this.stateCompliance[key].region
+      region: this.stateCompliance[key].region,
     }));
   }
 
@@ -1269,7 +1308,7 @@ class NationalComplianceEngine {
       .map(([key, state]) => ({
         code: key,
         name: state.name,
-        region: state.region
+        region: state.region,
       }));
   }
 
@@ -1280,7 +1319,7 @@ class NationalComplianceEngine {
       stateCompliance: {},
       internationalCompliance: {},
       federalRequirements: this.federalRequirements.usa,
-      summary: {}
+      summary: {},
     };
 
     // Check state compliance
@@ -1295,7 +1334,10 @@ class NationalComplianceEngine {
     // Check international compliance
     for (const country of countries) {
       try {
-        report.internationalCompliance[country] = await this.checkInternationalCompliance(country, 'international');
+        report.internationalCompliance[country] = await this.checkInternationalCompliance(
+          country,
+          'international',
+        );
       } catch (error) {
         report.internationalCompliance[country] = { error: error.message };
       }
@@ -1306,30 +1348,33 @@ class NationalComplianceEngine {
       totalStatesChecked: states.length,
       totalCountriesChecked: countries.length,
       complianceRate: this.calculateComplianceRate(report),
-      recommendations: this.aggregateRecommendations(report)
+      recommendations: this.aggregateRecommendations(report),
     };
 
     return report;
   }
 
   calculateComplianceRate(report) {
-    const total = Object.keys(report.stateCompliance).length + Object.keys(report.internationalCompliance).length;
-    const compliant = Object.values(report.stateCompliance).filter(c => !c.error).length + 
-                     Object.values(report.internationalCompliance).filter(c => !c.error).length;
-    
+    const total =
+      Object.keys(report.stateCompliance).length +
+      Object.keys(report.internationalCompliance).length;
+    const compliant =
+      Object.values(report.stateCompliance).filter((c) => !c.error).length +
+      Object.values(report.internationalCompliance).filter((c) => !c.error).length;
+
     return total > 0 ? Math.round((compliant / total) * 100) : 0;
   }
 
   aggregateRecommendations(report) {
     const allRecommendations = [];
-    
-    Object.values(report.stateCompliance).forEach(compliance => {
+
+    Object.values(report.stateCompliance).forEach((compliance) => {
       if (compliance.recommendations) {
         allRecommendations.push(...compliance.recommendations);
       }
     });
 
-    Object.values(report.internationalCompliance).forEach(compliance => {
+    Object.values(report.internationalCompliance).forEach((compliance) => {
       if (compliance.recommendations) {
         allRecommendations.push(...compliance.recommendations);
       }
@@ -1337,9 +1382,9 @@ class NationalComplianceEngine {
 
     // Group by priority
     return {
-      high: allRecommendations.filter(r => r.priority === 'high'),
-      medium: allRecommendations.filter(r => r.priority === 'medium'),
-      low: allRecommendations.filter(r => r.priority === 'low')
+      high: allRecommendations.filter((r) => r.priority === 'high'),
+      medium: allRecommendations.filter((r) => r.priority === 'medium'),
+      low: allRecommendations.filter((r) => r.priority === 'low'),
     };
   }
 }

@@ -42,7 +42,11 @@
               "description": "Master numbers 1-20 with superhero counting",
               "difficulty": "beginner",
               "adaptations": {
-                "dyslexia": ["visual number representations", "tactile counting tools", "number songs"],
+                "dyslexia": [
+                  "visual number representations",
+                  "tactile counting tools",
+                  "number songs"
+                ],
                 "adhd": ["movement-based counting", "quick challenges", "reward systems"],
                 "autism": ["structured sequences", "visual counting aids", "consistent methods"]
               }
@@ -80,7 +84,11 @@
               "description": "Learn addition through superhero team-ups",
               "difficulty": "intermediate",
               "adaptations": {
-                "dyslexia": ["visual math manipulatives", "step-by-step guides", "color-coded operations"],
+                "dyslexia": [
+                  "visual math manipulatives",
+                  "step-by-step guides",
+                  "color-coded operations"
+                ],
                 "adhd": ["hands-on activities", "immediate feedback", "short problem sets"],
                 "autism": ["consistent problem formats", "clear procedures", "visual supports"]
               }

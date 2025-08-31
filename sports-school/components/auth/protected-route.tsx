@@ -1,35 +1,35 @@
-'use client'
+'use client';
 
-import { useAuth } from '@/hooks/use-auth'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Loader2, Lock } from 'lucide-react'
-import LoginForm from './login-form'
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2, Lock } from 'lucide-react';
+import LoginForm from './login-form';
 
 interface ProtectedRouteProps {
-  children: React.ReactNode
-  requiredRole?: string
-  allowedRoles?: string[]
-  fallbackPath?: string
-  showLoginForm?: boolean
+  children: React.ReactNode;
+  requiredRole?: string;
+  allowedRoles?: string[];
+  fallbackPath?: string;
+  showLoginForm?: boolean;
 }
 
-export default function ProtectedRoute({ 
-  children, 
-  requiredRole, 
+export default function ProtectedRoute({
+  children,
+  requiredRole,
   allowedRoles,
   fallbackPath = '/auth',
-  showLoginForm = true
+  showLoginForm = true,
 }: ProtectedRouteProps) {
-  const { user, isLoading, isAuthenticated } = useAuth()
-  const router = useRouter()
+  const { user, isLoading, isAuthenticated } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated && !showLoginForm) {
-      router.push(fallbackPath)
+      router.push(fallbackPath);
     }
-  }, [isLoading, isAuthenticated, router, fallbackPath, showLoginForm])
+  }, [isLoading, isAuthenticated, router, fallbackPath, showLoginForm]);
 
   // Show loading spinner while checking auth
   if (isLoading) {
@@ -40,7 +40,7 @@ export default function ProtectedRoute({
           <p className="mt-2 text-sm text-gray-600">Checking authentication...</p>
         </div>
       </div>
-    )
+    );
   }
 
   // Show login form if not authenticated and showLoginForm is true
@@ -57,15 +57,15 @@ export default function ProtectedRoute({
             <LoginForm />
           </div>
         </div>
-      )
+      );
     }
-    return null // Will redirect via useEffect
+    return null; // Will redirect via useEffect
   }
 
   // Check role permissions if specified
   if (user && (requiredRole || allowedRoles)) {
-    const userRole = user.role || 'student'
-    
+    const userRole = user.role || 'student';
+
     // Check single required role
     if (requiredRole && userRole !== requiredRole) {
       return (
@@ -73,25 +73,24 @@ export default function ProtectedRoute({
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
               <CardTitle className="text-red-600">Access Denied</CardTitle>
-              <CardDescription>
-                You don't have permission to access this area.
-              </CardDescription>
+              <CardDescription>You don't have permission to access this area.</CardDescription>
             </CardHeader>
             <CardContent className="text-center space-y-4">
               <div className="text-sm text-gray-600">
-                <p>Required role: <span className="font-medium">{requiredRole}</span></p>
-                <p>Your role: <span className="font-medium">{userRole}</span></p>
+                <p>
+                  Required role: <span className="font-medium">{requiredRole}</span>
+                </p>
+                <p>
+                  Your role: <span className="font-medium">{userRole}</span>
+                </p>
               </div>
-              <button 
-                onClick={() => router.back()}
-                className="text-primary hover:underline"
-              >
+              <button onClick={() => router.back()} className="text-primary hover:underline">
                 Go back
               </button>
             </CardContent>
           </Card>
         </div>
-      )
+      );
     }
 
     // Check allowed roles array
@@ -101,28 +100,27 @@ export default function ProtectedRoute({
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
               <CardTitle className="text-red-600">Access Denied</CardTitle>
-              <CardDescription>
-                You don't have permission to access this area.
-              </CardDescription>
+              <CardDescription>You don't have permission to access this area.</CardDescription>
             </CardHeader>
             <CardContent className="text-center space-y-4">
               <div className="text-sm text-gray-600">
-                <p>Allowed roles: <span className="font-medium">{allowedRoles.join(', ')}</span></p>
-                <p>Your role: <span className="font-medium">{userRole}</span></p>
+                <p>
+                  Allowed roles: <span className="font-medium">{allowedRoles.join(', ')}</span>
+                </p>
+                <p>
+                  Your role: <span className="font-medium">{userRole}</span>
+                </p>
               </div>
-              <button 
-                onClick={() => router.back()}
-                className="text-primary hover:underline"
-              >
+              <button onClick={() => router.back()} className="text-primary hover:underline">
                 Go back
               </button>
             </CardContent>
           </Card>
         </div>
-      )
+      );
     }
   }
 
   // User is authenticated and has proper permissions
-  return <>{children}</>
+  return <>{children}</>;
 }

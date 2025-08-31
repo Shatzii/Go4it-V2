@@ -12,9 +12,21 @@
           "description": "Basic English vocabulary and conversation skills",
           "level": "beginner",
           "adaptations": {
-            "dyslexia": ["phonetic learning", "visual vocabulary cards", "audio pronunciation guides"],
-            "adhd": ["interactive conversation practice", "gamified vocabulary", "short lesson segments"],
-            "autism": ["structured grammar patterns", "predictable lesson formats", "visual conversation guides"]
+            "dyslexia": [
+              "phonetic learning",
+              "visual vocabulary cards",
+              "audio pronunciation guides"
+            ],
+            "adhd": [
+              "interactive conversation practice",
+              "gamified vocabulary",
+              "short lesson segments"
+            ],
+            "autism": [
+              "structured grammar patterns",
+              "predictable lesson formats",
+              "visual conversation guides"
+            ]
           }
         },
         {
@@ -23,9 +35,17 @@
           "description": "Advanced conversation and writing skills",
           "level": "intermediate",
           "adaptations": {
-            "dyslexia": ["writing support tools", "speech-to-text options", "collaborative projects"],
+            "dyslexia": [
+              "writing support tools",
+              "speech-to-text options",
+              "collaborative projects"
+            ],
             "adhd": ["varied communication formats", "immediate feedback", "choice-based topics"],
-            "autism": ["structured communication frameworks", "clear conversation rules", "practice scenarios"]
+            "autism": [
+              "structured communication frameworks",
+              "clear conversation rules",
+              "practice scenarios"
+            ]
           }
         }
       ]
@@ -41,8 +61,16 @@
           "level": "beginner",
           "adaptations": {
             "dyslexia": ["visual grammar charts", "color-coded cases", "audio pronunciation"],
-            "adhd": ["interactive grammar games", "cultural immersion activities", "varied practice methods"],
-            "autism": ["systematic case learning", "predictable grammar patterns", "structured vocabulary building"]
+            "adhd": [
+              "interactive grammar games",
+              "cultural immersion activities",
+              "varied practice methods"
+            ],
+            "autism": [
+              "systematic case learning",
+              "predictable grammar patterns",
+              "structured vocabulary building"
+            ]
           }
         },
         {
@@ -51,9 +79,21 @@
           "description": "German conversation and cultural understanding",
           "level": "intermediate",
           "adaptations": {
-            "dyslexia": ["conversation practice tools", "cultural context videos", "collaborative learning"],
-            "adhd": ["real-world applications", "multimedia cultural content", "flexible practice options"],
-            "autism": ["structured conversation practice", "clear cultural guidelines", "systematic skill progression"]
+            "dyslexia": [
+              "conversation practice tools",
+              "cultural context videos",
+              "collaborative learning"
+            ],
+            "adhd": [
+              "real-world applications",
+              "multimedia cultural content",
+              "flexible practice options"
+            ],
+            "autism": [
+              "structured conversation practice",
+              "clear cultural guidelines",
+              "systematic skill progression"
+            ]
           }
         }
       ]
@@ -68,9 +108,21 @@
           "description": "Spanish fundamentals with cultural context",
           "level": "beginner",
           "adaptations": {
-            "dyslexia": ["phonetic Spanish advantages", "visual conjugation charts", "rhythm-based learning"],
-            "adhd": ["music and movement integration", "cultural exploration", "interactive practice"],
-            "autism": ["systematic verb patterns", "structured cultural learning", "predictable lesson sequences"]
+            "dyslexia": [
+              "phonetic Spanish advantages",
+              "visual conjugation charts",
+              "rhythm-based learning"
+            ],
+            "adhd": [
+              "music and movement integration",
+              "cultural exploration",
+              "interactive practice"
+            ],
+            "autism": [
+              "systematic verb patterns",
+              "structured cultural learning",
+              "predictable lesson sequences"
+            ]
           }
         },
         {
@@ -79,9 +131,21 @@
           "description": "Advanced Spanish conversation and cultural fluency",
           "level": "intermediate",
           "adaptations": {
-            "dyslexia": ["conversation support tools", "cultural immersion projects", "peer collaboration"],
-            "adhd": ["varied cultural activities", "immediate practice opportunities", "choice in topics"],
-            "autism": ["structured conversation practice", "clear cultural frameworks", "systematic skill development"]
+            "dyslexia": [
+              "conversation support tools",
+              "cultural immersion projects",
+              "peer collaboration"
+            ],
+            "adhd": [
+              "varied cultural activities",
+              "immediate practice opportunities",
+              "choice in topics"
+            ],
+            "autism": [
+              "structured conversation practice",
+              "clear cultural frameworks",
+              "systematic skill development"
+            ]
           }
         }
       ]
@@ -91,7 +155,11 @@
     {
       "id": "professor-polyglot",
       "name": "Professor Polyglot",
-      "specialties": ["multilingual education", "cultural linguistics", "adaptive language teaching"],
+      "specialties": [
+        "multilingual education",
+        "cultural linguistics",
+        "adaptive language teaching"
+      ],
       "personality": "patient, culturally aware, encouraging",
       "adaptations": {
         "dyslexia": "Uses multi-sensory language learning, provides visual language maps, celebrates phonetic strengths",

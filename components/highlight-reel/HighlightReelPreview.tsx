@@ -1,18 +1,18 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Play, 
-  Download, 
-  Share2, 
-  Star, 
-  Clock, 
+import {
+  Play,
+  Download,
+  Share2,
+  Star,
+  Clock,
   Activity,
   Target,
   Award,
   Zap,
   Calendar,
-  Eye
+  Eye,
 } from 'lucide-react';
 
 interface HighlightMoment {
@@ -42,7 +42,7 @@ const HighlightReelPreview: React.FC<HighlightReelPreviewProps> = ({ reelId, onC
     try {
       const response = await fetch(`/api/highlight-reel/${reelId}`);
       const data = await response.json();
-      
+
       if (data.success) {
         setReel(data.highlightReel);
       }
@@ -102,7 +102,7 @@ const HighlightReelPreview: React.FC<HighlightReelPreviewProps> = ({ reelId, onC
         await navigator.share({
           title: reel.title,
           text: `Check out my highlight reel: ${reel.title}`,
-          url: window.location.href
+          url: window.location.href,
         });
       } catch (err) {
         console.log('Error sharing:', err);
@@ -164,7 +164,7 @@ const HighlightReelPreview: React.FC<HighlightReelPreviewProps> = ({ reelId, onC
                 </span>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <button
                 onClick={handleShare}
@@ -214,7 +214,7 @@ const HighlightReelPreview: React.FC<HighlightReelPreviewProps> = ({ reelId, onC
           {/* Highlights List */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-white">Key Highlights</h3>
-            
+
             <div className="space-y-3">
               {reel.highlights.map((highlight: HighlightMoment, index: number) => (
                 <div
@@ -227,10 +227,12 @@ const HighlightReelPreview: React.FC<HighlightReelPreviewProps> = ({ reelId, onC
                   onClick={() => setCurrentHighlight(index)}
                 >
                   <div className="flex items-start space-x-3">
-                    <div className={`p-2 rounded-lg border ${getHighlightTypeColor(highlight.type)}`}>
+                    <div
+                      className={`p-2 rounded-lg border ${getHighlightTypeColor(highlight.type)}`}
+                    >
                       {getHighlightTypeIcon(highlight.type)}
                     </div>
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-sm font-medium text-white">
@@ -241,15 +243,17 @@ const HighlightReelPreview: React.FC<HighlightReelPreviewProps> = ({ reelId, onC
                           <span className="text-xs text-yellow-400">{highlight.score}</span>
                         </div>
                       </div>
-                      
+
                       <p className="text-xs text-slate-400 leading-tight">
                         {highlight.description}
                       </p>
-                      
+
                       <div className="mt-2">
-                        <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                          getHighlightTypeColor(highlight.type)
-                        }`}>
+                        <span
+                          className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getHighlightTypeColor(
+                            highlight.type,
+                          )}`}
+                        >
                           {highlight.type.replace('_', ' ')}
                         </span>
                       </div>
@@ -266,13 +270,20 @@ const HighlightReelPreview: React.FC<HighlightReelPreviewProps> = ({ reelId, onC
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-green-400">
-                {Math.round(reel.highlights.reduce((sum: number, h: HighlightMoment) => sum + h.score, 0) / reel.highlights.length)}
+                {Math.round(
+                  reel.highlights.reduce((sum: number, h: HighlightMoment) => sum + h.score, 0) /
+                    reel.highlights.length,
+                )}
               </div>
               <div className="text-sm text-slate-400">Avg Score</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-400">
-                {reel.highlights.reduce((sum: number, h: HighlightMoment) => sum + (h.endTime - h.startTime), 0)}s
+                {reel.highlights.reduce(
+                  (sum: number, h: HighlightMoment) => sum + (h.endTime - h.startTime),
+                  0,
+                )}
+                s
               </div>
               <div className="text-sm text-slate-400">Total Highlights</div>
             </div>
@@ -283,9 +294,7 @@ const HighlightReelPreview: React.FC<HighlightReelPreviewProps> = ({ reelId, onC
               <div className="text-sm text-slate-400">Best Score</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-400">
-                {reel.videoSport}
-              </div>
+              <div className="text-2xl font-bold text-orange-400">{reel.videoSport}</div>
               <div className="text-sm text-slate-400">Sport</div>
             </div>
           </div>

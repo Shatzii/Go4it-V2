@@ -11,11 +11,11 @@ export const router = Router();
 router.post('/generate-learning-plan', async (req: Request, res: Response) => {
   try {
     const { studentProfile, neurotype, interests, subject } = req.body;
-    
+
     if (!studentProfile || !neurotype || !subject) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Student profile, neurotype, and subject are required' 
+      return res.status(400).json({
+        success: false,
+        message: 'Student profile, neurotype, and subject are required',
       });
     }
 
@@ -23,7 +23,7 @@ router.post('/generate-learning-plan', async (req: Request, res: Response) => {
     const systemPrompt = `You are an expert special education teacher specializing in creating 
     personalized learning plans for neurodivergent students. Your plans are evidence-based, 
     supportive, and appropriate for the specific neurotype of each student.`;
-    
+
     // Create the main prompt
     const prompt = `Please create a personalized learning plan for a ${neurotype} student with the following profile:
     
@@ -39,23 +39,23 @@ router.post('/generate-learning-plan', async (req: Request, res: Response) => {
     5. Assessment recommendations
     
     Format as a JSON object with appropriate sections.`;
-    
+
     const learningPlan = await AnthropicService.generateText(prompt, {
       systemPrompt: systemPrompt,
       maxTokens: 2048,
-      temperature: 0.7
+      temperature: 0.7,
     });
-    
+
     res.json({
       success: true,
-      learningPlan
+      learningPlan,
     });
   } catch (error: any) {
     console.error('Error generating learning plan:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to generate learning plan',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -68,11 +68,11 @@ router.post('/generate-learning-plan', async (req: Request, res: Response) => {
 router.post('/create-mission', async (req: Request, res: Response) => {
   try {
     const { subject, gradeLevel, neurotype } = req.body;
-    
+
     if (!subject || !gradeLevel || !neurotype) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Subject, grade level, and neurotype are required' 
+      return res.status(400).json({
+        success: false,
+        message: 'Subject, grade level, and neurotype are required',
       });
     }
 
@@ -81,7 +81,7 @@ router.post('/create-mission', async (req: Request, res: Response) => {
     creating engaging, superhero-themed educational content for neurodivergent students.
     Your missions are designed to be engaging, inclusive, and tailored to specific 
     learning needs while maintaining academic rigor.`;
-    
+
     // Create the main prompt
     const prompt = `Please create a superhero-themed educational mission for a ${neurotype} student
     in grade ${gradeLevel} studying ${subject}.
@@ -95,23 +95,23 @@ router.post('/create-mission', async (req: Request, res: Response) => {
     6. Reward system with digital badges or achievements
     
     Format as a JSON object with appropriate sections.`;
-    
+
     const mission = await AnthropicService.generateText(prompt, {
       systemPrompt: systemPrompt,
       maxTokens: 2048,
-      temperature: 0.7
+      temperature: 0.7,
     });
-    
+
     res.json({
       success: true,
-      mission
+      mission,
     });
   } catch (error: any) {
     console.error('Error creating superhero mission:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to create superhero mission',
-      error: error.message
+      error: error.message,
     });
   }
 });

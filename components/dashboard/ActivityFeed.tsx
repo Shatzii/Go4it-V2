@@ -1,13 +1,6 @@
 'use client';
 
-import { 
-  Video, 
-  Trophy, 
-  Target, 
-  BookOpen, 
-  Users, 
-  Clock 
-} from 'lucide-react';
+import { Video, Trophy, Target, BookOpen, Users, Clock } from 'lucide-react';
 
 interface Activity {
   id: string;
@@ -28,7 +21,7 @@ export function ActivityFeed() {
       description: 'New video analysis shows 12% improvement in technique',
       timestamp: '2 hours ago',
       xpEarned: 200,
-      priority: 'high'
+      priority: 'high',
     },
     {
       id: '2',
@@ -37,7 +30,7 @@ export function ActivityFeed() {
       description: 'Completed 7 consecutive days of training',
       timestamp: '1 day ago',
       xpEarned: 300,
-      priority: 'high'
+      priority: 'high',
     },
     {
       id: '3',
@@ -46,7 +39,7 @@ export function ActivityFeed() {
       description: 'Completed advanced agility ladder drills',
       timestamp: '2 days ago',
       xpEarned: 150,
-      priority: 'medium'
+      priority: 'medium',
     },
     {
       id: '4',
@@ -54,7 +47,7 @@ export function ActivityFeed() {
       title: 'Assignment Submitted',
       description: 'Biology lab report submitted on time',
       timestamp: '3 days ago',
-      priority: 'low'
+      priority: 'low',
     },
     {
       id: '5',
@@ -63,8 +56,8 @@ export function ActivityFeed() {
       description: 'Attended team scrimmage session',
       timestamp: '3 days ago',
       xpEarned: 100,
-      priority: 'medium'
-    }
+      priority: 'medium',
+    },
   ];
 
   const getActivityIcon = (type: Activity['type']) => {
@@ -114,23 +107,17 @@ export function ActivityFeed() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-white">
-                      {activity.title}
-                    </p>
+                    <p className="text-sm font-medium text-white">{activity.title}</p>
                     <div className="flex items-center space-x-2">
                       {activity.xpEarned && (
                         <span className="text-xs text-blue-400 bg-blue-400/10 px-2 py-1 rounded">
                           +{activity.xpEarned} XP
                         </span>
                       )}
-                      <span className="text-xs text-slate-400">
-                        {activity.timestamp}
-                      </span>
+                      <span className="text-xs text-slate-400">{activity.timestamp}</span>
                     </div>
                   </div>
-                  <p className="text-sm text-slate-400 mt-1">
-                    {activity.description}
-                  </p>
+                  <p className="text-sm text-slate-400 mt-1">{activity.description}</p>
                 </div>
               </div>
             </div>

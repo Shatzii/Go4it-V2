@@ -1,16 +1,16 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Clock, 
-  Rewind, 
-  FastForward, 
-  Play, 
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Clock,
+  Rewind,
+  FastForward,
+  Play,
   Pause,
   RotateCcw,
   Calendar,
@@ -32,62 +32,63 @@ import {
   Star,
   ArrowLeft,
   ArrowRight,
-  Settings
-} from 'lucide-react'
-import { Future } from '@/components/ui/missing-icons'
+  Settings,
+} from 'lucide-react';
+import { Future } from '@/components/ui/missing-icons';
 
 interface TimeEpoch {
-  id: string
-  name: string
-  period: string
-  description: string
-  learningOpportunities: string[]
-  accessLevel: 'unlocked' | 'locked' | 'partial'
-  complexity: number
-  visitCount: number
+  id: string;
+  name: string;
+  period: string;
+  description: string;
+  learningOpportunities: string[];
+  accessLevel: 'unlocked' | 'locked' | 'partial';
+  complexity: number;
+  visitCount: number;
 }
 
 interface TemporalSession {
-  id: string
-  student: string
-  epoch: string
-  duration: number
-  learningSpeed: number
-  knowledgeAbsorbed: number
-  timelineChanges: number
-  insights: string[]
+  id: string;
+  student: string;
+  epoch: string;
+  duration: number;
+  learningSpeed: number;
+  knowledgeAbsorbed: number;
+  timelineChanges: number;
+  insights: string[];
 }
 
 interface ParallelTimeline {
-  id: string
-  name: string
-  divergencePoint: string
-  outcomes: string[]
-  isActive: boolean
-  probability: number
+  id: string;
+  name: string;
+  divergencePoint: string;
+  outcomes: string[];
+  isActive: boolean;
+  probability: number;
 }
 
 export default function TimeDimensionLearning() {
-  const [currentEpoch, setCurrentEpoch] = useState('present')
-  const [timeSpeed, setTimeSpeed] = useState(1)
-  const [isTimeActive, setIsTimeActive] = useState(false)
-  const [temporalEnergy, setTemporalEnergy] = useState(85)
-  const [currentSession, setCurrentSession] = useState<TemporalSession | null>(null)
-  const [parallelTimelines, setParallelTimelines] = useState<ParallelTimeline[]>([])
-  const [timelinePosition, setTimelinePosition] = useState(2025)
+  const [currentEpoch, setCurrentEpoch] = useState('present');
+  const [timeSpeed, setTimeSpeed] = useState(1);
+  const [isTimeActive, setIsTimeActive] = useState(false);
+  const [temporalEnergy, setTemporalEnergy] = useState(85);
+  const [currentSession, setCurrentSession] = useState<TemporalSession | null>(null);
+  const [parallelTimelines, setParallelTimelines] = useState<ParallelTimeline[]>([]);
+  const [timelinePosition, setTimelinePosition] = useState(2025);
 
   const timeEpochs: Record<string, TimeEpoch> = {
     'ancient-egypt': {
       id: 'ancient-egypt',
       name: 'Ancient Egypt',
       period: '3100 - 30 BCE',
-      description: 'Experience the birth of civilization, pyramid construction, and hieroglyphic writing',
+      description:
+        'Experience the birth of civilization, pyramid construction, and hieroglyphic writing',
       learningOpportunities: ['Mathematics', 'Engineering', 'Language', 'History', 'Astronomy'],
       accessLevel: 'unlocked',
       complexity: 75,
-      visitCount: 0
+      visitCount: 0,
     },
-    'renaissance': {
+    renaissance: {
       id: 'renaissance',
       name: 'Renaissance',
       period: '1300 - 1600 CE',
@@ -95,7 +96,7 @@ export default function TimeDimensionLearning() {
       learningOpportunities: ['Art', 'Science', 'Innovation', 'Philosophy', 'Engineering'],
       accessLevel: 'unlocked',
       complexity: 80,
-      visitCount: 0
+      visitCount: 0,
     },
     'industrial-revolution': {
       id: 'industrial-revolution',
@@ -105,9 +106,9 @@ export default function TimeDimensionLearning() {
       learningOpportunities: ['Technology', 'Social Studies', 'Economics', 'Engineering'],
       accessLevel: 'unlocked',
       complexity: 85,
-      visitCount: 0
+      visitCount: 0,
     },
-    'present': {
+    present: {
       id: 'present',
       name: 'Present Day',
       period: '2025',
@@ -115,7 +116,7 @@ export default function TimeDimensionLearning() {
       learningOpportunities: ['All Subjects', 'Integration', 'Synthesis', 'Innovation'],
       accessLevel: 'unlocked',
       complexity: 60,
-      visitCount: 0
+      visitCount: 0,
     },
     'near-future': {
       id: 'near-future',
@@ -125,55 +126,60 @@ export default function TimeDimensionLearning() {
       learningOpportunities: ['Future Tech', 'Climate Solutions', 'Social Evolution'],
       accessLevel: 'partial',
       complexity: 90,
-      visitCount: 0
+      visitCount: 0,
     },
     'far-future': {
       id: 'far-future',
       name: 'Far Future',
       period: '2500+',
-      description: 'Experience humanity\'s ultimate potential across the cosmos',
+      description: "Experience humanity's ultimate potential across the cosmos",
       learningOpportunities: ['Cosmic Engineering', 'Consciousness Evolution', 'Universal Wisdom'],
       accessLevel: 'locked',
       complexity: 95,
-      visitCount: 0
-    }
-  }
+      visitCount: 0,
+    },
+  };
 
-  const currentEpochData = timeEpochs[currentEpoch]
+  const currentEpochData = timeEpochs[currentEpoch];
 
   // Simulate temporal dynamics
   useEffect(() => {
-    if (!isTimeActive) return
+    if (!isTimeActive) return;
 
     const interval = setInterval(() => {
-      setTemporalEnergy(prev => Math.max(10, Math.min(100, prev - 0.5)))
-      
+      setTemporalEnergy((prev) => Math.max(10, Math.min(100, prev - 0.5)));
+
       if (currentSession) {
-        setCurrentSession(prev => prev ? {
-          ...prev,
-          duration: prev.duration + 1,
-          knowledgeAbsorbed: Math.min(100, prev.knowledgeAbsorbed + (timeSpeed * 0.8)),
-          learningSpeed: 95 + (timeSpeed * 5)
-        } : null)
+        setCurrentSession((prev) =>
+          prev
+            ? {
+                ...prev,
+                duration: prev.duration + 1,
+                knowledgeAbsorbed: Math.min(100, prev.knowledgeAbsorbed + timeSpeed * 0.8),
+                learningSpeed: 95 + timeSpeed * 5,
+              }
+            : null,
+        );
       }
 
       // Update timeline position based on speed
-      setTimelinePosition(prev => {
-        if (currentEpoch === 'ancient-egypt') return Math.max(-3000, prev - timeSpeed)
-        if (currentEpoch === 'renaissance') return 1400 + Math.sin(Date.now() / 1000) * 50
-        if (currentEpoch === 'industrial-revolution') return 1800 + Math.sin(Date.now() / 1000) * 20
-        if (currentEpoch === 'near-future') return Math.min(2100, prev + timeSpeed)
-        if (currentEpoch === 'far-future') return Math.min(3000, prev + timeSpeed * 2)
-        return 2025
-      })
-    }, 1000)
+      setTimelinePosition((prev) => {
+        if (currentEpoch === 'ancient-egypt') return Math.max(-3000, prev - timeSpeed);
+        if (currentEpoch === 'renaissance') return 1400 + Math.sin(Date.now() / 1000) * 50;
+        if (currentEpoch === 'industrial-revolution')
+          return 1800 + Math.sin(Date.now() / 1000) * 20;
+        if (currentEpoch === 'near-future') return Math.min(2100, prev + timeSpeed);
+        if (currentEpoch === 'far-future') return Math.min(3000, prev + timeSpeed * 2);
+        return 2025;
+      });
+    }, 1000);
 
-    return () => clearInterval(interval)
-  }, [isTimeActive, timeSpeed, currentSession, currentEpoch])
+    return () => clearInterval(interval);
+  }, [isTimeActive, timeSpeed, currentSession, currentEpoch]);
 
   const startTemporalSession = (epoch: string) => {
-    const epochData = timeEpochs[epoch]
-    if (epochData.accessLevel === 'locked') return
+    const epochData = timeEpochs[epoch];
+    if (epochData.accessLevel === 'locked') return;
 
     setCurrentSession({
       id: Date.now().toString(),
@@ -183,42 +189,46 @@ export default function TimeDimensionLearning() {
       learningSpeed: 100,
       knowledgeAbsorbed: 0,
       timelineChanges: 0,
-      insights: []
-    })
-    
-    setCurrentEpoch(epoch)
-    setIsTimeActive(true)
-  }
+      insights: [],
+    });
+
+    setCurrentEpoch(epoch);
+    setIsTimeActive(true);
+  };
 
   const adjustTimeSpeed = (speed: number) => {
-    setTimeSpeed(Math.max(0.1, Math.min(10, speed)))
-  }
+    setTimeSpeed(Math.max(0.1, Math.min(10, speed)));
+  };
 
   const returnToPresent = () => {
-    setCurrentEpoch('present')
-    setTimeSpeed(1)
-    setTimelinePosition(2025)
-    setIsTimeActive(false)
-    setCurrentSession(null)
-  }
+    setCurrentEpoch('present');
+    setTimeSpeed(1);
+    setTimelinePosition(2025);
+    setIsTimeActive(false);
+    setCurrentSession(null);
+  };
 
   const getAccessColor = (level: string) => {
     switch (level) {
-      case 'unlocked': return 'text-green-600 bg-green-50'
-      case 'partial': return 'text-yellow-600 bg-yellow-50'
-      case 'locked': return 'text-red-600 bg-red-50'
-      default: return 'text-gray-600 bg-gray-50'
+      case 'unlocked':
+        return 'text-green-600 bg-green-50';
+      case 'partial':
+        return 'text-yellow-600 bg-yellow-50';
+      case 'locked':
+        return 'text-red-600 bg-red-50';
+      default:
+        return 'text-gray-600 bg-gray-50';
     }
-  }
+  };
 
   const getTimeSpeedDescription = (speed: number) => {
-    if (speed < 0.5) return 'Ultra Slow Motion'
-    if (speed < 1) return 'Slow Motion'
-    if (speed === 1) return 'Normal Time'
-    if (speed < 3) return 'Accelerated'
-    if (speed < 6) return 'Time Warp'
-    return 'Temporal Overdrive'
-  }
+    if (speed < 0.5) return 'Ultra Slow Motion';
+    if (speed < 1) return 'Slow Motion';
+    if (speed === 1) return 'Normal Time';
+    if (speed < 3) return 'Accelerated';
+    if (speed < 6) return 'Time Warp';
+    return 'Temporal Overdrive';
+  };
 
   useEffect(() => {
     // Generate parallel timelines
@@ -229,7 +239,7 @@ export default function TimeDimensionLearning() {
         divergencePoint: '1600 CE',
         outcomes: ['Art-based technology', 'Harmony with nature', 'Slower but deeper progress'],
         isActive: false,
-        probability: 23
+        probability: 23,
       },
       {
         id: '2',
@@ -237,18 +247,22 @@ export default function TimeDimensionLearning() {
         divergencePoint: '1850 CE',
         outcomes: ['Steam-powered computers', 'Victorian internet', 'Accelerated social change'],
         isActive: false,
-        probability: 31
+        probability: 31,
       },
       {
         id: '3',
         name: 'Climate Solutions Timeline',
         divergencePoint: '2020 CE',
-        outcomes: ['Global cooperation achieved', 'Technology saves planet', 'Sustainable abundance'],
+        outcomes: [
+          'Global cooperation achieved',
+          'Technology saves planet',
+          'Sustainable abundance',
+        ],
         isActive: true,
-        probability: 67
-      }
-    ])
-  }, [])
+        probability: 67,
+      },
+    ]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-black p-6">
@@ -302,9 +316,7 @@ export default function TimeDimensionLearning() {
                   <div className="text-lg font-bold text-cyan-400 mb-2">
                     {getTimeSpeedDescription(timeSpeed)}
                   </div>
-                  <div className="text-3xl font-bold text-white mb-2">
-                    {timeSpeed.toFixed(1)}x
-                  </div>
+                  <div className="text-3xl font-bold text-white mb-2">{timeSpeed.toFixed(1)}x</div>
                   <div className="text-xs text-gray-400">Time Acceleration</div>
                 </div>
 
@@ -330,7 +342,7 @@ export default function TimeDimensionLearning() {
                 <Button
                   onClick={() => setIsTimeActive(!isTimeActive)}
                   className="w-full"
-                  variant={isTimeActive ? "destructive" : "default"}
+                  variant={isTimeActive ? 'destructive' : 'default'}
                 >
                   {isTimeActive ? (
                     <>
@@ -359,11 +371,14 @@ export default function TimeDimensionLearning() {
                   <div className="text-sm font-medium">Temporal Energy</div>
                   <Progress value={temporalEnergy} className="h-2" />
                   <div className="text-xs text-gray-400">
-                    {temporalEnergy.toFixed(0)}% - {
-                      temporalEnergy > 70 ? 'Excellent' :
-                      temporalEnergy > 40 ? 'Good' :
-                      temporalEnergy > 20 ? 'Low' : 'Critical'
-                    }
+                    {temporalEnergy.toFixed(0)}% -{' '}
+                    {temporalEnergy > 70
+                      ? 'Excellent'
+                      : temporalEnergy > 40
+                        ? 'Good'
+                        : temporalEnergy > 20
+                          ? 'Low'
+                          : 'Critical'}
                   </div>
                 </div>
               </CardContent>
@@ -379,18 +394,12 @@ export default function TimeDimensionLearning() {
               <CardContent>
                 <div className="space-y-3">
                   <div className="text-center">
-                    <div className="text-lg font-bold text-purple-400">
-                      {currentEpochData.name}
-                    </div>
-                    <div className="text-sm text-gray-400">
-                      {currentEpochData.period}
-                    </div>
+                    <div className="text-lg font-bold text-purple-400">{currentEpochData.name}</div>
+                    <div className="text-sm text-gray-400">{currentEpochData.period}</div>
                   </div>
-                  
-                  <p className="text-xs text-gray-300">
-                    {currentEpochData.description}
-                  </p>
-                  
+
+                  <p className="text-xs text-gray-300">{currentEpochData.description}</p>
+
                   <div className="space-y-1">
                     <div className="text-xs font-medium">Learning Opportunities:</div>
                     <div className="flex flex-wrap gap-1">
@@ -401,7 +410,7 @@ export default function TimeDimensionLearning() {
                       ))}
                     </div>
                   </div>
-                  
+
                   <div className="flex justify-between items-center">
                     <span className="text-xs">Complexity:</span>
                     <span className="text-xs font-bold text-yellow-400">
@@ -436,8 +445,11 @@ export default function TimeDimensionLearning() {
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {Object.values(timeEpochs).map(epoch => (
-                        <div key={epoch.id} className="p-4 bg-gray-800 rounded-lg border-l-4 border-l-blue-500">
+                      {Object.values(timeEpochs).map((epoch) => (
+                        <div
+                          key={epoch.id}
+                          className="p-4 bg-gray-800 rounded-lg border-l-4 border-l-blue-500"
+                        >
                           <div className="flex items-start justify-between mb-3">
                             <div>
                               <h4 className="font-semibold text-lg">{epoch.name}</h4>
@@ -452,9 +464,9 @@ export default function TimeDimensionLearning() {
                               </div>
                             </div>
                           </div>
-                          
+
                           <p className="text-sm text-gray-300 mb-3">{epoch.description}</p>
-                          
+
                           <div className="mb-3">
                             <div className="text-xs font-medium mb-1">Available Subjects:</div>
                             <div className="flex flex-wrap gap-1">
@@ -475,7 +487,7 @@ export default function TimeDimensionLearning() {
                             className="w-full"
                             onClick={() => startTemporalSession(epoch.id)}
                             disabled={epoch.accessLevel === 'locked'}
-                            variant={currentEpoch === epoch.id ? "secondary" : "default"}
+                            variant={currentEpoch === epoch.id ? 'secondary' : 'default'}
                           >
                             {currentEpoch === epoch.id ? (
                               <>
@@ -483,9 +495,7 @@ export default function TimeDimensionLearning() {
                                 Current Location
                               </>
                             ) : epoch.accessLevel === 'locked' ? (
-                              <>
-                                🔒 Unlock Required
-                              </>
+                              <>🔒 Unlock Required</>
                             ) : (
                               <>
                                 <Zap className="w-4 h-4 mr-2" />
@@ -514,7 +524,8 @@ export default function TimeDimensionLearning() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="text-center p-4 bg-blue-900/30 rounded-lg">
                             <div className="text-2xl font-bold text-blue-400">
-                              {Math.floor(currentSession.duration / 60)}:{(currentSession.duration % 60).toString().padStart(2, '0')}
+                              {Math.floor(currentSession.duration / 60)}:
+                              {(currentSession.duration % 60).toString().padStart(2, '0')}
                             </div>
                             <div className="text-sm text-gray-400">Session Duration</div>
                           </div>
@@ -599,10 +610,15 @@ export default function TimeDimensionLearning() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {parallelTimelines.map(timeline => (
-                        <div key={timeline.id} className={`p-4 rounded-lg border-l-4 ${
-                          timeline.isActive ? 'border-l-green-500 bg-green-900/20' : 'border-l-gray-500 bg-gray-800'
-                        }`}>
+                      {parallelTimelines.map((timeline) => (
+                        <div
+                          key={timeline.id}
+                          className={`p-4 rounded-lg border-l-4 ${
+                            timeline.isActive
+                              ? 'border-l-green-500 bg-green-900/20'
+                              : 'border-l-gray-500 bg-gray-800'
+                          }`}
+                        >
                           <div className="flex items-start justify-between mb-3">
                             <div>
                               <h4 className="font-semibold">{timeline.name}</h4>
@@ -624,7 +640,10 @@ export default function TimeDimensionLearning() {
                             <div className="text-sm font-medium">Potential Outcomes:</div>
                             <div className="space-y-1">
                               {timeline.outcomes.map((outcome, index) => (
-                                <div key={index} className="text-sm text-gray-300 flex items-center">
+                                <div
+                                  key={index}
+                                  className="text-sm text-gray-300 flex items-center"
+                                >
                                   <ArrowRight className="w-3 h-3 mr-2 text-cyan-400" />
                                   {outcome}
                                 </div>
@@ -672,12 +691,14 @@ export default function TimeDimensionLearning() {
                           <h4 className="font-semibold text-cyan-400">Historical Patterns</h4>
                           <div className="space-y-2">
                             <div className="p-3 bg-blue-900/30 rounded text-sm">
-                              📚 <strong>Learning Acceleration:</strong> Knowledge compounds 
-                              exponentially when students experience concepts firsthand in their historical context.
+                              📚 <strong>Learning Acceleration:</strong> Knowledge compounds
+                              exponentially when students experience concepts firsthand in their
+                              historical context.
                             </div>
                             <div className="p-3 bg-green-900/30 rounded text-sm">
-                              🌍 <strong>Cultural Context:</strong> Understanding the "why" behind 
-                              historical events dramatically improves retention and critical thinking.
+                              🌍 <strong>Cultural Context:</strong> Understanding the "why" behind
+                              historical events dramatically improves retention and critical
+                              thinking.
                             </div>
                           </div>
                         </div>
@@ -686,11 +707,11 @@ export default function TimeDimensionLearning() {
                           <h4 className="font-semibold text-purple-400">Future Insights</h4>
                           <div className="space-y-2">
                             <div className="p-3 bg-purple-900/30 rounded text-sm">
-                              🚀 <strong>Innovation Patterns:</strong> Future technologies often 
+                              🚀 <strong>Innovation Patterns:</strong> Future technologies often
                               follow predictable patterns visible in historical data.
                             </div>
                             <div className="p-3 bg-yellow-900/30 rounded text-sm">
-                              ⚡ <strong>Accelerated Learning:</strong> Students who experience 
+                              ⚡ <strong>Accelerated Learning:</strong> Students who experience
                               multiple timelines develop enhanced pattern recognition abilities.
                             </div>
                           </div>
@@ -706,44 +727,50 @@ export default function TimeDimensionLearning() {
                               <span className="font-semibold">Temporal Learning Effect</span>
                             </div>
                             <p className="text-sm">
-                              Students who learn concepts in their original historical context 
-                              show 450% better understanding and 280% longer retention compared 
-                              to traditional methods.
+                              Students who learn concepts in their original historical context show
+                              450% better understanding and 280% longer retention compared to
+                              traditional methods.
                             </p>
                           </div>
-                          
+
                           <div className="p-4 bg-gradient-to-r from-cyan-900/30 to-blue-900/30 rounded-lg">
                             <div className="flex items-center space-x-2 mb-2">
                               <Globe className="w-5 h-5 text-cyan-400" />
                               <span className="font-semibold">Cross-Temporal Synthesis</span>
                             </div>
                             <p className="text-sm">
-                              Students who experience multiple time periods develop unique 
-                              abilities to synthesize knowledge across eras, leading to 
-                              innovative solutions to modern problems.
+                              Students who experience multiple time periods develop unique abilities
+                              to synthesize knowledge across eras, leading to innovative solutions
+                              to modern problems.
                             </p>
                           </div>
-                          
+
                           <div className="p-4 bg-gradient-to-r from-purple-900/30 to-indigo-900/30 rounded-lg">
                             <div className="flex items-center space-x-2 mb-2">
                               <Brain className="w-5 h-5 text-purple-400" />
                               <span className="font-semibold">Consciousness Expansion</span>
                             </div>
                             <p className="text-sm">
-                              Time dimension learning appears to enhance cognitive flexibility 
-                              and creative problem-solving by expanding students' mental models 
-                              of possibility and causation.
+                              Time dimension learning appears to enhance cognitive flexibility and
+                              creative problem-solving by expanding students' mental models of
+                              possibility and causation.
                             </p>
                           </div>
                         </div>
                       </div>
 
                       <div className="bg-indigo-900/50 p-4 rounded-lg border border-indigo-700">
-                        <h4 className="font-semibold mb-2 text-indigo-300">⚠️ Temporal Learning Protocol</h4>
+                        <h4 className="font-semibold mb-2 text-indigo-300">
+                          ⚠️ Temporal Learning Protocol
+                        </h4>
                         <div className="text-sm space-y-1">
-                          <p>• Maximum session time: 90 minutes to prevent temporal disorientation</p>
+                          <p>
+                            • Maximum session time: 90 minutes to prevent temporal disorientation
+                          </p>
                           <p>• Always return to present day before ending sessions</p>
-                          <p>• Monitor temporal energy levels - below 20% requires immediate return</p>
+                          <p>
+                            • Monitor temporal energy levels - below 20% requires immediate return
+                          </p>
                           <p>• Record all insights immediately upon return to present timeline</p>
                         </div>
                       </div>
@@ -756,5 +783,5 @@ export default function TimeDimensionLearning() {
         </div>
       </div>
     </div>
-  )
+  );
 }

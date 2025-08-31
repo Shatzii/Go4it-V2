@@ -6,27 +6,18 @@ if (!process.env.STRIPE_SECRET_KEY) {
 }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-07-30.basil",
+  apiVersion: '2025-07-30.basil',
 });
 
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
-    const { 
-      classId, 
-      className, 
-      coach, 
-      price, 
-      userId,
-      userEmail,
-      userPhone,
-      userName 
-    } = data;
+    const { classId, className, coach, price, userId, userEmail, userPhone, userName } = data;
 
     // Create Stripe payment intent
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(price * 100), // Convert to cents
-      currency: "usd",
+      currency: 'usd',
       automatic_payment_methods: { enabled: true },
       metadata: {
         classId,
@@ -35,10 +26,10 @@ export async function POST(request: NextRequest) {
         userId: userId || 'anonymous',
         type: 'live_class_payment',
         customerPhone: userPhone || '',
-        customerName: userName || ''
+        customerName: userName || '',
       },
       description: `Live class: ${className} with ${coach}`,
-      ...(userEmail && { receipt_email: userEmail })
+      ...(userEmail && { receipt_email: userEmail }),
     });
 
     // In production, you would:
@@ -50,7 +41,7 @@ export async function POST(request: NextRequest) {
     const revenueSharing = {
       totalAmount: price,
       coachShare: price * 0.85,
-      platformFee: price * 0.15
+      platformFee: price * 0.15,
     };
 
     return NextResponse.json({
@@ -58,14 +49,13 @@ export async function POST(request: NextRequest) {
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
       revenueSharing,
-      message: 'Payment intent created successfully'
+      message: 'Payment intent created successfully',
     });
-
   } catch (error) {
     console.error('Error creating payment intent:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to create payment intent' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -78,12 +68,9 @@ export async function PATCH(request: NextRequest) {
 
     // Verify payment with Stripe
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-    
+
     if (paymentIntent.status !== 'succeeded') {
-      return NextResponse.json(
-        { success: false, error: 'Payment not completed' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'Payment not completed' }, { status: 400 });
     }
 
     // In production, this would:
@@ -98,21 +85,21 @@ export async function PATCH(request: NextRequest) {
       userId,
       accessGranted: true,
       streamUrl: `${process.env.NEXT_PUBLIC_APP_URL}/stream/${classId}`,
-      joinInstructions: 'You will receive an email with join instructions 15 minutes before class starts.',
-      refundPolicy: 'Full refund available up to 2 hours before class start time.'
+      joinInstructions:
+        'You will receive an email with join instructions 15 minutes before class starts.',
+      refundPolicy: 'Full refund available up to 2 hours before class start time.',
     };
 
     return NextResponse.json({
       success: true,
       enrollment: classAccess,
-      message: 'Successfully enrolled in class'
+      message: 'Successfully enrolled in class',
     });
-
   } catch (error) {
     console.error('Error processing class enrollment:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to process enrollment' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

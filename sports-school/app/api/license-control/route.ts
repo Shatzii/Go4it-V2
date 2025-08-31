@@ -1,15 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { storage } from '../../../server/storage'
+import { NextRequest, NextResponse } from 'next/server';
+import { storage } from '../../../server/storage';
 
 // Integrated with main storage system
 const getLicenseData = async () => {
   // Get license data from storage with stats
-  const totalLicenses = 156
-  const activeLicenses = 134
-  const expiredLicenses = 22
-  const violatingLicenses = 8
-  const onlineDevices = 98
-  const monthlyRevenue = 23450
+  const totalLicenses = 156;
+  const activeLicenses = 134;
+  const expiredLicenses = 22;
+  const violatingLicenses = 8;
+  const onlineDevices = 98;
+  const monthlyRevenue = 23450;
 
   return {
     licenses: await getMockLicensesWithStorage(),
@@ -19,10 +19,10 @@ const getLicenseData = async () => {
       expiredLicenses,
       violatingLicenses,
       onlineDevices,
-      monthlyRevenue
-    }
-  }
-}
+      monthlyRevenue,
+    },
+  };
+};
 
 const getMockLicensesWithStorage = async () => {
   // Integrate with storage system for license management
@@ -38,14 +38,16 @@ const getMockLicensesWithStorage = async () => {
       isActive: true,
       currentActivations: 1,
       maxActivations: 1,
-      deviceInfo: [{
-        deviceId: 'WIN-EMMA-LAPTOP-001',
-        computerName: 'Emma-Surface-Pro',
-        lastHeartbeat: new Date('2025-01-23T10:30:00'),
-        isOnline: true
-      }],
+      deviceInfo: [
+        {
+          deviceId: 'WIN-EMMA-LAPTOP-001',
+          computerName: 'Emma-Surface-Pro',
+          lastHeartbeat: new Date('2025-01-23T10:30:00'),
+          isOnline: true,
+        },
+      ],
       postExpiryAccess: 'limited',
-      violationCount: 0
+      violationCount: 0,
     },
     {
       id: '2',
@@ -58,17 +60,19 @@ const getMockLicensesWithStorage = async () => {
       isActive: true,
       currentActivations: 1,
       maxActivations: 2,
-      deviceInfo: [{
-        deviceId: 'MAC-MARC-MBPRO-001',
-        computerName: 'Marcus-MacBook-Pro',
-        lastHeartbeat: new Date('2025-01-23T09:15:00'),
-        isOnline: true
-      }],
+      deviceInfo: [
+        {
+          deviceId: 'MAC-MARC-MBPRO-001',
+          computerName: 'Marcus-MacBook-Pro',
+          lastHeartbeat: new Date('2025-01-23T09:15:00'),
+          isOnline: true,
+        },
+      ],
       postExpiryAccess: 'basic',
-      violationCount: 0
-    }
-  ]
-}
+      violationCount: 0,
+    },
+  ];
+};
 
 const mockLicenseData = {
   licenses: [
@@ -83,14 +87,16 @@ const mockLicenseData = {
       isActive: true,
       currentActivations: 1,
       maxActivations: 1,
-      deviceInfo: [{
-        deviceId: 'WIN-EMMA-LAPTOP-001',
-        computerName: 'Emma-Surface-Pro',
-        lastHeartbeat: new Date('2025-01-23T10:30:00'),
-        isOnline: true
-      }],
+      deviceInfo: [
+        {
+          deviceId: 'WIN-EMMA-LAPTOP-001',
+          computerName: 'Emma-Surface-Pro',
+          lastHeartbeat: new Date('2025-01-23T10:30:00'),
+          isOnline: true,
+        },
+      ],
       postExpiryAccess: 'limited',
-      violationCount: 0
+      violationCount: 0,
     },
     {
       id: '2',
@@ -103,14 +109,16 @@ const mockLicenseData = {
       isActive: true,
       currentActivations: 1,
       maxActivations: 2,
-      deviceInfo: [{
-        deviceId: 'MAC-MARC-MBPRO-001',
-        computerName: 'Marcus-MacBook-Pro',
-        lastHeartbeat: new Date('2025-01-23T09:15:00'),
-        isOnline: true
-      }],
+      deviceInfo: [
+        {
+          deviceId: 'MAC-MARC-MBPRO-001',
+          computerName: 'Marcus-MacBook-Pro',
+          lastHeartbeat: new Date('2025-01-23T09:15:00'),
+          isOnline: true,
+        },
+      ],
       postExpiryAccess: 'basic',
-      violationCount: 0
+      violationCount: 0,
     },
     {
       id: '3',
@@ -128,17 +136,17 @@ const mockLicenseData = {
           deviceId: 'WIN-SARA-DESKTOP-001',
           computerName: 'Sarah-Gaming-PC',
           lastHeartbeat: new Date('2025-01-23T11:45:00'),
-          isOnline: true
+          isOnline: true,
         },
         {
           deviceId: 'WIN-SARA-LAPTOP-002',
           computerName: 'Sarah-Dell-Laptop',
           lastHeartbeat: new Date('2025-01-22T16:20:00'),
-          isOnline: false
-        }
+          isOnline: false,
+        },
       ],
       postExpiryAccess: 'full',
-      violationCount: 0
+      violationCount: 0,
     },
     {
       id: '4',
@@ -151,15 +159,17 @@ const mockLicenseData = {
       isActive: false,
       currentActivations: 1,
       maxActivations: 1,
-      deviceInfo: [{
-        deviceId: 'WIN-DAVI-LAPTOP-001',
-        computerName: 'David-ThinkPad',
-        lastHeartbeat: new Date('2025-01-20T14:30:00'),
-        isOnline: false
-      }],
+      deviceInfo: [
+        {
+          deviceId: 'WIN-DAVI-LAPTOP-001',
+          computerName: 'David-ThinkPad',
+          lastHeartbeat: new Date('2025-01-20T14:30:00'),
+          isOnline: false,
+        },
+      ],
       postExpiryAccess: 'limited',
-      violationCount: 2
-    }
+      violationCount: 2,
+    },
   ],
   stats: {
     totalLicenses: 156,
@@ -167,75 +177,75 @@ const mockLicenseData = {
     expiredLicenses: 22,
     violatingLicenses: 8,
     onlineDevices: 98,
-    monthlyRevenue: 23450
-  }
-}
+    monthlyRevenue: 23450,
+  },
+};
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const filter = searchParams.get('filter')
-    
+    const { searchParams } = new URL(request.url);
+    const filter = searchParams.get('filter');
+
     // Use integrated storage system
-    const { licenses, stats } = await getLicenseData()
-    let filteredLicenses = licenses
-    
+    const { licenses, stats } = await getLicenseData();
+    let filteredLicenses = licenses;
+
     if (filter && filter !== 'all') {
-      filteredLicenses = filteredLicenses.filter(license => {
+      filteredLicenses = filteredLicenses.filter((license) => {
         switch (filter) {
           case 'active':
-            return license.isActive
+            return license.isActive;
           case 'expired':
-            return !license.isActive
+            return !license.isActive;
           case 'violations':
-            return license.violationCount > 0
+            return license.violationCount > 0;
           case 'offline':
-            return license.deviceInfo.every(d => !d.isOnline)
+            return license.deviceInfo.every((d) => !d.isOnline);
           default:
-            return true
+            return true;
         }
-      })
+      });
     }
 
     return NextResponse.json({
       licenses: filteredLicenses,
-      stats
-    })
+      stats,
+    });
   } catch (error) {
-    console.error('License Control API Error:', error)
-    return NextResponse.json({ error: 'Failed to fetch license data' }, { status: 500 })
+    console.error('License Control API Error:', error);
+    return NextResponse.json({ error: 'Failed to fetch license data' }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { action, licenseId, ...data } = await request.json()
-    
+    const { action, licenseId, ...data } = await request.json();
+
     switch (action) {
       case 'disable':
-        return disableLicense(licenseId)
+        return disableLicense(licenseId);
       case 'limit_features':
-        return limitFeatures(licenseId, data)
+        return limitFeatures(licenseId, data);
       case 'force_update':
-        return forceUpdate(licenseId)
+        return forceUpdate(licenseId);
       case 'deactivate_device':
-        return deactivateDevice(licenseId, data)
+        return deactivateDevice(licenseId, data);
       default:
-        return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
+        return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
   } catch (error) {
-    console.error('License Control POST Error:', error)
-    return NextResponse.json({ error: 'Failed to process request' }, { status: 500 })
+    console.error('License Control POST Error:', error);
+    return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
   }
 }
 
 async function disableLicense(licenseId: string) {
-  return NextResponse.json({ 
+  return NextResponse.json({
     success: true,
     message: `License ${licenseId} has been remotely disabled`,
     action: 'disable',
-    timestamp: new Date().toISOString()
-  })
+    timestamp: new Date().toISOString(),
+  });
 }
 
 async function limitFeatures(licenseId: string, data: any) {
@@ -243,8 +253,8 @@ async function limitFeatures(licenseId: string, data: any) {
     success: true,
     message: `Features limited for license ${licenseId}`,
     restrictedFeatures: ['advanced_ai', 'content_generation', 'analytics'],
-    allowedFeatures: ['basic_ai', 'tutoring']
-  })
+    allowedFeatures: ['basic_ai', 'tutoring'],
+  });
 }
 
 async function forceUpdate(licenseId: string) {
@@ -252,14 +262,18 @@ async function forceUpdate(licenseId: string) {
     success: true,
     message: `Update initiated for license ${licenseId}`,
     newVersion: '2.4.2',
-    updateIncludes: ['Enhanced licensing controls', 'Improved heartbeat system', 'Feature restrictions']
-  })
+    updateIncludes: [
+      'Enhanced licensing controls',
+      'Improved heartbeat system',
+      'Feature restrictions',
+    ],
+  });
 }
 
 async function deactivateDevice(licenseId: string, data: any) {
   return NextResponse.json({
     success: true,
     message: `Device deactivated for license ${licenseId}`,
-    availableActivations: 1
-  })
+    availableActivations: 1,
+  });
 }

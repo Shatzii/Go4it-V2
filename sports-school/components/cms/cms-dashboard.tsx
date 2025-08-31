@@ -10,18 +10,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  Save, 
-  Upload, 
-  Eye, 
-  Palette, 
-  FileText, 
-  Image, 
+import {
+  Save,
+  Upload,
+  Eye,
+  Palette,
+  FileText,
+  Image,
   Settings,
   Download,
   Trash2,
   Plus,
-  Edit3
+  Edit3,
 } from 'lucide-react';
 
 interface CMSDashboardProps {
@@ -77,14 +77,14 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
       secondary: '#64748b',
       accent: '#0ea5e9',
       background: '#ffffff',
-      text: '#1f2937'
+      text: '#1f2937',
     },
     fonts: {
       heading: 'Inter',
       body: 'Inter',
-      size: 'medium'
+      size: 'medium',
     },
-    customCSS: ''
+    customCSS: '',
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -96,11 +96,11 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      
+
       // Load dashboard data
       const response = await fetch(`/api/education/cms/dashboard/${schoolId}`);
       const data = await response.json();
-      
+
       if (data.success) {
         setLandingPageContent(data.dashboard.content['landing-page'] || {});
         setSchoolInfo(data.dashboard.content['school-info'] || {});
@@ -111,7 +111,7 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
       toast({
         title: 'Error',
         description: 'Failed to load dashboard data',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -121,19 +121,22 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
   const saveContent = async (contentType: string, content: any) => {
     try {
       setLoading(true);
-      
-      const response = await fetch(`/api/education/cms/content/${contentType}?schoolId=${schoolId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(content)
-      });
-      
+
+      const response = await fetch(
+        `/api/education/cms/content/${contentType}?schoolId=${schoolId}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(content),
+        },
+      );
+
       const result = await response.json();
-      
+
       if (result.success) {
         toast({
           title: 'Success',
-          description: `${contentType} content saved successfully`
+          description: `${contentType} content saved successfully`,
         });
       } else {
         throw new Error(result.error);
@@ -142,7 +145,7 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
       toast({
         title: 'Error',
         description: `Failed to save ${contentType} content`,
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -155,19 +158,19 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
       formData.append('file', file);
       formData.append('schoolId', schoolId);
       formData.append('category', category);
-      
+
       const response = await fetch('/api/education/cms/media/upload', {
         method: 'POST',
-        body: formData
+        body: formData,
       });
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
-        setMediaLibrary(prev => [result.media, ...prev]);
+        setMediaLibrary((prev) => [result.media, ...prev]);
         toast({
           title: 'Success',
-          description: 'File uploaded successfully'
+          description: 'File uploaded successfully',
         });
         return result.media;
       } else {
@@ -177,7 +180,7 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
       toast({
         title: 'Error',
         description: 'Failed to upload file',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     }
   };
@@ -185,19 +188,19 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
   const saveBranding = async () => {
     try {
       setLoading(true);
-      
+
       const response = await fetch(`/api/education/cms/branding/${schoolId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(branding)
+        body: JSON.stringify(branding),
       });
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
         toast({
           title: 'Success',
-          description: 'Branding updated successfully'
+          description: 'Branding updated successfully',
         });
       } else {
         throw new Error(result.error);
@@ -206,7 +209,7 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
       toast({
         title: 'Error',
         description: 'Failed to update branding',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -217,7 +220,7 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
     try {
       const response = await fetch(`/api/education/cms/render/${schoolId}`);
       const html = await response.text();
-      
+
       // Open preview in new window
       const previewWindow = window.open('', '_blank');
       if (previewWindow) {
@@ -228,7 +231,7 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
       toast({
         title: 'Error',
         description: 'Failed to generate preview',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     }
   };
@@ -236,7 +239,7 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files) return;
-    
+
     for (const file of Array.from(files)) {
       await uploadFile(file);
     }
@@ -255,7 +258,10 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
               <Eye className="h-4 w-4 mr-2" />
               Preview
             </Button>
-            <Button onClick={() => window.open(`/api/education/cms/export/${schoolId}`, '_blank')} variant="outline">
+            <Button
+              onClick={() => window.open(`/api/education/cms/export/${schoolId}`, '_blank')}
+              variant="outline"
+            >
               <Download className="h-4 w-4 mr-2" />
               Export
             </Button>
@@ -288,9 +294,7 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
               <Card>
                 <CardHeader>
                   <CardTitle>Landing Page</CardTitle>
-                  <CardDescription>
-                    Update your main landing page content
-                  </CardDescription>
+                  <CardDescription>Update your main landing page content</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
@@ -298,7 +302,9 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
                     <Input
                       id="title"
                       value={landingPageContent.title || ''}
-                      onChange={(e) => setLandingPageContent(prev => ({ ...prev, title: e.target.value }))}
+                      onChange={(e) =>
+                        setLandingPageContent((prev) => ({ ...prev, title: e.target.value }))
+                      }
                       placeholder="AI-Powered Education Platform"
                     />
                   </div>
@@ -307,7 +313,9 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
                     <Input
                       id="subtitle"
                       value={landingPageContent.subtitle || ''}
-                      onChange={(e) => setLandingPageContent(prev => ({ ...prev, subtitle: e.target.value }))}
+                      onChange={(e) =>
+                        setLandingPageContent((prev) => ({ ...prev, subtitle: e.target.value }))
+                      }
                       placeholder="Transform learning with personalized AI teachers"
                     />
                   </div>
@@ -316,12 +324,14 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
                     <Textarea
                       id="description"
                       value={landingPageContent.description || ''}
-                      onChange={(e) => setLandingPageContent(prev => ({ ...prev, description: e.target.value }))}
+                      onChange={(e) =>
+                        setLandingPageContent((prev) => ({ ...prev, description: e.target.value }))
+                      }
                       placeholder="Comprehensive educational platform..."
                       rows={3}
                     />
                   </div>
-                  <Button 
+                  <Button
                     onClick={() => saveContent('landing-page', landingPageContent)}
                     disabled={loading}
                     className="w-full"
@@ -336,9 +346,7 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
               <Card>
                 <CardHeader>
                   <CardTitle>School Information</CardTitle>
-                  <CardDescription>
-                    Update your school's basic information
-                  </CardDescription>
+                  <CardDescription>Update your school's basic information</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
@@ -346,7 +354,9 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
                     <Input
                       id="schoolName"
                       value={schoolInfo.schoolName || ''}
-                      onChange={(e) => setSchoolInfo(prev => ({ ...prev, schoolName: e.target.value }))}
+                      onChange={(e) =>
+                        setSchoolInfo((prev) => ({ ...prev, schoolName: e.target.value }))
+                      }
                       placeholder="Your School Name"
                     />
                   </div>
@@ -355,7 +365,9 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
                     <Input
                       id="districtName"
                       value={schoolInfo.districtName || ''}
-                      onChange={(e) => setSchoolInfo(prev => ({ ...prev, districtName: e.target.value }))}
+                      onChange={(e) =>
+                        setSchoolInfo((prev) => ({ ...prev, districtName: e.target.value }))
+                      }
                       placeholder="Your District Name"
                     />
                   </div>
@@ -364,12 +376,14 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
                     <Textarea
                       id="mission"
                       value={schoolInfo.mission || ''}
-                      onChange={(e) => setSchoolInfo(prev => ({ ...prev, mission: e.target.value }))}
+                      onChange={(e) =>
+                        setSchoolInfo((prev) => ({ ...prev, mission: e.target.value }))
+                      }
                       placeholder="Our mission is to..."
                       rows={3}
                     />
                   </div>
-                  <Button 
+                  <Button
                     onClick={() => saveContent('school-info', schoolInfo)}
                     disabled={loading}
                     className="w-full"
@@ -386,9 +400,7 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
             <Card>
               <CardHeader>
                 <CardTitle>Media Library</CardTitle>
-                <CardDescription>
-                  Upload and manage images, videos, and documents
-                </CardDescription>
+                <CardDescription>Upload and manage images, videos, and documents</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="mb-6">
@@ -419,8 +431,8 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
                       <Card key={media.id} className="overflow-hidden">
                         <div className="aspect-video bg-gray-100 flex items-center justify-center">
                           {media.url.includes('image') ? (
-                            <img 
-                              src={media.url} 
+                            <img
+                              src={media.url}
                               alt={media.originalName}
                               className="w-full h-full object-cover"
                             />
@@ -452,9 +464,7 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
               <Card>
                 <CardHeader>
                   <CardTitle>Colors</CardTitle>
-                  <CardDescription>
-                    Customize your school's color scheme
-                  </CardDescription>
+                  <CardDescription>Customize your school's color scheme</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
@@ -465,18 +475,22 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
                           id="primary-color"
                           type="color"
                           value={branding.colors.primary}
-                          onChange={(e) => setBranding(prev => ({
-                            ...prev,
-                            colors: { ...prev.colors, primary: e.target.value }
-                          }))}
+                          onChange={(e) =>
+                            setBranding((prev) => ({
+                              ...prev,
+                              colors: { ...prev.colors, primary: e.target.value },
+                            }))
+                          }
                           className="w-16 h-10 p-1"
                         />
                         <Input
                           value={branding.colors.primary}
-                          onChange={(e) => setBranding(prev => ({
-                            ...prev,
-                            colors: { ...prev.colors, primary: e.target.value }
-                          }))}
+                          onChange={(e) =>
+                            setBranding((prev) => ({
+                              ...prev,
+                              colors: { ...prev.colors, primary: e.target.value },
+                            }))
+                          }
                           placeholder="#2563eb"
                         />
                       </div>
@@ -488,18 +502,22 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
                           id="secondary-color"
                           type="color"
                           value={branding.colors.secondary}
-                          onChange={(e) => setBranding(prev => ({
-                            ...prev,
-                            colors: { ...prev.colors, secondary: e.target.value }
-                          }))}
+                          onChange={(e) =>
+                            setBranding((prev) => ({
+                              ...prev,
+                              colors: { ...prev.colors, secondary: e.target.value },
+                            }))
+                          }
                           className="w-16 h-10 p-1"
                         />
                         <Input
                           value={branding.colors.secondary}
-                          onChange={(e) => setBranding(prev => ({
-                            ...prev,
-                            colors: { ...prev.colors, secondary: e.target.value }
-                          }))}
+                          onChange={(e) =>
+                            setBranding((prev) => ({
+                              ...prev,
+                              colors: { ...prev.colors, secondary: e.target.value },
+                            }))
+                          }
                           placeholder="#64748b"
                         />
                       </div>
@@ -511,9 +529,7 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
               <Card>
                 <CardHeader>
                   <CardTitle>Typography</CardTitle>
-                  <CardDescription>
-                    Choose fonts for your content
-                  </CardDescription>
+                  <CardDescription>Choose fonts for your content</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
@@ -521,10 +537,12 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
                     <select
                       id="heading-font"
                       value={branding.fonts.heading}
-                      onChange={(e) => setBranding(prev => ({
-                        ...prev,
-                        fonts: { ...prev.fonts, heading: e.target.value }
-                      }))}
+                      onChange={(e) =>
+                        setBranding((prev) => ({
+                          ...prev,
+                          fonts: { ...prev.fonts, heading: e.target.value },
+                        }))
+                      }
                       className="w-full p-2 border rounded-md"
                     >
                       <option value="Inter">Inter</option>
@@ -540,23 +558,19 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
               <Card className="lg:col-span-2">
                 <CardHeader>
                   <CardTitle>Custom CSS</CardTitle>
-                  <CardDescription>
-                    Add custom CSS for advanced styling
-                  </CardDescription>
+                  <CardDescription>Add custom CSS for advanced styling</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Textarea
                     value={branding.customCSS}
-                    onChange={(e) => setBranding(prev => ({ ...prev, customCSS: e.target.value }))}
+                    onChange={(e) =>
+                      setBranding((prev) => ({ ...prev, customCSS: e.target.value }))
+                    }
                     placeholder="/* Add your custom CSS here */"
                     rows={8}
                     className="font-mono text-sm"
                   />
-                  <Button 
-                    onClick={saveBranding}
-                    disabled={loading}
-                    className="mt-4"
-                  >
+                  <Button onClick={saveBranding} disabled={loading} className="mt-4">
                     <Save className="h-4 w-4 mr-2" />
                     Save Branding
                   </Button>
@@ -569,13 +583,11 @@ export default function CMSDashboard({ schoolId }: CMSDashboardProps) {
             <Card>
               <CardHeader>
                 <CardTitle>Export & Import</CardTitle>
-                <CardDescription>
-                  Backup and restore your content
-                </CardDescription>
+                <CardDescription>Backup and restore your content</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Button 
+                  <Button
                     onClick={() => window.open(`/api/education/cms/export/${schoolId}`, '_blank')}
                     variant="outline"
                   >

@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build-and-test:
@@ -70,3 +70,8 @@ jobs:
           CI: 'true'
         run: |
           node scripts/test-health-and-verify.js || (echo "Health/Verify test failed" && exit 1)
+
+      - name: Accessibility scan (pa11y)
+        if: always()
+        run: |
+          npx pa11y http://localhost:5000 || true

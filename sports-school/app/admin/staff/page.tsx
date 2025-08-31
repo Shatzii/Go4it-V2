@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import Link from 'next/link'
+import React, { useState } from 'react';
+import Link from 'next/link';
 
 export default function StaffManagement() {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedDepartment, setSelectedDepartment] = useState('all')
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState('all');
 
   // Sample staff data - would come from API
   const staff = [
@@ -21,7 +21,7 @@ export default function StaffManagement() {
       hireDate: '2020-08-15',
       certifications: ['Educational Leadership', 'Special Education'],
       isActive: true,
-      schedule: { type: 'full-time', hours: '7:30 AM - 4:30 PM' }
+      schedule: { type: 'full-time', hours: '7:30 AM - 4:30 PM' },
     },
     {
       id: '2',
@@ -35,7 +35,7 @@ export default function StaffManagement() {
       hireDate: '2021-08-01',
       certifications: ['Mathematics 4-8', 'ESL'],
       isActive: true,
-      schedule: { type: 'full-time', hours: '8:00 AM - 4:00 PM' }
+      schedule: { type: 'full-time', hours: '8:00 AM - 4:00 PM' },
     },
     {
       id: '3',
@@ -49,7 +49,7 @@ export default function StaffManagement() {
       hireDate: '2019-07-15',
       certifications: ['Registered Nurse', 'School Health'],
       isActive: true,
-      schedule: { type: 'full-time', hours: '7:45 AM - 3:45 PM' }
+      schedule: { type: 'full-time', hours: '7:45 AM - 3:45 PM' },
     },
     {
       id: '4',
@@ -63,19 +63,27 @@ export default function StaffManagement() {
       hireDate: '2022-01-10',
       certifications: ['Special Education EC-12', 'Autism Certification'],
       isActive: true,
-      schedule: { type: 'full-time', hours: '8:00 AM - 4:00 PM' }
-    }
-  ]
+      schedule: { type: 'full-time', hours: '8:00 AM - 4:00 PM' },
+    },
+  ];
 
-  const departments = ['Administration', 'Academic', 'Special Education', 'Health Services', 'Support Services']
+  const departments = [
+    'Administration',
+    'Academic',
+    'Special Education',
+    'Health Services',
+    'Support Services',
+  ];
 
-  const filteredStaff = staff.filter(member => {
-    const matchesSearch = `${member.firstName} ${member.lastName} ${member.employeeId} ${member.position}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-    const matchesDepartment = selectedDepartment === 'all' || member.department === selectedDepartment
-    return matchesSearch && matchesDepartment
-  })
+  const filteredStaff = staff.filter((member) => {
+    const matchesSearch =
+      `${member.firstName} ${member.lastName} ${member.employeeId} ${member.position}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+    const matchesDepartment =
+      selectedDepartment === 'all' || member.department === selectedDepartment;
+    return matchesSearch && matchesDepartment;
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -83,7 +91,10 @@ export default function StaffManagement() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <Link href="/admin/dashboard" className="text-indigo-600 font-semibold text-lg hover:text-indigo-500">
+            <Link
+              href="/admin/dashboard"
+              className="text-indigo-600 font-semibold text-lg hover:text-indigo-500"
+            >
               ← Admin Dashboard
             </Link>
             <h1 className="text-2xl font-bold text-gray-900">Staff Management</h1>
@@ -108,7 +119,7 @@ export default function StaffManagement() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-green-100 rounded-lg">
@@ -116,11 +127,13 @@ export default function StaffManagement() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Active Staff</p>
-                <p className="text-2xl font-bold text-gray-900">{staff.filter(s => s.isActive).length}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {staff.filter((s) => s.isActive).length}
+                </p>
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-purple-100 rounded-lg">
@@ -129,12 +142,12 @@ export default function StaffManagement() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Teachers</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {staff.filter(s => s.position.toLowerCase().includes('teacher')).length}
+                  {staff.filter((s) => s.position.toLowerCase().includes('teacher')).length}
                 </p>
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-yellow-100 rounded-lg">
@@ -162,7 +175,7 @@ export default function StaffManagement() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Department</label>
                 <select
@@ -171,12 +184,14 @@ export default function StaffManagement() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                 >
                   <option value="all">All Departments</option>
-                  {departments.map(dept => (
-                    <option key={dept} value={dept}>{dept}</option>
+                  {departments.map((dept) => (
+                    <option key={dept} value={dept}>
+                      {dept}
+                    </option>
                   ))}
                 </select>
               </div>
-              
+
               <div className="flex items-end">
                 <button className="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
                   Apply Filters
@@ -226,7 +241,8 @@ export default function StaffManagement() {
                         <div className="flex-shrink-0 h-10 w-10">
                           <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
                             <span className="text-sm font-medium text-indigo-600">
-                              {member.firstName.charAt(0)}{member.lastName.charAt(0)}
+                              {member.firstName.charAt(0)}
+                              {member.lastName.charAt(0)}
                             </span>
                           </div>
                         </div>
@@ -234,9 +250,7 @@ export default function StaffManagement() {
                           <div className="text-sm font-medium text-gray-900">
                             {member.firstName} {member.lastName}
                           </div>
-                          <div className="text-sm text-gray-500">
-                            Hire Date: {member.hireDate}
-                          </div>
+                          <div className="text-sm text-gray-500">Hire Date: {member.hireDate}</div>
                         </div>
                       </div>
                     </td>
@@ -256,25 +270,21 @@ export default function StaffManagement() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        member.isActive 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          member.isActive
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}
+                      >
                         {member.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex space-x-2">
-                        <button className="text-indigo-600 hover:text-indigo-900">
-                          View
-                        </button>
-                        <button className="text-indigo-600 hover:text-indigo-900">
-                          Edit
-                        </button>
-                        <button className="text-indigo-600 hover:text-indigo-900">
-                          Schedule
-                        </button>
+                        <button className="text-indigo-600 hover:text-indigo-900">View</button>
+                        <button className="text-indigo-600 hover:text-indigo-900">Edit</button>
+                        <button className="text-indigo-600 hover:text-indigo-900">Schedule</button>
                       </div>
                     </td>
                   </tr>
@@ -333,5 +343,5 @@ export default function StaffManagement() {
         </div>
       </div>
     </div>
-  )
+  );
 }

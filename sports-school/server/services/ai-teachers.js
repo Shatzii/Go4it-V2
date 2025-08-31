@@ -1,8 +1,8 @@
 /**
  * AI Teachers System
- * 
+ *
  * Complete implementation of 6 specialized AI teachers for K-12 education
- * Professor Newton (Math), Dr. Curie (Science), Ms. Shakespeare (English), 
+ * Professor Newton (Math), Dr. Curie (Science), Ms. Shakespeare (English),
  * Professor Timeline (Social Studies), Maestro Picasso (Arts), Dr. Inclusive (Special Ed)
  */
 
@@ -21,7 +21,14 @@ class AITeachersSystem {
         name: 'Professor Newton',
         subject: 'Mathematics',
         personality: 'Patient, logical, encourages step-by-step problem solving',
-        expertise: ['Arithmetic', 'Algebra', 'Geometry', 'Calculus', 'Statistics', 'Problem Solving'],
+        expertise: [
+          'Arithmetic',
+          'Algebra',
+          'Geometry',
+          'Calculus',
+          'Statistics',
+          'Problem Solving',
+        ],
         gradeRange: 'K-12',
         systemPrompt: `You are Professor Newton, an expert mathematics teacher with infinite patience and enthusiasm for helping students understand mathematical concepts. You:
         - Break down complex problems into manageable steps
@@ -31,14 +38,25 @@ class AITeachersSystem {
         - Make math fun and engaging through practical applications
         - Never give direct answers but guide students to discover solutions
         - Use encouraging language and celebrate small victories`,
-        specializations: ['Neurodivergent math support', 'Visual learning techniques', 'Real-world applications']
+        specializations: [
+          'Neurodivergent math support',
+          'Visual learning techniques',
+          'Real-world applications',
+        ],
       },
 
       'dr-curie': {
         name: 'Dr. Curie',
         subject: 'Science',
         personality: 'Curious, experimental, inspires scientific wonder',
-        expertise: ['Physics', 'Chemistry', 'Biology', 'Earth Science', 'Environmental Science', 'Scientific Method'],
+        expertise: [
+          'Physics',
+          'Chemistry',
+          'Biology',
+          'Earth Science',
+          'Environmental Science',
+          'Scientific Method',
+        ],
         gradeRange: 'K-12',
         systemPrompt: `You are Dr. Curie, a passionate science educator who believes every student can be a scientist. You:
         - Encourage hands-on experimentation and observation
@@ -48,14 +66,21 @@ class AITeachersSystem {
         - Emphasize safety while maintaining excitement for discovery
         - Help students develop hypotheses and test theories
         - Make abstract concepts concrete through examples and demonstrations`,
-        specializations: ['Laboratory safety', 'Inquiry-based learning', 'STEM career guidance']
+        specializations: ['Laboratory safety', 'Inquiry-based learning', 'STEM career guidance'],
       },
 
       'ms-shakespeare': {
         name: 'Ms. Shakespeare',
         subject: 'English Language Arts',
         personality: 'Creative, articulate, passionate about literature and writing',
-        expertise: ['Reading Comprehension', 'Creative Writing', 'Grammar', 'Literature Analysis', 'Public Speaking', 'Research Skills'],
+        expertise: [
+          'Reading Comprehension',
+          'Creative Writing',
+          'Grammar',
+          'Literature Analysis',
+          'Public Speaking',
+          'Research Skills',
+        ],
         gradeRange: 'K-12',
         systemPrompt: `You are Ms. Shakespeare, an inspiring English teacher who brings language and literature to life. You:
         - Make reading engaging through dramatic interpretation
@@ -65,14 +90,25 @@ class AITeachersSystem {
         - Connect literature to modern life and student experiences
         - Foster a love of reading through diverse text selection
         - Support students with varying literacy levels with patience and creativity`,
-        specializations: ['Dyslexia support', 'Creative writing techniques', 'Public speaking confidence']
+        specializations: [
+          'Dyslexia support',
+          'Creative writing techniques',
+          'Public speaking confidence',
+        ],
       },
 
       'professor-timeline': {
         name: 'Professor Timeline',
         subject: 'Social Studies',
         personality: 'Knowledgeable storyteller, connects past to present',
-        expertise: ['World History', 'American History', 'Geography', 'Civics', 'Economics', 'Cultural Studies'],
+        expertise: [
+          'World History',
+          'American History',
+          'Geography',
+          'Civics',
+          'Economics',
+          'Cultural Studies',
+        ],
         gradeRange: 'K-12',
         systemPrompt: `You are Professor Timeline, a master storyteller who makes history come alive. You:
         - Tell engaging stories that connect historical events to current events
@@ -82,7 +118,11 @@ class AITeachersSystem {
         - Make connections between cultures and civilizations
         - Promote civic engagement and understanding of democratic processes
         - Address sensitive topics with age-appropriate nuance and respect`,
-        specializations: ['Primary source analysis', 'Cultural sensitivity', 'Current events connections']
+        specializations: [
+          'Primary source analysis',
+          'Cultural sensitivity',
+          'Current events connections',
+        ],
       },
 
       'maestro-picasso': {
@@ -99,14 +139,25 @@ class AITeachersSystem {
         - Help students develop their unique artistic voice
         - Integrate arts with other subjects for deeper learning
         - Create a safe space for creative risk-taking and experimentation`,
-        specializations: ['Multi-sensory art therapy', 'Cultural art exploration', 'Digital creativity tools']
+        specializations: [
+          'Multi-sensory art therapy',
+          'Cultural art exploration',
+          'Digital creativity tools',
+        ],
       },
 
       'dr-inclusive': {
         name: 'Dr. Inclusive',
         subject: 'Special Education',
         personality: 'Compassionate, adaptive, expert in diverse learning needs',
-        expertise: ['Learning Disabilities', 'ADHD Support', 'Autism Spectrum', 'Behavioral Interventions', 'IEP Development', 'Assistive Technology'],
+        expertise: [
+          'Learning Disabilities',
+          'ADHD Support',
+          'Autism Spectrum',
+          'Behavioral Interventions',
+          'IEP Development',
+          'Assistive Technology',
+        ],
         gradeRange: 'K-12',
         systemPrompt: `You are Dr. Inclusive, a special education expert dedicated to ensuring every student can learn and succeed. You:
         - Provide individualized learning strategies for diverse needs
@@ -116,8 +167,12 @@ class AITeachersSystem {
         - Use assistive technology to enhance learning
         - Provide emotional support and build student confidence
         - Work with families to create comprehensive support plans`,
-        specializations: ['IEP/504 plan support', 'Assistive technology', 'Behavioral intervention strategies']
-      }
+        specializations: [
+          'IEP/504 plan support',
+          'Assistive technology',
+          'Behavioral intervention strategies',
+        ],
+      },
     };
   }
 
@@ -133,7 +188,7 @@ class AITeachersSystem {
       topic,
       learningStyle = 'visual',
       specialNeeds = [],
-      sessionType = 'tutoring' // tutoring, lesson, assessment, review
+      sessionType = 'tutoring', // tutoring, lesson, assessment, review
     } = options;
 
     const teacher = this.teachers[teacherId];
@@ -160,8 +215,8 @@ class AITeachersSystem {
         conceptsIntroduced: [],
         skillsPracticed: [],
         masteryLevel: 0,
-        engagementScore: 0
-      }
+        engagementScore: 0,
+      },
     };
 
     this.activeSessions.set(sessionId, session);
@@ -172,7 +227,7 @@ class AITeachersSystem {
       role: 'assistant',
       content: openingMessage,
       timestamp: new Date(),
-      adaptations: session.adaptations
+      adaptations: session.adaptations,
     });
 
     return session;
@@ -188,36 +243,36 @@ class AITeachersSystem {
     }
 
     const teacher = this.teachers[session.teacherId];
-    
+
     // Add student message to session
     session.messages.push({
       role: 'user',
       content: studentMessage,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     // Analyze student response for adaptation
     const analysis = await this.analyzeStudentResponse(studentMessage, session);
-    
+
     // Update session based on analysis
     this.updateSessionProgress(session, analysis);
 
     // Generate teacher response
     const teacherResponse = await this.generateTeacherResponse(teacher, session, analysis);
-    
+
     session.messages.push({
       role: 'assistant',
       content: teacherResponse,
       timestamp: new Date(),
       adaptations: session.adaptations,
-      analysis: analysis
+      analysis: analysis,
     });
 
     return {
       message: teacherResponse,
       analysis: analysis,
       progress: session.progress,
-      recommendations: await this.generateRecommendations(session)
+      recommendations: await this.generateRecommendations(session),
     };
   }
 
@@ -236,7 +291,7 @@ class AITeachersSystem {
       duration = 45,
       classSize = 25,
       specialNeeds = [],
-      learningObjectives = []
+      learningObjectives = [],
     } = options;
 
     const prompt = `As ${teacher.name}, create a comprehensive ${duration}-minute lesson plan for ${gradeLevel} students on "${topic}".
@@ -246,7 +301,7 @@ class AITeachersSystem {
     - Special needs considerations: ${specialNeeds.join(', ') || 'None'}
     
     Learning objectives:
-    ${learningObjectives.map(obj => `- ${obj}`).join('\n')}
+    ${learningObjectives.map((obj) => `- ${obj}`).join('\n')}
 
     Create a lesson that reflects your teaching personality: ${teacher.personality}
 
@@ -270,7 +325,7 @@ class AITeachersSystem {
     const response = await this.contentEngine.aiServer.generateText(prompt, 'curriculum', {
       temperature: 0.7,
       max_tokens: 3000,
-      system_prompt: teacher.systemPrompt
+      system_prompt: teacher.systemPrompt,
     });
 
     return {
@@ -284,8 +339,8 @@ class AITeachersSystem {
         duration,
         classSize,
         specialNeeds,
-        generatedAt: new Date().toISOString()
-      }
+        generatedAt: new Date().toISOString(),
+      },
     };
   }
 
@@ -323,7 +378,7 @@ class AITeachersSystem {
     const response = await this.contentEngine.aiServer.generateText(prompt, 'curriculum', {
       temperature: 0.7,
       max_tokens: 2500,
-      system_prompt: teacher.systemPrompt
+      system_prompt: teacher.systemPrompt,
     });
 
     return {
@@ -333,7 +388,7 @@ class AITeachersSystem {
       learningPath: response.text,
       estimatedDuration: '4 weeks',
       studentId: studentProfile.id,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
   }
 
@@ -347,7 +402,7 @@ class AITeachersSystem {
       gradeLevel,
       assessmentType = 'formative',
       questionCount = 5,
-      adaptiveLevel = true
+      adaptiveLevel = true,
     } = options;
 
     const assessment = await this.contentEngine.generateSingleAssessment({
@@ -355,7 +410,7 @@ class AITeachersSystem {
       topic,
       gradeLevel,
       learningObjectives: [`Master key concepts in ${topic}`],
-      questionCount
+      questionCount,
     });
 
     // Add teacher-specific feedback framework
@@ -367,7 +422,7 @@ class AITeachersSystem {
       teacherName: teacher.name,
       feedbackFramework,
       adaptiveLevel,
-      instructions: `Assessment created by ${teacher.name} with personalized feedback`
+      instructions: `Assessment created by ${teacher.name} with personalized feedback`,
     };
   }
 
@@ -376,7 +431,7 @@ class AITeachersSystem {
    */
   async analyzeStudentResponse(response, session) {
     const teacher = this.teachers[session.teacherId];
-    
+
     const prompt = `As ${teacher.name}, analyze this student response:
 
     Student Response: "${response}"
@@ -401,7 +456,7 @@ class AITeachersSystem {
     const analysis = await this.contentEngine.aiServer.generateText(prompt, 'assessment', {
       temperature: 0.6,
       max_tokens: 1000,
-      system_prompt: teacher.systemPrompt
+      system_prompt: teacher.systemPrompt,
     });
 
     try {
@@ -415,7 +470,7 @@ class AITeachersSystem {
         next_steps: ['Provide additional support'],
         difficulty_adjustment: 'maintain',
         engagement_indicators: ['Active participation'],
-        emotional_state: 'neutral'
+        emotional_state: 'neutral',
       };
     }
   }
@@ -425,13 +480,13 @@ class AITeachersSystem {
    */
   async generateTeacherResponse(teacher, session, analysis) {
     const messageHistory = session.messages.slice(-3); // Last 3 messages for context
-    
+
     const prompt = `As ${teacher.name}, respond to the student based on this analysis:
 
     Analysis: ${JSON.stringify(analysis, null, 2)}
     
     Recent conversation:
-    ${messageHistory.map(msg => `${msg.role}: ${msg.content}`).join('\n')}
+    ${messageHistory.map((msg) => `${msg.role}: ${msg.content}`).join('\n')}
 
     Student Profile:
     - Grade Level: ${session.gradeLevel}
@@ -451,7 +506,7 @@ class AITeachersSystem {
     const response = await this.contentEngine.aiServer.generateText(prompt, 'curriculum', {
       temperature: 0.8,
       max_tokens: 1500,
-      system_prompt: teacher.systemPrompt
+      system_prompt: teacher.systemPrompt,
     });
 
     return response.text;
@@ -482,7 +537,7 @@ class AITeachersSystem {
     const response = await this.contentEngine.aiServer.generateText(prompt, 'curriculum', {
       temperature: 0.8,
       max_tokens: 800,
-      system_prompt: teacher.systemPrompt
+      system_prompt: teacher.systemPrompt,
     });
 
     return response.text;
@@ -495,26 +550,26 @@ class AITeachersSystem {
 
   getTeacherForSubject(subject) {
     const subjectMapping = {
-      'math': 'professor-newton',
-      'mathematics': 'professor-newton',
-      'science': 'dr-curie',
-      'physics': 'dr-curie',
-      'chemistry': 'dr-curie',
-      'biology': 'dr-curie',
-      'english': 'ms-shakespeare',
-      'ela': 'ms-shakespeare',
+      math: 'professor-newton',
+      mathematics: 'professor-newton',
+      science: 'dr-curie',
+      physics: 'dr-curie',
+      chemistry: 'dr-curie',
+      biology: 'dr-curie',
+      english: 'ms-shakespeare',
+      ela: 'ms-shakespeare',
       'language arts': 'ms-shakespeare',
-      'reading': 'ms-shakespeare',
-      'writing': 'ms-shakespeare',
+      reading: 'ms-shakespeare',
+      writing: 'ms-shakespeare',
       'social studies': 'professor-timeline',
-      'history': 'professor-timeline',
-      'geography': 'professor-timeline',
-      'civics': 'professor-timeline',
-      'art': 'maestro-picasso',
-      'arts': 'maestro-picasso',
-      'music': 'maestro-picasso',
+      history: 'professor-timeline',
+      geography: 'professor-timeline',
+      civics: 'professor-timeline',
+      art: 'maestro-picasso',
+      arts: 'maestro-picasso',
+      music: 'maestro-picasso',
       'special education': 'dr-inclusive',
-      'special ed': 'dr-inclusive'
+      'special ed': 'dr-inclusive',
     };
 
     return subjectMapping[subject.toLowerCase()] || 'professor-newton';
@@ -530,7 +585,7 @@ class AITeachersSystem {
       visual: [],
       auditory: [],
       kinesthetic: [],
-      special: []
+      special: [],
     };
 
     if (learningStyle === 'visual') {
@@ -558,15 +613,17 @@ class AITeachersSystem {
 
     // Update progress tracking
     session.progress.masteryLevel = this.calculateMasteryLevel(analysis.understanding_level);
-    session.progress.engagementScore = this.calculateEngagementScore(analysis.engagement_indicators);
+    session.progress.engagementScore = this.calculateEngagementScore(
+      analysis.engagement_indicators,
+    );
   }
 
   calculateMasteryLevel(understandingLevel) {
     const levels = {
-      'struggling': 25,
-      'developing': 50,
-      'proficient': 75,
-      'advanced': 100
+      struggling: 25,
+      developing: 50,
+      proficient: 75,
+      advanced: 100,
     };
     return levels[understandingLevel] || 50;
   }
@@ -579,15 +636,15 @@ class AITeachersSystem {
     return [
       'Continue practicing similar problems',
       'Review foundational concepts if needed',
-      'Try different problem-solving strategies'
+      'Try different problem-solving strategies',
     ];
   }
 
   async generateFeedbackFramework(teacher, topic, gradeLevel) {
     return {
-      positive: [`Great effort on ${topic}!`, 'You\'re making good progress!'],
-      constructive: ['Let\'s try a different approach', 'Here\'s another way to think about it'],
-      encouraging: ['Keep going, you\'ve got this!', 'Every mistake is a learning opportunity']
+      positive: [`Great effort on ${topic}!`, "You're making good progress!"],
+      constructive: ["Let's try a different approach", "Here's another way to think about it"],
+      encouraging: ["Keep going, you've got this!", 'Every mistake is a learning opportunity'],
     };
   }
 

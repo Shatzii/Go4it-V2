@@ -1,7 +1,7 @@
 import { Pool, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
-import ws from "ws";
-import * as schema from "@shared/schema";
+import ws from 'ws';
+import * as schema from '@shared/schema';
 import { Performance } from '../lib/performance';
 
 neonConfig.webSocketConstructor = ws;
@@ -23,12 +23,12 @@ class DatabaseOptimizer {
     totalQueries: 0,
     slowQueries: 0,
     errors: 0,
-    avgQueryTime: 0
+    avgQueryTime: 0,
   };
 
   constructor() {
     if (!process.env.DATABASE_URL) {
-      throw new Error("DATABASE_URL must be set");
+      throw new Error('DATABASE_URL must be set');
     }
 
     // Optimized config for 16GB RAM server
@@ -37,7 +37,7 @@ class DatabaseOptimizer {
       idleTimeout: 30000, // 30 seconds
       connectionTimeout: 10000, // 10 seconds
       queryTimeout: 30000, // 30 seconds
-      retryAttempts: 3
+      retryAttempts: 3,
     };
 
     this.pool = new Pool({
@@ -48,10 +48,10 @@ class DatabaseOptimizer {
       statement_timeout: this.config.queryTimeout,
     });
 
-    this.db = drizzle({ 
-      client: this.pool, 
+    this.db = drizzle({
+      client: this.pool,
       schema,
-      logger: process.env.NODE_ENV === 'development'
+      logger: process.env.NODE_ENV === 'development',
     });
 
     this.setupMonitoring();
@@ -93,14 +93,14 @@ class DatabaseOptimizer {
   async executeQuery<T>(
     queryName: string,
     queryFn: () => Promise<T>,
-    useTransaction = false
+    useTransaction = false,
   ): Promise<T> {
     Performance.start(`db:${queryName}`);
     this.connectionMetrics.totalQueries++;
 
     try {
       let result: T;
-      
+
       if (useTransaction) {
         result = await this.db.transaction(async (tx) => {
           return await queryFn();
@@ -110,7 +110,7 @@ class DatabaseOptimizer {
       }
 
       const duration = Performance.end(`db:${queryName}`) || 0;
-      
+
       // Track slow queries (>100ms)
       if (duration > 100) {
         this.connectionMetrics.slowQueries++;
@@ -118,22 +118,28 @@ class DatabaseOptimizer {
       }
 
       // Update average query time
-      this.connectionMetrics.avgQueryTime = 
-        (this.connectionMetrics.avgQueryTime * (this.connectionMetrics.totalQueries - 1) + duration) / 
+      this.connectionMetrics.avgQueryTime =
+        (this.connectionMetrics.avgQueryTime * (this.connectionMetrics.totalQueries - 1) +
+          duration) /
         this.connectionMetrics.totalQueries;
 
       return result;
     } catch (error) {
       Performance.end(`db:${queryName}`);
       this.connectionMetrics.errors++;
-      
+
       // Retry logic for transient errors
       if (this.isRetryableError(error) && this.config.retryAttempts > 0) {
         console.warn(`Retrying query ${queryName} due to error:`, error);
         await this.sleep(1000); // Wait 1 second before retry
-        return this.executeQueryWithRetry(queryName, queryFn, useTransaction, this.config.retryAttempts - 1);
+        return this.executeQueryWithRetry(
+          queryName,
+          queryFn,
+          useTransaction,
+          this.config.retryAttempts - 1,
+        );
       }
-      
+
       throw error;
     }
   }
@@ -142,7 +148,7 @@ class DatabaseOptimizer {
     queryName: string,
     queryFn: () => Promise<T>,
     useTransaction: boolean,
-    attemptsLeft: number
+    attemptsLeft: number,
   ): Promise<T> {
     if (attemptsLeft <= 0) {
       throw new Error(`Query ${queryName} failed after all retry attempts`);
@@ -161,25 +167,20 @@ class DatabaseOptimizer {
 
   private isRetryableError(error: any): boolean {
     if (!error) return false;
-    
-    const retryableCodes = [
-      'ECONNRESET',
-      'ECONNREFUSED',
-      'ETIMEDOUT',
-      'ENOTFOUND',
-      'ENETUNREACH'
-    ];
-    
-    return retryableCodes.some(code => 
-      error.code === code || 
-      error.message?.includes(code) ||
-      error.message?.includes('connection') ||
-      error.message?.includes('timeout')
+
+    const retryableCodes = ['ECONNRESET', 'ECONNREFUSED', 'ETIMEDOUT', 'ENOTFOUND', 'ENETUNREACH'];
+
+    return retryableCodes.some(
+      (code) =>
+        error.code === code ||
+        error.message?.includes(code) ||
+        error.message?.includes('connection') ||
+        error.message?.includes('timeout'),
     );
   }
 
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   private logPoolStatus() {
@@ -187,7 +188,7 @@ class DatabaseOptimizer {
       totalCount: this.pool.totalCount,
       idleCount: this.pool.idleCount,
       waitingCount: this.pool.waitingCount,
-      ...this.connectionMetrics
+      ...this.connectionMetrics,
     };
 
     if (process.env.NODE_ENV === 'development') {
@@ -200,7 +201,11 @@ class DatabaseOptimizer {
     }
 
     if (this.connectionMetrics.avgQueryTime > 200) {
-      console.warn('High average query time:', this.connectionMetrics.avgQueryTime.toFixed(2), 'ms');
+      console.warn(
+        'High average query time:',
+        this.connectionMetrics.avgQueryTime.toFixed(2),
+        'ms',
+      );
     }
 
     if (this.connectionMetrics.errors > 10) {
@@ -216,19 +221,19 @@ class DatabaseOptimizer {
         with: {
           schoolModules: {
             with: {
-              module: true
-            }
+              module: true,
+            },
           },
           classrooms: {
             with: {
               studentClassrooms: {
                 with: {
-                  student: true
-                }
-              }
-            }
-          }
-        }
+                  student: true,
+                },
+              },
+            },
+          },
+        },
       });
     });
   }
@@ -236,12 +241,10 @@ class DatabaseOptimizer {
   async getStudentProgress(studentId: string, limit = 50) {
     return this.executeQuery('getStudentProgress', async () => {
       return await this.db.query.analytics.findMany({
-        where: (analytics, { eq, and }) => and(
-          eq(analytics.entityType, 'student'),
-          eq(analytics.entityId, studentId)
-        ),
+        where: (analytics, { eq, and }) =>
+          and(eq(analytics.entityType, 'student'), eq(analytics.entityId, studentId)),
         orderBy: (analytics, { desc }) => [desc(analytics.timestamp)],
-        limit
+        limit,
       });
     });
   }
@@ -249,30 +252,35 @@ class DatabaseOptimizer {
   async getCurriculumContent(schoolId: string, gradeLevel: string, subject: string) {
     return this.executeQuery('getCurriculumContent', async () => {
       return await this.db.query.content.findMany({
-        where: (content, { eq, and }) => and(
-          eq(content.gradeLevel, gradeLevel),
-          eq(content.subject, subject),
-          eq(content.isPublished, true)
-        ),
-        limit: 100
+        where: (content, { eq, and }) =>
+          and(
+            eq(content.gradeLevel, gradeLevel),
+            eq(content.subject, subject),
+            eq(content.isPublished, true),
+          ),
+        limit: 100,
       });
     });
   }
 
   // Bulk operations for better performance
   async bulkInsertAnalytics(analyticsData: any[]) {
-    return this.executeQuery('bulkInsertAnalytics', async () => {
-      const batchSize = 100;
-      const results = [];
-      
-      for (let i = 0; i < analyticsData.length; i += batchSize) {
-        const batch = analyticsData.slice(i, i + batchSize);
-        const result = await this.db.insert(schema.analytics).values(batch);
-        results.push(result);
-      }
-      
-      return results;
-    }, true); // Use transaction for bulk operations
+    return this.executeQuery(
+      'bulkInsertAnalytics',
+      async () => {
+        const batchSize = 100;
+        const results = [];
+
+        for (let i = 0; i < analyticsData.length; i += batchSize) {
+          const batch = analyticsData.slice(i, i + batchSize);
+          const result = await this.db.insert(schema.analytics).values(batch);
+          results.push(result);
+        }
+
+        return results;
+      },
+      true,
+    ); // Use transaction for bulk operations
   }
 
   // Health check
@@ -296,8 +304,8 @@ class DatabaseOptimizer {
       poolStatus: {
         totalCount: this.pool.totalCount,
         idleCount: this.pool.idleCount,
-        waitingCount: this.pool.waitingCount
-      }
+        waitingCount: this.pool.waitingCount,
+      },
     };
   }
 
@@ -333,21 +341,17 @@ process.on('SIGINT', async () => {
 
 // Export utility functions
 export const DatabaseQueries = {
-  getSchoolWithStudents: (schoolId: string) => 
-    dbOptimizer.getSchoolWithStudents(schoolId),
-  
-  getStudentProgress: (studentId: string, limit?: number) => 
+  getSchoolWithStudents: (schoolId: string) => dbOptimizer.getSchoolWithStudents(schoolId),
+
+  getStudentProgress: (studentId: string, limit?: number) =>
     dbOptimizer.getStudentProgress(studentId, limit),
-  
-  getCurriculumContent: (schoolId: string, gradeLevel: string, subject: string) => 
+
+  getCurriculumContent: (schoolId: string, gradeLevel: string, subject: string) =>
     dbOptimizer.getCurriculumContent(schoolId, gradeLevel, subject),
-  
-  bulkInsertAnalytics: (data: any[]) => 
-    dbOptimizer.bulkInsertAnalytics(data),
-  
-  healthCheck: () => 
-    dbOptimizer.healthCheck(),
-  
-  getMetrics: () => 
-    dbOptimizer.getMetrics()
+
+  bulkInsertAnalytics: (data: any[]) => dbOptimizer.bulkInsertAnalytics(data),
+
+  healthCheck: () => dbOptimizer.healthCheck(),
+
+  getMetrics: () => dbOptimizer.getMetrics(),
 };

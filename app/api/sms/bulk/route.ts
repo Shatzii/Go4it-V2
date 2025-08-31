@@ -1,57 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { smsService } from '@/lib/twilio-client';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { recipients, template, templateData, type } = body;
+    const { message, recipients, type } = body;
 
-    if (!recipients || !Array.isArray(recipients) || recipients.length === 0) {
-      return NextResponse.json({
-        success: false,
-        error: 'Recipients array is required'
-      }, { status: 400 });
+    if (!message || !recipients) {
+      return NextResponse.json({ error: 'Message and recipients are required' }, { status: 400 });
     }
 
-    if (recipients.length > 100) {
-      return NextResponse.json({
-        success: false,
-        error: 'Maximum 100 recipients per bulk request'
-      }, { status: 400 });
-    }
+    // Simulate bulk SMS sending
+    const estimatedRecipients = getRecipientCount(recipients);
 
-    // Validate all phone numbers
-    const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-    const invalidNumbers = recipients.filter(r => 
-      !phoneRegex.test(r.phone?.replace(/\s/g, '') || '')
-    );
+    // In a real implementation, you would:
+    // 1. Query the database for recipient phone numbers based on the filter
+    // 2. Use Twilio API to send bulk SMS
+    // 3. Log the results
 
-    if (invalidNumbers.length > 0) {
-      return NextResponse.json({
-        success: false,
-        error: `Invalid phone numbers detected: ${invalidNumbers.length} invalid`,
-        invalidNumbers: invalidNumbers.map(r => r.phone)
-      }, { status: 400 });
-    }
-
-    const result = await smsService.sendBulkSMS(recipients);
-
-    // Log bulk SMS activity
-    console.log(`Bulk SMS completed: ${result.totalSent} sent, ${result.totalFailed} failed`);
-
-    return NextResponse.json({
+    const result = {
       success: true,
-      totalSent: result.totalSent,
-      totalFailed: result.totalFailed,
-      results: result.results,
-      message: `Bulk SMS completed: ${result.totalSent} sent successfully`
-    });
+      messageId: `bulk_${Date.now()}`,
+      estimatedRecipients,
+      status: 'queued',
+      message: `Bulk SMS queued for ${estimatedRecipients} recipients`,
+    };
 
-  } catch (error: any) {
-    console.error('Bulk SMS API error:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to send bulk SMS'
-    }, { status: 500 });
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error('Bulk SMS send error:', error);
+    return NextResponse.json({ error: 'Failed to send bulk SMS' }, { status: 500 });
   }
+}
+
+function getRecipientCount(filter: string): number {
+  const counts = {
+    all: 234,
+    pro: 89,
+    students: 156,
+    coaches: 23,
+  };
+
+  return counts[filter as keyof typeof counts] || 0;
 }

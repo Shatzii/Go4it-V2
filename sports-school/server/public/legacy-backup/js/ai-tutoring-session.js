@@ -1,21 +1,23 @@
 /**
  * AI Tutoring Session Script
- * 
+ *
  * This script provides client-side functionality for the AI Tutoring Session interface,
  * connecting it to the backend AI integration API.
  */
 
 // Teacher configuration for the current session
 const teacherConfig = {
-  name: "Professor Einstein",
-  subject: "Mathematics",
-  gradeLevel: "High School (9-12)",
-  teachingStyle: "Socratic",
-  supportTypes: ["ADHD", "Dyscalculia"],
-  personalityTraits: ["Patient", "Supportive", "Enthusiastic"],
+  name: 'Professor Einstein',
+  subject: 'Mathematics',
+  gradeLevel: 'High School (9-12)',
+  teachingStyle: 'Socratic',
+  supportTypes: ['ADHD', 'Dyscalculia'],
+  personalityTraits: ['Patient', 'Supportive', 'Enthusiastic'],
   formalityLevel: 3,
-  description: "An engaging and patient mathematics teacher specializing in making complex concepts accessible for neurodivergent students.",
-  expertise: "Algebra, Geometry, Problem-Solving, Visual Mathematics, Making Mathematical Concepts Accessible"
+  description:
+    'An engaging and patient mathematics teacher specializing in making complex concepts accessible for neurodivergent students.',
+  expertise:
+    'Algebra, Geometry, Problem-Solving, Visual Mathematics, Making Mathematical Concepts Accessible',
 };
 
 // Conversation history
@@ -25,55 +27,55 @@ let conversationHistory = [];
 async function sendMessage() {
   const messageInput = document.getElementById('message-input');
   const message = messageInput.value.trim();
-  
+
   if (!message) return;
-  
+
   // Add user message to the chat
   addUserMessage(message);
-  
+
   // Clear input field
   messageInput.value = '';
-  
+
   // Show typing indicator
   showTypingIndicator();
-  
+
   try {
     // Call API to get teacher response
     const response = await fetch('/api/ai/integration/teacher-response', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         teacherConfig,
         conversationHistory,
-        userMessage: message
-      })
+        userMessage: message,
+      }),
     });
-    
+
     if (!response.ok) {
       throw new Error(`API request failed with status ${response.status}`);
     }
-    
+
     const data = await response.json();
-    
+
     // Hide typing indicator
     hideTypingIndicator();
-    
+
     // Add AI response to the chat
     addAIMessage(data.response);
-    
+
     // Update conversation history
     conversationHistory.push(
       { role: 'user', content: message },
-      { role: 'assistant', content: data.response }
+      { role: 'assistant', content: data.response },
     );
   } catch (error) {
     console.error('Error sending message:', error);
-    
+
     // Hide typing indicator
     hideTypingIndicator();
-    
+
     // Add error message
     addSystemMessage('Failed to get response from AI teacher. Please try again.');
   }
@@ -82,7 +84,7 @@ async function sendMessage() {
 // Add a user message to the chat
 function addUserMessage(message) {
   const time = getCurrentTime();
-  
+
   const messageElement = document.createElement('div');
   messageElement.className = 'message user-message';
   messageElement.innerHTML = `
@@ -92,7 +94,7 @@ function addUserMessage(message) {
     </div>
     <div class="message-timestamp">${time}</div>
   `;
-  
+
   document.getElementById('chat-messages').appendChild(messageElement);
   scrollToBottom();
 }
@@ -100,10 +102,10 @@ function addUserMessage(message) {
 // Add an AI message to the chat
 function addAIMessage(message) {
   const time = getCurrentTime();
-  
+
   // Process message to handle markdown-like formatting
   const formattedMessage = formatMessage(message);
-  
+
   const messageElement = document.createElement('div');
   messageElement.className = 'message ai-message';
   messageElement.innerHTML = `
@@ -117,13 +119,13 @@ function addAIMessage(message) {
       <button class="message-action-button">Visual Guide</button>
     </div>
   `;
-  
+
   document.getElementById('chat-messages').appendChild(messageElement);
-  
+
   // Add event listeners to message action buttons
   const actionButtons = messageElement.querySelectorAll('.message-action-button');
-  actionButtons.forEach(button => {
-    button.addEventListener('click', function() {
+  actionButtons.forEach((button) => {
+    button.addEventListener('click', function () {
       if (this.textContent === 'Read Aloud') {
         readAloud(message);
       } else if (this.textContent === 'Visual Guide') {
@@ -131,7 +133,7 @@ function addAIMessage(message) {
       }
     });
   });
-  
+
   scrollToBottom();
 }
 
@@ -140,7 +142,7 @@ function addSystemMessage(message) {
   const messageElement = document.createElement('div');
   messageElement.className = 'system-message';
   messageElement.textContent = message;
-  
+
   document.getElementById('chat-messages').appendChild(messageElement);
   scrollToBottom();
 }
@@ -154,7 +156,7 @@ function showTypingIndicator() {
     <div class="typing-dot"></div>
     <div class="typing-dot"></div>
   `;
-  
+
   document.getElementById('chat-messages').appendChild(typingIndicator);
   scrollToBottom();
 }
@@ -170,19 +172,19 @@ function hideTypingIndicator() {
 // Format message (convert markdown-like syntax to HTML)
 function formatMessage(message) {
   let formatted = message;
-  
+
   // Convert code blocks
   formatted = formatted.replace(/```([^`]+)```/g, '<pre>$1</pre>');
-  
+
   // Convert inline code
   formatted = formatted.replace(/`([^`]+)`/g, '<code>$1</code>');
-  
+
   // Convert line breaks to paragraphs
   formatted = '<p>' + formatted.replace(/\n\n/g, '</p><p>') + '</p>';
-  
+
   // Handle single line breaks
   formatted = formatted.replace(/\n/g, '<br>');
-  
+
   return formatted;
 }
 
@@ -202,10 +204,10 @@ function getCurrentTime() {
   let hours = now.getHours();
   const minutes = now.getMinutes().toString().padStart(2, '0');
   const ampm = hours >= 12 ? 'PM' : 'AM';
-  
+
   hours = hours % 12;
   hours = hours ? hours : 12; // Convert 0 to 12
-  
+
   return `${hours}:${minutes} ${ampm}`;
 }
 
@@ -239,51 +241,49 @@ function endSession() {
     // Save session data
     console.log('Saving session data:', {
       teacher: teacherConfig,
-      conversationHistory
+      conversationHistory,
     });
-    
+
     // Redirect to dashboard
     window.location.href = '/student-dashboard';
   }
 }
 
 // Initialize the page
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   // Send message when clicking the send button
   document.getElementById('send-button').addEventListener('click', sendMessage);
-  
+
   // Send message when pressing Enter (but allow Shift+Enter for new line)
-  document.getElementById('message-input').addEventListener('keydown', function(e) {
+  document.getElementById('message-input').addEventListener('keydown', function (e) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
   });
-  
+
   // End session button
   const endSessionButton = document.querySelector('.header-actions .secondary-button');
   if (endSessionButton) {
     endSessionButton.addEventListener('click', endSession);
   }
-  
+
   // Initialize with welcome message
   addAIMessage(`Hello there! I'm Professor Einstein, your math tutor for today. We'll be covering linear equations in this session.
 
 How familiar are you with solving equations like \`2x + 5 = 13\`? Would you like to start with some basics or jump right into more challenging problems?`);
-  
+
   // Initial scroll to bottom
   scrollToBottom();
-  
-  // Add existing messages to conversation history
-  conversationHistory.push(
-    { 
-      role: 'assistant', 
-      content: `Hello there! I'm Professor Einstein, your math tutor for today. We'll be covering linear equations in this session.
 
-How familiar are you with solving equations like \`2x + 5 = 13\`? Would you like to start with some basics or jump right into more challenging problems?` 
-    }
-  );
-  
+  // Add existing messages to conversation history
+  conversationHistory.push({
+    role: 'assistant',
+    content: `Hello there! I'm Professor Einstein, your math tutor for today. We'll be covering linear equations in this session.
+
+How familiar are you with solving equations like \`2x + 5 = 13\`? Would you like to start with some basics or jump right into more challenging problems?`,
+  });
+
   // Auto focus the input field
   document.getElementById('message-input').focus();
 });

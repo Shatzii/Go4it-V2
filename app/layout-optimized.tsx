@@ -1,21 +1,17 @@
-import './globals.css'
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import ErrorBoundary from '@/src/components/ui/error-boundary'
+import './globals.css';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import ErrorBoundary from '@/src/components/ui/error-boundary';
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Go4It Sports - Advanced Athletics Platform',
   description: 'AI-powered sports analytics platform designed for neurodivergent student athletes',
   keywords: ['sports analytics', 'ADHD', 'student athletes', 'AI coaching', 'video analysis'],
-}
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark">
       <body className={`${inter.className} bg-slate-900 text-white antialiased`}>
@@ -26,5 +22,5 @@ export default function RootLayout({
         </ErrorBoundary>
       </body>
     </html>
-  )
+  );
 }

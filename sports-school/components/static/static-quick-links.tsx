@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  BookOpen, 
-  Calendar, 
-  MessageSquare, 
+import {
+  BookOpen,
+  Calendar,
+  MessageSquare,
   Trophy,
   Clock,
   Users,
   Star,
-  ExternalLink
+  ExternalLink,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -29,7 +29,7 @@ export function StaticQuickLinks({ userType, schoolId }: StaticQuickLinksProps) 
         icon: BookOpen,
         href: `/schools/${school}/assignments`,
         badge: '3 new',
-        color: 'text-blue-600'
+        color: 'text-blue-600',
       },
       {
         title: 'Calendar',
@@ -37,7 +37,7 @@ export function StaticQuickLinks({ userType, schoolId }: StaticQuickLinksProps) 
         icon: Calendar,
         href: `/schools/${school}/calendar`,
         badge: 'Today',
-        color: 'text-green-600'
+        color: 'text-green-600',
       },
       {
         title: 'Messages',
@@ -45,8 +45,8 @@ export function StaticQuickLinks({ userType, schoolId }: StaticQuickLinksProps) 
         icon: MessageSquare,
         href: `/schools/${school}/messages`,
         badge: '2 unread',
-        color: 'text-purple-600'
-      }
+        color: 'text-purple-600',
+      },
     ];
 
     if (type === 'parent') {
@@ -58,7 +58,7 @@ export function StaticQuickLinks({ userType, schoolId }: StaticQuickLinksProps) 
           icon: Trophy,
           href: `/schools/${school}/progress`,
           badge: 'Updated',
-          color: 'text-orange-600'
+          color: 'text-orange-600',
         },
         {
           title: 'Parent Meetings',
@@ -66,7 +66,7 @@ export function StaticQuickLinks({ userType, schoolId }: StaticQuickLinksProps) 
           icon: Users,
           href: `/schools/${school}/meetings`,
           badge: 'Next: Tomorrow',
-          color: 'text-red-600'
+          color: 'text-red-600',
         },
         {
           title: 'Safety Center',
@@ -74,8 +74,8 @@ export function StaticQuickLinks({ userType, schoolId }: StaticQuickLinksProps) 
           icon: Star,
           href: `/social-media-safety`,
           badge: 'Active',
-          color: 'text-indigo-600'
-        }
+          color: 'text-indigo-600',
+        },
       ];
     }
 
@@ -100,7 +100,9 @@ export function StaticQuickLinks({ userType, schoolId }: StaticQuickLinksProps) 
               <Link key={index} href={link.href}>
                 <div className="group p-4 bg-white/70 rounded-lg hover:bg-white/90 transition-all duration-200 cursor-pointer border border-gray-200 hover:border-blue-300 hover:shadow-md">
                   <div className="flex items-start gap-3">
-                    <IconComponent className={`w-6 h-6 ${link.color} group-hover:scale-110 transition-transform`} />
+                    <IconComponent
+                      className={`w-6 h-6 ${link.color} group-hover:scale-110 transition-transform`}
+                    />
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
                         <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
@@ -108,9 +110,7 @@ export function StaticQuickLinks({ userType, schoolId }: StaticQuickLinksProps) 
                         </h3>
                         <ExternalLink className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">
-                        {link.description}
-                      </p>
+                      <p className="text-sm text-gray-600 mb-2">{link.description}</p>
                       <Badge variant="secondary" className="text-xs">
                         {link.badge}
                       </Badge>

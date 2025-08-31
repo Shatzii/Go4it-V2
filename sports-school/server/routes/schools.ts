@@ -1,6 +1,6 @@
 /**
  * School Routes
- * 
+ *
  * These routes handle redirects to the different school applications
  * and provide access to the downloadable packages.
  */
@@ -17,23 +17,29 @@ const schoolMap: Record<string, string> = {
   'lawyer-makers': '/public/schools/lawyer-makers/index.html',
   'language-school': '/public/schools/language-school/index.html',
   'ceo-dashboard': '/public/ceo-dashboard/index.html',
-  'sentinel': '/public/sentinel/dashboard.html',
+  sentinel: '/public/sentinel/dashboard.html',
 };
 
 // Map of downloadable packages
 const packageMap: Record<string, string> = {
   'primary-school.zip': 'Unavailable',
   'secondary-school.zip': 'Unavailable',
-  'ShatziiOS_Law_School_Complete.zip': path.join(__dirname, '../../ShatziiOS_Law_School_Complete.zip'),
+  'ShatziiOS_Law_School_Complete.zip': path.join(
+    __dirname,
+    '../../ShatziiOS_Law_School_Complete.zip',
+  ),
   'language-school.zip': 'Unavailable',
   'ShatziiOS_CEO_Dashboard.zip': path.join(__dirname, '../../ShatziiOS_CEO_Dashboard.zip'),
-  'Sentinel_4.5_Security_System.tar.gz': path.join(__dirname, '../../Sentinel_4.5_Security_System.tar.gz'),
+  'Sentinel_4.5_Security_System.tar.gz': path.join(
+    __dirname,
+    '../../Sentinel_4.5_Security_System.tar.gz',
+  ),
 };
 
 // School redirects
 router.get('/:school', (req, res) => {
   const school = req.params.school;
-  
+
   if (school in schoolMap) {
     // For schools that are direct files/folders, serve the file
     res.sendFile(path.join(__dirname, '../..', schoolMap[school]));
@@ -59,10 +65,10 @@ router.get('/sentinel/dashboard', (req, res) => {
 // Set up download routes
 router.get('/api/downloads/:package', (req, res) => {
   const packageName = req.params.package;
-  
+
   if (packageName in packageMap) {
     const packagePath = packageMap[packageName];
-    
+
     if (packagePath === 'Unavailable') {
       res.status(404).send('Package not available yet');
     } else if (fs.existsSync(packagePath)) {

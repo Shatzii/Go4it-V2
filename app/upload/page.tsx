@@ -1,65 +1,65 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Upload, Camera, FileVideo, Smartphone } from 'lucide-react'
-import { MobileVideoCapture } from '@/components/mobile/MobileVideoCapture'
-import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { useState } from 'react';
+import { Upload, Camera, FileVideo, Smartphone } from 'lucide-react';
+import { MobileVideoCapture } from '@/components/mobile/MobileVideoCapture';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 function UploadPageComponent() {
-  const [showMobileCapture, setShowMobileCapture] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
-  const [isUploading, setIsUploading] = useState(false)
+  const [showMobileCapture, setShowMobileCapture] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-    setIsUploading(true)
-    setUploadProgress(0)
+    setIsUploading(true);
+    setUploadProgress(0);
 
     try {
-      const formData = new FormData()
-      formData.append('video', file)
-      formData.append('sport', 'Football')
-      formData.append('source', 'web')
+      const formData = new FormData();
+      formData.append('video', file);
+      formData.append('sport', 'Football');
+      formData.append('source', 'web');
 
       // Simulate upload progress
       const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
+        setUploadProgress((prev) => {
           if (prev >= 90) {
-            clearInterval(progressInterval)
-            return prev
+            clearInterval(progressInterval);
+            return prev;
           }
-          return prev + Math.random() * 10
-        })
-      }, 200)
+          return prev + Math.random() * 10;
+        });
+      }, 200);
 
       const response = await fetch('/api/gar/analyze', {
         method: 'POST',
         body: formData,
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
-        }
-      })
+          Authorization: `Bearer ${localStorage.getItem('auth-token')}`,
+        },
+      });
 
-      clearInterval(progressInterval)
-      setUploadProgress(100)
+      clearInterval(progressInterval);
+      setUploadProgress(100);
 
       if (response.ok) {
-        const data = await response.json()
+        const data = await response.json();
         setTimeout(() => {
-          window.location.href = `/dashboard?analysis=${data.analysisId}`
-        }, 1000)
+          window.location.href = `/dashboard?analysis=${data.analysisId}`;
+        }, 1000);
       }
     } catch (error) {
-      console.error('Upload failed:', error)
+      console.error('Upload failed:', error);
     } finally {
-      setIsUploading(false)
+      setIsUploading(false);
     }
-  }
+  };
 
   if (showMobileCapture) {
-    return <MobileVideoCapture />
+    return <MobileVideoCapture />;
   }
 
   return (
@@ -81,7 +81,7 @@ function UploadPageComponent() {
               <p className="text-slate-400 mb-6">
                 Select a video file from your device to upload for analysis
               </p>
-              
+
               <label className="cursor-pointer">
                 <input
                   type="file"
@@ -121,7 +121,7 @@ function UploadPageComponent() {
               <p className="text-slate-400 mb-6">
                 Use your mobile device to record performance videos directly
               </p>
-              
+
               <button
                 onClick={() => setShowMobileCapture(true)}
                 className="bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg inline-flex items-center gap-2 transition-colors"
@@ -136,7 +136,7 @@ function UploadPageComponent() {
         {/* Upload Guidelines */}
         <div className="mt-8 bg-slate-800 rounded-lg p-6 border border-slate-700">
           <h3 className="text-lg font-semibold mb-4">Video Upload Guidelines</h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h4 className="font-medium text-white mb-2">Technical Requirements</h4>
@@ -148,7 +148,7 @@ function UploadPageComponent() {
                 <li>• Duration: 30 seconds to 10 minutes</li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-medium text-white mb-2">Best Practices</h4>
               <ul className="text-slate-300 space-y-1 text-sm">
@@ -165,12 +165,21 @@ function UploadPageComponent() {
         {/* Supported Sports */}
         <div className="mt-8 bg-slate-800 rounded-lg p-6 border border-slate-700">
           <h3 className="text-lg font-semibold mb-4">Supported Sports</h3>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              'Football', 'Basketball', 'Baseball', 'Soccer',
-              'Track & Field', 'Swimming', 'Tennis', 'Golf',
-              'Wrestling', 'Volleyball', 'Lacrosse', 'Softball'
+              'Football',
+              'Basketball',
+              'Baseball',
+              'Soccer',
+              'Track & Field',
+              'Swimming',
+              'Tennis',
+              'Golf',
+              'Wrestling',
+              'Volleyball',
+              'Lacrosse',
+              'Softball',
             ].map((sport) => (
               <div key={sport} className="bg-slate-700 rounded-lg p-3 text-center">
                 <span className="text-white font-medium">{sport}</span>
@@ -180,7 +189,7 @@ function UploadPageComponent() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default function UploadPage() {

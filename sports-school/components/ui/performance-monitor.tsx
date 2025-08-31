@@ -1,22 +1,22 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Button } from '@/components/ui/button'
-import { Activity, Database, Cpu, HardDrive, Wifi, RefreshCw } from 'lucide-react'
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
+import { Activity, Database, Cpu, HardDrive, Wifi, RefreshCw } from 'lucide-react';
 
 interface PerformanceMetrics {
-  responseTime: number
-  cpuUsage: number
-  memoryUsage: number
-  diskUsage: number
-  networkLatency: number
-  databaseConnections: number
-  activeUsers: number
-  systemUptime: number
-  lastUpdate: Date
+  responseTime: number;
+  cpuUsage: number;
+  memoryUsage: number;
+  diskUsage: number;
+  networkLatency: number;
+  databaseConnections: number;
+  activeUsers: number;
+  systemUptime: number;
+  lastUpdate: Date;
 }
 
 export default function PerformanceMonitor() {
@@ -29,59 +29,62 @@ export default function PerformanceMonitor() {
     databaseConnections: 12,
     activeUsers: 342,
     systemUptime: 99.8,
-    lastUpdate: new Date()
-  })
+    lastUpdate: new Date(),
+  });
 
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
   // Simulate real-time updates
   useEffect(() => {
     const interval = setInterval(() => {
-      setMetrics(prev => ({
+      setMetrics((prev) => ({
         ...prev,
         responseTime: Math.max(50, prev.responseTime + (Math.random() - 0.5) * 100),
         cpuUsage: Math.max(0, Math.min(100, prev.cpuUsage + (Math.random() - 0.5) * 20)),
         memoryUsage: Math.max(0, Math.min(100, prev.memoryUsage + (Math.random() - 0.5) * 15)),
         diskUsage: Math.max(0, Math.min(100, prev.diskUsage + (Math.random() - 0.5) * 5)),
         networkLatency: Math.max(10, prev.networkLatency + (Math.random() - 0.5) * 30),
-        databaseConnections: Math.max(0, prev.databaseConnections + Math.floor((Math.random() - 0.5) * 6)),
+        databaseConnections: Math.max(
+          0,
+          prev.databaseConnections + Math.floor((Math.random() - 0.5) * 6),
+        ),
         activeUsers: Math.max(0, prev.activeUsers + Math.floor((Math.random() - 0.5) * 50)),
-        lastUpdate: new Date()
-      }))
-    }, 5000)
+        lastUpdate: new Date(),
+      }));
+    }, 5000);
 
-    return () => clearInterval(interval)
-  }, [])
+    return () => clearInterval(interval);
+  }, []);
 
   const refreshMetrics = async () => {
-    setIsLoading(true)
-    
+    setIsLoading(true);
+
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setMetrics(prev => ({
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      setMetrics((prev) => ({
         ...prev,
-        lastUpdate: new Date()
-      }))
+        lastUpdate: new Date(),
+      }));
     } catch (error) {
-      console.error('Failed to refresh metrics:', error)
+      console.error('Failed to refresh metrics:', error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const getStatusColor = (value: number, thresholds: { good: number; warning: number }) => {
-    if (value <= thresholds.good) return 'text-green-600'
-    if (value <= thresholds.warning) return 'text-yellow-600'
-    return 'text-red-600'
-  }
+    if (value <= thresholds.good) return 'text-green-600';
+    if (value <= thresholds.warning) return 'text-yellow-600';
+    return 'text-red-600';
+  };
 
   const getStatusBadge = (value: number, thresholds: { good: number; warning: number }) => {
-    if (value <= thresholds.good) return 'bg-green-100 text-green-700'
-    if (value <= thresholds.warning) return 'bg-yellow-100 text-yellow-700'
-    return 'bg-red-100 text-red-700'
-  }
+    if (value <= thresholds.good) return 'bg-green-100 text-green-700';
+    if (value <= thresholds.warning) return 'bg-yellow-100 text-yellow-700';
+    return 'bg-red-100 text-red-700';
+  };
 
   return (
     <div className="space-y-6">
@@ -95,12 +98,7 @@ export default function PerformanceMonitor() {
           <span className="text-sm text-gray-500">
             Last updated: {metrics.lastUpdate.toLocaleTimeString()}
           </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={refreshMetrics}
-            disabled={isLoading}
-          >
+          <Button variant="outline" size="sm" onClick={refreshMetrics} disabled={isLoading}>
             <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
@@ -120,7 +118,11 @@ export default function PerformanceMonitor() {
           <CardContent>
             <div className="text-2xl font-bold">{Math.round(metrics.responseTime)}ms</div>
             <Badge className={getStatusBadge(metrics.responseTime, { good: 200, warning: 500 })}>
-              {metrics.responseTime <= 200 ? 'Excellent' : metrics.responseTime <= 500 ? 'Good' : 'Slow'}
+              {metrics.responseTime <= 200
+                ? 'Excellent'
+                : metrics.responseTime <= 500
+                  ? 'Good'
+                  : 'Slow'}
             </Badge>
           </CardContent>
         </Card>
@@ -154,7 +156,11 @@ export default function PerformanceMonitor() {
             <div className="text-2xl font-bold">{Math.round(metrics.memoryUsage)}%</div>
             <Progress value={metrics.memoryUsage} className="mt-2" />
             <Badge className={getStatusBadge(metrics.memoryUsage, { good: 60, warning: 85 })}>
-              {metrics.memoryUsage <= 60 ? 'Normal' : metrics.memoryUsage <= 85 ? 'High' : 'Critical'}
+              {metrics.memoryUsage <= 60
+                ? 'Normal'
+                : metrics.memoryUsage <= 85
+                  ? 'High'
+                  : 'Critical'}
             </Badge>
           </CardContent>
         </Card>
@@ -170,7 +176,11 @@ export default function PerformanceMonitor() {
           <CardContent>
             <div className="text-2xl font-bold">{Math.round(metrics.networkLatency)}ms</div>
             <Badge className={getStatusBadge(metrics.networkLatency, { good: 50, warning: 150 })}>
-              {metrics.networkLatency <= 50 ? 'Fast' : metrics.networkLatency <= 150 ? 'Normal' : 'Slow'}
+              {metrics.networkLatency <= 50
+                ? 'Fast'
+                : metrics.networkLatency <= 150
+                  ? 'Normal'
+                  : 'Slow'}
             </Badge>
           </CardContent>
         </Card>
@@ -186,8 +196,14 @@ export default function PerformanceMonitor() {
           <CardContent>
             <div className="text-2xl font-bold">{metrics.databaseConnections}</div>
             <div className="text-sm text-gray-500">Active connections</div>
-            <Badge className={getStatusBadge(metrics.databaseConnections, { good: 20, warning: 40 })}>
-              {metrics.databaseConnections <= 20 ? 'Normal' : metrics.databaseConnections <= 40 ? 'High' : 'Critical'}
+            <Badge
+              className={getStatusBadge(metrics.databaseConnections, { good: 20, warning: 40 })}
+            >
+              {metrics.databaseConnections <= 20
+                ? 'Normal'
+                : metrics.databaseConnections <= 40
+                  ? 'High'
+                  : 'Critical'}
             </Badge>
           </CardContent>
         </Card>
@@ -245,19 +261,25 @@ export default function PerformanceMonitor() {
             {metrics.cpuUsage > 80 && (
               <div className="flex items-center space-x-2 p-3 bg-red-50 rounded-lg">
                 <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                <span className="text-sm text-red-700">High CPU usage detected ({Math.round(metrics.cpuUsage)}%)</span>
+                <span className="text-sm text-red-700">
+                  High CPU usage detected ({Math.round(metrics.cpuUsage)}%)
+                </span>
               </div>
             )}
             {metrics.memoryUsage > 85 && (
               <div className="flex items-center space-x-2 p-3 bg-yellow-50 rounded-lg">
                 <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                <span className="text-sm text-yellow-700">High memory usage detected ({Math.round(metrics.memoryUsage)}%)</span>
+                <span className="text-sm text-yellow-700">
+                  High memory usage detected ({Math.round(metrics.memoryUsage)}%)
+                </span>
               </div>
             )}
             {metrics.responseTime > 500 && (
               <div className="flex items-center space-x-2 p-3 bg-orange-50 rounded-lg">
                 <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                <span className="text-sm text-orange-700">Slow response time detected ({Math.round(metrics.responseTime)}ms)</span>
+                <span className="text-sm text-orange-700">
+                  Slow response time detected ({Math.round(metrics.responseTime)}ms)
+                </span>
               </div>
             )}
             {metrics.cpuUsage <= 50 && metrics.memoryUsage <= 60 && metrics.responseTime <= 200 && (
@@ -270,5 +292,5 @@ export default function PerformanceMonitor() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

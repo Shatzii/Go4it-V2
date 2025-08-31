@@ -4,16 +4,16 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk';
-import type { 
-  SocialMediaActivity, 
-  ThreatAnalysis, 
+import type {
+  SocialMediaActivity,
+  ThreatAnalysis,
   SecurityAlert,
   InsertThreatAnalysis,
-  InsertSecurityAlert
+  InsertSecurityAlert,
 } from '@shared/schema';
 
 // The newest Anthropic model is "claude-sonnet-4-20250514"
-const DEFAULT_MODEL_STR = "claude-sonnet-4-20250514";
+const DEFAULT_MODEL_STR = 'claude-sonnet-4-20250514';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -61,17 +61,15 @@ export interface ConversationContext {
 }
 
 export class AIContentAnalysisEngine {
-  
   /**
    * Analyze content for predator behavior patterns
    * Target accuracy: 98.7%
    */
   async analyzePredatorRisk(
-    content: string, 
+    content: string,
     participants: string[],
-    context?: ConversationContext
+    context?: ConversationContext,
   ): Promise<PredatorRiskAssessment> {
-    
     const systemPrompt = `You are an expert AI trained to detect predatory behavior in digital communications involving minors. Analyze the content for grooming tactics, manipulation, inappropriate requests, and other predatory indicators.
 
 Key grooming patterns to detect:
@@ -98,16 +96,18 @@ Respond in JSON format with:
         model: DEFAULT_MODEL_STR,
         max_tokens: 1024,
         system: systemPrompt,
-        messages: [{
-          role: 'user',
-          content: `Analyze this content for predatory behavior:
+        messages: [
+          {
+            role: 'user',
+            content: `Analyze this content for predatory behavior:
 
 Content: "${content}"
 Participants: ${participants.join(', ')}
 Context: ${context ? JSON.stringify(context, null, 2) : 'No additional context'}
 
-Provide your analysis in JSON format.`
-        }]
+Provide your analysis in JSON format.`,
+          },
+        ],
       });
 
       const result = JSON.parse(response.content[0].text);
@@ -116,7 +116,7 @@ Provide your analysis in JSON format.`
         confidence: Math.max(0, Math.min(1, result.confidence)),
         indicators: result.indicators || [],
         immediateAction: result.immediateAction || false,
-        evidence: result.evidence || []
+        evidence: result.evidence || [],
       };
     } catch (error) {
       console.error('Predator risk analysis failed:', error);
@@ -129,9 +129,8 @@ Provide your analysis in JSON format.`
    */
   async detectCyberbullying(
     content: string,
-    context: ConversationContext
+    context: ConversationContext,
   ): Promise<BullyingAssessment> {
-    
     const systemPrompt = `You are an expert AI trained to detect cyberbullying in digital communications. Analyze the content for harassment, threats, exclusion, humiliation, and other forms of bullying.
 
 Types of cyberbullying to detect:
@@ -159,15 +158,17 @@ Respond in JSON format with:
         model: DEFAULT_MODEL_STR,
         max_tokens: 1024,
         system: systemPrompt,
-        messages: [{
-          role: 'user',
-          content: `Analyze this content for cyberbullying:
+        messages: [
+          {
+            role: 'user',
+            content: `Analyze this content for cyberbullying:
 
 Content: "${content}"
 Context: ${JSON.stringify(context, null, 2)}
 
-Provide your analysis in JSON format.`
-        }]
+Provide your analysis in JSON format.`,
+          },
+        ],
       });
 
       const result = JSON.parse(response.content[0].text);
@@ -177,7 +178,7 @@ Provide your analysis in JSON format.`
         confidence: Math.max(0, Math.min(1, result.confidence || 0)),
         bullyingType: result.bullyingType || [],
         targetIdentified: result.targetIdentified || false,
-        interventionNeeded: result.interventionNeeded || false
+        interventionNeeded: result.interventionNeeded || false,
       };
     } catch (error) {
       console.error('Cyberbullying detection failed:', error);
@@ -190,9 +191,8 @@ Provide your analysis in JSON format.`
    */
   async assessContentAppropriateness(
     content: string,
-    studentAge: number
+    studentAge: number,
   ): Promise<ContentAssessment> {
-    
     const systemPrompt = `You are an expert AI trained to assess content appropriateness for students of different ages. Consider educational standards, developmental appropriateness, and safety concerns.
 
 Factors to evaluate:
@@ -217,14 +217,16 @@ Respond in JSON format with:
         model: DEFAULT_MODEL_STR,
         max_tokens: 1024,
         system: systemPrompt,
-        messages: [{
-          role: 'user',
-          content: `Assess content appropriateness for a ${studentAge}-year-old student:
+        messages: [
+          {
+            role: 'user',
+            content: `Assess content appropriateness for a ${studentAge}-year-old student:
 
 Content: "${content}"
 
-Provide your analysis in JSON format.`
-        }]
+Provide your analysis in JSON format.`,
+          },
+        ],
       });
 
       const result = JSON.parse(response.content[0].text);
@@ -233,7 +235,7 @@ Provide your analysis in JSON format.`
         ageRating: result.ageRating || '18+',
         concerns: result.concerns || [],
         violatedPolicies: result.violatedPolicies || [],
-        parentalReviewNeeded: result.parentalReviewNeeded || false
+        parentalReviewNeeded: result.parentalReviewNeeded || false,
       };
     } catch (error) {
       console.error('Content appropriateness assessment failed:', error);
@@ -246,9 +248,8 @@ Provide your analysis in JSON format.`
    */
   async evaluateMentalHealthRisk(
     content: string,
-    behaviorHistory: any[]
+    behaviorHistory: any[],
   ): Promise<MentalHealthRisk> {
-    
     const systemPrompt = `You are an expert AI trained to identify mental health risk indicators in student communications. Look for signs of depression, anxiety, self-harm, suicidal ideation, and other mental health concerns.
 
 Key indicators to detect:
@@ -275,15 +276,17 @@ Respond in JSON format with:
         model: DEFAULT_MODEL_STR,
         max_tokens: 1024,
         system: systemPrompt,
-        messages: [{
-          role: 'user',
-          content: `Evaluate mental health risk indicators:
+        messages: [
+          {
+            role: 'user',
+            content: `Evaluate mental health risk indicators:
 
 Content: "${content}"
 Behavior History: ${JSON.stringify(behaviorHistory, null, 2)}
 
-Provide your analysis in JSON format.`
-        }]
+Provide your analysis in JSON format.`,
+          },
+        ],
       });
 
       const result = JSON.parse(response.content[0].text);
@@ -292,7 +295,7 @@ Provide your analysis in JSON format.`
         indicators: result.indicators || [],
         immediateIntervention: result.immediateIntervention || false,
         recommendedActions: result.recommendedActions || [],
-        confidence: Math.max(0, Math.min(1, result.confidence || 0))
+        confidence: Math.max(0, Math.min(1, result.confidence || 0)),
       };
     } catch (error) {
       console.error('Mental health risk evaluation failed:', error);
@@ -309,20 +312,20 @@ Provide your analysis in JSON format.`
   }> {
     const content = activity.content || '';
     const participants = (activity.involvedUsers as string[]) || [];
-    
+
     // Run parallel analyses
-    const [predatorRisk, bullyingAssessment, contentAssessment, mentalHealthRisk] = 
+    const [predatorRisk, bullyingAssessment, contentAssessment, mentalHealthRisk] =
       await Promise.all([
         this.analyzePredatorRisk(content, participants).catch(() => null),
-        this.detectCyberbullying(content, { 
-          participants, 
-          duration: 0, 
-          messageCount: 1, 
-          previousFlags: [], 
-          relationshipHistory: [] 
+        this.detectCyberbullying(content, {
+          participants,
+          duration: 0,
+          messageCount: 1,
+          previousFlags: [],
+          relationshipHistory: [],
         }).catch(() => null),
         this.assessContentAppropriateness(content, 16).catch(() => null), // Default age
-        this.evaluateMentalHealthRisk(content, []).catch(() => null)
+        this.evaluateMentalHealthRisk(content, []).catch(() => null),
       ]);
 
     // Calculate overall risk score
@@ -339,7 +342,8 @@ Provide your analysis in JSON format.`
     }
 
     if (bullyingAssessment && bullyingAssessment.isBullying) {
-      riskScore += this.getSeverityScore(bullyingAssessment.severity) * bullyingAssessment.confidence;
+      riskScore +=
+        this.getSeverityScore(bullyingAssessment.severity) * bullyingAssessment.confidence;
       threatTypes.push('cyberbullying');
       if (this.compareSeverity(bullyingAssessment.severity, highestSeverity) > 0) {
         highestSeverity = bullyingAssessment.severity;
@@ -369,10 +373,10 @@ Provide your analysis in JSON format.`
         predatorRisk,
         bullyingAssessment,
         contentAssessment,
-        mentalHealthRisk
+        mentalHealthRisk,
       },
       recommendations: this.generateRecommendations(riskScore, threatTypes),
-      reviewRequired: riskScore > 70
+      reviewRequired: riskScore > 70,
     };
 
     let securityAlert: InsertSecurityAlert | undefined;
@@ -390,11 +394,11 @@ Provide your analysis in JSON format.`
           content: content.substring(0, 500), // Truncate for privacy
           riskScore,
           threatTypes,
-          timestamp: activity.timestamp
+          timestamp: activity.timestamp,
         },
         riskScore: Math.round(riskScore),
         parentNotified: riskScore > 80,
-        lawEnforcementNotified: riskScore > 90
+        lawEnforcementNotified: riskScore > 90,
       };
     }
 
@@ -403,21 +407,31 @@ Provide your analysis in JSON format.`
 
   private getRiskScore(level: string): number {
     switch (level) {
-      case 'low': return 20;
-      case 'medium': return 50;
-      case 'high': return 80;
-      case 'critical': return 100;
-      default: return 0;
+      case 'low':
+        return 20;
+      case 'medium':
+        return 50;
+      case 'high':
+        return 80;
+      case 'critical':
+        return 100;
+      default:
+        return 0;
     }
   }
 
   private getSeverityScore(severity: string): number {
     switch (severity) {
-      case 'mild': return 25;
-      case 'moderate': return 50;
-      case 'severe': return 75;
-      case 'extreme': return 100;
-      default: return 0;
+      case 'mild':
+        return 25;
+      case 'moderate':
+        return 50;
+      case 'severe':
+        return 75;
+      case 'extreme':
+        return 100;
+      default:
+        return 0;
     }
   }
 
@@ -492,7 +506,9 @@ Provide your analysis in JSON format.`
     }
 
     if (details.mentalHealthRisk && details.mentalHealthRisk.riskLevel !== 'low') {
-      descriptions.push(`Mental health concerns detected (${details.mentalHealthRisk.riskLevel} risk)`);
+      descriptions.push(
+        `Mental health concerns detected (${details.mentalHealthRisk.riskLevel} risk)`,
+      );
     }
 
     return descriptions.join('. ') || 'Multiple risk factors detected requiring review.';

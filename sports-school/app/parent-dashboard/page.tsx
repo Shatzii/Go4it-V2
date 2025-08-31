@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { 
-  User, 
-  GraduationCap, 
-  BookOpen, 
-  TrendingUp, 
-  Calendar, 
-  Clock, 
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import {
+  User,
+  GraduationCap,
+  BookOpen,
+  TrendingUp,
+  Calendar,
+  Clock,
   Award,
   MessageCircle,
   Bell,
@@ -23,46 +23,46 @@ import {
   AlertCircle,
   Star,
   Heart,
-  CreditCard
-} from 'lucide-react'
+  CreditCard,
+} from 'lucide-react';
 
 interface Student {
-  id: string
-  name: string
-  grade: string
-  school: string
-  avatar: string
-  overallProgress: number
-  recentActivity: string
-  nextAssignment: string
-  accommodations: string[]
+  id: string;
+  name: string;
+  grade: string;
+  school: string;
+  avatar: string;
+  overallProgress: number;
+  recentActivity: string;
+  nextAssignment: string;
+  accommodations: string[];
 }
 
 interface ProgressData {
-  subject: string
-  currentGrade: number
-  trend: 'up' | 'down' | 'stable'
+  subject: string;
+  currentGrade: number;
+  trend: 'up' | 'down' | 'stable';
   assignments: {
-    completed: number
-    total: number
-  }
-  lastActivity: string
-  upcomingTests: string[]
+    completed: number;
+    total: number;
+  };
+  lastActivity: string;
+  upcomingTests: string[];
 }
 
 interface Achievement {
-  id: string
-  title: string
-  description: string
-  date: string
-  icon: string
-  category: 'academic' | 'behavior' | 'participation'
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  icon: string;
+  category: 'academic' | 'behavior' | 'participation';
 }
 
 export default function ParentDashboard() {
-  const [selectedStudent, setSelectedStudent] = useState<string>('1')
-  const [timeRange, setTimeRange] = useState<'week' | 'month' | 'semester'>('week')
-  const [notifications, setNotifications] = useState<any[]>([])
+  const [selectedStudent, setSelectedStudent] = useState<string>('1');
+  const [timeRange, setTimeRange] = useState<'week' | 'month' | 'semester'>('week');
+  const [notifications, setNotifications] = useState<any[]>([]);
 
   // Sample student data - would come from API
   const students: Student[] = [
@@ -75,7 +75,7 @@ export default function ParentDashboard() {
       overallProgress: 92,
       recentActivity: 'Completed Math Hero Mission',
       nextAssignment: 'Reading Adventure due Friday',
-      accommodations: ['Visual learning aids', 'Extra time for tasks']
+      accommodations: ['Visual learning aids', 'Extra time for tasks'],
     },
     {
       id: '2',
@@ -86,9 +86,9 @@ export default function ParentDashboard() {
       overallProgress: 88,
       recentActivity: 'Science Experiment completed',
       nextAssignment: 'Number Ninja Challenge',
-      accommodations: ['ADHD support', 'Movement breaks', 'Front row seating']
-    }
-  ]
+      accommodations: ['ADHD support', 'Movement breaks', 'Front row seating'],
+    },
+  ];
 
   const progressData: ProgressData[] = [
     {
@@ -97,7 +97,7 @@ export default function ParentDashboard() {
       trend: 'up',
       assignments: { completed: 18, total: 20 },
       lastActivity: '2 hours ago',
-      upcomingTests: ['Addition/Subtraction Quiz - Friday']
+      upcomingTests: ['Addition/Subtraction Quiz - Friday'],
     },
     {
       subject: 'English Language Arts',
@@ -105,7 +105,7 @@ export default function ParentDashboard() {
       trend: 'stable',
       assignments: { completed: 15, total: 18 },
       lastActivity: '1 day ago',
-      upcomingTests: ['Reading Comprehension Test - Monday']
+      upcomingTests: ['Reading Comprehension Test - Monday'],
     },
     {
       subject: 'Science',
@@ -113,7 +113,7 @@ export default function ParentDashboard() {
       trend: 'up',
       assignments: { completed: 12, total: 14 },
       lastActivity: '3 hours ago',
-      upcomingTests: []
+      upcomingTests: [],
     },
     {
       subject: 'Social Studies',
@@ -121,9 +121,9 @@ export default function ParentDashboard() {
       trend: 'down',
       assignments: { completed: 10, total: 12 },
       lastActivity: '2 days ago',
-      upcomingTests: ['Community Helpers Quiz - Wednesday']
-    }
-  ]
+      upcomingTests: ['Community Helpers Quiz - Wednesday'],
+    },
+  ];
 
   const achievements: Achievement[] = [
     {
@@ -132,7 +132,7 @@ export default function ParentDashboard() {
       description: 'Completed 10 math assignments in a row with A grades',
       date: '2024-07-14',
       icon: '🏆',
-      category: 'academic'
+      category: 'academic',
     },
     {
       id: '2',
@@ -140,7 +140,7 @@ export default function ParentDashboard() {
       description: 'Helped classmates during group activities',
       date: '2024-07-13',
       icon: '🤝',
-      category: 'behavior'
+      category: 'behavior',
     },
     {
       id: '3',
@@ -148,49 +148,52 @@ export default function ParentDashboard() {
       description: 'No absences this month',
       date: '2024-07-12',
       icon: '⭐',
-      category: 'participation'
-    }
-  ]
+      category: 'participation',
+    },
+  ];
 
   const weeklyProgress = [
     { day: 'Mon', completed: 4, total: 5 },
     { day: 'Tue', completed: 5, total: 5 },
     { day: 'Wed', completed: 3, total: 4 },
     { day: 'Thu', completed: 4, total: 4 },
-    { day: 'Fri', completed: 2, total: 3 }
-  ]
+    { day: 'Fri', completed: 2, total: 3 },
+  ];
 
   useEffect(() => {
     // Simulate real-time notifications
     const interval = setInterval(() => {
       const newNotification = {
         id: Date.now(),
-        message: `${students.find(s => s.id === selectedStudent)?.name} just submitted an assignment`,
+        message: `${students.find((s) => s.id === selectedStudent)?.name} just submitted an assignment`,
         type: 'success',
-        timestamp: new Date().toISOString()
-      }
-      setNotifications(prev => [newNotification, ...prev.slice(0, 4)])
-    }, 15000)
+        timestamp: new Date().toISOString(),
+      };
+      setNotifications((prev) => [newNotification, ...prev.slice(0, 4)]);
+    }, 15000);
 
-    return () => clearInterval(interval)
-  }, [selectedStudent])
+    return () => clearInterval(interval);
+  }, [selectedStudent]);
 
-  const selectedStudentData = students.find(s => s.id === selectedStudent)
+  const selectedStudentData = students.find((s) => s.id === selectedStudent);
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
-      case 'up': return <TrendingUp className="w-4 h-4 text-green-500" />
-      case 'down': return <TrendingUp className="w-4 h-4 text-red-500 rotate-180" />
-      default: return <Activity className="w-4 h-4 text-gray-500" />
+      case 'up':
+        return <TrendingUp className="w-4 h-4 text-green-500" />;
+      case 'down':
+        return <TrendingUp className="w-4 h-4 text-red-500 rotate-180" />;
+      default:
+        return <Activity className="w-4 h-4 text-gray-500" />;
     }
-  }
+  };
 
   const getGradeColor = (grade: number) => {
-    if (grade >= 90) return 'text-green-600'
-    if (grade >= 80) return 'text-blue-600'
-    if (grade >= 70) return 'text-yellow-600'
-    return 'text-red-600'
-  }
+    if (grade >= 90) return 'text-green-600';
+    if (grade >= 80) return 'text-blue-600';
+    if (grade >= 70) return 'text-yellow-600';
+    return 'text-red-600';
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -242,17 +245,21 @@ export default function ParentDashboard() {
                   <div className="text-2xl">{student.avatar}</div>
                   <div>
                     <h3 className="font-semibold text-gray-900">{student.name}</h3>
-                    <p className="text-sm text-gray-600">{student.school} - Grade {student.grade}</p>
+                    <p className="text-sm text-gray-600">
+                      {student.school} - Grade {student.grade}
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Overall Progress</span>
-                    <span className="text-sm font-semibold text-green-600">{student.overallProgress}%</span>
+                    <span className="text-sm font-semibold text-green-600">
+                      {student.overallProgress}%
+                    </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-green-500 h-2 rounded-full" 
+                    <div
+                      className="bg-green-500 h-2 rounded-full"
                       style={{ width: `${student.overallProgress}%` }}
                     ></div>
                   </div>
@@ -341,13 +348,17 @@ export default function ParentDashboard() {
                             {getTrendIcon(subject.trend)}
                           </div>
                           <div className="text-right">
-                            <p className={`text-lg font-bold ${getGradeColor(subject.currentGrade)}`}>
+                            <p
+                              className={`text-lg font-bold ${getGradeColor(subject.currentGrade)}`}
+                            >
                               {subject.currentGrade}%
                             </p>
-                            <p className="text-xs text-gray-500">Last activity: {subject.lastActivity}</p>
+                            <p className="text-xs text-gray-500">
+                              Last activity: {subject.lastActivity}
+                            </p>
                           </div>
                         </div>
-                        
+
                         <div className="grid gap-4 md:grid-cols-2">
                           <div>
                             <div className="flex items-center justify-between mb-1">
@@ -357,19 +368,23 @@ export default function ParentDashboard() {
                               </span>
                             </div>
                             <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div 
-                                className="bg-blue-500 h-2 rounded-full" 
-                                style={{ width: `${(subject.assignments.completed / subject.assignments.total) * 100}%` }}
+                              <div
+                                className="bg-blue-500 h-2 rounded-full"
+                                style={{
+                                  width: `${(subject.assignments.completed / subject.assignments.total) * 100}%`,
+                                }}
                               ></div>
                             </div>
                           </div>
-                          
+
                           <div>
                             {subject.upcomingTests.length > 0 && (
                               <div>
                                 <p className="text-sm text-gray-600 mb-1">Upcoming Tests:</p>
                                 {subject.upcomingTests.map((test, idx) => (
-                                  <p key={idx} className="text-sm text-orange-600 font-medium">{test}</p>
+                                  <p key={idx} className="text-sm text-orange-600 font-medium">
+                                    {test}
+                                  </p>
                                 ))}
                               </div>
                             )}
@@ -387,14 +402,16 @@ export default function ParentDashboard() {
                     {weeklyProgress.map((day) => (
                       <div key={day.day} className="flex-1 flex flex-col items-center">
                         <div className="w-full bg-gray-200 rounded-t flex-1 flex flex-col justify-end">
-                          <div 
+                          <div
                             className="bg-blue-500 rounded-t"
                             style={{ height: `${(day.completed / day.total) * 100}%` }}
                           ></div>
                         </div>
                         <div className="mt-2 text-center">
                           <p className="text-xs font-semibold text-gray-700">{day.day}</p>
-                          <p className="text-xs text-gray-500">{day.completed}/{day.total}</p>
+                          <p className="text-xs text-gray-500">
+                            {day.completed}/{day.total}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -408,7 +425,10 @@ export default function ParentDashboard() {
                   <h3 className="text-lg font-semibold text-gray-900 mb-6">Recent Achievements</h3>
                   <div className="space-y-4">
                     {achievements.map((achievement) => (
-                      <div key={achievement.id} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                      <div
+                        key={achievement.id}
+                        className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg"
+                      >
                         <div className="text-2xl">{achievement.icon}</div>
                         <div className="flex-1">
                           <h4 className="font-semibold text-gray-900">{achievement.title}</h4>
@@ -515,5 +535,5 @@ export default function ParentDashboard() {
         </div>
       )}
     </div>
-  )
+  );
 }

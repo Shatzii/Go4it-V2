@@ -1,11 +1,11 @@
 /**
  * Replit-Optimized Hybrid Server for ShatziiOS
- * 
+ *
  * This script is specifically designed for Replit workflow detection:
  * 1. Creates a simple HTTP server that responds instantly on port 5000
  * 2. Provides a loading page for users while the main app starts
  * 3. Keeps a background monitor process to restart the main app if it fails
- * 
+ *
  * NOTE: This version eliminates the TCP socket step to make Replit detection more reliable
  */
 
@@ -53,7 +53,7 @@ const server = http.createServer((req, res) => {
 // Immediately listen on the port - this is critical for Replit detection
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`✓ HTTP server running on port ${PORT} at ${new Date().toISOString()}`);
-  
+
   // Start the main application after a slight delay
   setTimeout(() => {
     startMainApp();
@@ -62,27 +62,27 @@ server.listen(PORT, '0.0.0.0', () => {
 
 server.on('error', (err) => {
   console.error('HTTP server error:', err);
-  
+
   // If the port is in use, try again with a different port
   if (err.code === 'EADDRINUSE') {
-    console.log(`Port ${PORT} is already in use, trying port ${PORT+1}...`);
-    server.listen(PORT+1, '0.0.0.0');
+    console.log(`Port ${PORT} is already in use, trying port ${PORT + 1}...`);
+    server.listen(PORT + 1, '0.0.0.0');
   }
 });
 
 function startMainApp() {
   console.log(`Starting main ShatziiOS application at ${new Date().toISOString()}`);
-  
+
   // Start the main application
   const mainApp = spawn('npm', ['run', 'dev'], {
     stdio: 'inherit',
-    env: process.env
+    env: process.env,
   });
-  
+
   // Handle application exit events
   mainApp.on('exit', (code, signal) => {
     console.log(`Main application exited with code ${code} and signal ${signal}`);
-    
+
     if (code !== 0) {
       console.log('Main application crashed, restarting in 5 seconds...');
       setTimeout(() => {
@@ -90,7 +90,7 @@ function startMainApp() {
       }, 5000);
     }
   });
-  
+
   mainApp.on('error', (err) => {
     console.error('Failed to start main application:', err);
     console.log('Will retry in 5 seconds...');

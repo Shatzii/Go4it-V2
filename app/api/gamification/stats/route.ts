@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getUserFromRequest } from '@/lib/auth'
+import { NextRequest, NextResponse } from 'next/server';
+import { getUserFromRequest } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getUserFromRequest(request)
+    const user = await getUserFromRequest(request);
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Mock gamification stats - in production, this would come from database
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
           progress: 1,
           maxProgress: 1,
           isUnlocked: true,
-          unlockedAt: new Date('2024-01-15')
+          unlockedAt: new Date('2024-01-15'),
         },
         {
           id: '2',
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
           progress: 7,
           maxProgress: 7,
           isUnlocked: true,
-          unlockedAt: new Date('2024-07-10')
+          unlockedAt: new Date('2024-07-10'),
         },
         {
           id: '3',
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
           rarity: 'common',
           progress: 8,
           maxProgress: 10,
-          isUnlocked: false
+          isUnlocked: false,
         },
         {
           id: '4',
@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
           rarity: 'epic',
           progress: 3,
           maxProgress: 6,
-          isUnlocked: false
+          isUnlocked: false,
         },
         {
           id: '5',
@@ -80,14 +80,14 @@ export async function GET(request: NextRequest) {
           rarity: 'legendary',
           progress: 0,
           maxProgress: 1,
-          isUnlocked: false
-        }
-      ]
-    }
+          isUnlocked: false,
+        },
+      ],
+    };
 
-    return NextResponse.json({ stats })
+    return NextResponse.json({ stats });
   } catch (error) {
-    console.error('Failed to fetch gamification stats:', error)
-    return NextResponse.json({ error: 'Failed to fetch stats' }, { status: 500 })
+    console.error('Failed to fetch gamification stats:', error);
+    return NextResponse.json({ error: 'Failed to fetch stats' }, { status: 500 });
   }
 }

@@ -1,22 +1,22 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { 
-  BookOpen, 
-  Clock, 
-  Star, 
-  Trophy, 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  BookOpen,
+  Clock,
+  Star,
+  Trophy,
   CheckCircle,
   AlertCircle,
   Calendar,
   FileText,
   Scale,
   Gavel,
-  Building
-} from 'lucide-react'
-import Link from 'next/link'
+  Building,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function LawAssignments() {
   const assignments = [
@@ -29,7 +29,7 @@ export default function LawAssignments() {
       status: 'pending',
       difficulty: 'hard',
       points: 75,
-      description: 'Analyze Marbury v. Madison and its impact on judicial review'
+      description: 'Analyze Marbury v. Madison and its impact on judicial review',
     },
     {
       id: 2,
@@ -40,7 +40,7 @@ export default function LawAssignments() {
       status: 'in_progress',
       difficulty: 'medium',
       points: 60,
-      description: 'Draft legal memo on breach of contract remedies'
+      description: 'Draft legal memo on breach of contract remedies',
     },
     {
       id: 3,
@@ -51,9 +51,9 @@ export default function LawAssignments() {
       status: 'completed',
       difficulty: 'hard',
       points: 80,
-      description: 'Evaluate admissibility of evidence in criminal proceedings'
-    }
-  ]
+      description: 'Evaluate admissibility of evidence in criminal proceedings',
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-gray-50">
@@ -61,7 +61,9 @@ export default function LawAssignments() {
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-800 via-indigo-800 to-gray-800 text-white rounded-lg p-6 mb-6">
           <h1 className="text-3xl font-bold">Legal Case Assignments ⚖️</h1>
-          <p className="text-blue-100 mt-1">Future Legal Professionals - Case Analysis & Legal Writing</p>
+          <p className="text-blue-100 mt-1">
+            Future Legal Professionals - Case Analysis & Legal Writing
+          </p>
         </div>
 
         {/* Stats Cards */}
@@ -104,22 +106,36 @@ export default function LawAssignments() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="text-4xl">
-                      {assignment.subject === 'Constitutional Law' ? '📜' :
-                       assignment.subject === 'Contract Law' ? '📋' :
-                       assignment.subject === 'Criminal Law' ? '⚖️' : '📚'}
+                      {assignment.subject === 'Constitutional Law'
+                        ? '📜'
+                        : assignment.subject === 'Contract Law'
+                          ? '📋'
+                          : assignment.subject === 'Criminal Law'
+                            ? '⚖️'
+                            : '📚'}
                     </div>
                     <div>
                       <CardTitle className="text-lg">{assignment.title}</CardTitle>
-                      <p className="text-sm text-gray-600">{assignment.subject} • {assignment.professor}</p>
+                      <p className="text-sm text-gray-600">
+                        {assignment.subject} • {assignment.professor}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant={
-                      assignment.status === 'completed' ? 'default' :
-                      assignment.status === 'in_progress' ? 'secondary' : 'outline'
-                    }>
-                      {assignment.status === 'completed' ? 'Completed' :
-                       assignment.status === 'in_progress' ? 'In Progress' : 'Pending'}
+                    <Badge
+                      variant={
+                        assignment.status === 'completed'
+                          ? 'default'
+                          : assignment.status === 'in_progress'
+                            ? 'secondary'
+                            : 'outline'
+                      }
+                    >
+                      {assignment.status === 'completed'
+                        ? 'Completed'
+                        : assignment.status === 'in_progress'
+                          ? 'In Progress'
+                          : 'Pending'}
                     </Badge>
                     <Badge className="bg-yellow-100 text-yellow-800">
                       {assignment.points} points
@@ -136,8 +152,11 @@ export default function LawAssignments() {
                       <span>Due: {assignment.dueDate}</span>
                     </div>
                     <Badge variant="outline" className="text-xs">
-                      {assignment.difficulty === 'easy' ? 'Easy' :
-                       assignment.difficulty === 'medium' ? 'Medium' : 'Hard'}
+                      {assignment.difficulty === 'easy'
+                        ? 'Easy'
+                        : assignment.difficulty === 'medium'
+                          ? 'Medium'
+                          : 'Hard'}
                     </Badge>
                   </div>
                   <div className="flex gap-2">
@@ -146,8 +165,11 @@ export default function LawAssignments() {
                       View Case Files
                     </Button>
                     <Button size="sm" disabled={assignment.status === 'completed'}>
-                      {assignment.status === 'completed' ? 'Completed' :
-                       assignment.status === 'in_progress' ? 'Continue Research' : 'Start Analysis'}
+                      {assignment.status === 'completed'
+                        ? 'Completed'
+                        : assignment.status === 'in_progress'
+                          ? 'Continue Research'
+                          : 'Start Analysis'}
                     </Button>
                   </div>
                 </div>
@@ -168,14 +190,10 @@ export default function LawAssignments() {
                   </Button>
                 </Link>
                 <Link href="/schools/law/virtual-classroom">
-                  <Button variant="outline">
-                    Join Virtual Classroom
-                  </Button>
+                  <Button variant="outline">Join Virtual Classroom</Button>
                 </Link>
                 <Link href="/schools/law/student-dashboard">
-                  <Button variant="outline">
-                    Back to Law Dashboard
-                  </Button>
+                  <Button variant="outline">Back to Law Dashboard</Button>
                 </Link>
               </div>
             </div>
@@ -183,5 +201,5 @@ export default function LawAssignments() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

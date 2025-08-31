@@ -15,16 +15,16 @@ interface OptimizedImageProps {
   onError?: () => void;
 }
 
-export function OptimizedImage({ 
-  src, 
-  alt, 
-  className, 
-  width, 
-  height, 
+export function OptimizedImage({
+  src,
+  alt,
+  className,
+  width,
+  height,
   priority = false,
   placeholder = 'empty',
   blurDataURL,
-  onError
+  onError,
 }: OptimizedImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -42,7 +42,7 @@ export function OptimizedImage({
           observer.disconnect();
         }
       },
-      { rootMargin: '50px' }
+      { rootMargin: '50px' },
     );
 
     if (imgRef.current) {
@@ -88,23 +88,21 @@ export function OptimizedImage({
       {isInView && (
         <>
           {/* Loading placeholder */}
-          {!isLoaded && (
-            <div className={`absolute inset-0 bg-slate-800 animate-pulse`} />
-          )}
-          
+          {!isLoaded && <div className={`absolute inset-0 bg-slate-800 animate-pulse`} />}
+
           <Image
             src={src}
             alt={alt}
             width={width}
             height={height}
-            className={`transition-opacity duration-300 ${
-              isLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
+            className={`transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
             onLoad={handleLoad}
             onError={handleError}
             priority={priority}
             placeholder={placeholder}
-            blurDataURL={blurDataURL || (typeof window !== 'undefined' ? generateBlurDataURL() : undefined)}
+            blurDataURL={
+              blurDataURL || (typeof window !== 'undefined' ? generateBlurDataURL() : undefined)
+            }
           />
         </>
       )}
@@ -113,30 +111,30 @@ export function OptimizedImage({
 }
 
 // Optimized avatar component
-export function OptimizedAvatar({ 
-  src, 
-  alt, 
-  size = 40, 
-  className = '' 
-}: { 
-  src?: string; 
-  alt: string; 
-  size?: number; 
+export function OptimizedAvatar({
+  src,
+  alt,
+  size = 40,
+  className = '',
+}: {
+  src?: string;
+  alt: string;
+  size?: number;
   className?: string;
 }) {
   const [hasError, setHasError] = useState(false);
-  
+
   if (!src || hasError) {
     // Generate initials from alt text
     const initials = alt
       .split(' ')
-      .map(name => name[0])
+      .map((name) => name[0])
       .join('')
       .toUpperCase()
       .slice(0, 2);
-    
+
     return (
-      <div 
+      <div
         className={`
           flex items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-purple-600 
           text-white font-semibold ${className}
@@ -147,7 +145,7 @@ export function OptimizedAvatar({
       </div>
     );
   }
-  
+
   return (
     <OptimizedImage
       src={src}
@@ -161,14 +159,14 @@ export function OptimizedAvatar({
 }
 
 // Responsive image component
-export function ResponsiveImage({ 
-  src, 
-  alt, 
+export function ResponsiveImage({
+  src,
+  alt,
   className,
-  aspectRatio = '16/9'
-}: { 
-  src: string; 
-  alt: string; 
+  aspectRatio = '16/9',
+}: {
+  src: string;
+  alt: string;
   className?: string;
   aspectRatio?: string;
 }) {

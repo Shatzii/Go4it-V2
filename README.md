@@ -1,13 +1,9 @@
-# Go4it-Sports-International
-Sports, Education, and Tech super charged
-
 # Go4It Sports Platform
 
 This repository hosts the Go4It Sports platform (Next.js + TypeScript + Drizzle ORM).
 
-Advanced AI-enhanced sports analytics platform for neurodivergent student athletes.
-
 ## Recent Enhancements
+
 - SEO: `/sitemap.xml` and `/robots.txt` via Next.js metadata routes
 - Headers: Security and caching headers in `middleware.ts` and `next.config.js`
 - Logging: Request ID header (X-Request-Id) and minimal request logs
@@ -16,13 +12,12 @@ Advanced AI-enhanced sports analytics platform for neurodivergent student athlet
 
 ## Quick Start
 
-```bash
-npm run dev    # Start development server
-npm run build  # Build for production
-npm run start  # Start production server
-```
+- Dev: `npm run dev` (port 5000)
+- Build: `npm run build`
+- Start: `npm start`
 
 ## Smoke Test Registration
+
 Requires server listening on BASE_URL (default http://localhost:5000).
 
 ```bash
@@ -32,6 +27,7 @@ BASE_URL=http://localhost:5001 node scripts/test-register.js
 ```
 
 ## Additional Smoke Tests
+
 - Full auth flow (register → me → logout → login → me)
 
 ```bash
@@ -42,6 +38,30 @@ node scripts/test-auth-flow.js
 
 ```bash
 node scripts/test-health-and-verify.js
+```
+
+## Environment
+
+- NEXT_PUBLIC_APP_URL: public base URL (e.g., https://app.example.com)
+- JWT_SECRET: required for auth
+- Optional: COOKIE_DOMAIN, UPSTASH_REDIS_REST_URL/TOKEN, RESEND_API_KEY, FROM_EMAIL, RECAPTCHA_SECRET_KEY
+- Monitoring (optional): SENTRY_DSN, NEXT_PUBLIC_SENTRY_DSN, SENTRY_ORG, SENTRY_PROJECT
+
+## Deployment
+
+- Preferred: git pull on server then build/start
+- Fallback: use generated deployment packages and scripts in docs
+
+# Go4It Sports Platform
+
+Advanced AI-enhanced sports analytics platform for neurodivergent student athletes.
+
+## Quick Start
+
+```bash
+npm run dev    # Start development server
+npm run build  # Build for production
+npm run start  # Start production server
 ```
 
 ## Features
@@ -59,7 +79,7 @@ node scripts/test-health-and-verify.js
 ✅ **Created proper Next.js configuration** with SWC disabled  
 ✅ **Added fallback build scripts** for reliable deployment  
 ✅ **Cleaned up unused files** and optimized project structure  
-✅ **Fixed environment variable handling** in Next.js config  
+✅ **Fixed environment variable handling** in Next.js config
 
 ## Project Structure
 
@@ -87,12 +107,6 @@ lib/               # Shared utilities
 └── utils.ts       # General utilities
 ```
 
-## Environment
-- NEXT_PUBLIC_APP_URL: public base URL (e.g., https://app.example.com)
-- JWT_SECRET: required for auth
-- Optional: COOKIE_DOMAIN, UPSTASH_REDIS_REST_URL/TOKEN, RESEND_API_KEY, FROM_EMAIL, RECAPTCHA_SECRET_KEY
-- Monitoring (optional): SENTRY_DSN, NEXT_PUBLIC_SENTRY_DSN, SENTRY_ORG, SENTRY_PROJECT
-
 ## Environment Variables
 
 Create a `.env.local` file with:
@@ -104,8 +118,6 @@ NEXTAUTH_URL=http://localhost:5000
 ```
 
 ## Deployment
-- Preferred: git pull on server then build/start
-- Fallback: use generated deployment packages and scripts in docs
 
 The application is optimized for deployment on platforms like Vercel, Netlify, or self-hosted servers. The build process now works reliably with all minification issues resolved.
 

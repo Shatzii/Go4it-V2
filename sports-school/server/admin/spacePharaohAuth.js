@@ -1,6 +1,6 @@
 /**
  * SpacePharaoh Master Admin Authentication System
- * 
+ *
  * Provides master administrative access across all schools and specialized
  * admin logins for each individual school with appropriate permissions
  */
@@ -35,12 +35,12 @@ class SpacePharaohAuthSystem {
         'deployment_control',
         'ai_engine_control',
         'global_analytics',
-        'emergency_access'
+        'emergency_access',
       ],
       schools: ['all'],
       created_at: new Date(),
       last_login: null,
-      status: 'active'
+      status: 'active',
     });
 
     // SuperHero School (K-6) Admin
@@ -61,12 +61,12 @@ class SpacePharaohAuthSystem {
         'parent_communication',
         'achievement_system',
         'neurodivergent_support',
-        'gamification_control'
+        'gamification_control',
       ],
       grade_levels: ['K', '1', '2', '3', '4', '5', '6'],
       created_at: new Date(),
       last_login: null,
-      status: 'active'
+      status: 'active',
     });
 
     // Stage Prep School (7-12) Admin
@@ -88,12 +88,12 @@ class SpacePharaohAuthSystem {
         'theater_program_management',
         'graduation_tracking',
         'college_prep_oversight',
-        'block_scheduling'
+        'block_scheduling',
       ],
       grade_levels: ['7', '8', '9', '10', '11', '12'],
       created_at: new Date(),
       last_login: null,
-      status: 'active'
+      status: 'active',
     });
 
     // The Lawyer Makers (Law School) Admin
@@ -115,12 +115,12 @@ class SpacePharaohAuthSystem {
         'career_services',
         'moot_court_oversight',
         'law_review_management',
-        'internship_coordination'
+        'internship_coordination',
       ],
       programs: ['JD', 'LLM', 'Certificate Programs'],
       created_at: new Date(),
       last_login: null,
-      status: 'active'
+      status: 'active',
     });
 
     // Global Language Academy Admin
@@ -141,12 +141,12 @@ class SpacePharaohAuthSystem {
         'cultural_program_management',
         'exchange_coordination',
         'certification_tracking',
-        'immersion_programs'
+        'immersion_programs',
       ],
       languages: ['English', 'Spanish', 'German', 'French', 'Mandarin'],
       created_at: new Date(),
       last_login: null,
-      status: 'active'
+      status: 'active',
     });
 
     console.log('🔐 SpacePharaoh Admin System Initialized');
@@ -163,11 +163,11 @@ class SpacePharaohAuthSystem {
       if (this.masterAdmins.has(username)) {
         const admin = this.masterAdmins.get(username);
         const isValidPassword = await bcrypt.compare(password, admin.password);
-        
+
         if (isValidPassword && admin.status === 'active') {
           const token = this.generateToken(admin);
           admin.last_login = new Date();
-          
+
           return {
             success: true,
             user: {
@@ -177,10 +177,10 @@ class SpacePharaohAuthSystem {
               role: admin.role,
               permissions: admin.permissions,
               schools: admin.schools,
-              isMasterAdmin: true
+              isMasterAdmin: true,
             },
             token,
-            message: 'SpacePharaoh master authentication successful'
+            message: 'SpacePharaoh master authentication successful',
           };
         }
       }
@@ -189,11 +189,11 @@ class SpacePharaohAuthSystem {
       if (this.schoolAdmins.has(username)) {
         const admin = this.schoolAdmins.get(username);
         const isValidPassword = await bcrypt.compare(password, admin.password);
-        
+
         if (isValidPassword && admin.status === 'active') {
           const token = this.generateToken(admin);
           admin.last_login = new Date();
-          
+
           return {
             success: true,
             user: {
@@ -207,23 +207,23 @@ class SpacePharaohAuthSystem {
               grade_levels: admin.grade_levels,
               programs: admin.programs,
               languages: admin.languages,
-              isMasterAdmin: false
+              isMasterAdmin: false,
             },
             token,
-            message: `${admin.school_name} admin authentication successful`
+            message: `${admin.school_name} admin authentication successful`,
           };
         }
       }
 
       return {
         success: false,
-        message: 'Invalid credentials or account inactive'
+        message: 'Invalid credentials or account inactive',
       };
     } catch (error) {
       console.error('Authentication error:', error);
       return {
         success: false,
-        message: 'Authentication system error'
+        message: 'Authentication system error',
       };
     }
   }
@@ -236,25 +236,28 @@ class SpacePharaohAuthSystem {
       school: admin.school || 'all',
       permissions: admin.permissions,
       iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 24 hours
+      exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60, // 24 hours
     };
 
     return jwt.sign(payload, process.env.JWT_SECRET || 'spacepharaoh_universal_secret_key_2025', {
-      algorithm: 'HS256'
+      algorithm: 'HS256',
     });
   }
 
   verifyToken(token) {
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'spacepharaoh_universal_secret_key_2025');
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET || 'spacepharaoh_universal_secret_key_2025',
+      );
       return {
         valid: true,
-        payload: decoded
+        payload: decoded,
       };
     } catch (error) {
       return {
         valid: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -285,7 +288,7 @@ class SpacePharaohAuthSystem {
 
   getAllAdmins() {
     const admins = [];
-    
+
     // Add master admins
     for (const [username, admin] of this.masterAdmins) {
       admins.push({
@@ -295,7 +298,7 @@ class SpacePharaohAuthSystem {
         school: 'All Schools',
         status: admin.status,
         last_login: admin.last_login,
-        isMasterAdmin: true
+        isMasterAdmin: true,
       });
     }
 
@@ -308,7 +311,7 @@ class SpacePharaohAuthSystem {
         school: admin.school_name,
         status: admin.status,
         last_login: admin.last_login,
-        isMasterAdmin: false
+        isMasterAdmin: false,
       });
     }
 
@@ -319,7 +322,7 @@ class SpacePharaohAuthSystem {
     if (this.masterAdmins.has(username)) {
       return {
         schools: ['all'],
-        permissions: this.masterAdmins.get(username).permissions
+        permissions: this.masterAdmins.get(username).permissions,
       };
     }
 
@@ -328,7 +331,7 @@ class SpacePharaohAuthSystem {
       return {
         school: admin.school,
         school_name: admin.school_name,
-        permissions: admin.permissions
+        permissions: admin.permissions,
       };
     }
 
@@ -337,7 +340,7 @@ class SpacePharaohAuthSystem {
 
   async resetPassword(username, newPassword) {
     const hashedPassword = await bcrypt.hash(newPassword, 12);
-    
+
     if (this.masterAdmins.has(username)) {
       this.masterAdmins.get(username).password = hashedPassword;
       return true;
@@ -384,30 +387,30 @@ class SpacePharaohAuthSystem {
       master_admin: {
         username: process.env.MASTER_ADMIN_USERNAME || 'spacepharaoh',
         password: process.env.MASTER_ADMIN_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
-        access: 'Full platform control'
+        access: 'Full platform control',
       },
       school_admins: {
         superhero_school: {
           username: process.env.SUPERHERO_ADMIN_USERNAME || 'hero_admin',
           password: process.env.SUPERHERO_ADMIN_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
-          access: 'SuperHero School (K-6) management'
+          access: 'SuperHero School (K-6) management',
         },
         stage_prep_school: {
           username: process.env.STAGE_ADMIN_USERNAME || 'stage_admin',
           password: process.env.STAGE_ADMIN_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
-          access: 'Stage Prep School (7-12) management'
+          access: 'Stage Prep School (7-12) management',
         },
         lawyer_makers: {
           username: process.env.LAW_ADMIN_USERNAME || 'law_admin',
           password: process.env.LAW_ADMIN_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
-          access: 'Law School management'
+          access: 'Law School management',
         },
         global_language_academy: {
           username: process.env.LANGUAGE_ADMIN_USERNAME || 'language_admin',
           password: process.env.LANGUAGE_ADMIN_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
-          access: 'Language Academy management'
-        }
-      }
+          access: 'Language Academy management',
+        },
+      },
     };
   }
 }

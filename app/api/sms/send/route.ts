@@ -1,59 +1,68 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendSmsKannel } from '@/lib/sendSmsKannel';
+import { smsService } from '@/lib/twilio-client';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    // Bulk: accept array of { to, text } or single { to, text }
-    const recipients = Array.isArray(body)
-      ? body
-      : (body.recipients || [{ to: body.to, text: body.text }]);
+    const { to, message, type, templateData, mediaUrl, scheduleTime } = body;
 
-    if (!recipients || !Array.isArray(recipients) || recipients.length === 0) {
-      return NextResponse.json({
-        success: false,
-        error: 'No recipients provided'
-      }, { status: 400 });
+    if (!to || !message) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Phone number and message are required',
+        },
+        { status: 400 },
+      );
     }
 
+    // Validate phone number format
     const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-    const results = await Promise.all(
-      recipients.map(async ({ to, text }) => {
-        if (!to || !text) {
-          return { to, success: false, error: 'Phone number and text are required' };
-        }
-        if (!phoneRegex.test(to.replace(/\s/g, ''))) {
-          return { to, success: false, error: 'Invalid phone number format' };
-        }
-        try {
-          await sendSmsKannel({
-            to,
-            text,
-            kannelUrl: process.env.KANNEL_URL!,
-            username: process.env.KANNEL_USER!,
-            password: process.env.KANNEL_PASS!,
-          });
-          console.log(`SMS sent successfully to ${to}`);
-          return { to, success: true };
-        } catch (e: any) {
-          return { to, success: false, error: e.message };
-        }
-      })
-    );
-    const totalSent = results.filter(r => r.success).length;
-    const totalFailed = results.length - totalSent;
-    return NextResponse.json({
-      success: totalFailed === 0,
-      totalSent,
-      totalFailed,
-      results
+    if (!phoneRegex.test(to.replace(/\s/g, ''))) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Invalid phone number format',
+        },
+        { status: 400 },
+      );
+    }
+
+    const result = await smsService.sendSMS({
+      to,
+      message,
+      mediaUrl,
+      scheduleTime: scheduleTime ? new Date(scheduleTime) : undefined,
     });
+
+    if (result.success) {
+      // Log SMS activity for analytics
+      console.log(`SMS sent successfully: ${type || 'manual'} message to ${to}`);
+
+      return NextResponse.json({
+        success: true,
+        messageId: result.messageId,
+        status: result.status,
+        message: 'SMS sent successfully',
+      });
+    } else {
+      return NextResponse.json(
+        {
+          success: false,
+          error: result.error,
+        },
+        { status: 500 },
+      );
+    }
   } catch (error: any) {
     console.error('SMS API error:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to send SMS'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to send SMS',
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -66,7 +75,7 @@ export async function GET() {
       bulkSMS: true,
       scheduledSMS: true,
       mediaSMS: true,
-      templates: true
+      templates: true,
     },
     templates: [
       'payment_confirmation',
@@ -76,7 +85,7 @@ export async function GET() {
       'parent_update',
       'scout_interest',
       'live_class_alert',
-      'achievement_unlock'
-    ]
+      'achievement_unlock',
+    ],
   });
 }

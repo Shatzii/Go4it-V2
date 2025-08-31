@@ -22,7 +22,7 @@ export const securityConfig = {
   jwtSecret: process.env.JWT_SECRET || 'development-secret-change-in-production',
   bcryptRounds: isProduction ? 12 : 10,
   sessionTimeout: isProduction ? 24 * 60 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000, // 1 day prod, 7 days dev
-  corsOrigins: isProduction 
+  corsOrigins: isProduction
     ? ['https://go4itsports.org', 'https://www.go4itsports.org']
     : ['http://localhost:3000', 'http://localhost:5000'],
   rateLimiting: {
@@ -55,9 +55,17 @@ export const storageConfig = {
     maxFileSize: 500 * 1024 * 1024, // 500MB
   },
   allowedFileTypes: [
-    'video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska',
-    'image/jpeg', 'image/png', 'image/webp', 'image/heic',
-    'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    'video/mp4',
+    'video/quicktime',
+    'video/x-msvideo',
+    'video/x-matroska',
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/heic',
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   ],
 };
 
@@ -134,15 +142,10 @@ export const urlConfig = {
 export const validateProductionConfig = () => {
   if (!isProduction) return true;
 
-  const requiredEnvVars = [
-    'DATABASE_URL',
-    'JWT_SECRET',
-    'STRIPE_SECRET_KEY',
-    'OPENAI_API_KEY'
-  ];
+  const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET', 'STRIPE_SECRET_KEY', 'OPENAI_API_KEY'];
 
-  const missing = requiredEnvVars.filter(envVar => !process.env[envVar]);
-  
+  const missing = requiredEnvVars.filter((envVar) => !process.env[envVar]);
+
   if (missing.length > 0) {
     throw new Error(`Missing required environment variables for production: ${missing.join(', ')}`);
   }

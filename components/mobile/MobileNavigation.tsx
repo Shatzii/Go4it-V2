@@ -1,17 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { 
-  Home, 
-  Star, 
-  Video, 
-  BookOpen, 
-  Users, 
-  Menu, 
-  X,
-  Settings,
-  LogOut 
-} from 'lucide-react';
+import { Home, Star, Video, BookOpen, Users, Menu, X, Settings, LogOut } from 'lucide-react';
 import { useApp } from '../providers/AppProviders';
 
 export function MobileNavigation() {
@@ -21,8 +11,8 @@ export function MobileNavigation() {
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: Home, active: true },
     { name: 'StarPath', href: '/starpath', icon: Star, active: false },
-    { name: 'Video Analysis', href: '/video-analysis', icon: Video, active: false },
-    { name: 'Academics', href: '/academics', icon: BookOpen, active: false },
+    { name: 'GAR Analysis', href: '/video-upload', icon: Video, active: false },
+    { name: 'Academy', href: '/academy', icon: BookOpen, active: false },
     { name: 'Teams', href: '/teams', icon: Users, active: false },
   ];
 
@@ -40,7 +30,7 @@ export function MobileNavigation() {
       {isOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setIsOpen(false)} />
-          
+
           <div className="fixed right-0 top-0 bottom-0 w-80 bg-slate-900 p-6 shadow-xl">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-xl font-bold text-white">Go4It Sports</h2>

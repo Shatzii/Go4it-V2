@@ -26,22 +26,22 @@ export async function POST(request: NextRequest) {
     // More flexible file validation
     const validTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/quicktime'];
     const validExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.m4v'];
-    
+
     const hasValidType = validTypes.includes(file.type);
-    const hasValidExtension = validExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
-    
+    const hasValidExtension = validExtensions.some((ext) => file.name.toLowerCase().endsWith(ext));
+
     if (!hasValidType && !hasValidExtension) {
       // Try to determine file type by content
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      
+
       // Check file signature (magic numbers)
       const isValidVideo = isVideoFile(buffer);
-      
+
       if (!isValidVideo) {
         return NextResponse.json(
           { error: 'Invalid video file. Please upload MP4, AVI, MOV, or WMV files.' },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     if (file.size > maxSize) {
       return NextResponse.json(
         { error: 'File too large. Maximum size is 500MB.' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -80,17 +80,13 @@ export async function POST(request: NextRequest) {
         sport: sport,
         description: description,
         uploadedAt: new Date().toISOString(),
-        userId: user.id
+        userId: user.id,
       },
-      message: 'Video uploaded successfully'
+      message: 'Video uploaded successfully',
     });
-
   } catch (error) {
     console.error('Error uploading video:', error);
-    return NextResponse.json(
-      { error: 'Failed to upload video' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to upload video' }, { status: 500 });
   }
 }
 
@@ -105,12 +101,12 @@ function isVideoFile(buffer: Buffer): boolean {
     // MOV/QuickTime
     [0x00, 0x00, 0x00, 0x14, 0x66, 0x74, 0x79, 0x70, 0x71, 0x74],
     // WMV
-    [0x30, 0x26, 0xB2, 0x75, 0x8E, 0x66, 0xCF, 0x11]
+    [0x30, 0x26, 0xb2, 0x75, 0x8e, 0x66, 0xcf, 0x11],
   ];
 
-  return signatures.some(signature => {
+  return signatures.some((signature) => {
     if (buffer.length < signature.length) return false;
-    
+
     return signature.every((byte, index) => {
       return byte === null || buffer[index] === byte;
     });
@@ -129,16 +125,12 @@ export async function GET(request: NextRequest) {
       limits: {
         maxFileSize: '500MB',
         supportedFormats: ['MP4', 'AVI', 'MOV', 'WMV', 'M4V'],
-        maxDuration: '30 minutes'
+        maxDuration: '30 minutes',
       },
-      uploadPath: '/api/upload/video'
+      uploadPath: '/api/upload/video',
     });
-
   } catch (error) {
     console.error('Error getting upload info:', error);
-    return NextResponse.json(
-      { error: 'Failed to get upload information' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to get upload information' }, { status: 500 });
   }
 }

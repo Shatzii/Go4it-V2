@@ -1,15 +1,13 @@
 /**
  * CMS Initialization
- * 
+ *
  * This file contains logic to initialize and apply CMS methods to the storage system.
  */
 
 import { IStorage } from '../storage';
 import { applyCMSMethods } from './cms-storage';
 import { db } from '../db';
-import { 
-  schools
-} from '../../shared/cms-schema';
+import { schools } from '../../shared/cms-schema';
 
 /**
  * Initialize CMS functionality
@@ -17,25 +15,25 @@ import {
  */
 export async function initializeCMS(storage: IStorage): Promise<IStorage> {
   console.log('🏫 Initializing CMS features...');
-  
+
   try {
     // Apply the CMS methods to the storage object
     const enhancedStorage = applyCMSMethods(storage);
     console.log('✅ CMS methods applied to storage');
-    
+
     // If using a database, ensure the tables exist
     if (process.env.DATABASE_URL && process.env.USE_MEMORY_STORAGE !== 'true') {
       try {
         // Check if we need to create tables
         const hasSchoolsTable = await checkTableExists('cms_schools');
-        
+
         if (!hasSchoolsTable) {
           console.log('⚠️ CMS tables not found in database, migrations needed');
-          
+
           try {
             // Create the tables using drizzle. In a production environment,
             // you would use drizzle-kit migrations instead of direct schema push.
-            
+
             // Create the tables in order to respect foreign key constraints
             await db.execute(`CREATE TABLE IF NOT EXISTS cms_schools (
               id SERIAL PRIMARY KEY,
@@ -57,7 +55,7 @@ export async function initializeCMS(storage: IStorage): Promise<IStorage> {
               created_at TIMESTAMP NOT NULL DEFAULT NOW(),
               updated_at TIMESTAMP NOT NULL DEFAULT NOW()
             )`);
-            
+
             await db.execute(`CREATE TABLE IF NOT EXISTS cms_neurodivergent_schools (
               id SERIAL PRIMARY KEY,
               school_id INTEGER NOT NULL REFERENCES cms_schools(id) ON DELETE CASCADE,
@@ -71,7 +69,7 @@ export async function initializeCMS(storage: IStorage): Promise<IStorage> {
               created_at TIMESTAMP NOT NULL DEFAULT NOW(),
               updated_at TIMESTAMP NOT NULL DEFAULT NOW()
             )`);
-            
+
             await db.execute(`CREATE TABLE IF NOT EXISTS cms_law_schools (
               id SERIAL PRIMARY KEY,
               school_id INTEGER NOT NULL REFERENCES cms_schools(id) ON DELETE CASCADE,
@@ -86,7 +84,7 @@ export async function initializeCMS(storage: IStorage): Promise<IStorage> {
               created_at TIMESTAMP NOT NULL DEFAULT NOW(),
               updated_at TIMESTAMP NOT NULL DEFAULT NOW()
             )`);
-            
+
             await db.execute(`CREATE TABLE IF NOT EXISTS cms_language_schools (
               id SERIAL PRIMARY KEY,
               school_id INTEGER NOT NULL REFERENCES cms_schools(id) ON DELETE CASCADE,
@@ -100,7 +98,7 @@ export async function initializeCMS(storage: IStorage): Promise<IStorage> {
               created_at TIMESTAMP NOT NULL DEFAULT NOW(),
               updated_at TIMESTAMP NOT NULL DEFAULT NOW()
             )`);
-            
+
             await db.execute(`CREATE TABLE IF NOT EXISTS cms_pages (
               id SERIAL PRIMARY KEY,
               title VARCHAR(255) NOT NULL,
@@ -119,7 +117,7 @@ export async function initializeCMS(storage: IStorage): Promise<IStorage> {
               created_at TIMESTAMP NOT NULL DEFAULT NOW(),
               updated_at TIMESTAMP NOT NULL DEFAULT NOW()
             )`);
-            
+
             await db.execute(`CREATE TABLE IF NOT EXISTS cms_ai_teachers (
               id SERIAL PRIMARY KEY,
               name VARCHAR(100) NOT NULL,
@@ -138,7 +136,7 @@ export async function initializeCMS(storage: IStorage): Promise<IStorage> {
               created_at TIMESTAMP NOT NULL DEFAULT NOW(),
               updated_at TIMESTAMP NOT NULL DEFAULT NOW()
             )`);
-            
+
             await db.execute(`CREATE TABLE IF NOT EXISTS cms_resources (
               id SERIAL PRIMARY KEY,
               title VARCHAR(255) NOT NULL,
@@ -155,7 +153,7 @@ export async function initializeCMS(storage: IStorage): Promise<IStorage> {
               created_at TIMESTAMP NOT NULL DEFAULT NOW(),
               updated_at TIMESTAMP NOT NULL DEFAULT NOW()
             )`);
-            
+
             // Log success
             console.log('✅ CMS database schema initialized (tables created)');
           } catch (schemaError) {
@@ -172,7 +170,7 @@ export async function initializeCMS(storage: IStorage): Promise<IStorage> {
     } else {
       console.log('📝 Using memory storage for CMS data');
     }
-    
+
     return enhancedStorage;
   } catch (error) {
     console.error('❌ Failed to initialize CMS:', error);
@@ -187,7 +185,7 @@ export async function initializeCMS(storage: IStorage): Promise<IStorage> {
 async function checkTableExists(tableName: string): Promise<boolean> {
   try {
     if (!process.env.DATABASE_URL) return false;
-    
+
     // Use a more compatible query approach for PostgreSQL
     const result = await db.execute(`
       SELECT EXISTS (
@@ -196,7 +194,7 @@ async function checkTableExists(tableName: string): Promise<boolean> {
         AND table_name = '${tableName}'
       )
     `);
-    
+
     return result.rows[0]?.exists === true;
   } catch (error) {
     console.error(`Error checking if table ${tableName} exists:`, error);

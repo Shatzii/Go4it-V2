@@ -41,10 +41,13 @@ let cmsContent: CMSContent[] = [
       elements: [
         {
           type: 'hero',
-          content: { title: 'Become a Learning SuperHero!', subtitle: 'Discover your powers through education' },
-          styles: { backgroundColor: '#1e40af', textColor: '#ffffff', padding: '4rem 2rem' }
-        }
-      ]
+          content: {
+            title: 'Become a Learning SuperHero!',
+            subtitle: 'Discover your powers through education',
+          },
+          styles: { backgroundColor: '#1e40af', textColor: '#ffffff', padding: '4rem 2rem' },
+        },
+      ],
     },
     status: 'published',
     author: 'Admin',
@@ -54,19 +57,19 @@ let cmsContent: CMSContent[] = [
       seo: {
         title: 'SuperHero School - Empowering Young Minds',
         description: 'Gamified education for neurodivergent learners with superhero themes',
-        keywords: ['education', 'superhero', 'neurodivergent', 'primary school']
+        keywords: ['education', 'superhero', 'neurodivergent', 'primary school'],
       },
       educational: {
         gradeLevel: ['K', '1', '2', '3', '4', '5', '6'],
         subject: ['Math', 'Science', 'Reading', 'Social Studies'],
-        difficulty: 'beginner'
+        difficulty: 'beginner',
       },
       accessibility: {
         dyslexiaFriendly: true,
         adhdSupport: true,
-        autismSupport: true
-      }
-    }
+        autismSupport: true,
+      },
+    },
   },
   {
     id: '2',
@@ -77,9 +80,9 @@ let cmsContent: CMSContent[] = [
       lessons: [
         { id: 'l1', title: 'Addition Heroes', duration: 30 },
         { id: 'l2', title: 'Subtraction Scouts', duration: 25 },
-        { id: 'l3', title: 'Multiplication Masters', duration: 35 }
+        { id: 'l3', title: 'Multiplication Masters', duration: 35 },
       ],
-      objectives: ['Master basic arithmetic', 'Problem solving skills', 'Mathematical reasoning']
+      objectives: ['Master basic arithmetic', 'Problem solving skills', 'Mathematical reasoning'],
     },
     status: 'published',
     author: 'Ms. Johnson',
@@ -89,13 +92,13 @@ let cmsContent: CMSContent[] = [
       educational: {
         gradeLevel: ['3'],
         subject: ['Math'],
-        difficulty: 'intermediate'
+        difficulty: 'intermediate',
       },
       accessibility: {
         dyslexiaFriendly: true,
-        adhdSupport: true
-      }
-    }
+        adhdSupport: true,
+      },
+    },
   },
   {
     id: '3',
@@ -107,13 +110,13 @@ let cmsContent: CMSContent[] = [
         {
           type: 'hero',
           content: { title: 'Event Title', subtitle: 'Event Description' },
-          styles: { backgroundColor: '#10b981', textColor: '#ffffff' }
+          styles: { backgroundColor: '#10b981', textColor: '#ffffff' },
         },
         {
           type: 'card',
-          content: { title: 'Event Details', description: 'Date, time, and location information' }
-        }
-      ]
+          content: { title: 'Event Details', description: 'Date, time, and location information' },
+        },
+      ],
     },
     status: 'draft',
     author: 'Design Team',
@@ -122,9 +125,9 @@ let cmsContent: CMSContent[] = [
     metadata: {
       seo: {
         title: 'Event Announcement Template',
-        description: 'Customizable template for school events'
-      }
-    }
+        description: 'Customizable template for school events',
+      },
+    },
   },
   {
     id: '4',
@@ -136,8 +139,8 @@ let cmsContent: CMSContent[] = [
       config: {
         showPercentage: true,
         showBadges: true,
-        colorScheme: 'superhero'
-      }
+        colorScheme: 'superhero',
+      },
     },
     status: 'published',
     author: 'Development Team',
@@ -146,10 +149,10 @@ let cmsContent: CMSContent[] = [
     metadata: {
       educational: {
         gradeLevel: ['K', '1', '2', '3', '4', '5', '6'],
-        subject: ['All']
-      }
-    }
-  }
+        subject: ['All'],
+      },
+    },
+  },
 ];
 
 export async function GET(request: NextRequest) {
@@ -165,24 +168,27 @@ export async function GET(request: NextRequest) {
 
     // Apply filters
     if (type && type !== 'all') {
-      filteredContent = filteredContent.filter(item => item.type === type);
+      filteredContent = filteredContent.filter((item) => item.type === type);
     }
 
     if (status && status !== 'all') {
-      filteredContent = filteredContent.filter(item => item.status === status);
+      filteredContent = filteredContent.filter((item) => item.status === status);
     }
 
     if (search) {
       const searchLower = search.toLowerCase();
-      filteredContent = filteredContent.filter(item => 
-        item.title.toLowerCase().includes(searchLower) ||
-        item.slug.toLowerCase().includes(searchLower) ||
-        item.author.toLowerCase().includes(searchLower)
+      filteredContent = filteredContent.filter(
+        (item) =>
+          item.title.toLowerCase().includes(searchLower) ||
+          item.slug.toLowerCase().includes(searchLower) ||
+          item.author.toLowerCase().includes(searchLower),
       );
     }
 
     // Sort by updatedAt desc
-    filteredContent.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    filteredContent.sort(
+      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    );
 
     // Apply pagination
     const paginatedContent = filteredContent.slice(offset, offset + limit);
@@ -194,8 +200,8 @@ export async function GET(request: NextRequest) {
       pagination: {
         offset,
         limit,
-        total: filteredContent.length
-      }
+        total: filteredContent.length,
+      },
     });
   } catch (error) {
     console.error('Error fetching CMS content:', error);
@@ -206,7 +212,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     const newContent: CMSContent = {
       id: `content_${Date.now()}`,
       type: body.type || 'page',
@@ -217,7 +223,7 @@ export async function POST(request: NextRequest) {
       author: body.author || 'Anonymous',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      metadata: body.metadata || {}
+      metadata: body.metadata || {},
     };
 
     cmsContent.push(newContent);
@@ -239,7 +245,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Content ID is required' }, { status: 400 });
     }
 
-    const contentIndex = cmsContent.findIndex(item => item.id === id);
+    const contentIndex = cmsContent.findIndex((item) => item.id === id);
     if (contentIndex === -1) {
       return NextResponse.json({ error: 'Content not found' }, { status: 404 });
     }
@@ -247,7 +253,7 @@ export async function PATCH(request: NextRequest) {
     const updatedContent = {
       ...cmsContent[contentIndex],
       ...body,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
 
     cmsContent[contentIndex] = updatedContent;
@@ -268,7 +274,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Content ID is required' }, { status: 400 });
     }
 
-    const contentIndex = cmsContent.findIndex(item => item.id === id);
+    const contentIndex = cmsContent.findIndex((item) => item.id === id);
     if (contentIndex === -1) {
       return NextResponse.json({ error: 'Content not found' }, { status: 404 });
     }

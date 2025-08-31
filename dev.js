@@ -13,7 +13,9 @@ console.log('📍 Environment: development');
 console.log('🌐 Port: 5000');
 console.log('🔧 Mode: Development');
 console.log('🔄 Preparing Next.js application...');
-console.log(' ⚠ Disabling SWC Minifer will not be an option in the next major version. Please report any issues you may be experiencing to https://github.com/vercel/next.js/issues');
+console.log(
+  ' ⚠ Disabling SWC Minifer will not be an option in the next major version. Please report any issues you may be experiencing to https://github.com/vercel/next.js/issues',
+);
 
 try {
   // Start Next.js development server

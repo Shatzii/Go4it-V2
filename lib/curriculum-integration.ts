@@ -11,20 +11,20 @@ export interface CurriculumSource {
 }
 
 export const CURRICULUM_SOURCES: Record<string, CurriculumSource> = {
-  'ck12': {
+  ck12: {
     name: 'CK-12 Foundation',
     baseUrl: 'https://www.ck12.org',
     contentTypes: ['flexbook', 'simulation', 'video', 'practice'],
     subjects: ['mathematics', 'science', 'engineering', 'technology'],
-    gradeLevels: ['7', '8', '9', '10', '11', '12']
+    gradeLevels: ['7', '8', '9', '10', '11', '12'],
   },
-  'oer_commons': {
+  oer_commons: {
     name: 'OER Commons',
     baseUrl: 'https://oercommons.org',
     contentTypes: ['textbook', 'lesson', 'activity', 'assessment'],
     subjects: ['mathematics', 'science', 'english', 'history', 'social_studies'],
-    gradeLevels: ['7', '8', '9', '10', '11', '12']
-  }
+    gradeLevels: ['7', '8', '9', '10', '11', '12'],
+  },
 };
 
 // CK-12 Content Structure
@@ -40,8 +40,8 @@ export const CK12_CURRICULUM_MAP = {
         { id: 4, title: 'Ratios and Proportions', lessons: 14 },
         { id: 5, title: 'Percent Applications', lessons: 10 },
         { id: 6, title: 'Geometry and Measurement', lessons: 16 },
-        { id: 7, title: 'Probability and Statistics', lessons: 12 }
-      ]
+        { id: 7, title: 'Probability and Statistics', lessons: 12 },
+      ],
     },
     grade_8: {
       courseId: 'ck12-math-8',
@@ -51,8 +51,8 @@ export const CK12_CURRICULUM_MAP = {
         { id: 2, title: 'Expressions and Equations', lessons: 20 },
         { id: 3, title: 'Functions', lessons: 16 },
         { id: 4, title: 'Geometry', lessons: 18 },
-        { id: 5, title: 'Statistics and Probability', lessons: 12 }
-      ]
+        { id: 5, title: 'Statistics and Probability', lessons: 12 },
+      ],
     },
     algebra_1: {
       courseId: 'ck12-algebra-1',
@@ -64,8 +64,8 @@ export const CK12_CURRICULUM_MAP = {
         { id: 4, title: 'Exponents and Exponential Functions', lessons: 16 },
         { id: 5, title: 'Polynomials and Factoring', lessons: 20 },
         { id: 6, title: 'Quadratic Functions and Equations', lessons: 24 },
-        { id: 7, title: 'Radical Functions and Geometry', lessons: 14 }
-      ]
+        { id: 7, title: 'Radical Functions and Geometry', lessons: 14 },
+      ],
     },
     geometry: {
       courseId: 'ck12-geometry',
@@ -80,8 +80,8 @@ export const CK12_CURRICULUM_MAP = {
         { id: 7, title: 'Right Triangles and Trigonometry', lessons: 14 },
         { id: 8, title: 'Quadrilaterals', lessons: 12 },
         { id: 9, title: 'Circles', lessons: 18 },
-        { id: 10, title: 'Perimeter, Area, and Volume', lessons: 16 }
-      ]
+        { id: 10, title: 'Perimeter, Area, and Volume', lessons: 16 },
+      ],
     },
     algebra_2: {
       courseId: 'ck12-algebra-2',
@@ -96,8 +96,8 @@ export const CK12_CURRICULUM_MAP = {
         { id: 7, title: 'Rational Functions', lessons: 12 },
         { id: 8, title: 'Conic Sections', lessons: 14 },
         { id: 9, title: 'Sequences and Series', lessons: 10 },
-        { id: 10, title: 'Trigonometric Functions', lessons: 16 }
-      ]
+        { id: 10, title: 'Trigonometric Functions', lessons: 16 },
+      ],
     },
     precalculus: {
       courseId: 'ck12-precalculus',
@@ -111,9 +111,9 @@ export const CK12_CURRICULUM_MAP = {
         { id: 6, title: 'Additional Topics in Trigonometry', lessons: 12 },
         { id: 7, title: 'Systems of Equations and Matrices', lessons: 14 },
         { id: 8, title: 'Conic Sections', lessons: 10 },
-        { id: 9, title: 'Sequences, Series, and Probability', lessons: 12 }
-      ]
-    }
+        { id: 9, title: 'Sequences, Series, and Probability', lessons: 12 },
+      ],
+    },
   },
   science: {
     life_science: {
@@ -128,8 +128,8 @@ export const CK12_CURRICULUM_MAP = {
         { id: 6, title: 'Plants', lessons: 12 },
         { id: 7, title: 'Animals', lessons: 14 },
         { id: 8, title: 'Human Biology', lessons: 18 },
-        { id: 9, title: 'Ecology', lessons: 16 }
-      ]
+        { id: 9, title: 'Ecology', lessons: 16 },
+      ],
     },
     biology: {
       courseId: 'ck12-biology',
@@ -142,8 +142,8 @@ export const CK12_CURRICULUM_MAP = {
         { id: 5, title: 'Ecology', lessons: 18 },
         { id: 6, title: 'Human Biology', lessons: 22 },
         { id: 7, title: 'Plant Biology', lessons: 14 },
-        { id: 8, title: 'Animal Biology', lessons: 16 }
-      ]
+        { id: 8, title: 'Animal Biology', lessons: 16 },
+      ],
     },
     chemistry: {
       courseId: 'ck12-chemistry',
@@ -160,8 +160,8 @@ export const CK12_CURRICULUM_MAP = {
         { id: 9, title: 'States of Matter', lessons: 14 },
         { id: 10, title: 'Solutions', lessons: 12 },
         { id: 11, title: 'Acids and Bases', lessons: 14 },
-        { id: 12, title: 'Nuclear Chemistry', lessons: 10 }
-      ]
+        { id: 12, title: 'Nuclear Chemistry', lessons: 10 },
+      ],
     },
     physics: {
       courseId: 'ck12-physics',
@@ -177,10 +177,10 @@ export const CK12_CURRICULUM_MAP = {
         { id: 8, title: 'Sound', lessons: 12 },
         { id: 9, title: 'Light', lessons: 16 },
         { id: 10, title: 'Electricity and Magnetism', lessons: 20 },
-        { id: 11, title: 'Modern Physics', lessons: 12 }
-      ]
-    }
-  }
+        { id: 11, title: 'Modern Physics', lessons: 12 },
+      ],
+    },
+  },
 };
 
 // OER Commons Content Structure
@@ -194,8 +194,8 @@ export const OER_COMMONS_CURRICULUM_MAP = {
         { id: 2, title: 'Reading Informational Text', lessons: 18 },
         { id: 3, title: 'Writing', lessons: 22 },
         { id: 4, title: 'Speaking and Listening', lessons: 12 },
-        { id: 5, title: 'Language', lessons: 16 }
-      ]
+        { id: 5, title: 'Language', lessons: 16 },
+      ],
     },
     grade_8: {
       courseId: 'oer-english-8',
@@ -205,8 +205,8 @@ export const OER_COMMONS_CURRICULUM_MAP = {
         { id: 2, title: 'Reading Informational Text', lessons: 18 },
         { id: 3, title: 'Writing', lessons: 24 },
         { id: 4, title: 'Speaking and Listening', lessons: 14 },
-        { id: 5, title: 'Language', lessons: 16 }
-      ]
+        { id: 5, title: 'Language', lessons: 16 },
+      ],
     },
     grade_9: {
       courseId: 'oer-english-9',
@@ -217,8 +217,8 @@ export const OER_COMMONS_CURRICULUM_MAP = {
         { id: 3, title: 'Argumentative Writing', lessons: 18 },
         { id: 4, title: 'Narrative Writing', lessons: 16 },
         { id: 5, title: 'Research and Inquiry', lessons: 14 },
-        { id: 6, title: 'Media Literacy', lessons: 12 }
-      ]
+        { id: 6, title: 'Media Literacy', lessons: 12 },
+      ],
     },
     grade_10: {
       courseId: 'oer-english-10',
@@ -229,8 +229,8 @@ export const OER_COMMONS_CURRICULUM_MAP = {
         { id: 3, title: 'Expository Writing', lessons: 20 },
         { id: 4, title: 'Creative Writing', lessons: 16 },
         { id: 5, title: 'Research Methods', lessons: 14 },
-        { id: 6, title: 'Digital Literacy', lessons: 12 }
-      ]
+        { id: 6, title: 'Digital Literacy', lessons: 12 },
+      ],
     },
     grade_11: {
       courseId: 'oer-english-11',
@@ -241,8 +241,8 @@ export const OER_COMMONS_CURRICULUM_MAP = {
         { id: 3, title: 'Research Writing', lessons: 18 },
         { id: 4, title: 'Literary Analysis', lessons: 22 },
         { id: 5, title: 'Contemporary Issues', lessons: 16 },
-        { id: 6, title: 'College Preparation', lessons: 14 }
-      ]
+        { id: 6, title: 'College Preparation', lessons: 14 },
+      ],
     },
     grade_12: {
       courseId: 'oer-english-12',
@@ -253,9 +253,9 @@ export const OER_COMMONS_CURRICULUM_MAP = {
         { id: 3, title: 'Critical Theory', lessons: 18 },
         { id: 4, title: 'Independent Reading', lessons: 16 },
         { id: 5, title: 'Senior Portfolio', lessons: 14 },
-        { id: 6, title: 'College Writing', lessons: 20 }
-      ]
-    }
+        { id: 6, title: 'College Writing', lessons: 20 },
+      ],
+    },
   },
   history: {
     world_history: {
@@ -269,8 +269,8 @@ export const OER_COMMONS_CURRICULUM_MAP = {
         { id: 5, title: 'Age of Exploration', lessons: 12 },
         { id: 6, title: 'Industrial Revolution', lessons: 16 },
         { id: 7, title: 'Modern Era', lessons: 18 },
-        { id: 8, title: 'Contemporary World', lessons: 14 }
-      ]
+        { id: 8, title: 'Contemporary World', lessons: 14 },
+      ],
     },
     us_history: {
       courseId: 'oer-us-history',
@@ -285,8 +285,8 @@ export const OER_COMMONS_CURRICULUM_MAP = {
         { id: 7, title: 'Progressive Era', lessons: 12 },
         { id: 8, title: 'World Wars', lessons: 20 },
         { id: 9, title: 'Cold War', lessons: 16 },
-        { id: 10, title: 'Modern America', lessons: 14 }
-      ]
+        { id: 10, title: 'Modern America', lessons: 14 },
+      ],
     },
     civics: {
       courseId: 'oer-civics',
@@ -299,10 +299,10 @@ export const OER_COMMONS_CURRICULUM_MAP = {
         { id: 5, title: 'Political Parties', lessons: 10 },
         { id: 6, title: 'Civil Rights and Liberties', lessons: 16 },
         { id: 7, title: 'State and Local Government', lessons: 12 },
-        { id: 8, title: 'International Relations', lessons: 10 }
-      ]
-    }
-  }
+        { id: 8, title: 'International Relations', lessons: 10 },
+      ],
+    },
+  },
 };
 
 export function getCurriculumByGradeAndSubject(grade: string, subject: string): any {
@@ -315,48 +315,70 @@ export function getCurriculumByGradeAndSubject(grade: string, subject: string): 
   return null;
 }
 
-export function getAllAvailableCourses(): Array<{courseId: string, title: string, subject: string, gradeLevel: string}> {
-  const courses: Array<{courseId: string, title: string, subject: string, gradeLevel: string}> = [];
-  
+export function getAllAvailableCourses(): Array<{
+  courseId: string;
+  title: string;
+  subject: string;
+  gradeLevel: string;
+}> {
+  const courses: Array<{ courseId: string; title: string; subject: string; gradeLevel: string }> =
+    [];
+
   // Add CK-12 Math courses
   Object.entries(CK12_CURRICULUM_MAP.mathematics).forEach(([key, course]) => {
     courses.push({
       courseId: course.courseId,
       title: course.title,
       subject: 'mathematics',
-      gradeLevel: key.includes('7') ? '7' : key.includes('8') ? '8' : key.includes('algebra_1') ? '9' : key.includes('geometry') ? '10' : key.includes('algebra_2') ? '11' : '12'
+      gradeLevel: key.includes('7')
+        ? '7'
+        : key.includes('8')
+          ? '8'
+          : key.includes('algebra_1')
+            ? '9'
+            : key.includes('geometry')
+              ? '10'
+              : key.includes('algebra_2')
+                ? '11'
+                : '12',
     });
   });
-  
+
   // Add CK-12 Science courses
   Object.entries(CK12_CURRICULUM_MAP.science).forEach(([key, course]) => {
     courses.push({
       courseId: course.courseId,
       title: course.title,
       subject: 'science',
-      gradeLevel: key.includes('life') ? '7' : key.includes('biology') ? '9' : key.includes('chemistry') ? '10' : '11'
+      gradeLevel: key.includes('life')
+        ? '7'
+        : key.includes('biology')
+          ? '9'
+          : key.includes('chemistry')
+            ? '10'
+            : '11',
     });
   });
-  
+
   // Add OER Commons English courses
   Object.entries(OER_COMMONS_CURRICULUM_MAP.english).forEach(([key, course]) => {
     courses.push({
       courseId: course.courseId,
       title: course.title,
       subject: 'english',
-      gradeLevel: key.replace('grade_', '')
+      gradeLevel: key.replace('grade_', ''),
     });
   });
-  
+
   // Add OER Commons History courses
   Object.entries(OER_COMMONS_CURRICULUM_MAP.history).forEach(([key, course]) => {
     courses.push({
       courseId: course.courseId,
       title: course.title,
       subject: 'history',
-      gradeLevel: key.includes('world') ? '9' : key.includes('us') ? '11' : '12'
+      gradeLevel: key.includes('world') ? '9' : key.includes('us') ? '11' : '12',
     });
   });
-  
+
   return courses;
 }

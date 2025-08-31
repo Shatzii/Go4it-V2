@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useRef } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Brain, 
-  Eye, 
-  Waves, 
-  Zap, 
-  Target, 
+import { useState, useEffect, useRef } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Brain,
+  Eye,
+  Waves,
+  Zap,
+  Target,
   Heart,
   Activity,
   Lightbulb,
@@ -28,33 +28,33 @@ import {
   Volume2,
   Headphones,
   Sparkles,
-  Gauge
-} from 'lucide-react'
+  Gauge,
+} from 'lucide-react';
 
 interface NeuroFeedback {
-  attentionLevel: number
-  stressLevel: number
-  engagementScore: number
-  cognitiveLoad: number
-  learningOptimization: number
+  attentionLevel: number;
+  stressLevel: number;
+  engagementScore: number;
+  cognitiveLoad: number;
+  learningOptimization: number;
   brainwavePatterns: {
-    alpha: number
-    beta: number
-    theta: number
-    gamma: number
-  }
+    alpha: number;
+    beta: number;
+    theta: number;
+    gamma: number;
+  };
 }
 
 interface AdaptiveResponse {
-  type: 'content' | 'environment' | 'pace' | 'modality'
-  action: string
-  reasoning: string
-  confidence: number
+  type: 'content' | 'environment' | 'pace' | 'modality';
+  action: string;
+  reasoning: string;
+  confidence: number;
 }
 
 export default function NeuralLearningInterface() {
-  const [isActive, setIsActive] = useState(false)
-  const [currentSession, setCurrentSession] = useState(0)
+  const [isActive, setIsActive] = useState(false);
+  const [currentSession, setCurrentSession] = useState(0);
   const [neurofeedback, setNeurofeedback] = useState<NeuroFeedback>({
     attentionLevel: 75,
     stressLevel: 23,
@@ -65,63 +65,78 @@ export default function NeuralLearningInterface() {
       alpha: 45,
       beta: 35,
       theta: 15,
-      gamma: 5
-    }
-  })
-  
-  const [adaptiveResponses, setAdaptiveResponses] = useState<AdaptiveResponse[]>([])
+      gamma: 5,
+    },
+  });
+
+  const [adaptiveResponses, setAdaptiveResponses] = useState<AdaptiveResponse[]>([]);
   const [eyeTrackingData, setEyeTrackingData] = useState({
     gazePosition: { x: 50, y: 50 },
     focusAreas: ['text-content', 'visual-aids'],
     blinkRate: 18,
-    pupilDilation: 4.2
-  })
+    pupilDilation: 4.2,
+  });
 
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [brainwaveVisual, setBrainwaveVisual] = useState<number[]>([])
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [brainwaveVisual, setBrainwaveVisual] = useState<number[]>([]);
 
   // Simulate real-time neural interface updates
   useEffect(() => {
-    if (!isActive) return
+    if (!isActive) return;
 
     const interval = setInterval(() => {
       // Simulate neurofeedback updates
-      setNeurofeedback(prev => ({
+      setNeurofeedback((prev) => ({
         ...prev,
-        attentionLevel: Math.max(10, Math.min(100, prev.attentionLevel + (Math.random() - 0.5) * 15)),
+        attentionLevel: Math.max(
+          10,
+          Math.min(100, prev.attentionLevel + (Math.random() - 0.5) * 15),
+        ),
         stressLevel: Math.max(0, Math.min(100, prev.stressLevel + (Math.random() - 0.5) * 10)),
-        engagementScore: Math.max(20, Math.min(100, prev.engagementScore + (Math.random() - 0.5) * 8)),
+        engagementScore: Math.max(
+          20,
+          Math.min(100, prev.engagementScore + (Math.random() - 0.5) * 8),
+        ),
         cognitiveLoad: Math.max(0, Math.min(100, prev.cognitiveLoad + (Math.random() - 0.5) * 12)),
         brainwavePatterns: {
-          alpha: Math.max(0, Math.min(100, prev.brainwavePatterns.alpha + (Math.random() - 0.5) * 10)),
+          alpha: Math.max(
+            0,
+            Math.min(100, prev.brainwavePatterns.alpha + (Math.random() - 0.5) * 10),
+          ),
           beta: Math.max(0, Math.min(100, prev.brainwavePatterns.beta + (Math.random() - 0.5) * 8)),
-          theta: Math.max(0, Math.min(100, prev.brainwavePatterns.theta + (Math.random() - 0.5) * 6)),
-          gamma: Math.max(0, Math.min(100, prev.brainwavePatterns.gamma + (Math.random() - 0.5) * 4))
-        }
-      }))
+          theta: Math.max(
+            0,
+            Math.min(100, prev.brainwavePatterns.theta + (Math.random() - 0.5) * 6),
+          ),
+          gamma: Math.max(
+            0,
+            Math.min(100, prev.brainwavePatterns.gamma + (Math.random() - 0.5) * 4),
+          ),
+        },
+      }));
 
       // Update eye tracking
-      setEyeTrackingData(prev => ({
+      setEyeTrackingData((prev) => ({
         ...prev,
         gazePosition: {
           x: Math.max(0, Math.min(100, prev.gazePosition.x + (Math.random() - 0.5) * 20)),
-          y: Math.max(0, Math.min(100, prev.gazePosition.y + (Math.random() - 0.5) * 20))
+          y: Math.max(0, Math.min(100, prev.gazePosition.y + (Math.random() - 0.5) * 20)),
         },
         blinkRate: Math.max(10, Math.min(30, prev.blinkRate + (Math.random() - 0.5) * 4)),
-        pupilDilation: Math.max(2, Math.min(8, prev.pupilDilation + (Math.random() - 0.5) * 0.8))
-      }))
+        pupilDilation: Math.max(2, Math.min(8, prev.pupilDilation + (Math.random() - 0.5) * 0.8)),
+      }));
 
       // Update brainwave visualization
-      setBrainwaveVisual(prev => {
-        const newData = [...prev, Math.sin(Date.now() / 200) * 50 + 50].slice(-50)
-        return newData
-      })
+      setBrainwaveVisual((prev) => {
+        const newData = [...prev, Math.sin(Date.now() / 200) * 50 + 50].slice(-50);
+        return newData;
+      });
 
-      setCurrentSession(prev => prev + 1)
-    }, 1000)
+      setCurrentSession((prev) => prev + 1);
+    }, 1000);
 
-    return () => clearInterval(interval)
-  }, [isActive])
+    return () => clearInterval(interval);
+  }, [isActive]);
 
   // Generate adaptive responses based on neural data
   useEffect(() => {
@@ -130,9 +145,9 @@ export default function NeuralLearningInterface() {
         type: 'environment',
         action: 'Reduce visual distractions and increase contrast',
         reasoning: 'Low attention detected - simplifying environment',
-        confidence: 0.85
-      }
-      setAdaptiveResponses(prev => [response, ...prev.slice(0, 4)])
+        confidence: 0.85,
+      };
+      setAdaptiveResponses((prev) => [response, ...prev.slice(0, 4)]);
     }
 
     if (neurofeedback.stressLevel > 70) {
@@ -140,9 +155,9 @@ export default function NeuralLearningInterface() {
         type: 'pace',
         action: 'Suggest 5-minute mindfulness break',
         reasoning: 'High stress levels detected - recommending break',
-        confidence: 0.92
-      }
-      setAdaptiveResponses(prev => [response, ...prev.slice(0, 4)])
+        confidence: 0.92,
+      };
+      setAdaptiveResponses((prev) => [response, ...prev.slice(0, 4)]);
     }
 
     if (neurofeedback.cognitiveLoad > 85) {
@@ -150,53 +165,53 @@ export default function NeuralLearningInterface() {
         type: 'content',
         action: 'Switch to simpler concepts and add visual aids',
         reasoning: 'Cognitive overload detected - reducing complexity',
-        confidence: 0.78
-      }
-      setAdaptiveResponses(prev => [response, ...prev.slice(0, 4)])
+        confidence: 0.78,
+      };
+      setAdaptiveResponses((prev) => [response, ...prev.slice(0, 4)]);
     }
-  }, [neurofeedback])
+  }, [neurofeedback]);
 
   const drawBrainwaves = () => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.strokeStyle = '#3B82F6'
-    ctx.lineWidth = 2
-    ctx.beginPath()
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#3B82F6';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
 
     brainwaveVisual.forEach((value, index) => {
-      const x = (index / brainwaveVisual.length) * canvas.width
-      const y = (value / 100) * canvas.height
-      
-      if (index === 0) {
-        ctx.moveTo(x, y)
-      } else {
-        ctx.lineTo(x, y)
-      }
-    })
+      const x = (index / brainwaveVisual.length) * canvas.width;
+      const y = (value / 100) * canvas.height;
 
-    ctx.stroke()
-  }
+      if (index === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    });
+
+    ctx.stroke();
+  };
 
   useEffect(() => {
-    drawBrainwaves()
-  }, [brainwaveVisual])
+    drawBrainwaves();
+  }, [brainwaveVisual]);
 
   const getAttentionColor = (level: number) => {
-    if (level > 80) return 'text-green-600 bg-green-50'
-    if (level > 60) return 'text-yellow-600 bg-yellow-50'
-    return 'text-red-600 bg-red-50'
-  }
+    if (level > 80) return 'text-green-600 bg-green-50';
+    if (level > 60) return 'text-yellow-600 bg-yellow-50';
+    return 'text-red-600 bg-red-50';
+  };
 
   const getStressColor = (level: number) => {
-    if (level < 30) return 'text-green-600 bg-green-50'
-    if (level < 60) return 'text-yellow-600 bg-yellow-50'
-    return 'text-red-600 bg-red-50'
-  }
+    if (level < 30) return 'text-green-600 bg-green-50';
+    if (level < 60) return 'text-yellow-600 bg-yellow-50';
+    return 'text-red-600 bg-red-50';
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 p-6">
@@ -218,7 +233,7 @@ export default function NeuralLearningInterface() {
                 <Button
                   onClick={() => setIsActive(!isActive)}
                   size="lg"
-                  variant={isActive ? "destructive" : "secondary"}
+                  variant={isActive ? 'destructive' : 'secondary'}
                   className="bg-white text-indigo-600 hover:bg-gray-100"
                 >
                   {isActive ? (
@@ -255,13 +270,18 @@ export default function NeuralLearningInterface() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className={`text-3xl font-bold ${getAttentionColor(neurofeedback.attentionLevel).split(' ')[0]} mb-2`}>
+                <div
+                  className={`text-3xl font-bold ${getAttentionColor(neurofeedback.attentionLevel).split(' ')[0]} mb-2`}
+                >
                   {neurofeedback.attentionLevel.toFixed(0)}%
                 </div>
                 <Progress value={neurofeedback.attentionLevel} className="h-3 mb-2" />
                 <Badge className={getAttentionColor(neurofeedback.attentionLevel)}>
-                  {neurofeedback.attentionLevel > 80 ? 'Excellent' : 
-                   neurofeedback.attentionLevel > 60 ? 'Good' : 'Needs Support'}
+                  {neurofeedback.attentionLevel > 80
+                    ? 'Excellent'
+                    : neurofeedback.attentionLevel > 60
+                      ? 'Good'
+                      : 'Needs Support'}
                 </Badge>
               </CardContent>
             </Card>
@@ -274,13 +294,18 @@ export default function NeuralLearningInterface() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className={`text-3xl font-bold ${getStressColor(neurofeedback.stressLevel).split(' ')[0]} mb-2`}>
+                <div
+                  className={`text-3xl font-bold ${getStressColor(neurofeedback.stressLevel).split(' ')[0]} mb-2`}
+                >
                   {neurofeedback.stressLevel.toFixed(0)}%
                 </div>
                 <Progress value={neurofeedback.stressLevel} className="h-3 mb-2" />
                 <Badge className={getStressColor(neurofeedback.stressLevel)}>
-                  {neurofeedback.stressLevel < 30 ? 'Relaxed' : 
-                   neurofeedback.stressLevel < 60 ? 'Moderate' : 'High Stress'}
+                  {neurofeedback.stressLevel < 30
+                    ? 'Relaxed'
+                    : neurofeedback.stressLevel < 60
+                      ? 'Moderate'
+                      : 'High Stress'}
                 </Badge>
               </CardContent>
             </Card>
@@ -297,9 +322,7 @@ export default function NeuralLearningInterface() {
                   {neurofeedback.engagementScore.toFixed(0)}%
                 </div>
                 <Progress value={neurofeedback.engagementScore} className="h-3 mb-2" />
-                <Badge className="text-green-600 bg-green-50">
-                  Highly Engaged
-                </Badge>
+                <Badge className="text-green-600 bg-green-50">Highly Engaged</Badge>
               </CardContent>
             </Card>
 
@@ -315,9 +338,7 @@ export default function NeuralLearningInterface() {
                   {neurofeedback.cognitiveLoad.toFixed(0)}%
                 </div>
                 <Progress value={neurofeedback.cognitiveLoad} className="h-3 mb-2" />
-                <Badge className="text-purple-600 bg-purple-50">
-                  Optimal Range
-                </Badge>
+                <Badge className="text-purple-600 bg-purple-50">Optimal Range</Badge>
               </CardContent>
             </Card>
           </div>
@@ -366,10 +387,20 @@ export default function NeuralLearningInterface() {
                     <div className="bg-blue-50 p-4 rounded-lg">
                       <h4 className="font-semibold mb-2">Neural State Analysis</h4>
                       <div className="space-y-2 text-sm">
-                        <p><strong>Alpha (8-12 Hz):</strong> Relaxed, creative state - optimal for learning</p>
-                        <p><strong>Beta (13-30 Hz):</strong> Alert, focused attention - good for problem solving</p>
-                        <p><strong>Theta (4-7 Hz):</strong> Deep creativity and memory consolidation</p>
-                        <p><strong>Gamma (30+ Hz):</strong> Peak cognitive performance and insight</p>
+                        <p>
+                          <strong>Alpha (8-12 Hz):</strong> Relaxed, creative state - optimal for
+                          learning
+                        </p>
+                        <p>
+                          <strong>Beta (13-30 Hz):</strong> Alert, focused attention - good for
+                          problem solving
+                        </p>
+                        <p>
+                          <strong>Theta (4-7 Hz):</strong> Deep creativity and memory consolidation
+                        </p>
+                        <p>
+                          <strong>Gamma (30+ Hz):</strong> Peak cognitive performance and insight
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -390,11 +421,11 @@ export default function NeuralLearningInterface() {
                   <CardContent className="space-y-6">
                     <div className="relative bg-gray-100 p-8 rounded-lg h-64">
                       <div className="text-center text-gray-600 mb-4">Content Display Area</div>
-                      <div 
+                      <div
                         className="absolute w-4 h-4 bg-red-500 rounded-full transform -translate-x-2 -translate-y-2 animate-pulse"
                         style={{
                           left: `${eyeTrackingData.gazePosition.x}%`,
-                          top: `${eyeTrackingData.gazePosition.y}%`
+                          top: `${eyeTrackingData.gazePosition.y}%`,
                         }}
                       />
                       <div className="absolute bottom-4 left-4 text-sm text-gray-500">
@@ -404,12 +435,16 @@ export default function NeuralLearningInterface() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="text-center p-4 bg-green-50 rounded-lg">
-                        <div className="text-2xl font-bold text-green-600">{eyeTrackingData.blinkRate}</div>
+                        <div className="text-2xl font-bold text-green-600">
+                          {eyeTrackingData.blinkRate}
+                        </div>
                         <div className="text-sm text-gray-600">Blinks/min</div>
                         <div className="text-xs text-gray-500 mt-1">Normal: 15-20</div>
                       </div>
                       <div className="text-center p-4 bg-blue-50 rounded-lg">
-                        <div className="text-2xl font-bold text-blue-600">{eyeTrackingData.pupilDilation.toFixed(1)}mm</div>
+                        <div className="text-2xl font-bold text-blue-600">
+                          {eyeTrackingData.pupilDilation.toFixed(1)}mm
+                        </div>
                         <div className="text-sm text-gray-600">Pupil Size</div>
                         <div className="text-xs text-gray-500 mt-1">Cognitive load indicator</div>
                       </div>
@@ -450,11 +485,16 @@ export default function NeuralLearningInterface() {
                       <div className="text-center py-8 text-gray-500">
                         <Sparkles className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                         <p>Neural analysis in progress...</p>
-                        <p className="text-sm">AI will suggest adaptations based on your brain activity</p>
+                        <p className="text-sm">
+                          AI will suggest adaptations based on your brain activity
+                        </p>
                       </div>
                     ) : (
                       adaptiveResponses.map((response, index) => (
-                        <div key={index} className="border rounded-lg p-4 bg-gradient-to-r from-yellow-50 to-orange-50">
+                        <div
+                          key={index}
+                          className="border rounded-lg p-4 bg-gradient-to-r from-yellow-50 to-orange-50"
+                        >
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
                               <div className="flex items-center space-x-2 mb-2">
@@ -562,9 +602,10 @@ export default function NeuralLearningInterface() {
                     <div className="bg-indigo-50 p-4 rounded-lg">
                       <h4 className="font-semibold mb-2">Session Summary</h4>
                       <p className="text-sm text-gray-700">
-                        Your brain is showing excellent learning patterns! Neural feedback indicates 
-                        optimal engagement with enhanced memory consolidation. The AI has made 
-                        {adaptiveResponses.length} real-time optimizations to maintain peak performance.
+                        Your brain is showing excellent learning patterns! Neural feedback indicates
+                        optimal engagement with enhanced memory consolidation. The AI has made
+                        {adaptiveResponses.length} real-time optimizations to maintain peak
+                        performance.
                       </p>
                     </div>
                   </CardContent>
@@ -575,5 +616,5 @@ export default function NeuralLearningInterface() {
         </div>
       </div>
     </div>
-  )
+  );
 }

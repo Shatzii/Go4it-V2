@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { 
-  Smartphone, 
-  Download, 
-  Wifi, 
-  WifiOff, 
-  Battery, 
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import {
+  Smartphone,
+  Download,
+  Wifi,
+  WifiOff,
+  Battery,
   Bell,
   Bookmark,
   PlayCircle,
@@ -21,93 +21,93 @@ import {
   Camera,
   Mic,
   Share2,
-  Star
-} from 'lucide-react'
+  Star,
+} from 'lucide-react';
 
 export default function MobilePWAFeatures() {
-  const [isOnline, setIsOnline] = useState(true)
-  const [installPrompt, setInstallPrompt] = useState<any>(null)
-  const [isInstallable, setIsInstallable] = useState(false)
-  const [offlineProgress, setOfflineProgress] = useState(0)
+  const [isOnline, setIsOnline] = useState(true);
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
+  const [isInstallable, setIsInstallable] = useState(false);
+  const [offlineProgress, setOfflineProgress] = useState(0);
 
   useEffect(() => {
     // Check if PWA is installable
     const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault()
-      setInstallPrompt(e)
-      setIsInstallable(true)
-    }
+      e.preventDefault();
+      setInstallPrompt(e);
+      setIsInstallable(true);
+    };
 
     // Check online status
-    const handleOnline = () => setIsOnline(true)
-    const handleOffline = () => setIsOnline(false)
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
 
     // Simulate offline content progress
     const timer = setInterval(() => {
-      setOfflineProgress(prev => Math.min(prev + 2, 100))
-    }, 100)
+      setOfflineProgress((prev) => Math.min(prev + 2, 100));
+    }, 100);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-      window.removeEventListener('online', handleOnline)
-      window.removeEventListener('offline', handleOffline)
-      clearInterval(timer)
-    }
-  }, [])
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+      clearInterval(timer);
+    };
+  }, []);
 
   const handleInstallPWA = async () => {
     if (installPrompt) {
-      installPrompt.prompt()
-      const result = await installPrompt.userChoice
+      installPrompt.prompt();
+      const result = await installPrompt.userChoice;
       if (result.outcome === 'accepted') {
-        setIsInstallable(false)
-        setInstallPrompt(null)
+        setIsInstallable(false);
+        setInstallPrompt(null);
       }
     }
-  }
+  };
 
   const features = [
     {
       icon: WifiOff,
       title: 'Offline Learning',
       description: 'Continue learning even without internet connection',
-      color: 'blue'
+      color: 'blue',
     },
     {
       icon: Bell,
       title: 'Smart Notifications',
       description: 'Get reminders for assignments and study sessions',
-      color: 'purple'
+      color: 'purple',
     },
     {
       icon: Bookmark,
       title: 'Save for Later',
       description: 'Bookmark content to access anytime',
-      color: 'green'
+      color: 'green',
     },
     {
       icon: PlayCircle,
       title: 'Video Lessons',
       description: 'Watch interactive video content optimized for mobile',
-      color: 'red'
+      color: 'red',
     },
     {
       icon: Headphones,
       title: 'Audio Learning',
       description: 'Listen to lessons during commutes or workouts',
-      color: 'orange'
+      color: 'orange',
     },
     {
       icon: Camera,
       title: 'AR/VR Ready',
       description: 'Experience immersive learning with AR camera features',
-      color: 'pink'
-    }
-  ]
+      color: 'pink',
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
@@ -127,7 +127,8 @@ export default function MobilePWAFeatures() {
               Learn Anywhere, Anytime
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Install Universal One School as a Progressive Web App for the ultimate mobile learning experience with offline capabilities, notifications, and optimized performance.
+              Install Universal One School as a Progressive Web App for the ultimate mobile learning
+              experience with offline capabilities, notifications, and optimized performance.
             </p>
           </motion.div>
         </div>
@@ -152,12 +153,16 @@ export default function MobilePWAFeatures() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center space-x-3">
-                  <div className={`w-3 h-3 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`} />
-                  <span className="font-medium">
-                    {isOnline ? 'Online' : 'Offline Mode'}
-                  </span>
+                  <div
+                    className={`w-3 h-3 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}
+                  />
+                  <span className="font-medium">{isOnline ? 'Online' : 'Offline Mode'}</span>
                 </div>
-                {isOnline ? <Wifi className="w-5 h-5 text-green-500" /> : <WifiOff className="w-5 h-5 text-red-500" />}
+                {isOnline ? (
+                  <Wifi className="w-5 h-5 text-green-500" />
+                ) : (
+                  <WifiOff className="w-5 h-5 text-red-500" />
+                )}
               </div>
 
               {isInstallable && (
@@ -199,7 +204,9 @@ export default function MobilePWAFeatures() {
             >
               <Card className="h-full hover:shadow-lg transition-shadow">
                 <CardHeader>
-                  <div className={`w-12 h-12 rounded-lg bg-gradient-to-br from-${feature.color}-500 to-${feature.color}-600 flex items-center justify-center mb-4`}>
+                  <div
+                    className={`w-12 h-12 rounded-lg bg-gradient-to-br from-${feature.color}-500 to-${feature.color}-600 flex items-center justify-center mb-4`}
+                  >
                     <feature.icon className="w-6 h-6 text-white" />
                   </div>
                   <CardTitle className="text-lg">{feature.title}</CardTitle>
@@ -289,7 +296,8 @@ export default function MobilePWAFeatures() {
             <CardContent className="p-8">
               <h2 className="text-3xl font-bold mb-4">Ready to Learn on the Go?</h2>
               <p className="text-blue-100 mb-6">
-                Join thousands of students who are already learning with our mobile-optimized platform
+                Join thousands of students who are already learning with our mobile-optimized
+                platform
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <Button
@@ -314,5 +322,5 @@ export default function MobilePWAFeatures() {
         </motion.div>
       </div>
     </div>
-  )
+  );
 }

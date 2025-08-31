@@ -25,11 +25,11 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 // Authentication middleware
 const authenticate = (req, res, next) => {
   const apiKey = req.headers['x-api-key'];
-  
+
   if (!apiKey || apiKey !== AI_ENGINE_API_KEY) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
-  
+
   next();
 };
 
@@ -38,7 +38,7 @@ const rateLimit = require('express-rate-limit');
 const aiRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100,
-  message: 'Too many AI requests from this IP'
+  message: 'Too many AI requests from this IP',
 });
 
 // File upload configuration
@@ -52,12 +52,12 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
-  }
+  },
 });
 
-const upload = multer({ 
+const upload = multer({
   storage,
-  limits: { fileSize: 100 * 1024 * 1024 } // 100MB limit
+  limits: { fileSize: 100 * 1024 * 1024 }, // 100MB limit
 });
 
 // Initialize AI components
@@ -74,57 +74,62 @@ app.get('/health', (req, res) => {
     uptime: process.uptime(),
     queue_length: processQueue.length,
     processing: isProcessing,
-    engine_id: process.env.AI_ENGINE_ID || 'default'
+    engine_id: process.env.AI_ENGINE_ID || 'default',
   });
 });
 
 // Video analysis endpoint
-app.post('/api/analyze-video', authenticate, aiRateLimit, upload.single('video'), async (req, res) => {
-  try {
-    const { sport, userId, testMode } = req.body;
-    let videoPath = req.file?.path;
+app.post(
+  '/api/analyze-video',
+  authenticate,
+  aiRateLimit,
+  upload.single('video'),
+  async (req, res) => {
+    try {
+      const { sport, userId, testMode } = req.body;
+      let videoPath = req.file?.path;
 
-    if (!sport) {
-      return res.status(400).json({ error: 'Sport parameter is required' });
+      if (!sport) {
+        return res.status(400).json({ error: 'Sport parameter is required' });
+      }
+
+      // Handle test mode
+      if (testMode === 'true' || testMode === true) {
+        videoPath = 'test_video.mp4';
+      } else if (!videoPath) {
+        return res.status(400).json({ error: 'Video file is required' });
+      }
+
+      // Create video analyzer
+      const analyzer = createAdvancedVideoAnalyzer(sport);
+
+      // Process video analysis
+      const analysis = await analyzer.analyzeVideo(videoPath, { userId });
+
+      // Clean up uploaded file (except in test mode)
+      if (req.file && !testMode) {
+        setTimeout(() => {
+          fs.unlink(videoPath, (err) => {
+            if (err) console.error('Error deleting file:', err);
+          });
+        }, 5000);
+      }
+
+      res.json({
+        success: true,
+        analysis,
+        processingTime: Date.now() - req.startTime || 0,
+        engineId: process.env.AI_ENGINE_ID || 'default',
+      });
+    } catch (error) {
+      console.error('Video analysis error:', error);
+      res.status(500).json({
+        error: 'Analysis failed',
+        message: error.message,
+      });
     }
-
-    // Handle test mode
-    if (testMode === 'true' || testMode === true) {
-      videoPath = 'test_video.mp4';
-    } else if (!videoPath) {
-      return res.status(400).json({ error: 'Video file is required' });
-    }
-
-    // Create video analyzer
-    const analyzer = createAdvancedVideoAnalyzer(sport);
-    
-    // Process video analysis
-    const analysis = await analyzer.analyzeVideo(videoPath, { userId });
-
-    // Clean up uploaded file (except in test mode)
-    if (req.file && !testMode) {
-      setTimeout(() => {
-        fs.unlink(videoPath, (err) => {
-          if (err) console.error('Error deleting file:', err);
-        });
-      }, 5000);
-    }
-
-    res.json({
-      success: true,
-      analysis,
-      processingTime: Date.now() - req.startTime || 0,
-      engineId: process.env.AI_ENGINE_ID || 'default'
-    });
-
-  } catch (error) {
-    console.error('Video analysis error:', error);
-    res.status(500).json({ 
-      error: 'Analysis failed',
-      message: error.message 
-    });
-  }
-});
+  },
+);
 
 // Real-time analysis endpoint
 app.post('/api/real-time-analysis', authenticate, aiRateLimit, async (req, res) => {
@@ -137,26 +142,23 @@ app.post('/api/real-time-analysis', authenticate, aiRateLimit, async (req, res) 
         sport,
         quality,
         fps: quality === 'performance' ? 15 : quality === 'balanced' ? 30 : 60,
-        latency_target: quality === 'performance' ? 200 : quality === 'balanced' ? 100 : 50
+        latency_target: quality === 'performance' ? 200 : quality === 'balanced' ? 100 : 50,
       };
 
       res.json({
         success: true,
         message: 'Real-time analysis started',
         config,
-        sessionId: `session_${Date.now()}`
+        sessionId: `session_${Date.now()}`,
       });
-
     } else if (action === 'stop') {
       res.json({
         success: true,
-        message: 'Real-time analysis stopped'
+        message: 'Real-time analysis stopped',
       });
-
     } else {
       res.status(400).json({ error: 'Invalid action' });
     }
-
   } catch (error) {
     console.error('Real-time analysis error:', error);
     res.status(500).json({ error: 'Real-time analysis failed' });
@@ -169,32 +171,31 @@ app.post('/api/predictive-analysis', authenticate, aiRateLimit, async (req, res)
     const { action, sport, timeframes, athleteProfile } = req.body;
 
     if (action === 'performance_forecast') {
-      const forecasts = timeframes.map(timeframe => ({
+      const forecasts = timeframes.map((timeframe) => ({
         timeframe,
         predicted_score: 75 + Math.random() * 20 - 10,
         confidence_interval: {
           lower: 50 + Math.random() * 20,
-          upper: 80 + Math.random() * 20
+          upper: 80 + Math.random() * 20,
         },
         contributing_factors: [
           { factor: 'Technical skill development', impact: 0.3, trend: 'neutral' },
           { factor: 'Athletic conditioning', impact: 0.25, trend: 'positive' },
           { factor: 'Mental preparation', impact: 0.2, trend: 'positive' },
-          { factor: 'Consistency in training', impact: 0.25, trend: 'neutral' }
+          { factor: 'Consistency in training', impact: 0.25, trend: 'neutral' },
         ],
         recommendations: [
           'Focus on fundamental skill development',
-          'Increase training intensity gradually'
-        ]
+          'Increase training intensity gradually',
+        ],
       }));
 
       res.json({
         success: true,
         type: 'performance_forecast',
         data: forecasts,
-        generated_at: new Date().toISOString()
+        generated_at: new Date().toISOString(),
       });
-
     } else if (action === 'comprehensive_report') {
       // Generate comprehensive predictive report
       const report = {
@@ -211,10 +212,10 @@ app.post('/api/predictive-analysis', authenticate, aiRateLimit, async (req, res)
               prevention_strategies: [
                 'Proper warm-up and cool-down',
                 'Adequate recovery time',
-                'Cross-training activities'
-              ]
-            }
-          ]
+                'Cross-training activities',
+              ],
+            },
+          ],
         },
         recruitment_analysis: {
           division_predictions: [
@@ -222,18 +223,18 @@ app.post('/api/predictive-analysis', authenticate, aiRateLimit, async (req, res)
               division: 'Division I',
               probability: 0.25,
               timeline: '2-3 years',
-              requirements_gap: []
-            }
+              requirements_gap: [],
+            },
           ],
           scholarship_probability: Math.floor(Math.random() * 30),
-          target_schools: []
+          target_schools: [],
         },
         optimization_recommendations: [],
         data_quality: {
           historical_data_points: 0,
           model_accuracy: { performance: 0.87, injury_risk: 0.92, recruitment: 0.78 },
-          confidence_score: 0.85
-        }
+          confidence_score: 0.85,
+        },
       };
 
       res.json({
@@ -241,13 +242,11 @@ app.post('/api/predictive-analysis', authenticate, aiRateLimit, async (req, res)
         type: 'comprehensive_report',
         data: report,
         generated_at: new Date().toISOString(),
-        report_id: `report_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        report_id: `report_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       });
-
     } else {
       res.status(400).json({ error: 'Invalid action' });
     }
-
   } catch (error) {
     console.error('Predictive analysis error:', error);
     res.status(500).json({ error: 'Predictive analysis failed' });
@@ -261,10 +260,10 @@ app.get('/api/models', authenticate, async (req, res) => {
       available_models: [
         { name: 'llama3.1:8b', size: '4.7GB', status: 'available' },
         { name: 'gemma:2b', size: '1.4GB', status: 'available' },
-        { name: 'mistral:7b', size: '4.1GB', status: 'available' }
+        { name: 'mistral:7b', size: '4.1GB', status: 'available' },
       ],
       current_model: 'llama3.1:8b',
-      model_status: 'ready'
+      model_status: 'ready',
     });
   } catch (error) {
     res.status(500).json({ error: 'Failed to get model status' });
@@ -274,13 +273,13 @@ app.get('/api/models', authenticate, async (req, res) => {
 app.post('/api/models/load', authenticate, async (req, res) => {
   try {
     const { model_name } = req.body;
-    
+
     // Simulate model loading
     res.json({
       success: true,
       message: `Model ${model_name} loaded successfully`,
       model_name,
-      load_time: Math.floor(Math.random() * 10) + 5
+      load_time: Math.floor(Math.random() * 10) + 5,
     });
   } catch (error) {
     res.status(500).json({ error: 'Failed to load model' });
@@ -292,16 +291,16 @@ app.get('/api/queue', authenticate, async (req, res) => {
   res.json({
     queue_length: processQueue.length,
     processing: isProcessing,
-    estimated_wait_time: processQueue.length * 30 // seconds
+    estimated_wait_time: processQueue.length * 30, // seconds
   });
 });
 
 // Error handling middleware
 app.use((error, req, res, next) => {
   console.error('Server error:', error);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Internal server error',
-    message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
+    message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong',
   });
 });
 

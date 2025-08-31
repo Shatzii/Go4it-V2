@@ -2,19 +2,19 @@
 // Handles both self-hosted and cloud AI models
 
 export interface AIModelConfig {
-  type: 'local' | 'cloud'
-  provider: string
-  model: string
-  endpoint?: string
-  apiKey?: string
-  timeout?: number
+  type: 'local' | 'cloud';
+  provider: string;
+  model: string;
+  endpoint?: string;
+  apiKey?: string;
+  timeout?: number;
 }
 
 export interface AIResponse {
-  content: string
-  confidence: number
-  processingTime: number
-  model: string
+  content: string;
+  confidence: number;
+  processingTime: number;
+  model: string;
 }
 
 export const AVAILABLE_LOCAL_MODELS = [
@@ -23,104 +23,98 @@ export const AVAILABLE_LOCAL_MODELS = [
     id: 'sports-analysis-v1',
     size: '1.2GB',
     description: 'Specialized model for athletic performance analysis',
-    status: 'available'
+    status: 'available',
   },
   {
     name: 'ADHD-Friendly Educational Model',
     id: 'adhd-edu-v1',
     size: '850MB',
     description: 'Educational model optimized for neurodivergent students',
-    status: 'available'
+    status: 'available',
   },
   {
     name: 'Content Tagging Model',
     id: 'content-tag-v1',
     size: '600MB',
     description: 'Lightweight model for content categorization',
-    status: 'available'
-  }
-]
+    status: 'available',
+  },
+];
 
 export function createAIModelManager(config: AIModelConfig): AIModelManager {
-  return new AIModelManager(config)
+  return new AIModelManager(config);
 }
 
 export class AIModelManager {
-  private config: AIModelConfig
-  private defaultTimeout = 30000 // 30 seconds
+  private config: AIModelConfig;
+  private defaultTimeout = 30000; // 30 seconds
 
   constructor(config: AIModelConfig) {
     this.config = {
       ...config,
-      timeout: config.timeout || this.defaultTimeout
-    }
+      timeout: config.timeout || this.defaultTimeout,
+    };
   }
 
   async generateResponse(
     prompt: string,
     context?: {
-      filePath?: string
-      fileType?: string
-      userPreferences?: any
-    }
+      filePath?: string;
+      fileType?: string;
+      userPreferences?: any;
+    },
   ): Promise<string> {
-    const startTime = Date.now()
+    const startTime = Date.now();
 
     try {
       switch (this.config.type) {
         case 'local':
-          return await this.generateLocalResponse(prompt, context)
+          return await this.generateLocalResponse(prompt, context);
         case 'cloud':
-          return await this.generateCloudResponse(prompt, context)
+          return await this.generateCloudResponse(prompt, context);
         default:
-          throw new Error(`Unsupported AI model type: ${this.config.type}`)
+          throw new Error(`Unsupported AI model type: ${this.config.type}`);
       }
     } catch (error) {
-      console.error('AI model generation failed:', error)
-      return this.getFallbackResponse(prompt, context)
+      console.error('AI model generation failed:', error);
+      return this.getFallbackResponse(prompt, context);
     }
   }
 
-  private async generateLocalResponse(
-    prompt: string,
-    context?: any
-  ): Promise<string> {
+  private async generateLocalResponse(prompt: string, context?: any): Promise<string> {
     // Use self-hosted AI model for content analysis
     const payload = {
       prompt: this.enhancePrompt(prompt),
       context: context || {},
       model: this.config.model,
       temperature: 0.1, // Lower temperature for more consistent tagging
-      max_tokens: 1000
-    }
+      max_tokens: 1000,
+    };
 
     const response = await fetch(this.config.endpoint || 'http://localhost:8080/api/analyze', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Go4It-Sports-Platform/1.0'
+        'User-Agent': 'Go4It-Sports-Platform/1.0',
       },
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(this.config.timeout!)
-    })
+      signal: AbortSignal.timeout(this.config.timeout!),
+    });
 
     if (!response.ok) {
-      throw new Error(`Local AI model request failed: ${response.status}`)
+      throw new Error(`Local AI model request failed: ${response.status}`);
     }
 
-    const data = await response.json()
-    return data.content || data.response || 'No response generated'
+    const data = await response.json();
+    return data.content || data.response || 'No response generated';
   }
 
-  private async generateCloudResponse(
-    prompt: string,
-    context?: any
-  ): Promise<string> {
+  private async generateCloudResponse(prompt: string, context?: any): Promise<string> {
     // Fallback to cloud AI if local model is unavailable
     // This would integrate with external APIs like OpenAI or Anthropic
     // For now, we'll simulate the response structure
-    
-    throw new Error('Cloud AI not configured - using local models only')
+
+    throw new Error('Cloud AI not configured - using local models only');
   }
 
   private enhancePrompt(prompt: string): string {
@@ -138,9 +132,9 @@ export class AIModelManager {
     
     Provide structured, consistent output that can be parsed for tagging.
     
-    Original request: `
+    Original request: `;
 
-    return systemContext + prompt
+    return systemContext + prompt;
   }
 
   private getFallbackResponse(prompt: string, context?: any): string {
@@ -165,57 +159,57 @@ export class AIModelManager {
     - Manual analysis recommended for detailed insights
     - Consider uploading additional context information
     - Review AI model configuration for better results
-    `
+    `;
 
-    return fallbackAnalysis
+    return fallbackAnalysis;
   }
 
   // Health check for AI model availability
   async healthCheck(): Promise<{ available: boolean; latency: number; model: string }> {
-    const startTime = Date.now()
-    
+    const startTime = Date.now();
+
     try {
       if (this.config.type === 'local') {
         const response = await fetch(this.config.endpoint + '/health', {
           method: 'GET',
-          signal: AbortSignal.timeout(5000) // 5 second timeout for health check
-        })
-        
-        const latency = Date.now() - startTime
+          signal: AbortSignal.timeout(5000), // 5 second timeout for health check
+        });
+
+        const latency = Date.now() - startTime;
         return {
           available: response.ok,
           latency,
-          model: this.config.model
-        }
+          model: this.config.model,
+        };
       } else {
         // Cloud model health check would go here
         return {
           available: false,
           latency: 0,
-          model: this.config.model
-        }
+          model: this.config.model,
+        };
       }
     } catch (error) {
       return {
         available: false,
         latency: Date.now() - startTime,
-        model: this.config.model
-      }
+        model: this.config.model,
+      };
     }
   }
 
   // Get model information
   getModelInfo(): {
-    type: string
-    provider: string
-    model: string
-    endpoint?: string
+    type: string;
+    provider: string;
+    model: string;
+    endpoint?: string;
   } {
     return {
       type: this.config.type,
       provider: this.config.provider,
       model: this.config.model,
-      endpoint: this.config.endpoint
-    }
+      endpoint: this.config.endpoint,
+    };
   }
 }

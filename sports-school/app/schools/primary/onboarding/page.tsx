@@ -1,28 +1,42 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { ArrowLeft, Star, Heart, Sparkles, Users, BookOpen, Calculator, Microscope, Globe, Palette, Target, Music, Brain } from 'lucide-react'
-import { TEXAS_CURRICULUM_DATA } from '@/shared/texas-curriculum-schema'
+import { useState } from 'react';
+import Link from 'next/link';
+import {
+  ArrowLeft,
+  Star,
+  Heart,
+  Sparkles,
+  Users,
+  BookOpen,
+  Calculator,
+  Microscope,
+  Globe,
+  Palette,
+  Target,
+  Music,
+  Brain,
+} from 'lucide-react';
+import { TEXAS_CURRICULUM_DATA } from '@/shared/texas-curriculum-schema';
 
 interface StudentProfile {
-  id: string
-  name: string
-  grade: string
-  school: string
-  learningStyle: string
-  accommodations: string[]
-  strengths: string[]
-  challenges: string[]
-  interests: string[]
-  parentEmail: string
-  emergencyContact: string
-  medicalNotes: string
+  id: string;
+  name: string;
+  grade: string;
+  school: string;
+  learningStyle: string;
+  accommodations: string[];
+  strengths: string[];
+  challenges: string[];
+  interests: string[];
+  parentEmail: string;
+  emergencyContact: string;
+  medicalNotes: string;
   technologyAccess: {
-    hasDevice: boolean
-    hasInternet: boolean
-    deviceType: string
-  }
+    hasDevice: boolean;
+    hasInternet: boolean;
+    deviceType: string;
+  };
 }
 
 // Primary School Students (K-5)
@@ -40,7 +54,7 @@ const PRIMARY_STUDENTS: StudentProfile[] = [
     parentEmail: 'maria.rodriguez@email.com',
     emergencyContact: '555-0123',
     medicalNotes: 'No known allergies',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'tablet' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'tablet' },
   },
   {
     id: '2',
@@ -55,7 +69,7 @@ const PRIMARY_STUDENTS: StudentProfile[] = [
     parentEmail: 'carlos.martinez@email.com',
     emergencyContact: '555-0678',
     medicalNotes: 'No medical concerns',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'tablet' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'tablet' },
   },
   {
     id: '3',
@@ -70,7 +84,7 @@ const PRIMARY_STUDENTS: StudentProfile[] = [
     parentEmail: 'lisa.thompson@email.com',
     emergencyContact: '555-0901',
     medicalNotes: 'No known allergies',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' },
   },
   {
     id: '4',
@@ -85,7 +99,7 @@ const PRIMARY_STUDENTS: StudentProfile[] = [
     parentEmail: 'jennifer.johnson@email.com',
     emergencyContact: '555-0456',
     medicalNotes: 'ADHD - takes medication daily',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' },
   },
   {
     id: '5',
@@ -100,7 +114,7 @@ const PRIMARY_STUDENTS: StudentProfile[] = [
     parentEmail: 'raj.patel@email.com',
     emergencyContact: '555-0234',
     medicalNotes: 'No medical concerns',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'desktop' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'desktop' },
   },
   {
     id: '6',
@@ -115,24 +129,27 @@ const PRIMARY_STUDENTS: StudentProfile[] = [
     parentEmail: 'melissa.brown@email.com',
     emergencyContact: '555-0567',
     medicalNotes: 'No known allergies',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' }
-  }
-]
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' },
+  },
+];
 
 export default function PrimarySchoolOnboarding() {
-  const [selectedStudent, setSelectedStudent] = useState<StudentProfile | null>(null)
-  const [generatedSchedule, setGeneratedSchedule] = useState<any>(null)
-  const [isGenerating, setIsGenerating] = useState(false)
+  const [selectedStudent, setSelectedStudent] = useState<StudentProfile | null>(null);
+  const [generatedSchedule, setGeneratedSchedule] = useState<any>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const generateSchedule = async (student: StudentProfile) => {
-    setIsGenerating(true)
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    const gradeData = TEXAS_CURRICULUM_DATA.elementary[student.grade as keyof typeof TEXAS_CURRICULUM_DATA.elementary]
-    
+    setIsGenerating(true);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    const gradeData =
+      TEXAS_CURRICULUM_DATA.elementary[
+        student.grade as keyof typeof TEXAS_CURRICULUM_DATA.elementary
+      ];
+
     if (!gradeData) {
-      setIsGenerating(false)
-      return
+      setIsGenerating(false);
+      return;
     }
 
     const schedule = {
@@ -150,69 +167,72 @@ export default function PrimarySchoolOnboarding() {
         room_number: `Hero Hall ${100 + index}`,
         teks_standards: subject.standards,
         superhero_theme: getSuperHeroTheme(subject.subject),
-        accommodations: getAccommodationsForStudent(student, subject.subject)
+        accommodations: getAccommodationsForStudent(student, subject.subject),
       })),
       total_instructional_minutes: gradeData.total_instructional_minutes,
       meets_texas_requirements: true,
-      compliance_notes: `SuperHero Elementary schedule meets all Texas TEKS requirements for grade ${student.grade}.`
-    }
-    
-    setGeneratedSchedule(schedule)
-    setIsGenerating(false)
-  }
+      compliance_notes: `SuperHero Elementary schedule meets all Texas TEKS requirements for grade ${student.grade}.`,
+    };
+
+    setGeneratedSchedule(schedule);
+    setIsGenerating(false);
+  };
 
   const getSuperHeroTheme = (subject: string) => {
     const themes = {
-      'english_language_arts': 'Word Warriors - Master the power of language!',
-      'mathematics': 'Number Ninjas - Calculate your way to victory!',
-      'science': 'Science Superheroes - Discover the secrets of the universe!',
-      'social_studies': 'History Heroes - Travel through time and space!',
-      'fine_arts': 'Art Avengers - Create amazing masterpieces!',
-      'physical_education': 'Fitness Force - Build your superhero strength!'
-    }
-    return themes[subject as keyof typeof themes] || 'Hero Training'
-  }
+      english_language_arts: 'Word Warriors - Master the power of language!',
+      mathematics: 'Number Ninjas - Calculate your way to victory!',
+      science: 'Science Superheroes - Discover the secrets of the universe!',
+      social_studies: 'History Heroes - Travel through time and space!',
+      fine_arts: 'Art Avengers - Create amazing masterpieces!',
+      physical_education: 'Fitness Force - Build your superhero strength!',
+    };
+    return themes[subject as keyof typeof themes] || 'Hero Training';
+  };
 
   const getTeacherForSubject = (subject: string) => {
     const teachers = {
-      'english_language_arts': 'Ms. Shakespeare (Story Superhero)',
-      'mathematics': 'Professor Newton (Number Hero)',
-      'science': 'Dr. Curie (Science Champion)',
-      'social_studies': 'Professor Timeline (History Hero)',
-      'fine_arts': 'Maestro Picasso (Art Avenger)',
-      'physical_education': 'Coach Hero (Fitness Force)'
-    }
-    return teachers[subject as keyof typeof teachers] || 'Hero Teacher'
-  }
+      english_language_arts: 'Ms. Shakespeare (Story Superhero)',
+      mathematics: 'Professor Newton (Number Hero)',
+      science: 'Dr. Curie (Science Champion)',
+      social_studies: 'Professor Timeline (History Hero)',
+      fine_arts: 'Maestro Picasso (Art Avenger)',
+      physical_education: 'Coach Hero (Fitness Force)',
+    };
+    return teachers[subject as keyof typeof teachers] || 'Hero Teacher';
+  };
 
   const getAccommodationsForStudent = (student: StudentProfile, subject: string) => {
-    const accommodations = []
-    
+    const accommodations = [];
+
     if (student.accommodations.includes('adhd')) {
-      accommodations.push('Super Focus breaks every 15 minutes')
-      accommodations.push('Hero fidget tools available')
-      accommodations.push('Front row hero seat')
+      accommodations.push('Super Focus breaks every 15 minutes');
+      accommodations.push('Hero fidget tools available');
+      accommodations.push('Front row hero seat');
     }
-    
+
     if (student.learningStyle === 'visual') {
-      accommodations.push('Colorful superhero visual aids')
-      accommodations.push('Picture-based learning materials')
+      accommodations.push('Colorful superhero visual aids');
+      accommodations.push('Picture-based learning materials');
     }
-    
+
     if (student.learningStyle === 'kinesthetic') {
-      accommodations.push('Hands-on hero activities')
-      accommodations.push('Movement-based learning')
+      accommodations.push('Hands-on hero activities');
+      accommodations.push('Movement-based learning');
     }
-    
-    return accommodations
-  }
+
+    return accommodations;
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <Link href="/schools/primary" className="inline-flex items-center gap-2 text-orange-600 hover:text-orange-700 mb-4">
+          <Link
+            href="/schools/primary"
+            className="inline-flex items-center gap-2 text-orange-600 hover:text-orange-700 mb-4"
+          >
             <ArrowLeft className="w-4 h-4" />
             Back to SuperHero Elementary
           </Link>
@@ -222,7 +242,9 @@ export default function PrimarySchoolOnboarding() {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">SuperHero Elementary Onboarding</h1>
-              <p className="text-gray-600">Create personalized learning adventures for K-5 heroes</p>
+              <p className="text-gray-600">
+                Create personalized learning adventures for K-5 heroes
+              </p>
             </div>
           </div>
         </div>
@@ -251,10 +273,19 @@ export default function PrimarySchoolOnboarding() {
                     </div>
                   </div>
                   <div className="space-y-1 text-sm">
-                    <p className="text-gray-600">Learning Style: <span className="font-medium">{student.learningStyle}</span></p>
-                    <p className="text-gray-600">Interests: <span className="font-medium">{student.interests.slice(0, 2).join(', ')}</span></p>
+                    <p className="text-gray-600">
+                      Learning Style: <span className="font-medium">{student.learningStyle}</span>
+                    </p>
+                    <p className="text-gray-600">
+                      Interests:{' '}
+                      <span className="font-medium">
+                        {student.interests.slice(0, 2).join(', ')}
+                      </span>
+                    </p>
                     {student.accommodations[0] !== 'none' && (
-                      <p className="text-orange-600 font-medium">Special Support: {student.accommodations.join(', ')}</p>
+                      <p className="text-orange-600 font-medium">
+                        Special Support: {student.accommodations.join(', ')}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -278,26 +309,48 @@ export default function PrimarySchoolOnboarding() {
                 <ArrowLeft className="w-5 h-5" />
               </button>
             </div>
-            
+
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               <div>
                 <h3 className="font-semibold text-gray-900 mb-3">Hero Details</h3>
                 <div className="space-y-2 text-sm">
-                  <p><span className="font-medium">Grade:</span> {selectedStudent.grade}</p>
-                  <p><span className="font-medium">Learning Style:</span> {selectedStudent.learningStyle}</p>
-                  <p><span className="font-medium">Parent Email:</span> {selectedStudent.parentEmail}</p>
-                  <p><span className="font-medium">Emergency Contact:</span> {selectedStudent.emergencyContact}</p>
+                  <p>
+                    <span className="font-medium">Grade:</span> {selectedStudent.grade}
+                  </p>
+                  <p>
+                    <span className="font-medium">Learning Style:</span>{' '}
+                    {selectedStudent.learningStyle}
+                  </p>
+                  <p>
+                    <span className="font-medium">Parent Email:</span> {selectedStudent.parentEmail}
+                  </p>
+                  <p>
+                    <span className="font-medium">Emergency Contact:</span>{' '}
+                    {selectedStudent.emergencyContact}
+                  </p>
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="font-semibold text-gray-900 mb-3">Super Powers & Growth Areas</h3>
                 <div className="space-y-2 text-sm">
-                  <p><span className="font-medium">Strengths:</span> {selectedStudent.strengths.join(', ')}</p>
-                  <p><span className="font-medium">Growth Areas:</span> {selectedStudent.challenges.join(', ')}</p>
-                  <p><span className="font-medium">Interests:</span> {selectedStudent.interests.join(', ')}</p>
+                  <p>
+                    <span className="font-medium">Strengths:</span>{' '}
+                    {selectedStudent.strengths.join(', ')}
+                  </p>
+                  <p>
+                    <span className="font-medium">Growth Areas:</span>{' '}
+                    {selectedStudent.challenges.join(', ')}
+                  </p>
+                  <p>
+                    <span className="font-medium">Interests:</span>{' '}
+                    {selectedStudent.interests.join(', ')}
+                  </p>
                   {selectedStudent.accommodations[0] !== 'none' && (
-                    <p><span className="font-medium">Special Support:</span> {selectedStudent.accommodations.join(', ')}</p>
+                    <p>
+                      <span className="font-medium">Special Support:</span>{' '}
+                      {selectedStudent.accommodations.join(', ')}
+                    </p>
                   )}
                 </div>
               </div>
@@ -323,7 +376,9 @@ export default function PrimarySchoolOnboarding() {
                 <Target className="w-6 h-6 text-orange-500" />
                 {selectedStudent?.name}'s SuperHero Schedule
               </h2>
-              <p className="text-gray-600">{generatedSchedule.school_type} - Grade {generatedSchedule.grade_level}</p>
+              <p className="text-gray-600">
+                {generatedSchedule.school_type} - Grade {generatedSchedule.grade_level}
+              </p>
             </div>
 
             <div className="space-y-4">
@@ -335,23 +390,31 @@ export default function PrimarySchoolOnboarding() {
                         {period.period_number}
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900">{period.subject.replace('_', ' ').toUpperCase()}</h3>
+                        <h3 className="font-semibold text-gray-900">
+                          {period.subject.replace('_', ' ').toUpperCase()}
+                        </h3>
                         <p className="text-sm text-orange-600">{period.superhero_theme}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">{period.start_time} - {period.end_time}</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        {period.start_time} - {period.end_time}
+                      </p>
                       <p className="text-sm text-gray-600">{period.room_number}</p>
                     </div>
                   </div>
-                  
+
                   <div className="text-sm text-gray-600 mb-2">
-                    <p><span className="font-medium">Hero Teacher:</span> {period.teacher_name}</p>
+                    <p>
+                      <span className="font-medium">Hero Teacher:</span> {period.teacher_name}
+                    </p>
                   </div>
-                  
+
                   {period.accommodations.length > 0 && (
                     <div className="bg-orange-50 rounded-lg p-3">
-                      <p className="text-sm font-medium text-orange-800 mb-1">Special Hero Support:</p>
+                      <p className="text-sm font-medium text-orange-800 mb-1">
+                        Special Hero Support:
+                      </p>
                       <ul className="text-sm text-orange-700 space-y-1">
                         {period.accommodations.map((acc: string, idx: number) => (
                           <li key={idx}>• {acc}</li>
@@ -374,8 +437,8 @@ export default function PrimarySchoolOnboarding() {
             <div className="mt-6 text-center">
               <button
                 onClick={() => {
-                  setSelectedStudent(null)
-                  setGeneratedSchedule(null)
+                  setSelectedStudent(null);
+                  setGeneratedSchedule(null);
                 }}
                 className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-8 py-3 rounded-lg hover:from-yellow-500 hover:to-orange-600 transition-all font-semibold"
               >
@@ -386,5 +449,5 @@ export default function PrimarySchoolOnboarding() {
         )}
       </div>
     </div>
-  )
+  );
 }

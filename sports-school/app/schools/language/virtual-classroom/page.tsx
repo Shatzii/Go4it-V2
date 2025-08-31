@@ -1,19 +1,19 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Video, 
-  Mic, 
-  MicOff, 
-  VideoOff, 
-  Users, 
-  MessageSquare, 
-  Settings, 
-  Monitor, 
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Video,
+  Mic,
+  MicOff,
+  VideoOff,
+  Users,
+  MessageSquare,
+  Settings,
+  Monitor,
   Camera,
   Volume2,
   ScreenShare,
@@ -23,15 +23,15 @@ import {
   Clock,
   Globe,
   Languages,
-  Headphones
-} from 'lucide-react'
-import Link from 'next/link'
+  Headphones,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function LanguageVirtualClassroom() {
-  const [isMuted, setIsMuted] = useState(false)
-  const [isVideoOff, setIsVideoOff] = useState(false)
-  const [activeTab, setActiveTab] = useState('classroom')
-  const [currentLanguage, setCurrentLanguage] = useState('Spanish')
+  const [isMuted, setIsMuted] = useState(false);
+  const [isVideoOff, setIsVideoOff] = useState(false);
+  const [activeTab, setActiveTab] = useState('classroom');
+  const [currentLanguage, setCurrentLanguage] = useState('Spanish');
 
   const currentClasses = [
     {
@@ -40,7 +40,7 @@ export default function LanguageVirtualClassroom() {
       time: 'Now - 3:30 PM',
       participants: 16,
       status: 'live',
-      language: 'Spanish'
+      language: 'Spanish',
     },
     {
       title: 'French Cultural Immersion',
@@ -48,7 +48,7 @@ export default function LanguageVirtualClassroom() {
       time: '4:00 PM - 5:00 PM',
       participants: 12,
       status: 'upcoming',
-      language: 'French'
+      language: 'French',
     },
     {
       title: 'Mandarin Writing Practice',
@@ -56,33 +56,62 @@ export default function LanguageVirtualClassroom() {
       time: '2:00 PM - 3:00 PM',
       participants: 14,
       status: 'completed',
-      language: 'Mandarin'
-    }
-  ]
+      language: 'Mandarin',
+    },
+  ];
 
   const participants = [
     { name: 'Ana Rodriguez', level: 'Intermediate', status: 'online', speaking: false, flag: '🇪🇸' },
     { name: 'Pierre Dubois', level: 'Advanced', status: 'online', speaking: true, flag: '🇫🇷' },
     { name: 'Yuki Tanaka', level: 'Beginner', status: 'online', speaking: false, flag: '🇯🇵' },
     { name: 'Marco Silva', level: 'Intermediate', status: 'away', speaking: false, flag: '🇧🇷' },
-    { name: 'Profesora María', level: 'Native', status: 'online', speaking: false, flag: '🇪🇸' }
-  ]
+    { name: 'Profesora María', level: 'Native', status: 'online', speaking: false, flag: '🇪🇸' },
+  ];
 
   const chatMessages = [
-    { user: 'Profesora María', message: '¡Hola clase! Today we practice conversational Spanish.', time: '2:15 PM', flag: '🇪🇸' },
-    { user: 'Ana Rodriguez', message: 'Estoy muy emocionada para practicar hoy', time: '2:16 PM', flag: '🇪🇸' },
-    { user: 'Pierre Dubois', message: 'Can we practice ordering food in restaurants?', time: '2:17 PM', flag: '🇫🇷' },
-    { user: 'Profesora María', message: '¡Excelente idea! Vamos a crear un diálogo.', time: '2:18 PM', flag: '🇪🇸' }
-  ]
+    {
+      user: 'Profesora María',
+      message: '¡Hola clase! Today we practice conversational Spanish.',
+      time: '2:15 PM',
+      flag: '🇪🇸',
+    },
+    {
+      user: 'Ana Rodriguez',
+      message: 'Estoy muy emocionada para practicar hoy',
+      time: '2:16 PM',
+      flag: '🇪🇸',
+    },
+    {
+      user: 'Pierre Dubois',
+      message: 'Can we practice ordering food in restaurants?',
+      time: '2:17 PM',
+      flag: '🇫🇷',
+    },
+    {
+      user: 'Profesora María',
+      message: '¡Excelente idea! Vamos a crear un diálogo.',
+      time: '2:18 PM',
+      flag: '🇪🇸',
+    },
+  ];
 
   const classResources = [
     { name: 'Spanish Conversation Guide', type: 'PDF', size: '2.1 MB', language: 'Spanish' },
     { name: 'Audio Pronunciation Practice', type: 'MP3', size: '15.3 MB', language: 'Spanish' },
     { name: 'Cultural Context Worksheet', type: 'DOC', size: '1.2 MB', language: 'Spanish' },
-    { name: 'Vocabulary Flash Cards', type: 'Interactive', size: '3.4 MB', language: 'Spanish' }
-  ]
+    { name: 'Vocabulary Flash Cards', type: 'Interactive', size: '3.4 MB', language: 'Spanish' },
+  ];
 
-  const languages = ['Spanish', 'French', 'Mandarin', 'Japanese', 'German', 'Italian', 'Portuguese', 'Arabic']
+  const languages = [
+    'Spanish',
+    'French',
+    'Mandarin',
+    'Japanese',
+    'German',
+    'Italian',
+    'Portuguese',
+    'Arabic',
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-teal-50 to-blue-50">
@@ -92,18 +121,16 @@ export default function LanguageVirtualClassroom() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold">Global Language Immersion 🌍</h1>
-              <p className="text-green-100 mt-1">Multilingual Virtual Classroom - {currentLanguage} Session</p>
+              <p className="text-green-100 mt-1">
+                Multilingual Virtual Classroom - {currentLanguage} Session
+              </p>
             </div>
             <div className="flex items-center gap-2">
-              <Badge className="bg-green-100 text-green-800">
-                Live Class
-              </Badge>
+              <Badge className="bg-green-100 text-green-800">Live Class</Badge>
               <Badge variant="outline" className="text-white border-white">
                 16 Students
               </Badge>
-              <Badge className="bg-blue-100 text-blue-800">
-                🇪🇸 {currentLanguage}
-              </Badge>
+              <Badge className="bg-blue-100 text-blue-800">🇪🇸 {currentLanguage}</Badge>
             </div>
           </div>
         </div>
@@ -147,34 +174,38 @@ export default function LanguageVirtualClassroom() {
                     {/* Video Controls */}
                     <div className="flex items-center justify-center gap-4 p-4 bg-gray-100 rounded-lg">
                       <Button
-                        variant={isMuted ? "destructive" : "default"}
+                        variant={isMuted ? 'destructive' : 'default'}
                         size="sm"
                         onClick={() => setIsMuted(!isMuted)}
                       >
                         {isMuted ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
                       </Button>
-                      
+
                       <Button
-                        variant={isVideoOff ? "destructive" : "default"}
+                        variant={isVideoOff ? 'destructive' : 'default'}
                         size="sm"
                         onClick={() => setIsVideoOff(!isVideoOff)}
                       >
-                        {isVideoOff ? <VideoOff className="h-4 w-4" /> : <Camera className="h-4 w-4" />}
+                        {isVideoOff ? (
+                          <VideoOff className="h-4 w-4" />
+                        ) : (
+                          <Camera className="h-4 w-4" />
+                        )}
                       </Button>
-                      
+
                       <Button variant="outline" size="sm">
                         <Headphones className="h-4 w-4" />
                         Audio
                       </Button>
-                      
+
                       <Button variant="outline" size="sm">
                         <ScreenShare className="h-4 w-4" />
                       </Button>
-                      
+
                       <Button variant="outline" size="sm">
                         🗣️ Speak
                       </Button>
-                      
+
                       <Button variant="destructive" size="sm">
                         Exit Class
                       </Button>
@@ -198,7 +229,7 @@ export default function LanguageVirtualClassroom() {
                       {languages.slice(0, 6).map((lang, index) => (
                         <Button
                           key={lang}
-                          variant={lang === currentLanguage ? "default" : "outline"}
+                          variant={lang === currentLanguage ? 'default' : 'outline'}
                           size="sm"
                           className="text-xs"
                           onClick={() => setCurrentLanguage(lang)}
@@ -227,12 +258,12 @@ export default function LanguageVirtualClassroom() {
                             <span className="text-sm font-medium">{participant.name}</span>
                             <div className="text-xs text-gray-600">{participant.level}</div>
                           </div>
-                          {participant.speaking && (
-                            <Volume2 className="h-3 w-3 text-green-500" />
-                          )}
-                          <div className={`w-2 h-2 rounded-full ${
-                            participant.status === 'online' ? 'bg-green-500' : 'bg-gray-400'
-                          }`} />
+                          {participant.speaking && <Volume2 className="h-3 w-3 text-green-500" />}
+                          <div
+                            className={`w-2 h-2 rounded-full ${
+                              participant.status === 'online' ? 'bg-green-500' : 'bg-gray-400'
+                            }`}
+                          />
                         </div>
                       ))}
                     </div>
@@ -261,9 +292,9 @@ export default function LanguageVirtualClassroom() {
                       ))}
                     </div>
                     <div className="mt-3 flex gap-2">
-                      <input 
-                        type="text" 
-                        placeholder="¡Escribe en español!" 
+                      <input
+                        type="text"
+                        placeholder="¡Escribe en español!"
                         className="flex-1 px-3 py-2 border rounded-md text-sm"
                       />
                       <Button size="sm">Enviar</Button>
@@ -285,19 +316,29 @@ export default function LanguageVirtualClassroom() {
               <CardContent>
                 <div className="space-y-4">
                   {currentClasses.map((classItem, index) => (
-                    <div key={index} className={`border-2 rounded-lg p-4 ${
-                      classItem.status === 'live' ? 'border-green-200 bg-green-50' :
-                      classItem.status === 'upcoming' ? 'border-blue-200 bg-blue-50' :
-                      'border-gray-200 bg-gray-50'
-                    }`}>
+                    <div
+                      key={index}
+                      className={`border-2 rounded-lg p-4 ${
+                        classItem.status === 'live'
+                          ? 'border-green-200 bg-green-50'
+                          : classItem.status === 'upcoming'
+                            ? 'border-blue-200 bg-blue-50'
+                            : 'border-gray-200 bg-gray-50'
+                      }`}
+                    >
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="font-medium">{classItem.title}</h3>
                         <div className="flex items-center gap-2">
                           <Badge className="bg-blue-100 text-blue-800">{classItem.language}</Badge>
-                          <Badge variant={
-                            classItem.status === 'live' ? 'default' :
-                            classItem.status === 'upcoming' ? 'secondary' : 'outline'
-                          }>
+                          <Badge
+                            variant={
+                              classItem.status === 'live'
+                                ? 'default'
+                                : classItem.status === 'upcoming'
+                                  ? 'secondary'
+                                  : 'outline'
+                            }
+                          >
                             {classItem.status}
                           </Badge>
                         </div>
@@ -309,8 +350,11 @@ export default function LanguageVirtualClassroom() {
                       <div className="flex items-center justify-between mt-3">
                         <span className="text-sm font-medium">{classItem.time}</span>
                         <Button size="sm" disabled={classItem.status === 'completed'}>
-                          {classItem.status === 'live' ? 'Join Class' : 
-                           classItem.status === 'upcoming' ? 'Set Reminder' : 'View Recording'}
+                          {classItem.status === 'live'
+                            ? 'Join Class'
+                            : classItem.status === 'upcoming'
+                              ? 'Set Reminder'
+                              : 'View Recording'}
                         </Button>
                       </div>
                     </div>
@@ -331,12 +375,17 @@ export default function LanguageVirtualClassroom() {
               <CardContent>
                 <div className="space-y-3">
                   {classResources.map((resource, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
                       <div className="flex items-center gap-3">
                         <Languages className="h-5 w-5 text-green-600" />
                         <div>
                           <p className="font-medium">{resource.name}</p>
-                          <p className="text-sm text-gray-600">{resource.type} • {resource.size} • {resource.language}</p>
+                          <p className="text-sm text-gray-600">
+                            {resource.type} • {resource.size} • {resource.language}
+                          </p>
                         </div>
                       </div>
                       <Button size="sm" variant="outline">
@@ -346,7 +395,7 @@ export default function LanguageVirtualClassroom() {
                     </div>
                   ))}
                 </div>
-                
+
                 <div className="mt-6 p-4 border-2 border-dashed border-gray-300 rounded-lg text-center">
                   <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                   <p className="text-sm text-gray-600">Submit your language practice assignments</p>
@@ -370,11 +419,11 @@ export default function LanguageVirtualClassroom() {
                 <div className="text-center py-8">
                   <Headphones className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                   <h3 className="text-lg font-medium mb-2">Pronunciation Practice Library</h3>
-                  <p className="text-gray-600 mb-4">Access recorded pronunciation guides and conversation practice sessions</p>
+                  <p className="text-gray-600 mb-4">
+                    Access recorded pronunciation guides and conversation practice sessions
+                  </p>
                   <Link href="/schools/language/assignments">
-                    <Button variant="outline">
-                      View Language Assignments
-                    </Button>
+                    <Button variant="outline">View Language Assignments</Button>
                   </Link>
                 </div>
               </CardContent>
@@ -394,9 +443,7 @@ export default function LanguageVirtualClassroom() {
                   </Button>
                 </Link>
                 <Link href="/schools/language/student-dashboard">
-                  <Button variant="outline">
-                    Back to Language Dashboard
-                  </Button>
+                  <Button variant="outline">Back to Language Dashboard</Button>
                 </Link>
               </div>
             </div>
@@ -404,5 +451,5 @@ export default function LanguageVirtualClassroom() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

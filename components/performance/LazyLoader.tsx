@@ -6,11 +6,11 @@ import { LoadingFallback } from '@/components/LoadingFallback';
 // Performance optimization: Dynamic imports with loading states
 export function withLazyLoading<T extends ComponentType<any>>(
   importFunc: () => Promise<{ default: T }>,
-  fallbackComponent?: ComponentType
+  fallbackComponent?: ComponentType,
 ) {
   const LazyComponent = lazy(importFunc);
   const Fallback = fallbackComponent || LoadingFallback;
-  
+
   return function LazyWrappedComponent(props: any) {
     return (
       <Suspense fallback={<Fallback />}>

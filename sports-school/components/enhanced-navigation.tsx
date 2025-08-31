@@ -1,56 +1,67 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Search, Menu, X, Bell, MessageCircle, User, GraduationCap, Brain, Zap, ChevronDown } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import Link from 'next/link'
+import { useState, useEffect } from 'react';
+import {
+  Search,
+  Menu,
+  X,
+  Bell,
+  MessageCircle,
+  User,
+  GraduationCap,
+  Brain,
+  Zap,
+  ChevronDown,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import Link from 'next/link';
 
 export default function EnhancedNavigation() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState([])
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const schools = [
     { id: 'primary', name: 'Primary School', href: '/schools/primary', color: 'blue' },
     { id: 'secondary', name: 'S.T.A.G.E Prep', href: '/schools/secondary', color: 'purple' },
     { id: 'law', name: 'Law School', href: '/schools/law', color: 'green' },
     { id: 'language', name: 'Language School', href: '/schools/language', color: 'orange' },
-    { id: 'sports', name: 'Sports Academy', href: '/schools/sports', color: 'red' }
-  ]
+    { id: 'sports', name: 'Sports Academy', href: '/schools/sports', color: 'red' },
+  ];
 
   const aiFeatures = [
     { name: 'AI Tutor', href: '/ai-tutor', icon: Brain },
     { name: 'Study Buddy', href: '/study-buddy', icon: GraduationCap },
-    { name: 'Content Creator', href: '/ai-content', icon: Zap }
-  ]
+    { name: 'Content Creator', href: '/ai-content', icon: Zap },
+  ];
 
   const handleSearch = async (query: string) => {
     if (!query.trim()) {
-      setSearchResults([])
-      return
+      setSearchResults([]);
+      return;
     }
 
     try {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`)
-      const results = await response.json()
-      setSearchResults(results)
+      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+      const results = await response.json();
+      setSearchResults(results);
     } catch (error) {
-      console.error('Search error:', error)
-      setSearchResults([])
+      console.error('Search error:', error);
+      setSearchResults([]);
     }
-  }
+  };
 
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      handleSearch(searchQuery)
-    }, 300)
+      handleSearch(searchQuery);
+    }, 300);
 
-    return () => clearTimeout(debounceTimer)
-  }, [searchQuery])
+    return () => clearTimeout(debounceTimer);
+  }, [searchQuery]);
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
@@ -111,7 +122,10 @@ export default function EnhancedNavigation() {
               </div>
             </div>
 
-            <Link href="/dashboards" className="text-gray-700 hover:text-blue-600 transition-colors">
+            <Link
+              href="/dashboards"
+              className="text-gray-700 hover:text-blue-600 transition-colors"
+            >
               Dashboards
             </Link>
           </nav>
@@ -129,7 +143,7 @@ export default function EnhancedNavigation() {
                 onFocus={() => setIsSearchOpen(true)}
               />
             </div>
-            
+
             {/* Search Results */}
             {isSearchOpen && (searchQuery || searchResults.length > 0) && (
               <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 max-h-96 overflow-y-auto z-50">
@@ -160,9 +174,7 @@ export default function EnhancedNavigation() {
                     No results found for "{searchQuery}"
                   </div>
                 ) : (
-                  <div className="p-4 text-center text-gray-500">
-                    Start typing to search...
-                  </div>
+                  <div className="p-4 text-center text-gray-500">Start typing to search...</div>
                 )}
               </div>
             )}
@@ -265,5 +277,5 @@ export default function EnhancedNavigation() {
         />
       )}
     </header>
-  )
+  );
 }

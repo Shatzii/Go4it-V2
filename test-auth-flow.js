@@ -17,7 +17,7 @@ async function testAuthFlow() {
     password: 'testpass123',
     username: `testuser${timestamp}`,
     firstName: 'Test',
-    lastName: 'User'
+    lastName: 'User',
   };
 
   let authCookie = null;
@@ -28,7 +28,7 @@ async function testAuthFlow() {
     const registerResponse = await fetch(`${BASE_URL}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(testUser)
+      body: JSON.stringify(testUser),
     });
 
     if (registerResponse.ok) {
@@ -37,7 +37,7 @@ async function testAuthFlow() {
       console.log(`   User ID: ${registerData.user.id}`);
       console.log(`   Username: ${registerData.user.username}`);
       console.log(`   Role: ${registerData.user.role}`);
-      
+
       // Extract auth cookie
       const setCookieHeader = registerResponse.headers.get('set-cookie');
       if (setCookieHeader) {
@@ -57,15 +57,15 @@ async function testAuthFlow() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email: testUser.email,
-        password: testUser.password
-      })
+        password: testUser.password,
+      }),
     });
 
     if (loginResponse.ok) {
       const loginData = await loginResponse.json();
       console.log('✅ Login successful');
       console.log(`   Welcome back: ${loginData.user.firstName} ${loginData.user.lastName}`);
-      
+
       // Update auth cookie from login
       const setCookieHeader = loginResponse.headers.get('set-cookie');
       if (setCookieHeader) {
@@ -81,8 +81,8 @@ async function testAuthFlow() {
     console.log('\n3️⃣ Testing Protected Route Access...');
     const meResponse = await fetch(`${BASE_URL}/api/auth/me`, {
       headers: {
-        'Cookie': authCookie || ''
-      }
+        Cookie: authCookie || '',
+      },
     });
 
     if (meResponse.ok) {
@@ -116,8 +116,8 @@ async function testAuthFlow() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email: testUser.email,
-        password: 'wrongpassword'
-      })
+        password: 'wrongpassword',
+      }),
     });
 
     if (invalidLoginResponse.status === 401) {
@@ -135,9 +135,8 @@ async function testAuthFlow() {
     console.log('   ✅ Protected Route Access');
     console.log('   ✅ Unauthorized Access Protection');
     console.log('   ✅ Invalid Login Rejection');
-    
-    return true;
 
+    return true;
   } catch (error) {
     console.error('\n💥 Test failed with error:', error.message);
     return false;
@@ -147,11 +146,11 @@ async function testAuthFlow() {
 // Enhanced database connectivity test
 async function testDatabaseConnectivity() {
   console.log('\n🔧 Testing Database Connectivity...');
-  
+
   try {
     // Test notifications endpoint as a database connectivity check
     const response = await fetch(`${BASE_URL}/api/notifications`);
-    
+
     if (response.ok) {
       console.log('✅ Database connectivity confirmed');
       const data = await response.json();
@@ -168,14 +167,14 @@ async function testDatabaseConnectivity() {
 // Run the complete test suite
 async function runTests() {
   console.log('Go4It Sports Platform - Authentication Test Suite');
-  console.log('=' .repeat(55));
-  
+  console.log('='.repeat(55));
+
   await testDatabaseConnectivity();
-  
-  console.log('\n' + '=' .repeat(55));
+
+  console.log('\n' + '='.repeat(55));
   const authTestPassed = await testAuthFlow();
-  
-  console.log('\n' + '=' .repeat(55));
+
+  console.log('\n' + '='.repeat(55));
   if (authTestPassed) {
     console.log('🏆 AUTHENTICATION SYSTEM: FULLY OPERATIONAL');
     console.log('   Ready for production use');
@@ -183,7 +182,7 @@ async function runTests() {
     console.log('🚨 AUTHENTICATION SYSTEM: NEEDS ATTENTION');
     console.log('   Check logs for specific issues');
   }
-  console.log('=' .repeat(55));
+  console.log('='.repeat(55));
 }
 
 // Execute tests

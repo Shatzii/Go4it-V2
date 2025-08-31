@@ -1,13 +1,13 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { BookOpen, Users, Clock, Star, Globe, Languages } from 'lucide-react'
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { BookOpen, Users, Clock, Star, Globe, Languages } from 'lucide-react';
 
 export default function LanguageCoursesPage() {
-  const [selectedGrade, setSelectedGrade] = useState('all')
+  const [selectedGrade, setSelectedGrade] = useState('all');
 
   const courses = [
     {
@@ -21,7 +21,7 @@ export default function LanguageCoursesPage() {
       difficulty: 'Beginner',
       subjects: ['Grammar', 'Vocabulary', 'Culture'],
       color: 'bg-red-500',
-      flag: '🇪🇸'
+      flag: '🇪🇸',
     },
     {
       id: 'french-9',
@@ -34,7 +34,7 @@ export default function LanguageCoursesPage() {
       difficulty: 'Beginner',
       subjects: ['Pronunciation', 'Grammar', 'Culture'],
       color: 'bg-blue-500',
-      flag: '🇫🇷'
+      flag: '🇫🇷',
     },
     {
       id: 'mandarin-10',
@@ -47,7 +47,7 @@ export default function LanguageCoursesPage() {
       difficulty: 'Intermediate',
       subjects: ['Characters', 'Conversation', 'Culture'],
       color: 'bg-red-600',
-      flag: '🇨🇳'
+      flag: '🇨🇳',
     },
     {
       id: 'german-10',
@@ -60,7 +60,7 @@ export default function LanguageCoursesPage() {
       difficulty: 'Intermediate',
       subjects: ['Grammar', 'Literature', 'History'],
       color: 'bg-yellow-600',
-      flag: '🇩🇪'
+      flag: '🇩🇪',
     },
     {
       id: 'spanish-11',
@@ -73,7 +73,7 @@ export default function LanguageCoursesPage() {
       difficulty: 'Advanced',
       subjects: ['Literature', 'Composition', 'Culture'],
       color: 'bg-orange-600',
-      flag: '🇪🇸'
+      flag: '🇪🇸',
     },
     {
       id: 'japanese-11',
@@ -86,7 +86,7 @@ export default function LanguageCoursesPage() {
       difficulty: 'Advanced',
       subjects: ['Kanji', 'Culture', 'Literature'],
       color: 'bg-pink-600',
-      flag: '🇯🇵'
+      flag: '🇯🇵',
     },
     {
       id: 'ap-spanish',
@@ -99,7 +99,7 @@ export default function LanguageCoursesPage() {
       difficulty: 'Expert',
       subjects: ['AP Prep', 'Literature', 'Culture'],
       color: 'bg-purple-600',
-      flag: '🇪🇸'
+      flag: '🇪🇸',
     },
     {
       id: 'cultural-exchange',
@@ -112,23 +112,24 @@ export default function LanguageCoursesPage() {
       difficulty: 'Variable',
       subjects: ['Culture', 'Communication', 'Leadership'],
       color: 'bg-green-600',
-      flag: '🌍'
-    }
-  ]
+      flag: '🌍',
+    },
+  ];
 
-  const grades = ['all', '9', '10', '11', '12', '9-12']
+  const grades = ['all', '9', '10', '11', '12', '9-12'];
 
-  const filteredCourses = selectedGrade === 'all' 
-    ? courses 
-    : courses.filter(course => course.grade === selectedGrade || course.grade.includes(selectedGrade))
+  const filteredCourses =
+    selectedGrade === 'all'
+      ? courses
+      : courses.filter(
+          (course) => course.grade === selectedGrade || course.grade.includes(selectedGrade),
+        );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-50">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            🌍 Global Language Academy
-          </h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">🌍 Global Language Academy</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Multilingual education and cultural immersion for global citizenship
           </p>
@@ -139,7 +140,7 @@ export default function LanguageCoursesPage() {
           {grades.map((grade) => (
             <Button
               key={grade}
-              variant={selectedGrade === grade ? "default" : "outline"}
+              variant={selectedGrade === grade ? 'default' : 'outline'}
               onClick={() => setSelectedGrade(grade)}
               className="min-w-[80px]"
             >
@@ -168,7 +169,7 @@ export default function LanguageCoursesPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 mb-4">{course.description}</p>
-                
+
                 <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
                   <div className="flex items-center gap-1">
                     <Users className="w-4 h-4" />
@@ -205,9 +206,7 @@ export default function LanguageCoursesPage() {
           <Card className="text-center">
             <CardContent className="pt-6">
               <Globe className="w-12 h-12 text-green-600 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                6
-              </h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">6</h3>
               <p className="text-gray-600">Languages Offered</p>
             </CardContent>
           </Card>
@@ -223,14 +222,12 @@ export default function LanguageCoursesPage() {
           <Card className="text-center">
             <CardContent className="pt-6">
               <Star className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                4.8/5
-              </h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">4.8/5</h3>
               <p className="text-gray-600">Course Rating</p>
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -7,10 +7,23 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AICoachWidget } from '@/components/ai-coach/AICoachWidget';
-import { 
-  Trophy, Target, Clock, Star, Zap, Award, 
-  PlayCircle, CheckCircle, Lock, TrendingUp,
-  Flame, Crown, Shield, Mic, Brain, Timer
+import {
+  Trophy,
+  Target,
+  Clock,
+  Star,
+  Zap,
+  Award,
+  PlayCircle,
+  CheckCircle,
+  Lock,
+  TrendingUp,
+  Flame,
+  Crown,
+  Shield,
+  Mic,
+  Brain,
+  Timer,
 } from 'lucide-react';
 
 interface Challenge {
@@ -34,8 +47,56 @@ export default function ChallengesPage() {
   const [activeChallenge, setActiveChallenge] = useState<Challenge | null>(null);
   const [challengeProgress, setChallengeProgress] = useState(0);
   const [isCoachingActive, setIsCoachingActive] = useState(false);
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const challenges: Challenge[] = [
+  useEffect(() => {
+    loadChallenges();
+  }, []);
+
+  const loadChallenges = async () => {
+    try {
+      const response = await fetch('/api/challenges/route?userId=demo-user');
+      const result = await response.json();
+
+      if (result.success) {
+        setChallenges(result.challenges || sampleChallenges);
+      } else {
+        setChallenges(sampleChallenges);
+      }
+    } catch (error) {
+      console.error('Failed to load challenges:', error);
+      setChallenges(sampleChallenges);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const startChallenge = async (challenge: Challenge) => {
+    setActiveChallenge(challenge);
+    setChallengeProgress(0);
+    setIsCoachingActive(true);
+
+    try {
+      const response = await fetch('/api/challenges/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          challengeId: challenge.id,
+          userId: 'demo-user',
+        }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        console.log('Challenge started successfully');
+      }
+    } catch (error) {
+      console.error('Failed to start challenge:', error);
+    }
+  };
+
+  const sampleChallenges: Challenge[] = [
     {
       id: 'speed_burst',
       title: '40-Yard Dash Challenge',
@@ -49,7 +110,7 @@ export default function ChallengesPage() {
       locked: false,
       bestScore: 4.8,
       currentAttempt: 3,
-      totalAttempts: 5
+      totalAttempts: 5,
     },
     {
       id: 'agility_cone',
@@ -64,7 +125,7 @@ export default function ChallengesPage() {
       locked: false,
       bestScore: 12.3,
       currentAttempt: 1,
-      totalAttempts: 3
+      totalAttempts: 3,
     },
     {
       id: 'accuracy_target',
@@ -78,7 +139,7 @@ export default function ChallengesPage() {
       completed: false,
       locked: false,
       currentAttempt: 0,
-      totalAttempts: 0
+      totalAttempts: 0,
     },
     {
       id: 'endurance_circuit',
@@ -92,7 +153,7 @@ export default function ChallengesPage() {
       completed: false,
       locked: false,
       currentAttempt: 0,
-      totalAttempts: 0
+      totalAttempts: 0,
     },
     {
       id: 'technique_form',
@@ -106,7 +167,7 @@ export default function ChallengesPage() {
       completed: false,
       locked: true,
       currentAttempt: 0,
-      totalAttempts: 0
+      totalAttempts: 0,
     },
     {
       id: 'game_awareness',
@@ -120,8 +181,8 @@ export default function ChallengesPage() {
       completed: false,
       locked: true,
       currentAttempt: 0,
-      totalAttempts: 0
-    }
+      totalAttempts: 0,
+    },
   ];
 
   const categories = [
@@ -131,35 +192,33 @@ export default function ChallengesPage() {
     { value: 'accuracy', label: 'Accuracy', icon: Target, color: 'text-red-400' },
     { value: 'endurance', label: 'Endurance', icon: Shield, color: 'text-purple-400' },
     { value: 'technique', label: 'Technique', icon: Crown, color: 'text-orange-400' },
-    { value: 'game_awareness', label: 'Game IQ', icon: Brain, color: 'text-pink-400' }
+    { value: 'game_awareness', label: 'Game IQ', icon: Brain, color: 'text-pink-400' },
   ];
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'beginner': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'intermediate': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      case 'advanced': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
-      case 'elite': return 'bg-red-500/20 text-red-400 border-red-500/30';
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      case 'beginner':
+        return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'intermediate':
+        return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'advanced':
+        return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
+      case 'elite':
+        return 'bg-red-500/20 text-red-400 border-red-500/30';
+      default:
+        return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
     }
   };
 
   const getCategoryColor = (category: string) => {
-    const categoryData = categories.find(c => c.value === category);
+    const categoryData = categories.find((c) => c.value === category);
     return categoryData?.color || 'text-gray-400';
   };
 
-  const filteredChallenges = selectedCategory === 'all' 
-    ? challenges 
-    : challenges.filter(c => c.category === selectedCategory);
-
-  const startChallenge = (challenge: Challenge) => {
-    if (challenge.locked) return;
-    
-    setActiveChallenge(challenge);
-    setChallengeProgress(0);
-    setIsCoachingActive(true);
-  };
+  const filteredChallenges =
+    selectedCategory === 'all'
+      ? challenges
+      : challenges.filter((c) => c.category === selectedCategory);
 
   const completeChallenge = () => {
     if (activeChallenge) {
@@ -187,9 +246,7 @@ export default function ChallengesPage() {
               Athletic Challenges
             </h1>
           </div>
-          <p className="text-xl text-slate-300 mb-4">
-            Push your limits with AI-coached challenges
-          </p>
+          <p className="text-xl text-slate-300 mb-4">Push your limits with AI-coached challenges</p>
           <div className="flex items-center justify-center gap-4">
             <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
               Real-time Coaching
@@ -219,7 +276,7 @@ export default function ChallengesPage() {
                   <span className="text-green-400 font-medium">AI Coach Active</span>
                 </div>
               </div>
-              
+
               <div className="mb-4">
                 <div className="flex items-center justify-between text-sm mb-2">
                   <span className="text-slate-300">Progress</span>
@@ -229,18 +286,11 @@ export default function ChallengesPage() {
               </div>
 
               <div className="flex gap-3">
-                <Button 
-                  onClick={completeChallenge}
-                  className="bg-green-600 hover:bg-green-700"
-                >
+                <Button onClick={completeChallenge} className="bg-green-600 hover:bg-green-700">
                   <CheckCircle className="w-4 h-4 mr-2" />
                   Complete Challenge
                 </Button>
-                <Button 
-                  onClick={stopChallenge}
-                  variant="outline"
-                  className="border-slate-600"
-                >
+                <Button onClick={stopChallenge} variant="outline" className="border-slate-600">
                   Stop Challenge
                 </Button>
               </div>
@@ -251,14 +301,14 @@ export default function ChallengesPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* AI Coach Integration */}
           <div className="lg:col-span-1">
-            <AICoachWidget 
+            <AICoachWidget
               feature="challenges"
               context={{
                 activeChallenge,
                 challengeType: activeChallenge?.category || 'general',
                 difficulty: activeChallenge?.difficulty || 'intermediate',
                 sport: 'football',
-                isActive: isCoachingActive
+                isActive: isCoachingActive,
               }}
               className="mb-6"
             />
@@ -275,11 +325,11 @@ export default function ChallengesPage() {
                 <div className="space-y-4">
                   <div className="text-center p-3 bg-green-500/10 rounded-lg">
                     <div className="text-2xl font-bold text-green-400 mb-1">
-                      {challenges.filter(c => c.completed).length}
+                      {challenges.filter((c) => c.completed).length}
                     </div>
                     <p className="text-sm text-slate-300">Completed</p>
                   </div>
-                  
+
                   <div className="text-center p-3 bg-blue-500/10 rounded-lg">
                     <div className="text-2xl font-bold text-blue-400 mb-1">
                       {challenges.reduce((sum, c) => sum + (c.completed ? c.xpReward : 0), 0)}
@@ -289,7 +339,10 @@ export default function ChallengesPage() {
 
                   <div className="text-center p-3 bg-yellow-500/10 rounded-lg">
                     <div className="text-2xl font-bold text-yellow-400 mb-1">
-                      {Math.round(challenges.filter(c => c.completed).length / challenges.length * 100)}%
+                      {Math.round(
+                        (challenges.filter((c) => c.completed).length / challenges.length) * 100,
+                      )}
+                      %
                     </div>
                     <p className="text-sm text-slate-300">Completion</p>
                   </div>
@@ -308,10 +361,10 @@ export default function ChallengesPage() {
                   <Button
                     key={category.value}
                     onClick={() => setSelectedCategory(category.value)}
-                    variant={selectedCategory === category.value ? "default" : "outline"}
+                    variant={selectedCategory === category.value ? 'default' : 'outline'}
                     className={`flex items-center gap-2 ${
-                      selectedCategory === category.value 
-                        ? 'bg-blue-600 hover:bg-blue-700' 
+                      selectedCategory === category.value
+                        ? 'bg-blue-600 hover:bg-blue-700'
                         : 'border-slate-600 hover:bg-slate-700'
                     }`}
                   >
@@ -325,11 +378,12 @@ export default function ChallengesPage() {
             {/* Challenges Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredChallenges.map((challenge) => {
-                const CategoryIcon = categories.find(c => c.value === challenge.category)?.icon || Trophy;
-                
+                const CategoryIcon =
+                  categories.find((c) => c.value === challenge.category)?.icon || Trophy;
+
                 return (
-                  <Card 
-                    key={challenge.id} 
+                  <Card
+                    key={challenge.id}
                     className={`bg-slate-800 border-slate-700 transition-all duration-300 ${
                       challenge.locked ? 'opacity-50' : 'hover:border-blue-500/50'
                     } ${activeChallenge?.id === challenge.id ? 'border-blue-500 shadow-lg shadow-blue-500/20' : ''}`}
@@ -337,17 +391,23 @@ export default function ChallengesPage() {
                     <CardHeader>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-lg bg-slate-700 flex items-center justify-center`}>
+                          <div
+                            className={`w-10 h-10 rounded-lg bg-slate-700 flex items-center justify-center`}
+                          >
                             {challenge.locked ? (
                               <Lock className="w-5 h-5 text-slate-400" />
                             ) : challenge.completed ? (
                               <CheckCircle className="w-5 h-5 text-green-400" />
                             ) : (
-                              <CategoryIcon className={`w-5 h-5 ${getCategoryColor(challenge.category)}`} />
+                              <CategoryIcon
+                                className={`w-5 h-5 ${getCategoryColor(challenge.category)}`}
+                              />
                             )}
                           </div>
                           <div>
-                            <CardTitle className={`text-lg ${challenge.locked ? 'text-slate-400' : 'text-white'}`}>
+                            <CardTitle
+                              className={`text-lg ${challenge.locked ? 'text-slate-400' : 'text-white'}`}
+                            >
                               {challenge.title}
                             </CardTitle>
                             <div className="flex items-center gap-2 mt-1">
@@ -361,7 +421,7 @@ export default function ChallengesPage() {
                             </div>
                           </div>
                         </div>
-                        
+
                         {challenge.completed && (
                           <div className="text-right">
                             <div className="text-sm text-green-400 font-medium">
@@ -376,7 +436,9 @@ export default function ChallengesPage() {
                     </CardHeader>
 
                     <CardContent className="space-y-4">
-                      <p className={`text-sm ${challenge.locked ? 'text-slate-500' : 'text-slate-300'}`}>
+                      <p
+                        className={`text-sm ${challenge.locked ? 'text-slate-500' : 'text-slate-300'}`}
+                      >
                         {challenge.description}
                       </p>
 
@@ -402,13 +464,13 @@ export default function ChallengesPage() {
                           </span>
                         </div>
 
-                        <Button 
+                        <Button
                           onClick={() => startChallenge(challenge)}
                           disabled={challenge.locked || activeChallenge !== null}
                           className={
-                            challenge.completed 
-                              ? "bg-green-600 hover:bg-green-700" 
-                              : "bg-blue-600 hover:bg-blue-700"
+                            challenge.completed
+                              ? 'bg-green-600 hover:bg-green-700'
+                              : 'bg-blue-600 hover:bg-blue-700'
                           }
                         >
                           {challenge.locked ? (

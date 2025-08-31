@@ -1,6 +1,6 @@
 /**
  * Sentinel 4.5 Threat Intelligence Integration
- * 
+ *
  * This module integrates with external threat intelligence sources to enhance
  * security by identifying known malicious actors and emerging threats.
  */
@@ -45,12 +45,12 @@ const UPDATE_THRESHOLD_MS = 24 * 60 * 60 * 1000; // Force update after 24 hours
 export function initThreatIntelligence(): void {
   // Load initial data
   updateThreatIntelligence();
-  
+
   // Schedule regular updates
   setInterval(() => {
     updateThreatIntelligence();
   }, UPDATE_INTERVAL_MS);
-  
+
   console.log('Threat Intelligence module initialized');
 }
 
@@ -63,26 +63,26 @@ export async function updateThreatIntelligence(): Promise<void> {
   if (now - lastUpdateTime < UPDATE_INTERVAL_MS && now - lastUpdateTime < UPDATE_THRESHOLD_MS) {
     return;
   }
-  
+
   try {
     let newIndicators: ThreatIndicator[] = [];
-    
+
     // If API key is available, fetch from external source
     if (THREAT_INTEL_API_KEY) {
       newIndicators = await fetchExternalThreatIntelligence();
     }
-    
+
     // If no API key or external fetch failed, use open source datasets
     if (newIndicators.length === 0) {
       newIndicators = await fetchOpenSourceThreatIntelligence();
     }
-    
+
     // Process and store indicators
     processIndicators(newIndicators);
-    
+
     // Update last update time
     lastUpdateTime = now;
-    
+
     // Log success
     logSecurityEvent(
       'system',
@@ -91,32 +91,27 @@ export async function updateThreatIntelligence(): Promise<void> {
         indicators: newIndicators.length,
         ips: knownBadIPs.size,
         domains: knownBadDomains.size,
-        hashes: knownBadHashes.size
+        hashes: knownBadHashes.size,
       },
-      'system'
+      'system',
     );
   } catch (error) {
     console.error('Error updating threat intelligence:', error);
-    
+
     // Log error
     logSecurityEvent(
       'system',
       'Failed to update threat intelligence',
       { error: error.message },
-      'system'
+      'system',
     );
-    
+
     // Send alert if the update hasn't happened in a while
     if (Date.now() - lastUpdateTime > UPDATE_THRESHOLD_MS) {
-      sendAlert(
-        AlertSeverity.MEDIUM,
-        AlertType.SYSTEM,
-        'Threat intelligence update failure',
-        {
-          error: error.message,
-          lastSuccessfulUpdate: new Date(lastUpdateTime).toISOString()
-        }
-      );
+      sendAlert(AlertSeverity.MEDIUM, AlertType.SYSTEM, 'Threat intelligence update failure', {
+        error: error.message,
+        lastSuccessfulUpdate: new Date(lastUpdateTime).toISOString(),
+      });
     }
   }
 }
@@ -130,17 +125,17 @@ async function fetchExternalThreatIntelligence(): Promise<ThreatIndicator[]> {
     // like AlienVault OTX, VirusTotal, etc.
     const response = await fetch('https://api.threatintel.example/v1/indicators', {
       headers: {
-        'Authorization': `Bearer ${THREAT_INTEL_API_KEY}`,
-        'Content-Type': 'application/json'
-      }
+        Authorization: `Bearer ${THREAT_INTEL_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
     });
-    
+
     if (!response.ok) {
       throw new Error(`API responded with status: ${response.status}`);
     }
-    
+
     const data = await response.json();
-    
+
     // Transform to our internal format
     return data.indicators.map((indicator: any) => ({
       id: indicator.id,
@@ -154,7 +149,7 @@ async function fetchExternalThreatIntelligence(): Promise<ThreatIndicator[]> {
       firstSeen: indicator.first_seen ? new Date(indicator.first_seen).getTime() : Date.now(),
       lastSeen: indicator.last_seen ? new Date(indicator.last_seen).getTime() : Date.now(),
       addedAt: Date.now(),
-      validUntil: Date.now() + (30 * 24 * 60 * 60 * 1000) // 30 days
+      validUntil: Date.now() + 30 * 24 * 60 * 60 * 1000, // 30 days
     }));
   } catch (error) {
     console.error('Error fetching external threat intelligence:', error);
@@ -171,29 +166,29 @@ async function fetchOpenSourceThreatIntelligence(): Promise<ThreatIndicator[]> {
     // Sample feeds - in a real implementation, these would be actual URLs
     { url: 'https://blocklist.example/malicious-ips.txt', type: 'ip' },
     { url: 'https://blocklist.example/malware-domains.txt', type: 'domain' },
-    { url: 'https://blocklist.example/malware-hashes.txt', type: 'file_hash' }
+    { url: 'https://blocklist.example/malware-hashes.txt', type: 'file_hash' },
   ];
-  
+
   const indicators: ThreatIndicator[] = [];
-  
+
   // Process each feed
   for (const feed of feeds) {
     try {
       const response = await fetch(feed.url);
-      
+
       if (!response.ok) {
         continue;
       }
-      
+
       const text = await response.text();
-      const lines = text.split('\n').filter(line => 
-        line.trim().length > 0 && !line.startsWith('#')
-      );
-      
+      const lines = text
+        .split('\n')
+        .filter((line) => line.trim().length > 0 && !line.startsWith('#'));
+
       // Convert each line to an indicator
       for (const line of lines) {
         const value = line.trim();
-        
+
         indicators.push({
           id: `open-${feed.type}-${Date.now()}-${indicators.length}`,
           type: feed.type as any,
@@ -206,15 +201,14 @@ async function fetchOpenSourceThreatIntelligence(): Promise<ThreatIndicator[]> {
           firstSeen: Date.now(),
           lastSeen: Date.now(),
           addedAt: Date.now(),
-          validUntil: Date.now() + (14 * 24 * 60 * 60 * 1000) // 14 days
+          validUntil: Date.now() + 14 * 24 * 60 * 60 * 1000, // 14 days
         });
       }
-      
     } catch (error) {
       console.error(`Error fetching feed ${feed.url}:`, error);
     }
   }
-  
+
   return indicators;
 }
 
@@ -223,32 +217,35 @@ async function fetchOpenSourceThreatIntelligence(): Promise<ThreatIndicator[]> {
  */
 function processIndicators(indicators: ThreatIndicator[]): void {
   let newMaliciousIPs = 0;
-  
+
   // Process each indicator
   for (const indicator of indicators) {
     switch (indicator.type) {
       case 'ip':
         knownBadIPs.set(indicator.value, indicator);
-        
+
         // Automatically block critical IPs with high confidence
         if (indicator.severity === 'critical' && indicator.confidence > 85) {
-          blockIP(indicator.value, `Automatically blocked from threat intelligence: ${indicator.description}`);
+          blockIP(
+            indicator.value,
+            `Automatically blocked from threat intelligence: ${indicator.description}`,
+          );
           newMaliciousIPs++;
         }
         break;
-        
+
       case 'domain':
         knownBadDomains.set(indicator.value, indicator);
         break;
-        
+
       case 'file_hash':
         knownBadHashes.set(indicator.value, indicator);
         break;
-        
+
       // Additional types can be handled here
     }
   }
-  
+
   // Send alert if significant number of new malicious IPs were blocked
   if (newMaliciousIPs > 10) {
     sendAlert(
@@ -257,8 +254,8 @@ function processIndicators(indicators: ThreatIndicator[]): void {
       'Multiple malicious IPs automatically blocked',
       {
         count: newMaliciousIPs,
-        source: 'threat intelligence feed'
-      }
+        source: 'threat intelligence feed',
+      },
     );
   }
 }
@@ -268,14 +265,14 @@ function processIndicators(indicators: ThreatIndicator[]): void {
  */
 export function checkIP(ip: string): { malicious: boolean; indicator?: ThreatIndicator } {
   const indicator = knownBadIPs.get(ip);
-  
+
   if (indicator && indicator.validUntil > Date.now()) {
     return {
       malicious: true,
-      indicator
+      indicator,
     };
   }
-  
+
   return { malicious: false };
 }
 
@@ -284,14 +281,14 @@ export function checkIP(ip: string): { malicious: boolean; indicator?: ThreatInd
  */
 export function checkDomain(domain: string): { malicious: boolean; indicator?: ThreatIndicator } {
   const indicator = knownBadDomains.get(domain);
-  
+
   if (indicator && indicator.validUntil > Date.now()) {
     return {
       malicious: true,
-      indicator
+      indicator,
     };
   }
-  
+
   return { malicious: false };
 }
 
@@ -300,14 +297,14 @@ export function checkDomain(domain: string): { malicious: boolean; indicator?: T
  */
 export function checkFileHash(hash: string): { malicious: boolean; indicator?: ThreatIndicator } {
   const indicator = knownBadHashes.get(hash);
-  
+
   if (indicator && indicator.validUntil > Date.now()) {
     return {
       malicious: true,
-      indicator
+      indicator,
     };
   }
-  
+
   return { malicious: false };
 }
 
@@ -316,26 +313,26 @@ export function checkFileHash(hash: string): { malicious: boolean; indicator?: T
  */
 export function getAllIndicators(): ThreatIndicator[] {
   const allIndicators: ThreatIndicator[] = [];
-  
+
   // Combine all indicators
   for (const indicator of knownBadIPs.values()) {
     if (indicator.validUntil > Date.now()) {
       allIndicators.push(indicator);
     }
   }
-  
+
   for (const indicator of knownBadDomains.values()) {
     if (indicator.validUntil > Date.now()) {
       allIndicators.push(indicator);
     }
   }
-  
+
   for (const indicator of knownBadHashes.values()) {
     if (indicator.validUntil > Date.now()) {
       allIndicators.push(indicator);
     }
   }
-  
+
   return allIndicators;
 }
 
@@ -344,20 +341,20 @@ export function getAllIndicators(): ThreatIndicator[] {
  */
 function mapIndicatorType(externalType: string): 'ip' | 'domain' | 'url' | 'file_hash' | 'email' {
   const typeMap: Record<string, 'ip' | 'domain' | 'url' | 'file_hash' | 'email'> = {
-    'ipv4': 'ip',
-    'ipv6': 'ip',
-    'domain': 'domain',
-    'hostname': 'domain',
-    'fqdn': 'domain',
-    'url': 'url',
-    'uri': 'url',
-    'md5': 'file_hash',
-    'sha1': 'file_hash',
-    'sha256': 'file_hash',
-    'email': 'email',
-    'email-addr': 'email'
+    ipv4: 'ip',
+    ipv6: 'ip',
+    domain: 'domain',
+    hostname: 'domain',
+    fqdn: 'domain',
+    url: 'url',
+    uri: 'url',
+    md5: 'file_hash',
+    sha1: 'file_hash',
+    sha256: 'file_hash',
+    email: 'email',
+    'email-addr': 'email',
   };
-  
+
   return typeMap[externalType.toLowerCase()] || 'ip';
 }
 
@@ -366,15 +363,15 @@ function mapIndicatorType(externalType: string): 'ip' | 'domain' | 'url' | 'file
  */
 function mapSeverity(externalSeverity: string): 'low' | 'medium' | 'high' | 'critical' {
   const severityMap: Record<string, 'low' | 'medium' | 'high' | 'critical'> = {
-    'low': 'low',
-    'minor': 'low',
-    'medium': 'medium',
-    'moderate': 'medium',
-    'high': 'high',
-    'major': 'high',
-    'critical': 'critical',
-    'severe': 'critical'
+    low: 'low',
+    minor: 'low',
+    medium: 'medium',
+    moderate: 'medium',
+    high: 'high',
+    major: 'high',
+    critical: 'critical',
+    severe: 'critical',
   };
-  
+
   return severityMap[externalSeverity.toLowerCase()] || 'medium';
 }

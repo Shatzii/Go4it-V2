@@ -1,27 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { storage } from '@/server/storage';
+import { logger } from '@/lib/logger';
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
+  const t0 = Date.now();
   try {
-    const body = await request.json();
-    
-    // TODO: Implement academy enrollment logic
-    return NextResponse.json({
-      success: true,
-      message: 'Enrollment request received',
-      data: body
-    });
-  } catch (error) {
-    console.error('Academy enrollment error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
-    );
+    const { studentId, courseId } = await req.json();
+    if (!studentId || !courseId)
+      return NextResponse.json({ error: 'studentId and courseId required' }, { status: 400 });
+    const enrollment = await storage.enrollStudentInCourse(String(studentId), String(courseId));
+    return NextResponse.json({ success: true, enrollment });
+  } catch (e) {
+    logger.error('academy.enroll.error', { err: (e as Error).message });
+    return NextResponse.json({ error: 'Enrollment failed' }, { status: 500 });
+  } finally {
+    logger.info('academy.enroll.done', { durationMs: Date.now() - t0 });
   }
-}
-
-export async function GET() {
-  return NextResponse.json({
-    message: 'Academy enrollment API endpoint',
-    methods: ['POST']
-  });
 }

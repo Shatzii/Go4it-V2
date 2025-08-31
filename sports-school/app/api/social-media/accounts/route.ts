@@ -5,7 +5,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
-    
+
     const accounts = await storage.getSocialMediaAccounts(userId || undefined);
     return NextResponse.json(accounts);
   } catch (error) {
@@ -30,11 +30,11 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    
+
     if (!id) {
       return NextResponse.json({ error: 'Account ID is required' }, { status: 400 });
     }
-    
+
     const account = await storage.updateSocialMediaAccount(id, body);
     if (!account) {
       return NextResponse.json({ error: 'Account not found' }, { status: 404 });

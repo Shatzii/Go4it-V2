@@ -1,19 +1,19 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { loadStripe } from '@stripe/stripe-js'
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
-import { 
-  CreditCard, 
-  Calendar, 
-  BookOpen, 
-  Users, 
-  Award, 
+import { useState } from 'react';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import {
+  CreditCard,
+  Calendar,
+  BookOpen,
+  Users,
+  Award,
   CheckCircle,
   ArrowLeft,
-  Shield
-} from 'lucide-react'
-import Link from 'next/link'
+  Shield,
+} from 'lucide-react';
+import Link from 'next/link';
 
 // Initialize Stripe with runtime check to prevent build-time errors
 const getStripePublicKey = () => {
@@ -21,32 +21,38 @@ const getStripePublicKey = () => {
   return process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '';
 };
 
-const stripePromise = typeof window !== 'undefined' 
-  ? loadStripe(getStripePublicKey()) 
-  : Promise.resolve(null);
+const stripePromise =
+  typeof window !== 'undefined' ? loadStripe(getStripePublicKey()) : Promise.resolve(null);
 
 interface PaymentFormProps {
-  amount: number
-  description: string
-  studentId: string
-  paymentType: string
-  schoolId: string
-  onSuccess: () => void
+  amount: number;
+  description: string;
+  studentId: string;
+  paymentType: string;
+  schoolId: string;
+  onSuccess: () => void;
 }
 
-function PaymentForm({ amount, description, studentId, paymentType, schoolId, onSuccess }: PaymentFormProps) {
-  const stripe = useStripe()
-  const elements = useElements()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+function PaymentForm({
+  amount,
+  description,
+  studentId,
+  paymentType,
+  schoolId,
+  onSuccess,
+}: PaymentFormProps) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault()
-    
-    if (!stripe || !elements) return
+    event.preventDefault();
 
-    setLoading(true)
-    setError(null)
+    if (!stripe || !elements) return;
+
+    setLoading(true);
+    setError(null);
 
     try {
       // Create payment intent
@@ -60,37 +66,37 @@ function PaymentForm({ amount, description, studentId, paymentType, schoolId, on
           description,
           studentId,
           paymentType,
-          schoolId
+          schoolId,
         }),
-      })
+      });
 
-      const { clientSecret } = await response.json()
+      const { clientSecret } = await response.json();
 
-      const cardElement = elements.getElement(CardElement)
-      
+      const cardElement = elements.getElement(CardElement);
+
       if (!cardElement) {
-        throw new Error('Card element not found')
+        throw new Error('Card element not found');
       }
 
       // Confirm payment
       const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: cardElement,
-        }
-      })
+        },
+      });
 
       if (error) {
-        setError(error.message || 'Payment failed')
+        setError(error.message || 'Payment failed');
       } else if (paymentIntent.status === 'succeeded') {
-        onSuccess()
+        onSuccess();
       }
     } catch (err) {
-      setError('Payment processing error')
-      console.error('Payment error:', err)
+      setError('Payment processing error');
+      console.error('Payment error:', err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -102,9 +108,7 @@ function PaymentForm({ amount, description, studentId, paymentType, schoolId, on
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Card Information
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Card Information</label>
           <div className="p-3 border border-gray-300 rounded-lg">
             <CardElement
               options={{
@@ -147,12 +151,12 @@ function PaymentForm({ amount, description, studentId, paymentType, schoolId, on
         </div>
       </div>
     </form>
-  )
+  );
 }
 
 export default function PaymentsPage() {
-  const [selectedPayment, setSelectedPayment] = useState<string | null>(null)
-  const [paymentSuccess, setPaymentSuccess] = useState(false)
+  const [selectedPayment, setSelectedPayment] = useState<string | null>(null);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   const paymentOptions = [
     {
@@ -162,7 +166,7 @@ export default function PaymentsPage() {
       description: 'Monthly tuition payment for Universal One School',
       type: 'tuition',
       icon: BookOpen,
-      color: 'bg-blue-500'
+      color: 'bg-blue-500',
     },
     {
       id: 'enrollment-fee',
@@ -171,7 +175,7 @@ export default function PaymentsPage() {
       description: 'One-time enrollment fee for new students',
       type: 'enrollment',
       icon: Users,
-      color: 'bg-green-500'
+      color: 'bg-green-500',
     },
     {
       id: 'activity-fee',
@@ -180,7 +184,7 @@ export default function PaymentsPage() {
       description: 'Sports and extracurricular activities fee',
       type: 'activity',
       icon: Award,
-      color: 'bg-purple-500'
+      color: 'bg-purple-500',
     },
     {
       id: 'materials-fee',
@@ -189,11 +193,11 @@ export default function PaymentsPage() {
       description: 'Educational materials and supplies fee',
       type: 'materials',
       icon: Calendar,
-      color: 'bg-orange-500'
-    }
-  ]
+      color: 'bg-orange-500',
+    },
+  ];
 
-  const selectedOption = paymentOptions.find(option => option.id === selectedPayment)
+  const selectedOption = paymentOptions.find((option) => option.id === selectedPayment);
 
   if (paymentSuccess) {
     return (
@@ -218,8 +222,8 @@ export default function PaymentsPage() {
               </Link>
               <button
                 onClick={() => {
-                  setPaymentSuccess(false)
-                  setSelectedPayment(null)
+                  setPaymentSuccess(false);
+                  setSelectedPayment(null);
                 }}
                 className="w-full px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
               >
@@ -229,7 +233,7 @@ export default function PaymentsPage() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -261,7 +265,7 @@ export default function PaymentsPage() {
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Select Payment Type</h2>
             <div className="space-y-4">
               {paymentOptions.map((option) => {
-                const Icon = option.icon
+                const Icon = option.icon;
                 return (
                   <button
                     key={option.id}
@@ -274,7 +278,9 @@ export default function PaymentsPage() {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
-                        <div className={`w-12 h-12 rounded-lg ${option.color} flex items-center justify-center mr-4`}>
+                        <div
+                          className={`w-12 h-12 rounded-lg ${option.color} flex items-center justify-center mr-4`}
+                        >
                           <Icon className="w-6 h-6 text-white" />
                         </div>
                         <div className="text-left">
@@ -287,7 +293,7 @@ export default function PaymentsPage() {
                       </div>
                     </div>
                   </button>
-                )
+                );
               })}
             </div>
           </div>
@@ -295,7 +301,7 @@ export default function PaymentsPage() {
           {/* Payment Form */}
           <div className="bg-white rounded-lg shadow-lg p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Payment Information</h2>
-            
+
             {selectedOption ? (
               <Elements stripe={stripePromise}>
                 <PaymentForm
@@ -326,7 +332,9 @@ export default function PaymentsPage() {
             <div className="text-center">
               <Shield className="w-12 h-12 text-green-500 mx-auto mb-2" />
               <h3 className="font-semibold text-gray-900">Secure Processing</h3>
-              <p className="text-sm text-gray-600">All payments are processed securely through Stripe</p>
+              <p className="text-sm text-gray-600">
+                All payments are processed securely through Stripe
+              </p>
             </div>
             <div className="text-center">
               <CreditCard className="w-12 h-12 text-blue-500 mx-auto mb-2" />
@@ -342,5 +350,5 @@ export default function PaymentsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

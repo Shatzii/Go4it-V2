@@ -1,43 +1,43 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import Link from 'next/link'
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 interface StudentMetrics {
-  engagementScore: number
-  comprehensionRate: number
-  progressVelocity: number
-  strengthAreas: string[]
-  improvementAreas: string[]
-  recommendedActions: string[]
+  engagementScore: number;
+  comprehensionRate: number;
+  progressVelocity: number;
+  strengthAreas: string[];
+  improvementAreas: string[];
+  recommendedActions: string[];
   learningPatterns: {
-    peakHours: string[]
-    preferredSubjects: string[]
-    strugglingSubjects: string[]
-  }
+    peakHours: string[];
+    preferredSubjects: string[];
+    strugglingSubjects: string[];
+  };
 }
 
 export default function AIAnalyticsPage() {
-  const [metrics, setMetrics] = useState<StudentMetrics | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [selectedTimeframe, setSelectedTimeframe] = useState('week')
+  const [metrics, setMetrics] = useState<StudentMetrics | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedTimeframe, setSelectedTimeframe] = useState('week');
 
   useEffect(() => {
-    fetchAnalytics()
-  }, [selectedTimeframe])
+    fetchAnalytics();
+  }, [selectedTimeframe]);
 
   const fetchAnalytics = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const response = await fetch(`/api/ai-analytics?timeframe=${selectedTimeframe}`)
-      const data = await response.json()
-      setMetrics(data.metrics)
+      const response = await fetch(`/api/ai-analytics?timeframe=${selectedTimeframe}`);
+      const data = await response.json();
+      setMetrics(data.metrics);
     } catch (error) {
-      console.error('Analytics fetch error:', error)
+      console.error('Analytics fetch error:', error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const mockMetrics: StudentMetrics = {
     engagementScore: 85,
@@ -49,28 +49,29 @@ export default function AIAnalyticsPage() {
       'Increase reading practice with audio support',
       'Implement structured study schedule',
       'Use visual aids for complex concepts',
-      'Practice writing with speech-to-text tools'
+      'Practice writing with speech-to-text tools',
     ],
     learningPatterns: {
       peakHours: ['9:00 AM - 11:00 AM', '2:00 PM - 4:00 PM'],
       preferredSubjects: ['Math', 'Science', 'Art'],
-      strugglingSubjects: ['English Literature', 'History']
-    }
-  }
+      strugglingSubjects: ['English Literature', 'History'],
+    },
+  };
 
-  const displayMetrics = metrics || mockMetrics
+  const displayMetrics = metrics || mockMetrics;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-teal-900 to-cyan-900">
       <header className="bg-black/20 backdrop-blur-sm border-b border-white/10">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex justify-between items-center">
-            <Link href="/" className="text-white font-bold text-xl hover:text-emerald-300 transition-colors">
+            <Link
+              href="/"
+              className="text-white font-bold text-xl hover:text-emerald-300 transition-colors"
+            >
               ← The Universal One School
             </Link>
-            <div className="text-white font-bold text-xl">
-              AI Learning Analytics
-            </div>
+            <div className="text-white font-bold text-xl">AI Learning Analytics</div>
           </nav>
         </div>
       </header>
@@ -79,7 +80,7 @@ export default function AIAnalyticsPage() {
         <div className="mb-6">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold text-white mb-2">Learning Analytics Dashboard</h1>
-            <select 
+            <select
               value={selectedTimeframe}
               onChange={(e) => setSelectedTimeframe(e.target.value)}
               className="p-2 rounded-lg bg-black/30 text-white border border-white/30"
@@ -90,7 +91,9 @@ export default function AIAnalyticsPage() {
               <option value="semester">This Semester</option>
             </select>
           </div>
-          <p className="text-emerald-200">AI-powered insights into learning patterns and progress</p>
+          <p className="text-emerald-200">
+            AI-powered insights into learning patterns and progress
+          </p>
         </div>
 
         {isLoading ? (
@@ -110,7 +113,7 @@ export default function AIAnalyticsPage() {
                     <span>{displayMetrics.engagementScore}%</span>
                   </div>
                   <div className="w-full bg-black/30 rounded-full h-2">
-                    <div 
+                    <div
                       className="bg-emerald-500 h-2 rounded-full transition-all duration-500"
                       style={{ width: `${displayMetrics.engagementScore}%` }}
                     ></div>
@@ -122,7 +125,7 @@ export default function AIAnalyticsPage() {
                     <span>{displayMetrics.comprehensionRate}%</span>
                   </div>
                   <div className="w-full bg-black/30 rounded-full h-2">
-                    <div 
+                    <div
                       className="bg-teal-500 h-2 rounded-full transition-all duration-500"
                       style={{ width: `${displayMetrics.comprehensionRate}%` }}
                     ></div>
@@ -134,7 +137,7 @@ export default function AIAnalyticsPage() {
                     <span>{displayMetrics.progressVelocity}%</span>
                   </div>
                   <div className="w-full bg-black/30 rounded-full h-2">
-                    <div 
+                    <div
                       className="bg-cyan-500 h-2 rounded-full transition-all duration-500"
                       style={{ width: `${displayMetrics.progressVelocity}%` }}
                     ></div>
@@ -176,19 +179,25 @@ export default function AIAnalyticsPage() {
                 <div>
                   <h4 className="text-emerald-300 font-medium mb-2">Peak Learning Hours</h4>
                   {displayMetrics.learningPatterns.peakHours.map((hour, index) => (
-                    <div key={index} className="text-white/80 text-sm mb-1">{hour}</div>
+                    <div key={index} className="text-white/80 text-sm mb-1">
+                      {hour}
+                    </div>
                   ))}
                 </div>
                 <div>
                   <h4 className="text-emerald-300 font-medium mb-2">Preferred Subjects</h4>
                   {displayMetrics.learningPatterns.preferredSubjects.map((subject, index) => (
-                    <div key={index} className="text-white/80 text-sm mb-1">{subject}</div>
+                    <div key={index} className="text-white/80 text-sm mb-1">
+                      {subject}
+                    </div>
                   ))}
                 </div>
                 <div>
                   <h4 className="text-emerald-300 font-medium mb-2">Challenge Areas</h4>
                   {displayMetrics.learningPatterns.strugglingSubjects.map((subject, index) => (
-                    <div key={index} className="text-white/80 text-sm mb-1">{subject}</div>
+                    <div key={index} className="text-white/80 text-sm mb-1">
+                      {subject}
+                    </div>
                   ))}
                 </div>
               </div>
@@ -211,19 +220,19 @@ export default function AIAnalyticsPage() {
 
         {/* Action Buttons */}
         <div className="mt-8 flex flex-wrap gap-4 justify-center">
-          <Link 
+          <Link
             href="/ai-tutor"
             className="bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-700 transition-colors"
           >
             Start AI Tutoring Session
           </Link>
-          <Link 
+          <Link
             href="/virtual-classroom"
             className="bg-teal-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-teal-700 transition-colors"
           >
             Join Virtual Classroom
           </Link>
-          <Link 
+          <Link
             href="/study-buddy"
             className="bg-cyan-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-cyan-700 transition-colors"
           >
@@ -232,5 +241,5 @@ export default function AIAnalyticsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

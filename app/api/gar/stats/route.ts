@@ -18,9 +18,13 @@ export async function GET(request: NextRequest) {
       .where(eq(videoAnalysis.userId, user.id));
 
     const totalAnalyses = userAnalyses.length;
-    const averageGarScore = userAnalyses.length > 0 
-      ? Math.round(userAnalyses.reduce((sum, analysis) => sum + parseFloat(analysis.garScore || '0'), 0) / userAnalyses.length)
-      : 0;
+    const averageGarScore =
+      userAnalyses.length > 0
+        ? Math.round(
+            userAnalyses.reduce((sum, analysis) => sum + parseFloat(analysis.garScore || '0'), 0) /
+              userAnalyses.length,
+          )
+        : 0;
 
     const recentAnalyses = userAnalyses
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -29,20 +33,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       count: totalAnalyses,
       averageScore: averageGarScore,
-      recentAnalyses: recentAnalyses.map(analysis => ({
+      recentAnalyses: recentAnalyses.map((analysis) => ({
         id: analysis.id,
         sport: analysis.sport,
         garScore: analysis.garScore,
         createdAt: analysis.createdAt,
-        fileName: analysis.fileName
-      }))
+        fileName: analysis.fileName,
+      })),
     });
-
   } catch (error) {
     console.error('GAR stats error:', error);
-    return NextResponse.json(
-      { error: 'Failed to load statistics' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to load statistics' }, { status: 500 });
   }
 }

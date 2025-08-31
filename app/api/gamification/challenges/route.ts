@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getUserFromRequest } from '@/lib/auth'
+import { NextRequest, NextResponse } from 'next/server';
+import { getUserFromRequest } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getUserFromRequest(request)
+    const user = await getUserFromRequest(request);
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Mock challenges data - in production, this would come from database
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
         maxProgress: 5,
         isActive: true,
         isCompleted: false,
-        participants: 47
+        participants: 47,
       },
       {
         id: '2',
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
         maxProgress: 1,
         isActive: false,
         isCompleted: false,
-        participants: 23
+        participants: 23,
       },
       {
         id: '3',
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
         maxProgress: 3,
         isActive: true,
         isCompleted: false,
-        participants: 34
+        participants: 34,
       },
       {
         id: '4',
@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
         maxProgress: 10,
         isActive: true,
         isCompleted: false,
-        participants: 89
+        participants: 89,
       },
       {
         id: '5',
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
         maxProgress: 30,
         isActive: true,
         isCompleted: false,
-        participants: 12
+        participants: 12,
       },
       {
         id: '6',
@@ -104,13 +104,13 @@ export async function GET(request: NextRequest) {
         maxProgress: 1,
         isActive: false,
         isCompleted: false,
-        participants: 56
-      }
-    ]
+        participants: 56,
+      },
+    ];
 
-    return NextResponse.json({ challenges })
+    return NextResponse.json({ challenges });
   } catch (error) {
-    console.error('Failed to fetch challenges:', error)
-    return NextResponse.json({ error: 'Failed to fetch challenges' }, { status: 500 })
+    console.error('Failed to fetch challenges:', error);
+    return NextResponse.json({ error: 'Failed to fetch challenges' }, { status: 500 });
   }
 }

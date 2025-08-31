@@ -1,24 +1,24 @@
 /**
  * Server Configuration
- * 
+ *
  * This file contains configuration settings for connecting to the main ShatziiOS server.
  */
 
 export const SERVER_CONFIG = {
   // Remote server URL
   REMOTE_SERVER_URL: 'http://5.161.99.81',
-  
+
   // Default API version
   API_VERSION: 'v1',
-  
+
   // Connection timeout in milliseconds
   CONNECTION_TIMEOUT: 30000,
-  
+
   // Default headers
   DEFAULT_HEADERS: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  }
+    Accept: 'application/json',
+  },
 };
 
 /**

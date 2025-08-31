@@ -10,27 +10,27 @@ export async function POST(req: NextRequest) {
     if (!username || !email || !password) {
       return NextResponse.json(
         { error: 'Username, email, and password are required' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Direct SQL insert using the exact database structure
     const hashedPassword = await hash(password, 12);
-    
+
     // Use dynamic import to avoid module loading issues
     const { db } = await import('@/server/db');
     const { sql } = await import('drizzle-orm');
-    
+
     try {
       // Check if user exists
       const existingUsers = await db.execute(
-        sql`SELECT id FROM users WHERE email = ${email} OR username = ${username} LIMIT 1`
+        sql`SELECT id FROM users WHERE email = ${email} OR username = ${username} LIMIT 1`,
       );
-      
+
       if (existingUsers.length > 0) {
         return NextResponse.json(
           { error: 'User with this email or username already exists' },
-          { status: 409 }
+          { status: 409 },
         );
       }
 
@@ -74,26 +74,18 @@ export async function POST(req: NextRequest) {
             username: newUser.username,
             email: newUser.email,
             firstName: newUser.first_name,
-            lastName: newUser.last_name
-          }
+            lastName: newUser.last_name,
+          },
         });
       } else {
         throw new Error('Failed to create user');
       }
-
     } catch (dbError) {
       console.error('Database error:', dbError);
-      return NextResponse.json(
-        { error: 'Database error. Please try again.' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Database error. Please try again.' }, { status: 500 });
     }
-
   } catch (error) {
     console.error('Registration error:', error);
-    return NextResponse.json(
-      { error: 'Registration failed. Please try again.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Registration failed. Please try again.' }, { status: 500 });
   }
 }

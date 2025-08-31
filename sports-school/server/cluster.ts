@@ -41,7 +41,7 @@ class ClusterManager {
     cluster.on('exit', (worker, code, signal) => {
       console.log(`Worker ${worker.process.pid} died. Code: ${code}, Signal: ${signal}`);
       this.workers.delete(worker.process.pid!);
-      
+
       // Restart worker if not intentional shutdown
       if (code !== 0 && !worker.exitedAfterDisconnect) {
         console.log('Starting a new worker...');
@@ -63,14 +63,14 @@ class ClusterManager {
 
   private forkWorker() {
     const worker = cluster.fork();
-    
+
     if (worker.process.pid) {
       this.workers.set(worker.process.pid, {
         pid: worker.process.pid,
         memoryUsage: process.memoryUsage(),
         cpuUsage: process.cpuUsage(),
         requests: 0,
-        uptime: Date.now()
+        uptime: Date.now(),
       });
     }
 
@@ -89,20 +89,22 @@ class ClusterManager {
 
   private monitorWorkers() {
     console.log('\n=== Worker Health Report ===');
-    
+
     for (const [pid, metrics] of this.workers) {
       const memoryMB = Math.round(metrics.memoryUsage.heapUsed / 1024 / 1024);
-      const uptimeHours = Math.round((Date.now() - metrics.uptime) / 1000 / 3600 * 100) / 100;
-      
-      console.log(`Worker ${pid}: ${memoryMB}MB memory, ${metrics.requests} requests, ${uptimeHours}h uptime`);
-      
+      const uptimeHours = Math.round(((Date.now() - metrics.uptime) / 1000 / 3600) * 100) / 100;
+
+      console.log(
+        `Worker ${pid}: ${memoryMB}MB memory, ${metrics.requests} requests, ${uptimeHours}h uptime`,
+      );
+
       // Check if worker needs restart
       if (this.shouldRestartWorker(metrics)) {
         console.log(`Restarting worker ${pid} due to resource limits`);
         this.restartWorker(pid);
       }
     }
-    
+
     console.log('===========================\n');
   }
 
@@ -114,7 +116,7 @@ class ClusterManager {
   }
 
   private restartWorker(pid: number) {
-    const worker = Object.values(cluster.workers || {}).find(w => w?.process.pid === pid);
+    const worker = Object.values(cluster.workers || {}).find((w) => w?.process.pid === pid);
     if (worker) {
       worker.disconnect();
       setTimeout(() => {
@@ -125,7 +127,7 @@ class ClusterManager {
 
   private shutdown() {
     console.log('Shutting down all workers...');
-    
+
     for (const worker of Object.values(cluster.workers || {})) {
       if (worker) {
         worker.disconnect();
@@ -146,7 +148,7 @@ class ClusterManager {
   private setupWorker() {
     // Worker process setup
     console.log(`Worker ${process.pid} started`);
-    
+
     // Track worker metrics
     let requestCount = 0;
     const startTime = Date.now();
@@ -159,7 +161,7 @@ class ClusterManager {
           requests: requestCount,
           memoryUsage: process.memoryUsage(),
           cpuUsage: process.cpuUsage(),
-          uptime: Date.now() - startTime
+          uptime: Date.now() - startTime,
         });
       }
     }, 10000);
@@ -194,6 +196,6 @@ export function getWorkerMetrics() {
     pid: process.pid,
     memoryUsage: process.memoryUsage(),
     cpuUsage: process.cpuUsage(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
   };
 }

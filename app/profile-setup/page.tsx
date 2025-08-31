@@ -2,7 +2,18 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Calendar, Target, Phone, Users, Check, ArrowRight, Star, Trophy, Zap } from 'lucide-react';
+import {
+  User,
+  Calendar,
+  Target,
+  Phone,
+  Users,
+  Check,
+  ArrowRight,
+  Star,
+  Trophy,
+  Zap,
+} from 'lucide-react';
 
 export default function ProfileSetupPage() {
   const router = useRouter();
@@ -55,15 +66,28 @@ export default function ProfileSetupPage() {
   ];
 
   const sportOptions = [
-    'American Football', 'Basketball', 'Soccer', 'Baseball', 'Track & Field',
-    'Swimming', 'Tennis', 'Volleyball', 'Wrestling', 'Cross Country', 'Golf',
-    'Lacrosse', 'Hockey', 'Softball', 'Gymnastics', 'Other'
+    'American Football',
+    'Basketball',
+    'Soccer',
+    'Baseball',
+    'Track & Field',
+    'Swimming',
+    'Tennis',
+    'Volleyball',
+    'Wrestling',
+    'Cross Country',
+    'Golf',
+    'Lacrosse',
+    'Hockey',
+    'Softball',
+    'Gymnastics',
+    'Other',
   ];
 
   const handleInputChange = (field: string, value: string | number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -79,7 +103,7 @@ export default function ProfileSetupPage() {
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         router.push('/profile?created=true');
       } else {
@@ -96,19 +120,19 @@ export default function ProfileSetupPage() {
 
   const handleNextStep = () => {
     if (currentStep < steps.length - 1) {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep((prev) => prev + 1);
     }
   };
 
   const handlePrevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep((prev) => prev - 1);
     }
   };
 
   const isCurrentStepValid = () => {
     const currentStepFields = steps[currentStep].fields;
-    return currentStepFields.every(field => {
+    return currentStepFields.every((field) => {
       const value = formData[field as keyof typeof formData];
       return value !== '' && value !== undefined;
     });
@@ -135,11 +159,15 @@ export default function ProfileSetupPage() {
         {/* Progress Bar */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-slate-400">Step {currentStep + 1} of {steps.length}</span>
-            <span className="text-sm text-slate-400">{Math.round(getProgressPercentage())}% Complete</span>
+            <span className="text-sm text-slate-400">
+              Step {currentStep + 1} of {steps.length}
+            </span>
+            <span className="text-sm text-slate-400">
+              {Math.round(getProgressPercentage())}% Complete
+            </span>
           </div>
           <div className="w-full bg-slate-700 rounded-full h-2">
-            <div 
+            <div
               className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
               style={{ width: `${getProgressPercentage()}%` }}
             />
@@ -172,8 +200,10 @@ export default function ProfileSetupPage() {
                   className="w-full bg-slate-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Select your sport</option>
-                  {sportOptions.map(sport => (
-                    <option key={sport} value={sport}>{sport}</option>
+                  {sportOptions.map((sport) => (
+                    <option key={sport} value={sport}>
+                      {sport}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -188,7 +218,9 @@ export default function ProfileSetupPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Graduation Year</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Graduation Year
+                </label>
                 <input
                   type="number"
                   value={formData.graduationYear}
@@ -225,7 +257,9 @@ export default function ProfileSetupPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Years Playing</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Years Playing
+                </label>
                 <input
                   type="number"
                   value={formData.yearsPlaying}
@@ -243,7 +277,9 @@ export default function ProfileSetupPage() {
           {currentStep === 2 && (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Your Phone Number</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Your Phone Number
+                </label>
                 <input
                   type="tel"
                   value={formData.phoneNumber}
@@ -253,7 +289,9 @@ export default function ProfileSetupPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Parent/Guardian Name</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Parent/Guardian Name
+                </label>
                 <input
                   type="text"
                   value={formData.parentContactName}
@@ -263,7 +301,9 @@ export default function ProfileSetupPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Parent/Guardian Phone</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Parent/Guardian Phone
+                </label>
                 <input
                   type="tel"
                   value={formData.parentContactPhone}
@@ -273,7 +313,9 @@ export default function ProfileSetupPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Parent/Guardian Email</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Parent/Guardian Email
+                </label>
                 <input
                   type="email"
                   value={formData.parentContactEmail}
@@ -289,7 +331,9 @@ export default function ProfileSetupPage() {
           {currentStep === 3 && (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Athletic Goals</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Athletic Goals
+                </label>
                 <textarea
                   value={formData.goals}
                   onChange={(e) => handleInputChange('goals', e.target.value)}
@@ -308,8 +352,8 @@ export default function ProfileSetupPage() {
             onClick={handlePrevStep}
             disabled={currentStep === 0}
             className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              currentStep === 0 
-                ? 'bg-slate-700 text-slate-500 cursor-not-allowed' 
+              currentStep === 0
+                ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
                 : 'bg-slate-700 text-white hover:bg-slate-600'
             }`}
           >
@@ -362,7 +406,9 @@ export default function ProfileSetupPage() {
                 <Zap className="w-6 h-6 text-yellow-400" />
                 <div>
                   <h3 className="font-semibold text-white">Quick Start</h3>
-                  <p className="text-sm text-slate-400">Skip the steps and create a basic profile instantly</p>
+                  <p className="text-sm text-slate-400">
+                    Skip the steps and create a basic profile instantly
+                  </p>
                 </div>
               </div>
               <button

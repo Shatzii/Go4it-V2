@@ -26,7 +26,7 @@ class PerformanceMonitor {
     this.metrics.set(name, {
       name,
       startTime: performance.now(),
-      metadata
+      metadata,
     });
   }
 
@@ -40,7 +40,7 @@ class PerformanceMonitor {
 
     const endTime = performance.now();
     const duration = endTime - metric.startTime;
-    
+
     metric.endTime = endTime;
     metric.duration = duration;
 
@@ -58,7 +58,7 @@ class PerformanceMonitor {
       renderCount: 0,
       totalRenderTime: 0,
       averageRenderTime: 0,
-      lastRender: 0
+      lastRender: 0,
     };
 
     existing.renderCount++;
@@ -78,12 +78,12 @@ class PerformanceMonitor {
   trackAPICall(endpoint: string, duration: number): void {
     const times = this.apiMetrics.get(endpoint) || [];
     times.push(duration);
-    
+
     // Keep only last 100 measurements
     if (times.length > 100) {
       times.shift();
     }
-    
+
     this.apiMetrics.set(endpoint, times);
 
     // Warn about slow API calls (>500ms)
@@ -97,7 +97,7 @@ class PerformanceMonitor {
     if (typeof process !== 'undefined' && process.memoryUsage) {
       this.memorySnapshots.push({
         timestamp: Date.now(),
-        usage: process.memoryUsage()
+        usage: process.memoryUsage(),
       });
 
       // Keep only last 50 snapshots
@@ -108,7 +108,9 @@ class PerformanceMonitor {
       // Check for memory leaks (>1GB heap usage)
       const currentUsage = process.memoryUsage();
       if (currentUsage.heapUsed > 1024 * 1024 * 1024) {
-        console.warn(`High memory usage detected: ${Math.round(currentUsage.heapUsed / 1024 / 1024)}MB`);
+        console.warn(
+          `High memory usage detected: ${Math.round(currentUsage.heapUsed / 1024 / 1024)}MB`,
+        );
       }
     }
   }
@@ -121,13 +123,14 @@ class PerformanceMonitor {
     memory: { current?: NodeJS.MemoryUsage; trend: string };
   } {
     // Process API metrics
-    const apiReport: Record<string, { average: number; min: number; max: number; count: number }> = {};
-    
+    const apiReport: Record<string, { average: number; min: number; max: number; count: number }> =
+      {};
+
     for (const [endpoint, times] of this.apiMetrics) {
       const average = times.reduce((a, b) => a + b, 0) / times.length;
       const min = Math.min(...times);
       const max = Math.max(...times);
-      
+
       apiReport[endpoint] = { average, min, max, count: times.length };
     }
 
@@ -136,11 +139,12 @@ class PerformanceMonitor {
     if (this.memorySnapshots.length >= 2) {
       const recent = this.memorySnapshots.slice(-10);
       const older = this.memorySnapshots.slice(-20, -10);
-      
+
       if (recent.length > 0 && older.length > 0) {
-        const recentAvg = recent.reduce((sum, snap) => sum + snap.usage.heapUsed, 0) / recent.length;
+        const recentAvg =
+          recent.reduce((sum, snap) => sum + snap.usage.heapUsed, 0) / recent.length;
         const olderAvg = older.reduce((sum, snap) => sum + snap.usage.heapUsed, 0) / older.length;
-        
+
         if (recentAvg > olderAvg * 1.2) {
           memoryTrend = 'increasing';
         } else if (recentAvg < olderAvg * 0.8) {
@@ -150,20 +154,20 @@ class PerformanceMonitor {
     }
 
     return {
-      operations: Array.from(this.metrics.values()).filter(m => m.duration !== undefined),
+      operations: Array.from(this.metrics.values()).filter((m) => m.duration !== undefined),
       components: Object.fromEntries(this.componentMetrics),
       apis: apiReport,
       memory: {
         current: typeof process !== 'undefined' ? process.memoryUsage() : undefined,
-        trend: memoryTrend
-      }
+        trend: memoryTrend,
+      },
     };
   }
 
   // Clear old metrics
   cleanup(): void {
     const oneHourAgo = Date.now() - 60 * 60 * 1000;
-    
+
     // Clean up old performance metrics
     for (const [name, metric] of this.metrics) {
       if (metric.startTime < oneHourAgo) {
@@ -173,7 +177,7 @@ class PerformanceMonitor {
 
     // Clean up old memory snapshots
     this.memorySnapshots = this.memorySnapshots.filter(
-      snapshot => snapshot.timestamp > oneHourAgo
+      (snapshot) => snapshot.timestamp > oneHourAgo,
     );
   }
 }
@@ -184,13 +188,14 @@ export const performanceMonitor = new PerformanceMonitor();
 // React component performance wrapper
 export function withPerformanceTracking<T extends object>(
   WrappedComponent: React.ComponentType<T>,
-  componentName?: string
+  componentName?: string,
 ) {
-  const displayName = componentName || WrappedComponent.displayName || WrappedComponent.name || 'Component';
-  
+  const displayName =
+    componentName || WrappedComponent.displayName || WrappedComponent.name || 'Component';
+
   return function PerformanceTrackedComponent(props: T) {
     const startTime = performance.now();
-    
+
     React.useEffect(() => {
       const renderTime = performance.now() - startTime;
       performanceMonitor.trackComponentRender(displayName, renderTime);
@@ -203,7 +208,7 @@ export function withPerformanceTracking<T extends object>(
 // Hook for tracking component performance
 export function usePerformanceTracking(componentName: string) {
   const startTime = React.useRef(performance.now());
-  
+
   React.useEffect(() => {
     const renderTime = performance.now() - startTime.current;
     performanceMonitor.trackComponentRender(componentName, renderTime);
@@ -212,12 +217,9 @@ export function usePerformanceTracking(componentName: string) {
 }
 
 // API call performance wrapper
-export async function trackAPICall<T>(
-  endpoint: string,
-  apiCall: () => Promise<T>
-): Promise<T> {
+export async function trackAPICall<T>(endpoint: string, apiCall: () => Promise<T>): Promise<T> {
   const startTime = performance.now();
-  
+
   try {
     const result = await apiCall();
     const duration = performance.now() - startTime;
@@ -232,18 +234,17 @@ export async function trackAPICall<T>(
 
 // Utility functions
 export const Performance = {
-  start: (name: string, metadata?: Record<string, any>) => 
+  start: (name: string, metadata?: Record<string, any>) =>
     performanceMonitor.startTiming(name, metadata),
-  
-  end: (name: string) => 
-    performanceMonitor.endTiming(name),
-  
+
+  end: (name: string) => performanceMonitor.endTiming(name),
+
   track: (name: string, fn: () => void) => {
     performanceMonitor.startTiming(name);
     fn();
     return performanceMonitor.endTiming(name);
   },
-  
+
   trackAsync: async <T>(name: string, fn: () => Promise<T>): Promise<T> => {
     performanceMonitor.startTiming(name);
     try {
@@ -255,24 +256,30 @@ export const Performance = {
       throw error;
     }
   },
-  
+
   report: () => performanceMonitor.getReport(),
-  
+
   snapshot: () => performanceMonitor.takeMemorySnapshot(),
-  
-  cleanup: () => performanceMonitor.cleanup()
+
+  cleanup: () => performanceMonitor.cleanup(),
 };
 
 // Auto-cleanup every hour
 if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
-    performanceMonitor.cleanup();
-  }, 60 * 60 * 1000);
+  setInterval(
+    () => {
+      performanceMonitor.cleanup();
+    },
+    60 * 60 * 1000,
+  );
 }
 
 // Auto-memory snapshots every 5 minutes
 if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
-    performanceMonitor.takeMemorySnapshot();
-  }, 5 * 60 * 1000);
+  setInterval(
+    () => {
+      performanceMonitor.takeMemorySnapshot();
+    },
+    5 * 60 * 1000,
+  );
 }

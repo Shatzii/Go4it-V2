@@ -1,94 +1,94 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { CouponInput, CouponShowcase } from '@/components/ui/coupon-input'
-import { 
-  Gift, 
-  Percent, 
-  Star, 
-  Clock, 
-  Users, 
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { CouponInput, CouponShowcase } from '@/components/ui/coupon-input';
+import {
+  Gift,
+  Percent,
+  Star,
+  Clock,
+  Users,
   CheckCircle,
   Copy,
   Calendar,
-  DollarSign
-} from 'lucide-react'
+  DollarSign,
+} from 'lucide-react';
 
 export default function CouponsPage() {
-  const [coupons, setCoupons] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [copiedCode, setCopiedCode] = useState('')
+  const [coupons, setCoupons] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [copiedCode, setCopiedCode] = useState('');
 
   useEffect(() => {
-    loadCoupons()
-    initializeCoupons()
-  }, [])
+    loadCoupons();
+    initializeCoupons();
+  }, []);
 
   const loadCoupons = async () => {
     try {
-      const response = await fetch('/api/coupons/list?active=true')
-      const data = await response.json()
+      const response = await fetch('/api/coupons/list?active=true');
+      const data = await response.json();
       if (data.success) {
-        setCoupons(data.coupons)
+        setCoupons(data.coupons);
       }
     } catch (error) {
-      console.error('Failed to load coupons:', error)
+      console.error('Failed to load coupons:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const initializeCoupons = async () => {
     try {
-      await fetch('/api/coupons/admin?action=init', { method: 'POST' })
+      await fetch('/api/coupons/admin?action=init', { method: 'POST' });
     } catch (error) {
-      console.error('Failed to initialize coupons:', error)
+      console.error('Failed to initialize coupons:', error);
     }
-  }
+  };
 
   const copyToClipboard = (code: string) => {
-    navigator.clipboard.writeText(code)
-    setCopiedCode(code)
-    setTimeout(() => setCopiedCode(''), 2000)
-  }
+    navigator.clipboard.writeText(code);
+    setCopiedCode(code);
+    setTimeout(() => setCopiedCode(''), 2000);
+  };
 
   const getDiscountIcon = (discountType: string) => {
     switch (discountType) {
       case 'percentage':
-        return Percent
+        return Percent;
       case 'free':
-        return Gift
+        return Gift;
       case 'fixed':
-        return DollarSign
+        return DollarSign;
       default:
-        return Star
+        return Star;
     }
-  }
+  };
 
   const formatDiscount = (discountType: string, discountValue: string) => {
     switch (discountType) {
       case 'percentage':
-        return `${discountValue}% OFF`
+        return `${discountValue}% OFF`;
       case 'free':
-        return 'FREE MONTH'
+        return 'FREE MONTH';
       case 'fixed':
-        return `$${discountValue} OFF`
+        return `$${discountValue} OFF`;
       default:
-        return `${discountValue}% OFF`
+        return `${discountValue}% OFF`;
     }
-  }
+  };
 
   const getDiscountColor = (discountValue: string) => {
-    const value = parseFloat(discountValue)
-    if (value >= 75) return 'from-green-500 to-emerald-500'
-    if (value >= 50) return 'from-orange-500 to-red-500'
-    if (value >= 20) return 'from-blue-500 to-cyan-500'
-    return 'from-purple-500 to-pink-500'
-  }
+    const value = parseFloat(discountValue);
+    if (value >= 75) return 'from-green-500 to-emerald-500';
+    if (value >= 50) return 'from-orange-500 to-red-500';
+    if (value >= 20) return 'from-blue-500 to-cyan-500';
+    return 'from-purple-500 to-pink-500';
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-6">
@@ -103,8 +103,8 @@ export default function CouponsPage() {
             Save Big on Go4It Sports
           </h1>
           <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-            Unlock exclusive savings with our promotional codes. From free months to massive discounts,
-            find the perfect deal for your athletic journey.
+            Unlock exclusive savings with our promotional codes. From free months to massive
+            discounts, find the perfect deal for your athletic journey.
           </p>
         </div>
 
@@ -125,7 +125,7 @@ export default function CouponsPage() {
               amount={19}
               onCouponApplied={(coupon) => {
                 if (coupon) {
-                  console.log('Coupon applied:', coupon)
+                  console.log('Coupon applied:', coupon);
                 }
               }}
             />
@@ -137,24 +137,31 @@ export default function CouponsPage() {
           <h2 className="text-2xl font-bold text-white mb-8 text-center">
             Available Discount Codes
           </h2>
-          
+
           {loading ? (
             <div className="text-center text-slate-400">Loading coupons...</div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {coupons.map((coupon: any) => {
-                const Icon = getDiscountIcon(coupon.discountType)
-                const colorClass = getDiscountColor(coupon.discountValue)
-                const usagePercent = coupon.maxUses ? (coupon.currentUses / coupon.maxUses) * 100 : 0
-                
+                const Icon = getDiscountIcon(coupon.discountType);
+                const colorClass = getDiscountColor(coupon.discountValue);
+                const usagePercent = coupon.maxUses
+                  ? (coupon.currentUses / coupon.maxUses) * 100
+                  : 0;
+
                 return (
-                  <Card key={coupon.id} className="relative overflow-hidden bg-slate-800 border-slate-700 hover:border-primary/50 transition-colors">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${colorClass} opacity-10`} />
+                  <Card
+                    key={coupon.id}
+                    className="relative overflow-hidden bg-slate-800 border-slate-700 hover:border-primary/50 transition-colors"
+                  >
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${colorClass} opacity-10`}
+                    />
                     <CardHeader className="relative pb-2">
                       <div className="flex items-center justify-between">
                         <Icon className="w-6 h-6 text-primary" />
-                        <Badge 
-                          variant="outline" 
+                        <Badge
+                          variant="outline"
                           className="cursor-pointer hover:bg-primary/20"
                           onClick={() => copyToClipboard(coupon.code)}
                         >
@@ -169,35 +176,33 @@ export default function CouponsPage() {
                       <CardTitle className="text-white text-xl">
                         {formatDiscount(coupon.discountType, coupon.discountValue)}
                       </CardTitle>
-                      <CardDescription className="text-slate-300">
-                        {coupon.name}
-                      </CardDescription>
+                      <CardDescription className="text-slate-300">{coupon.name}</CardDescription>
                     </CardHeader>
                     <CardContent className="relative">
-                      <p className="text-sm text-slate-400 mb-4">
-                        {coupon.description}
-                      </p>
-                      
+                      <p className="text-sm text-slate-400 mb-4">{coupon.description}</p>
+
                       {/* Usage Progress */}
                       {coupon.maxUses && (
                         <div className="mb-4">
                           <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                            <span>Used {coupon.currentUses} of {coupon.maxUses}</span>
+                            <span>
+                              Used {coupon.currentUses} of {coupon.maxUses}
+                            </span>
                             <span>{Math.round(usagePercent)}%</span>
                           </div>
                           <Progress value={usagePercent} className="h-1" />
                         </div>
                       )}
-                      
+
                       {/* Validity */}
                       <div className="flex items-center gap-2 text-xs text-slate-400 mb-3">
                         <Calendar className="w-3 h-3" />
-                        Valid until {coupon.validUntil ? 
-                          new Date(coupon.validUntil).toLocaleDateString() : 
-                          'No expiration'
-                        }
+                        Valid until{' '}
+                        {coupon.validUntil
+                          ? new Date(coupon.validUntil).toLocaleDateString()
+                          : 'No expiration'}
                       </div>
-                      
+
                       {/* Applicable Plans */}
                       {coupon.applicablePlans && coupon.applicablePlans.length > 0 && (
                         <div className="flex flex-wrap gap-1 mb-3">
@@ -208,7 +213,7 @@ export default function CouponsPage() {
                           ))}
                         </div>
                       )}
-                      
+
                       <Button
                         variant="outline"
                         size="sm"
@@ -219,7 +224,7 @@ export default function CouponsPage() {
                       </Button>
                     </CardContent>
                   </Card>
-                )
+                );
               })}
             </div>
           )}
@@ -241,7 +246,7 @@ export default function CouponsPage() {
                   Click on any coupon code above to copy it to your clipboard
                 </p>
               </div>
-              
+
               <div className="text-center">
                 <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mx-auto mb-4">
                   <Star className="w-6 h-6 text-primary" />
@@ -251,7 +256,7 @@ export default function CouponsPage() {
                   Go to our pricing page and select your preferred subscription plan
                 </p>
               </div>
-              
+
               <div className="text-center">
                 <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mx-auto mb-4">
                   <CheckCircle className="w-6 h-6 text-primary" />
@@ -266,5 +271,5 @@ export default function CouponsPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

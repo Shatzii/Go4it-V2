@@ -4,21 +4,24 @@ import { smsService } from '@/lib/twilio-client';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { 
+    const {
       classId,
       className,
       coachName,
       startTime,
       enrolledStudents, // Array of { phone, name }
       notificationType, // 'enrollment', 'reminder', 'starting', 'cancelled'
-      additionalInfo 
+      additionalInfo,
     } = body;
 
     if (!className || !enrolledStudents || !Array.isArray(enrolledStudents)) {
-      return NextResponse.json({
-        success: false,
-        error: 'Missing required class information for SMS notifications'
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Missing required class information for SMS notifications',
+        },
+        { status: 400 },
+      );
     }
 
     let messageTemplate = '';
@@ -42,16 +45,19 @@ export async function POST(request: NextRequest) {
         break;
 
       default:
-        return NextResponse.json({
-          success: false,
-          error: 'Invalid notification type'
-        }, { status: 400 });
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Invalid notification type',
+          },
+          { status: 400 },
+        );
     }
 
     // Send bulk SMS to all enrolled students
-    const recipients = enrolledStudents.map(student => ({
+    const recipients = enrolledStudents.map((student) => ({
       phone: student.phone,
-      message: messageTemplate
+      message: messageTemplate,
     }));
 
     const bulkResult = await smsService.sendBulkSMS(recipients);
@@ -63,14 +69,16 @@ export async function POST(request: NextRequest) {
       notificationType,
       className,
       results: bulkResult.results,
-      message: `Live class ${notificationType} notifications sent to ${bulkResult.totalSent} students`
+      message: `Live class ${notificationType} notifications sent to ${bulkResult.totalSent} students`,
     });
-
   } catch (error: any) {
     console.error('Live class SMS notification error:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to send live class SMS notifications'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to send live class SMS notifications',
+      },
+      { status: 500 },
+    );
   }
 }

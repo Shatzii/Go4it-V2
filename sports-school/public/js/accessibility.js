@@ -1,31 +1,30 @@
 /**
  * ShatziiOS Accessibility System
- * 
+ *
  * This script manages accessibility features for neurodivergent users,
  * including dyslexia-friendly fonts, high contrast mode, and more.
  */
 
 // Initialize the global accessibility object
-window.ShatziiAccessibility = (function() {
-  
+window.ShatziiAccessibility = (function () {
   // Available accessibility modes
   const ACCESSIBILITY_MODES = {
     STANDARD: 'standard',
     DYSLEXIA: 'dyslexia-friendly',
     HIGH_CONTRAST: 'high-contrast',
     ADHD: 'adhd-friendly',
-    AUTISM: 'autism-friendly'
+    AUTISM: 'autism-friendly',
   };
-  
+
   // Font options
   const FONT_OPTIONS = {
     STANDARD: 'standard',
     DYSLEXIC: 'dyslexic',
     SERIF: 'serif',
     SANS: 'sans-serif',
-    MONO: 'monospace'
+    MONO: 'monospace',
   };
-  
+
   // Current settings
   let currentSettings = {
     mode: ACCESSIBILITY_MODES.STANDARD,
@@ -35,9 +34,9 @@ window.ShatziiAccessibility = (function() {
     wordSpacing: 'normal',
     useReadingRuler: false,
     font: FONT_OPTIONS.STANDARD,
-    reducedMotion: false
+    reducedMotion: false,
   };
-  
+
   // Default settings for quick switching
   const PRESET_SETTINGS = {
     [ACCESSIBILITY_MODES.STANDARD]: {
@@ -48,7 +47,7 @@ window.ShatziiAccessibility = (function() {
       wordSpacing: 'normal',
       useReadingRuler: false,
       font: FONT_OPTIONS.STANDARD,
-      reducedMotion: false
+      reducedMotion: false,
     },
     [ACCESSIBILITY_MODES.DYSLEXIA]: {
       mode: ACCESSIBILITY_MODES.DYSLEXIA,
@@ -58,7 +57,7 @@ window.ShatziiAccessibility = (function() {
       wordSpacing: '0.1em',
       useReadingRuler: true,
       font: FONT_OPTIONS.DYSLEXIC,
-      reducedMotion: true
+      reducedMotion: true,
     },
     [ACCESSIBILITY_MODES.HIGH_CONTRAST]: {
       mode: ACCESSIBILITY_MODES.HIGH_CONTRAST,
@@ -68,7 +67,7 @@ window.ShatziiAccessibility = (function() {
       wordSpacing: 'normal',
       useReadingRuler: false,
       font: FONT_OPTIONS.SANS,
-      reducedMotion: false
+      reducedMotion: false,
     },
     [ACCESSIBILITY_MODES.ADHD]: {
       mode: ACCESSIBILITY_MODES.ADHD,
@@ -78,7 +77,7 @@ window.ShatziiAccessibility = (function() {
       wordSpacing: '0.05em',
       useReadingRuler: true,
       font: FONT_OPTIONS.SANS,
-      reducedMotion: true
+      reducedMotion: true,
     },
     [ACCESSIBILITY_MODES.AUTISM]: {
       mode: ACCESSIBILITY_MODES.AUTISM,
@@ -88,10 +87,10 @@ window.ShatziiAccessibility = (function() {
       wordSpacing: 'normal',
       useReadingRuler: false,
       font: FONT_OPTIONS.SANS,
-      reducedMotion: true
-    }
+      reducedMotion: true,
+    },
   };
-  
+
   /**
    * Get system preference for reduced motion
    * @returns {boolean} Whether the system prefers reduced motion
@@ -99,7 +98,7 @@ window.ShatziiAccessibility = (function() {
   function getSystemReducedMotionPreference() {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
-  
+
   /**
    * Load saved accessibility settings from localStorage
    */
@@ -121,7 +120,7 @@ window.ShatziiAccessibility = (function() {
       applySettings(currentSettings); // Apply default settings on error
     }
   }
-  
+
   /**
    * Save current accessibility settings to localStorage
    */
@@ -132,7 +131,7 @@ window.ShatziiAccessibility = (function() {
       console.error('Error saving accessibility settings:', error);
     }
   }
-  
+
   /**
    * Apply the current accessibility settings to the page
    * @param {Object} settings - The settings to apply
@@ -145,37 +144,37 @@ window.ShatziiAccessibility = (function() {
       ACCESSIBILITY_MODES.HIGH_CONTRAST,
       ACCESSIBILITY_MODES.ADHD,
       ACCESSIBILITY_MODES.AUTISM,
-      'use-reading-ruler'
+      'use-reading-ruler',
     );
-    
+
     // Add the selected mode class
     document.body.classList.add(settings.mode);
-    
+
     // Apply font size
     document.documentElement.style.setProperty('--base-font-size', `${settings.fontSize}px`);
-    
+
     // Apply line height
     document.documentElement.style.setProperty('--line-height', settings.lineHeight);
-    
+
     // Apply letter spacing
     document.documentElement.style.setProperty('--letter-spacing', settings.letterSpacing);
-    
+
     // Apply word spacing
     document.documentElement.style.setProperty('--word-spacing', settings.wordSpacing);
-    
+
     // Apply reading ruler if needed
     if (settings.useReadingRuler) {
       document.body.classList.add('use-reading-ruler');
       initReadingRuler();
     }
-    
+
     // Apply reduced motion if needed
     if (settings.reducedMotion) {
       document.documentElement.style.setProperty('--reduced-motion', 'none');
     } else {
       document.documentElement.style.setProperty('--reduced-motion', 'all');
     }
-    
+
     // Apply the selected font
     switch (settings.font) {
       case FONT_OPTIONS.DYSLEXIC:
@@ -194,7 +193,7 @@ window.ShatziiAccessibility = (function() {
         document.documentElement.style.setProperty('--primary-font', 'var(--font-standard)');
     }
   }
-  
+
   /**
    * Initialize the reading ruler (for dyslexia and ADHD)
    */
@@ -206,15 +205,15 @@ window.ShatziiAccessibility = (function() {
       ruler.className = 'reading-ruler';
       document.body.appendChild(ruler);
     }
-    
+
     // Update ruler position on mouse movement
-    document.addEventListener('mousemove', function(e) {
+    document.addEventListener('mousemove', function (e) {
       if (currentSettings.useReadingRuler) {
-        ruler.style.top = (e.clientY - ruler.offsetHeight / 2) + 'px';
+        ruler.style.top = e.clientY - ruler.offsetHeight / 2 + 'px';
       }
     });
   }
-  
+
   /**
    * Set accessibility mode
    * @param {string} mode - One of the ACCESSIBILITY_MODES values
@@ -225,17 +224,19 @@ window.ShatziiAccessibility = (function() {
       currentSettings = { ...PRESET_SETTINGS[mode] };
       applySettings(currentSettings);
       saveSettings();
-      
+
       // Dispatch event for other components to react
-      document.dispatchEvent(new CustomEvent('accessibility-changed', { 
-        detail: { mode, settings: currentSettings } 
-      }));
-      
+      document.dispatchEvent(
+        new CustomEvent('accessibility-changed', {
+          detail: { mode, settings: currentSettings },
+        }),
+      );
+
       return true;
     }
     return false;
   }
-  
+
   /**
    * Update individual accessibility settings
    * @param {Object} newSettings - Object with settings to update
@@ -245,13 +246,15 @@ window.ShatziiAccessibility = (function() {
     currentSettings = { ...currentSettings, ...newSettings };
     applySettings(currentSettings);
     saveSettings();
-    
+
     // Dispatch event for other components to react
-    document.dispatchEvent(new CustomEvent('accessibility-changed', { 
-      detail: { settings: currentSettings } 
-    }));
+    document.dispatchEvent(
+      new CustomEvent('accessibility-changed', {
+        detail: { settings: currentSettings },
+      }),
+    );
   }
-  
+
   /**
    * Get current accessibility settings
    * @returns {Object} Current settings
@@ -259,7 +262,7 @@ window.ShatziiAccessibility = (function() {
   function getSettings() {
     return { ...currentSettings };
   }
-  
+
   /**
    * Increase font size
    * @param {number} amount - The amount to increase (default: 1)
@@ -267,7 +270,7 @@ window.ShatziiAccessibility = (function() {
   function increaseFontSize(amount = 1) {
     updateSettings({ fontSize: currentSettings.fontSize + amount });
   }
-  
+
   /**
    * Decrease font size
    * @param {number} amount - The amount to decrease (default: 1)
@@ -277,7 +280,7 @@ window.ShatziiAccessibility = (function() {
     const newSize = Math.max(12, currentSettings.fontSize - amount);
     updateSettings({ fontSize: newSize });
   }
-  
+
   /**
    * Reset settings to default
    */
@@ -285,54 +288,56 @@ window.ShatziiAccessibility = (function() {
     currentSettings = { ...PRESET_SETTINGS[ACCESSIBILITY_MODES.STANDARD] };
     applySettings(currentSettings);
     saveSettings();
-    
+
     // Dispatch event for other components to react
-    document.dispatchEvent(new CustomEvent('accessibility-changed', { 
-      detail: { settings: currentSettings } 
-    }));
+    document.dispatchEvent(
+      new CustomEvent('accessibility-changed', {
+        detail: { settings: currentSettings },
+      }),
+    );
   }
-  
+
   /**
    * Toggle the reading ruler
    */
   function toggleReadingRuler() {
     updateSettings({ useReadingRuler: !currentSettings.useReadingRuler });
   }
-  
+
   /**
    * Toggle reduced motion
    */
   function toggleReducedMotion() {
     updateSettings({ reducedMotion: !currentSettings.reducedMotion });
   }
-  
+
   /**
    * Initialize the accessibility system
    */
   function init() {
     // Setup the font links if needed
     loadRequiredFonts();
-    
+
     // Load saved settings or apply defaults
     loadSavedSettings();
-    
+
     // Setup keyboard shortcuts (if needed)
     setupKeyboardShortcuts();
-    
+
     // Initialize the reading ruler (even if not visible)
     initReadingRuler();
-    
+
     // Listen for system preference changes
-    window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', function(e) {
+    window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', function (e) {
       if (!localStorage.getItem('shatziiAccessibilitySettings')) {
         // Only auto-update if the user hasn't explicitly set preferences
         updateSettings({ reducedMotion: e.matches });
       }
     });
-    
+
     console.log('ShatziiOS Accessibility System initialized');
   }
-  
+
   /**
    * Load the required accessibility fonts
    */
@@ -345,48 +350,60 @@ window.ShatziiAccessibility = (function() {
       fontLink.rel = 'stylesheet';
       fontLink.href = 'https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/open-dyslexic-regular.otf';
       document.head.appendChild(fontLink);
-      
+
       // Alternative approach: Use Google Fonts Lexend which is also dyslexia-friendly
       const lexendLink = document.createElement('link');
       lexendLink.rel = 'stylesheet';
-      lexendLink.href = 'https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap';
+      lexendLink.href =
+        'https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap';
       document.head.appendChild(lexendLink);
-      
+
       // Update CSS variable
-      document.documentElement.style.setProperty('--font-dyslexic', '"Lexend", "OpenDyslexic", "Comic Sans MS", sans-serif');
+      document.documentElement.style.setProperty(
+        '--font-dyslexic',
+        '"Lexend", "OpenDyslexic", "Comic Sans MS", sans-serif',
+      );
     }
   }
-  
+
   /**
    * Setup keyboard shortcuts for accessibility features
    */
   function setupKeyboardShortcuts() {
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
       // Only trigger if Alt key is pressed
       if (e.altKey) {
         switch (e.key) {
           case 'd': // Alt+D: Toggle dyslexia mode
-            setMode(currentSettings.mode === ACCESSIBILITY_MODES.DYSLEXIA 
-              ? ACCESSIBILITY_MODES.STANDARD 
-              : ACCESSIBILITY_MODES.DYSLEXIA);
+            setMode(
+              currentSettings.mode === ACCESSIBILITY_MODES.DYSLEXIA
+                ? ACCESSIBILITY_MODES.STANDARD
+                : ACCESSIBILITY_MODES.DYSLEXIA,
+            );
             e.preventDefault();
             break;
           case 'c': // Alt+C: Toggle high contrast
-            setMode(currentSettings.mode === ACCESSIBILITY_MODES.HIGH_CONTRAST 
-              ? ACCESSIBILITY_MODES.STANDARD 
-              : ACCESSIBILITY_MODES.HIGH_CONTRAST);
+            setMode(
+              currentSettings.mode === ACCESSIBILITY_MODES.HIGH_CONTRAST
+                ? ACCESSIBILITY_MODES.STANDARD
+                : ACCESSIBILITY_MODES.HIGH_CONTRAST,
+            );
             e.preventDefault();
             break;
           case 'a': // Alt+A: Toggle ADHD mode
-            setMode(currentSettings.mode === ACCESSIBILITY_MODES.ADHD 
-              ? ACCESSIBILITY_MODES.STANDARD 
-              : ACCESSIBILITY_MODES.ADHD);
+            setMode(
+              currentSettings.mode === ACCESSIBILITY_MODES.ADHD
+                ? ACCESSIBILITY_MODES.STANDARD
+                : ACCESSIBILITY_MODES.ADHD,
+            );
             e.preventDefault();
             break;
           case 'u': // Alt+U: Toggle autism-friendly mode
-            setMode(currentSettings.mode === ACCESSIBILITY_MODES.AUTISM 
-              ? ACCESSIBILITY_MODES.STANDARD 
-              : ACCESSIBILITY_MODES.AUTISM);
+            setMode(
+              currentSettings.mode === ACCESSIBILITY_MODES.AUTISM
+                ? ACCESSIBILITY_MODES.STANDARD
+                : ACCESSIBILITY_MODES.AUTISM,
+            );
             e.preventDefault();
             break;
           case '+': // Alt++: Increase font size
@@ -414,15 +431,15 @@ window.ShatziiAccessibility = (function() {
       }
     });
   }
-  
+
   // Initialize on page load
   document.addEventListener('DOMContentLoaded', init);
-  
+
   // Also initialize if the script is loaded after DOMContentLoaded
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
     init();
   }
-  
+
   // Return the public API
   return {
     MODES: ACCESSIBILITY_MODES,
@@ -434,6 +451,6 @@ window.ShatziiAccessibility = (function() {
     decreaseFontSize,
     toggleReadingRuler,
     toggleReducedMotion,
-    resetSettings
+    resetSettings,
   };
 })();

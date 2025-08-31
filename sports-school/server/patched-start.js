@@ -1,6 +1,6 @@
 /**
  * Patched Server Starter
- * 
+ *
  * This script sets environment variables and applies necessary patches
  * before starting the main server to work around the Vite environment variable issue.
  */
@@ -14,13 +14,13 @@ process.env.VITE_APP_NAME = 'ShotziOS';
 // Apply a monkey patch for the Vite loadEnv function
 // This is applied before Vite is loaded anywhere to ensure it takes effect
 const originalRequire = require;
-require = function(id) {
+require = function (id) {
   if (id === 'vite') {
     const vite = originalRequire(id);
     const originalLoadEnv = vite.loadEnv;
-    
+
     // Replace the loadEnv function with a safe version
-    vite.loadEnv = function(mode, envDir, prefixes) {
+    vite.loadEnv = function (mode, envDir, prefixes) {
       try {
         return originalLoadEnv(mode, envDir, prefixes);
       } catch (error) {
@@ -30,7 +30,7 @@ require = function(id) {
           DEV: mode !== 'production',
           PROD: mode === 'production',
           BASE_URL: '/',
-          VITE_APP_NAME: 'ShotziOS'
+          VITE_APP_NAME: 'ShotziOS',
         };
       }
     };

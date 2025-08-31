@@ -5,10 +5,29 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, BarChart3, Target, TrendingUp, Clock, Medal, Cpu, Zap, Mic, MessageCircle } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Upload,
+  BarChart3,
+  Target,
+  TrendingUp,
+  Clock,
+  Medal,
+  Cpu,
+  Zap,
+  Mic,
+  MessageCircle,
+} from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AICoachWidget } from '@/components/ai-coach/AICoachWidget';
+import OnboardingManager from '@/components/onboarding/OnboardingManager';
+import OnboardingTrigger from '@/components/onboarding/OnboardingTrigger';
 
 export default function GARUploadPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -19,13 +38,31 @@ export default function GARUploadPage() {
   const [useLocalModels, setUseLocalModels] = useState(true);
 
   const sports = [
-    'basketball', 'soccer', 'football', 'baseball', 'tennis', 'volleyball',
-    'track', 'swimming', 'golf', 'softball', 'lacrosse', 'wrestling'
+    'basketball',
+    'soccer',
+    'football',
+    'baseball',
+    'tennis',
+    'volleyball',
+    'track',
+    'swimming',
+    'golf',
+    'softball',
+    'lacrosse',
+    'wrestling',
   ];
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // Check file size (max 50MB to prevent upload hanging)
+      const maxSize = 50 * 1024 * 1024; // 50MB
+      if (file.size > maxSize) {
+        alert(`File too large: ${(file.size / 1024 / 1024).toFixed(1)}MB. Maximum size is 50MB.`);
+        return;
+      }
+
+      console.log('File selected:', file.name, `${(file.size / 1024 / 1024).toFixed(1)}MB`);
       setSelectedFile(file);
     }
   };
@@ -45,21 +82,27 @@ export default function GARUploadPage() {
       formData.append('video', selectedFile);
       formData.append('sport', sport);
 
-      // Progress simulation
+      // Faster progress simulation that doesn't get stuck at 90%
       const progressInterval = setInterval(() => {
-        setAnalysisProgress(prev => {
-          if (prev >= 90) {
+        setAnalysisProgress((prev) => {
+          if (prev >= 95) {
             clearInterval(progressInterval);
-            return 90;
+            return 95;
           }
-          return prev + 10;
+          return prev + Math.random() * 15 + 5; // Variable progress increments
         });
-      }, 500);
+      }, 300);
 
-      const endpoint = useLocalModels ? '/api/gar/analyze-local' : '/api/gar/analyze';
+      // Use the fixed endpoint that doesn't hang
+      const endpoint = useLocalModels ? '/api/gar/analyze-local' : '/api/gar/analyze-fixed';
+
+      console.log('Starting GAR analysis upload...');
+      console.log('File:', selectedFile.name, 'Size:', selectedFile.size, 'Sport:', sport);
+
       const response = await fetch(endpoint, {
         method: 'POST',
-        body: formData
+        body: formData,
+        signal: AbortSignal.timeout(30000), // Shorter 30 second timeout for fixed endpoint
       });
 
       clearInterval(progressInterval);
@@ -67,19 +110,29 @@ export default function GARUploadPage() {
 
       const result = await response.json();
 
-      if (response.ok) {
-        setAnalysisResult(result);
+      if (response.ok && result.success) {
+        setAnalysisResult(result.analysis);
+        console.log('✅ GAR analysis completed:', result.analysis.garScore);
       } else {
         if (result.needsModels) {
           alert('Local AI models not installed. Redirecting to model download page...');
           window.location.href = '/local-models';
         } else {
-          alert(`Analysis failed: ${result.error}`);
+          console.error('Analysis failed:', result);
+          alert(`Analysis failed: ${result.error || result.message || 'Unknown error'}`);
         }
       }
     } catch (error) {
       console.error('Analysis error:', error);
-      alert('Analysis failed. Please try again.');
+      setAnalysisProgress(0);
+
+      if (error.name === 'TimeoutError') {
+        alert('Upload timed out. Please try with a smaller file or check your connection.');
+      } else if (error.name === 'AbortError') {
+        alert('Upload was cancelled. Please try again.');
+      } else {
+        alert(`Analysis failed: ${error.message || 'Unknown error'}. Please try again.`);
+      }
     } finally {
       setIsAnalyzing(false);
     }
@@ -95,13 +148,24 @@ export default function GARUploadPage() {
   return (
     <div className="min-h-screen bg-slate-900 p-4">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">GAR Score Video Analysis</h1>
-          <p className="text-slate-300">Upload your athletic performance video for comprehensive AI analysis</p>
+        <div className="mb-8" data-onboarding="gar-upload-form">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-white mb-2">GAR Score Video Analysis</h1>
+              <p className="text-slate-300">
+                Upload your athletic performance video for comprehensive AI analysis
+              </p>
+            </div>
+            <OnboardingTrigger
+              flowId="garUpload"
+              variant="icon"
+              className="text-white hover:text-blue-400"
+            />
+          </div>
         </div>
 
         {/* Analysis Method Selection */}
-        <Card className="bg-slate-800 border-slate-700 mb-8">
+        <Card className="bg-slate-800 border-slate-700 mb-8" data-onboarding="analysis-method">
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <Cpu className="w-5 h-5" />
@@ -110,7 +174,7 @@ export default function GARUploadPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div 
+              <div
                 className={`p-4 rounded-lg border-2 cursor-pointer ${
                   useLocalModels ? 'border-blue-500 bg-blue-900/20' : 'border-slate-600'
                 }`}
@@ -119,22 +183,26 @@ export default function GARUploadPage() {
                 <div className="flex items-center gap-2 mb-2">
                   <Zap className="w-5 h-5 text-yellow-400" />
                   <h3 className="text-white font-semibold">Local AI Models</h3>
-                  <Badge variant="secondary">Recommended</Badge>
+                  <Badge variant="secondary">For Testing</Badge>
                 </div>
-                <p className="text-sm text-slate-300">2-4 second analysis, privacy-first, works offline</p>
+                <p className="text-sm text-slate-300">
+                  Computer vision analysis, may require model download
+                </p>
               </div>
-              <div 
+              <div
                 className={`p-4 rounded-lg border-2 cursor-pointer ${
-                  !useLocalModels ? 'border-blue-500 bg-blue-900/20' : 'border-slate-600'
+                  !useLocalModels ? 'border-green-500 bg-green-900/20' : 'border-slate-600'
                 }`}
                 onClick={() => setUseLocalModels(false)}
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <BarChart3 className="w-5 h-5 text-green-400" />
-                  <h3 className="text-white font-semibold">Cloud AI Analysis</h3>
-                  <Badge variant="outline">Backup</Badge>
+                  <Cpu className="w-5 h-5 text-green-400" />
+                  <h3 className="text-white font-semibold">Fixed Upload Analysis</h3>
+                  <Badge variant="secondary">Recommended</Badge>
                 </div>
-                <p className="text-sm text-slate-300">OpenAI/Anthropic powered, requires internet</p>
+                <p className="text-sm text-slate-300">
+                  Reliable upload processing, no hanging at 90%
+                </p>
               </div>
             </div>
           </CardContent>
@@ -154,7 +222,7 @@ export default function GARUploadPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Sport Selection */}
-              <div>
+              <div data-onboarding="sport-selector">
                 <label className="block text-sm font-medium text-white mb-2">Sport</label>
                 <Select value={sport} onValueChange={setSport}>
                   <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
@@ -185,8 +253,12 @@ export default function GARUploadPage() {
                     <Upload className="w-12 h-12 mx-auto text-slate-400 mb-4" />
                     {selectedFile ? (
                       <div>
-                        <p className="text-lg font-medium text-green-400 mb-2">{selectedFile.name}</p>
-                        <p className="text-sm text-slate-300">{(selectedFile.size / 1024 / 1024).toFixed(1)} MB</p>
+                        <p className="text-lg font-medium text-green-400 mb-2">
+                          {selectedFile.name}
+                        </p>
+                        <p className="text-sm text-slate-300">
+                          {(selectedFile.size / 1024 / 1024).toFixed(1)} MB
+                        </p>
                       </div>
                     ) : (
                       <div>
@@ -208,14 +280,16 @@ export default function GARUploadPage() {
                   </div>
                   <Progress value={analysisProgress} className="h-2" />
                   <p className="text-sm text-slate-300">
-                    {useLocalModels ? 'Processing with local AI models...' : 'Processing with cloud AI...'}
+                    {useLocalModels
+                      ? 'Processing with local AI models...'
+                      : 'Processing with cloud AI...'}
                   </p>
                 </div>
               )}
 
               {/* Action Buttons */}
               <div className="flex gap-4">
-                <Button 
+                <Button
                   onClick={handleAnalysis}
                   disabled={!selectedFile || !sport || isAnalyzing}
                   className="bg-blue-600 hover:bg-blue-700 flex-1"
@@ -223,11 +297,7 @@ export default function GARUploadPage() {
                   {isAnalyzing ? 'Analyzing...' : 'Start GAR Analysis'}
                 </Button>
                 {(selectedFile || analysisResult) && (
-                  <Button 
-                    onClick={resetAnalysis}
-                    variant="outline"
-                    disabled={isAnalyzing}
-                  >
+                  <Button onClick={resetAnalysis} variant="outline" disabled={isAnalyzing}>
                     Reset
                   </Button>
                 )}
@@ -242,9 +312,7 @@ export default function GARUploadPage() {
                 <BarChart3 className="w-5 h-5" />
                 Analysis Results
               </CardTitle>
-              <CardDescription>
-                Comprehensive GAR scoring and performance insights
-              </CardDescription>
+              <CardDescription>Comprehensive GAR scoring and performance insights</CardDescription>
             </CardHeader>
             <CardContent>
               {analysisResult ? (
@@ -256,7 +324,9 @@ export default function GARUploadPage() {
                     </div>
                     <p className="text-slate-300">GAR Score out of 100</p>
                     <Badge className="mt-2">
-                      {analysisResult.analysisSource === 'local_models' ? 'Local AI Analysis' : 'Cloud AI Analysis'}
+                      {analysisResult.analysisSource === 'local_models'
+                        ? 'Local AI Analysis'
+                        : 'Cloud AI Analysis'}
                     </Badge>
                   </div>
 
@@ -266,13 +336,13 @@ export default function GARUploadPage() {
                       <Mic className="w-4 h-4 text-green-400" />
                       <span className="text-sm font-medium text-white">AI Coach Available</span>
                     </div>
-                    <AICoachWidget 
+                    <AICoachWidget
                       feature="gar_analysis"
                       context={{
                         garScore: analysisResult.garScore,
                         analysisData: analysisResult.analysis,
                         sport: sport,
-                        improvementAreas: analysisResult.suggestions
+                        improvementAreas: analysisResult.suggestions,
                       }}
                       className="bg-slate-700/50"
                     />
@@ -310,12 +380,14 @@ export default function GARUploadPage() {
                   <div>
                     <h4 className="text-white font-semibold mb-2">Strengths</h4>
                     <div className="space-y-1">
-                      {analysisResult.analysis.breakdown.strengths.slice(0, 3).map((strength: string, index: number) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <Medal className="w-4 h-4 text-green-400" />
-                          <span className="text-sm text-slate-300">{strength}</span>
-                        </div>
-                      ))}
+                      {analysisResult.analysis.breakdown.strengths
+                        .slice(0, 3)
+                        .map((strength: string, index: number) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <Medal className="w-4 h-4 text-green-400" />
+                            <span className="text-sm text-slate-300">{strength}</span>
+                          </div>
+                        ))}
                     </div>
                   </div>
 
@@ -348,14 +420,17 @@ export default function GARUploadPage() {
             <Alert className="bg-blue-900/20 border-blue-500/50">
               <TrendingUp className="h-4 w-4" />
               <AlertDescription className="text-blue-200">
-                <strong>Local vs Cloud Analysis:</strong> Local models provide faster analysis (2-4 seconds) and 
-                complete privacy since your video never leaves the server. Cloud analysis uses OpenAI/Anthropic 
-                for advanced insights. Both provide the same GAR scoring accuracy.
+                <strong>Local vs Cloud Analysis:</strong> Local models provide faster analysis (2-4
+                seconds) and complete privacy since your video never leaves the server. Cloud
+                analysis uses OpenAI/Anthropic for advanced insights. Both provide the same GAR
+                scoring accuracy.
               </AlertDescription>
             </Alert>
           </CardContent>
         </Card>
       </div>
+      {/* Onboarding Manager */}
+      <OnboardingManager flowId="garUpload" autoStart={true} autoStartDelay={2000} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 /**
  * Anthropic AI Service
- * 
+ *
  * This module provides a reusable interface for interacting with the Anthropic API
  * for all ShotziOS AI-powered features.
  */
@@ -41,10 +41,7 @@ export const AnthropicService = {
   /**
    * Generate a text response using the Anthropic API
    */
-  async generateText(
-    prompt: string,
-    options: AnthropicTextAnalysisOptions = {}
-  ): Promise<string> {
+  async generateText(prompt: string, options: AnthropicTextAnalysisOptions = {}): Promise<string> {
     try {
       const response = await anthropic.messages.create({
         model: ANTHROPIC_MODEL,
@@ -61,7 +58,7 @@ export const AnthropicService = {
           result += block.text;
         }
       }
-      
+
       return result;
     } catch (error) {
       console.error('Anthropic API error:', error);
@@ -74,45 +71,49 @@ export const AnthropicService = {
    */
   async analyzeMultimodal(
     prompt: string,
-    options: AnthropicMultimodalAnalysisOptions
+    options: AnthropicMultimodalAnalysisOptions,
   ): Promise<string> {
     try {
       // Validate required parameters
       if (!options.imageBase64) {
         throw new Error('Image data is required for multimodal analysis');
       }
-      
+
       if (!options.imageType) {
         throw new Error('Image type is required for multimodal analysis');
       }
-      
-      console.log(`Analyzing image of type ${options.imageType} with prompt: ${prompt.substring(0, 50)}...`);
-      
+
+      console.log(
+        `Analyzing image of type ${options.imageType} with prompt: ${prompt.substring(0, 50)}...`,
+      );
+
       // Call Anthropic API
       const response = await anthropic.messages.create({
         model: ANTHROPIC_MODEL,
         max_tokens: options.maxTokens || 1024,
         system: options.systemPrompt || undefined,
         temperature: options.temperature,
-        messages: [{
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: prompt
-            },
-            {
-              type: 'image',
-              source: {
-                type: 'base64',
-                media_type: options.imageType,
-                data: options.imageBase64
-              }
-            }
-          ]
-        }]
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: prompt,
+              },
+              {
+                type: 'image',
+                source: {
+                  type: 'base64',
+                  media_type: options.imageType,
+                  data: options.imageBase64,
+                },
+              },
+            ],
+          },
+        ],
       });
-      
+
       // Extract text content from response
       let result = '';
       for (const block of response.content) {
@@ -120,7 +121,7 @@ export const AnthropicService = {
           result += block.text;
         }
       }
-      
+
       return result;
     } catch (error) {
       console.error('Anthropic Multimodal API error:', error);
@@ -136,7 +137,7 @@ export const AnthropicService = {
     concept: string,
     gradeLevel: string,
     neurotypeFocus: string | null = null,
-    format: string = 'text'
+    format: string = 'text',
   ): Promise<string> {
     const systemPrompt = `You are an expert educational content creator specializing in creating 
     engaging, accessible learning materials for students of diverse abilities and needs.
@@ -151,16 +152,16 @@ export const AnthropicService = {
     When responding, use a supportive, encouraging tone that builds confidence.
     Emphasize real-world connections and practical applications of concepts.
     Include opportunities for active learning and self-assessment.`;
-    
+
     return this.generateText(
       `Create educational content about "${concept}" for ${subject} at ${gradeLevel} grade level in ${format} format.`,
       {
         systemPrompt,
         maxTokens: 2048,
-        temperature: 0.7
-      }
+        temperature: 0.7,
+      },
     );
-  }
+  },
 };
 
 /**
@@ -173,35 +174,37 @@ export function isAnthropicAPIAvailable(): boolean {
 /**
  * Helper function to extract image data from a request
  */
-export function extractImageFromRequest(req: Request): { base64: string, type: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp' } | null {
+export function extractImageFromRequest(
+  req: Request,
+): { base64: string; type: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp' } | null {
   try {
     if (!req.files || Object.keys(req.files).length === 0) {
       return null;
     }
-    
+
     const imageFile = req.files.image;
     if (!imageFile || Array.isArray(imageFile)) {
       return null;
     }
-    
+
     // Convert file to base64
     const base64 = imageFile.data.toString('base64');
     const mimeType = imageFile.mimetype;
-    
+
     // Validate supported image types
     if (
-      mimeType !== 'image/jpeg' && 
-      mimeType !== 'image/png' && 
-      mimeType !== 'image/gif' && 
+      mimeType !== 'image/jpeg' &&
+      mimeType !== 'image/png' &&
+      mimeType !== 'image/gif' &&
       mimeType !== 'image/webp'
     ) {
       console.error('Unsupported image type:', mimeType);
       return null;
     }
-    
-    return { 
-      base64, 
-      type: mimeType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp'
+
+    return {
+      base64,
+      type: mimeType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
     };
   } catch (error) {
     console.error('Error extracting image from request:', error);

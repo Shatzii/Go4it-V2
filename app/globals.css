@@ -2,6 +2,194 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Go4It Sports Landing Page - Custom Neon Styling */
+.hero-bg {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.neon-border {
+  border: 2px solid #3b82f6;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+.neon-glow {
+  text-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+}
+
+.neon-text {
+  color: #60a5fa;
+  text-shadow: 0 0 10px rgba(96, 165, 250, 0.7);
+}
+
+.glow-text {
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #3b82f6);
+  background-size: 200% 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.glow-button {
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+  color: white;
+  padding: 12px 32px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-block;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.glow-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Floating Animation for Buttons */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Pulse Glow Animation */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
+  }
+}
+
+/* Counter Animation */
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-count {
+  animation: countUp 2s ease-out;
+}
+
+/* Progress Bar Animation */
+@keyframes progressFill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: var(--target-width);
+  }
+}
+
+.animate-progress {
+  animation: progressFill 2s ease-out forwards;
+}
+
+/* Card Hover Effects */
+.hover-lift {
+  transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Enhanced Button Floating */
+.glow-button {
+  animation: float 3s ease-in-out infinite;
+}
+
+.glow-button:hover {
+  animation: pulse-glow 1.5s infinite;
+}
+
+/* Onboarding System Styles */
+.onboarding-highlight {
+  position: relative;
+  z-index: 10001 !important;
+  border-radius: 8px;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3) !important;
+  transition: all 0.3s ease;
+}
+
+.onboarding-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+  pointer-events: none;
+}
+
+.onboarding-spotlight {
+  position: absolute;
+  border-radius: 8px;
+  box-shadow:
+    0 0 0 4px rgba(59, 130, 246, 0.3),
+    0 0 0 9999px rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+@keyframes fadeInBounce {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(10px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05) translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.onboarding-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 /* Go4It Sports Neon Color Variables - Matching GET VERIFIED design */
 :root {
   --background: 220 20% 5%;
@@ -26,45 +214,27 @@
   --radius: 0.75rem;
 }
 
-/* Neon glow effects */
+/* Consolidated Neon glow effects */
 .neon-text {
   color: hsl(195, 100%, 60%);
-  text-shadow: 
+  text-shadow:
     0 0 10px hsl(195, 100%, 60%),
     0 0 20px hsl(195, 100%, 60%),
     0 0 30px hsl(195, 100%, 60%);
 }
 
 .glow-text {
-  color: hsl(195, 100%, 70%);
-  text-shadow: 
-    0 0 15px hsl(195, 100%, 60%),
-    0 0 25px hsl(195, 100%, 60%),
-    0 0 35px hsl(195, 100%, 60%),
-    0 0 45px hsl(195, 100%, 60%);
-  animation: pulse-glow 2s ease-in-out infinite alternate;
-}
-
-@keyframes pulse-glow {
-  from {
-    text-shadow: 
-      0 0 15px hsl(195, 100%, 60%),
-      0 0 25px hsl(195, 100%, 60%),
-      0 0 35px hsl(195, 100%, 60%),
-      0 0 45px hsl(195, 100%, 60%);
-  }
-  to {
-    text-shadow: 
-      0 0 20px hsl(195, 100%, 70%),
-      0 0 30px hsl(195, 100%, 70%),
-      0 0 40px hsl(195, 100%, 70%),
-      0 0 50px hsl(195, 100%, 70%);
-  }
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #3b82f6);
+  background-size: 200% 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: glow-pulse 3s ease-in-out infinite;
 }
 
 .neon-border {
   border: 2px solid hsl(195, 100%, 60%);
-  box-shadow: 
+  box-shadow:
     0 0 10px hsl(195, 100%, 60%),
     inset 0 0 10px hsl(195, 100%, 60%);
 }
@@ -85,13 +255,13 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
+  background:
     radial-gradient(circle at 20% 80%, hsl(195, 100%, 60%, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, hsl(195, 100%, 60%, 0.1) 0%, transparent 50%);
   pointer-events: none;
 }
 
-/* Glass card effects from original site */
+/* Consolidated Glass card effects */
 .glass-card {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(20px);
@@ -103,28 +273,12 @@
   transition: all 0.3s ease;
 }
 
-.glass-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
 .glass-card:hover {
   transform: translateY(-5px);
   border-color: hsl(195, 100%, 60%);
-  box-shadow: 
+  box-shadow:
     0 20px 40px rgba(0, 0, 0, 0.3),
     0 0 20px hsl(195, 100%, 60%, 0.3);
-}
-
-.glass-card:hover::before {
-  opacity: 1;
 }
 
 /* Glow button from original */
@@ -140,14 +294,14 @@
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
-  box-shadow: 
+  box-shadow:
     0 0 20px hsl(195, 100%, 60%, 0.5),
     0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .glow-button:hover {
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     0 0 30px hsl(195, 100%, 60%, 0.8),
     0 6px 20px rgba(0, 0, 0, 0.4);
 }
@@ -182,11 +336,21 @@
 }
 
 /* Stagger animations */
-.animate-fade-up:nth-child(1) { animation-delay: 0.1s; }
-.animate-fade-up:nth-child(2) { animation-delay: 0.2s; }
-.animate-fade-up:nth-child(3) { animation-delay: 0.3s; }
-.animate-fade-up:nth-child(4) { animation-delay: 0.4s; }
-.animate-fade-up:nth-child(5) { animation-delay: 0.5s; }
+.animate-fade-up:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.animate-fade-up:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.animate-fade-up:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.animate-fade-up:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.animate-fade-up:nth-child(5) {
+  animation-delay: 0.5s;
+}
 
 /* Custom scrollbar styles */
 ::-webkit-scrollbar {
@@ -239,7 +403,8 @@ html {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -346,7 +511,7 @@ html {
   .no-print {
     display: none !important;
   }
-  
+
   body {
     background: white !important;
     color: black !important;

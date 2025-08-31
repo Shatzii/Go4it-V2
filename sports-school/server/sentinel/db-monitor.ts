@@ -1,6 +1,6 @@
 /**
  * Sentinel 4.5 Database Query Monitoring System
- * 
+ *
  * This module provides real-time monitoring of database queries to detect
  * and block potential SQL injection attempts or unusually heavy data extraction.
  */
@@ -29,24 +29,24 @@ const SQL_INJECTION_PATTERNS = [
   /\/\*.*\*\//i, // SQL comment patterns often used in injections
   /EXECUTE\s*\(/i,
   /EXEC\s*\(/i,
-  /DECLARE\s+@/i
+  /DECLARE\s+@/i,
 ];
 
 // Database entities with sensitivity levels (1-5)
 const ENTITY_SENSITIVITY: Record<string, number> = {
-  'users': 5,
-  'user_sessions': 4,
-  'api_keys': 5,
-  'security_logs': 3,
-  'audit_logs': 4,
-  'courses': 2,
-  'lessons': 2,
-  'missions': 2,
-  'rewards': 2,
-  'products': 3,
-  'orders': 4,
-  'payments': 5,
-  'settings': 3
+  users: 5,
+  user_sessions: 4,
+  api_keys: 5,
+  security_logs: 3,
+  audit_logs: 4,
+  courses: 2,
+  lessons: 2,
+  missions: 2,
+  rewards: 2,
+  products: 3,
+  orders: 4,
+  payments: 5,
+  settings: 3,
 };
 
 // Track ongoing queries
@@ -88,17 +88,17 @@ let originalQuery: any;
 export function initDatabaseMonitoring(pool: Pool): void {
   // Save original query function
   originalQuery = pool.query;
-  
+
   // Override the query function
-  pool.query = async function(...args: any[]): Promise<any> {
+  pool.query = async function (...args: any[]): Promise<any> {
     const queryId = `query-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     const user = global.currentUser?.username || 'system';
     const clientIP = global.currentIP || 'unknown';
-    
+
     // Prepare query info
     let query = '';
     let params: any[] = [];
-    
+
     // Parse arguments (different overloads possible)
     if (typeof args[0] === 'string') {
       // Simple query string
@@ -109,15 +109,15 @@ export function initDatabaseMonitoring(pool: Pool): void {
       query = args[0].text;
       params = args[0].values || [];
     }
-    
+
     // Get stack trace to identify source function
     const stackTrace = new Error().stack || '';
     const stackLines = stackTrace.split('\n').slice(2); // Skip constructor and this function
     const sourceFunction = stackLines[0]?.trim();
-    
+
     // Record query start
     const startTime = Date.now();
-    
+
     // Create active query record
     const activeQuery: ActiveQuery = {
       id: queryId,
@@ -127,23 +127,23 @@ export function initDatabaseMonitoring(pool: Pool): void {
       startTime,
       clientIP,
       sourceFunction,
-      blocked: false
+      blocked: false,
     };
-    
+
     // Security check the query before executing
     const securityCheck = checkQuerySecurity(activeQuery);
-    
+
     // Track the query
     activeQueries.set(queryId, activeQuery);
-    
+
     // Update user stats
     updateUserQueryStats(user, query);
-    
+
     // If query is blocked, don't execute
     if (securityCheck.blocked) {
       activeQuery.blocked = true;
       activeQuery.blockReason = securityCheck.reason;
-      
+
       // Log blocked query
       logSecurityEvent(
         user,
@@ -151,11 +151,11 @@ export function initDatabaseMonitoring(pool: Pool): void {
         {
           query,
           params,
-          reason: securityCheck.reason
+          reason: securityCheck.reason,
         },
-        clientIP
+        clientIP,
       );
-      
+
       // Send alert
       sendAlert(
         AlertSeverity.HIGH,
@@ -166,29 +166,29 @@ export function initDatabaseMonitoring(pool: Pool): void {
           reason: securityCheck.reason,
           user,
           clientIP,
-          sourceFunction
+          sourceFunction,
         },
         user,
-        clientIP
+        clientIP,
       );
-      
+
       // Remove from active queries
       activeQueries.delete(queryId);
-      
+
       // Throw error
       throw new Error(`Query blocked for security reasons: ${securityCheck.reason}`);
     }
-    
+
     // Execute the query and measure performance
     try {
       const result = await originalQuery.apply(pool, args);
-      
+
       // Calculate execution time
       const executionTime = Date.now() - startTime;
-      
+
       // Remove from active queries
       activeQueries.delete(queryId);
-      
+
       // Check for slow queries
       if (executionTime > MAX_QUERY_EXECUTION_TIME_MS) {
         logSecurityEvent(
@@ -198,11 +198,11 @@ export function initDatabaseMonitoring(pool: Pool): void {
             query,
             params,
             executionTime,
-            threshold: MAX_QUERY_EXECUTION_TIME_MS
+            threshold: MAX_QUERY_EXECUTION_TIME_MS,
           },
-          clientIP
+          clientIP,
         );
-        
+
         // Alert on very slow queries
         if (executionTime > MAX_QUERY_EXECUTION_TIME_MS * 2) {
           sendAlert(
@@ -214,12 +214,12 @@ export function initDatabaseMonitoring(pool: Pool): void {
               executionTime,
               user,
               clientIP,
-              rowCount: result.rowCount
-            }
+              rowCount: result.rowCount,
+            },
           );
         }
       }
-      
+
       // Check for large result sets
       if (result.rows && result.rows.length > MAX_ROWS_FETCHED) {
         logSecurityEvent(
@@ -228,11 +228,11 @@ export function initDatabaseMonitoring(pool: Pool): void {
           {
             query,
             rowCount: result.rows.length,
-            threshold: MAX_ROWS_FETCHED
+            threshold: MAX_ROWS_FETCHED,
           },
-          clientIP
+          clientIP,
         );
-        
+
         // Alert on very large result sets
         sendAlert(
           AlertSeverity.MEDIUM,
@@ -242,14 +242,14 @@ export function initDatabaseMonitoring(pool: Pool): void {
             query,
             rowCount: result.rows.length,
             user,
-            clientIP
-          }
+            clientIP,
+          },
         );
       }
-      
+
       // Update user stats with results
       updateUserQueryStatsWithResult(user, result, executionTime);
-      
+
       // For sensitive data access, log audit
       if (isSensitiveDataQuery(query)) {
         logAuditEvent(
@@ -258,17 +258,17 @@ export function initDatabaseMonitoring(pool: Pool): void {
           {
             query,
             rowCount: result.rowCount,
-            tables: extractTablesFromQuery(query)
+            tables: extractTablesFromQuery(query),
           },
-          clientIP
+          clientIP,
         );
       }
-      
+
       return result;
     } catch (error) {
       // Remove from active queries
       activeQueries.delete(queryId);
-      
+
       // Log query errors
       logSecurityEvent(
         user,
@@ -276,16 +276,16 @@ export function initDatabaseMonitoring(pool: Pool): void {
         {
           query,
           params,
-          error: error.message
+          error: error.message,
         },
-        clientIP
+        clientIP,
       );
-      
+
       // Rethrow the error
       throw error;
     }
   };
-  
+
   console.log('Database query monitoring initialized');
 }
 
@@ -294,30 +294,33 @@ export function initDatabaseMonitoring(pool: Pool): void {
  */
 function checkQuerySecurity(activeQuery: ActiveQuery): { blocked: boolean; reason?: string } {
   const { query, user, clientIP } = activeQuery;
-  
+
   // Skip empty queries
   if (!query.trim()) {
     return { blocked: true, reason: 'Empty query' };
   }
-  
+
   // Check for maximum query length
   if (query.length > MAX_QUERY_LENGTH) {
-    return { blocked: true, reason: `Query exceeds maximum length of ${MAX_QUERY_LENGTH} characters` };
+    return {
+      blocked: true,
+      reason: `Query exceeds maximum length of ${MAX_QUERY_LENGTH} characters`,
+    };
   }
-  
+
   // Check for SQL injection patterns
   for (const pattern of SQL_INJECTION_PATTERNS) {
     if (pattern.test(query)) {
       return { blocked: true, reason: `Query contains suspicious pattern: ${pattern}` };
     }
   }
-  
+
   // Check for excessive JOINs
   const joinMatches = query.match(/JOIN/gi);
   if (joinMatches && joinMatches.length > MAX_JOINS) {
     return { blocked: true, reason: `Query contains excessive JOINs (${joinMatches.length})` };
   }
-  
+
   // Check for unauthorized schema modifications
   if (
     /CREATE\s+TABLE/i.test(query) ||
@@ -330,28 +333,23 @@ function checkQuerySecurity(activeQuery: ActiveQuery): { blocked: boolean; reaso
       return { blocked: true, reason: 'Unauthorized schema modification' };
     }
   }
-  
+
   // Check for unauthorized data deletion
   if (/DELETE\s+FROM/i.test(query) && !query.includes('WHERE')) {
     return { blocked: true, reason: 'Unqualified DELETE statement (missing WHERE clause)' };
   }
-  
+
   // Check for unauthorized data updates
   if (/UPDATE\s+.+\s+SET/i.test(query) && !query.includes('WHERE')) {
     return { blocked: true, reason: 'Unqualified UPDATE statement (missing WHERE clause)' };
   }
-  
+
   // Check for SQL comments which might be used to hide malicious code
   if (query.includes('--') || query.includes('/*')) {
-    logSecurityEvent(
-      user,
-      'Query contains SQL comments',
-      { query },
-      clientIP
-    );
+    logSecurityEvent(user, 'Query contains SQL comments', { query }, clientIP);
     // We don't block here, just log for review
   }
-  
+
   // Query passes security checks
   return { blocked: false };
 }
@@ -369,18 +367,18 @@ function updateUserQueryStats(user: string, query: string): void {
       queries: {
         read: 0,
         write: 0,
-        delete: 0
+        delete: 0,
       },
-      lastActivity: Date.now()
+      lastActivity: Date.now(),
     });
   }
-  
+
   const stats = userQueryStats.get(user)!;
-  
+
   // Update query count
   stats.totalQueries++;
   stats.lastActivity = Date.now();
-  
+
   // Update query type counts
   if (query.trim().toUpperCase().startsWith('SELECT')) {
     stats.queries.read++;
@@ -392,7 +390,7 @@ function updateUserQueryStats(user: string, query: string): void {
   } else if (query.trim().toUpperCase().startsWith('DELETE')) {
     stats.queries.delete++;
   }
-  
+
   // Update the stats
   userQueryStats.set(user, stats);
 }
@@ -400,23 +398,19 @@ function updateUserQueryStats(user: string, query: string): void {
 /**
  * Update user query statistics with query results
  */
-function updateUserQueryStatsWithResult(
-  user: string,
-  result: any,
-  executionTime: number
-): void {
+function updateUserQueryStatsWithResult(user: string, result: any, executionTime: number): void {
   if (!userQueryStats.has(user)) return;
-  
+
   const stats = userQueryStats.get(user)!;
-  
+
   // Update execution time
   stats.totalExecutionTime += executionTime;
-  
+
   // Update rows fetched if applicable
   if (result.rows) {
     stats.totalRowsFetched += result.rows.length;
   }
-  
+
   // Update the stats
   userQueryStats.set(user, stats);
 }
@@ -427,7 +421,7 @@ function updateUserQueryStatsWithResult(
 function isSensitiveDataQuery(query: string): boolean {
   // Extract tables from query
   const tables = extractTablesFromQuery(query);
-  
+
   // Check if any table is sensitive
   for (const table of tables) {
     const sensitivity = ENTITY_SENSITIVITY[table] || 0;
@@ -435,19 +429,27 @@ function isSensitiveDataQuery(query: string): boolean {
       return true;
     }
   }
-  
+
   // Check for sensitive columns
   const sensitiveColumns = [
-    'password', 'credit_card', 'ssn', 'social_security',
-    'address', 'phone', 'email', 'dob', 'birth', 'secret'
+    'password',
+    'credit_card',
+    'ssn',
+    'social_security',
+    'address',
+    'phone',
+    'email',
+    'dob',
+    'birth',
+    'secret',
   ];
-  
+
   for (const column of sensitiveColumns) {
     if (query.toLowerCase().includes(column)) {
       return true;
     }
   }
-  
+
   return false;
 }
 
@@ -456,7 +458,7 @@ function isSensitiveDataQuery(query: string): boolean {
  */
 function extractTablesFromQuery(query: string): string[] {
   const tables: string[] = [];
-  
+
   // Match tables in FROM clauses
   const fromMatches = query.match(/FROM\s+([a-zA-Z0-9_]+)/gi);
   if (fromMatches) {
@@ -465,7 +467,7 @@ function extractTablesFromQuery(query: string): string[] {
       tables.push(table);
     }
   }
-  
+
   // Match tables in JOIN clauses
   const joinMatches = query.match(/JOIN\s+([a-zA-Z0-9_]+)/gi);
   if (joinMatches) {
@@ -474,7 +476,7 @@ function extractTablesFromQuery(query: string): string[] {
       tables.push(table);
     }
   }
-  
+
   // Match tables in UPDATE clauses
   const updateMatches = query.match(/UPDATE\s+([a-zA-Z0-9_]+)/gi);
   if (updateMatches) {
@@ -483,7 +485,7 @@ function extractTablesFromQuery(query: string): string[] {
       tables.push(table);
     }
   }
-  
+
   // Match tables in INSERT clauses
   const insertMatches = query.match(/INSERT\s+INTO\s+([a-zA-Z0-9_]+)/gi);
   if (insertMatches) {
@@ -492,7 +494,7 @@ function extractTablesFromQuery(query: string): string[] {
       tables.push(table);
     }
   }
-  
+
   // Match tables in DELETE clauses
   const deleteMatches = query.match(/DELETE\s+FROM\s+([a-zA-Z0-9_]+)/gi);
   if (deleteMatches) {
@@ -501,7 +503,7 @@ function extractTablesFromQuery(query: string): string[] {
       tables.push(table);
     }
   }
-  
+
   return tables;
 }
 
@@ -521,7 +523,7 @@ export function getUserQueryStatistics(): Array<{
 }> {
   return Array.from(userQueryStats.entries()).map(([user, stats]) => ({
     user,
-    stats
+    stats,
   }));
 }
 
@@ -530,13 +532,8 @@ export function getUserQueryStatistics(): Array<{
  */
 export function resetMonitoringStatistics(): void {
   userQueryStats.clear();
-  
-  logAuditEvent(
-    'system',
-    'Database monitoring statistics reset',
-    {},
-    'system'
-  );
+
+  logAuditEvent('system', 'Database monitoring statistics reset', {}, 'system');
 }
 
 /**
@@ -545,12 +542,12 @@ export function resetMonitoringStatistics(): void {
 export async function killQuery(queryId: string, killedBy: string): Promise<boolean> {
   const query = activeQueries.get(queryId);
   if (!query) return false;
-  
+
   // In a real implementation, this would use pg_terminate_backend
   // Here we just mark it as blocked
   query.blocked = true;
   query.blockReason = 'Manually killed by administrator';
-  
+
   // Log the action
   logAuditEvent(
     killedBy,
@@ -559,23 +556,18 @@ export async function killQuery(queryId: string, killedBy: string): Promise<bool
       queryId,
       query: query.query,
       user: query.user,
-      clientIP: query.clientIP
+      clientIP: query.clientIP,
     },
-    'system'
+    'system',
   );
-  
+
   // Send alert
-  sendAlert(
-    AlertSeverity.MEDIUM,
-    AlertType.SYSTEM,
-    'Database query manually terminated',
-    {
-      queryId,
-      query: query.query,
-      user: query.user,
-      killedBy
-    }
-  );
-  
+  sendAlert(AlertSeverity.MEDIUM, AlertType.SYSTEM, 'Database query manually terminated', {
+    queryId,
+    query: query.query,
+    user: query.user,
+    killedBy,
+  });
+
   return true;
 }

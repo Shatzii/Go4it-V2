@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
         successStories: 45,
         liveClasses: true,
         revenueShare: 0.85,
-        totalEarnings: 15420
+        totalEarnings: 15420,
       },
       {
         id: 'coach_002',
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
         successStories: 67,
         liveClasses: true,
         revenueShare: 0.85,
-        totalEarnings: 12800
+        totalEarnings: 12800,
       },
       {
         id: 'coach_003',
@@ -54,52 +54,48 @@ export async function GET(request: NextRequest) {
         successStories: 89,
         liveClasses: false,
         revenueShare: 0.85,
-        totalEarnings: 18950
-      }
+        totalEarnings: 18950,
+      },
     ];
 
     // Filter coaches based on query parameters
     let filteredCoaches = coaches;
-    
+
     if (specialty && specialty !== 'all') {
-      filteredCoaches = filteredCoaches.filter(coach => 
-        coach.specialty.some(spec => spec.toLowerCase().includes(specialty.toLowerCase()))
+      filteredCoaches = filteredCoaches.filter((coach) =>
+        coach.specialty.some((spec) => spec.toLowerCase().includes(specialty.toLowerCase())),
       );
     }
 
     if (availability) {
-      filteredCoaches = filteredCoaches.filter(coach => 
-        coach.availability.toLowerCase() === availability.toLowerCase()
+      filteredCoaches = filteredCoaches.filter(
+        (coach) => coach.availability.toLowerCase() === availability.toLowerCase(),
       );
     }
 
     return NextResponse.json({
       success: true,
       coaches: filteredCoaches,
-      total: filteredCoaches.length
+      total: filteredCoaches.length,
     });
-
   } catch (error) {
     console.error('Error fetching coaches:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch coaches' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to fetch coaches' }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
-    const { 
-      name, 
-      email, 
-      specialty, 
-      experience, 
+    const {
+      name,
+      email,
+      specialty,
+      experience,
       credentials,
       hourlyRate,
       bio,
-      availableForLiveClasses 
+      availableForLiveClasses,
     } = data;
 
     // In production, this would save to database
@@ -119,20 +115,19 @@ export async function POST(request: NextRequest) {
       successStories: 0,
       revenueShare: 0.85,
       totalEarnings: 0,
-      status: 'pending_approval'
+      status: 'pending_approval',
     };
 
     return NextResponse.json({
       success: true,
       coach: newCoach,
-      message: 'Coach application submitted successfully'
+      message: 'Coach application submitted successfully',
     });
-
   } catch (error) {
     console.error('Error creating coach profile:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to create coach profile' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

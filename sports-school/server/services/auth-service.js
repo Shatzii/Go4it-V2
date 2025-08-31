@@ -1,6 +1,6 @@
 /**
  * Comprehensive Authentication Service
- * 
+ *
  * Provides secure authentication for the AI Education Platform with:
  * - JWT token-based authentication
  * - Role-based access control (School Admin, Teacher, Student, Parent)
@@ -20,15 +20,16 @@ class AuthenticationService {
     // Import secure environment configuration
     const { getAuthConfig } = require('../../lib/env-validation');
     const authConfig = getAuthConfig();
-    
+
     this.jwtSecret = authConfig.jwtSecret;
-    this.refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || crypto.randomBytes(64).toString('hex');
+    this.refreshTokenSecret =
+      process.env.REFRESH_TOKEN_SECRET || crypto.randomBytes(64).toString('hex');
     this.tokenExpiry = '15m'; // Access token expires in 15 minutes
     this.refreshTokenExpiry = '7d'; // Refresh token expires in 7 days
     this.saltRounds = authConfig.bcryptRounds; // bcrypt salt rounds for password hashing
     this.maxLoginAttempts = 5; // Maximum failed login attempts before lockout
     this.lockoutDuration = 30 * 60 * 1000; // 30 minutes lockout duration
-    
+
     // In-memory storage for failed attempts and refresh tokens
     // In production, this should be stored in Redis or database
     this.failedAttempts = new Map();
@@ -77,13 +78,13 @@ class AuthenticationService {
       role: user.role,
       schoolId: user.schoolId,
       permissions: user.permissions || [],
-      iat: Math.floor(Date.now() / 1000)
+      iat: Math.floor(Date.now() / 1000),
     };
 
-    return jwt.sign(payload, this.jwtSecret, { 
+    return jwt.sign(payload, this.jwtSecret, {
       expiresIn: this.tokenExpiry,
       issuer: 'ai-education-platform',
-      audience: 'schools.shatzii.com'
+      audience: 'schools.shatzii.com',
     });
   }
 
@@ -95,11 +96,11 @@ class AuthenticationService {
   generateRefreshToken(userId) {
     const refreshToken = crypto.randomBytes(40).toString('hex');
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-    
+
     this.refreshTokens.set(refreshToken, {
       userId,
       expiresAt,
-      createdAt: new Date()
+      createdAt: new Date(),
     });
 
     return refreshToken;
@@ -114,7 +115,7 @@ class AuthenticationService {
     try {
       return jwt.verify(token, this.jwtSecret, {
         issuer: 'ai-education-platform',
-        audience: 'schools.shatzii.com'
+        audience: 'schools.shatzii.com',
       });
     } catch (error) {
       this.logSecurityEvent('TOKEN_VERIFICATION_FAILED', { error: error.message });
@@ -129,7 +130,7 @@ class AuthenticationService {
    */
   verifyRefreshToken(refreshToken) {
     const tokenData = this.refreshTokens.get(refreshToken);
-    
+
     if (!tokenData) {
       return null;
     }
@@ -149,7 +150,7 @@ class AuthenticationService {
    */
   isAccountLocked(email) {
     const attempts = this.failedAttempts.get(email);
-    
+
     if (!attempts) {
       return false;
     }
@@ -178,10 +179,10 @@ class AuthenticationService {
     attempts.lastAttempt = Date.now();
     this.failedAttempts.set(email, attempts);
 
-    this.logSecurityEvent('FAILED_LOGIN_ATTEMPT', { 
-      email, 
+    this.logSecurityEvent('FAILED_LOGIN_ATTEMPT', {
+      email,
       attemptCount: attempts.count,
-      locked: attempts.count >= this.maxLoginAttempts
+      locked: attempts.count >= this.maxLoginAttempts,
     });
   }
 
@@ -207,32 +208,33 @@ class AuthenticationService {
         this.logSecurityEvent('LOGIN_ATTEMPT_BLOCKED', { email, reason: 'account_locked' });
         return {
           success: false,
-          error: 'Account temporarily locked due to multiple failed attempts. Please try again later.',
-          code: 'ACCOUNT_LOCKED'
+          error:
+            'Account temporarily locked due to multiple failed attempts. Please try again later.',
+          code: 'ACCOUNT_LOCKED',
         };
       }
 
       // Get user from database
       const user = await getUserByEmail(email);
-      
+
       if (!user) {
         this.recordFailedAttempt(email);
         return {
           success: false,
           error: 'Invalid email or password.',
-          code: 'INVALID_CREDENTIALS'
+          code: 'INVALID_CREDENTIALS',
         };
       }
 
       // Verify password
       const isPasswordValid = await this.verifyPassword(password, user.passwordHash);
-      
+
       if (!isPasswordValid) {
         this.recordFailedAttempt(email);
         return {
           success: false,
           error: 'Invalid email or password.',
-          code: 'INVALID_CREDENTIALS'
+          code: 'INVALID_CREDENTIALS',
         };
       }
 
@@ -244,10 +246,10 @@ class AuthenticationService {
       const refreshToken = this.generateRefreshToken(user.id);
 
       // Log successful login
-      this.logSecurityEvent('SUCCESSFUL_LOGIN', { 
-        userId: user.id, 
-        email: user.email, 
-        role: user.role 
+      this.logSecurityEvent('SUCCESSFUL_LOGIN', {
+        userId: user.id,
+        email: user.email,
+        role: user.role,
       });
 
       return {
@@ -259,19 +261,18 @@ class AuthenticationService {
           lastName: user.lastName,
           role: user.role,
           schoolId: user.schoolId,
-          permissions: user.permissions || []
+          permissions: user.permissions || [],
         },
         accessToken,
         refreshToken,
-        expiresIn: this.tokenExpiry
+        expiresIn: this.tokenExpiry,
       };
-
     } catch (error) {
       this.logSecurityEvent('AUTHENTICATION_ERROR', { email, error: error.message });
       return {
         success: false,
         error: 'Authentication service temporarily unavailable.',
-        code: 'SERVICE_ERROR'
+        code: 'SERVICE_ERROR',
       };
     }
   }
@@ -285,23 +286,23 @@ class AuthenticationService {
   async refreshAccessToken(refreshToken, getUserById) {
     try {
       const tokenData = this.verifyRefreshToken(refreshToken);
-      
+
       if (!tokenData) {
         return {
           success: false,
           error: 'Invalid or expired refresh token.',
-          code: 'INVALID_REFRESH_TOKEN'
+          code: 'INVALID_REFRESH_TOKEN',
         };
       }
 
       const user = await getUserById(tokenData.userId);
-      
+
       if (!user) {
         this.refreshTokens.delete(refreshToken);
         return {
           success: false,
           error: 'User not found.',
-          code: 'USER_NOT_FOUND'
+          code: 'USER_NOT_FOUND',
         };
       }
 
@@ -313,15 +314,14 @@ class AuthenticationService {
       return {
         success: true,
         accessToken: newAccessToken,
-        expiresIn: this.tokenExpiry
+        expiresIn: this.tokenExpiry,
       };
-
     } catch (error) {
       this.logSecurityEvent('TOKEN_REFRESH_ERROR', { error: error.message });
       return {
         success: false,
         error: 'Token refresh failed.',
-        code: 'REFRESH_ERROR'
+        code: 'REFRESH_ERROR',
       };
     }
   }
@@ -364,7 +364,7 @@ class AuthenticationService {
         'view_students',
         'create_content',
         'view_analytics',
-        'manage_classes'
+        'manage_classes',
       ];
       return teacherPermissions.includes(action);
     }
@@ -375,18 +375,14 @@ class AuthenticationService {
         'view_courses',
         'submit_assignments',
         'access_ai_tutors',
-        'view_progress'
+        'view_progress',
       ];
       return studentPermissions.includes(action);
     }
 
     // Parent permissions
     if (user.role === 'parent') {
-      const parentPermissions = [
-        'view_child_progress',
-        'communicate_teachers',
-        'access_reports'
-      ];
+      const parentPermissions = ['view_child_progress', 'communicate_teachers', 'access_reports'];
       return parentPermissions.includes(action);
     }
 
@@ -403,11 +399,11 @@ class AuthenticationService {
       timestamp: new Date().toISOString(),
       event,
       data,
-      ip: data.ip || 'unknown'
+      ip: data.ip || 'unknown',
     };
-    
+
     this.auditLog.push(logEntry);
-    
+
     // Keep only last 1000 entries in memory
     if (this.auditLog.length > 1000) {
       this.auditLog = this.auditLog.slice(-1000);
@@ -435,52 +431,51 @@ class AuthenticationService {
     return (req, res, next) => {
       try {
         const authHeader = req.headers.authorization;
-        
+
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-          return res.status(401).json({ 
-            success: false, 
+          return res.status(401).json({
+            success: false,
             error: 'Access token required.',
-            code: 'NO_TOKEN'
+            code: 'NO_TOKEN',
           });
         }
 
         const token = authHeader.substring(7);
         const decoded = this.verifyAccessToken(token);
-        
+
         if (!decoded) {
-          return res.status(401).json({ 
-            success: false, 
+          return res.status(401).json({
+            success: false,
             error: 'Invalid or expired access token.',
-            code: 'INVALID_TOKEN'
+            code: 'INVALID_TOKEN',
           });
         }
 
         // Check role requirements
         if (requiredRoles.length > 0 && !requiredRoles.includes(decoded.role)) {
-          this.logSecurityEvent('UNAUTHORIZED_ACCESS_ATTEMPT', { 
-            userId: decoded.userId, 
-            role: decoded.role, 
+          this.logSecurityEvent('UNAUTHORIZED_ACCESS_ATTEMPT', {
+            userId: decoded.userId,
+            role: decoded.role,
             requiredRoles,
-            path: req.path
+            path: req.path,
           });
-          
-          return res.status(403).json({ 
-            success: false, 
+
+          return res.status(403).json({
+            success: false,
             error: 'Insufficient permissions.',
-            code: 'INSUFFICIENT_PERMISSIONS'
+            code: 'INSUFFICIENT_PERMISSIONS',
           });
         }
 
         // Add user info to request
         req.user = decoded;
         next();
-
       } catch (error) {
         this.logSecurityEvent('AUTH_MIDDLEWARE_ERROR', { error: error.message });
-        return res.status(500).json({ 
-          success: false, 
+        return res.status(500).json({
+          success: false,
           error: 'Authentication error.',
-          code: 'AUTH_ERROR'
+          code: 'AUTH_ERROR',
         });
       }
     };

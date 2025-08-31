@@ -1,139 +1,162 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Trophy, Star, Target, Zap, Award, Calendar, Users, TrendingUp, Gift, CheckCircle, Lock, Flame } from 'lucide-react'
+import { useState, useEffect } from 'react';
+import {
+  Trophy,
+  Star,
+  Target,
+  Zap,
+  Award,
+  Calendar,
+  Users,
+  TrendingUp,
+  Gift,
+  CheckCircle,
+  Lock,
+  Flame,
+} from 'lucide-react';
 
 interface Achievement {
-  id: string
-  title: string
-  description: string
-  icon: string
-  category: 'performance' | 'training' | 'social' | 'academic' | 'milestone'
-  points: number
-  rarity: 'common' | 'rare' | 'epic' | 'legendary'
-  progress: number
-  maxProgress: number
-  isUnlocked: boolean
-  unlockedAt?: Date
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  category: 'performance' | 'training' | 'social' | 'academic' | 'milestone';
+  points: number;
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  progress: number;
+  maxProgress: number;
+  isUnlocked: boolean;
+  unlockedAt?: Date;
 }
 
 interface Challenge {
-  id: string
-  title: string
-  description: string
-  type: 'daily' | 'weekly' | 'monthly' | 'seasonal'
-  sport: string
-  difficulty: 'easy' | 'medium' | 'hard' | 'expert'
-  points: number
-  xp: number
-  deadline: Date
-  progress: number
-  maxProgress: number
-  isActive: boolean
-  isCompleted: boolean
-  participants: number
+  id: string;
+  title: string;
+  description: string;
+  type: 'daily' | 'weekly' | 'monthly' | 'seasonal';
+  sport: string;
+  difficulty: 'easy' | 'medium' | 'hard' | 'expert';
+  points: number;
+  xp: number;
+  deadline: Date;
+  progress: number;
+  maxProgress: number;
+  isActive: boolean;
+  isCompleted: boolean;
+  participants: number;
 }
 
 interface LeaderboardEntry {
-  rank: number
-  userId: string
-  username: string
-  avatar?: string
-  sport: string
-  level: number
-  xp: number
-  garScore: number
-  achievements: number
-  streak: number
+  rank: number;
+  userId: string;
+  username: string;
+  avatar?: string;
+  sport: string;
+  level: number;
+  xp: number;
+  garScore: number;
+  achievements: number;
+  streak: number;
 }
 
 interface UserStats {
-  level: number
-  xp: number
-  totalXp: number
-  xpToNextLevel: number
-  achievements: Achievement[]
-  currentStreak: number
-  longestStreak: number
-  totalPoints: number
-  rank: number
-  badges: string[]
+  level: number;
+  xp: number;
+  totalXp: number;
+  xpToNextLevel: number;
+  achievements: Achievement[];
+  currentStreak: number;
+  longestStreak: number;
+  totalPoints: number;
+  rank: number;
+  badges: string[];
 }
 
 export function EnhancedGamification() {
-  const [activeTab, setActiveTab] = useState('overview')
-  const [userStats, setUserStats] = useState<UserStats | null>(null)
-  const [challenges, setChallenges] = useState<Challenge[]>([])
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
-  const [loading, setLoading] = useState(true)
-  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [activeTab, setActiveTab] = useState('overview');
+  const [userStats, setUserStats] = useState<UserStats | null>(null);
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
   useEffect(() => {
-    fetchGamificationData()
-  }, [])
+    fetchGamificationData();
+  }, []);
 
   const fetchGamificationData = async () => {
     try {
       const [statsResponse, challengesResponse, leaderboardResponse] = await Promise.all([
         fetch('/api/gamification/stats'),
         fetch('/api/gamification/challenges'),
-        fetch('/api/gamification/leaderboard')
-      ])
+        fetch('/api/gamification/leaderboard'),
+      ]);
 
       if (statsResponse.ok) {
-        const statsData = await statsResponse.json()
-        setUserStats(statsData.stats)
+        const statsData = await statsResponse.json();
+        setUserStats(statsData.stats);
       }
 
       if (challengesResponse.ok) {
-        const challengesData = await challengesResponse.json()
-        setChallenges(challengesData.challenges)
+        const challengesData = await challengesResponse.json();
+        setChallenges(challengesData.challenges);
       }
 
       if (leaderboardResponse.ok) {
-        const leaderboardData = await leaderboardResponse.json()
-        setLeaderboard(leaderboardData.leaderboard)
+        const leaderboardData = await leaderboardResponse.json();
+        setLeaderboard(leaderboardData.leaderboard);
       }
     } catch (error) {
-      console.error('Failed to fetch gamification data:', error)
+      console.error('Failed to fetch gamification data:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const acceptChallenge = async (challengeId: string) => {
     try {
       const response = await fetch(`/api/gamification/challenges/${challengeId}/accept`, {
-        method: 'POST'
-      })
-      
+        method: 'POST',
+      });
+
       if (response.ok) {
-        await fetchGamificationData()
+        await fetchGamificationData();
       }
     } catch (error) {
-      console.error('Failed to accept challenge:', error)
+      console.error('Failed to accept challenge:', error);
     }
-  }
+  };
 
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
-      case 'common': return 'text-gray-400 bg-gray-600'
-      case 'rare': return 'text-blue-400 bg-blue-600'
-      case 'epic': return 'text-purple-400 bg-purple-600'
-      case 'legendary': return 'text-yellow-400 bg-yellow-600'
-      default: return 'text-gray-400 bg-gray-600'
+      case 'common':
+        return 'text-gray-400 bg-gray-600';
+      case 'rare':
+        return 'text-blue-400 bg-blue-600';
+      case 'epic':
+        return 'text-purple-400 bg-purple-600';
+      case 'legendary':
+        return 'text-yellow-400 bg-yellow-600';
+      default:
+        return 'text-gray-400 bg-gray-600';
     }
-  }
+  };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return 'text-green-400 bg-green-600'
-      case 'medium': return 'text-yellow-400 bg-yellow-600'
-      case 'hard': return 'text-orange-400 bg-orange-600'
-      case 'expert': return 'text-red-400 bg-red-600'
-      default: return 'text-gray-400 bg-gray-600'
+      case 'easy':
+        return 'text-green-400 bg-green-600';
+      case 'medium':
+        return 'text-yellow-400 bg-yellow-600';
+      case 'hard':
+        return 'text-orange-400 bg-orange-600';
+      case 'expert':
+        return 'text-red-400 bg-red-600';
+      default:
+        return 'text-gray-400 bg-gray-600';
     }
-  }
+  };
 
   const renderOverview = () => (
     <div className="space-y-6">
@@ -154,16 +177,16 @@ export function EnhancedGamification() {
             <p className="text-blue-100">{userStats?.xpToNextLevel} to next level</p>
           </div>
         </div>
-        
+
         <div className="bg-slate-700/50 rounded-full h-3 mb-2">
-          <div 
+          <div
             className="bg-slate-400 h-3 rounded-full transition-all duration-300"
-            style={{ 
-              width: `${userStats ? ((userStats.xp / (userStats.xp + userStats.xpToNextLevel)) * 100) : 0}%` 
+            style={{
+              width: `${userStats ? (userStats.xp / (userStats.xp + userStats.xpToNextLevel)) * 100 : 0}%`,
             }}
           />
         </div>
-        
+
         <div className="grid grid-cols-3 gap-4 mt-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-white">{userStats?.achievements.length}</div>
@@ -177,7 +200,9 @@ export function EnhancedGamification() {
             <div className="text-sm text-blue-100">Day Streak</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-white">{userStats?.totalPoints.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-white">
+              {userStats?.totalPoints.toLocaleString()}
+            </div>
             <div className="text-sm text-blue-100">Total Points</div>
           </div>
         </div>
@@ -188,7 +213,10 @@ export function EnhancedGamification() {
         <h3 className="text-lg font-semibold text-white mb-4">Recent Achievements</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {userStats?.achievements.slice(0, 4).map((achievement) => (
-            <div key={achievement.id} className="flex items-center gap-3 p-3 bg-slate-700 rounded-lg">
+            <div
+              key={achievement.id}
+              className="flex items-center gap-3 p-3 bg-slate-700 rounded-lg"
+            >
               <div className="text-2xl">{achievement.icon}</div>
               <div className="flex-1">
                 <h4 className="font-medium text-white">{achievement.title}</h4>
@@ -206,43 +234,49 @@ export function EnhancedGamification() {
       <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
         <h3 className="text-lg font-semibold text-white mb-4">Active Challenges</h3>
         <div className="space-y-3">
-          {challenges.filter(c => c.isActive).slice(0, 3).map((challenge) => (
-            <div key={challenge.id} className="flex items-center gap-3 p-3 bg-slate-700 rounded-lg">
-              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
-                <Target className="w-6 h-6 text-white" />
-              </div>
-              <div className="flex-1">
-                <h4 className="font-medium text-white">{challenge.title}</h4>
-                <p className="text-sm text-slate-400">{challenge.description}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <div className="w-32 bg-slate-600 rounded-full h-2">
-                    <div 
-                      className="bg-blue-500 h-2 rounded-full"
-                      style={{ width: `${(challenge.progress / challenge.maxProgress) * 100}%` }}
-                    />
+          {challenges
+            .filter((c) => c.isActive)
+            .slice(0, 3)
+            .map((challenge) => (
+              <div
+                key={challenge.id}
+                className="flex items-center gap-3 p-3 bg-slate-700 rounded-lg"
+              >
+                <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                  <Target className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-medium text-white">{challenge.title}</h4>
+                  <p className="text-sm text-slate-400">{challenge.description}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="w-32 bg-slate-600 rounded-full h-2">
+                      <div
+                        className="bg-blue-500 h-2 rounded-full"
+                        style={{ width: `${(challenge.progress / challenge.maxProgress) * 100}%` }}
+                      />
+                    </div>
+                    <span className="text-xs text-slate-400">
+                      {challenge.progress}/{challenge.maxProgress}
+                    </span>
                   </div>
-                  <span className="text-xs text-slate-400">
-                    {challenge.progress}/{challenge.maxProgress}
-                  </span>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm text-white font-medium">+{challenge.points} pts</div>
+                  <div className="text-xs text-slate-400">+{challenge.xp} XP</div>
                 </div>
               </div>
-              <div className="text-right">
-                <div className="text-sm text-white font-medium">+{challenge.points} pts</div>
-                <div className="text-xs text-slate-400">+{challenge.xp} XP</div>
-              </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     </div>
-  )
+  );
 
   const renderChallenges = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-white">Challenges</h2>
         <div className="flex gap-2">
-          <select 
+          <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white"
@@ -262,7 +296,9 @@ export function EnhancedGamification() {
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-semibold text-white">{challenge.title}</h3>
               <div className="flex items-center gap-2">
-                <span className={`px-2 py-1 rounded text-xs ${getDifficultyColor(challenge.difficulty)}`}>
+                <span
+                  className={`px-2 py-1 rounded text-xs ${getDifficultyColor(challenge.difficulty)}`}
+                >
                   {challenge.difficulty}
                 </span>
                 <span className="px-2 py-1 bg-blue-600 text-white rounded text-xs">
@@ -270,9 +306,9 @@ export function EnhancedGamification() {
                 </span>
               </div>
             </div>
-            
+
             <p className="text-slate-400 text-sm mb-3">{challenge.description}</p>
-            
+
             <div className="flex items-center gap-4 mb-3">
               <div className="flex items-center gap-1">
                 <Trophy className="w-4 h-4 text-yellow-500" />
@@ -287,7 +323,7 @@ export function EnhancedGamification() {
                 <span className="text-sm text-white">{challenge.participants}</span>
               </div>
             </div>
-            
+
             <div className="mb-3">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-sm text-slate-400">Progress</span>
@@ -296,13 +332,13 @@ export function EnhancedGamification() {
                 </span>
               </div>
               <div className="w-full bg-slate-600 rounded-full h-2">
-                <div 
+                <div
                   className="bg-blue-500 h-2 rounded-full"
                   style={{ width: `${(challenge.progress / challenge.maxProgress) * 100}%` }}
                 />
               </div>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <span className="text-sm text-slate-400">
                 Ends: {new Date(challenge.deadline).toLocaleDateString()}
@@ -324,7 +360,7 @@ export function EnhancedGamification() {
         ))}
       </div>
     </div>
-  )
+  );
 
   const renderAchievements = () => (
     <div className="space-y-6">
@@ -351,15 +387,18 @@ export function EnhancedGamification() {
                 {achievement.rarity}
               </div>
             </div>
-            
+
             <h3 className="font-semibold text-white mb-1">{achievement.title}</h3>
             <p className="text-sm text-slate-400 mb-2">{achievement.description}</p>
-            
+
             {achievement.isUnlocked ? (
               <div className="flex items-center gap-2 text-green-400">
                 <CheckCircle className="w-4 h-4" />
                 <span className="text-sm">
-                  Unlocked {achievement.unlockedAt ? new Date(achievement.unlockedAt).toLocaleDateString() : ''}
+                  Unlocked{' '}
+                  {achievement.unlockedAt
+                    ? new Date(achievement.unlockedAt).toLocaleDateString()
+                    : ''}
                 </span>
               </div>
             ) : (
@@ -371,14 +410,14 @@ export function EnhancedGamification() {
                   </span>
                 </div>
                 <div className="w-full bg-slate-600 rounded-full h-2">
-                  <div 
+                  <div
                     className="bg-blue-500 h-2 rounded-full"
                     style={{ width: `${(achievement.progress / achievement.maxProgress) * 100}%` }}
                   />
                 </div>
               </div>
             )}
-            
+
             <div className="flex items-center justify-between mt-2">
               <span className="text-sm text-slate-400">{achievement.category}</span>
               <span className="text-sm text-yellow-400">+{achievement.points} pts</span>
@@ -387,7 +426,7 @@ export function EnhancedGamification() {
         ))}
       </div>
     </div>
-  )
+  );
 
   const renderLeaderboard = () => (
     <div className="space-y-6">
@@ -421,22 +460,27 @@ export function EnhancedGamification() {
             <div>Achievements</div>
           </div>
         </div>
-        
+
         <div className="divide-y divide-slate-700">
           {leaderboard.map((entry) => (
             <div key={entry.userId} className="p-4 hover:bg-slate-700 transition-colors">
               <div className="grid grid-cols-7 gap-4 items-center">
                 <div className="flex items-center gap-2">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-                    entry.rank === 1 ? 'bg-yellow-500 text-black' :
-                    entry.rank === 2 ? 'bg-gray-400 text-black' :
-                    entry.rank === 3 ? 'bg-orange-500 text-black' :
-                    'bg-slate-600 text-white'
-                  }`}>
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                      entry.rank === 1
+                        ? 'bg-yellow-500 text-black'
+                        : entry.rank === 2
+                          ? 'bg-gray-400 text-black'
+                          : entry.rank === 3
+                            ? 'bg-orange-500 text-black'
+                            : 'bg-slate-600 text-white'
+                    }`}
+                  >
                     {entry.rank}
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 bg-slate-600 rounded-full flex items-center justify-center">
                     <span className="text-xs font-medium">
@@ -445,7 +489,7 @@ export function EnhancedGamification() {
                   </div>
                   <span className="text-white font-medium">{entry.username}</span>
                 </div>
-                
+
                 <div className="text-slate-400">{entry.sport}</div>
                 <div className="text-white">{entry.level}</div>
                 <div className="text-white">{entry.xp.toLocaleString()}</div>
@@ -457,14 +501,14 @@ export function EnhancedGamification() {
         </div>
       </div>
     </div>
-  )
+  );
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -484,7 +528,7 @@ export function EnhancedGamification() {
               { id: 'overview', label: 'Overview', icon: Target },
               { id: 'challenges', label: 'Challenges', icon: Trophy },
               { id: 'achievements', label: 'Achievements', icon: Award },
-              { id: 'leaderboard', label: 'Leaderboard', icon: TrendingUp }
+              { id: 'leaderboard', label: 'Leaderboard', icon: TrendingUp },
             ].map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
@@ -511,5 +555,5 @@ export function EnhancedGamification() {
         {activeTab === 'leaderboard' && renderLeaderboard()}
       </div>
     </div>
-  )
+  );
 }

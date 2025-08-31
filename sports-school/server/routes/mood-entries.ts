@@ -22,11 +22,11 @@ router.get('/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const entry = await storage.getMoodEntry(id);
-    
+
     if (!entry) {
       return res.status(404).json({ error: 'Mood entry not found' });
     }
-    
+
     res.json(entry);
   } catch (error) {
     console.error('Error fetching mood entry:', error);
@@ -39,7 +39,7 @@ router.get('/user/:userId', async (req, res) => {
   try {
     const userId = parseInt(req.params.userId);
     const entries = await storage.getUserMoodEntries(userId);
-    
+
     res.json(entries);
   } catch (error) {
     console.error('Error fetching user mood entries:', error);
@@ -52,7 +52,7 @@ router.post('/', async (req, res) => {
   try {
     const moodData = insertMoodEntrySchema.parse(req.body);
     const newEntry = await storage.createMoodEntry(moodData);
-    
+
     res.status(201).json(newEntry);
   } catch (error) {
     console.error('Error creating mood entry:', error);
@@ -65,13 +65,13 @@ router.put('/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const moodData = insertMoodEntrySchema.partial().parse(req.body);
-    
+
     const updatedEntry = await storage.updateMoodEntry(id, moodData);
-    
+
     if (!updatedEntry) {
       return res.status(404).json({ error: 'Mood entry not found' });
     }
-    
+
     res.json(updatedEntry);
   } catch (error) {
     console.error('Error updating mood entry:', error);
@@ -84,11 +84,11 @@ router.delete('/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const success = await storage.deleteMoodEntry(id);
-    
+
     if (!success) {
       return res.status(404).json({ error: 'Mood entry not found' });
     }
-    
+
     res.status(204).send();
   } catch (error) {
     console.error('Error deleting mood entry:', error);

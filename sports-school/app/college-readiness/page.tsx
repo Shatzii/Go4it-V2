@@ -1,24 +1,30 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { 
-  GraduationCap, 
-  Target, 
-  Trophy, 
-  Star, 
-  MapPin, 
-  DollarSign, 
-  Clock, 
-  Users, 
-  BookOpen, 
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  GraduationCap,
+  Target,
+  Trophy,
+  Star,
+  MapPin,
+  DollarSign,
+  Clock,
+  Users,
+  BookOpen,
   Award,
   TrendingUp,
   CheckCircle,
@@ -27,18 +33,18 @@ import {
   Search,
   Filter,
   Heart,
-  Zap
-} from 'lucide-react'
-import Link from 'next/link'
+  Zap,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function CollegeReadinessCenter() {
-  const [selectedStudent, setSelectedStudent] = useState('maya_rodriguez')
-  const [selectedSport, setSelectedSport] = useState('theater')
-  const [collegeFilter, setCollegeFilter] = useState('all')
+  const [selectedStudent, setSelectedStudent] = useState('maya_rodriguez');
+  const [selectedSport, setSelectedSport] = useState('theater');
+  const [collegeFilter, setCollegeFilter] = useState('all');
 
   // Student profiles with athletic/performance data
   const studentProfiles = {
-    'maya_rodriguez': {
+    maya_rodriguez: {
       name: 'Maya Rodriguez',
       grade: 11,
       gpa: 3.7,
@@ -48,14 +54,18 @@ export default function CollegeReadinessCenter() {
       actScore: 28,
       sport: 'Theater Performance',
       position: 'Lead Actress',
-      achievements: ['Regional Theater Champion', 'All-State Drama Team', 'Theater Scholarship Recipient'],
+      achievements: [
+        'Regional Theater Champion',
+        'All-State Drama Team',
+        'Theater Scholarship Recipient',
+      ],
       interests: ['Performing Arts', 'Creative Writing', 'Psychology'],
       careerGoals: ['Professional Theater', 'Arts Education', 'Drama Therapy'],
       ncaaEligible: true,
       athleticScholarships: ['Arts Excellence', 'Performance Merit'],
-      recommendedColleges: ['juilliard', 'yale', 'northwestern', 'carnegie_mellon']
+      recommendedColleges: ['juilliard', 'yale', 'northwestern', 'carnegie_mellon'],
     },
-    'jordan_kim': {
+    jordan_kim: {
       name: 'Jordan Kim',
       grade: 10,
       gpa: 3.9,
@@ -70,9 +80,9 @@ export default function CollegeReadinessCenter() {
       careerGoals: ['Entertainment Technology', 'Digital Media', 'Sound Engineering'],
       ncaaEligible: true,
       athleticScholarships: ['STEM Excellence', 'Technical Arts'],
-      recommendedColleges: ['mit', 'stanford', 'ucla', 'nyu']
-    }
-  }
+      recommendedColleges: ['mit', 'stanford', 'ucla', 'nyu'],
+    },
+  };
 
   // NCAA Eligibility Requirements
   const ncaaRequirements = {
@@ -85,13 +95,13 @@ export default function CollegeReadinessCenter() {
       mathematics: 3,
       science: 2,
       socialStudies: 2,
-      additionalCore: 5
-    }
-  }
+      additionalCore: 5,
+    },
+  };
 
   // College database with detailed information
   const collegeDatabase = {
-    'juilliard': {
+    juilliard: {
       name: 'The Juilliard School',
       location: 'New York, NY',
       type: 'Private',
@@ -105,9 +115,10 @@ export default function CollegeReadinessCenter() {
       scholarships: ['Merit-Based', 'Need-Based', 'Talent Scholarships'],
       matchScore: 95,
       reasons: ['Elite performing arts program', 'Strong alumni network', 'NYC location'],
-      aiRecommendation: 'Perfect match for Maya\'s theater performance goals with world-class training'
+      aiRecommendation:
+        "Perfect match for Maya's theater performance goals with world-class training",
     },
-    'yale': {
+    yale: {
       name: 'Yale University',
       location: 'New Haven, CT',
       type: 'Private',
@@ -121,9 +132,9 @@ export default function CollegeReadinessCenter() {
       scholarships: ['Need-Based', 'Academic Merit'],
       matchScore: 88,
       reasons: ['Prestigious drama program', 'Strong academics', 'Extensive resources'],
-      aiRecommendation: 'Excellent academics combined with top-tier theater program'
+      aiRecommendation: 'Excellent academics combined with top-tier theater program',
     },
-    'northwestern': {
+    northwestern: {
       name: 'Northwestern University',
       location: 'Evanston, IL',
       type: 'Private',
@@ -137,9 +148,9 @@ export default function CollegeReadinessCenter() {
       scholarships: ['Merit', 'Need-Based', 'Athletic'],
       matchScore: 92,
       reasons: ['Renowned theater program', 'Strong career placement', 'Research opportunities'],
-      aiRecommendation: 'Outstanding theater program with excellent career preparation'
+      aiRecommendation: 'Outstanding theater program with excellent career preparation',
     },
-    'carnegie_mellon': {
+    carnegie_mellon: {
       name: 'Carnegie Mellon University',
       location: 'Pittsburgh, PA',
       type: 'Private',
@@ -153,9 +164,9 @@ export default function CollegeReadinessCenter() {
       scholarships: ['Merit-Based', 'Talent Awards'],
       matchScore: 89,
       reasons: ['Top-ranked drama school', 'Technology integration', 'Industry connections'],
-      aiRecommendation: 'Perfect blend of traditional theater and modern technology'
+      aiRecommendation: 'Perfect blend of traditional theater and modern technology',
     },
-    'mit': {
+    mit: {
       name: 'Massachusetts Institute of Technology',
       location: 'Cambridge, MA',
       type: 'Private',
@@ -169,9 +180,9 @@ export default function CollegeReadinessCenter() {
       scholarships: ['Need-Based', 'Merit'],
       matchScore: 85,
       reasons: ['World-class engineering', 'Innovation focus', 'Strong tech theater'],
-      aiRecommendation: 'Ideal for technical theater with cutting-edge technology focus'
+      aiRecommendation: 'Ideal for technical theater with cutting-edge technology focus',
     },
-    'stanford': {
+    stanford: {
       name: 'Stanford University',
       location: 'Stanford, CA',
       type: 'Private',
@@ -185,73 +196,85 @@ export default function CollegeReadinessCenter() {
       scholarships: ['Need-Based', 'Merit', 'Athletic'],
       matchScore: 82,
       reasons: ['Top engineering program', 'Silicon Valley connections', 'Innovation culture'],
-      aiRecommendation: 'Excellent for technology-focused theater and entertainment industry'
-    }
-  }
+      aiRecommendation: 'Excellent for technology-focused theater and entertainment industry',
+    },
+  };
 
-  const selectedStudentData = studentProfiles[selectedStudent]
+  const selectedStudentData = studentProfiles[selectedStudent];
 
   // Calculate NCAA eligibility
   const calculateNCAAEligibility = (student) => {
-    const gpaEligible = student.gpa >= ncaaRequirements.coreGPA
-    const satEligible = student.satScore >= ncaaRequirements.satScore
-    const actEligible = student.actScore >= ncaaRequirements.actScore
-    
+    const gpaEligible = student.gpa >= ncaaRequirements.coreGPA;
+    const satEligible = student.satScore >= ncaaRequirements.satScore;
+    const actEligible = student.actScore >= ncaaRequirements.actScore;
+
     return {
       overall: gpaEligible && (satEligible || actEligible),
       gpa: gpaEligible,
       standardizedTest: satEligible || actEligible,
-      recommendations: []
-    }
-  }
+      recommendations: [],
+    };
+  };
 
   // AI College Matching Algorithm
   const calculateCollegeMatch = (student, college) => {
-    let score = 0
-    let factors = []
-    
+    let score = 0;
+    let factors = [];
+
     // Academic fit (40% weight)
-    const gpaFit = (student.gpa / 4.0) * 100
-    const testFit = Math.min((student.satScore / college.avgSAT) * 100, 100)
-    const academicScore = (gpaFit + testFit) / 2
-    score += academicScore * 0.4
-    factors.push({ factor: 'Academic Fit', score: Math.round(academicScore), weight: '40%' })
-    
+    const gpaFit = (student.gpa / 4.0) * 100;
+    const testFit = Math.min((student.satScore / college.avgSAT) * 100, 100);
+    const academicScore = (gpaFit + testFit) / 2;
+    score += academicScore * 0.4;
+    factors.push({ factor: 'Academic Fit', score: Math.round(academicScore), weight: '40%' });
+
     // Program strength (35% weight)
-    const hasStrongProgram = college.strengths.some(strength => 
-      student.interests.some(interest => 
-        strength.toLowerCase().includes(interest.toLowerCase()) ||
-        interest.toLowerCase().includes(strength.toLowerCase())
-      )
-    )
-    const programScore = hasStrongProgram ? 95 : 60
-    score += programScore * 0.35
-    factors.push({ factor: 'Program Strength', score: programScore, weight: '35%' })
-    
+    const hasStrongProgram = college.strengths.some((strength) =>
+      student.interests.some(
+        (interest) =>
+          strength.toLowerCase().includes(interest.toLowerCase()) ||
+          interest.toLowerCase().includes(strength.toLowerCase()),
+      ),
+    );
+    const programScore = hasStrongProgram ? 95 : 60;
+    score += programScore * 0.35;
+    factors.push({ factor: 'Program Strength', score: programScore, weight: '35%' });
+
     // Athletic/Performance opportunities (15% weight)
-    const hasAthletic = college.athleticPrograms.some(program =>
-      program.toLowerCase().includes(student.sport.toLowerCase())
-    )
-    const athleticScore = hasAthletic ? 90 : 50
-    score += athleticScore * 0.15
-    factors.push({ factor: 'Performance Opportunities', score: athleticScore, weight: '15%' })
-    
+    const hasAthletic = college.athleticPrograms.some((program) =>
+      program.toLowerCase().includes(student.sport.toLowerCase()),
+    );
+    const athleticScore = hasAthletic ? 90 : 50;
+    score += athleticScore * 0.15;
+    factors.push({ factor: 'Performance Opportunities', score: athleticScore, weight: '15%' });
+
     // Financial accessibility (10% weight)
-    const financialScore = Math.max(0, 100 - (college.tuition / 600)) // Rough affordability score
-    score += financialScore * 0.1
-    factors.push({ factor: 'Financial Accessibility', score: Math.round(financialScore), weight: '10%' })
-    
+    const financialScore = Math.max(0, 100 - college.tuition / 600); // Rough affordability score
+    score += financialScore * 0.1;
+    factors.push({
+      factor: 'Financial Accessibility',
+      score: Math.round(financialScore),
+      weight: '10%',
+    });
+
     return {
       totalScore: Math.round(score),
       factors,
-      recommendation: score >= 85 ? 'Excellent Match' : score >= 70 ? 'Good Match' : score >= 55 ? 'Moderate Match' : 'Reach School'
-    }
-  }
+      recommendation:
+        score >= 85
+          ? 'Excellent Match'
+          : score >= 70
+            ? 'Good Match'
+            : score >= 55
+              ? 'Moderate Match'
+              : 'Reach School',
+    };
+  };
 
   // Generate personalized recommendations
   const generateRecommendations = (student) => {
-    const recommendations = []
-    
+    const recommendations = [];
+
     // Academic recommendations
     if (student.gpa < 3.5) {
       recommendations.push({
@@ -259,10 +282,10 @@ export default function CollegeReadinessCenter() {
         priority: 'high',
         title: 'GPA Improvement',
         description: 'Focus on raising GPA through strong performance in remaining courses',
-        actions: ['Meet with counselor', 'Consider tutoring', 'Prioritize core subjects']
-      })
+        actions: ['Meet with counselor', 'Consider tutoring', 'Prioritize core subjects'],
+      });
     }
-    
+
     // Test score recommendations
     if (student.satScore < 1200) {
       recommendations.push({
@@ -270,24 +293,24 @@ export default function CollegeReadinessCenter() {
         priority: 'medium',
         title: 'SAT/ACT Preparation',
         description: 'Consider retaking standardized tests to improve college admission chances',
-        actions: ['Take practice tests', 'Consider test prep courses', 'Schedule retake dates']
-      })
+        actions: ['Take practice tests', 'Consider test prep courses', 'Schedule retake dates'],
+      });
     }
-    
+
     // Athletic/performance recommendations
     recommendations.push({
       type: 'athletic',
       priority: 'medium',
       title: 'Performance Portfolio',
       description: 'Develop a comprehensive portfolio showcasing theater achievements',
-      actions: ['Create performance reel', 'Document achievements', 'Get recommendation letters']
-    })
-    
-    return recommendations
-  }
+      actions: ['Create performance reel', 'Document achievements', 'Get recommendation letters'],
+    });
 
-  const ncaaStatus = calculateNCAAEligibility(selectedStudentData)
-  const personalizedRecommendations = generateRecommendations(selectedStudentData)
+    return recommendations;
+  };
+
+  const ncaaStatus = calculateNCAAEligibility(selectedStudentData);
+  const personalizedRecommendations = generateRecommendations(selectedStudentData);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 p-6">
@@ -296,13 +319,19 @@ export default function CollegeReadinessCenter() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-4 mb-4">
             <Link href="/schools/secondary-school">
-              <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+              <Button
+                variant="outline"
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              >
                 <Home className="h-4 w-4 mr-2" />
                 Back to Secondary School
               </Button>
             </Link>
             <Link href="/texas-graduation">
-              <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+              <Button
+                variant="outline"
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              >
                 <GraduationCap className="h-4 w-4 mr-2" />
                 Graduation Tracker
               </Button>
@@ -315,12 +344,8 @@ export default function CollegeReadinessCenter() {
             AI-Powered College Matching | NCAA Eligibility | Student-Athlete Support
           </p>
           <div className="mt-4 flex justify-center gap-4 flex-wrap">
-            <Badge className="bg-blue-600/20 text-blue-300 px-4 py-2">
-              NCAA Clearinghouse
-            </Badge>
-            <Badge className="bg-green-600/20 text-green-300 px-4 py-2">
-              AI College Matching
-            </Badge>
+            <Badge className="bg-blue-600/20 text-blue-300 px-4 py-2">NCAA Clearinghouse</Badge>
+            <Badge className="bg-green-600/20 text-green-300 px-4 py-2">AI College Matching</Badge>
             <Badge className="bg-purple-600/20 text-purple-300 px-4 py-2">
               Athletic Recruitment
             </Badge>
@@ -348,12 +373,24 @@ export default function CollegeReadinessCenter() {
 
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="grid w-full grid-cols-6 bg-white/10 border-white/20">
-            <TabsTrigger value="overview" className="text-white">Overview</TabsTrigger>
-            <TabsTrigger value="ncaa" className="text-white">NCAA Status</TabsTrigger>
-            <TabsTrigger value="colleges" className="text-white">College Match</TabsTrigger>
-            <TabsTrigger value="athletic" className="text-white">Athletic Profile</TabsTrigger>
-            <TabsTrigger value="recommendations" className="text-white">AI Guidance</TabsTrigger>
-            <TabsTrigger value="timeline" className="text-white">Action Plan</TabsTrigger>
+            <TabsTrigger value="overview" className="text-white">
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="ncaa" className="text-white">
+              NCAA Status
+            </TabsTrigger>
+            <TabsTrigger value="colleges" className="text-white">
+              College Match
+            </TabsTrigger>
+            <TabsTrigger value="athletic" className="text-white">
+              Athletic Profile
+            </TabsTrigger>
+            <TabsTrigger value="recommendations" className="text-white">
+              AI Guidance
+            </TabsTrigger>
+            <TabsTrigger value="timeline" className="text-white">
+              Action Plan
+            </TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -378,11 +415,15 @@ export default function CollegeReadinessCenter() {
                   </div>
                   <div className="flex justify-between">
                     <span>GPA:</span>
-                    <Badge className="bg-green-600/20 text-green-300">{selectedStudentData.gpa}</Badge>
+                    <Badge className="bg-green-600/20 text-green-300">
+                      {selectedStudentData.gpa}
+                    </Badge>
                   </div>
                   <div className="flex justify-between">
                     <span>Class Rank:</span>
-                    <span>{selectedStudentData.classRank} of {selectedStudentData.classSize}</span>
+                    <span>
+                      {selectedStudentData.classRank} of {selectedStudentData.classSize}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Sport/Activity:</span>
@@ -447,9 +488,14 @@ export default function CollegeReadinessCenter() {
                     </div>
                   ))}
                   <div className="mt-4">
-                    <div className="text-sm text-purple-300 font-medium mb-2">Scholarship Opportunities:</div>
+                    <div className="text-sm text-purple-300 font-medium mb-2">
+                      Scholarship Opportunities:
+                    </div>
                     {selectedStudentData.athleticScholarships.map((scholarship, idx) => (
-                      <Badge key={idx} className="bg-purple-600/20 text-purple-300 mr-2 mb-1 text-xs">
+                      <Badge
+                        key={idx}
+                        className="bg-purple-600/20 text-purple-300 mr-2 mb-1 text-xs"
+                      >
                         {scholarship}
                       </Badge>
                     ))}
@@ -485,7 +531,9 @@ export default function CollegeReadinessCenter() {
                     </div>
                     <div className="flex justify-between items-center">
                       <span>College Matches:</span>
-                      <Badge className="bg-purple-600/20 text-purple-300">{selectedStudentData.recommendedColleges.length}</Badge>
+                      <Badge className="bg-purple-600/20 text-purple-300">
+                        {selectedStudentData.recommendedColleges.length}
+                      </Badge>
                     </div>
                   </div>
                 </CardContent>
@@ -543,15 +591,19 @@ export default function CollegeReadinessCenter() {
                   <div className="space-y-4">
                     <h3 className="text-xl font-bold text-blue-300">Core Course Progress</h3>
                     <div className="space-y-3">
-                      {Object.entries(ncaaRequirements.coreCourseBreakdown).map(([subject, required]) => (
-                        <div key={subject} className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <span className="capitalize">{subject}</span>
-                            <span className="text-sm">{required}/{required}</span>
+                      {Object.entries(ncaaRequirements.coreCourseBreakdown).map(
+                        ([subject, required]) => (
+                          <div key={subject} className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <span className="capitalize">{subject}</span>
+                              <span className="text-sm">
+                                {required}/{required}
+                              </span>
+                            </div>
+                            <Progress value={100} className="h-2" />
                           </div>
-                          <Progress value={100} className="h-2" />
-                        </div>
-                      ))}
+                        ),
+                      )}
                     </div>
                     <div className="mt-4 p-3 bg-blue-600/10 rounded-lg">
                       <div className="text-blue-300 font-medium mb-1">Total Core Courses</div>
@@ -576,7 +628,9 @@ export default function CollegeReadinessCenter() {
                       </ul>
                     </div>
                     <div>
-                      <div className="font-medium text-yellow-300 mb-2">Performance Opportunities:</div>
+                      <div className="font-medium text-yellow-300 mb-2">
+                        Performance Opportunities:
+                      </div>
                       <ul className="space-y-1 text-yellow-200">
                         <li>• University theater programs</li>
                         <li>• Performance ensembles</li>
@@ -598,17 +652,21 @@ export default function CollegeReadinessCenter() {
                   AI-Powered College Matching
                 </CardTitle>
                 <CardDescription className="text-blue-200">
-                  Personalized college recommendations based on academic profile and performance arts focus
+                  Personalized college recommendations based on academic profile and performance
+                  arts focus
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  {selectedStudentData.recommendedColleges.map(collegeId => {
-                    const college = collegeDatabase[collegeId]
-                    const match = calculateCollegeMatch(selectedStudentData, college)
-                    
+                  {selectedStudentData.recommendedColleges.map((collegeId) => {
+                    const college = collegeDatabase[collegeId];
+                    const match = calculateCollegeMatch(selectedStudentData, college);
+
                     return (
-                      <div key={collegeId} className="p-6 bg-white/5 rounded-lg border border-white/10">
+                      <div
+                        key={collegeId}
+                        className="p-6 bg-white/5 rounded-lg border border-white/10"
+                      >
                         <div className="flex justify-between items-start mb-4">
                           <div>
                             <h3 className="text-xl font-bold text-white">{college.name}</h3>
@@ -618,13 +676,20 @@ export default function CollegeReadinessCenter() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="text-2xl font-bold text-green-400">{match.totalScore}%</div>
-                            <Badge className={`${
-                              match.totalScore >= 85 ? 'bg-green-600/20 text-green-300' :
-                              match.totalScore >= 70 ? 'bg-blue-600/20 text-blue-300' :
-                              match.totalScore >= 55 ? 'bg-yellow-600/20 text-yellow-300' :
-                              'bg-red-600/20 text-red-300'
-                            }`}>
+                            <div className="text-2xl font-bold text-green-400">
+                              {match.totalScore}%
+                            </div>
+                            <Badge
+                              className={`${
+                                match.totalScore >= 85
+                                  ? 'bg-green-600/20 text-green-300'
+                                  : match.totalScore >= 70
+                                    ? 'bg-blue-600/20 text-blue-300'
+                                    : match.totalScore >= 55
+                                      ? 'bg-yellow-600/20 text-yellow-300'
+                                      : 'bg-red-600/20 text-red-300'
+                              }`}
+                            >
                               {match.recommendation}
                             </Badge>
                           </div>
@@ -645,14 +710,16 @@ export default function CollegeReadinessCenter() {
                           </div>
                           <div className="text-center p-3 bg-white/5 rounded-lg">
                             <div className="text-yellow-300 font-medium">Tuition</div>
-                            <div className="text-white text-lg">${(college.tuition / 1000).toFixed(0)}k</div>
+                            <div className="text-white text-lg">
+                              ${(college.tuition / 1000).toFixed(0)}k
+                            </div>
                           </div>
                         </div>
 
                         <div className="mb-4">
                           <h4 className="font-medium text-purple-300 mb-2">Program Strengths:</h4>
                           <div className="flex flex-wrap gap-2">
-                            {college.strengths.map(strength => (
+                            {college.strengths.map((strength) => (
                               <Badge key={strength} className="bg-purple-600/20 text-purple-300">
                                 {strength}
                               </Badge>
@@ -666,7 +733,7 @@ export default function CollegeReadinessCenter() {
                         </div>
 
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                          {match.factors.map(factor => (
+                          {match.factors.map((factor) => (
                             <div key={factor.factor} className="text-center p-2 bg-white/5 rounded">
                               <div className="text-xs text-gray-300">{factor.factor}</div>
                               <div className="text-sm font-bold">{factor.score}%</div>
@@ -675,19 +742,30 @@ export default function CollegeReadinessCenter() {
                         </div>
 
                         <div className="mt-4 flex gap-2">
-                          <Button size="sm" className="bg-blue-600/20 border-blue-600/30 text-blue-300 hover:bg-blue-600/30">
+                          <Button
+                            size="sm"
+                            className="bg-blue-600/20 border-blue-600/30 text-blue-300 hover:bg-blue-600/30"
+                          >
                             <Heart className="h-3 w-3 mr-1" />
                             Add to Favorites
                           </Button>
-                          <Button size="sm" variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                          >
                             View Details
                           </Button>
-                          <Button size="sm" variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                          >
                             Schedule Visit
                           </Button>
                         </div>
                       </div>
-                    )
+                    );
                   })}
                 </div>
               </CardContent>
@@ -708,7 +786,9 @@ export default function CollegeReadinessCenter() {
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span>Primary Focus:</span>
-                      <Badge className="bg-purple-600/20 text-purple-300">{selectedStudentData.sport}</Badge>
+                      <Badge className="bg-purple-600/20 text-purple-300">
+                        {selectedStudentData.sport}
+                      </Badge>
                     </div>
                     <div className="flex justify-between">
                       <span>Position/Role:</span>
@@ -754,7 +834,11 @@ export default function CollegeReadinessCenter() {
                           <span className="font-medium">{achievement}</span>
                         </div>
                         <div className="text-xs text-blue-200 ml-6">
-                          {idx === 0 ? 'Regional Competition' : idx === 1 ? 'State Recognition' : 'Merit Award'}
+                          {idx === 0
+                            ? 'Regional Competition'
+                            : idx === 1
+                              ? 'State Recognition'
+                              : 'Merit Award'}
                         </div>
                       </div>
                     ))}
@@ -764,9 +848,14 @@ export default function CollegeReadinessCenter() {
                     <h4 className="font-semibold text-green-300 mb-3">Scholarship Opportunities</h4>
                     <div className="space-y-2">
                       {selectedStudentData.athleticScholarships.map((scholarship, idx) => (
-                        <div key={idx} className="flex items-center justify-between p-2 bg-green-600/10 rounded">
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between p-2 bg-green-600/10 rounded"
+                        >
                           <span className="text-sm">{scholarship}</span>
-                          <Badge className="bg-green-600/20 text-green-300 text-xs">Available</Badge>
+                          <Badge className="bg-green-600/20 text-green-300 text-xs">
+                            Available
+                          </Badge>
                         </div>
                       ))}
                     </div>
@@ -791,11 +880,16 @@ export default function CollegeReadinessCenter() {
               <CardContent>
                 <div className="space-y-6">
                   {personalizedRecommendations.map((rec, idx) => (
-                    <div key={idx} className={`p-4 rounded-lg border ${
-                      rec.priority === 'high' ? 'bg-red-600/10 border-red-600/30' :
-                      rec.priority === 'medium' ? 'bg-yellow-600/10 border-yellow-600/30' :
-                      'bg-blue-600/10 border-blue-600/30'
-                    }`}>
+                    <div
+                      key={idx}
+                      className={`p-4 rounded-lg border ${
+                        rec.priority === 'high'
+                          ? 'bg-red-600/10 border-red-600/30'
+                          : rec.priority === 'medium'
+                            ? 'bg-yellow-600/10 border-yellow-600/30'
+                            : 'bg-blue-600/10 border-blue-600/30'
+                      }`}
+                    >
                       <div className="flex items-center gap-2 mb-3">
                         {rec.priority === 'high' ? (
                           <AlertTriangle className="h-5 w-5 text-red-400" />
@@ -805,11 +899,15 @@ export default function CollegeReadinessCenter() {
                           <Star className="h-5 w-5 text-blue-400" />
                         )}
                         <h3 className="font-bold text-lg">{rec.title}</h3>
-                        <Badge className={`${
-                          rec.priority === 'high' ? 'bg-red-600/20 text-red-300' :
-                          rec.priority === 'medium' ? 'bg-yellow-600/20 text-yellow-300' :
-                          'bg-blue-600/20 text-blue-300'
-                        }`}>
+                        <Badge
+                          className={`${
+                            rec.priority === 'high'
+                              ? 'bg-red-600/20 text-red-300'
+                              : rec.priority === 'medium'
+                                ? 'bg-yellow-600/20 text-yellow-300'
+                                : 'bg-blue-600/20 text-blue-300'
+                          }`}
+                        >
                           {rec.priority} Priority
                         </Badge>
                       </div>
@@ -904,5 +1002,5 @@ export default function CollegeReadinessCenter() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }

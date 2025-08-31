@@ -1,23 +1,33 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Bell, X, Check, Video, Trophy, Users, BookOpen, AlertCircle, Settings } from 'lucide-react'
+import { useState, useEffect } from 'react';
+import {
+  Bell,
+  X,
+  Check,
+  Video,
+  Trophy,
+  Users,
+  BookOpen,
+  AlertCircle,
+  Settings,
+} from 'lucide-react';
 
 interface Notification {
-  id: string
-  type: 'video' | 'achievement' | 'team' | 'course' | 'system' | 'reminder'
-  title: string
-  message: string
-  timestamp: Date
-  read: boolean
-  actionUrl?: string
-  priority: 'low' | 'medium' | 'high'
+  id: string;
+  type: 'video' | 'achievement' | 'team' | 'course' | 'system' | 'reminder';
+  title: string;
+  message: string;
+  timestamp: Date;
+  read: boolean;
+  actionUrl?: string;
+  priority: 'low' | 'medium' | 'high';
 }
 
 export function NotificationSystem() {
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const [isOpen, setIsOpen] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [settings, setSettings] = useState({
     enableBrowser: true,
     enableEmail: false,
@@ -26,139 +36,153 @@ export function NotificationSystem() {
     achievements: true,
     teamUpdates: true,
     courseReminders: true,
-    systemAlerts: true
-  })
+    systemAlerts: true,
+  });
 
   useEffect(() => {
-    fetchNotifications()
-    requestNotificationPermission()
-    
-    // Set up WebSocket connection for real-time notifications
-    const ws = new WebSocket(`${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`)
-    
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data)
-      if (data.type === 'notification') {
-        handleNewNotification(data.notification)
-      }
-    }
+    fetchNotifications();
+    requestNotificationPermission();
 
-    return () => ws.close()
-  }, [])
+    // Set up WebSocket connection for real-time notifications
+    const ws = new WebSocket(
+      `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`,
+    );
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'notification') {
+        handleNewNotification(data.notification);
+      }
+    };
+
+    return () => ws.close();
+  }, []);
 
   const fetchNotifications = async () => {
     try {
-      const response = await fetch('/api/notifications')
+      const response = await fetch('/api/notifications');
       if (response.ok) {
-        const data = await response.json()
-        setNotifications(data.notifications)
+        const data = await response.json();
+        setNotifications(data.notifications);
       }
     } catch (error) {
-      console.error('Failed to fetch notifications:', error)
+      console.error('Failed to fetch notifications:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const requestNotificationPermission = async () => {
     if ('Notification' in window && Notification.permission === 'default') {
-      await Notification.requestPermission()
+      await Notification.requestPermission();
     }
-  }
+  };
 
   const handleNewNotification = (notification: Notification) => {
-    setNotifications(prev => [notification, ...prev])
-    
+    setNotifications((prev) => [notification, ...prev]);
+
     // Show browser notification if enabled
-    if (settings.enableBrowser && 'Notification' in window && Notification.permission === 'granted') {
+    if (
+      settings.enableBrowser &&
+      'Notification' in window &&
+      Notification.permission === 'granted'
+    ) {
       new Notification(notification.title, {
         body: notification.message,
         icon: '/icon-192x192.png',
-        tag: notification.id
-      })
+        tag: notification.id,
+      });
     }
-  }
+  };
 
   const markAsRead = async (notificationId: string) => {
     try {
       const response = await fetch(`/api/notifications/${notificationId}/read`, {
-        method: 'POST'
-      })
-      
+        method: 'POST',
+      });
+
       if (response.ok) {
-        setNotifications(prev => 
-          prev.map(n => 
-            n.id === notificationId ? { ...n, read: true } : n
-          )
-        )
+        setNotifications((prev) =>
+          prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n)),
+        );
       }
     } catch (error) {
-      console.error('Failed to mark notification as read:', error)
+      console.error('Failed to mark notification as read:', error);
     }
-  }
+  };
 
   const markAllAsRead = async () => {
     try {
       const response = await fetch('/api/notifications/read-all', {
-        method: 'POST'
-      })
-      
+        method: 'POST',
+      });
+
       if (response.ok) {
-        setNotifications(prev => prev.map(n => ({ ...n, read: true })))
+        setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
       }
     } catch (error) {
-      console.error('Failed to mark all notifications as read:', error)
+      console.error('Failed to mark all notifications as read:', error);
     }
-  }
+  };
 
   const deleteNotification = async (notificationId: string) => {
     try {
       const response = await fetch(`/api/notifications/${notificationId}`, {
-        method: 'DELETE'
-      })
-      
+        method: 'DELETE',
+      });
+
       if (response.ok) {
-        setNotifications(prev => prev.filter(n => n.id !== notificationId))
+        setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
       }
     } catch (error) {
-      console.error('Failed to delete notification:', error)
+      console.error('Failed to delete notification:', error);
     }
-  }
+  };
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'video': return <Video className="w-5 h-5 text-red-500" />
-      case 'achievement': return <Trophy className="w-5 h-5 text-yellow-500" />
-      case 'team': return <Users className="w-5 h-5 text-blue-500" />
-      case 'course': return <BookOpen className="w-5 h-5 text-green-500" />
-      case 'system': return <AlertCircle className="w-5 h-5 text-orange-500" />
-      default: return <Bell className="w-5 h-5 text-gray-500" />
+      case 'video':
+        return <Video className="w-5 h-5 text-red-500" />;
+      case 'achievement':
+        return <Trophy className="w-5 h-5 text-yellow-500" />;
+      case 'team':
+        return <Users className="w-5 h-5 text-blue-500" />;
+      case 'course':
+        return <BookOpen className="w-5 h-5 text-green-500" />;
+      case 'system':
+        return <AlertCircle className="w-5 h-5 text-orange-500" />;
+      default:
+        return <Bell className="w-5 h-5 text-gray-500" />;
     }
-  }
+  };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'border-l-red-500'
-      case 'medium': return 'border-l-yellow-500'
-      case 'low': return 'border-l-green-500'
-      default: return 'border-l-gray-500'
+      case 'high':
+        return 'border-l-red-500';
+      case 'medium':
+        return 'border-l-yellow-500';
+      case 'low':
+        return 'border-l-green-500';
+      default:
+        return 'border-l-gray-500';
     }
-  }
+  };
 
   const formatTime = (timestamp: Date) => {
-    const now = new Date()
-    const diff = now.getTime() - new Date(timestamp).getTime()
-    const minutes = Math.floor(diff / 60000)
-    const hours = Math.floor(minutes / 60)
-    const days = Math.floor(hours / 24)
+    const now = new Date();
+    const diff = now.getTime() - new Date(timestamp).getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
 
-    if (days > 0) return `${days}d ago`
-    if (hours > 0) return `${hours}h ago`
-    if (minutes > 0) return `${minutes}m ago`
-    return 'Just now'
-  }
+    if (days > 0) return `${days}d ago`;
+    if (hours > 0) return `${hours}h ago`;
+    if (minutes > 0) return `${minutes}m ago`;
+    return 'Just now';
+  };
 
-  const unreadCount = notifications.filter(n => !n.read).length
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
     <div className="relative">
@@ -218,9 +242,7 @@ export function NotificationSystem() {
                     }`}
                   >
                     <div className="flex items-start gap-3">
-                      <div className="mt-1">
-                        {getNotificationIcon(notification.type)}
-                      </div>
+                      <div className="mt-1">{getNotificationIcon(notification.type)}</div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-medium text-white truncate">{notification.title}</h4>
@@ -276,7 +298,7 @@ export function NotificationSystem() {
           <div className="p-3 border-t border-slate-700">
             <button
               onClick={() => {
-                setIsOpen(false)
+                setIsOpen(false);
                 // Open notification settings
               }}
               className="w-full flex items-center justify-center gap-2 text-sm text-slate-400 hover:text-white transition-colors"
@@ -288,5 +310,5 @@ export function NotificationSystem() {
         </div>
       )}
     </div>
-  )
+  );
 }

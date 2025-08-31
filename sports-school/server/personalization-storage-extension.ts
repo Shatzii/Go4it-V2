@@ -1,6 +1,6 @@
 /**
  * Personalization Storage Extension
- * 
+ *
  * This file extends the storage implementation with methods required
  * for the assessment to curriculum personalization pipeline.
  */
@@ -8,14 +8,14 @@
 import { storage } from './storage';
 import { pool, db } from './db';
 import { sql } from 'drizzle-orm';
-import { 
-  LearningProfile, 
-  LearningStyleAssessment, 
-  NeurotypeAssessment, 
-  LearningStyle, 
-  Neurotype, 
+import {
+  LearningProfile,
+  LearningStyleAssessment,
+  NeurotypeAssessment,
+  LearningStyle,
+  Neurotype,
   AdaptationLevel,
-  AdaptationCategory 
+  AdaptationCategory,
 } from './services/learning-profile-service';
 import { ContentRules } from './services/content-rules-service';
 import { GeneratedContent } from './services/ai-content-service';
@@ -39,7 +39,7 @@ export async function createPersonalizationTables() {
         UNIQUE(user_id)
       )
     `);
-    
+
     // Create neurotype_assessments table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS neurotype_assessments (
@@ -52,7 +52,7 @@ export async function createPersonalizationTables() {
         UNIQUE(user_id)
       )
     `);
-    
+
     // Create learning_profiles table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS learning_profiles (
@@ -69,7 +69,7 @@ export async function createPersonalizationTables() {
         UNIQUE(user_id)
       )
     `);
-    
+
     // Create content_rules table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS content_rules (
@@ -94,7 +94,7 @@ export async function createPersonalizationTables() {
         UNIQUE(user_id, content_type, subject, grade_level, tier)
       )
     `);
-    
+
     // Create generated_content table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS generated_content (
@@ -114,7 +114,7 @@ export async function createPersonalizationTables() {
         UNIQUE(content_id)
       )
     `);
-    
+
     // Create content_generation_usage table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS content_generation_usage (
@@ -124,7 +124,7 @@ export async function createPersonalizationTables() {
         generated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
       )
     `);
-    
+
     console.log('✅ Created personalization tables');
     return true;
   } catch (error) {
@@ -149,12 +149,15 @@ export function extendStorageWithPersonalization() {
       return false;
     }
   };
-  
-  storage.saveLearningStyleAssessment = async (userId: number, assessmentData: LearningStyleAssessment): Promise<boolean> => {
+
+  storage.saveLearningStyleAssessment = async (
+    userId: number,
+    assessmentData: LearningStyleAssessment,
+  ): Promise<boolean> => {
     try {
       // Check if assessment already exists
       const exists = await storage.hasLearningStyleAssessment(userId);
-      
+
       if (exists) {
         // Update existing assessment
         await db.execute(sql`
@@ -176,24 +179,26 @@ export function extendStorageWithPersonalization() {
           ${assessmentData.kinestheticScore}, ${assessmentData.readingWritingScore}, ${assessmentData.assessmentDate})
         `);
       }
-      
+
       return true;
     } catch (error) {
       console.error(`Error saving learning style assessment for user ${userId}:`, error);
       return false;
     }
   };
-  
-  storage.getLearningStyleAssessment = async (userId: number): Promise<LearningStyleAssessment | null> => {
+
+  storage.getLearningStyleAssessment = async (
+    userId: number,
+  ): Promise<LearningStyleAssessment | null> => {
     try {
       const result = await db.execute(sql`
         SELECT * FROM learning_style_assessments WHERE user_id = ${userId}
       `);
-      
+
       if (result.rows.length === 0) {
         return null;
       }
-      
+
       const row = result.rows[0];
       return {
         userId: parseInt(row.user_id),
@@ -201,14 +206,14 @@ export function extendStorageWithPersonalization() {
         auditoryScore: parseInt(row.auditory_score),
         kinestheticScore: parseInt(row.kinesthetic_score),
         readingWritingScore: parseInt(row.reading_writing_score),
-        assessmentDate: new Date(row.assessment_date)
+        assessmentDate: new Date(row.assessment_date),
       };
     } catch (error) {
       console.error(`Error getting learning style assessment for user ${userId}:`, error);
       return null;
     }
   };
-  
+
   // Neurotype Assessment methods
   storage.hasNeurotypeAssessment = async (userId: number): Promise<boolean> => {
     try {
@@ -221,12 +226,15 @@ export function extendStorageWithPersonalization() {
       return false;
     }
   };
-  
-  storage.saveNeurotypeAssessment = async (userId: number, assessmentData: NeurotypeAssessment): Promise<boolean> => {
+
+  storage.saveNeurotypeAssessment = async (
+    userId: number,
+    assessmentData: NeurotypeAssessment,
+  ): Promise<boolean> => {
     try {
       // Check if assessment already exists
       const exists = await storage.hasNeurotypeAssessment(userId);
-      
+
       if (exists) {
         // Update existing assessment
         await db.execute(sql`
@@ -247,38 +255,38 @@ export function extendStorageWithPersonalization() {
           ${assessmentData.autismSpectrumIndicators}, ${assessmentData.assessmentDate})
         `);
       }
-      
+
       return true;
     } catch (error) {
       console.error(`Error saving neurotype assessment for user ${userId}:`, error);
       return false;
     }
   };
-  
+
   storage.getNeurotypeAssessment = async (userId: number): Promise<NeurotypeAssessment | null> => {
     try {
       const result = await db.execute(sql`
         SELECT * FROM neurotype_assessments WHERE user_id = ${userId}
       `);
-      
+
       if (result.rows.length === 0) {
         return null;
       }
-      
+
       const row = result.rows[0];
       return {
         userId: parseInt(row.user_id),
         dyslexiaIndicators: parseInt(row.dyslexia_indicators),
         adhdIndicators: parseInt(row.adhd_indicators),
         autismSpectrumIndicators: parseInt(row.autism_spectrum_indicators),
-        assessmentDate: new Date(row.assessment_date)
+        assessmentDate: new Date(row.assessment_date),
       };
     } catch (error) {
       console.error(`Error getting neurotype assessment for user ${userId}:`, error);
       return null;
     }
   };
-  
+
   // Learning Profile methods
   storage.hasCompletedAssessments = async (userId: number): Promise<boolean> => {
     try {
@@ -290,17 +298,17 @@ export function extendStorageWithPersonalization() {
       return false;
     }
   };
-  
+
   storage.getLearningProfile = async (userId: number): Promise<LearningProfile | null> => {
     try {
       const result = await db.execute(sql`
         SELECT * FROM learning_profiles WHERE user_id = ${userId}
       `);
-      
+
       if (result.rows.length === 0) {
         return null;
       }
-      
+
       const row = result.rows[0];
       return {
         userId: parseInt(row.user_id),
@@ -311,19 +319,19 @@ export function extendStorageWithPersonalization() {
         adaptations: row.adaptations,
         contentPreferences: row.content_preferences,
         lastUpdated: new Date(row.last_updated),
-        version: parseInt(row.version)
+        version: parseInt(row.version),
       };
     } catch (error) {
       console.error(`Error getting learning profile for user ${userId}:`, error);
       return null;
     }
   };
-  
+
   storage.saveLearningProfile = async (profile: LearningProfile): Promise<boolean> => {
     try {
       // Check if profile already exists
       const existingProfile = await storage.getLearningProfile(profile.userId);
-      
+
       if (existingProfile) {
         // Update existing profile
         await db.execute(sql`
@@ -351,16 +359,19 @@ export function extendStorageWithPersonalization() {
            ${profile.lastUpdated}, ${profile.version})
         `);
       }
-      
+
       return true;
     } catch (error) {
       console.error(`Error saving learning profile for user ${profile.userId}:`, error);
       return false;
     }
   };
-  
+
   // Content Rules methods
-  storage.saveContentRules = async (userId: number, contentRules: ContentRules): Promise<boolean> => {
+  storage.saveContentRules = async (
+    userId: number,
+    contentRules: ContentRules,
+  ): Promise<boolean> => {
     try {
       // Check if rules already exist
       const result = await db.execute(sql`
@@ -371,7 +382,7 @@ export function extendStorageWithPersonalization() {
         AND grade_level = ${contentRules.grade_level}
         AND tier = ${contentRules.tier}
       `);
-      
+
       if (result.rows.length > 0) {
         // Update existing rules
         const ruleId = parseInt(result.rows[0].id);
@@ -413,20 +424,20 @@ export function extendStorageWithPersonalization() {
            ${contentRules.tier}, ${new Date()})
         `);
       }
-      
+
       return true;
     } catch (error) {
       console.error(`Error saving content rules for user ${userId}:`, error);
       return false;
     }
   };
-  
+
   storage.getContentRules = async (
-    userId: number, 
-    contentType: string, 
-    subject: string, 
-    gradeLevel: string, 
-    tier: string
+    userId: number,
+    contentType: string,
+    subject: string,
+    gradeLevel: string,
+    tier: string,
   ): Promise<ContentRules | null> => {
     try {
       const result = await db.execute(sql`
@@ -437,11 +448,11 @@ export function extendStorageWithPersonalization() {
         AND grade_level = ${gradeLevel}
         AND tier = ${tier}
       `);
-      
+
       if (result.rows.length === 0) {
         return null;
       }
-      
+
       const row = result.rows[0];
       return {
         userId: parseInt(row.user_id),
@@ -460,16 +471,19 @@ export function extendStorageWithPersonalization() {
         organizationalAdaptations: row.organizational_adaptations,
         focusAdaptations: row.focus_adaptations,
         tier: row.tier,
-        lastUpdated: new Date(row.last_updated)
+        lastUpdated: new Date(row.last_updated),
       };
     } catch (error) {
       console.error(`Error getting content rules for user ${userId}:`, error);
       return null;
     }
   };
-  
+
   // Generated Content methods
-  storage.saveGeneratedContent = async (userId: number, content: GeneratedContent): Promise<boolean> => {
+  storage.saveGeneratedContent = async (
+    userId: number,
+    content: GeneratedContent,
+  ): Promise<boolean> => {
     try {
       await db.execute(sql`
         INSERT INTO generated_content 
@@ -481,14 +495,14 @@ export function extendStorageWithPersonalization() {
          ${JSON.stringify(content.sections)}, ${JSON.stringify(content.adaptations)},
          ${JSON.stringify(content.metadata)}, ${content.deepResearchSources ? JSON.stringify(content.deepResearchSources) : null})
       `);
-      
+
       return true;
     } catch (error) {
       console.error(`Error saving generated content for user ${userId}:`, error);
       return false;
     }
   };
-  
+
   storage.getGeneratedContent = async (userId: number): Promise<GeneratedContent[]> => {
     try {
       const result = await db.execute(sql`
@@ -496,8 +510,8 @@ export function extendStorageWithPersonalization() {
         WHERE user_id = ${userId}
         ORDER BY created_at DESC
       `);
-      
-      return result.rows.map(row => ({
+
+      return result.rows.map((row) => ({
         contentId: row.content_id,
         userId: parseInt(row.user_id),
         title: row.title,
@@ -508,25 +522,28 @@ export function extendStorageWithPersonalization() {
         sections: row.sections,
         adaptations: row.adaptations,
         metadata: row.metadata,
-        deepResearchSources: row.deep_research_sources
+        deepResearchSources: row.deep_research_sources,
       }));
     } catch (error) {
       console.error(`Error getting generated content for user ${userId}:`, error);
       return [];
     }
   };
-  
-  storage.getGeneratedContentById = async (userId: number, contentId: string): Promise<GeneratedContent | null> => {
+
+  storage.getGeneratedContentById = async (
+    userId: number,
+    contentId: string,
+  ): Promise<GeneratedContent | null> => {
     try {
       const result = await db.execute(sql`
         SELECT * FROM generated_content 
         WHERE user_id = ${userId} AND content_id = ${contentId}
       `);
-      
+
       if (result.rows.length === 0) {
         return null;
       }
-      
+
       const row = result.rows[0];
       return {
         contentId: row.content_id,
@@ -539,14 +556,14 @@ export function extendStorageWithPersonalization() {
         sections: row.sections,
         adaptations: row.adaptations,
         metadata: row.metadata,
-        deepResearchSources: row.deep_research_sources
+        deepResearchSources: row.deep_research_sources,
       };
     } catch (error) {
       console.error(`Error getting generated content by ID for user ${userId}:`, error);
       return null;
     }
   };
-  
+
   // Content Generation Usage methods
   storage.recordContentGeneration = async (userId: number, tier: string): Promise<boolean> => {
     try {
@@ -556,38 +573,46 @@ export function extendStorageWithPersonalization() {
         VALUES 
         (${userId}, ${tier}, ${new Date()})
       `);
-      
+
       return true;
     } catch (error) {
       console.error(`Error recording content generation for user ${userId}:`, error);
       return false;
     }
   };
-  
-  storage.getContentGenerationUsage = async (userId: number, tier: string, period: 'day' | 'month' = 'month'): Promise<number> => {
+
+  storage.getContentGenerationUsage = async (
+    userId: number,
+    tier: string,
+    period: 'day' | 'month' = 'month',
+  ): Promise<number> => {
     try {
-      const timeFrame = period === 'day' 
-        ? sql`DATE(generated_at) = CURRENT_DATE` 
-        : sql`DATE(generated_at) >= DATE_TRUNC('month', CURRENT_DATE)`;
-      
+      const timeFrame =
+        period === 'day'
+          ? sql`DATE(generated_at) = CURRENT_DATE`
+          : sql`DATE(generated_at) >= DATE_TRUNC('month', CURRENT_DATE)`;
+
       const result = await db.execute(sql`
         SELECT COUNT(*) as count FROM content_generation_usage 
         WHERE user_id = ${userId} 
         AND tier = ${tier}
         AND ${timeFrame}
       `);
-      
+
       return parseInt(result.rows[0].count);
     } catch (error) {
       console.error(`Error getting content generation usage for user ${userId}:`, error);
       return 0;
     }
   };
-  
-  storage.hasReachedContentGenerationLimit = async (userId: number, tier: string): Promise<boolean> => {
+
+  storage.hasReachedContentGenerationLimit = async (
+    userId: number,
+    tier: string,
+  ): Promise<boolean> => {
     try {
       const usage = await storage.getContentGenerationUsage(userId, tier);
-      
+
       // Define limits based on tier
       let limit = 0;
       switch (tier.toLowerCase()) {
@@ -602,16 +627,16 @@ export function extendStorageWithPersonalization() {
           limit = 50;
           break;
       }
-      
+
       return usage >= limit;
     } catch (error) {
       console.error(`Error checking content generation limit for user ${userId}:`, error);
       return false;
     }
   };
-  
+
   // Add all methods from personalizationStorageMethods to storage
   Object.assign(storage, personalizationStorageMethods);
-  
+
   return storage;
 }

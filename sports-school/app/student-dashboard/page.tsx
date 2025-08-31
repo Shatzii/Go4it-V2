@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  BookOpen, 
-  Brain, 
-  Calendar, 
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  BookOpen,
+  Brain,
+  Calendar,
   Trophy,
   MessageSquare,
   Target,
@@ -18,57 +18,82 @@ import {
   Settings,
   Play,
   FileText,
-  CheckCircle
-} from 'lucide-react'
-import Link from 'next/link'
+  CheckCircle,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function StudentDashboard() {
-  const [activeTab, setActiveTab] = useState('learning')
+  const [activeTab, setActiveTab] = useState('learning');
 
   const learningPaths = [
-    { 
-      title: 'Mathematics Mastery', 
-      progress: 68, 
+    {
+      title: 'Mathematics Mastery',
+      progress: 68,
       nextLesson: 'Quadratic Equations',
       difficulty: 'Intermediate',
-      estimatedTime: '45 mins'
+      estimatedTime: '45 mins',
     },
-    { 
-      title: 'Science Explorer', 
-      progress: 82, 
+    {
+      title: 'Science Explorer',
+      progress: 82,
       nextLesson: 'Chemical Reactions',
       difficulty: 'Advanced',
-      estimatedTime: '60 mins'
+      estimatedTime: '60 mins',
     },
-    { 
-      title: 'English Literature', 
-      progress: 55, 
+    {
+      title: 'English Literature',
+      progress: 55,
       nextLesson: 'Poetry Analysis',
       difficulty: 'Beginner',
-      estimatedTime: '30 mins'
-    }
-  ]
+      estimatedTime: '30 mins',
+    },
+  ];
 
   const aiTeachersAvailable = [
-    { name: 'Professor Newton', subject: 'Mathematics', status: 'online', lastHelped: '2 hours ago' },
+    {
+      name: 'Professor Newton',
+      subject: 'Mathematics',
+      status: 'online',
+      lastHelped: '2 hours ago',
+    },
     { name: 'Dr. Curie', subject: 'Science', status: 'online', lastHelped: '1 day ago' },
     { name: 'Ms. Shakespeare', subject: 'English', status: 'busy', lastHelped: '3 hours ago' },
-    { name: 'Professor Timeline', subject: 'History', status: 'online', lastHelped: '5 hours ago' }
-  ]
+    { name: 'Professor Timeline', subject: 'History', status: 'online', lastHelped: '5 hours ago' },
+  ];
 
   const achievements = [
-    { title: 'Math Wizard', description: 'Solved 50 algebra problems', icon: Trophy, color: 'text-yellow-600' },
-    { title: 'Science Explorer', description: 'Completed 10 experiments', icon: Star, color: 'text-blue-600' },
-    { title: 'Reading Champion', description: 'Read 5 books this month', icon: BookOpen, color: 'text-green-600' },
-    { title: 'Consistent Learner', description: '7-day learning streak', icon: Target, color: 'text-purple-600' }
-  ]
+    {
+      title: 'Math Wizard',
+      description: 'Solved 50 algebra problems',
+      icon: Trophy,
+      color: 'text-yellow-600',
+    },
+    {
+      title: 'Science Explorer',
+      description: 'Completed 10 experiments',
+      icon: Star,
+      color: 'text-blue-600',
+    },
+    {
+      title: 'Reading Champion',
+      description: 'Read 5 books this month',
+      icon: BookOpen,
+      color: 'text-green-600',
+    },
+    {
+      title: 'Consistent Learner',
+      description: '7-day learning streak',
+      icon: Target,
+      color: 'text-purple-600',
+    },
+  ];
 
   const todaysGoals = [
     { title: 'Complete Math Assignment', completed: true, subject: 'Mathematics' },
     { title: 'Read Chapter 5 - History', completed: false, subject: 'History' },
     { title: 'Practice Spanish Vocabulary', completed: false, subject: 'Language' },
-    { title: 'Submit Science Lab Report', completed: true, subject: 'Science' }
-  ]
+    { title: 'Submit Science Lab Report', completed: true, subject: 'Science' },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -126,7 +151,7 @@ export default function StudentDashboard() {
                             <span>{path.progress}%</span>
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div 
+                            <div
                               className="bg-blue-600 h-2 rounded-full transition-all"
                               style={{ width: `${path.progress}%` }}
                             />
@@ -219,7 +244,9 @@ export default function StudentDashboard() {
                         </Badge>
                       </div>
                       <p className="text-sm text-gray-600 mb-2">{teacher.subject}</p>
-                      <p className="text-xs text-gray-500 mb-3">Last helped: {teacher.lastHelped}</p>
+                      <p className="text-xs text-gray-500 mb-3">
+                        Last helped: {teacher.lastHelped}
+                      </p>
                       <Link href="/ai-teachers">
                         <Button size="sm" className="w-full" disabled={teacher.status !== 'online'}>
                           <MessageSquare className="h-4 w-4 mr-2" />
@@ -244,9 +271,12 @@ export default function StudentDashboard() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {achievements.map((achievement, index) => {
-                    const Icon = achievement.icon
+                    const Icon = achievement.icon;
                     return (
-                      <div key={index} className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                      <div
+                        key={index}
+                        className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg"
+                      >
                         <div className={`p-2 bg-white rounded-full ${achievement.color}`}>
                           <Icon className="h-5 w-5" />
                         </div>
@@ -255,7 +285,7 @@ export default function StudentDashboard() {
                           <p className="text-sm text-gray-600">{achievement.description}</p>
                         </div>
                       </div>
-                    )
+                    );
                   })}
                 </div>
               </CardContent>
@@ -273,16 +303,25 @@ export default function StudentDashboard() {
               <CardContent>
                 <div className="space-y-3">
                   {todaysGoals.map((goal, index) => (
-                    <div key={index} className={`flex items-center gap-3 p-3 rounded-lg ${
-                      goal.completed ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'
-                    } border`}>
-                      <div className={`p-1 rounded-full ${
-                        goal.completed ? 'bg-green-500' : 'bg-gray-300'
-                      }`}>
+                    <div
+                      key={index}
+                      className={`flex items-center gap-3 p-3 rounded-lg ${
+                        goal.completed
+                          ? 'bg-green-50 border-green-200'
+                          : 'bg-gray-50 border-gray-200'
+                      } border`}
+                    >
+                      <div
+                        className={`p-1 rounded-full ${
+                          goal.completed ? 'bg-green-500' : 'bg-gray-300'
+                        }`}
+                      >
                         <CheckCircle className="h-4 w-4 text-white" />
                       </div>
                       <div className="flex-1">
-                        <h3 className={`font-medium ${goal.completed ? 'line-through text-gray-500' : ''}`}>
+                        <h3
+                          className={`font-medium ${goal.completed ? 'line-through text-gray-500' : ''}`}
+                        >
                           {goal.title}
                         </h3>
                         <p className="text-sm text-gray-600">{goal.subject}</p>
@@ -301,5 +340,5 @@ export default function StudentDashboard() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }

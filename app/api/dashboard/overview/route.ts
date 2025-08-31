@@ -28,12 +28,16 @@ export async function GET(request: NextRequest) {
 
     // Calculate overview statistics
     const totalAnalyses = recentAnalyses.length;
-    const avgScore = totalAnalyses > 0 
-      ? Math.round(recentAnalyses.reduce((sum, analysis) => sum + parseFloat(analysis.garScore), 0) / totalAnalyses)
-      : 0;
+    const avgScore =
+      totalAnalyses > 0
+        ? Math.round(
+            recentAnalyses.reduce((sum, analysis) => sum + parseFloat(analysis.garScore), 0) /
+              totalAnalyses,
+          )
+        : 0;
 
     const totalXp = starpathData.reduce((sum, progress) => sum + progress.totalXp, 0);
-    const completedSkills = starpathData.filter(progress => progress.isUnlocked).length;
+    const completedSkills = starpathData.filter((progress) => progress.isUnlocked).length;
 
     // Get recent achievements
     const recentAchievements = getRecentAchievements(recentAnalyses, starpathData);
@@ -47,21 +51,21 @@ export async function GET(request: NextRequest) {
         id: user.id,
         username: user.username,
         sport: user.sport,
-        role: user.role
+        role: user.role,
       },
       statistics: {
         total_analyses: totalAnalyses,
         average_gar_score: avgScore,
         total_xp: totalXp,
         completed_skills: completedSkills,
-        current_tier: Math.floor(totalXp / 1000) + 1
+        current_tier: Math.floor(totalXp / 1000) + 1,
       },
-      recent_analyses: recentAnalyses.map(analysis => ({
+      recent_analyses: recentAnalyses.map((analysis) => ({
         id: analysis.id,
         sport: analysis.sport,
         gar_score: analysis.garScore,
         created_at: analysis.createdAt,
-        feedback: analysis.feedback
+        feedback: analysis.feedback,
       })),
       recent_achievements: recentAchievements,
       upcoming_goals: upcomingGoals,
@@ -69,16 +73,12 @@ export async function GET(request: NextRequest) {
         { title: 'Upload Video', url: '/upload', icon: 'upload' },
         { title: 'View Progress', url: '/starpath', icon: 'trending-up' },
         { title: 'Academy', url: '/academy', icon: 'book' },
-        { title: 'AI Coach', url: '/ai-coach', icon: 'brain' }
-      ]
+        { title: 'AI Coach', url: '/ai-coach', icon: 'brain' },
+      ],
     });
-
   } catch (error) {
     console.error('Error fetching dashboard overview:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch dashboard data' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch dashboard data' }, { status: 500 });
   }
 }
 
@@ -95,7 +95,7 @@ function getRecentAchievements(analyses: any[], starpathData: any[]): any[] {
         description: `Achieved ${score}/100 GAR score`,
         type: 'performance',
         earned_at: latestAnalysis.createdAt,
-        icon: '🌟'
+        icon: '🌟',
       });
     } else if (score >= 80) {
       achievements.push({
@@ -103,7 +103,7 @@ function getRecentAchievements(analyses: any[], starpathData: any[]): any[] {
         description: `Achieved ${score}/100 GAR score`,
         type: 'performance',
         earned_at: latestAnalysis.createdAt,
-        icon: '⭐'
+        icon: '⭐',
       });
     }
   }
@@ -118,22 +118,22 @@ function getRecentAchievements(analyses: any[], starpathData: any[]): any[] {
         description: `Improved by ${Math.round(currentScore - previousScore)} points`,
         type: 'improvement',
         earned_at: analyses[0].createdAt,
-        icon: '📈'
+        icon: '📈',
       });
     }
   }
 
   // Check for consistency achievements
   if (analyses.length >= 3) {
-    const recentScores = analyses.slice(0, 3).map(a => parseFloat(a.garScore));
-    const isConsistent = recentScores.every(score => Math.abs(score - recentScores[0]) < 5);
+    const recentScores = analyses.slice(0, 3).map((a) => parseFloat(a.garScore));
+    const isConsistent = recentScores.every((score) => Math.abs(score - recentScores[0]) < 5);
     if (isConsistent && recentScores[0] >= 75) {
       achievements.push({
         title: 'Consistent Performance',
         description: 'Maintained consistent high performance',
         type: 'consistency',
         earned_at: analyses[0].createdAt,
-        icon: '🎯'
+        icon: '🎯',
       });
     }
   }
@@ -153,7 +153,7 @@ function getUpcomingGoals(sport: string, currentScore: number): any[] {
       current: currentScore,
       type: 'performance',
       estimated_time: '2-3 weeks',
-      icon: '🎯'
+      icon: '🎯',
     });
   } else if (currentScore < 90) {
     goals.push({
@@ -163,7 +163,7 @@ function getUpcomingGoals(sport: string, currentScore: number): any[] {
       current: currentScore,
       type: 'performance',
       estimated_time: '3-4 weeks',
-      icon: '🌟'
+      icon: '🌟',
     });
   }
 
@@ -175,15 +175,15 @@ function getUpcomingGoals(sport: string, currentScore: number): any[] {
         description: 'Complete advanced dribbling skill tree',
         type: 'skill',
         estimated_time: '1-2 weeks',
-        icon: '🏀'
+        icon: '🏀',
       },
       {
         title: 'Improve Shooting Consistency',
         description: 'Achieve 80%+ shooting accuracy in drills',
         type: 'skill',
         estimated_time: '2-3 weeks',
-        icon: '🎯'
-      }
+        icon: '🎯',
+      },
     ],
     soccer: [
       {
@@ -191,15 +191,15 @@ function getUpcomingGoals(sport: string, currentScore: number): any[] {
         description: 'Master ball control and reception',
         type: 'skill',
         estimated_time: '1-2 weeks',
-        icon: '⚽'
+        icon: '⚽',
       },
       {
         title: 'Passing Accuracy',
         description: 'Achieve 90%+ passing accuracy',
         type: 'skill',
         estimated_time: '2-3 weeks',
-        icon: '🎯'
-      }
+        icon: '🎯',
+      },
     ],
     tennis: [
       {
@@ -207,9 +207,9 @@ function getUpcomingGoals(sport: string, currentScore: number): any[] {
         description: 'Master forehand and backhand technique',
         type: 'skill',
         estimated_time: '2-3 weeks',
-        icon: '🎾'
-      }
-    ]
+        icon: '🎾',
+      },
+    ],
   };
 
   if (sport && sportGoals[sport]) {

@@ -1,117 +1,123 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Check, X, RefreshCw, Users, Database, Settings, BarChart, Shield } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Check, X, RefreshCw, Users, Database, Settings, BarChart, Shield } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface VerificationResult {
-  database: { connected: boolean; error: string | null }
-  users: { count: number; error: string | null }
-  videoAnalysis: { count: number; error: string | null }
-  starPath: { count: number; error: string | null }
-  features: Record<string, boolean>
-  adminAccess: Record<string, boolean>
+  database: { connected: boolean; error: string | null };
+  users: { count: number; error: string | null };
+  videoAnalysis: { count: number; error: string | null };
+  starPath: { count: number; error: string | null };
+  features: Record<string, boolean>;
+  adminAccess: Record<string, boolean>;
 }
 
 export default function AdminVerificationPage() {
-  const [results, setResults] = useState<VerificationResult | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [demoLoading, setDemoLoading] = useState(false)
-  const router = useRouter()
+  const [results, setResults] = useState<VerificationResult | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(false);
+  const router = useRouter();
 
   const verifyFeatures = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await fetch('/api/admin/verify-features', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
-        }
-      })
-      
+          Authorization: `Bearer ${localStorage.getItem('auth-token')}`,
+        },
+      });
+
       if (!response.ok) {
-        throw new Error('Verification failed')
+        throw new Error('Verification failed');
       }
-      
-      const data = await response.json()
-      setResults(data.verificationResults)
+
+      const data = await response.json();
+      setResults(data.verificationResults);
     } catch (error) {
-      console.error('Verification error:', error)
+      console.error('Verification error:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const populateDemoUsers = async () => {
-    setDemoLoading(true)
+    setDemoLoading(true);
     try {
       const response = await fetch('/api/admin/populate-demo', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
-        }
-      })
-      
+          Authorization: `Bearer ${localStorage.getItem('auth-token')}`,
+        },
+      });
+
       if (!response.ok) {
-        throw new Error('Demo population failed')
+        throw new Error('Demo population failed');
       }
-      
-      const data = await response.json()
-      
+
+      const data = await response.json();
+
       if (data.success) {
-        alert(`Successfully created ${data.users?.length || 0} real user accounts!`)
-        verifyFeatures() // Refresh verification
+        alert(`Successfully created ${data.users?.length || 0} real user accounts!`);
+        verifyFeatures(); // Refresh verification
       } else {
-        alert(`User creation failed: ${data.message}`)
+        alert(`User creation failed: ${data.message}`);
       }
     } catch (error) {
-      console.error('User creation error:', error)
-      alert('Failed to create real users')
+      console.error('User creation error:', error);
+      alert('Failed to create real users');
     } finally {
-      setDemoLoading(false)
+      setDemoLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    verifyFeatures()
-  }, [])
+    verifyFeatures();
+  }, []);
 
   const StatusBadge = ({ status }: { status: boolean }) => (
     <Badge variant={status ? 'default' : 'destructive'} className="ml-2">
       {status ? <Check className="w-3 h-3 mr-1" /> : <X className="w-3 h-3 mr-1" />}
       {status ? 'Working' : 'Issue'}
     </Badge>
-  )
+  );
 
   return (
     <div className="min-h-screen bg-slate-900 py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">
-            Admin Platform Verification
-          </h1>
+          <h1 className="text-4xl font-bold text-white mb-4">Admin Platform Verification</h1>
           <p className="text-xl text-slate-300">
             Comprehensive platform functionality and admin access verification
           </p>
-          
+
           <div className="flex justify-center gap-4 mt-8">
-            <Button 
+            <Button
               onClick={verifyFeatures}
               disabled={loading}
               className="bg-blue-600 hover:bg-blue-700"
             >
-              {loading ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <Shield className="w-4 h-4 mr-2" />}
+              {loading ? (
+                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Shield className="w-4 h-4 mr-2" />
+              )}
               {loading ? 'Verifying...' : 'Verify Platform'}
             </Button>
-            
-            <Button 
+
+            <Button
               onClick={populateDemoUsers}
               disabled={demoLoading}
               className="bg-green-600 hover:bg-green-700"
             >
-              {demoLoading ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <Users className="w-4 h-4 mr-2" />}
+              {demoLoading ? (
+                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Users className="w-4 h-4 mr-2" />
+              )}
               {demoLoading ? 'Creating...' : 'Create Real Users'}
             </Button>
           </div>
@@ -201,25 +207,25 @@ export default function AdminVerificationPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Button 
+                <Button
                   onClick={() => router.push('/admin')}
                   className="w-full bg-blue-600 hover:bg-blue-700"
                 >
                   Go to Admin Dashboard
                 </Button>
-                <Button 
+                <Button
                   onClick={() => router.push('/dashboard')}
                   className="w-full bg-green-600 hover:bg-green-700"
                 >
                   Go to User Dashboard
                 </Button>
-                <Button 
+                <Button
                   onClick={() => router.push('/academy')}
                   className="w-full bg-purple-600 hover:bg-purple-700"
                 >
                   Go to Academy
                 </Button>
-                <Button 
+                <Button
                   onClick={() => router.push('/ai-coach')}
                   className="w-full bg-orange-600 hover:bg-orange-700"
                 >
@@ -271,13 +277,14 @@ export default function AdminVerificationPage() {
             </div>
             <div className="mt-4 p-4 bg-blue-900/20 rounded-lg">
               <p className="text-sm text-blue-300">
-                <strong>Passwords:</strong> Each account uses [username]123 format<br/>
-                <strong>Example:</strong> athlete@test.com uses password &quot;athlete123&quot;
+                <strong>Passwords:</strong> Each account uses [username]123 format
+                <br />
+                <strong>Example:</strong> athlete@test.com uses password "athlete123"
               </p>
             </div>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }

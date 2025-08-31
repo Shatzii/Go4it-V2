@@ -1,6 +1,6 @@
 /**
  * School Registration & Payment System
- * 
+ *
  * Complete school district onboarding with Stripe payment integration
  * Tiered pricing and automated billing system
  */
@@ -19,12 +19,12 @@ class SchoolRegistrationSystem {
           'Basic Curriculum Generation',
           'Student Progress Tracking',
           'Parent Dashboard',
-          'Email Support'
+          'Email Support',
         ],
-        stripePriceId: process.env.STRIPE_BASIC_PRICE_ID
+        stripePriceId: process.env.STRIPE_BASIC_PRICE_ID,
       },
       pro: {
-        name: 'Professional', 
+        name: 'Professional',
         price: 59900, // $599 in cents
         studentLimit: 500,
         features: [
@@ -33,9 +33,9 @@ class SchoolRegistrationSystem {
           'Custom Curriculum Standards',
           'Neurodivergent Adaptations',
           'Priority Support',
-          'Admin Training Sessions'
+          'Admin Training Sessions',
         ],
-        stripePriceId: process.env.STRIPE_PRO_PRICE_ID
+        stripePriceId: process.env.STRIPE_PRO_PRICE_ID,
       },
       enterprise: {
         name: 'Enterprise',
@@ -48,10 +48,10 @@ class SchoolRegistrationSystem {
           'Custom AI Teacher Training',
           'API Access',
           'Dedicated Success Manager',
-          'Custom Integrations'
+          'Custom Integrations',
         ],
-        stripePriceId: process.env.STRIPE_ENTERPRISE_PRICE_ID
-      }
+        stripePriceId: process.env.STRIPE_ENTERPRISE_PRICE_ID,
+      },
     };
   }
 
@@ -68,7 +68,7 @@ class SchoolRegistrationSystem {
       address,
       estimatedStudents,
       pricingTier,
-      paymentMethodId
+      paymentMethodId,
     } = registrationData;
 
     // Validate pricing tier
@@ -80,7 +80,9 @@ class SchoolRegistrationSystem {
 
     // Check student limit
     if (tier.studentLimit && estimatedStudents > tier.studentLimit) {
-      throw new Error(`Student count (${estimatedStudents}) exceeds limit for ${tier.name} plan (${tier.studentLimit})`);
+      throw new Error(
+        `Student count (${estimatedStudents}) exceeds limit for ${tier.name} plan (${tier.studentLimit})`,
+      );
     }
 
     try {
@@ -94,15 +96,15 @@ class SchoolRegistrationSystem {
           districtName,
           adminName,
           estimatedStudents: estimatedStudents.toString(),
-          pricingTier
+          pricingTier,
         },
         address: {
           line1: address.street,
           city: address.city,
           state: address.state,
           postal_code: address.zipCode,
-          country: 'US'
-        }
+          country: 'US',
+        },
       });
 
       // Attach payment method to customer
@@ -120,20 +122,22 @@ class SchoolRegistrationSystem {
       // Create subscription
       const subscription = await stripe.subscriptions.create({
         customer: customer.id,
-        items: [{
-          price: tier.stripePriceId,
-        }],
+        items: [
+          {
+            price: tier.stripePriceId,
+          },
+        ],
         payment_behavior: 'default_incomplete',
-        payment_settings: { 
-          save_default_payment_method: 'on_subscription' 
+        payment_settings: {
+          save_default_payment_method: 'on_subscription',
         },
         expand: ['latest_invoice.payment_intent'],
         metadata: {
           schoolName,
           districtName,
           pricingTier,
-          estimatedStudents: estimatedStudents.toString()
-        }
+          estimatedStudents: estimatedStudents.toString(),
+        },
       });
 
       // Create school record in database
@@ -150,7 +154,7 @@ class SchoolRegistrationSystem {
         stripeSubscriptionId: subscription.id,
         status: subscription.status,
         features: tier.features,
-        studentLimit: tier.studentLimit
+        studentLimit: tier.studentLimit,
       });
 
       // Send welcome email
@@ -159,7 +163,7 @@ class SchoolRegistrationSystem {
         schoolName,
         adminName,
         pricingTier: tier.name,
-        loginUrl: `https://schools.shatzii.com/login?school=${schoolId}`
+        loginUrl: `https://schools.shatzii.com/login?school=${schoolId}`,
       });
 
       return {
@@ -170,9 +174,8 @@ class SchoolRegistrationSystem {
         clientSecret: subscription.latest_invoice.payment_intent.client_secret,
         status: subscription.status,
         pricingTier: tier,
-        message: 'School registration successful! Check your email for login instructions.'
+        message: 'School registration successful! Check your email for login instructions.',
       };
-
     } catch (error) {
       console.error('School registration error:', error);
       throw new Error(`Registration failed: ${error.message}`);
@@ -184,7 +187,7 @@ class SchoolRegistrationSystem {
    */
   async createSchoolRecord(schoolData) {
     const schoolId = this.generateSchoolId();
-    
+
     // In production, this would save to actual database
     const schoolRecord = {
       id: schoolId,
@@ -196,13 +199,13 @@ class SchoolRegistrationSystem {
       usageStats: {
         monthlyLessons: 0,
         monthlyTutoringMinutes: 0,
-        monthlyAssessments: 0
-      }
+        monthlyAssessments: 0,
+      },
     };
 
     // Simulate database save
     console.log('Creating school record:', schoolRecord);
-    
+
     return schoolId;
   }
 
@@ -213,13 +216,13 @@ class SchoolRegistrationSystem {
     try {
       // Retrieve subscription from Stripe
       const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-      
+
       // Activate school account
       await this.activateSchoolAccount(subscription.metadata.schoolName, subscription.id);
-      
+
       // Send activation email
       await this.sendActivationEmail(subscription);
-      
+
       return { success: true };
     } catch (error) {
       console.error('Payment success handling error:', error);
@@ -233,13 +236,13 @@ class SchoolRegistrationSystem {
   async handlePaymentFailed(subscriptionId) {
     try {
       const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-      
+
       // Suspend school account
       await this.suspendSchoolAccount(subscription.metadata.schoolName);
-      
+
       // Send payment failure notification
       await this.sendPaymentFailureEmail(subscription);
-      
+
       return { success: true };
     } catch (error) {
       console.error('Payment failure handling error:', error);
@@ -264,12 +267,14 @@ class SchoolRegistrationSystem {
 
       // Update Stripe subscription
       const subscription = await stripe.subscriptions.retrieve(school.stripeSubscriptionId);
-      
+
       await stripe.subscriptions.update(school.stripeSubscriptionId, {
-        items: [{
-          id: subscription.items.data[0].id,
-          price: newTierConfig.stripePriceId,
-        }],
+        items: [
+          {
+            id: subscription.items.data[0].id,
+            price: newTierConfig.stripePriceId,
+          },
+        ],
         proration_behavior: 'create_prorations',
       });
 
@@ -279,9 +284,8 @@ class SchoolRegistrationSystem {
       return {
         success: true,
         message: `Successfully upgraded to ${newTierConfig.name} plan`,
-        newFeatures: newTierConfig.features
+        newFeatures: newTierConfig.features,
       };
-
     } catch (error) {
       console.error('Subscription upgrade error:', error);
       throw error;
@@ -305,16 +309,17 @@ class SchoolRegistrationSystem {
       currentPlan: school.pricingTier,
       studentCount: school.currentStudentCount,
       studentLimit: school.studentLimit,
-      utilizationPercentage: school.studentLimit ? 
-        Math.round((school.currentStudentCount / school.studentLimit) * 100) : 0,
+      utilizationPercentage: school.studentLimit
+        ? Math.round((school.currentStudentCount / school.studentLimit) * 100)
+        : 0,
       monthlyUsage: {
         lessons: school.usageStats.monthlyLessons,
         tutoringMinutes: school.usageStats.monthlyTutoringMinutes,
         assessments: school.usageStats.monthlyAssessments,
-        period: `${monthStart.toLocaleDateString()} - ${currentDate.toLocaleDateString()}`
+        period: `${monthStart.toLocaleDateString()} - ${currentDate.toLocaleDateString()}`,
       },
       billingStatus: school.status,
-      nextBillingDate: await this.getNextBillingDate(school.stripeSubscriptionId)
+      nextBillingDate: await this.getNextBillingDate(school.stripeSubscriptionId),
     };
   }
 
@@ -333,8 +338,8 @@ class SchoolRegistrationSystem {
         cancel_at_period_end: true,
         metadata: {
           cancellation_reason: reason,
-          cancelled_at: new Date().toISOString()
-        }
+          cancelled_at: new Date().toISOString(),
+        },
       });
 
       // Update school status
@@ -345,10 +350,10 @@ class SchoolRegistrationSystem {
 
       return {
         success: true,
-        message: 'Subscription cancelled. Access will continue until the end of the billing period.',
-        accessUntil: await this.getSubscriptionEndDate(school.stripeSubscriptionId)
+        message:
+          'Subscription cancelled. Access will continue until the end of the billing period.',
+        accessUntil: await this.getSubscriptionEndDate(school.stripeSubscriptionId),
       };
-
     } catch (error) {
       console.error('Subscription cancellation error:', error);
       throw error;
@@ -469,8 +474,8 @@ class SchoolRegistrationSystem {
       usageStats: {
         monthlyLessons: 1250,
         monthlyTutoringMinutes: 3500,
-        monthlyAssessments: 450
-      }
+        monthlyAssessments: 450,
+      },
     };
   }
 

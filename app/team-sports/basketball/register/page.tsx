@@ -1,19 +1,25 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Checkbox } from '@/components/ui/checkbox'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
-import { Zap, User, Calendar, FileText, CreditCard, CheckCircle } from 'lucide-react'
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Zap, User, Calendar, FileText, CreditCard, CheckCircle } from 'lucide-react';
 
 export default function BasketballRegisterPage() {
-  const [currentStep, setCurrentStep] = useState(1)
+  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     // Player Info
     firstName: '',
@@ -23,39 +29,39 @@ export default function BasketballRegisterPage() {
     school: '',
     playerPhone: '',
     playerEmail: '',
-    
+
     // Parent/Guardian Info
     parentFirstName: '',
     parentLastName: '',
     parentPhone: '',
     parentEmail: '',
     relationship: '',
-    
+
     // Division & Preferences
     preferredDivision: '',
     position: '',
     experience: '',
-    
+
     // Emergency & Medical
     emergencyContact: '',
     emergencyPhone: '',
     medicalConditions: '',
     allergies: '',
-    
+
     // Agreements
     agreesToTerms: false,
     agreesToMedical: false,
-    agreesToPhotos: false
-  })
+    agreesToPhotos: false,
+  });
 
-  const totalSteps = 5
+  const totalSteps = 5;
   const stepTitles = [
     'Player Information',
     'Parent/Guardian Info',
     'Division Selection',
     'Emergency & Medical',
-    'Terms & Payment'
-  ]
+    'Terms & Payment',
+  ];
 
   const divisions = [
     { id: 'u10', name: 'U10', ages: '8-10 years', available: true, cost: 190 },
@@ -63,43 +69,43 @@ export default function BasketballRegisterPage() {
     { id: 'u14', name: 'U14', ages: '13-14 years', available: true, cost: 230 },
     { id: 'u16', name: 'U16', ages: '15-16 years', available: true, cost: 250 },
     { id: 'u18', name: 'U18', ages: '17-18 years', available: true, cost: 270 },
-    { id: 'adult', name: 'Adult', ages: '18+ years', available: false, cost: 300 }
-  ]
+    { id: 'adult', name: 'Adult', ages: '18+ years', available: false, cost: 300 },
+  ];
 
   const positions = [
     'Point Guard (PG)',
-    'Shooting Guard (SG)', 
+    'Shooting Guard (SG)',
     'Small Forward (SF)',
     'Power Forward (PF)',
     'Center (C)',
     'Guard (G) - Flexible',
     'Forward (F) - Flexible',
-    'No Preference'
-  ]
+    'No Preference',
+  ];
 
   const updateFormData = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const nextStep = () => {
     if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1)
+      setCurrentStep(currentStep + 1);
     }
-  }
+  };
 
   const prevStep = () => {
     if (currentStep > 1) {
-      setCurrentStep(currentStep - 1)
+      setCurrentStep(currentStep - 1);
     }
-  }
+  };
 
   const handleSubmit = () => {
     // Here you would submit to your team registration API
-    console.log('Basketball team registration submitted:', formData)
-    setCurrentStep(6) // Success step
-  }
+    console.log('Basketball team registration submitted:', formData);
+    setCurrentStep(6); // Success step
+  };
 
-  const selectedDivision = divisions.find(d => d.id === formData.preferredDivision)
+  const selectedDivision = divisions.find((d) => d.id === formData.preferredDivision);
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
@@ -114,7 +120,8 @@ export default function BasketballRegisterPage() {
           </div>
           <h1 className="text-3xl font-bold mb-2">🏀 Basketball Team Registration</h1>
           <p className="text-orange-100">
-            Join our competitive basketball program focused on fundamentals, teamwork, and character development
+            Join our competitive basketball program focused on fundamentals, teamwork, and character
+            development
           </p>
         </div>
       </div>
@@ -126,19 +133,23 @@ export default function BasketballRegisterPage() {
             <div className="flex items-center justify-between mb-4">
               {stepTitles.map((title, index) => (
                 <div key={index} className="flex items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                    currentStep > index + 1 
-                      ? 'bg-orange-600 text-white' 
-                      : currentStep === index + 1 
-                        ? 'bg-green-600 text-white' 
-                        : 'bg-slate-700 text-slate-400'
-                  }`}>
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                      currentStep > index + 1
+                        ? 'bg-orange-600 text-white'
+                        : currentStep === index + 1
+                          ? 'bg-green-600 text-white'
+                          : 'bg-slate-700 text-slate-400'
+                    }`}
+                  >
                     {currentStep > index + 1 ? '✓' : index + 1}
                   </div>
                   {index < stepTitles.length - 1 && (
-                    <div className={`w-16 h-1 mx-2 ${
-                      currentStep > index + 1 ? 'bg-orange-600' : 'bg-slate-700'
-                    }`} />
+                    <div
+                      className={`w-16 h-1 mx-2 ${
+                        currentStep > index + 1 ? 'bg-orange-600' : 'bg-slate-700'
+                      }`}
+                    />
                   )}
                 </div>
               ))}
@@ -167,7 +178,7 @@ export default function BasketballRegisterPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label className="text-white">First Name *</Label>
-                  <Input 
+                  <Input
                     value={formData.firstName}
                     onChange={(e) => updateFormData('firstName', e.target.value)}
                     className="bg-slate-700 border-slate-600 text-white"
@@ -176,7 +187,7 @@ export default function BasketballRegisterPage() {
                 </div>
                 <div>
                   <Label className="text-white">Last Name *</Label>
-                  <Input 
+                  <Input
                     value={formData.lastName}
                     onChange={(e) => updateFormData('lastName', e.target.value)}
                     className="bg-slate-700 border-slate-600 text-white"
@@ -184,11 +195,11 @@ export default function BasketballRegisterPage() {
                   />
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <Label className="text-white">Date of Birth *</Label>
-                  <Input 
+                  <Input
                     type="date"
                     value={formData.dateOfBirth}
                     onChange={(e) => updateFormData('dateOfBirth', e.target.value)}
@@ -219,7 +230,7 @@ export default function BasketballRegisterPage() {
                 </div>
                 <div>
                   <Label className="text-white">School</Label>
-                  <Input 
+                  <Input
                     value={formData.school}
                     onChange={(e) => updateFormData('school', e.target.value)}
                     className="bg-slate-700 border-slate-600 text-white"
@@ -231,7 +242,7 @@ export default function BasketballRegisterPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label className="text-white">Player Phone</Label>
-                  <Input 
+                  <Input
                     value={formData.playerPhone}
                     onChange={(e) => updateFormData('playerPhone', e.target.value)}
                     className="bg-slate-700 border-slate-600 text-white"
@@ -240,7 +251,7 @@ export default function BasketballRegisterPage() {
                 </div>
                 <div>
                   <Label className="text-white">Player Email</Label>
-                  <Input 
+                  <Input
                     type="email"
                     value={formData.playerEmail}
                     onChange={(e) => updateFormData('playerEmail', e.target.value)}
@@ -269,7 +280,7 @@ export default function BasketballRegisterPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label className="text-white">Parent/Guardian First Name *</Label>
-                  <Input 
+                  <Input
                     value={formData.parentFirstName}
                     onChange={(e) => updateFormData('parentFirstName', e.target.value)}
                     className="bg-slate-700 border-slate-600 text-white"
@@ -277,18 +288,18 @@ export default function BasketballRegisterPage() {
                 </div>
                 <div>
                   <Label className="text-white">Parent/Guardian Last Name *</Label>
-                  <Input 
+                  <Input
                     value={formData.parentLastName}
                     onChange={(e) => updateFormData('parentLastName', e.target.value)}
                     className="bg-slate-700 border-slate-600 text-white"
                   />
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <Label className="text-white">Phone Number *</Label>
-                  <Input 
+                  <Input
                     value={formData.parentPhone}
                     onChange={(e) => updateFormData('parentPhone', e.target.value)}
                     className="bg-slate-700 border-slate-600 text-white"
@@ -297,7 +308,7 @@ export default function BasketballRegisterPage() {
                 </div>
                 <div>
                   <Label className="text-white">Email Address *</Label>
-                  <Input 
+                  <Input
                     type="email"
                     value={formData.parentEmail}
                     onChange={(e) => updateFormData('parentEmail', e.target.value)}
@@ -339,20 +350,20 @@ export default function BasketballRegisterPage() {
             <CardContent className="space-y-6">
               <div>
                 <Label className="text-white text-lg mb-4 block">Age Division *</Label>
-                <RadioGroup 
-                  value={formData.preferredDivision} 
+                <RadioGroup
+                  value={formData.preferredDivision}
                   onValueChange={(value) => updateFormData('preferredDivision', value)}
                   className="space-y-3"
                 >
                   {divisions.map((division) => (
                     <div key={division.id} className="flex items-center space-x-3">
-                      <RadioGroupItem 
-                        value={division.id} 
+                      <RadioGroupItem
+                        value={division.id}
                         id={division.id}
                         disabled={!division.available}
                         className="text-white"
                       />
-                      <Label 
+                      <Label
                         htmlFor={division.id}
                         className={`flex-1 p-3 rounded border cursor-pointer transition-all ${
                           formData.preferredDivision === division.id
@@ -418,24 +429,21 @@ export default function BasketballRegisterPage() {
         {/* Navigation Buttons */}
         {currentStep <= totalSteps && (
           <div className="flex justify-between mt-8">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={prevStep}
               disabled={currentStep === 1}
               className="border-slate-600 text-slate-300"
             >
               Previous
             </Button>
-            
+
             {currentStep < totalSteps ? (
-              <Button 
-                onClick={nextStep}
-                className="bg-orange-600 hover:bg-orange-700 text-white"
-              >
+              <Button onClick={nextStep} className="bg-orange-600 hover:bg-orange-700 text-white">
                 Next Step
               </Button>
             ) : (
-              <Button 
+              <Button
                 onClick={handleSubmit}
                 className="bg-orange-600 hover:bg-orange-700 text-white"
               >
@@ -450,22 +458,26 @@ export default function BasketballRegisterPage() {
           <Card className="bg-orange-600 border-orange-500 text-center">
             <CardContent className="p-8">
               <CheckCircle className="w-16 h-16 text-white mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-white mb-4">
-                Registration Successful!
-              </h2>
+              <h2 className="text-2xl font-bold text-white mb-4">Registration Successful!</h2>
               <p className="text-orange-100 mb-6">
-                Welcome to the Go4It Sports Basketball program! 
-                You'll receive team assignment and practice schedule information via email within 48 hours.
+                Welcome to the Go4It Sports Basketball program! You'll receive team assignment and
+                practice schedule information via email within 48 hours.
               </p>
               <div className="space-y-2 text-orange-100">
-                <p><strong>Registration ID:</strong> BB-{Date.now()}</p>
-                <p><strong>Division:</strong> {selectedDivision?.name}</p>
-                <p><strong>Season Cost:</strong> ${selectedDivision?.cost}</p>
+                <p>
+                  <strong>Registration ID:</strong> BB-{Date.now()}
+                </p>
+                <p>
+                  <strong>Division:</strong> {selectedDivision?.name}
+                </p>
+                <p>
+                  <strong>Season Cost:</strong> ${selectedDivision?.cost}
+                </p>
               </div>
             </CardContent>
           </Card>
         )}
       </div>
     </div>
-  )
+  );
 }

@@ -4,16 +4,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Smartphone, 
-  Download, 
-  Wifi, 
-  Bell, 
-  Home,
-  X,
-  CheckCircle,
-  AlertCircle
-} from 'lucide-react';
+import { Smartphone, Download, Wifi, Bell, Home, X, CheckCircle, AlertCircle } from 'lucide-react';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -26,7 +17,8 @@ export function PWAInstall() {
   const [isInstalling, setIsInstalling] = useState(false);
   const [showInstallCard, setShowInstallCard] = useState(false);
   const [installStep, setInstallStep] = useState(0);
-  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
+  const [notificationPermission, setNotificationPermission] =
+    useState<NotificationPermission>('default');
 
   useEffect(() => {
     // Check if app is already installed
@@ -75,7 +67,7 @@ export function PWAInstall() {
     try {
       await deferredPrompt.prompt();
       const choiceResult = await deferredPrompt.userChoice;
-      
+
       if (choiceResult.outcome === 'accepted') {
         setInstallStep(2);
         setTimeout(() => {
@@ -99,13 +91,13 @@ export function PWAInstall() {
     if ('Notification' in window) {
       const permission = await Notification.requestPermission();
       setNotificationPermission(permission);
-      
+
       if (permission === 'granted') {
         // Show a test notification
         new Notification('Universal One School', {
           body: 'You will now receive important notifications!',
           icon: '/favicon.ico',
-          tag: 'pwa-setup'
+          tag: 'pwa-setup',
         });
       }
     }
@@ -124,8 +116,8 @@ export function PWAInstall() {
         steps: [
           'Tap the Share button at the bottom of the screen',
           'Scroll down and tap "Add to Home Screen"',
-          'Tap "Add" to confirm'
-        ]
+          'Tap "Add" to confirm',
+        ],
       };
     } else if (isAndroid && isChrome) {
       return {
@@ -133,8 +125,8 @@ export function PWAInstall() {
         steps: [
           'Tap the menu (three dots) in the top right',
           'Tap "Add to Home screen"',
-          'Tap "Add" to confirm'
-        ]
+          'Tap "Add" to confirm',
+        ],
       };
     } else {
       return {
@@ -142,8 +134,8 @@ export function PWAInstall() {
         steps: [
           'Look for the install icon in your browser',
           'Click "Install" when prompted',
-          'Follow your browser\'s instructions'
-        ]
+          "Follow your browser's instructions",
+        ],
       };
     }
   };
@@ -156,8 +148,8 @@ export function PWAInstall() {
             <CheckCircle className="w-12 h-12 text-green-600 mx-auto" />
             <h3 className="text-lg font-semibold text-green-800">App Installed!</h3>
             <p className="text-green-700">
-              Universal One School is now installed on your device. 
-              You can access it from your home screen.
+              Universal One School is now installed on your device. You can access it from your home
+              screen.
             </p>
             <div className="flex justify-center space-x-2">
               <Badge variant="secondary" className="bg-green-100 text-green-800">
@@ -189,11 +181,7 @@ export function PWAInstall() {
             <Smartphone className="w-5 h-5" />
             Install App
           </CardTitle>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => setShowInstallCard(false)}
-          >
+          <Button variant="ghost" size="sm" onClick={() => setShowInstallCard(false)}>
             <X className="w-4 h-4" />
           </Button>
         </div>
@@ -228,11 +216,7 @@ export function PWAInstall() {
             </div>
 
             {deferredPrompt && (
-              <Button 
-                onClick={handleInstallClick}
-                disabled={isInstalling}
-                className="w-full"
-              >
+              <Button onClick={handleInstallClick} disabled={isInstalling} className="w-full">
                 <Download className="w-4 h-4 mr-2" />
                 {isInstalling ? 'Installing...' : 'Install Now'}
               </Button>
@@ -268,11 +252,7 @@ export function PWAInstall() {
                 <p className="font-medium text-sm">Enable Notifications</p>
                 <p className="text-xs text-gray-600">Get updates about your learning</p>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={requestNotificationPermission}
-              >
+              <Button variant="outline" size="sm" onClick={requestNotificationPermission}>
                 <Bell className="w-4 h-4 mr-1" />
                 Allow
               </Button>

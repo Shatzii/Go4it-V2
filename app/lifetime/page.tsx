@@ -6,19 +6,19 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Trophy, 
-  Star, 
-  Users, 
-  Calendar, 
-  MapPin, 
-  Clock, 
-  CheckCircle, 
+import {
+  Trophy,
+  Star,
+  Users,
+  Calendar,
+  MapPin,
+  Clock,
+  CheckCircle,
   Timer,
   TrendingUp,
   Award,
   Zap,
-  Crown
+  Crown,
 } from 'lucide-react';
 
 const TOTAL_SPOTS = 100;
@@ -30,23 +30,23 @@ export default function LifetimeMembershipPage() {
     days: 0,
     hours: 0,
     minutes: 0,
-    seconds: 0
+    seconds: 0,
   });
 
   useEffect(() => {
     // Set event date: July 22, 2025 7:00 PM
     const eventDate = new Date('2025-07-22T19:00:00');
-    
+
     const timer = setInterval(() => {
       const now = new Date();
       const difference = eventDate.getTime() - now.getTime();
-      
+
       if (difference > 0) {
         setTimeLeft({
           days: Math.floor(difference / (1000 * 60 * 60 * 24)),
           hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
           minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((difference % (1000 * 60)) / 1000)
+          seconds: Math.floor((difference % (1000 * 60)) / 1000),
         });
       }
     }, 1000);
@@ -60,13 +60,13 @@ export default function LifetimeMembershipPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
+          Authorization: `Bearer ${localStorage.getItem('auth-token')}`,
         },
         body: JSON.stringify({
           membershipType: 'verified100',
           amount: 100,
-          eventId: 'vienna-july-2025'
-        })
+          eventId: 'vienna-july-2025',
+        }),
       });
 
       if (!response.ok) {
@@ -93,19 +93,19 @@ export default function LifetimeMembershipPage() {
             <Badge className="mb-6 bg-yellow-500 text-black font-bold text-lg px-6 py-2">
               FOUNDERS CLUB EXCLUSIVE
             </Badge>
-            
+
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
               THE VERIFIED 100
             </h1>
-            
+
             <p className="text-2xl md:text-3xl font-bold mb-4 text-white">
               LIFETIME MEMBERSHIP LAUNCH
             </p>
-            
+
             <p className="text-xl text-slate-300 mb-8 max-w-3xl mx-auto">
               Be one of the FIRST. Be VERIFIED for LIFE.
             </p>
-            
+
             <div className="flex items-center justify-center gap-8 mb-12">
               <div className="text-center">
                 <div className="text-4xl font-bold text-yellow-400">$100</div>
@@ -153,7 +153,7 @@ export default function LifetimeMembershipPage() {
               Starting with Friday Night Lights • July 22, 7:00 PM
             </p>
           </div>
-          
+
           {/* Countdown Timer */}
           <div className="grid grid-cols-4 gap-4 max-w-md mx-auto mb-8">
             <div className="bg-slate-800 rounded-lg p-4">
@@ -177,7 +177,8 @@ export default function LifetimeMembershipPage() {
           <Alert className="max-w-2xl mx-auto bg-blue-900/30 border-blue-500">
             <Calendar className="w-5 h-5" />
             <AlertDescription className="text-white">
-              <strong>Event Schedule:</strong> Friday Night Lights (7 PM) • Saturday Combines (8 AM) • Sunday Elite Showcases (10 AM)
+              <strong>Event Schedule:</strong> Friday Night Lights (7 PM) • Saturday Combines (8 AM)
+              • Sunday Elite Showcases (10 AM)
             </AlertDescription>
           </Alert>
         </div>
@@ -187,12 +188,10 @@ export default function LifetimeMembershipPage() {
       <div className="max-w-7xl mx-auto px-4 py-16">
         {/* Value Proposition */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-6">
-            $100 FOR LIFE? BELIEVE IT.
-          </h2>
+          <h2 className="text-4xl font-bold mb-6">$100 FOR LIFE? BELIEVE IT.</h2>
           <p className="text-xl text-slate-300 max-w-4xl mx-auto">
-            We're launching the GAR Score revolution. You get data, exposure, a verified future. 
-            And if you're early? You'll never pay again.
+            We're launching the GAR Score revolution. You get data, exposure, a verified future. And
+            if you're early? You'll never pay again.
           </p>
         </div>
 
@@ -207,7 +206,8 @@ export default function LifetimeMembershipPage() {
             </CardHeader>
             <CardContent>
               <p className="text-slate-300">
-                Full GAR Score testing at every combine event. Professional video analysis and performance metrics.
+                Full GAR Score testing at every combine event. Professional video analysis and
+                performance metrics.
               </p>
             </CardContent>
           </Card>
@@ -295,15 +295,15 @@ export default function LifetimeMembershipPage() {
                   No monthly fees. No pay-per-combine. Just performance. Just verified. Forever.
                 </p>
               </div>
-              
+
               <div className="space-y-4">
-                <Button 
+                <Button
                   onClick={handleLifetimePurchase}
                   className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold text-lg py-6"
                 >
                   SECURE MY LIFETIME MEMBERSHIP - $100
                 </Button>
-                
+
                 <div className="flex items-center justify-center gap-4 text-sm text-slate-400">
                   <div className="flex items-center gap-1">
                     <CheckCircle className="w-4 h-4 text-green-400" />
@@ -325,9 +325,7 @@ export default function LifetimeMembershipPage() {
 
         {/* Social Proof */}
         <div className="text-center mt-16">
-          <p className="text-slate-400 mb-4">
-            Join the movement. Be legendary.
-          </p>
+          <p className="text-slate-400 mb-4">Join the movement. Be legendary.</p>
           <div className="flex flex-wrap justify-center gap-4 text-sm">
             <Badge variant="outline" className="text-slate-300 border-slate-600">
               #Verified100

@@ -19,7 +19,7 @@ export function preloadCriticalComponents() {
   if (typeof window !== 'undefined') {
     // Preload based on user's likely next action
     const path = window.location.pathname;
-    
+
     if (path === '/') {
       // On homepage, preload registration and GAR upload
       preloadComponent(() => import('@/app/register/page'));

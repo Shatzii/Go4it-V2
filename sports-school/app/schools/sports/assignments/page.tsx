@@ -1,13 +1,13 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Clock, Calendar, CheckCircle, Trophy, Target, Timer } from 'lucide-react'
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Clock, Calendar, CheckCircle, Trophy, Target, Timer } from 'lucide-react';
 
 export default function SportsAssignmentsPage() {
-  const [selectedFilter, setSelectedFilter] = useState('all')
+  const [selectedFilter, setSelectedFilter] = useState('all');
 
   const assignments = [
     {
@@ -17,10 +17,11 @@ export default function SportsAssignmentsPage() {
       dueDate: '2025-07-20',
       status: 'pending',
       priority: 'high',
-      description: 'Complete comprehensive fitness testing including strength, endurance, and flexibility assessments.',
+      description:
+        'Complete comprehensive fitness testing including strength, endurance, and flexibility assessments.',
       coach: 'Coach Johnson',
       sport: '🏃‍♂️',
-      grade: '10'
+      grade: '10',
     },
     {
       id: 'team-strategy',
@@ -29,10 +30,11 @@ export default function SportsAssignmentsPage() {
       dueDate: '2025-07-18',
       status: 'completed',
       priority: 'medium',
-      description: 'Analyze game footage and develop strategic playbook for upcoming championship game.',
+      description:
+        'Analyze game footage and develop strategic playbook for upcoming championship game.',
       coach: 'Coach Martinez',
       sport: '🏀',
-      grade: '10'
+      grade: '10',
     },
     {
       id: 'swimming-technique',
@@ -41,10 +43,11 @@ export default function SportsAssignmentsPage() {
       dueDate: '2025-07-22',
       status: 'in-progress',
       priority: 'high',
-      description: 'Record and analyze swimming technique for stroke improvement and time reduction.',
+      description:
+        'Record and analyze swimming technique for stroke improvement and time reduction.',
       coach: 'Coach Williams',
       sport: '🏊‍♂️',
-      grade: '11'
+      grade: '11',
     },
     {
       id: 'nutrition-plan',
@@ -53,10 +56,11 @@ export default function SportsAssignmentsPage() {
       dueDate: '2025-07-25',
       status: 'pending',
       priority: 'medium',
-      description: 'Create personalized nutrition plan based on training schedule and athletic goals.',
+      description:
+        'Create personalized nutrition plan based on training schedule and athletic goals.',
       coach: 'Dr. Chen',
       sport: '🥗',
-      grade: '11'
+      grade: '11',
     },
     {
       id: 'coaching-portfolio',
@@ -65,10 +69,11 @@ export default function SportsAssignmentsPage() {
       dueDate: '2025-07-28',
       status: 'pending',
       priority: 'high',
-      description: 'Develop coaching portfolio with lesson plans and youth athletic program design.',
+      description:
+        'Develop coaching portfolio with lesson plans and youth athletic program design.',
       coach: 'Coach Johnson',
       sport: '👨‍🏫',
-      grade: '12'
+      grade: '12',
     },
     {
       id: 'competition-prep',
@@ -77,10 +82,11 @@ export default function SportsAssignmentsPage() {
       dueDate: '2025-07-30',
       status: 'in-progress',
       priority: 'urgent',
-      description: 'Final preparation for state championship including mental conditioning and strategy review.',
+      description:
+        'Final preparation for state championship including mental conditioning and strategy review.',
       coach: 'Coach Elite',
       sport: '🏆',
-      grade: '10-12'
+      grade: '10-12',
     },
     {
       id: 'injury-prevention',
@@ -89,54 +95,63 @@ export default function SportsAssignmentsPage() {
       dueDate: '2025-07-26',
       status: 'pending',
       priority: 'high',
-      description: 'Design comprehensive injury prevention protocol for specific sport specialization.',
+      description:
+        'Design comprehensive injury prevention protocol for specific sport specialization.',
       coach: 'Dr. Rodriguez',
       sport: '🏥',
-      grade: '12'
-    }
-  ]
+      grade: '12',
+    },
+  ];
 
-  const filters = ['all', 'pending', 'in-progress', 'completed', 'urgent']
+  const filters = ['all', 'pending', 'in-progress', 'completed', 'urgent'];
 
-  const filteredAssignments = selectedFilter === 'all' 
-    ? assignments 
-    : assignments.filter(assignment => 
-        assignment.status === selectedFilter || assignment.priority === selectedFilter
-      )
+  const filteredAssignments =
+    selectedFilter === 'all'
+      ? assignments
+      : assignments.filter(
+          (assignment) =>
+            assignment.status === selectedFilter || assignment.priority === selectedFilter,
+        );
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-500'
-      case 'in-progress': return 'bg-blue-500'
-      case 'pending': return 'bg-yellow-500'
-      default: return 'bg-gray-500'
+      case 'completed':
+        return 'bg-green-500';
+      case 'in-progress':
+        return 'bg-blue-500';
+      case 'pending':
+        return 'bg-yellow-500';
+      default:
+        return 'bg-gray-500';
     }
-  }
+  };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'urgent': return 'bg-red-500'
-      case 'high': return 'bg-orange-500'
-      case 'medium': return 'bg-yellow-500'
-      default: return 'bg-gray-500'
+      case 'urgent':
+        return 'bg-red-500';
+      case 'high':
+        return 'bg-orange-500';
+      case 'medium':
+        return 'bg-yellow-500';
+      default:
+        return 'bg-gray-500';
     }
-  }
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
-    })
-  }
+      year: 'numeric',
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            🏆 Sports Academy Assignments
-          </h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">🏆 Sports Academy Assignments</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Athletic training assignments and performance assessments for championship excellence
           </p>
@@ -147,7 +162,7 @@ export default function SportsAssignmentsPage() {
           {filters.map((filter) => (
             <Button
               key={filter}
-              variant={selectedFilter === filter ? "default" : "outline"}
+              variant={selectedFilter === filter ? 'default' : 'outline'}
               onClick={() => setSelectedFilter(filter)}
               className="min-w-[100px] capitalize"
             >
@@ -169,7 +184,9 @@ export default function SportsAssignmentsPage() {
                     <Badge className={`${getStatusColor(assignment.status)} text-white text-xs`}>
                       {assignment.status}
                     </Badge>
-                    <Badge className={`${getPriorityColor(assignment.priority)} text-white text-xs`}>
+                    <Badge
+                      className={`${getPriorityColor(assignment.priority)} text-white text-xs`}
+                    >
                       {assignment.priority}
                     </Badge>
                   </div>
@@ -181,14 +198,12 @@ export default function SportsAssignmentsPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 mb-4">{assignment.description}</p>
-                
+
                 <div className="mb-4">
                   <p className="text-sm font-medium text-gray-700 mb-1">
                     Course: {assignment.course}
                   </p>
-                  <p className="text-sm text-gray-600">
-                    Coach: {assignment.coach}
-                  </p>
+                  <p className="text-sm text-gray-600">Coach: {assignment.coach}</p>
                 </div>
 
                 <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
@@ -221,9 +236,7 @@ export default function SportsAssignmentsPage() {
           <Card className="text-center">
             <CardContent className="pt-6">
               <Trophy className="w-12 h-12 text-red-500 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                {assignments.length}
-              </h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">{assignments.length}</h3>
               <p className="text-gray-600">Total Assignments</p>
             </CardContent>
           </Card>
@@ -231,7 +244,7 @@ export default function SportsAssignmentsPage() {
             <CardContent className="pt-6">
               <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
               <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                {assignments.filter(a => a.status === 'completed').length}
+                {assignments.filter((a) => a.status === 'completed').length}
               </h3>
               <p className="text-gray-600">Completed</p>
             </CardContent>
@@ -240,7 +253,7 @@ export default function SportsAssignmentsPage() {
             <CardContent className="pt-6">
               <Timer className="w-12 h-12 text-blue-500 mx-auto mb-4" />
               <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                {assignments.filter(a => a.status === 'in-progress').length}
+                {assignments.filter((a) => a.status === 'in-progress').length}
               </h3>
               <p className="text-gray-600">In Progress</p>
             </CardContent>
@@ -249,7 +262,7 @@ export default function SportsAssignmentsPage() {
             <CardContent className="pt-6">
               <Clock className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
               <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                {assignments.filter(a => a.status === 'pending').length}
+                {assignments.filter((a) => a.status === 'pending').length}
               </h3>
               <p className="text-gray-600">Pending</p>
             </CardContent>
@@ -257,5 +270,5 @@ export default function SportsAssignmentsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

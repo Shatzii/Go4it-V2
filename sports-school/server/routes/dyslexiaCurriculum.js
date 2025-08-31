@@ -1,6 +1,6 @@
 /**
  * Dyslexia Curriculum API Routes
- * 
+ *
  * These routes provide access to the Dyslexia Curriculum Service,
  * which generates dyslexia-friendly educational content across K-College
  * curriculum based on the SuperPAC Dyslexia Curriculum framework.
@@ -18,19 +18,19 @@ const handleApiError = (res, error) => {
     return res.status(500).json({
       error: 'API configuration error',
       message: 'The required API key is not configured. Please contact the administrator.',
-      code: 'API_KEY_MISSING'
+      code: 'API_KEY_MISSING',
     });
   }
   return res.status(500).json({
     error: 'Server error',
     message: error.message,
-    code: 'INTERNAL_ERROR'
+    code: 'INTERNAL_ERROR',
   });
 };
 
 /**
  * GET /api/dyslexia-curriculum/subjects
- * 
+ *
  * Returns a list of available subjects for curriculum generation
  */
 router.get('/subjects', (req, res) => {
@@ -44,7 +44,7 @@ router.get('/subjects', (req, res) => {
 
 /**
  * GET /api/dyslexia-curriculum/grades
- * 
+ *
  * Returns a list of available grade levels for curriculum generation
  */
 router.get('/grades', (req, res) => {
@@ -58,7 +58,7 @@ router.get('/grades', (req, res) => {
 
 /**
  * GET /api/dyslexia-curriculum/formats
- * 
+ *
  * Returns a list of available formats for curriculum generation
  */
 router.get('/formats', (req, res) => {
@@ -72,9 +72,9 @@ router.get('/formats', (req, res) => {
 
 /**
  * GET /api/dyslexia-curriculum/topics
- * 
+ *
  * Returns sample topics for a given subject and grade level
- * 
+ *
  * Query parameters:
  * - subject: The subject area
  * - grade: The grade level
@@ -82,15 +82,15 @@ router.get('/formats', (req, res) => {
 router.get('/topics', (req, res) => {
   try {
     const { subject, grade } = req.query;
-    
+
     if (!subject || !grade) {
       return res.status(400).json({
         error: 'Missing parameters',
         message: 'Both subject and grade parameters are required',
-        code: 'MISSING_PARAMS'
+        code: 'MISSING_PARAMS',
       });
     }
-    
+
     const topics = dyslexiaCurriculumService.getSampleTopics(subject, grade);
     res.json(topics);
   } catch (error) {
@@ -100,9 +100,9 @@ router.get('/topics', (req, res) => {
 
 /**
  * POST /api/dyslexia-curriculum/generate-lesson
- * 
+ *
  * Generates a curriculum lesson based on the provided parameters
- * 
+ *
  * Request body:
  * - subject: The subject area
  * - grade: The grade level
@@ -114,25 +114,25 @@ router.get('/topics', (req, res) => {
 router.post('/generate-lesson', async (req, res) => {
   try {
     const { subject, grade, state = 'general', format, topic, api = 'anthropic' } = req.body;
-    
+
     // Validate required parameters
     if (!subject || !grade || !format) {
       return res.status(400).json({
         error: 'Missing parameters',
         message: 'subject, grade, and format parameters are required',
-        code: 'MISSING_PARAMS'
+        code: 'MISSING_PARAMS',
       });
     }
-    
+
     // Build parameters object for service
     const params = {
       subject,
       grade,
       state,
       format,
-      topic: topic || `${subject} for ${grade}`
+      topic: topic || `${subject} for ${grade}`,
     };
-    
+
     // Call the appropriate service method based on API selection
     let lesson;
     if (api === 'perplexity') {
@@ -140,7 +140,7 @@ router.post('/generate-lesson', async (req, res) => {
     } else {
       lesson = await dyslexiaCurriculumService.generateLessonWithAnthropic(params);
     }
-    
+
     res.json(lesson);
   } catch (error) {
     handleApiError(res, error);
@@ -149,7 +149,7 @@ router.post('/generate-lesson', async (req, res) => {
 
 /**
  * POST /api/dyslexia-curriculum/clear-cache
- * 
+ *
  * Clears the curriculum content cache
  */
 router.post('/clear-cache', (req, res) => {

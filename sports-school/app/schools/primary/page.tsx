@@ -1,16 +1,35 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import StandaloneNavigation from '@/app/schools/standalone-navigation'
-import { Zap, Shield, Star, Trophy, Book, Users, Clock, Target, TrendingUp, BookOpen } from 'lucide-react'
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import StandaloneNavigation from '@/app/schools/standalone-navigation';
+import {
+  Zap,
+  Shield,
+  Star,
+  Trophy,
+  Book,
+  Users,
+  Clock,
+  Target,
+  TrendingUp,
+  BookOpen,
+} from 'lucide-react';
 
 // Placeholder components for missing imports
-const AssignmentList = ({ userId, courseId, schoolTheme }: { userId: string; courseId: string; schoolTheme: string }) => (
+const AssignmentList = ({
+  userId,
+  courseId,
+  schoolTheme,
+}: {
+  userId: string;
+  courseId: string;
+  schoolTheme: string;
+}) => (
   <Card>
     <CardContent className="text-center py-8">
       <div className="text-4xl mb-4">🦸‍♂️</div>
@@ -18,9 +37,17 @@ const AssignmentList = ({ userId, courseId, schoolTheme }: { userId: string; cou
       <p className="text-gray-600">Check back soon for exciting learning adventures!</p>
     </CardContent>
   </Card>
-)
+);
 
-const GradeSummary = ({ userId, courseId, schoolTheme }: { userId: string; courseId: string; schoolTheme: string }) => (
+const GradeSummary = ({
+  userId,
+  courseId,
+  schoolTheme,
+}: {
+  userId: string;
+  courseId: string;
+  schoolTheme: string;
+}) => (
   <Card>
     <CardContent className="text-center py-8">
       <div className="text-4xl mb-4">🏆</div>
@@ -28,77 +55,77 @@ const GradeSummary = ({ userId, courseId, schoolTheme }: { userId: string; cours
       <p className="text-gray-600">Your superhero progress will appear here!</p>
     </CardContent>
   </Card>
-)
+);
 
 export default function PrimarySchoolPage() {
-  const [selectedGrade, setSelectedGrade] = useState('K')
+  const [selectedGrade, setSelectedGrade] = useState('K');
 
   const gradePrograms = {
     K: {
       name: 'Kindergarten Heroes',
       description: 'Building foundational superpowers',
-      subjects: ['Number Magic', 'Letter Adventures', 'Science Discovery', 'Art Expression']
+      subjects: ['Number Magic', 'Letter Adventures', 'Science Discovery', 'Art Expression'],
     },
     '1': {
       name: 'First Grade Champions',
       description: 'Reading and math adventures begin',
-      subjects: ['Math Adventures', 'Reading Heroes', 'Nature Explorers', 'Creative Arts']
+      subjects: ['Math Adventures', 'Reading Heroes', 'Nature Explorers', 'Creative Arts'],
     },
     '2': {
       name: 'Second Grade Defenders',
       description: 'Expanding knowledge and skills',
-      subjects: ['Number Superheroes', 'Story Champions', 'Science Investigators', 'Music Magic']
+      subjects: ['Number Superheroes', 'Story Champions', 'Science Investigators', 'Music Magic'],
     },
     '3': {
       name: 'Third Grade Guardians',
       description: 'Mastering core concepts',
-      subjects: ['Math Masters', 'Reading Legends', 'Science Detectives', 'Drama Fun']
+      subjects: ['Math Masters', 'Reading Legends', 'Science Detectives', 'Drama Fun'],
     },
     '4': {
       name: 'Fourth Grade Warriors',
       description: 'Advanced problem solving',
-      subjects: ['Advanced Math', 'Literature Heroes', 'Earth Science', 'Digital Arts']
+      subjects: ['Advanced Math', 'Literature Heroes', 'Earth Science', 'Digital Arts'],
     },
     '5': {
       name: 'Fifth Grade Leaders',
       description: 'Preparing for middle school',
-      subjects: ['Pre-Algebra', 'Classic Literature', 'Physical Science', 'Theater Arts']
+      subjects: ['Pre-Algebra', 'Classic Literature', 'Physical Science', 'Theater Arts'],
     },
     '6': {
       name: 'Sixth Grade Legends',
       description: 'Transition to advanced learning',
-      subjects: ['Algebra Prep', 'Advanced Reading', 'Life Science', 'Performance Arts']
-    }
-  }
+      subjects: ['Algebra Prep', 'Advanced Reading', 'Life Science', 'Performance Arts'],
+    },
+  };
 
   const neurodivergentSupports = [
     {
       type: 'ADHD Support',
       icon: <Zap className="h-5 w-5" />,
-      features: ['Movement breaks', 'Fidget tools', 'Visual schedules', 'Shortened tasks']
+      features: ['Movement breaks', 'Fidget tools', 'Visual schedules', 'Shortened tasks'],
     },
     {
       type: 'Dyslexia Support',
       icon: <Book className="h-5 w-5" />,
-      features: ['Audio support', 'Dyslexia fonts', 'Reading overlays', 'Phonics games']
+      features: ['Audio support', 'Dyslexia fonts', 'Reading overlays', 'Phonics games'],
     },
     {
       type: 'Autism Support',
       icon: <Shield className="h-5 w-5" />,
-      features: ['Predictable routines', 'Social stories', 'Sensory breaks', 'Clear expectations']
-    }
-  ]
+      features: ['Predictable routines', 'Social stories', 'Sensory breaks', 'Clear expectations'],
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-      <StandaloneNavigation 
+      <StandaloneNavigation
         schoolPath="/schools/primary"
         schoolName="Primary SuperHero School"
         schoolTheme="SuperHero Learning Adventure (K-6)"
         gradeLevel="Kindergarten - 6th Grade"
         themeColor="from-red-500 to-orange-500"
       />
-      
+
       <div className="container mx-auto px-4 py-8">
         {/* Hero Section */}
         <div className="text-center mb-12">
@@ -106,7 +133,8 @@ export default function PrimarySchoolPage() {
             Primary SuperHero School
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Where every child discovers their unique superpowers through personalized learning adventures
+            Where every child discovers their unique superpowers through personalized learning
+            adventures
           </p>
         </div>
 
@@ -123,7 +151,7 @@ export default function PrimarySchoolPage() {
               {Object.entries(gradePrograms).map(([grade, program]) => (
                 <Button
                   key={grade}
-                  variant={selectedGrade === grade ? "default" : "outline"}
+                  variant={selectedGrade === grade ? 'default' : 'outline'}
                   className={`h-20 flex flex-col ${selectedGrade === grade ? 'bg-red-500 text-white' : ''}`}
                   onClick={() => setSelectedGrade(grade)}
                 >
@@ -142,9 +170,7 @@ export default function PrimarySchoolPage() {
               <Star className="h-6 w-6 text-yellow-500" />
               <span>{gradePrograms[selectedGrade].name}</span>
             </CardTitle>
-            <CardDescription>
-              {gradePrograms[selectedGrade].description}
-            </CardDescription>
+            <CardDescription>{gradePrograms[selectedGrade].description}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -209,19 +235,11 @@ export default function PrimarySchoolPage() {
           </TabsList>
 
           <TabsContent value="assignments" className="space-y-6">
-            <AssignmentList 
-              userId="1" 
-              courseId="1"
-              schoolTheme="superhero"
-            />
+            <AssignmentList userId="1" courseId="1" schoolTheme="superhero" />
           </TabsContent>
 
           <TabsContent value="grades" className="space-y-6">
-            <GradeSummary 
-              userId="1" 
-              courseId="1"
-              schoolTheme="superhero"
-            />
+            <GradeSummary userId="1" courseId="1" schoolTheme="superhero" />
           </TabsContent>
 
           <TabsContent value="curriculum" className="space-y-6">
@@ -303,7 +321,9 @@ export default function PrimarySchoolPage() {
                   </div>
                   <div className="flex items-center space-x-3">
                     <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span>Power-Up Challenges: Skill-building mini-games with immediate feedback</span>
+                    <span>
+                      Power-Up Challenges: Skill-building mini-games with immediate feedback
+                    </span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
@@ -361,7 +381,9 @@ export default function PrimarySchoolPage() {
         {/* Student Access Portal */}
         <Card className="mb-8 border-2 border-blue-300 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-2xl text-center text-slate-900">Student Learning Portal</CardTitle>
+            <CardTitle className="text-2xl text-center text-slate-900">
+              Student Learning Portal
+            </CardTitle>
             <CardDescription className="text-center text-slate-700">
               Access your personalized superhero learning dashboard
             </CardDescription>
@@ -374,8 +396,13 @@ export default function PrimarySchoolPage() {
                     <Users className="h-8 w-8 text-white" />
                   </div>
                   <h3 className="font-semibold mb-2 text-slate-900">Student Dashboard</h3>
-                  <p className="text-sm text-slate-800 mb-4">Access your courses, progress, and achievements</p>
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={() => window.location.href = '/schools/primary/student-dashboard'}>
+                  <p className="text-sm text-slate-800 mb-4">
+                    Access your courses, progress, and achievements
+                  </p>
+                  <Button
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    onClick={() => (window.location.href = '/schools/primary/student-dashboard')}
+                  >
                     🦸‍♂️ Enter SuperHero Dashboard
                   </Button>
                 </CardContent>
@@ -387,8 +414,14 @@ export default function PrimarySchoolPage() {
                     <Zap className="h-8 w-8 text-white" />
                   </div>
                   <h3 className="font-semibold mb-2 text-slate-900">AI Tutor Chat</h3>
-                  <p className="text-sm text-slate-800 mb-4">Get help from Dean Wonder, your AI superhero tutor</p>
-                  <Button className="w-full border-2 border-green-400 text-slate-900 hover:bg-green-50" variant="outline" onClick={() => window.location.href = '/dashboard'}>
+                  <p className="text-sm text-slate-800 mb-4">
+                    Get help from Dean Wonder, your AI superhero tutor
+                  </p>
+                  <Button
+                    className="w-full border-2 border-green-400 text-slate-900 hover:bg-green-50"
+                    variant="outline"
+                    onClick={() => (window.location.href = '/dashboard')}
+                  >
                     🤖 Chat with Dean Wonder
                   </Button>
                 </CardContent>
@@ -400,8 +433,14 @@ export default function PrimarySchoolPage() {
                     <Target className="h-8 w-8 text-white" />
                   </div>
                   <h3 className="font-semibold mb-2 text-slate-900">Sensory Breaks</h3>
-                  <p className="text-sm text-slate-800 mb-4">Take personalized breaks to stay focused and regulated</p>
-                  <Button className="w-full border-2 border-purple-400 text-slate-900 hover:bg-purple-50" variant="outline" onClick={() => window.location.href = '/dashboard'}>
+                  <p className="text-sm text-slate-800 mb-4">
+                    Take personalized breaks to stay focused and regulated
+                  </p>
+                  <Button
+                    className="w-full border-2 border-purple-400 text-slate-900 hover:bg-purple-50"
+                    variant="outline"
+                    onClick={() => (window.location.href = '/dashboard')}
+                  >
                     🧘‍♂️ Take a Break
                   </Button>
                 </CardContent>
@@ -421,19 +460,35 @@ export default function PrimarySchoolPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Button variant="outline" className="h-20 flex flex-col border-2 border-blue-300 text-slate-900 hover:bg-blue-50" onClick={() => window.location.href = '/dashboard'}>
+              <Button
+                variant="outline"
+                className="h-20 flex flex-col border-2 border-blue-300 text-slate-900 hover:bg-blue-50"
+                onClick={() => (window.location.href = '/dashboard')}
+              >
                 <BookOpen className="h-6 w-6 mb-2 text-blue-600" />
                 <span className="text-sm">📚 My Courses</span>
               </Button>
-              <Button variant="outline" className="h-20 flex flex-col" onClick={() => window.location.href = '/assignments'}>
+              <Button
+                variant="outline"
+                className="h-20 flex flex-col"
+                onClick={() => (window.location.href = '/assignments')}
+              >
                 <Target className="h-6 w-6 mb-2 text-green-600" />
                 <span className="text-sm">Assignments</span>
               </Button>
-              <Button variant="outline" className="h-20 flex flex-col" onClick={() => window.location.href = '/progress'}>
+              <Button
+                variant="outline"
+                className="h-20 flex flex-col"
+                onClick={() => (window.location.href = '/progress')}
+              >
                 <TrendingUp className="h-6 w-6 mb-2 text-purple-600" />
                 <span className="text-sm">My Progress</span>
               </Button>
-              <Button variant="outline" className="h-20 flex flex-col" onClick={() => window.location.href = '/achievements'}>
+              <Button
+                variant="outline"
+                className="h-20 flex flex-col"
+                onClick={() => (window.location.href = '/achievements')}
+              >
                 <Trophy className="h-6 w-6 mb-2 text-yellow-600" />
                 <span className="text-sm">Achievements</span>
               </Button>
@@ -446,13 +501,23 @@ export default function PrimarySchoolPage() {
           <CardContent className="text-center py-12">
             <h2 className="text-3xl font-bold mb-4">Ready to Unleash Your Child's Superpowers?</h2>
             <p className="text-xl mb-8 max-w-2xl mx-auto">
-              Join the SuperHero School where every child discovers their unique learning abilities and thrives
+              Join the SuperHero School where every child discovers their unique learning abilities
+              and thrives
             </p>
             <div className="space-x-4">
-              <Button size="lg" variant="secondary" onClick={() => window.location.href = '/register'}>
+              <Button
+                size="lg"
+                variant="secondary"
+                onClick={() => (window.location.href = '/register')}
+              >
                 Schedule Tour
               </Button>
-              <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-blue-600" onClick={() => window.location.href = '/apply'}>
+              <Button
+                size="lg"
+                variant="outline"
+                className="bg-transparent border-white text-white hover:bg-white hover:text-blue-600"
+                onClick={() => (window.location.href = '/apply')}
+              >
                 Apply Now
               </Button>
             </div>
@@ -460,5 +525,5 @@ export default function PrimarySchoolPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const athleteId = searchParams.get('athleteId') || 'current-user'
+    const { searchParams } = new URL(request.url);
+    const athleteId = searchParams.get('athleteId') || 'current-user';
 
     // Fetch data from all recruitment systems
     const integratedData = {
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
         sat: 1280,
         garScore: 87,
         location: 'California',
-        achievements: ['State Champion', 'All-Conference', 'Team Captain']
+        achievements: ['State Champion', 'All-Conference', 'Team Captain'],
       },
 
       // Scholarship Opportunities (from scholarship-tracker)
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
             matchScore: 94,
             status: 'available',
             deadline: '2025-11-15',
-            requirements: { minGPA: 3.3, minSAT: 1200 }
+            requirements: { minGPA: 3.3, minSAT: 1200 },
           },
           {
             id: 'stanford-scholarship',
@@ -47,9 +47,9 @@ export async function GET(request: NextRequest) {
             matchScore: 89,
             status: 'applied',
             deadline: '2025-12-15',
-            requirements: { minGPA: 3.8, minSAT: 1450 }
-          }
-        ]
+            requirements: { minGPA: 3.8, minSAT: 1450 },
+          },
+        ],
       },
 
       // College Matches (from college-explorer)
@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
           tuition: 43022,
           acceptance_rate: 14,
           hasScholarship: true,
-          contactMade: false
+          contactMade: false,
         },
         {
           id: 'stanford',
@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
           tuition: 58416,
           acceptance_rate: 5,
           hasScholarship: true,
-          contactMade: true
+          contactMade: true,
         },
         {
           id: 'gonzaga',
@@ -88,8 +88,8 @@ export async function GET(request: NextRequest) {
           tuition: 48350,
           acceptance_rate: 62,
           hasScholarship: true,
-          contactMade: false
-        }
+          contactMade: false,
+        },
       ],
 
       // Athletic Contacts (from athletic-contacts)
@@ -105,7 +105,7 @@ export async function GET(request: NextRequest) {
             email: 'mcronin@athletics.ucla.edu',
             lastContact: '2025-07-15',
             status: 'responded',
-            interest: 'high'
+            interest: 'high',
           },
           {
             id: 'coach-haase-stanford',
@@ -115,9 +115,9 @@ export async function GET(request: NextRequest) {
             email: 'jhaase@stanford.edu',
             lastContact: '2025-07-10',
             status: 'pending',
-            interest: 'medium'
-          }
-        ]
+            interest: 'medium',
+          },
+        ],
       },
 
       // NCAA Eligibility (from ncaa-eligibility)
@@ -128,7 +128,7 @@ export async function GET(request: NextRequest) {
         coreCoursesCompleted: 14,
         coreCoursesRequired: 16,
         amateurStatus: 'certified',
-        nextSteps: ['Complete remaining 2 core courses', 'Submit final transcripts']
+        nextSteps: ['Complete remaining 2 core courses', 'Submit final transcripts'],
       },
 
       // Rankings (from rankings system)
@@ -137,7 +137,7 @@ export async function GET(request: NextRequest) {
         nationalRank: 47,
         positionRank: 8,
         stateRank: 3,
-        improvementTrend: '+12 positions (last 6 months)'
+        improvementTrend: '+12 positions (last 6 months)',
       },
 
       // Recruitment Timeline
@@ -147,8 +147,8 @@ export async function GET(request: NextRequest) {
         upcomingDeadlines: [
           { event: 'UCLA Scholarship Application', date: '2025-11-15', priority: 'high' },
           { event: 'Stanford Early Decision', date: '2025-12-15', priority: 'medium' },
-          { event: 'NCAA Core Course Completion', date: '2026-05-30', priority: 'critical' }
-        ]
+          { event: 'NCAA Core Course Completion', date: '2026-05-30', priority: 'critical' },
+        ],
       },
 
       // AI Recommendations
@@ -156,30 +156,29 @@ export async function GET(request: NextRequest) {
         immediate: [
           'Apply to UCLA scholarship (94% match) before Nov 15 deadline',
           'Contact Gonzaga coach - high athletic fit (90%)',
-          'Complete SAT retake to improve Stanford academic fit'
+          'Complete SAT retake to improve Stanford academic fit',
         ],
         strategic: [
           'Focus on schools with 85%+ overall match scores',
           'Maintain 3.7+ GPA for top scholarship eligibility',
-          'Schedule official visits for top 3 schools'
-        ]
-      }
-    }
+          'Schedule official visits for top 3 schools',
+        ],
+      },
+    };
 
     return NextResponse.json({
       success: true,
       data: integratedData,
-      lastUpdated: new Date().toISOString()
-    })
-
+      lastUpdated: new Date().toISOString(),
+    });
   } catch (error) {
-    console.error('Error fetching integrated dashboard data:', error)
+    console.error('Error fetching integrated dashboard data:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Failed to fetch integrated dashboard data'
+      {
+        success: false,
+        error: 'Failed to fetch integrated dashboard data',
       },
-      { status: 500 }
-    )
+      { status: 500 },
+    );
   }
 }

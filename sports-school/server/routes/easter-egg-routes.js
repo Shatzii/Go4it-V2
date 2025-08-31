@@ -1,7 +1,7 @@
 /**
  * Easter Egg Routes
- * 
- * These routes handle all Easter egg functionality, including checking for 
+ *
+ * These routes handle all Easter egg functionality, including checking for
  * Easter eggs at specific paths, tracking user discoveries, and completing Easter eggs.
  */
 
@@ -23,14 +23,14 @@ const sampleEasterEggs = [
       facts: [
         'The brain forms new neural connections when learning new information, a process called neuroplasticity.',
         'Taking short breaks during study sessions can improve long-term memory retention by up to 30%.',
-        'Learning a musical instrument can enhance mathematical and spatial-temporal reasoning skills.'
+        'Learning a musical instrument can enhance mathematical and spatial-temporal reasoning skills.',
       ],
-      source: 'Journal of Cognitive Neuroscience'
+      source: 'Journal of Cognitive Neuroscience',
     },
     reward: {
       xp: 50,
-      badge: { name: 'Brain Explorer' }
-    }
+      badge: { name: 'Brain Explorer' },
+    },
   },
   {
     id: 'egg2',
@@ -45,20 +45,30 @@ const sampleEasterEggs = [
       questions: [
         {
           question: 'What legal principle states that a person is innocent until proven guilty?',
-          options: ['Habeas corpus', 'Presumption of innocence', 'Double jeopardy', 'Burden of proof'],
-          correctIndex: 1
+          options: [
+            'Habeas corpus',
+            'Presumption of innocence',
+            'Double jeopardy',
+            'Burden of proof',
+          ],
+          correctIndex: 1,
         },
         {
           question: 'In contract law, what is consideration?',
-          options: ['The act of thinking about an offer', 'Something of value exchanged in a contract', 'The physical location where a contract is signed', 'The amount of time given to accept an offer'],
-          correctIndex: 1
-        }
-      ]
+          options: [
+            'The act of thinking about an offer',
+            'Something of value exchanged in a contract',
+            'The physical location where a contract is signed',
+            'The amount of time given to accept an offer',
+          ],
+          correctIndex: 1,
+        },
+      ],
     },
     reward: {
       xp: 100,
-      badge: { name: 'Legal Eagle' }
-    }
+      badge: { name: 'Legal Eagle' },
+    },
   },
   {
     id: 'egg3',
@@ -70,13 +80,13 @@ const sampleEasterEggs = [
     difficulty: 'hard',
     content: {
       title: 'Speed Vocabulary Challenge',
-      instructions: 'Match as many words as possible with their translations in 60 seconds!'
+      instructions: 'Match as many words as possible with their translations in 60 seconds!',
     },
     reward: {
       xp: 200,
       badge: { name: 'Code Linguist' },
-      unlocks: { name: 'Bonus vocabulary lists' }
-    }
+      unlocks: { name: 'Bonus vocabulary lists' },
+    },
   },
   {
     id: 'egg4',
@@ -88,13 +98,14 @@ const sampleEasterEggs = [
     difficulty: 'medium',
     content: {
       title: 'A Message from the ShotziOS Team',
-      message: 'Thank you for exploring our platform so thoroughly! We built ShotziOS with love and dedication to create an inclusive educational experience for all learners. Keep exploring, and you might find more surprises!'
+      message:
+        'Thank you for exploring our platform so thoroughly! We built ShotziOS with love and dedication to create an inclusive educational experience for all learners. Keep exploring, and you might find more surprises!',
     },
     reward: {
       xp: 75,
-      specialMessage: 'The developers appreciate your curiosity!'
-    }
-  }
+      specialMessage: 'The developers appreciate your curiosity!',
+    },
+  },
 ];
 
 // In-memory storage for Easter eggs and user discoveries
@@ -109,7 +120,7 @@ router.get('/all', (req, res) => {
   // In a real app, check if user is admin
   res.json({
     success: true,
-    data: easterEggs
+    data: easterEggs,
   });
 });
 
@@ -118,51 +129,50 @@ router.get('/all', (req, res) => {
  */
 router.post('/check', (req, res) => {
   const { path, action, userId } = req.body;
-  
+
   if (!path || !userId) {
     return res.status(400).json({
       success: false,
-      error: 'Path and userId are required'
+      error: 'Path and userId are required',
     });
   }
-  
+
   // Find a matching Easter egg
-  const easterEgg = easterEggs.find(egg => 
-    egg.path === path && 
-    (egg.action === null || egg.action === action)
+  const easterEgg = easterEggs.find(
+    (egg) => egg.path === path && (egg.action === null || egg.action === action),
   );
-  
+
   if (!easterEgg) {
     return res.json({
       success: true,
-      found: false
+      found: false,
     });
   }
-  
+
   // Check if this is a new discovery for the user
   if (!userDiscoveries[userId]) {
     userDiscoveries[userId] = [];
   }
-  
+
   const isNewDiscovery = !userDiscoveries[userId].some(
-    discovery => discovery.easterEggId === easterEgg.id
+    (discovery) => discovery.easterEggId === easterEgg.id,
   );
-  
+
   // If it's a new discovery, add it to the user's discoveries
   if (isNewDiscovery) {
     userDiscoveries[userId].push({
       easterEggId: easterEgg.id,
       easterEggName: easterEgg.name,
       discoveredAt: new Date().toISOString(),
-      completed: false
+      completed: false,
     });
   }
-  
+
   res.json({
     success: true,
     found: true,
     easterEgg,
-    isNewDiscovery
+    isNewDiscovery,
   });
 });
 
@@ -171,33 +181,33 @@ router.post('/check', (req, res) => {
  */
 router.post('/complete', (req, res) => {
   const { userId, easterEggId, earnedReward } = req.body;
-  
+
   if (!userId || !easterEggId) {
     return res.status(400).json({
       success: false,
-      error: 'userId and easterEggId are required'
+      error: 'userId and easterEggId are required',
     });
   }
-  
+
   // Find the Easter egg
-  const easterEgg = easterEggs.find(egg => egg.id === easterEggId);
-  
+  const easterEgg = easterEggs.find((egg) => egg.id === easterEggId);
+
   if (!easterEgg) {
     return res.status(404).json({
       success: false,
-      error: 'Easter egg not found'
+      error: 'Easter egg not found',
     });
   }
-  
+
   // Find the user's discovery
   if (!userDiscoveries[userId]) {
     userDiscoveries[userId] = [];
   }
-  
+
   const discoveryIndex = userDiscoveries[userId].findIndex(
-    discovery => discovery.easterEggId === easterEggId
+    (discovery) => discovery.easterEggId === easterEggId,
   );
-  
+
   if (discoveryIndex === -1) {
     // If the user hasn't discovered this Easter egg yet, add it
     userDiscoveries[userId].push({
@@ -205,20 +215,20 @@ router.post('/complete', (req, res) => {
       easterEggName: easterEgg.name,
       discoveredAt: new Date().toISOString(),
       completed: true,
-      earnedReward: earnedReward
+      earnedReward: earnedReward,
     });
   } else {
     // Update the existing discovery
     userDiscoveries[userId][discoveryIndex].completed = true;
     userDiscoveries[userId][discoveryIndex].earnedReward = earnedReward;
   }
-  
+
   // In a real app, we would also update the user's XP, badges, etc.
-  
+
   res.json({
     success: true,
     message: 'Easter egg completed successfully',
-    reward: earnedReward ? easterEgg.reward : null
+    reward: earnedReward ? easterEgg.reward : null,
   });
 });
 
@@ -227,14 +237,14 @@ router.post('/complete', (req, res) => {
  */
 router.get('/stats/:userId', (req, res) => {
   const { userId } = req.params;
-  
+
   if (!userId) {
     return res.status(400).json({
       success: false,
-      error: 'userId is required'
+      error: 'userId is required',
     });
   }
-  
+
   // Get the user's discoveries
   const userStats = {
     discoveredCount: 0,
@@ -244,7 +254,7 @@ router.get('/stats/:userId', (req, res) => {
     byDifficulty: {
       easy: 0,
       medium: 0,
-      hard: 0
+      hard: 0,
     },
     byType: {
       quiz: 0,
@@ -252,31 +262,31 @@ router.get('/stats/:userId', (req, res) => {
       challenge: 0,
       mini_game: 0,
       hidden_message: 0,
-      achievement: 0
+      achievement: 0,
     },
-    recentDiscoveries: []
+    recentDiscoveries: [],
   };
-  
+
   if (userDiscoveries[userId]) {
     const discoveries = userDiscoveries[userId];
     userStats.discoveredCount = discoveries.length;
-    userStats.completedCount = discoveries.filter(d => d.completed).length;
+    userStats.completedCount = discoveries.filter((d) => d.completed).length;
     userStats.percentageFound = Math.round((discoveries.length / easterEggs.length) * 100);
-    
+
     // Get recent discoveries
     userStats.recentDiscoveries = discoveries
       .sort((a, b) => new Date(b.discoveredAt) - new Date(a.discoveredAt))
       .slice(0, 5)
-      .map(d => ({
+      .map((d) => ({
         id: d.easterEggId,
         easterEggName: d.easterEggName,
         discoveredAt: d.discoveredAt,
-        completed: d.completed
+        completed: d.completed,
       }));
-    
+
     // Count by difficulty and type
-    discoveries.forEach(discovery => {
-      const egg = easterEggs.find(e => e.id === discovery.easterEggId);
+    discoveries.forEach((discovery) => {
+      const egg = easterEggs.find((e) => e.id === discovery.easterEggId);
       if (egg) {
         if (egg.difficulty) {
           userStats.byDifficulty[egg.difficulty]++;
@@ -287,10 +297,10 @@ router.get('/stats/:userId', (req, res) => {
       }
     });
   }
-  
+
   res.json({
     success: true,
-    data: userStats
+    data: userStats,
   });
 });
 
@@ -300,29 +310,29 @@ router.get('/stats/:userId', (req, res) => {
 router.post('/create', (req, res) => {
   // In a real app, check if user is admin
   const newEasterEgg = req.body;
-  
+
   if (!newEasterEgg.id || !newEasterEgg.name || !newEasterEgg.path) {
     return res.status(400).json({
       success: false,
-      error: 'id, name, and path are required'
+      error: 'id, name, and path are required',
     });
   }
-  
+
   // Check if an Easter egg with this ID already exists
-  if (easterEggs.some(egg => egg.id === newEasterEgg.id)) {
+  if (easterEggs.some((egg) => egg.id === newEasterEgg.id)) {
     return res.status(400).json({
       success: false,
-      error: 'An Easter egg with this ID already exists'
+      error: 'An Easter egg with this ID already exists',
     });
   }
-  
+
   // Add the Easter egg
   easterEggs.push(newEasterEgg);
-  
+
   res.json({
     success: true,
     message: 'Easter egg created successfully',
-    data: newEasterEgg
+    data: newEasterEgg,
   });
 });
 

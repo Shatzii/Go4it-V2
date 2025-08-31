@@ -14,7 +14,11 @@ export async function POST(request: NextRequest) {
     const { videoAnalysis, performanceData, sessionNotes } = await request.json();
 
     // Analyze emotional state from video and performance data
-    const emotionalAnalysis = await analyzeEmotionalState(videoAnalysis, performanceData, sessionNotes);
+    const emotionalAnalysis = await analyzeEmotionalState(
+      videoAnalysis,
+      performanceData,
+      sessionNotes,
+    );
 
     // Update or create AI coaching profile
     const existingProfile = await db
@@ -30,14 +34,14 @@ export async function POST(request: NextRequest) {
           emotionalState: emotionalAnalysis.state,
           frustrationLevel: emotionalAnalysis.frustrationLevel,
           adaptations: emotionalAnalysis.adaptations,
-          lastInteraction: new Date()
+          lastInteraction: new Date(),
         })
         .where(eq(aiCoachingProfiles.userId, user.id))
         .returning();
 
       return NextResponse.json({
         profile: updatedProfile,
-        recommendations: emotionalAnalysis.recommendations
+        recommendations: emotionalAnalysis.recommendations,
       });
     } else {
       const [newProfile] = await db
@@ -48,26 +52,26 @@ export async function POST(request: NextRequest) {
           frustrationLevel: emotionalAnalysis.frustrationLevel,
           preferredTone: 'encouraging',
           adhd: { needsBreaks: true, focusTime: 20 },
-          adaptations: emotionalAnalysis.adaptations
+          adaptations: emotionalAnalysis.adaptations,
         })
         .returning();
 
       return NextResponse.json({
         profile: newProfile,
-        recommendations: emotionalAnalysis.recommendations
+        recommendations: emotionalAnalysis.recommendations,
       });
     }
-
   } catch (error) {
     console.error('Emotional analysis error:', error);
-    return NextResponse.json(
-      { error: 'Failed to analyze emotional state' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to analyze emotional state' }, { status: 500 });
   }
 }
 
-async function analyzeEmotionalState(videoAnalysis: any, performanceData: any, sessionNotes: string) {
+async function analyzeEmotionalState(
+  videoAnalysis: any,
+  performanceData: any,
+  sessionNotes: string,
+) {
   // Advanced emotional intelligence analysis
   let frustrationLevel = 0;
   let state = 'neutral';
@@ -90,8 +94,10 @@ async function analyzeEmotionalState(videoAnalysis: any, performanceData: any, s
   }
 
   // Analyze session notes for keywords
-  if (sessionNotes?.toLowerCase().includes('frustrated') || 
-      sessionNotes?.toLowerCase().includes('angry')) {
+  if (
+    sessionNotes?.toLowerCase().includes('frustrated') ||
+    sessionNotes?.toLowerCase().includes('angry')
+  ) {
     frustrationLevel += 25;
     state = 'frustrated';
     adaptations.push('Switch to positive reinforcement');
@@ -99,8 +105,7 @@ async function analyzeEmotionalState(videoAnalysis: any, performanceData: any, s
   }
 
   // ADHD-specific adaptations
-  if (sessionNotes?.toLowerCase().includes('distracted') || 
-      performanceData?.focusTime < 10) {
+  if (sessionNotes?.toLowerCase().includes('distracted') || performanceData?.focusTime < 10) {
     adaptations.push('Shorten session length');
     adaptations.push('Add movement breaks');
     recommendations.push('Try 10-minute focused sessions with 2-minute breaks');
@@ -110,13 +115,13 @@ async function analyzeEmotionalState(videoAnalysis: any, performanceData: any, s
   if (performanceData?.improvement > 0.1) {
     state = 'motivated';
     frustrationLevel = Math.max(0, frustrationLevel - 15);
-    recommendations.push('Great progress! You\'re ready for the next challenge');
+    recommendations.push("Great progress! You're ready for the next challenge");
   }
 
   return {
     state,
     frustrationLevel: Math.min(100, frustrationLevel),
     adaptations,
-    recommendations
+    recommendations,
   };
 }

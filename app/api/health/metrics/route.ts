@@ -28,15 +28,11 @@ export async function GET(request: NextRequest) {
       metrics,
       activeRecoveryPlans,
       currentRisk: metrics[0]?.injuryRisk || 0,
-      status: metrics[0]?.recoveryStatus || 'normal'
+      status: metrics[0]?.recoveryStatus || 'normal',
     });
-
   } catch (error) {
     console.error('Health metrics error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch health metrics' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch health metrics' }, { status: 500 });
   }
 }
 
@@ -62,7 +58,7 @@ export async function POST(request: NextRequest) {
         recoveryStatus: determineRecoveryStatus(injuryRisk, symptoms),
         biomechanicalAnalysis,
         recommendedExercises: recommendations.exercises,
-        medicalNotes: symptoms ? JSON.stringify(symptoms) : null
+        medicalNotes: symptoms ? JSON.stringify(symptoms) : null,
       })
       .returning();
 
@@ -73,18 +69,14 @@ export async function POST(request: NextRequest) {
         planType: 'active_recovery',
         exercises: recommendations.recoveryExercises,
         duration: 7,
-        progressTracking: { dailyCheckins: true, painLevel: true }
+        progressTracking: { dailyCheckins: true, painLevel: true },
       });
     }
 
     return NextResponse.json(newMetrics);
-
   } catch (error) {
     console.error('Health metrics creation error:', error);
-    return NextResponse.json(
-      { error: 'Failed to create health metrics' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create health metrics' }, { status: 500 });
   }
 }
 
@@ -113,7 +105,7 @@ function analyzeBiomechanics(performance: any) {
     movement_efficiency: performance?.efficiency || 0.8,
     force_distribution: performance?.force || 'balanced',
     range_of_motion: performance?.rom || 'normal',
-    asymmetries: performance?.asymmetries || []
+    asymmetries: performance?.asymmetries || [],
   };
 }
 

@@ -14,19 +14,16 @@ export async function POST(request: NextRequest) {
     const { nodeId, activity } = await request.json();
 
     if (!nodeId || !activity) {
-      return NextResponse.json(
-        { error: 'Node ID and activity type required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Node ID and activity type required' }, { status: 400 });
     }
 
     // Calculate XP based on activity type
     const activityXpMap = {
-      'practice_drill': 50,
-      'video_upload': 100,
-      'skill_assessment': 75,
-      'game_application': 125,
-      'coach_feedback': 80
+      practice_drill: 50,
+      video_upload: 100,
+      skill_assessment: 75,
+      game_application: 125,
+      coach_feedback: 80,
     };
 
     const xpGained = activityXpMap[activity] || 50;
@@ -35,30 +32,27 @@ export async function POST(request: NextRequest) {
     const [existingProgress] = await db
       .select()
       .from(starPathProgress)
-      .where(and(
-        eq(starPathProgress.userId, user.id),
-        eq(starPathProgress.skillId, nodeId)
-      ));
+      .where(and(eq(starPathProgress.userId, user.id), eq(starPathProgress.skillId, nodeId)));
 
     let updatedProgress;
 
     if (existingProgress) {
       const newTotalXp = existingProgress.totalXp + xpGained;
       const newLevel = Math.floor(newTotalXp / 200) + 1; // 200 XP per level
-      
+
       [updatedProgress] = await db
         .update(starPathProgress)
         .set({
           totalXp: newTotalXp,
           currentLevel: Math.min(newLevel, 5), // Max level 5
-          lastUpdated: new Date()
+          lastUpdated: new Date(),
         })
         .where(eq(starPathProgress.id, existingProgress.id))
         .returning();
     } else {
       // Create new progress entry
-      const skillName = nodeId.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-      
+      const skillName = nodeId.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+
       [updatedProgress] = await db
         .insert(starPathProgress)
         .values({
@@ -67,7 +61,7 @@ export async function POST(request: NextRequest) {
           skillName: skillName,
           currentLevel: 1,
           totalXp: xpGained,
-          isUnlocked: true
+          isUnlocked: true,
         })
         .returning();
     }
@@ -80,7 +74,7 @@ export async function POST(request: NextRequest) {
       achievements.push({
         type: 'level_up',
         skill: updatedProgress.skillName,
-        level: updatedProgress.currentLevel
+        level: updatedProgress.currentLevel,
       });
     }
 
@@ -89,7 +83,7 @@ export async function POST(request: NextRequest) {
       achievements.push({
         type: 'milestone',
         description: 'Skill Dedication - 500 XP earned',
-        skill: updatedProgress.skillName
+        skill: updatedProgress.skillName,
       });
     }
 
@@ -97,7 +91,7 @@ export async function POST(request: NextRequest) {
       achievements.push({
         type: 'mastery',
         description: 'Skill Mastery - 1000 XP earned',
-        skill: updatedProgress.skillName
+        skill: updatedProgress.skillName,
       });
     }
 
@@ -107,14 +101,10 @@ export async function POST(request: NextRequest) {
       xpGained,
       achievements,
       leveledUp,
-      message: `Training complete! Gained ${xpGained} XP in ${updatedProgress.skillName}`
+      message: `Training complete! Gained ${xpGained} XP in ${updatedProgress.skillName}`,
     });
-
   } catch (error) {
     console.error('Training error:', error);
-    return NextResponse.json(
-      { error: 'Training failed. Please try again.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Training failed. Please try again.' }, { status: 500 });
   }
 }

@@ -4,42 +4,47 @@ import { smsService } from '@/lib/twilio-client';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { 
+    const {
       alertType, // 'weather', 'facility', 'safety', 'cancellation'
       message,
       affectedUsers, // Array of { phone, name, role }
       severity, // 'low', 'medium', 'high', 'critical'
       eventId,
-      additionalInfo 
+      additionalInfo,
     } = body;
 
     if (!alertType || !message || !affectedUsers || !Array.isArray(affectedUsers)) {
-      return NextResponse.json({
-        success: false,
-        error: 'Missing required alert information'
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Missing required alert information',
+        },
+        { status: 400 },
+      );
     }
 
     const severityEmoji = {
       low: '🔔',
       medium: '⚠️',
       high: '🚨',
-      critical: '🆘'
+      critical: '🆘',
     };
 
     const emoji = severityEmoji[severity as keyof typeof severityEmoji] || '🔔';
     const formattedMessage = `${emoji} ALERT: ${alertType.toUpperCase()} - ${message}. ${additionalInfo || ''} Check go4it.app for updates.`;
 
     // Send emergency SMS to all affected users
-    const recipients = affectedUsers.map(user => ({
+    const recipients = affectedUsers.map((user) => ({
       phone: user.phone,
-      message: formattedMessage
+      message: formattedMessage,
     }));
 
     const bulkResult = await smsService.sendBulkSMS(recipients);
 
     // Log emergency alert for compliance and tracking
-    console.log(`Emergency alert sent: ${alertType} - ${severity} severity to ${bulkResult.totalSent} recipients`);
+    console.log(
+      `Emergency alert sent: ${alertType} - ${severity} severity to ${bulkResult.totalSent} recipients`,
+    );
 
     return NextResponse.json({
       success: true,
@@ -48,14 +53,16 @@ export async function POST(request: NextRequest) {
       totalSent: bulkResult.totalSent,
       totalFailed: bulkResult.totalFailed,
       results: bulkResult.results,
-      message: `Emergency alert sent to ${bulkResult.totalSent} users`
+      message: `Emergency alert sent to ${bulkResult.totalSent} users`,
     });
-
   } catch (error: any) {
     console.error('Emergency SMS alert error:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to send emergency SMS alert'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to send emergency SMS alert',
+      },
+      { status: 500 },
+    );
   }
 }

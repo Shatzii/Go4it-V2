@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import Link from 'next/link'
+import React, { useState } from 'react';
+import Link from 'next/link';
 
 export default function PrimaryParentPortal() {
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState('overview');
 
   const childData = {
     name: 'Emma Wilson',
@@ -12,34 +12,54 @@ export default function PrimaryParentPortal() {
     heroName: 'Lightning Learner',
     teacher: 'Mrs. Johnson',
     progress: 92,
-    streakDays: 15
-  }
+    streakDays: 15,
+  };
 
   const weeklyProgress = [
     { subject: 'Reading', current: 95, previous: 88, trend: 'up' },
     { subject: 'Math', current: 87, previous: 82, trend: 'up' },
     { subject: 'Science', current: 93, previous: 90, trend: 'up' },
-    { subject: 'Social Studies', current: 89, previous: 91, trend: 'down' }
-  ]
+    { subject: 'Social Studies', current: 89, previous: 91, trend: 'down' },
+  ];
 
   const recentActivities = [
-    { date: 'Today', activity: 'Completed "Superhero Reading Adventure"', type: 'assignment', score: 'A+' },
-    { date: 'Yesterday', activity: 'Practiced math with Dean Wonder AI', type: 'practice', score: '95%' },
-    { date: 'Jan 22', activity: 'Science experiment: Weather Heroes', type: 'lab', score: 'Excellent' },
-    { date: 'Jan 21', activity: 'Used sensory break during focus time', type: 'accommodation', score: 'Helpful' }
-  ]
+    {
+      date: 'Today',
+      activity: 'Completed "Superhero Reading Adventure"',
+      type: 'assignment',
+      score: 'A+',
+    },
+    {
+      date: 'Yesterday',
+      activity: 'Practiced math with Dean Wonder AI',
+      type: 'practice',
+      score: '95%',
+    },
+    {
+      date: 'Jan 22',
+      activity: 'Science experiment: Weather Heroes',
+      type: 'lab',
+      score: 'Excellent',
+    },
+    {
+      date: 'Jan 21',
+      activity: 'Used sensory break during focus time',
+      type: 'accommodation',
+      score: 'Helpful',
+    },
+  ];
 
   const accommodations = [
     { name: 'Movement Breaks', active: true, frequency: 'Every 15 minutes', effectiveness: 'High' },
     { name: 'Visual Cues', active: true, frequency: 'As needed', effectiveness: 'Medium' },
-    { name: 'Extended Time', active: false, frequency: 'Test situations', effectiveness: 'N/A' }
-  ]
+    { name: 'Extended Time', active: false, frequency: 'Test situations', effectiveness: 'N/A' },
+  ];
 
   const upcomingEvents = [
     { date: 'Jan 26', event: 'Parent-Teacher Conference', time: '3:00 PM' },
     { date: 'Jan 28', event: 'Superhero Showcase', time: '10:00 AM' },
-    { date: 'Feb 1', event: 'IEP Review Meeting', time: '2:30 PM' }
-  ]
+    { date: 'Feb 1', event: 'IEP Review Meeting', time: '2:30 PM' },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-900 via-teal-900 to-blue-900">
@@ -47,7 +67,10 @@ export default function PrimaryParentPortal() {
       <header className="bg-white/10 backdrop-blur-sm border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <Link href="/schools/primary-school" className="text-white font-semibold text-lg hover:text-green-300">
+            <Link
+              href="/schools/primary-school"
+              className="text-white font-semibold text-lg hover:text-green-300"
+            >
               ← SuperHero School
             </Link>
             <h1 className="text-2xl font-bold text-white">Parent Portal</h1>
@@ -72,14 +95,18 @@ export default function PrimaryParentPortal() {
               <div className="text-6xl">⚡</div>
               <div>
                 <h2 className="text-3xl font-bold text-white">{childData.name}</h2>
-                <p className="text-lg text-green-200">{childData.heroName} • {childData.grade}</p>
+                <p className="text-lg text-green-200">
+                  {childData.heroName} • {childData.grade}
+                </p>
                 <p className="text-green-300">Teacher: {childData.teacher}</p>
               </div>
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold text-white">{childData.progress}%</div>
               <div className="text-green-200">Overall Progress</div>
-              <div className="text-sm text-green-300 mt-1">{childData.streakDays} day learning streak! 🔥</div>
+              <div className="text-sm text-green-300 mt-1">
+                {childData.streakDays} day learning streak! 🔥
+              </div>
             </div>
           </div>
 
@@ -89,14 +116,17 @@ export default function PrimaryParentPortal() {
                 <h4 className="text-white font-semibold mb-2">{subject.subject}</h4>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-2xl font-bold text-white">{subject.current}%</span>
-                  <span className={`text-sm ${subject.trend === 'up' ? 'text-green-400' : 'text-red-400'}`}>
-                    {subject.trend === 'up' ? '↗' : '↘'} {Math.abs(subject.current - subject.previous)}%
+                  <span
+                    className={`text-sm ${subject.trend === 'up' ? 'text-green-400' : 'text-red-400'}`}
+                  >
+                    {subject.trend === 'up' ? '↗' : '↘'}{' '}
+                    {Math.abs(subject.current - subject.previous)}%
                   </span>
                 </div>
                 <div className="w-full bg-white/20 rounded-full h-2">
-                  <div 
-                    className="bg-green-500 h-2 rounded-full" 
-                    style={{width: `${subject.current}%`}}
+                  <div
+                    className="bg-green-500 h-2 rounded-full"
+                    style={{ width: `${subject.current}%` }}
                   ></div>
                 </div>
               </div>
@@ -112,7 +142,7 @@ export default function PrimaryParentPortal() {
                 { id: 'overview', name: 'Overview', icon: '📊' },
                 { id: 'activities', name: 'Recent Activities', icon: '📚' },
                 { id: 'accommodations', name: 'Accommodations', icon: '🛠️' },
-                { id: 'communication', name: 'Messages', icon: '💬' }
+                { id: 'communication', name: 'Messages', icon: '💬' },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -136,18 +166,33 @@ export default function PrimaryParentPortal() {
                   <h3 className="text-xl font-bold text-white mb-6">This Week's Highlights</h3>
                   <div className="space-y-4">
                     <div className="bg-green-500/20 border border-green-500/30 rounded-lg p-4">
-                      <h4 className="text-white font-semibold mb-2">🏆 Amazing Progress in Reading!</h4>
-                      <p className="text-green-200 text-sm">Emma has shown exceptional improvement in phonics and sight word recognition. She's reading above grade level!</p>
+                      <h4 className="text-white font-semibold mb-2">
+                        🏆 Amazing Progress in Reading!
+                      </h4>
+                      <p className="text-green-200 text-sm">
+                        Emma has shown exceptional improvement in phonics and sight word
+                        recognition. She's reading above grade level!
+                      </p>
                     </div>
-                    
+
                     <div className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-4">
-                      <h4 className="text-white font-semibold mb-2">🧮 Math Hero Skills Developing</h4>
-                      <p className="text-blue-200 text-sm">Strong number sense and basic addition/subtraction. Ready to advance to more complex problems.</p>
+                      <h4 className="text-white font-semibold mb-2">
+                        🧮 Math Hero Skills Developing
+                      </h4>
+                      <p className="text-blue-200 text-sm">
+                        Strong number sense and basic addition/subtraction. Ready to advance to more
+                        complex problems.
+                      </p>
                     </div>
 
                     <div className="bg-purple-500/20 border border-purple-500/30 rounded-lg p-4">
-                      <h4 className="text-white font-semibold mb-2">🔬 Science Curiosity Shining</h4>
-                      <p className="text-purple-200 text-sm">Emma asks thoughtful questions and shows genuine excitement about experiments and discoveries.</p>
+                      <h4 className="text-white font-semibold mb-2">
+                        🔬 Science Curiosity Shining
+                      </h4>
+                      <p className="text-purple-200 text-sm">
+                        Emma asks thoughtful questions and shows genuine excitement about
+                        experiments and discoveries.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -175,12 +220,17 @@ export default function PrimaryParentPortal() {
                     <div key={index} className="bg-white/5 rounded-lg p-6 border border-white/10">
                       <div className="flex justify-between items-start mb-3">
                         <div className="flex items-center space-x-3">
-                          <span className={`px-3 py-1 rounded-full text-sm ${
-                            activity.type === 'assignment' ? 'bg-blue-500/30 text-blue-200' :
-                            activity.type === 'practice' ? 'bg-green-500/30 text-green-200' :
-                            activity.type === 'lab' ? 'bg-purple-500/30 text-purple-200' :
-                            'bg-yellow-500/30 text-yellow-200'
-                          }`}>
+                          <span
+                            className={`px-3 py-1 rounded-full text-sm ${
+                              activity.type === 'assignment'
+                                ? 'bg-blue-500/30 text-blue-200'
+                                : activity.type === 'practice'
+                                  ? 'bg-green-500/30 text-green-200'
+                                  : activity.type === 'lab'
+                                    ? 'bg-purple-500/30 text-purple-200'
+                                    : 'bg-yellow-500/30 text-yellow-200'
+                            }`}
+                          >
                             {activity.type}
                           </span>
                           <span className="text-green-300 text-sm">{activity.date}</span>
@@ -202,13 +252,17 @@ export default function PrimaryParentPortal() {
                     <div key={index} className="bg-white/5 rounded-lg p-6 border border-white/10">
                       <div className="flex justify-between items-start mb-4">
                         <h4 className="text-lg font-semibold text-white">{accommodation.name}</h4>
-                        <span className={`px-3 py-1 rounded-full text-sm ${
-                          accommodation.active ? 'bg-green-500/30 text-green-200' : 'bg-gray-500/30 text-gray-200'
-                        }`}>
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm ${
+                            accommodation.active
+                              ? 'bg-green-500/30 text-green-200'
+                              : 'bg-gray-500/30 text-gray-200'
+                          }`}
+                        >
                           {accommodation.active ? 'Active' : 'Inactive'}
                         </span>
                       </div>
-                      
+
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
                           <span className="text-green-200">Frequency:</span>
@@ -216,11 +270,15 @@ export default function PrimaryParentPortal() {
                         </div>
                         <div className="flex justify-between">
                           <span className="text-green-200">Effectiveness:</span>
-                          <span className={`${
-                            accommodation.effectiveness === 'High' ? 'text-green-400' :
-                            accommodation.effectiveness === 'Medium' ? 'text-yellow-400' :
-                            'text-gray-400'
-                          }`}>
+                          <span
+                            className={`${
+                              accommodation.effectiveness === 'High'
+                                ? 'text-green-400'
+                                : accommodation.effectiveness === 'Medium'
+                                  ? 'text-yellow-400'
+                                  : 'text-gray-400'
+                            }`}
+                          >
                             {accommodation.effectiveness}
                           </span>
                         </div>
@@ -239,7 +297,7 @@ export default function PrimaryParentPortal() {
                     New Message
                   </button>
                 </div>
-                
+
                 <div className="space-y-4">
                   <div className="bg-white/5 rounded-lg p-6 border border-white/10">
                     <div className="flex justify-between items-start mb-3">
@@ -247,9 +305,14 @@ export default function PrimaryParentPortal() {
                         <h4 className="text-white font-semibold">From: Mrs. Johnson</h4>
                         <p className="text-green-200 text-sm">Today, 2:30 PM</p>
                       </div>
-                      <span className="bg-blue-500/30 text-blue-200 px-2 py-1 rounded text-xs">Teacher Note</span>
+                      <span className="bg-blue-500/30 text-blue-200 px-2 py-1 rounded text-xs">
+                        Teacher Note
+                      </span>
                     </div>
-                    <p className="text-white">Emma had a wonderful day today! She helped a classmate with their reading and showed great leadership skills. Her kindness really shines through.</p>
+                    <p className="text-white">
+                      Emma had a wonderful day today! She helped a classmate with their reading and
+                      showed great leadership skills. Her kindness really shines through.
+                    </p>
                   </div>
 
                   <div className="bg-white/5 rounded-lg p-6 border border-white/10">
@@ -258,9 +321,14 @@ export default function PrimaryParentPortal() {
                         <h4 className="text-white font-semibold">From: Dean Wonder AI</h4>
                         <p className="text-green-200 text-sm">Yesterday, 10:15 AM</p>
                       </div>
-                      <span className="bg-purple-500/30 text-purple-200 px-2 py-1 rounded text-xs">AI Update</span>
+                      <span className="bg-purple-500/30 text-purple-200 px-2 py-1 rounded text-xs">
+                        AI Update
+                      </span>
                     </div>
-                    <p className="text-white">Emma completed her math practice session with 95% accuracy! She's mastering addition and ready for more challenging problems.</p>
+                    <p className="text-white">
+                      Emma completed her math practice session with 95% accuracy! She's mastering
+                      addition and ready for more challenging problems.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -288,5 +356,5 @@ export default function PrimaryParentPortal() {
         </div>
       </div>
     </div>
-  )
+  );
 }

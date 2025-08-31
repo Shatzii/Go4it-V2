@@ -1,13 +1,13 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { 
-  BookOpen, 
-  Clock, 
-  Star, 
-  Trophy, 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  BookOpen,
+  Clock,
+  Star,
+  Trophy,
   CheckCircle,
   AlertCircle,
   Calendar,
@@ -15,9 +15,9 @@ import {
   Activity,
   Target,
   Timer,
-  Award
-} from 'lucide-react'
-import Link from 'next/link'
+  Award,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function SportsAssignments() {
   const assignments = [
@@ -31,7 +31,7 @@ export default function SportsAssignments() {
       difficulty: 'medium',
       points: 50,
       description: 'Complete 100 free throws and 50 three-pointers, record accuracy',
-      sport: '🏀'
+      sport: '🏀',
     },
     {
       id: 2,
@@ -43,7 +43,7 @@ export default function SportsAssignments() {
       difficulty: 'hard',
       points: 60,
       description: 'Video analysis of freestyle stroke technique improvements',
-      sport: '🏊‍♂️'
+      sport: '🏊‍♂️',
     },
     {
       id: 3,
@@ -55,15 +55,15 @@ export default function SportsAssignments() {
       difficulty: 'medium',
       points: 45,
       description: 'Complete 2-week sprint training program and log times',
-      sport: '🏃‍♂️'
-    }
-  ]
+      sport: '🏃‍♂️',
+    },
+  ];
 
   const performanceStats = [
     { sport: 'Basketball', current: '85%', goal: '90%', icon: '🏀' },
     { sport: 'Swimming', current: '78%', goal: '85%', icon: '🏊‍♂️' },
-    { sport: 'Track', current: '92%', goal: '95%', icon: '🏃‍♂️' }
-  ]
+    { sport: 'Track', current: '92%', goal: '95%', icon: '🏃‍♂️' },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50">
@@ -116,16 +116,26 @@ export default function SportsAssignments() {
                     <div className="text-4xl">{assignment.sport}</div>
                     <div>
                       <CardTitle className="text-lg">{assignment.title}</CardTitle>
-                      <p className="text-sm text-gray-600">{assignment.subject} • {assignment.coach}</p>
+                      <p className="text-sm text-gray-600">
+                        {assignment.subject} • {assignment.coach}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant={
-                      assignment.status === 'completed' ? 'default' :
-                      assignment.status === 'in_progress' ? 'secondary' : 'outline'
-                    }>
-                      {assignment.status === 'completed' ? 'Completed' :
-                       assignment.status === 'in_progress' ? 'Training' : 'Pending'}
+                    <Badge
+                      variant={
+                        assignment.status === 'completed'
+                          ? 'default'
+                          : assignment.status === 'in_progress'
+                            ? 'secondary'
+                            : 'outline'
+                      }
+                    >
+                      {assignment.status === 'completed'
+                        ? 'Completed'
+                        : assignment.status === 'in_progress'
+                          ? 'Training'
+                          : 'Pending'}
                     </Badge>
                     <Badge className="bg-yellow-100 text-yellow-800">
                       {assignment.points} points
@@ -142,8 +152,11 @@ export default function SportsAssignments() {
                       <span>Due: {assignment.dueDate}</span>
                     </div>
                     <Badge variant="outline" className="text-xs">
-                      {assignment.difficulty === 'easy' ? 'Easy' :
-                       assignment.difficulty === 'medium' ? 'Medium' : 'Hard'}
+                      {assignment.difficulty === 'easy'
+                        ? 'Easy'
+                        : assignment.difficulty === 'medium'
+                          ? 'Medium'
+                          : 'Hard'}
                     </Badge>
                   </div>
                   <div className="flex gap-2">
@@ -152,8 +165,11 @@ export default function SportsAssignments() {
                       Track Progress
                     </Button>
                     <Button size="sm" disabled={assignment.status === 'completed'}>
-                      {assignment.status === 'completed' ? 'Completed' :
-                       assignment.status === 'in_progress' ? 'Continue Training' : 'Start Training'}
+                      {assignment.status === 'completed'
+                        ? 'Completed'
+                        : assignment.status === 'in_progress'
+                          ? 'Continue Training'
+                          : 'Start Training'}
                     </Button>
                   </div>
                 </div>
@@ -179,9 +195,12 @@ export default function SportsAssignments() {
                   <p className="text-sm text-gray-600">Current: {stat.current}</p>
                   <p className="text-sm text-gray-600">Goal: {stat.goal}</p>
                   <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                    <div className="bg-orange-600 h-2 rounded-full" style={{
-                      width: stat.current
-                    }}></div>
+                    <div
+                      className="bg-orange-600 h-2 rounded-full"
+                      style={{
+                        width: stat.current,
+                      }}
+                    ></div>
                   </div>
                 </div>
               ))}
@@ -201,14 +220,10 @@ export default function SportsAssignments() {
                   </Button>
                 </Link>
                 <Link href="/schools/go4it-sports-academy/virtual-classroom">
-                  <Button variant="outline">
-                    Join Training Session
-                  </Button>
+                  <Button variant="outline">Join Training Session</Button>
                 </Link>
                 <Link href="/schools/go4it-sports-academy/student-dashboard">
-                  <Button variant="outline">
-                    Back to Sports Dashboard
-                  </Button>
+                  <Button variant="outline">Back to Sports Dashboard</Button>
                 </Link>
               </div>
             </div>
@@ -216,5 +231,5 @@ export default function SportsAssignments() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

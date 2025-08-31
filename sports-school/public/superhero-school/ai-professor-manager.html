@@ -1,1118 +1,1154 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Professor Manager - ShotziOS</title>
-  <style>
-    :root {
-      --primary-color: #1e90ff;
-      --primary-hover: #4da6ff;
-      --secondary-color: #ff4081;
-      --background-dark: #000000;
-      --card-background: #121212;
-      --text-light: #ffffff;
-      --text-secondary: #888888;
-      --border-color: #333333;
-      --success-color: #32cd32;
-      --warning-color: #f39c12;
-      --danger-color: #e74c3c;
-      --info-color: #3498db;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Open Dyslexic', Arial, sans-serif;
-      background-color: var(--background-dark);
-      color: var(--text-light);
-      line-height: 1.6;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 0;
-      border-bottom: 2px solid var(--primary-color);
-      margin-bottom: 30px;
-    }
-
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-      color: var(--primary-color);
-    }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: var(--primary-color);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      font-weight: bold;
-    }
-
-    nav {
-      margin-bottom: 20px;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 10px;
-    }
-
-    .nav-link {
-      color: var(--text-secondary);
-      text-decoration: none;
-      padding: 5px 10px;
-      border-radius: 4px;
-      transition: all 0.3s ease;
-    }
-
-    .nav-link:hover, .nav-link.active {
-      color: var(--text-light);
-      background-color: rgba(30, 144, 255, 0.1);
-    }
-
-    h1, h2, h3, h4 {
-      color: var(--primary-color);
-      margin-bottom: 15px;
-    }
-
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .dashboard-row {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 30px;
-      flex-wrap: wrap;
-    }
-
-    .card {
-      background-color: var(--card-background);
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 10px;
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin: 0;
-    }
-
-    .card-subtitle {
-      color: var(--text-secondary);
-      font-size: 14px;
-    }
-
-    .tab-container {
-      margin-bottom: 20px;
-    }
-
-    .tab-buttons {
-      display: flex;
-      border-bottom: 1px solid var(--border-color);
-      margin-bottom: 20px;
-    }
-
-    .tab-button {
-      padding: 10px 20px;
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      cursor: pointer;
-      font-family: 'Open Dyslexic', Arial, sans-serif;
-      transition: all 0.3s ease;
-    }
-
-    .tab-button.active {
-      color: var(--primary-color);
-      border-bottom: 2px solid var(--primary-color);
-    }
-
-    .tab-button:hover {
-      color: var(--primary-hover);
-    }
-
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    .action-button {
-      background-color: var(--primary-color);
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-family: 'Open Dyslexic', Arial, sans-serif;
-      transition: all 0.3s ease;
-    }
-
-    .action-button:hover {
-      background-color: var(--primary-hover);
-      transform: translateY(-2px);
-    }
-
-    .action-button.secondary {
-      background-color: var(--secondary-color);
-    }
-
-    .action-button.secondary:hover {
-      background-color: var(--secondary-color);
-    }
-
-    .action-button.danger {
-      background-color: var(--danger-color);
-    }
-
-    .action-button.danger:hover {
-      background-color: #c0392b;
-    }
-
-    .action-button.small {
-      padding: 4px 8px;
-      font-size: 12px;
-    }
-
-    /* Form styles */
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 5px;
-      color: var(--text-light);
-    }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 8px 10px;
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      background-color: rgba(255, 255, 255, 0.1);
-      color: var(--text-light);
-      font-family: 'Open Dyslexic', Arial, sans-serif;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--primary-color);
-    }
-
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-
-    .form-row {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 15px;
-    }
-
-    .form-col {
-      flex: 1;
-    }
-
-    .professor-list {
-      list-style-type: none;
-      margin-top: 15px;
-      max-height: 500px;
-      overflow-y: auto;
-    }
-
-    .professor-item {
-      margin-bottom: 15px;
-      padding: 15px;
-      background-color: rgba(30, 144, 255, 0.1);
-      border-radius: 8px;
-      border-left: 4px solid var(--primary-color);
-      transition: all 0.3s ease;
-    }
-
-    .professor-item:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .professor-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .professor-title {
-      font-weight: bold;
-      font-size: 16px;
-    }
-
-    .professor-subject {
-      color: var(--text-secondary);
-      font-size: 14px;
-    }
-
-    .professor-details {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .professor-detail {
-      background-color: rgba(255, 255, 255, 0.1);
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
-    }
-
-    .professor-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .badge-success {
-      background-color: rgba(50, 205, 50, 0.2);
-      color: var(--success-color);
-    }
-
-    .badge-warning {
-      background-color: rgba(243, 156, 18, 0.2);
-      color: var(--warning-color);
-    }
-
-    .badge-info {
-      background-color: rgba(52, 152, 219, 0.2);
-      color: var(--info-color);
-    }
-
-    .notification {
-      padding: 10px 15px;
-      border-radius: 4px;
-      margin-bottom: 15px;
-      display: none;
-    }
-
-    .notification-success {
-      background-color: rgba(50, 205, 50, 0.2);
-      border: 1px solid var(--success-color);
-      color: var(--success-color);
-    }
-
-    .notification-error {
-      background-color: rgba(231, 76, 60, 0.2);
-      border: 1px solid var(--danger-color);
-      color: var(--danger-color);
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-    }
-
-    .modal.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .modal-content {
-      background-color: var(--card-background);
-      border-radius: 8px;
-      padding: 20px;
-      width: 90%;
-      max-width: 600px;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 10px;
-    }
-
-    .modal-title {
-      font-size: 18px;
-      font-weight: bold;
-      color: var(--primary-color);
-    }
-
-    .modal-close {
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    .modal-body {
-      margin-bottom: 15px;
-    }
-
-    .modal-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      border-top: 1px solid var(--border-color);
-      padding-top: 15px;
-    }
-
-    .loading-spinner {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: var(--primary-color);
-      animation: spin 1s linear infinite;
-      margin-right: 10px;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Professor Manager - ShotziOS</title>
+    <style>
+      :root {
+        --primary-color: #1e90ff;
+        --primary-hover: #4da6ff;
+        --secondary-color: #ff4081;
+        --background-dark: #000000;
+        --card-background: #121212;
+        --text-light: #ffffff;
+        --text-secondary: #888888;
+        --border-color: #333333;
+        --success-color: #32cd32;
+        --warning-color: #f39c12;
+        --danger-color: #e74c3c;
+        --info-color: #3498db;
       }
-    }
 
-    .conversation-container {
-      max-height: 400px;
-      overflow-y: auto;
-      padding: 10px;
-      background-color: rgba(0, 0, 0, 0.2);
-      border-radius: 8px;
-      margin-bottom: 15px;
-    }
-
-    .message {
-      margin-bottom: 15px;
-      max-width: 80%;
-    }
-
-    .message-student {
-      margin-left: auto;
-      background-color: rgba(30, 144, 255, 0.2);
-      padding: 10px;
-      border-radius: 8px 8px 0 8px;
-    }
-
-    .message-professor {
-      margin-right: auto;
-      background-color: rgba(255, 64, 129, 0.2);
-      padding: 10px;
-      border-radius: 8px 8px 8px 0;
-    }
-
-    .message-time {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-top: 5px;
-      text-align: right;
-    }
-
-    .resource-item {
-      padding: 10px;
-      background-color: rgba(30, 144, 255, 0.1);
-      border-radius: 4px;
-      margin-bottom: 10px;
-    }
-
-    .resource-title {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .resource-description {
-      font-size: 14px;
-      color: var(--text-secondary);
-    }
-
-    .checkbox-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-
-    .checkbox-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .checkbox-item input[type="checkbox"] {
-      width: auto;
-    }
-
-    /* Responsive styles */
-    @media (max-width: 768px) {
-      .dashboard-grid {
-        grid-template-columns: 1fr;
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
-      
-      .form-row {
-        flex-direction: column;
+
+      body {
+        font-family: 'Open Dyslexic', Arial, sans-serif;
+        background-color: var(--background-dark);
+        color: var(--text-light);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 0;
+        border-bottom: 2px solid var(--primary-color);
+        margin-bottom: 30px;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--primary-color);
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
         gap: 10px;
       }
-    }
 
-    /* Accessibility */
-    @media (prefers-reduced-motion: reduce) {
-      .action-button:hover,
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-weight: bold;
+      }
+
+      nav {
+        margin-bottom: 20px;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 10px;
+      }
+
+      .nav-link {
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+
+      .nav-link:hover,
+      .nav-link.active {
+        color: var(--text-light);
+        background-color: rgba(30, 144, 255, 0.1);
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        color: var(--primary-color);
+        margin-bottom: 15px;
+      }
+
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .dashboard-row {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+      }
+
+      .card {
+        background-color: var(--card-background);
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 10px;
+      }
+
+      .card-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 0;
+      }
+
+      .card-subtitle {
+        color: var(--text-secondary);
+        font-size: 14px;
+      }
+
+      .tab-container {
+        margin-bottom: 20px;
+      }
+
+      .tab-buttons {
+        display: flex;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 20px;
+      }
+
+      .tab-button {
+        padding: 10px 20px;
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-family: 'Open Dyslexic', Arial, sans-serif;
+        transition: all 0.3s ease;
+      }
+
+      .tab-button.active {
+        color: var(--primary-color);
+        border-bottom: 2px solid var(--primary-color);
+      }
+
+      .tab-button:hover {
+        color: var(--primary-hover);
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .action-button {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: 'Open Dyslexic', Arial, sans-serif;
+        transition: all 0.3s ease;
+      }
+
+      .action-button:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-2px);
+      }
+
+      .action-button.secondary {
+        background-color: var(--secondary-color);
+      }
+
+      .action-button.secondary:hover {
+        background-color: var(--secondary-color);
+      }
+
+      .action-button.danger {
+        background-color: var(--danger-color);
+      }
+
+      .action-button.danger:hover {
+        background-color: #c0392b;
+      }
+
+      .action-button.small {
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+
+      /* Form styles */
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--text-light);
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--text-light);
+        font-family: 'Open Dyslexic', Arial, sans-serif;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
+
+      textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
+
+      .form-row {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+      }
+
+      .form-col {
+        flex: 1;
+      }
+
+      .professor-list {
+        list-style-type: none;
+        margin-top: 15px;
+        max-height: 500px;
+        overflow-y: auto;
+      }
+
+      .professor-item {
+        margin-bottom: 15px;
+        padding: 15px;
+        background-color: rgba(30, 144, 255, 0.1);
+        border-radius: 8px;
+        border-left: 4px solid var(--primary-color);
+        transition: all 0.3s ease;
+      }
+
       .professor-item:hover {
-        transform: none;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
       }
-      
+
+      .professor-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .professor-title {
+        font-weight: bold;
+        font-size: 16px;
+      }
+
+      .professor-subject {
+        color: var(--text-secondary);
+        font-size: 14px;
+      }
+
+      .professor-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .professor-detail {
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+      }
+
+      .professor-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      .badge-success {
+        background-color: rgba(50, 205, 50, 0.2);
+        color: var(--success-color);
+      }
+
+      .badge-warning {
+        background-color: rgba(243, 156, 18, 0.2);
+        color: var(--warning-color);
+      }
+
+      .badge-info {
+        background-color: rgba(52, 152, 219, 0.2);
+        color: var(--info-color);
+      }
+
+      .notification {
+        padding: 10px 15px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        display: none;
+      }
+
+      .notification-success {
+        background-color: rgba(50, 205, 50, 0.2);
+        border: 1px solid var(--success-color);
+        color: var(--success-color);
+      }
+
+      .notification-error {
+        background-color: rgba(231, 76, 60, 0.2);
+        border: 1px solid var(--danger-color);
+        color: var(--danger-color);
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .modal.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .modal-content {
+        background-color: var(--card-background);
+        border-radius: 8px;
+        padding: 20px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 10px;
+      }
+
+      .modal-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--primary-color);
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        font-size: 20px;
+        cursor: pointer;
+      }
+
+      .modal-body {
+        margin-bottom: 15px;
+      }
+
+      .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        border-top: 1px solid var(--border-color);
+        padding-top: 15px;
+      }
+
       .loading-spinner {
-        animation: none;
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--primary-color);
+        animation: spin 1s linear infinite;
+        margin-right: 10px;
       }
-    }
 
-    [role="button"]:focus,
-    button:focus,
-    input:focus,
-    select:focus,
-    textarea:focus {
-      outline: 2px solid var(--primary-color);
-      outline-offset: 2px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <header>
-      <div class="logo">ShotziOS AI Professors</div>
-      <div class="user-info">
-        <div class="user-avatar">A</div>
-        <div>Admin User</div>
-      </div>
-    </header>
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
 
-    <nav>
-      <div class="nav-links">
-        <a href="/tools" class="nav-link">All Tools</a>
-        <a href="/curriculum" class="nav-link">Curriculum Generator</a>
-        <a href="/performance" class="nav-link">Performance Dashboard</a>
-        <a href="#" class="nav-link active">AI Professors</a>
-        <a href="/ceo" class="nav-link">CEO Dashboard</a>
-      </div>
-    </nav>
+      .conversation-container {
+        max-height: 400px;
+        overflow-y: auto;
+        padding: 10px;
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        margin-bottom: 15px;
+      }
 
-    <div id="notification" class="notification">
-      Notification message
-    </div>
+      .message {
+        margin-bottom: 15px;
+        max-width: 80%;
+      }
 
-    <h1>AI Professor Management System</h1>
-    <p>Create, manage, and interact with AI professors to provide personalized education for students.</p>
+      .message-student {
+        margin-left: auto;
+        background-color: rgba(30, 144, 255, 0.2);
+        padding: 10px;
+        border-radius: 8px 8px 0 8px;
+      }
 
-    <div class="tab-container">
-      <div class="tab-buttons">
-        <button class="tab-button active" data-tab="professors">Professor Directory</button>
-        <button class="tab-button" data-tab="create">Create Professor</button>
-        <button class="tab-button" data-tab="chat">Professor Chat</button>
-        <button class="tab-button" data-tab="resources">Educational Resources</button>
-      </div>
+      .message-professor {
+        margin-right: auto;
+        background-color: rgba(255, 64, 129, 0.2);
+        padding: 10px;
+        border-radius: 8px 8px 8px 0;
+      }
 
-      <!-- Professors Directory Tab -->
-      <div id="professors" class="tab-content active">
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">Available AI Professors</h2>
-            <button id="refreshProfessorsBtn" class="action-button small">Refresh List</button>
-          </div>
-          
-          <div id="professorListLoading">
-            <div class="loading-spinner"></div> Loading professors...
-          </div>
-          
-          <ul id="professorList" class="professor-list hidden">
-            <!-- Professors will be populated here via JavaScript -->
-          </ul>
-          
-          <div id="noProfessorsMessage" class="hidden" style="text-align: center; padding: 20px;">
-            <p>No AI professors have been created yet.</p>
-            <button id="createFirstProfessorBtn" class="action-button" style="margin-top: 10px;">Create Your First Professor</button>
+      .message-time {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-top: 5px;
+        text-align: right;
+      }
+
+      .resource-item {
+        padding: 10px;
+        background-color: rgba(30, 144, 255, 0.1);
+        border-radius: 4px;
+        margin-bottom: 10px;
+      }
+
+      .resource-title {
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .resource-description {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
+      .checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .checkbox-item input[type='checkbox'] {
+        width: auto;
+      }
+
+      /* Responsive styles */
+      @media (max-width: 768px) {
+        .dashboard-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .form-row {
+          flex-direction: column;
+          gap: 10px;
+        }
+      }
+
+      /* Accessibility */
+      @media (prefers-reduced-motion: reduce) {
+        .action-button:hover,
+        .professor-item:hover {
+          transform: none;
+        }
+
+        .loading-spinner {
+          animation: none;
+        }
+      }
+
+      [role='button']:focus,
+      button:focus,
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo">ShotziOS AI Professors</div>
+        <div class="user-info">
+          <div class="user-avatar">A</div>
+          <div>Admin User</div>
+        </div>
+      </header>
+
+      <nav>
+        <div class="nav-links">
+          <a href="/tools" class="nav-link">All Tools</a>
+          <a href="/curriculum" class="nav-link">Curriculum Generator</a>
+          <a href="/performance" class="nav-link">Performance Dashboard</a>
+          <a href="#" class="nav-link active">AI Professors</a>
+          <a href="/ceo" class="nav-link">CEO Dashboard</a>
+        </div>
+      </nav>
+
+      <div id="notification" class="notification">Notification message</div>
+
+      <h1>AI Professor Management System</h1>
+      <p>
+        Create, manage, and interact with AI professors to provide personalized education for
+        students.
+      </p>
+
+      <div class="tab-container">
+        <div class="tab-buttons">
+          <button class="tab-button active" data-tab="professors">Professor Directory</button>
+          <button class="tab-button" data-tab="create">Create Professor</button>
+          <button class="tab-button" data-tab="chat">Professor Chat</button>
+          <button class="tab-button" data-tab="resources">Educational Resources</button>
+        </div>
+
+        <!-- Professors Directory Tab -->
+        <div id="professors" class="tab-content active">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Available AI Professors</h2>
+              <button id="refreshProfessorsBtn" class="action-button small">Refresh List</button>
+            </div>
+
+            <div id="professorListLoading">
+              <div class="loading-spinner"></div>
+              Loading professors...
+            </div>
+
+            <ul id="professorList" class="professor-list hidden">
+              <!-- Professors will be populated here via JavaScript -->
+            </ul>
+
+            <div id="noProfessorsMessage" class="hidden" style="text-align: center; padding: 20px">
+              <p>No AI professors have been created yet.</p>
+              <button id="createFirstProfessorBtn" class="action-button" style="margin-top: 10px">
+                Create Your First Professor
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Create Professor Tab -->
-      <div id="create" class="tab-content">
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">Create New AI Professor</h2>
-          </div>
-          
-          <form id="createProfessorForm">
-            <div class="form-row">
-              <div class="form-col">
-                <div class="form-group">
-                  <label for="professorName">Professor Name</label>
-                  <input type="text" id="professorName" placeholder="e.g., Dr. Alexandra" required>
-                </div>
-              </div>
-              <div class="form-col">
-                <div class="form-group">
-                  <label for="subject">Subject Area</label>
-                  <select id="subject" required>
-                    <option value="">Select a subject...</option>
-                    <option value="Mathematics">Mathematics</option>
-                    <option value="Science">Science</option>
-                    <option value="Biology">Biology</option>
-                    <option value="Chemistry">Chemistry</option>
-                    <option value="Physics">Physics</option>
-                    <option value="English Literature">English Literature</option>
-                    <option value="History">History</option>
-                    <option value="Computer Science">Computer Science</option>
-                    <option value="Foreign Languages">Foreign Languages</option>
-                    <option value="Art">Art</option>
-                    <option value="Music">Music</option>
-                    <option value="Physical Education">Physical Education</option>
-                    <option value="Economics">Economics</option>
-                    <option value="Psychology">Psychology</option>
-                    <option value="General Education">General Education</option>
-                  </select>
-                </div>
-              </div>
+        <!-- Create Professor Tab -->
+        <div id="create" class="tab-content">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Create New AI Professor</h2>
             </div>
-            
-            <div class="form-row">
-              <div class="form-col">
-                <div class="form-group">
-                  <label for="gradeLevel">Grade Level</label>
-                  <select id="gradeLevel" required>
-                    <option value="">Select grade level...</option>
-                    <option value="K-2">K-2 (Elementary)</option>
-                    <option value="3-5">3-5 (Elementary)</option>
-                    <option value="6-8">6-8 (Middle School)</option>
-                    <option value="9-12">9-12 (High School)</option>
-                    <option value="College">College/University</option>
-                    <option value="Adult Education">Adult Education</option>
-                  </select>
-                </div>
-              </div>
-              <div class="form-col">
-                <div class="form-group">
-                  <label for="tone">Teaching Tone</label>
-                  <select id="tone" required>
-                    <option value="">Select a tone...</option>
-                    <option value="encouraging">Encouraging & Supportive</option>
-                    <option value="formal">Formal & Academic</option>
-                    <option value="enthusiastic">Enthusiastic & Energetic</option>
-                    <option value="calm">Calm & Patient</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            
-            <div class="form-row">
-              <div class="form-col">
-                <div class="form-group">
-                  <label for="neurodivergentSupport">Neurodivergent Support</label>
-                  <select id="neurodivergentSupport" required>
-                    <option value="">Select support type...</option>
-                    <option value="adhd">ADHD-Focused Support</option>
-                    <option value="dyslexia">Dyslexia-Focused Support</option>
-                    <option value="autism">Autism-Focused Support</option>
-                    <option value="balanced">Balanced Support (All Types)</option>
-                  </select>
-                </div>
-              </div>
-              <div class="form-col">
-                <div class="form-group">
-                  <label for="teachingStyle">Teaching Style</label>
-                  <select id="teachingStyle" required>
-                    <option value="">Select a style...</option>
-                    <option value="interactive">Interactive & Hands-on</option>
-                    <option value="lecture">Lecture & Explanation</option>
-                    <option value="inquiry">Inquiry & Discovery</option>
-                    <option value="socratic">Socratic Method</option>
-                    <option value="gamified">Gamified Learning</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="specialization">Specialization (Optional)</label>
-              <input type="text" id="specialization" placeholder="e.g., Quantum Mechanics, Shakespearean Literature">
-            </div>
-            
-            <div class="form-group">
-              <label for="professorBio">Professor Biography</label>
-              <textarea id="professorBio" placeholder="Enter a brief biography for this AI professor..."></textarea>
-            </div>
-            
-            <div style="text-align: right; margin-top: 20px;">
-              <button type="button" id="clearFormBtn" class="action-button danger">Clear Form</button>
-              <button type="submit" id="createProfessorBtn" class="action-button">Create Professor</button>
-            </div>
-          </form>
-        </div>
-      </div>
 
-      <!-- Professor Chat Tab -->
-      <div id="chat" class="tab-content">
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">Chat with AI Professor</h2>
-          </div>
-          
-          <div class="form-group">
-            <label for="chatProfessorSelect">Select Professor</label>
-            <select id="chatProfessorSelect">
-              <option value="">Select a professor...</option>
-              <!-- Options will be populated via JavaScript -->
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="studentId">Student ID</label>
-            <input type="text" id="studentId" placeholder="Enter student ID">
-          </div>
-          
-          <div id="conversationContainer" class="conversation-container hidden">
-            <!-- Messages will appear here -->
-          </div>
-          
-          <div class="form-group">
-            <label for="questionInput">Ask a Question</label>
-            <textarea id="questionInput" placeholder="Enter your question..." disabled></textarea>
-          </div>
-          
-          <div style="text-align: right; margin-top: 15px;">
-            <button id="sendQuestionBtn" class="action-button" disabled>Send Question</button>
+            <form id="createProfessorForm">
+              <div class="form-row">
+                <div class="form-col">
+                  <div class="form-group">
+                    <label for="professorName">Professor Name</label>
+                    <input
+                      type="text"
+                      id="professorName"
+                      placeholder="e.g., Dr. Alexandra"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="form-col">
+                  <div class="form-group">
+                    <label for="subject">Subject Area</label>
+                    <select id="subject" required>
+                      <option value="">Select a subject...</option>
+                      <option value="Mathematics">Mathematics</option>
+                      <option value="Science">Science</option>
+                      <option value="Biology">Biology</option>
+                      <option value="Chemistry">Chemistry</option>
+                      <option value="Physics">Physics</option>
+                      <option value="English Literature">English Literature</option>
+                      <option value="History">History</option>
+                      <option value="Computer Science">Computer Science</option>
+                      <option value="Foreign Languages">Foreign Languages</option>
+                      <option value="Art">Art</option>
+                      <option value="Music">Music</option>
+                      <option value="Physical Education">Physical Education</option>
+                      <option value="Economics">Economics</option>
+                      <option value="Psychology">Psychology</option>
+                      <option value="General Education">General Education</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-col">
+                  <div class="form-group">
+                    <label for="gradeLevel">Grade Level</label>
+                    <select id="gradeLevel" required>
+                      <option value="">Select grade level...</option>
+                      <option value="K-2">K-2 (Elementary)</option>
+                      <option value="3-5">3-5 (Elementary)</option>
+                      <option value="6-8">6-8 (Middle School)</option>
+                      <option value="9-12">9-12 (High School)</option>
+                      <option value="College">College/University</option>
+                      <option value="Adult Education">Adult Education</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-col">
+                  <div class="form-group">
+                    <label for="tone">Teaching Tone</label>
+                    <select id="tone" required>
+                      <option value="">Select a tone...</option>
+                      <option value="encouraging">Encouraging & Supportive</option>
+                      <option value="formal">Formal & Academic</option>
+                      <option value="enthusiastic">Enthusiastic & Energetic</option>
+                      <option value="calm">Calm & Patient</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-col">
+                  <div class="form-group">
+                    <label for="neurodivergentSupport">Neurodivergent Support</label>
+                    <select id="neurodivergentSupport" required>
+                      <option value="">Select support type...</option>
+                      <option value="adhd">ADHD-Focused Support</option>
+                      <option value="dyslexia">Dyslexia-Focused Support</option>
+                      <option value="autism">Autism-Focused Support</option>
+                      <option value="balanced">Balanced Support (All Types)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-col">
+                  <div class="form-group">
+                    <label for="teachingStyle">Teaching Style</label>
+                    <select id="teachingStyle" required>
+                      <option value="">Select a style...</option>
+                      <option value="interactive">Interactive & Hands-on</option>
+                      <option value="lecture">Lecture & Explanation</option>
+                      <option value="inquiry">Inquiry & Discovery</option>
+                      <option value="socratic">Socratic Method</option>
+                      <option value="gamified">Gamified Learning</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="specialization">Specialization (Optional)</label>
+                <input
+                  type="text"
+                  id="specialization"
+                  placeholder="e.g., Quantum Mechanics, Shakespearean Literature"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="professorBio">Professor Biography</label>
+                <textarea
+                  id="professorBio"
+                  placeholder="Enter a brief biography for this AI professor..."
+                ></textarea>
+              </div>
+
+              <div style="text-align: right; margin-top: 20px">
+                <button type="button" id="clearFormBtn" class="action-button danger">
+                  Clear Form
+                </button>
+                <button type="submit" id="createProfessorBtn" class="action-button">
+                  Create Professor
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-      </div>
 
-      <!-- Educational Resources Tab -->
-      <div id="resources" class="tab-content">
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">Generate Educational Resources</h2>
-          </div>
-          
-          <div class="form-group">
-            <label for="resourceProfessorSelect">Select Professor</label>
-            <select id="resourceProfessorSelect">
-              <option value="">Select a professor...</option>
-              <!-- Options will be populated via JavaScript -->
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="resourceType">Resource Type</label>
-            <select id="resourceType">
-              <option value="">Select resource type...</option>
-              <option value="lessonPlan">Lesson Plan</option>
-              <option value="quiz">Quiz</option>
-              <option value="studyGuide">Study Guide</option>
-            </select>
-          </div>
-          
-          <div id="lessonPlanOptions" class="resource-options hidden">
-            <div class="form-group">
-              <label for="lessonTopic">Topic</label>
-              <input type="text" id="lessonTopic" placeholder="e.g., Pythagorean Theorem, American Civil War">
+        <!-- Professor Chat Tab -->
+        <div id="chat" class="tab-content">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Chat with AI Professor</h2>
             </div>
+
             <div class="form-group">
-              <label for="lessonDuration">Duration</label>
-              <select id="lessonDuration">
-                <option value="30 minutes">30 minutes</option>
-                <option value="45 minutes">45 minutes</option>
-                <option value="60 minutes">1 hour</option>
-                <option value="90 minutes">90 minutes</option>
-                <option value="2 hours">2 hours</option>
+              <label for="chatProfessorSelect">Select Professor</label>
+              <select id="chatProfessorSelect">
+                <option value="">Select a professor...</option>
+                <!-- Options will be populated via JavaScript -->
               </select>
             </div>
-          </div>
-          
-          <div id="quizOptions" class="resource-options hidden">
+
             <div class="form-group">
-              <label for="quizTopic">Topic</label>
-              <input type="text" id="quizTopic" placeholder="e.g., Cell Biology, World War II">
+              <label for="studentId">Student ID</label>
+              <input type="text" id="studentId" placeholder="Enter student ID" />
             </div>
-            <div class="form-row">
-              <div class="form-col">
-                <div class="form-group">
-                  <label for="questionCount">Number of Questions</label>
-                  <select id="questionCount">
-                    <option value="5">5 questions</option>
-                    <option value="10">10 questions</option>
-                    <option value="15">15 questions</option>
-                    <option value="20">20 questions</option>
-                  </select>
-                </div>
-              </div>
-              <div class="form-col">
-                <div class="form-group">
-                  <label for="difficulty">Difficulty</label>
-                  <select id="difficulty">
-                    <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
-                    <option value="hard">Hard</option>
-                  </select>
-                </div>
-              </div>
+
+            <div id="conversationContainer" class="conversation-container hidden">
+              <!-- Messages will appear here -->
             </div>
-          </div>
-          
-          <div id="studyGuideOptions" class="resource-options hidden">
+
             <div class="form-group">
-              <label for="studyGuideTopic">Topic</label>
-              <input type="text" id="studyGuideTopic" placeholder="e.g., Thermodynamics, Literary Analysis">
+              <label for="questionInput">Ask a Question</label>
+              <textarea id="questionInput" placeholder="Enter your question..." disabled></textarea>
             </div>
-          </div>
-          
-          <div style="text-align: right; margin-top: 20px;">
-            <button id="generateResourceBtn" class="action-button">Generate Resource</button>
+
+            <div style="text-align: right; margin-top: 15px">
+              <button id="sendQuestionBtn" class="action-button" disabled>Send Question</button>
+            </div>
           </div>
         </div>
-        
-        <div id="resourceResult" class="card hidden" style="margin-top: 20px;">
-          <div class="card-header">
-            <h2 class="card-title">Generated Resource</h2>
-            <button id="downloadResourceBtn" class="action-button small">Download</button>
+
+        <!-- Educational Resources Tab -->
+        <div id="resources" class="tab-content">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Generate Educational Resources</h2>
+            </div>
+
+            <div class="form-group">
+              <label for="resourceProfessorSelect">Select Professor</label>
+              <select id="resourceProfessorSelect">
+                <option value="">Select a professor...</option>
+                <!-- Options will be populated via JavaScript -->
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="resourceType">Resource Type</label>
+              <select id="resourceType">
+                <option value="">Select resource type...</option>
+                <option value="lessonPlan">Lesson Plan</option>
+                <option value="quiz">Quiz</option>
+                <option value="studyGuide">Study Guide</option>
+              </select>
+            </div>
+
+            <div id="lessonPlanOptions" class="resource-options hidden">
+              <div class="form-group">
+                <label for="lessonTopic">Topic</label>
+                <input
+                  type="text"
+                  id="lessonTopic"
+                  placeholder="e.g., Pythagorean Theorem, American Civil War"
+                />
+              </div>
+              <div class="form-group">
+                <label for="lessonDuration">Duration</label>
+                <select id="lessonDuration">
+                  <option value="30 minutes">30 minutes</option>
+                  <option value="45 minutes">45 minutes</option>
+                  <option value="60 minutes">1 hour</option>
+                  <option value="90 minutes">90 minutes</option>
+                  <option value="2 hours">2 hours</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="quizOptions" class="resource-options hidden">
+              <div class="form-group">
+                <label for="quizTopic">Topic</label>
+                <input type="text" id="quizTopic" placeholder="e.g., Cell Biology, World War II" />
+              </div>
+              <div class="form-row">
+                <div class="form-col">
+                  <div class="form-group">
+                    <label for="questionCount">Number of Questions</label>
+                    <select id="questionCount">
+                      <option value="5">5 questions</option>
+                      <option value="10">10 questions</option>
+                      <option value="15">15 questions</option>
+                      <option value="20">20 questions</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-col">
+                  <div class="form-group">
+                    <label for="difficulty">Difficulty</label>
+                    <select id="difficulty">
+                      <option value="easy">Easy</option>
+                      <option value="medium">Medium</option>
+                      <option value="hard">Hard</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="studyGuideOptions" class="resource-options hidden">
+              <div class="form-group">
+                <label for="studyGuideTopic">Topic</label>
+                <input
+                  type="text"
+                  id="studyGuideTopic"
+                  placeholder="e.g., Thermodynamics, Literary Analysis"
+                />
+              </div>
+            </div>
+
+            <div style="text-align: right; margin-top: 20px">
+              <button id="generateResourceBtn" class="action-button">Generate Resource</button>
+            </div>
           </div>
-          
-          <div id="resourceContent" style="white-space: pre-wrap;"></div>
+
+          <div id="resourceResult" class="card hidden" style="margin-top: 20px">
+            <div class="card-header">
+              <h2 class="card-title">Generated Resource</h2>
+              <button id="downloadResourceBtn" class="action-button small">Download</button>
+            </div>
+
+            <div id="resourceContent" style="white-space: pre-wrap"></div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Professor Details Modal -->
-  <div id="professorModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title">Professor Details</h3>
-        <button class="modal-close" id="closeModalBtn">&times;</button>
-      </div>
-      <div class="modal-body" id="professorModalBody">
-        <!-- Professor details will be populated here -->
-      </div>
-      <div class="modal-footer">
-        <button id="deleteProfessorBtn" class="action-button danger">Delete Professor</button>
-        <button id="closeModalFooterBtn" class="action-button">Close</button>
+    <!-- Professor Details Modal -->
+    <div id="professorModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Professor Details</h3>
+          <button class="modal-close" id="closeModalBtn">&times;</button>
+        </div>
+        <div class="modal-body" id="professorModalBody">
+          <!-- Professor details will be populated here -->
+        </div>
+        <div class="modal-footer">
+          <button id="deleteProfessorBtn" class="action-button danger">Delete Professor</button>
+          <button id="closeModalFooterBtn" class="action-button">Close</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script>
-    // DOM elements
-    const tabButtons = document.querySelectorAll('.tab-button');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const notification = document.getElementById('notification');
-    
-    // Professor list elements
-    const professorList = document.getElementById('professorList');
-    const professorListLoading = document.getElementById('professorListLoading');
-    const noProfessorsMessage = document.getElementById('noProfessorsMessage');
-    const refreshProfessorsBtn = document.getElementById('refreshProfessorsBtn');
-    const createFirstProfessorBtn = document.getElementById('createFirstProfessorBtn');
-    
-    // Create professor form elements
-    const createProfessorForm = document.getElementById('createProfessorForm');
-    const clearFormBtn = document.getElementById('clearFormBtn');
-    
-    // Chat elements
-    const chatProfessorSelect = document.getElementById('chatProfessorSelect');
-    const studentId = document.getElementById('studentId');
-    const conversationContainer = document.getElementById('conversationContainer');
-    const questionInput = document.getElementById('questionInput');
-    const sendQuestionBtn = document.getElementById('sendQuestionBtn');
-    
-    // Resource elements
-    const resourceProfessorSelect = document.getElementById('resourceProfessorSelect');
-    const resourceType = document.getElementById('resourceType');
-    const resourceOptions = document.querySelectorAll('.resource-options');
-    const generateResourceBtn = document.getElementById('generateResourceBtn');
-    const resourceResult = document.getElementById('resourceResult');
-    const resourceContent = document.getElementById('resourceContent');
-    const downloadResourceBtn = document.getElementById('downloadResourceBtn');
-    
-    // Modal elements
-    const professorModal = document.getElementById('professorModal');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const closeModalFooterBtn = document.getElementById('closeModalFooterBtn');
-    const professorModalBody = document.getElementById('professorModalBody');
-    const deleteProfessorBtn = document.getElementById('deleteProfessorBtn');
-    
-    // Current state
-    let currentProfessors = [];
-    let selectedProfessorId = null;
-    let conversationHistory = [];
-    
-    // Tab functionality
-    tabButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        // Deactivate all tabs
-        tabButtons.forEach(btn => btn.classList.remove('active'));
-        tabContents.forEach(content => content.classList.remove('active'));
-        
-        // Activate selected tab
-        button.classList.add('active');
-        const tabId = button.getAttribute('data-tab');
-        document.getElementById(tabId).classList.add('active');
+    <script>
+      // DOM elements
+      const tabButtons = document.querySelectorAll('.tab-button');
+      const tabContents = document.querySelectorAll('.tab-content');
+      const notification = document.getElementById('notification');
+
+      // Professor list elements
+      const professorList = document.getElementById('professorList');
+      const professorListLoading = document.getElementById('professorListLoading');
+      const noProfessorsMessage = document.getElementById('noProfessorsMessage');
+      const refreshProfessorsBtn = document.getElementById('refreshProfessorsBtn');
+      const createFirstProfessorBtn = document.getElementById('createFirstProfessorBtn');
+
+      // Create professor form elements
+      const createProfessorForm = document.getElementById('createProfessorForm');
+      const clearFormBtn = document.getElementById('clearFormBtn');
+
+      // Chat elements
+      const chatProfessorSelect = document.getElementById('chatProfessorSelect');
+      const studentId = document.getElementById('studentId');
+      const conversationContainer = document.getElementById('conversationContainer');
+      const questionInput = document.getElementById('questionInput');
+      const sendQuestionBtn = document.getElementById('sendQuestionBtn');
+
+      // Resource elements
+      const resourceProfessorSelect = document.getElementById('resourceProfessorSelect');
+      const resourceType = document.getElementById('resourceType');
+      const resourceOptions = document.querySelectorAll('.resource-options');
+      const generateResourceBtn = document.getElementById('generateResourceBtn');
+      const resourceResult = document.getElementById('resourceResult');
+      const resourceContent = document.getElementById('resourceContent');
+      const downloadResourceBtn = document.getElementById('downloadResourceBtn');
+
+      // Modal elements
+      const professorModal = document.getElementById('professorModal');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      const closeModalFooterBtn = document.getElementById('closeModalFooterBtn');
+      const professorModalBody = document.getElementById('professorModalBody');
+      const deleteProfessorBtn = document.getElementById('deleteProfessorBtn');
+
+      // Current state
+      let currentProfessors = [];
+      let selectedProfessorId = null;
+      let conversationHistory = [];
+
+      // Tab functionality
+      tabButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          // Deactivate all tabs
+          tabButtons.forEach((btn) => btn.classList.remove('active'));
+          tabContents.forEach((content) => content.classList.remove('active'));
+
+          // Activate selected tab
+          button.classList.add('active');
+          const tabId = button.getAttribute('data-tab');
+          document.getElementById(tabId).classList.add('active');
+        });
       });
-    });
-    
-    // Show notification
-    function showNotification(message, type = 'success') {
-      notification.textContent = message;
-      notification.className = 'notification';
-      notification.classList.add(`notification-${type}`);
-      notification.style.display = 'block';
-      
-      setTimeout(() => {
-        notification.style.display = 'none';
-      }, 5000);
-    }
-    
-    // API methods
-    const api = {
-      // Get all professors
-      async getProfessors() {
-        try {
-          const response = await fetch('/api/professors');
-          if (!response.ok) throw new Error('Failed to fetch professors');
-          return await response.json();
-        } catch (error) {
-          console.error('Error fetching professors:', error);
-          showNotification('Error fetching professors: ' + error.message, 'error');
-          return [];
-        }
-      },
-      
-      // Get professor details
-      async getProfessor(id) {
-        try {
-          const response = await fetch(`/api/professors/${id}`);
-          if (!response.ok) throw new Error('Failed to fetch professor details');
-          return await response.json();
-        } catch (error) {
-          console.error('Error fetching professor details:', error);
-          showNotification('Error fetching professor details: ' + error.message, 'error');
-          return null;
-        }
-      },
-      
-      // Create a new professor
-      async createProfessor(professorData) {
-        try {
-          const response = await fetch('/api/professors', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(professorData)
-          });
-          
-          if (!response.ok) throw new Error('Failed to create professor');
-          return await response.json();
-        } catch (error) {
-          console.error('Error creating professor:', error);
-          showNotification('Error creating professor: ' + error.message, 'error');
-          return null;
-        }
-      },
-      
-      // Update a professor
-      async updateProfessor(id, professorData) {
-        try {
-          const response = await fetch(`/api/professors/${id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(professorData)
-          });
-          
-          if (!response.ok) throw new Error('Failed to update professor');
-          return await response.json();
-        } catch (error) {
-          console.error('Error updating professor:', error);
-          showNotification('Error updating professor: ' + error.message, 'error');
-          return null;
-        }
-      },
-      
-      // Ask a question to a professor
-      async askProfessor(id, studentId, question, context = []) {
-        try {
-          const response = await fetch(`/api/professors/${id}/ask`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ studentId, question, context })
-          });
-          
-          if (!response.ok) throw new Error('Failed to ask question');
-          return await response.json();
-        } catch (error) {
-          console.error('Error asking question:', error);
-          showNotification('Error asking question: ' + error.message, 'error');
-          return null;
-        }
-      },
-      
-      // Get professor-student conversation history
-      async getConversationHistory(professorId, studentId) {
-        try {
-          const response = await fetch(`/api/professors/${professorId}/history/${studentId}`);
-          if (!response.ok) throw new Error('Failed to fetch conversation history');
-          return await response.json();
-        } catch (error) {
-          console.error('Error fetching conversation history:', error);
-          showNotification('Error fetching conversation history: ' + error.message, 'error');
-          return [];
-        }
-      },
-      
-      // Generate a lesson plan
-      async generateLessonPlan(professorId, topic, duration) {
-        try {
-          const response = await fetch(`/api/professors/${professorId}/lesson-plan`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ topic, duration })
-          });
-          
-          if (!response.ok) throw new Error('Failed to generate lesson plan');
-          return await response.json();
-        } catch (error) {
-          console.error('Error generating lesson plan:', error);
-          showNotification('Error generating lesson plan: ' + error.message, 'error');
-          return null;
-        }
-      },
-      
-      // Create a quiz
-      async createQuiz(professorId, topic, questionCount, difficulty) {
-        try {
-          const response = await fetch(`/api/professors/${professorId}/quiz`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ topic, questionCount, difficulty })
-          });
-          
-          if (!response.ok) throw new Error('Failed to create quiz');
-          return await response.json();
-        } catch (error) {
-          console.error('Error creating quiz:', error);
-          showNotification('Error creating quiz: ' + error.message, 'error');
-          return null;
-        }
-      },
-      
-      // Generate a study guide
-      async generateStudyGuide(professorId, topic) {
-        try {
-          const response = await fetch(`/api/professors/${professorId}/study-guide`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ topic })
-          });
-          
-          if (!response.ok) throw new Error('Failed to generate study guide');
-          return await response.json();
-        } catch (error) {
-          console.error('Error generating study guide:', error);
-          showNotification('Error generating study guide: ' + error.message, 'error');
-          return null;
-        }
+
+      // Show notification
+      function showNotification(message, type = 'success') {
+        notification.textContent = message;
+        notification.className = 'notification';
+        notification.classList.add(`notification-${type}`);
+        notification.style.display = 'block';
+
+        setTimeout(() => {
+          notification.style.display = 'none';
+        }, 5000);
       }
-    };
-    
-    // Load professors list
-    async function loadProfessors() {
-      professorListLoading.classList.remove('hidden');
-      professorList.classList.add('hidden');
-      noProfessorsMessage.classList.add('hidden');
-      
-      currentProfessors = await api.getProfessors();
-      
-      professorListLoading.classList.add('hidden');
-      
-      // Update professor selects in other tabs
-      updateProfessorSelects();
-      
-      if (currentProfessors.length === 0) {
-        noProfessorsMessage.classList.remove('hidden');
-        return;
-      }
-      
-      professorList.innerHTML = '';
-      professorList.classList.remove('hidden');
-      
-      currentProfessors.forEach(professor => {
-        const item = document.createElement('li');
-        item.className = 'professor-item';
-        item.innerHTML = `
+
+      // API methods
+      const api = {
+        // Get all professors
+        async getProfessors() {
+          try {
+            const response = await fetch('/api/professors');
+            if (!response.ok) throw new Error('Failed to fetch professors');
+            return await response.json();
+          } catch (error) {
+            console.error('Error fetching professors:', error);
+            showNotification('Error fetching professors: ' + error.message, 'error');
+            return [];
+          }
+        },
+
+        // Get professor details
+        async getProfessor(id) {
+          try {
+            const response = await fetch(`/api/professors/${id}`);
+            if (!response.ok) throw new Error('Failed to fetch professor details');
+            return await response.json();
+          } catch (error) {
+            console.error('Error fetching professor details:', error);
+            showNotification('Error fetching professor details: ' + error.message, 'error');
+            return null;
+          }
+        },
+
+        // Create a new professor
+        async createProfessor(professorData) {
+          try {
+            const response = await fetch('/api/professors', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(professorData),
+            });
+
+            if (!response.ok) throw new Error('Failed to create professor');
+            return await response.json();
+          } catch (error) {
+            console.error('Error creating professor:', error);
+            showNotification('Error creating professor: ' + error.message, 'error');
+            return null;
+          }
+        },
+
+        // Update a professor
+        async updateProfessor(id, professorData) {
+          try {
+            const response = await fetch(`/api/professors/${id}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(professorData),
+            });
+
+            if (!response.ok) throw new Error('Failed to update professor');
+            return await response.json();
+          } catch (error) {
+            console.error('Error updating professor:', error);
+            showNotification('Error updating professor: ' + error.message, 'error');
+            return null;
+          }
+        },
+
+        // Ask a question to a professor
+        async askProfessor(id, studentId, question, context = []) {
+          try {
+            const response = await fetch(`/api/professors/${id}/ask`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ studentId, question, context }),
+            });
+
+            if (!response.ok) throw new Error('Failed to ask question');
+            return await response.json();
+          } catch (error) {
+            console.error('Error asking question:', error);
+            showNotification('Error asking question: ' + error.message, 'error');
+            return null;
+          }
+        },
+
+        // Get professor-student conversation history
+        async getConversationHistory(professorId, studentId) {
+          try {
+            const response = await fetch(`/api/professors/${professorId}/history/${studentId}`);
+            if (!response.ok) throw new Error('Failed to fetch conversation history');
+            return await response.json();
+          } catch (error) {
+            console.error('Error fetching conversation history:', error);
+            showNotification('Error fetching conversation history: ' + error.message, 'error');
+            return [];
+          }
+        },
+
+        // Generate a lesson plan
+        async generateLessonPlan(professorId, topic, duration) {
+          try {
+            const response = await fetch(`/api/professors/${professorId}/lesson-plan`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ topic, duration }),
+            });
+
+            if (!response.ok) throw new Error('Failed to generate lesson plan');
+            return await response.json();
+          } catch (error) {
+            console.error('Error generating lesson plan:', error);
+            showNotification('Error generating lesson plan: ' + error.message, 'error');
+            return null;
+          }
+        },
+
+        // Create a quiz
+        async createQuiz(professorId, topic, questionCount, difficulty) {
+          try {
+            const response = await fetch(`/api/professors/${professorId}/quiz`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ topic, questionCount, difficulty }),
+            });
+
+            if (!response.ok) throw new Error('Failed to create quiz');
+            return await response.json();
+          } catch (error) {
+            console.error('Error creating quiz:', error);
+            showNotification('Error creating quiz: ' + error.message, 'error');
+            return null;
+          }
+        },
+
+        // Generate a study guide
+        async generateStudyGuide(professorId, topic) {
+          try {
+            const response = await fetch(`/api/professors/${professorId}/study-guide`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ topic }),
+            });
+
+            if (!response.ok) throw new Error('Failed to generate study guide');
+            return await response.json();
+          } catch (error) {
+            console.error('Error generating study guide:', error);
+            showNotification('Error generating study guide: ' + error.message, 'error');
+            return null;
+          }
+        },
+      };
+
+      // Load professors list
+      async function loadProfessors() {
+        professorListLoading.classList.remove('hidden');
+        professorList.classList.add('hidden');
+        noProfessorsMessage.classList.add('hidden');
+
+        currentProfessors = await api.getProfessors();
+
+        professorListLoading.classList.add('hidden');
+
+        // Update professor selects in other tabs
+        updateProfessorSelects();
+
+        if (currentProfessors.length === 0) {
+          noProfessorsMessage.classList.remove('hidden');
+          return;
+        }
+
+        professorList.innerHTML = '';
+        professorList.classList.remove('hidden');
+
+        currentProfessors.forEach((professor) => {
+          const item = document.createElement('li');
+          item.className = 'professor-item';
+          item.innerHTML = `
           <div class="professor-header">
             <div class="professor-title">${professor.subject} Professor</div>
             <div class="badge badge-${professor.active ? 'success' : 'warning'}">
@@ -1128,45 +1164,45 @@
             <button class="action-button small view-professor-btn" data-id="${professor.id}">View Details</button>
           </div>
         `;
-        
-        professorList.appendChild(item);
-      });
-      
-      // Add event listeners to view buttons
-      document.querySelectorAll('.view-professor-btn').forEach(button => {
-        button.addEventListener('click', () => {
-          const professorId = button.getAttribute('data-id');
-          openProfessorDetails(professorId);
+
+          professorList.appendChild(item);
         });
-      });
-    }
-    
-    // Update professor select dropdowns
-    function updateProfessorSelects() {
-      // Clear existing options
-      chatProfessorSelect.innerHTML = '<option value="">Select a professor...</option>';
-      resourceProfessorSelect.innerHTML = '<option value="">Select a professor...</option>';
-      
-      // Add options for each professor
-      currentProfessors.forEach(professor => {
-        const chatOption = document.createElement('option');
-        chatOption.value = professor.id;
-        chatOption.textContent = `${professor.subject} Professor (${professor.gradeLevel})`;
-        chatProfessorSelect.appendChild(chatOption);
-        
-        const resourceOption = document.createElement('option');
-        resourceOption.value = professor.id;
-        resourceOption.textContent = `${professor.subject} Professor (${professor.gradeLevel})`;
-        resourceProfessorSelect.appendChild(resourceOption);
-      });
-    }
-    
-    // Open professor details modal
-    async function openProfessorDetails(professorId) {
-      const professor = await api.getProfessor(professorId);
-      if (!professor) return;
-      
-      professorModalBody.innerHTML = `
+
+        // Add event listeners to view buttons
+        document.querySelectorAll('.view-professor-btn').forEach((button) => {
+          button.addEventListener('click', () => {
+            const professorId = button.getAttribute('data-id');
+            openProfessorDetails(professorId);
+          });
+        });
+      }
+
+      // Update professor select dropdowns
+      function updateProfessorSelects() {
+        // Clear existing options
+        chatProfessorSelect.innerHTML = '<option value="">Select a professor...</option>';
+        resourceProfessorSelect.innerHTML = '<option value="">Select a professor...</option>';
+
+        // Add options for each professor
+        currentProfessors.forEach((professor) => {
+          const chatOption = document.createElement('option');
+          chatOption.value = professor.id;
+          chatOption.textContent = `${professor.subject} Professor (${professor.gradeLevel})`;
+          chatProfessorSelect.appendChild(chatOption);
+
+          const resourceOption = document.createElement('option');
+          resourceOption.value = professor.id;
+          resourceOption.textContent = `${professor.subject} Professor (${professor.gradeLevel})`;
+          resourceProfessorSelect.appendChild(resourceOption);
+        });
+      }
+
+      // Open professor details modal
+      async function openProfessorDetails(professorId) {
+        const professor = await api.getProfessor(professorId);
+        if (!professor) return;
+
+        professorModalBody.innerHTML = `
         <div class="form-group">
           <label>Professor ID</label>
           <p>${professor.id}</p>
@@ -1204,353 +1240,362 @@
           <p>${professor.interactions.length} total interactions</p>
         </div>
       `;
-      
-      // Set current professor for deletion
-      deleteProfessorBtn.setAttribute('data-id', professor.id);
-      
-      // Show modal
-      professorModal.classList.add('active');
-    }
-    
-    // Create a new professor
-    async function createProfessor(event) {
-      event.preventDefault();
-      
-      const professorData = {
-        name: document.getElementById('professorName').value,
-        subject: document.getElementById('subject').value,
-        gradeLevel: document.getElementById('gradeLevel').value,
-        tone: document.getElementById('tone').value,
-        neurodivergentSupport: document.getElementById('neurodivergentSupport').value,
-        teachingStyle: document.getElementById('teachingStyle').value,
-        specialization: document.getElementById('specialization').value || undefined,
-        bio: document.getElementById('professorBio').value || undefined
-      };
-      
-      const createdProfessor = await api.createProfessor(professorData);
-      
-      if (createdProfessor) {
-        showNotification('Professor created successfully!');
+
+        // Set current professor for deletion
+        deleteProfessorBtn.setAttribute('data-id', professor.id);
+
+        // Show modal
+        professorModal.classList.add('active');
+      }
+
+      // Create a new professor
+      async function createProfessor(event) {
+        event.preventDefault();
+
+        const professorData = {
+          name: document.getElementById('professorName').value,
+          subject: document.getElementById('subject').value,
+          gradeLevel: document.getElementById('gradeLevel').value,
+          tone: document.getElementById('tone').value,
+          neurodivergentSupport: document.getElementById('neurodivergentSupport').value,
+          teachingStyle: document.getElementById('teachingStyle').value,
+          specialization: document.getElementById('specialization').value || undefined,
+          bio: document.getElementById('professorBio').value || undefined,
+        };
+
+        const createdProfessor = await api.createProfessor(professorData);
+
+        if (createdProfessor) {
+          showNotification('Professor created successfully!');
+          createProfessorForm.reset();
+
+          // Switch to professors tab
+          tabButtons.forEach((btn) => btn.classList.remove('active'));
+          tabContents.forEach((content) => content.classList.remove('active'));
+          document.querySelector('[data-tab="professors"]').classList.add('active');
+          document.getElementById('professors').classList.add('active');
+
+          // Reload professors list
+          await loadProfessors();
+        }
+      }
+
+      // Clear create professor form
+      function clearCreateForm() {
         createProfessorForm.reset();
-        
-        // Switch to professors tab
-        tabButtons.forEach(btn => btn.classList.remove('active'));
-        tabContents.forEach(content => content.classList.remove('active'));
-        document.querySelector('[data-tab="professors"]').classList.add('active');
-        document.getElementById('professors').classList.add('active');
-        
-        // Reload professors list
-        await loadProfessors();
       }
-    }
-    
-    // Clear create professor form
-    function clearCreateForm() {
-      createProfessorForm.reset();
-    }
-    
-    // Load conversation history
-    async function loadConversationHistory() {
-      if (!selectedProfessorId || !studentId.value) {
-        conversationContainer.classList.add('hidden');
-        return;
-      }
-      
-      conversationHistory = await api.getConversationHistory(selectedProfessorId, studentId.value);
-      
-      if (conversationHistory.length === 0) {
-        conversationContainer.innerHTML = '<p style="text-align: center; padding: 20px;">No conversation history found. Ask a question to begin.</p>';
-      } else {
-        conversationContainer.innerHTML = '';
-        
-        conversationHistory.forEach(interaction => {
-          // Add student question
-          const questionDiv = document.createElement('div');
-          questionDiv.className = 'message message-student';
-          questionDiv.innerHTML = `
+
+      // Load conversation history
+      async function loadConversationHistory() {
+        if (!selectedProfessorId || !studentId.value) {
+          conversationContainer.classList.add('hidden');
+          return;
+        }
+
+        conversationHistory = await api.getConversationHistory(
+          selectedProfessorId,
+          studentId.value,
+        );
+
+        if (conversationHistory.length === 0) {
+          conversationContainer.innerHTML =
+            '<p style="text-align: center; padding: 20px;">No conversation history found. Ask a question to begin.</p>';
+        } else {
+          conversationContainer.innerHTML = '';
+
+          conversationHistory.forEach((interaction) => {
+            // Add student question
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'message message-student';
+            questionDiv.innerHTML = `
             <div>${interaction.question}</div>
             <div class="message-time">${new Date(interaction.timestamp).toLocaleString()}</div>
           `;
-          conversationContainer.appendChild(questionDiv);
-          
-          // Add professor answer
-          const answerDiv = document.createElement('div');
-          answerDiv.className = 'message message-professor';
-          answerDiv.innerHTML = `
+            conversationContainer.appendChild(questionDiv);
+
+            // Add professor answer
+            const answerDiv = document.createElement('div');
+            answerDiv.className = 'message message-professor';
+            answerDiv.innerHTML = `
             <div>${interaction.answer}</div>
             <div class="message-time">${new Date(interaction.timestamp).toLocaleString()}</div>
           `;
-          conversationContainer.appendChild(answerDiv);
-        });
-        
-        // Scroll to bottom
-        conversationContainer.scrollTop = conversationContainer.scrollHeight;
+            conversationContainer.appendChild(answerDiv);
+          });
+
+          // Scroll to bottom
+          conversationContainer.scrollTop = conversationContainer.scrollHeight;
+        }
+
+        conversationContainer.classList.remove('hidden');
       }
-      
-      conversationContainer.classList.remove('hidden');
-    }
-    
-    // Send question to professor
-    async function sendQuestion() {
-      if (!selectedProfessorId || !studentId.value || !questionInput.value) return;
-      
-      const question = questionInput.value;
-      
-      // Add question to the conversation container
-      const questionDiv = document.createElement('div');
-      questionDiv.className = 'message message-student';
-      questionDiv.innerHTML = `
+
+      // Send question to professor
+      async function sendQuestion() {
+        if (!selectedProfessorId || !studentId.value || !questionInput.value) return;
+
+        const question = questionInput.value;
+
+        // Add question to the conversation container
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'message message-student';
+        questionDiv.innerHTML = `
         <div>${question}</div>
         <div class="message-time">${new Date().toLocaleString()}</div>
       `;
-      conversationContainer.appendChild(questionDiv);
-      
-      // Disable input and button while processing
-      questionInput.disabled = true;
-      sendQuestionBtn.disabled = true;
-      sendQuestionBtn.innerHTML = '<div class="loading-spinner"></div> Processing...';
-      
-      // Send question to API
-      const response = await api.askProfessor(selectedProfessorId, studentId.value, question);
-      
-      // Re-enable input and button
-      questionInput.disabled = false;
-      sendQuestionBtn.disabled = false;
-      sendQuestionBtn.textContent = 'Send Question';
-      
-      if (!response) return;
-      
-      // Add answer to the conversation container
-      const answerDiv = document.createElement('div');
-      answerDiv.className = 'message message-professor';
-      answerDiv.innerHTML = `
+        conversationContainer.appendChild(questionDiv);
+
+        // Disable input and button while processing
+        questionInput.disabled = true;
+        sendQuestionBtn.disabled = true;
+        sendQuestionBtn.innerHTML = '<div class="loading-spinner"></div> Processing...';
+
+        // Send question to API
+        const response = await api.askProfessor(selectedProfessorId, studentId.value, question);
+
+        // Re-enable input and button
+        questionInput.disabled = false;
+        sendQuestionBtn.disabled = false;
+        sendQuestionBtn.textContent = 'Send Question';
+
+        if (!response) return;
+
+        // Add answer to the conversation container
+        const answerDiv = document.createElement('div');
+        answerDiv.className = 'message message-professor';
+        answerDiv.innerHTML = `
         <div>${response.answer}</div>
         <div class="message-time">${new Date().toLocaleString()}</div>
       `;
-      conversationContainer.appendChild(answerDiv);
-      
-      // Clear input
-      questionInput.value = '';
-      
-      // Scroll to bottom
-      conversationContainer.scrollTop = conversationContainer.scrollHeight;
-    }
-    
-    // Generate educational resource
-    async function generateResource() {
-      const professorId = resourceProfessorSelect.value;
-      const type = resourceType.value;
-      
-      if (!professorId || !type) {
-        showNotification('Please select a professor and resource type', 'error');
-        return;
+        conversationContainer.appendChild(answerDiv);
+
+        // Clear input
+        questionInput.value = '';
+
+        // Scroll to bottom
+        conversationContainer.scrollTop = conversationContainer.scrollHeight;
       }
-      
-      // Prepare generate button for loading state
-      generateResourceBtn.disabled = true;
-      generateResourceBtn.innerHTML = '<div class="loading-spinner"></div> Generating...';
-      
-      let resource = null;
-      
-      // Generate the appropriate resource type
-      switch (type) {
-        case 'lessonPlan':
-          const topic = document.getElementById('lessonTopic').value;
-          const duration = document.getElementById('lessonDuration').value;
-          
-          if (!topic) {
-            showNotification('Please enter a topic', 'error');
-            generateResourceBtn.disabled = false;
-            generateResourceBtn.textContent = 'Generate Resource';
-            return;
-          }
-          
-          resource = await api.generateLessonPlan(professorId, topic, duration);
-          break;
-          
-        case 'quiz':
-          const quizTopic = document.getElementById('quizTopic').value;
-          const questionCount = document.getElementById('questionCount').value;
-          const difficulty = document.getElementById('difficulty').value;
-          
-          if (!quizTopic) {
-            showNotification('Please enter a topic', 'error');
-            generateResourceBtn.disabled = false;
-            generateResourceBtn.textContent = 'Generate Resource';
-            return;
-          }
-          
-          resource = await api.createQuiz(professorId, quizTopic, questionCount, difficulty);
-          break;
-          
-        case 'studyGuide':
-          const studyGuideTopic = document.getElementById('studyGuideTopic').value;
-          
-          if (!studyGuideTopic) {
-            showNotification('Please enter a topic', 'error');
-            generateResourceBtn.disabled = false;
-            generateResourceBtn.textContent = 'Generate Resource';
-            return;
-          }
-          
-          resource = await api.generateStudyGuide(professorId, studyGuideTopic);
-          break;
-      }
-      
-      // Reset button state
-      generateResourceBtn.disabled = false;
-      generateResourceBtn.textContent = 'Generate Resource';
-      
-      if (!resource) return;
-      
-      // Display the resource content
-      let contentToShow = '';
-      
-      if (type === 'quiz' && resource.content) {
-        // Format quiz content nicely
-        contentToShow = resource.rawContent || JSON.stringify(resource.content, null, 2);
-      } else {
-        // For other resource types
-        contentToShow = resource.content;
-      }
-      
-      resourceContent.textContent = contentToShow;
-      resourceResult.classList.remove('hidden');
-      
-      // Set up download button with the resource data
-      downloadResourceBtn.setAttribute('data-content', contentToShow);
-      downloadResourceBtn.setAttribute('data-filename', `${type}_${new Date().toISOString().split('T')[0]}.txt`);
-    }
-    
-    // Download resource as text file
-    function downloadResource() {
-      const content = downloadResourceBtn.getAttribute('data-content');
-      const filename = downloadResourceBtn.getAttribute('data-filename');
-      
-      if (!content || !filename) return;
-      
-      const blob = new Blob([content], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = filename;
-      
-      document.body.appendChild(a);
-      a.click();
-      
-      setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }, 100);
-    }
-    
-    // Event listeners
-    document.addEventListener('DOMContentLoaded', () => {
-      // Load professors list on page load
-      loadProfessors();
-      
-      // Refresh professors list
-      refreshProfessorsBtn.addEventListener('click', loadProfessors);
-      
-      // Create first professor button
-      createFirstProfessorBtn.addEventListener('click', () => {
-        tabButtons.forEach(btn => btn.classList.remove('active'));
-        tabContents.forEach(content => content.classList.remove('active'));
-        document.querySelector('[data-tab="create"]').classList.add('active');
-        document.getElementById('create').classList.add('active');
-      });
-      
-      // Create professor form submission
-      createProfessorForm.addEventListener('submit', createProfessor);
-      
-      // Clear professor form
-      clearFormBtn.addEventListener('click', clearCreateForm);
-      
-      // Professor selection for chat
-      chatProfessorSelect.addEventListener('change', () => {
-        selectedProfessorId = chatProfessorSelect.value;
-        
-        if (selectedProfessorId && studentId.value) {
-          questionInput.disabled = false;
-          sendQuestionBtn.disabled = false;
-          loadConversationHistory();
+
+      // Generate educational resource
+      async function generateResource() {
+        const professorId = resourceProfessorSelect.value;
+        const type = resourceType.value;
+
+        if (!professorId || !type) {
+          showNotification('Please select a professor and resource type', 'error');
+          return;
+        }
+
+        // Prepare generate button for loading state
+        generateResourceBtn.disabled = true;
+        generateResourceBtn.innerHTML = '<div class="loading-spinner"></div> Generating...';
+
+        let resource = null;
+
+        // Generate the appropriate resource type
+        switch (type) {
+          case 'lessonPlan':
+            const topic = document.getElementById('lessonTopic').value;
+            const duration = document.getElementById('lessonDuration').value;
+
+            if (!topic) {
+              showNotification('Please enter a topic', 'error');
+              generateResourceBtn.disabled = false;
+              generateResourceBtn.textContent = 'Generate Resource';
+              return;
+            }
+
+            resource = await api.generateLessonPlan(professorId, topic, duration);
+            break;
+
+          case 'quiz':
+            const quizTopic = document.getElementById('quizTopic').value;
+            const questionCount = document.getElementById('questionCount').value;
+            const difficulty = document.getElementById('difficulty').value;
+
+            if (!quizTopic) {
+              showNotification('Please enter a topic', 'error');
+              generateResourceBtn.disabled = false;
+              generateResourceBtn.textContent = 'Generate Resource';
+              return;
+            }
+
+            resource = await api.createQuiz(professorId, quizTopic, questionCount, difficulty);
+            break;
+
+          case 'studyGuide':
+            const studyGuideTopic = document.getElementById('studyGuideTopic').value;
+
+            if (!studyGuideTopic) {
+              showNotification('Please enter a topic', 'error');
+              generateResourceBtn.disabled = false;
+              generateResourceBtn.textContent = 'Generate Resource';
+              return;
+            }
+
+            resource = await api.generateStudyGuide(professorId, studyGuideTopic);
+            break;
+        }
+
+        // Reset button state
+        generateResourceBtn.disabled = false;
+        generateResourceBtn.textContent = 'Generate Resource';
+
+        if (!resource) return;
+
+        // Display the resource content
+        let contentToShow = '';
+
+        if (type === 'quiz' && resource.content) {
+          // Format quiz content nicely
+          contentToShow = resource.rawContent || JSON.stringify(resource.content, null, 2);
         } else {
-          questionInput.disabled = true;
-          sendQuestionBtn.disabled = true;
-          conversationContainer.classList.add('hidden');
+          // For other resource types
+          contentToShow = resource.content;
         }
-      });
-      
-      // Student ID input
-      studentId.addEventListener('change', () => {
-        if (selectedProfessorId && studentId.value) {
-          questionInput.disabled = false;
-          sendQuestionBtn.disabled = false;
-          loadConversationHistory();
-        } else {
-          questionInput.disabled = true;
-          sendQuestionBtn.disabled = true;
-          conversationContainer.classList.add('hidden');
-        }
-      });
-      
-      // Send question button
-      sendQuestionBtn.addEventListener('click', sendQuestion);
-      
-      // Submit question on Enter (with Shift+Enter for new line)
-      questionInput.addEventListener('keydown', event => {
-        if (event.key === 'Enter' && !event.shiftKey) {
-          event.preventDefault();
-          sendQuestion();
-        }
-      });
-      
-      // Resource type selection
-      resourceType.addEventListener('change', () => {
-        const selectedType = resourceType.value;
-        
-        // Hide all resource option divs
-        resourceOptions.forEach(div => {
-          div.classList.add('hidden');
+
+        resourceContent.textContent = contentToShow;
+        resourceResult.classList.remove('hidden');
+
+        // Set up download button with the resource data
+        downloadResourceBtn.setAttribute('data-content', contentToShow);
+        downloadResourceBtn.setAttribute(
+          'data-filename',
+          `${type}_${new Date().toISOString().split('T')[0]}.txt`,
+        );
+      }
+
+      // Download resource as text file
+      function downloadResource() {
+        const content = downloadResourceBtn.getAttribute('data-content');
+        const filename = downloadResourceBtn.getAttribute('data-filename');
+
+        if (!content || !filename) return;
+
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = filename;
+
+        document.body.appendChild(a);
+        a.click();
+
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
+      }
+
+      // Event listeners
+      document.addEventListener('DOMContentLoaded', () => {
+        // Load professors list on page load
+        loadProfessors();
+
+        // Refresh professors list
+        refreshProfessorsBtn.addEventListener('click', loadProfessors);
+
+        // Create first professor button
+        createFirstProfessorBtn.addEventListener('click', () => {
+          tabButtons.forEach((btn) => btn.classList.remove('active'));
+          tabContents.forEach((content) => content.classList.remove('active'));
+          document.querySelector('[data-tab="create"]').classList.add('active');
+          document.getElementById('create').classList.add('active');
         });
-        
-        // Show the selected resource options
-        if (selectedType) {
-          document.getElementById(`${selectedType}Options`).classList.remove('hidden');
-        }
-      });
-      
-      // Generate resource button
-      generateResourceBtn.addEventListener('click', generateResource);
-      
-      // Download resource button
-      downloadResourceBtn.addEventListener('click', downloadResource);
-      
-      // Modal close buttons
-      closeModalBtn.addEventListener('click', () => {
-        professorModal.classList.remove('active');
-      });
-      
-      closeModalFooterBtn.addEventListener('click', () => {
-        professorModal.classList.remove('active');
-      });
-      
-      // Close modal on click outside
-      professorModal.addEventListener('click', event => {
-        if (event.target === professorModal) {
+
+        // Create professor form submission
+        createProfessorForm.addEventListener('submit', createProfessor);
+
+        // Clear professor form
+        clearFormBtn.addEventListener('click', clearCreateForm);
+
+        // Professor selection for chat
+        chatProfessorSelect.addEventListener('change', () => {
+          selectedProfessorId = chatProfessorSelect.value;
+
+          if (selectedProfessorId && studentId.value) {
+            questionInput.disabled = false;
+            sendQuestionBtn.disabled = false;
+            loadConversationHistory();
+          } else {
+            questionInput.disabled = true;
+            sendQuestionBtn.disabled = true;
+            conversationContainer.classList.add('hidden');
+          }
+        });
+
+        // Student ID input
+        studentId.addEventListener('change', () => {
+          if (selectedProfessorId && studentId.value) {
+            questionInput.disabled = false;
+            sendQuestionBtn.disabled = false;
+            loadConversationHistory();
+          } else {
+            questionInput.disabled = true;
+            sendQuestionBtn.disabled = true;
+            conversationContainer.classList.add('hidden');
+          }
+        });
+
+        // Send question button
+        sendQuestionBtn.addEventListener('click', sendQuestion);
+
+        // Submit question on Enter (with Shift+Enter for new line)
+        questionInput.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            sendQuestion();
+          }
+        });
+
+        // Resource type selection
+        resourceType.addEventListener('change', () => {
+          const selectedType = resourceType.value;
+
+          // Hide all resource option divs
+          resourceOptions.forEach((div) => {
+            div.classList.add('hidden');
+          });
+
+          // Show the selected resource options
+          if (selectedType) {
+            document.getElementById(`${selectedType}Options`).classList.remove('hidden');
+          }
+        });
+
+        // Generate resource button
+        generateResourceBtn.addEventListener('click', generateResource);
+
+        // Download resource button
+        downloadResourceBtn.addEventListener('click', downloadResource);
+
+        // Modal close buttons
+        closeModalBtn.addEventListener('click', () => {
           professorModal.classList.remove('active');
-        }
+        });
+
+        closeModalFooterBtn.addEventListener('click', () => {
+          professorModal.classList.remove('active');
+        });
+
+        // Close modal on click outside
+        professorModal.addEventListener('click', (event) => {
+          if (event.target === professorModal) {
+            professorModal.classList.remove('active');
+          }
+        });
+
+        // Simulate professor deletion (not fully implemented)
+        deleteProfessorBtn.addEventListener('click', () => {
+          const professorId = deleteProfessorBtn.getAttribute('data-id');
+          showNotification(
+            `Professor ${professorId} would be deleted (functionality not implemented)`,
+          );
+          professorModal.classList.remove('active');
+        });
       });
-      
-      // Simulate professor deletion (not fully implemented)
-      deleteProfessorBtn.addEventListener('click', () => {
-        const professorId = deleteProfessorBtn.getAttribute('data-id');
-        showNotification(`Professor ${professorId} would be deleted (functionality not implemented)`);
-        professorModal.classList.remove('active');
-      });
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>

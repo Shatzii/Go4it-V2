@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Bell, 
-  Shield, 
-  AlertTriangle, 
-  Clock, 
-  MessageSquare, 
+import {
+  Bell,
+  Shield,
+  AlertTriangle,
+  Clock,
+  MessageSquare,
   Settings,
   User,
   Phone,
   Mail,
   CheckCircle,
-  X
+  X,
 } from 'lucide-react';
 
 interface StaticParentNotificationProps {
@@ -31,7 +31,7 @@ export function StaticParentNotification({ childUserId }: StaticParentNotificati
       message: 'No suspicious activity detected',
       timestamp: '2024-01-15T14:30:00Z',
       platform: 'Instagram',
-      resolved: false
+      resolved: false,
     },
     {
       id: '2',
@@ -40,8 +40,8 @@ export function StaticParentNotification({ childUserId }: StaticParentNotificati
       message: 'Content monitoring active',
       timestamp: '2024-01-15T10:15:00Z',
       platform: 'TikTok',
-      resolved: true
-    }
+      resolved: true,
+    },
   ];
 
   const staticSettings = {
@@ -52,8 +52,8 @@ export function StaticParentNotification({ childUserId }: StaticParentNotificati
     quietHours: {
       enabled: true,
       start: '22:00',
-      end: '07:00'
-    }
+      end: '07:00',
+    },
   };
 
   return (
@@ -69,22 +69,29 @@ export function StaticParentNotification({ childUserId }: StaticParentNotificati
         <CardContent>
           <div className="space-y-3">
             {staticAlerts.map((alert) => (
-              <Alert key={alert.id} className={`${
-                alert.severity === 'high' ? 'border-red-500' :
-                alert.severity === 'medium' ? 'border-yellow-500' :
-                'border-green-500'
-              }`}>
+              <Alert
+                key={alert.id}
+                className={`${
+                  alert.severity === 'high'
+                    ? 'border-red-500'
+                    : alert.severity === 'medium'
+                      ? 'border-yellow-500'
+                      : 'border-green-500'
+                }`}
+              >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3">
-                    <AlertTriangle className={`w-5 h-5 mt-0.5 ${
-                      alert.severity === 'high' ? 'text-red-500' :
-                      alert.severity === 'medium' ? 'text-yellow-500' :
-                      'text-green-500'
-                    }`} />
+                    <AlertTriangle
+                      className={`w-5 h-5 mt-0.5 ${
+                        alert.severity === 'high'
+                          ? 'text-red-500'
+                          : alert.severity === 'medium'
+                            ? 'text-yellow-500'
+                            : 'text-green-500'
+                      }`}
+                    />
                     <div>
-                      <AlertDescription className="font-medium">
-                        {alert.message}
-                      </AlertDescription>
+                      <AlertDescription className="font-medium">{alert.message}</AlertDescription>
                       <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
                         <span className="flex items-center gap-1">
                           <Clock className="w-4 h-4" />
@@ -139,10 +146,9 @@ export function StaticParentNotification({ childUserId }: StaticParentNotificati
             <div className="flex items-center justify-between">
               <span>Quiet Hours</span>
               <Badge variant={staticSettings.quietHours.enabled ? 'default' : 'secondary'}>
-                {staticSettings.quietHours.enabled ? 
-                  `${staticSettings.quietHours.start} - ${staticSettings.quietHours.end}` : 
-                  'Disabled'
-                }
+                {staticSettings.quietHours.enabled
+                  ? `${staticSettings.quietHours.start} - ${staticSettings.quietHours.end}`
+                  : 'Disabled'}
               </Badge>
             </div>
           </div>

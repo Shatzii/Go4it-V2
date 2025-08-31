@@ -19,25 +19,25 @@ export async function GET(request: NextRequest) {
 
     const totalAchievements = userAchievements.length;
     const recentAchievements = userAchievements
-      .sort((a, b) => new Date(b.earned_date || new Date()).getTime() - new Date(a.earned_date || new Date()).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b.earned_date || new Date()).getTime() -
+          new Date(a.earned_date || new Date()).getTime(),
+      )
       .slice(0, 3);
 
     return NextResponse.json({
       count: totalAchievements,
-      recent: recentAchievements.map(achievement => ({
+      recent: recentAchievements.map((achievement) => ({
         id: achievement.id,
         title: achievement.title,
         description: achievement.description,
         iconType: achievement.icon_type,
-        earnedAt: achievement.earned_date
-      }))
+        earnedAt: achievement.earned_date,
+      })),
     });
-
   } catch (error) {
     console.error('Achievements stats error:', error);
-    return NextResponse.json(
-      { error: 'Failed to load achievements' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to load achievements' }, { status: 500 });
   }
 }

@@ -1,6 +1,6 @@
 /**
  * Course Builder API
- * 
+ *
  * This module provides API endpoints for the course builder feature,
  * including saving/loading courses and AI-powered course adaptations.
  */
@@ -37,12 +37,12 @@ router.get('/ai-status', async (req, res) => {
 router.post('/courses', async (req, res) => {
   try {
     const courseData = req.body;
-    
+
     // Add validation here
     if (!courseData.title) {
       return res.status(400).json({ error: 'Course title is required' });
     }
-    
+
     // Add a creation timestamp and ID if one doesn't exist
     const timestamp = new Date().toISOString();
     const courseToSave = {
@@ -50,22 +50,22 @@ router.post('/courses', async (req, res) => {
       id: courseData.id || `course_${Date.now()}`,
       createdAt: courseData.createdAt || timestamp,
       updatedAt: timestamp,
-      createdBy: req.user?.id || 'anonymous' // In a real implementation, this would be the user's ID
+      createdBy: req.user?.id || 'anonymous', // In a real implementation, this would be the user's ID
     };
-    
+
     // Save to in-memory storage for now
     // In a production implementation, this would save to the database
-    const existingIndex = courses.findIndex(c => c.id === courseToSave.id);
-    
+    const existingIndex = courses.findIndex((c) => c.id === courseToSave.id);
+
     if (existingIndex !== -1) {
       courses[existingIndex] = courseToSave;
     } else {
       courses.push(courseToSave);
     }
-    
-    res.status(201).json({ 
-      success: true, 
-      course: courseToSave 
+
+    res.status(201).json({
+      success: true,
+      course: courseToSave,
     });
   } catch (error) {
     console.error('Failed to save course:', error);
@@ -97,14 +97,14 @@ router.get('/courses', async (req, res) => {
 router.get('/courses/:id', async (req, res) => {
   try {
     const courseId = req.params.id;
-    
+
     // Find the course
-    const course = courses.find(c => c.id === courseId);
-    
+    const course = courses.find((c) => c.id === courseId);
+
     if (!course) {
       return res.status(404).json({ error: 'Course not found' });
     }
-    
+
     res.json({ course });
   } catch (error) {
     console.error(`Failed to retrieve course ${req.params.id}:`, error);
@@ -121,24 +121,24 @@ router.put('/courses/:id', async (req, res) => {
   try {
     const courseId = req.params.id;
     const courseData = req.body;
-    
+
     // Find the course
-    const existingIndex = courses.findIndex(c => c.id === courseId);
-    
+    const existingIndex = courses.findIndex((c) => c.id === courseId);
+
     if (existingIndex === -1) {
       return res.status(404).json({ error: 'Course not found' });
     }
-    
+
     // Update the course
     const updatedCourse = {
       ...courses[existingIndex],
       ...courseData,
       id: courseId, // Ensure ID doesn't change
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
-    
+
     courses[existingIndex] = updatedCourse;
-    
+
     res.json({ success: true, course: updatedCourse });
   } catch (error) {
     console.error(`Failed to update course ${req.params.id}:`, error);
@@ -154,17 +154,17 @@ router.put('/courses/:id', async (req, res) => {
 router.delete('/courses/:id', async (req, res) => {
   try {
     const courseId = req.params.id;
-    
+
     // Find the course
-    const existingIndex = courses.findIndex(c => c.id === courseId);
-    
+    const existingIndex = courses.findIndex((c) => c.id === courseId);
+
     if (existingIndex === -1) {
       return res.status(404).json({ error: 'Course not found' });
     }
-    
+
     // Remove the course
     courses.splice(existingIndex, 1);
-    
+
     res.json({ success: true });
   } catch (error) {
     console.error(`Failed to delete course ${req.params.id}:`, error);
@@ -180,13 +180,13 @@ router.delete('/courses/:id', async (req, res) => {
 router.post('/generate-quiz', async (req, res) => {
   try {
     const { content, options } = req.body;
-    
+
     if (!content) {
       return res.status(400).json({ error: 'Content is required' });
     }
-    
+
     const quiz = await aiEngine.generateQuiz(content, options);
-    
+
     res.json({ quiz });
   } catch (error) {
     console.error('Failed to generate quiz:', error);
@@ -202,13 +202,13 @@ router.post('/generate-quiz', async (req, res) => {
 router.post('/transform-course', async (req, res) => {
   try {
     const { course, options } = req.body;
-    
+
     if (!course) {
       return res.status(400).json({ error: 'Course data is required' });
     }
-    
+
     const transformedCourse = await aiEngine.transformCourseContent(course, options);
-    
+
     res.json({ course: transformedCourse });
   } catch (error) {
     console.error('Failed to transform course:', error);
@@ -224,13 +224,13 @@ router.post('/transform-course', async (req, res) => {
 router.post('/simplify-text', async (req, res) => {
   try {
     const { text, gradeLevel } = req.body;
-    
+
     if (!text) {
       return res.status(400).json({ error: 'Text is required' });
     }
-    
+
     const simplified = await aiEngine.simplifyText(text, gradeLevel);
-    
+
     res.json({ simplified });
   } catch (error) {
     console.error('Failed to simplify text:', error);
@@ -246,13 +246,13 @@ router.post('/simplify-text', async (req, res) => {
 router.post('/adapt-for-dyslexia', async (req, res) => {
   try {
     const { content, options } = req.body;
-    
+
     if (!content) {
       return res.status(400).json({ error: 'Content is required' });
     }
-    
+
     const adapted = await aiEngine.adaptForDyslexia(content, options);
-    
+
     res.json(adapted);
   } catch (error) {
     console.error('Failed to adapt for dyslexia:', error);
@@ -268,13 +268,13 @@ router.post('/adapt-for-dyslexia', async (req, res) => {
 router.post('/adapt-for-adhd', async (req, res) => {
   try {
     const { content, options } = req.body;
-    
+
     if (!content) {
       return res.status(400).json({ error: 'Content is required' });
     }
-    
+
     const adapted = await aiEngine.adaptForADHD(content, options);
-    
+
     res.json(adapted);
   } catch (error) {
     console.error('Failed to adapt for ADHD:', error);
@@ -290,13 +290,13 @@ router.post('/adapt-for-adhd', async (req, res) => {
 router.post('/adapt-for-autism', async (req, res) => {
   try {
     const { content, options } = req.body;
-    
+
     if (!content) {
       return res.status(400).json({ error: 'Content is required' });
     }
-    
+
     const adapted = await aiEngine.adaptForAutism(content, options);
-    
+
     res.json(adapted);
   } catch (error) {
     console.error('Failed to adapt for autism:', error);

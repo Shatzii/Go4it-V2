@@ -25,22 +25,26 @@ interface AnalysisResult {
 }
 
 export class BuildSafeAnalyzer {
-  
-  async analyzeVideo(
-    videoPath: string, 
-    sport: string = 'basketball'
-  ): Promise<AnalysisResult> {
+  async analyzeVideo(videoPath: string, sport: string = 'basketball'): Promise<AnalysisResult> {
     // During build, return a safe placeholder result
-    if (process.env.NODE_ENV === 'production' && typeof window === 'undefined' && !process.env.RUNTIME_INIT) {
+    if (
+      process.env.NODE_ENV === 'production' &&
+      typeof window === 'undefined' &&
+      !process.env.RUNTIME_INIT
+    ) {
       return this.getPlaceholderResult();
     }
-    
+
     try {
       // Skip TensorFlow.js imports during build - only use at runtime
-      if (process.env.NODE_ENV === 'production' && typeof window === 'undefined' && !process.env.RUNTIME_INIT) {
+      if (
+        process.env.NODE_ENV === 'production' &&
+        typeof window === 'undefined' &&
+        !process.env.RUNTIME_INIT
+      ) {
         return this.getPlaceholderResult();
       }
-      
+
       // Use production analyzer instead of TensorFlow.js for build compatibility
       const { productionAnalyzer } = await import('./production-analyzer');
       return await productionAnalyzer.analyzeVideo(videoPath, sport);
@@ -49,7 +53,7 @@ export class BuildSafeAnalyzer {
       return this.getErrorResult();
     }
   }
-  
+
   private getPlaceholderResult(): AnalysisResult {
     return {
       success: true,
@@ -65,16 +69,16 @@ export class BuildSafeAnalyzer {
       injuryRiskAssessment: {
         overallRisk: 'low',
         specificRisks: [],
-        preventionTips: []
+        preventionTips: [],
       },
       performancePrediction: {
         collegePotential: 'medium',
         strengths: [],
-        developmentAreas: []
-      }
+        developmentAreas: [],
+      },
     };
   }
-  
+
   private getErrorResult(): AnalysisResult {
     return {
       success: false,
@@ -90,13 +94,13 @@ export class BuildSafeAnalyzer {
       injuryRiskAssessment: {
         overallRisk: 'low',
         specificRisks: [],
-        preventionTips: []
+        preventionTips: [],
       },
       performancePrediction: {
         collegePotential: 'medium',
         strengths: [],
-        developmentAreas: []
-      }
+        developmentAreas: [],
+      },
     };
   }
 }

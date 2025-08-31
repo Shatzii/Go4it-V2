@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     if (!file || !sport || !userId) {
       return NextResponse.json(
         { error: 'Video file, sport, and userId are required' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     if (!validTypes.includes(file.type)) {
       return NextResponse.json(
         { error: 'Invalid file type. Please upload MP4, MOV, or WebM files.' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     if (file.size > 100 * 1024 * 1024) {
       return NextResponse.json(
         { error: 'File too large. Maximum size is 100MB.' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -53,18 +53,21 @@ export async function POST(request: NextRequest) {
     const mobileAnalysis = await performMobileAnalysis(filePath, sport, userId);
 
     // Send real-time notification
-    await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000'}/api/notifications/websocket`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userId,
-        type: 'gar_complete',
-        title: 'Mobile Analysis Complete',
-        message: `Your ${sport} video has been analyzed! GAR Score: ${mobileAnalysis.garScore}/100`,
-        priority: 'high',
-        actionUrl: '/mobile-video'
-      })
-    });
+    await fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000'}/api/notifications/websocket`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          type: 'gar_complete',
+          title: 'Mobile Analysis Complete',
+          message: `Your ${sport} video has been analyzed! GAR Score: ${mobileAnalysis.garScore}/100`,
+          priority: 'high',
+          actionUrl: '/mobile-video',
+        }),
+      },
+    );
 
     return NextResponse.json({
       success: true,
@@ -72,14 +75,13 @@ export async function POST(request: NextRequest) {
       garScore: mobileAnalysis.garScore,
       analysis: mobileAnalysis,
       message: 'Mobile video analysis completed successfully',
-      processingTime: mobileAnalysis.processingTime
+      processingTime: mobileAnalysis.processingTime,
     });
-
   } catch (error) {
     console.error('Mobile video analysis error:', error);
     return NextResponse.json(
       { error: 'Mobile analysis failed. Please try again.' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -94,37 +96,49 @@ async function performMobileAnalysis(filePath: string, sport: string, userId: st
       technique: Math.floor(Math.random() * 25) + 75,
       movement: Math.floor(Math.random() * 25) + 70,
       timing: Math.floor(Math.random() * 30) + 65,
-      consistency: Math.floor(Math.random() * 20) + 75
+      consistency: Math.floor(Math.random() * 20) + 75,
     },
     keyHighlights: [
       {
-        timestamp: '0:' + Math.floor(Math.random() * 60).toString().padStart(2, '0'),
+        timestamp:
+          '0:' +
+          Math.floor(Math.random() * 60)
+            .toString()
+            .padStart(2, '0'),
         description: 'Excellent technique demonstration',
-        score: 92
+        score: 92,
       },
       {
-        timestamp: '1:' + Math.floor(Math.random() * 60).toString().padStart(2, '0'),
+        timestamp:
+          '1:' +
+          Math.floor(Math.random() * 60)
+            .toString()
+            .padStart(2, '0'),
         description: 'Strong athletic movement',
-        score: 87
+        score: 87,
       },
       {
-        timestamp: '2:' + Math.floor(Math.random() * 60).toString().padStart(2, '0'),
+        timestamp:
+          '2:' +
+          Math.floor(Math.random() * 60)
+            .toString()
+            .padStart(2, '0'),
         description: 'Good decision making',
-        score: 84
-      }
+        score: 84,
+      },
     ],
     quickTips: [
       'Focus on consistent follow-through',
       'Improve reaction timing',
       'Work on core stability',
-      'Practice under pressure situations'
+      'Practice under pressure situations',
     ],
     shareableHighlight: {
       clipStart: '0:15',
       clipEnd: '0:45',
-      description: 'Best moment from your training session'
+      description: 'Best moment from your training session',
     },
-    processingTime: Date.now() - startTime
+    processingTime: Date.now() - startTime,
   };
 
   return mobileAnalysis;

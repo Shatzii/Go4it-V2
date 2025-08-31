@@ -30,15 +30,16 @@ export async function GET(request: NextRequest) {
     // Filter by plan if specified
     let filteredCoupons = allCoupons;
     if (planId) {
-      filteredCoupons = allCoupons.filter(coupon => 
-        !coupon.applicablePlans || 
-        coupon.applicablePlans.length === 0 || 
-        coupon.applicablePlans.includes(planId)
+      filteredCoupons = allCoupons.filter(
+        (coupon) =>
+          !coupon.applicablePlans ||
+          coupon.applicablePlans.length === 0 ||
+          coupon.applicablePlans.includes(planId),
       );
     }
 
     // Format response
-    const formattedCoupons = filteredCoupons.map(coupon => ({
+    const formattedCoupons = filteredCoupons.map((coupon) => ({
       id: coupon.id,
       code: coupon.code,
       name: coupon.name,
@@ -60,12 +61,14 @@ export async function GET(request: NextRequest) {
       coupons: formattedCoupons,
       total: formattedCoupons.length,
     });
-
   } catch (error) {
     console.error('List coupons error:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Internal server error',
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Internal server error',
+      },
+      { status: 500 },
+    );
   }
 }

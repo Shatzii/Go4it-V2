@@ -52,25 +52,21 @@ export class UnifiedAuthService {
       userId: user.id,
       username: user.username,
       role: user.role,
-      schoolAccess: user.schoolAccess
+      schoolAccess: user.schoolAccess,
     };
 
-    return jwt.sign(payload, this.jwtSecret, { 
+    return jwt.sign(payload, this.jwtSecret, {
       expiresIn: this.tokenExpiry,
       issuer: 'universal-one-school',
-      audience: 'school-platform'
+      audience: 'school-platform',
     });
   }
 
   generateRefreshToken(userId: string): string {
-    return jwt.sign(
-      { userId, type: 'refresh' },
-      this.refreshSecret,
-      { 
-        expiresIn: this.refreshExpiry,
-        issuer: 'universal-one-school'
-      }
-    );
+    return jwt.sign({ userId, type: 'refresh' }, this.refreshSecret, {
+      expiresIn: this.refreshExpiry,
+      issuer: 'universal-one-school',
+    });
   }
 
   verifyAccessToken(token: string): AuthTokenPayload | null {
@@ -96,7 +92,7 @@ export class UnifiedAuthService {
   requireAuth = (allowedRoles?: string[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
       const authHeader = req.headers.authorization;
-      
+
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ error: 'No valid authorization token provided' });
       }
@@ -116,7 +112,7 @@ export class UnifiedAuthService {
         id: payload.userId,
         username: payload.username,
         role: payload.role,
-        schoolAccess: payload.schoolAccess
+        schoolAccess: payload.schoolAccess,
       };
 
       next();
@@ -126,7 +122,7 @@ export class UnifiedAuthService {
   requireSchoolAccess = (schoolId: string) => {
     return (req: Request, res: Response, next: NextFunction) => {
       const user = req.user;
-      
+
       if (!user) {
         return res.status(401).json({ error: 'Authentication required' });
       }
@@ -146,7 +142,7 @@ export class UnifiedAuthService {
   generateSessionTokens(user: User): { accessToken: string; refreshToken: string } {
     return {
       accessToken: this.generateAccessToken(user),
-      refreshToken: this.generateRefreshToken(user.id)
+      refreshToken: this.generateRefreshToken(user.id),
     };
   }
 
@@ -154,17 +150,13 @@ export class UnifiedAuthService {
     if (user.role === 'admin') return true;
 
     const permissions: Record<string, string[]> = {
-      'teacher': [
+      teacher: [
         'view_student_progress',
         'create_assignments',
         'grade_assignments',
-        'manage_curriculum'
+        'manage_curriculum',
       ],
-      'student': [
-        'view_own_progress',
-        'submit_assignments',
-        'access_curriculum'
-      ]
+      student: ['view_own_progress', 'submit_assignments', 'access_curriculum'],
     };
 
     const userPermissions = permissions[user.role] || [];

@@ -13,9 +13,9 @@ process.env.HOSTNAME = '0.0.0.0';
 try {
   // Start Next.js in production mode
   console.log('⚡ Starting Next.js server on port 5000...');
-  execSync('npx next start -p 5000', { 
+  execSync('npx next start -p 5000', {
     stdio: 'inherit',
-    cwd: process.cwd()
+    cwd: process.cwd(),
   });
 } catch (error) {
   console.error('❌ Failed to start application:', error.message);

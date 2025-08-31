@@ -1,6 +1,6 @@
 /**
  * Sentinel 4.5 Security Event Correlation Engine
- * 
+ *
  * This module implements a security event correlation engine that can connect
  * multiple security events to identify coordinated attacks that might otherwise
  * appear as isolated incidents.
@@ -18,7 +18,7 @@ export enum CorrelationPatternType {
   TEMPORAL = 'temporal',
   MULTI_STAGE = 'multi_stage',
   DISTRIBUTED = 'distributed',
-  BEHAVIORAL = 'behavioral'
+  BEHAVIORAL = 'behavioral',
 }
 
 // Correlation rule definition
@@ -110,17 +110,18 @@ const DEFAULT_CORRELATION_RULES: CorrelationRule[] = [
       eventTypes: ['authentication_failure'],
       minEvents: 5,
       timeWindowMs: 5 * 60 * 1000, // 5 minutes
-      groupBy: ['sourceIp']
+      groupBy: ['sourceIp'],
     },
     actions: {
       createIncident: true,
       incidentType: IncidentType.BRUTE_FORCE,
       alertSeverity: AlertSeverity.HIGH,
-      alertMessage: 'Brute force attack detected: %count% failed login attempts from IP %sourceIp% in %timeWindow% minutes'
+      alertMessage:
+        'Brute force attack detected: %count% failed login attempts from IP %sourceIp% in %timeWindow% minutes',
     },
     createdAt: Date.now(),
     updatedAt: Date.now(),
-    triggerCount: 0
+    triggerCount: 0,
   },
   {
     id: 'rule-account-takeover',
@@ -132,17 +133,18 @@ const DEFAULT_CORRELATION_RULES: CorrelationRule[] = [
       eventTypes: ['authentication_failure', 'authentication_success'],
       requiredPatterns: ['multiple_failures_then_success'],
       timeWindowMs: 30 * 60 * 1000, // 30 minutes
-      groupBy: ['userId']
+      groupBy: ['userId'],
     },
     actions: {
       createIncident: true,
       incidentType: IncidentType.ACCOUNT_TAKEOVER,
       alertSeverity: AlertSeverity.HIGH,
-      alertMessage: 'Possible account takeover for user %username%: successful login after multiple failures'
+      alertMessage:
+        'Possible account takeover for user %username%: successful login after multiple failures',
     },
     createdAt: Date.now(),
     updatedAt: Date.now(),
-    triggerCount: 0
+    triggerCount: 0,
   },
   {
     id: 'rule-recon-then-attack',
@@ -154,17 +156,18 @@ const DEFAULT_CORRELATION_RULES: CorrelationRule[] = [
       eventTypes: ['honeypot_trigger', 'path_traversal', 'sql_injection', 'authentication_failure'],
       requiredPatterns: ['honeypot_then_attack'],
       timeWindowMs: 60 * 60 * 1000, // 1 hour
-      groupBy: ['sourceIp']
+      groupBy: ['sourceIp'],
     },
     actions: {
       createIncident: true,
       incidentType: IncidentType.SUSPICIOUS_ACTIVITY,
       alertSeverity: AlertSeverity.HIGH,
-      alertMessage: 'Multi-stage attack detected from IP %sourceIp%: reconnaissance followed by attack attempts'
+      alertMessage:
+        'Multi-stage attack detected from IP %sourceIp%: reconnaissance followed by attack attempts',
     },
     createdAt: Date.now(),
     updatedAt: Date.now(),
-    triggerCount: 0
+    triggerCount: 0,
   },
   {
     id: 'rule-distributed-scan',
@@ -181,11 +184,11 @@ const DEFAULT_CORRELATION_RULES: CorrelationRule[] = [
       createIncident: true,
       incidentType: IncidentType.SUSPICIOUS_ACTIVITY,
       alertSeverity: AlertSeverity.MEDIUM,
-      alertMessage: 'Distributed scanning detected from multiple related IPs'
+      alertMessage: 'Distributed scanning detected from multiple related IPs',
     },
     createdAt: Date.now(),
     updatedAt: Date.now(),
-    triggerCount: 0
+    triggerCount: 0,
   },
   {
     id: 'rule-data-exfiltration',
@@ -197,18 +200,19 @@ const DEFAULT_CORRELATION_RULES: CorrelationRule[] = [
       eventTypes: ['large_data_query', 'sensitive_data_access'],
       minEvents: 3,
       timeWindowMs: 60 * 60 * 1000, // 1 hour
-      groupBy: ['userId']
+      groupBy: ['userId'],
     },
     actions: {
       createIncident: true,
       incidentType: IncidentType.DATA_EXFILTRATION,
       alertSeverity: AlertSeverity.HIGH,
-      alertMessage: 'Potential data exfiltration by user %username%: unusual access to large amounts of sensitive data'
+      alertMessage:
+        'Potential data exfiltration by user %username%: unusual access to large amounts of sensitive data',
     },
     createdAt: Date.now(),
     updatedAt: Date.now(),
-    triggerCount: 0
-  }
+    triggerCount: 0,
+  },
 ];
 
 /**
@@ -219,12 +223,15 @@ export function initCorrelationEngine(): void {
   for (const rule of DEFAULT_CORRELATION_RULES) {
     correlationRules.set(rule.id, rule);
   }
-  
+
   // Start periodic cleanup of old events
-  setInterval(() => {
-    cleanupOldEvents();
-  }, 30 * 60 * 1000); // Run every 30 minutes
-  
+  setInterval(
+    () => {
+      cleanupOldEvents();
+    },
+    30 * 60 * 1000,
+  ); // Run every 30 minutes
+
   console.log('Security Event Correlation Engine initialized');
 }
 
@@ -234,12 +241,12 @@ export function initCorrelationEngine(): void {
 export function processSecurityEvent(event: SecurityEvent): void {
   // Add to recent events
   recentEvents.push(event);
-  
+
   // Limit the number of events kept in memory
   if (recentEvents.length > MAX_EVENTS) {
     recentEvents.shift();
   }
-  
+
   // Correlate events
   correlateEvents();
 }
@@ -254,7 +261,7 @@ function correlateEvents(): void {
     if (!rule.enabled) {
       continue;
     }
-    
+
     // Apply the rule
     applyCorrelationRule(rule);
   }
@@ -266,55 +273,60 @@ function correlateEvents(): void {
 function applyCorrelationRule(rule: CorrelationRule): void {
   // Get events that match the rule's event types
   let matchingEvents = recentEvents;
-  
+
   if (rule.conditions.eventTypes && rule.conditions.eventTypes.length > 0) {
-    matchingEvents = matchingEvents.filter(event => 
-      rule.conditions.eventTypes!.includes(event.type)
+    matchingEvents = matchingEvents.filter((event) =>
+      rule.conditions.eventTypes!.includes(event.type),
     );
   }
-  
+
   // Filter by time window
   if (rule.conditions.timeWindowMs) {
     const cutoffTime = Date.now() - rule.conditions.timeWindowMs;
-    matchingEvents = matchingEvents.filter(event => event.timestamp >= cutoffTime);
+    matchingEvents = matchingEvents.filter((event) => event.timestamp >= cutoffTime);
   }
-  
+
   // If not enough events, skip
   if (rule.conditions.minEvents && matchingEvents.length < rule.conditions.minEvents) {
     return;
   }
-  
+
   // Group events if necessary
   if (rule.conditions.groupBy && rule.conditions.groupBy.length > 0) {
     const groupedEvents: Record<string, SecurityEvent[]> = {};
-    
+
     for (const event of matchingEvents) {
       // Create a key based on the groupBy fields
-      const groupKey = rule.conditions.groupBy.map(field => 
-        field === 'sourceIp' ? event.sourceIp :
-        field === 'userId' ? event.userId :
-        field === 'username' ? event.username : 
-        JSON.stringify(event.details[field])
-      ).join('|');
-      
+      const groupKey = rule.conditions.groupBy
+        .map((field) =>
+          field === 'sourceIp'
+            ? event.sourceIp
+            : field === 'userId'
+              ? event.userId
+              : field === 'username'
+                ? event.username
+                : JSON.stringify(event.details[field]),
+        )
+        .join('|');
+
       if (!groupedEvents[groupKey]) {
         groupedEvents[groupKey] = [];
       }
-      
+
       groupedEvents[groupKey].push(event);
     }
-    
+
     // Check each group for patterns
     for (const [groupKey, events] of Object.entries(groupedEvents)) {
       if (rule.conditions.minEvents && events.length < rule.conditions.minEvents) {
         continue;
       }
-      
+
       // Check for specific patterns
       if (rule.conditions.requiredPatterns && rule.conditions.requiredPatterns.length > 0) {
         // Sort events by timestamp
         events.sort((a, b) => a.timestamp - b.timestamp);
-        
+
         for (const pattern of rule.conditions.requiredPatterns) {
           if (matchesPattern(events, pattern, rule)) {
             // Create an attack
@@ -330,7 +342,7 @@ function applyCorrelationRule(rule: CorrelationRule): void {
   } else if (rule.conditions.requiredPatterns && rule.conditions.requiredPatterns.length > 0) {
     // Sort events by timestamp
     matchingEvents.sort((a, b) => a.timestamp - b.timestamp);
-    
+
     // Check for specific patterns without grouping
     for (const pattern of rule.conditions.requiredPatterns) {
       if (matchesPattern(matchingEvents, pattern, rule)) {
@@ -353,7 +365,7 @@ function matchesPattern(events: SecurityEvent[], pattern: string, rule: Correlat
       // Find failures followed by success for the same user
       const userIds = new Set<string>();
       const failuresByUser: Record<string, SecurityEvent[]> = {};
-      
+
       // Collect failures by user
       for (const event of events) {
         if (event.type === 'authentication_failure' && event.userId) {
@@ -364,54 +376,56 @@ function matchesPattern(events: SecurityEvent[], pattern: string, rule: Correlat
           userIds.add(event.userId);
         }
       }
-      
+
       // Check for successful login after failures
       for (const userId of userIds) {
         if (failuresByUser[userId] && failuresByUser[userId].length >= 3) {
           // Find successful login after the failures
-          const lastFailureTime = Math.max(...failuresByUser[userId].map(e => e.timestamp));
-          
-          const successAfterFailure = events.find(e => 
-            e.type === 'authentication_success' &&
-            e.userId === userId &&
-            e.timestamp > lastFailureTime
+          const lastFailureTime = Math.max(...failuresByUser[userId].map((e) => e.timestamp));
+
+          const successAfterFailure = events.find(
+            (e) =>
+              e.type === 'authentication_success' &&
+              e.userId === userId &&
+              e.timestamp > lastFailureTime,
           );
-          
+
           if (successAfterFailure) {
             return true;
           }
         }
       }
       return false;
-      
+
     case 'honeypot_then_attack':
       // Find honeypot triggers followed by attack attempts from the same IP
-      const honeypotEvents = events.filter(e => e.type === 'honeypot_trigger');
-      const honeypotIps = new Set(honeypotEvents.map(e => e.sourceIp).filter(Boolean));
-      
+      const honeypotEvents = events.filter((e) => e.type === 'honeypot_trigger');
+      const honeypotIps = new Set(honeypotEvents.map((e) => e.sourceIp).filter(Boolean));
+
       for (const ip of honeypotIps) {
         // Find the latest honeypot trigger time for this IP
         const latestHoneypotTime = Math.max(
-          ...honeypotEvents
-            .filter(e => e.sourceIp === ip)
-            .map(e => e.timestamp)
+          ...honeypotEvents.filter((e) => e.sourceIp === ip).map((e) => e.timestamp),
         );
-        
+
         // Check for attack events after the honeypot trigger
-        const attackEvents = events.filter(e => 
-          e.sourceIp === ip &&
-          e.timestamp > latestHoneypotTime &&
-          (e.type === 'path_traversal' || e.type === 'sql_injection' || e.type === 'authentication_failure')
+        const attackEvents = events.filter(
+          (e) =>
+            e.sourceIp === ip &&
+            e.timestamp > latestHoneypotTime &&
+            (e.type === 'path_traversal' ||
+              e.type === 'sql_injection' ||
+              e.type === 'authentication_failure'),
         );
-        
+
         if (attackEvents.length > 0) {
           return true;
         }
       }
       return false;
-      
+
     // Add more pattern matchers as needed
-      
+
     default:
       return false;
   }
@@ -420,20 +434,24 @@ function matchesPattern(events: SecurityEvent[], pattern: string, rule: Correlat
 /**
  * Create an attack from a matched rule
  */
-function createAttackFromRule(rule: CorrelationRule, events: SecurityEvent[], groupKey: string): void {
+function createAttackFromRule(
+  rule: CorrelationRule,
+  events: SecurityEvent[],
+  groupKey: string,
+): void {
   // Update rule statistics
   rule.lastTriggered = Date.now();
   rule.triggerCount++;
   correlationRules.set(rule.id, rule);
-  
+
   // Generate attack ID
   const attackId = `attack-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-  
+
   // Determine source IP or user ID from events
   const sourceIp = events[0].sourceIp;
   const userId = events[0].userId;
   const username = events[0].username;
-  
+
   // Create the attack object
   const attack: Attack = {
     id: attackId,
@@ -442,8 +460,8 @@ function createAttackFromRule(rule: CorrelationRule, events: SecurityEvent[], gr
     type: rule.type,
     sourceIp,
     userId,
-    eventIds: events.map(e => e.id),
-    alertIds: events.filter(e => e.alertId).map(e => e.alertId!),
+    eventIds: events.map((e) => e.id),
+    alertIds: events.filter((e) => e.alertId).map((e) => e.alertId!),
     detectedAt: Date.now(),
     confidence: calculateConfidence(rule, events),
     severity: rule.actions.alertSeverity || AlertSeverity.MEDIUM,
@@ -452,14 +470,17 @@ function createAttackFromRule(rule: CorrelationRule, events: SecurityEvent[], gr
       sourceIp: sourceIp || 'unknown',
       userId: userId || 'unknown',
       username: username || 'unknown',
-      timeWindow: (rule.conditions.timeWindowMs ? (rule.conditions.timeWindowMs / (60 * 1000)) : 0).toString()
+      timeWindow: (rule.conditions.timeWindowMs
+        ? rule.conditions.timeWindowMs / (60 * 1000)
+        : 0
+      ).toString(),
     }),
-    status: 'new'
+    status: 'new',
   };
-  
+
   // Store the attack
   detectedAttacks.set(attackId, attack);
-  
+
   // Log the attack detection
   logSecurityEvent(
     'system',
@@ -470,11 +491,11 @@ function createAttackFromRule(rule: CorrelationRule, events: SecurityEvent[], gr
       ruleName: rule.name,
       eventCount: events.length,
       sourceIp,
-      userId
+      userId,
     },
-    'system'
+    'system',
   );
-  
+
   // Send alert
   sendAlert(
     attack.severity,
@@ -486,16 +507,16 @@ function createAttackFromRule(rule: CorrelationRule, events: SecurityEvent[], gr
       ruleName: rule.name,
       sourceIp,
       userId,
-      eventCount: events.length
+      eventCount: events.length,
     },
     userId,
-    sourceIp
+    sourceIp,
   );
-  
+
   // Create incident if configured
   if (rule.actions.createIncident) {
     const incidentType = rule.actions.incidentType || IncidentType.SUSPICIOUS_ACTIVITY;
-    
+
     const incident = createSecurityIncident(
       incidentType,
       attack.severity,
@@ -504,16 +525,16 @@ function createAttackFromRule(rule: CorrelationRule, events: SecurityEvent[], gr
         attackId,
         ruleId: rule.id,
         ruleName: rule.name,
-        correlatedEvents: events.map(e => ({
+        correlatedEvents: events.map((e) => ({
           id: e.id,
           type: e.type,
-          timestamp: e.timestamp
-        }))
+          timestamp: e.timestamp,
+        })),
       },
       sourceIp,
-      userId
+      userId,
     );
-    
+
     // Link incident to attack
     attack.incidentId = incident.id;
     detectedAttacks.set(attackId, attack);
@@ -526,25 +547,26 @@ function createAttackFromRule(rule: CorrelationRule, events: SecurityEvent[], gr
 function calculateConfidence(rule: CorrelationRule, events: SecurityEvent[]): number {
   // Start with base confidence
   let confidence = 0.7;
-  
+
   // Adjust based on number of events (more events = higher confidence)
   const eventCountFactor = Math.min(1, events.length / 10);
   confidence += eventCountFactor * 0.1;
-  
+
   // Adjust based on time span (shorter time span = higher confidence)
   if (events.length > 1) {
-    const timeSpanMs = Math.max(...events.map(e => e.timestamp)) - Math.min(...events.map(e => e.timestamp));
+    const timeSpanMs =
+      Math.max(...events.map((e) => e.timestamp)) - Math.min(...events.map((e) => e.timestamp));
     const timeWindowMs = rule.conditions.timeWindowMs || 24 * 60 * 60 * 1000;
     const timeSpanFactor = 1 - Math.min(1, timeSpanMs / timeWindowMs);
     confidence += timeSpanFactor * 0.1;
   }
-  
+
   // Adjust based on IP reputation (if available)
   // This would be implemented in a real system
-  
+
   // Adjust based on user risk score (if available)
   // This would be implemented in a real system
-  
+
   // Cap at 0.99
   return Math.min(0.99, confidence);
 }
@@ -554,11 +576,11 @@ function calculateConfidence(rule: CorrelationRule, events: SecurityEvent[]): nu
  */
 function formatAlertMessage(message: string, variables: Record<string, string>): string {
   let formattedMessage = message;
-  
+
   for (const [key, value] of Object.entries(variables)) {
     formattedMessage = formattedMessage.replace(new RegExp(`%${key}%`, 'g'), value);
   }
-  
+
   return formattedMessage;
 }
 
@@ -568,25 +590,25 @@ function formatAlertMessage(message: string, variables: Record<string, string>):
 function cleanupOldEvents(): void {
   const cutoffTime = Date.now() - MAX_EVENT_AGE;
   const initialCount = recentEvents.length;
-  
+
   // Remove events older than the cutoff time
   for (let i = recentEvents.length - 1; i >= 0; i--) {
     if (recentEvents[i].timestamp < cutoffTime) {
       recentEvents.splice(i, 1);
     }
   }
-  
+
   const removedCount = initialCount - recentEvents.length;
-  
+
   if (removedCount > 0) {
     logSecurityEvent(
       'system',
       'Cleaned up old security events',
       {
         removedCount,
-        remainingCount: recentEvents.length
+        remainingCount: recentEvents.length,
       },
-      'system'
+      'system',
     );
   }
 }
@@ -611,16 +633,16 @@ export function getCorrelationRule(ruleId: string): CorrelationRule | undefined 
 export function saveCorrelationRule(rule: CorrelationRule, updatedBy: string): CorrelationRule {
   // Set updated timestamp
   rule.updatedAt = Date.now();
-  
+
   // If new rule, set created timestamp and trigger count
   if (!rule.createdAt) {
     rule.createdAt = Date.now();
     rule.triggerCount = 0;
   }
-  
+
   // Store the rule
   correlationRules.set(rule.id, rule);
-  
+
   // Log the update
   logSecurityEvent(
     updatedBy,
@@ -628,11 +650,11 @@ export function saveCorrelationRule(rule: CorrelationRule, updatedBy: string): C
     {
       ruleId: rule.id,
       ruleName: rule.name,
-      enabled: rule.enabled
+      enabled: rule.enabled,
     },
-    'system'
+    'system',
   );
-  
+
   return rule;
 }
 
@@ -642,64 +664,62 @@ export function saveCorrelationRule(rule: CorrelationRule, updatedBy: string): C
 export function deleteCorrelationRule(ruleId: string, deletedBy: string): boolean {
   const rule = correlationRules.get(ruleId);
   if (!rule) return false;
-  
+
   // Delete the rule
   correlationRules.delete(ruleId);
-  
+
   // Log the deletion
   logSecurityEvent(
     deletedBy,
     'Correlation rule deleted',
     {
       ruleId,
-      ruleName: rule.name
+      ruleName: rule.name,
     },
-    'system'
+    'system',
   );
-  
+
   return true;
 }
 
 /**
  * Get all detected attacks
  */
-export function getAllAttacks(
-  filters?: {
-    status?: 'new' | 'investigating' | 'mitigated' | 'resolved' | 'false_positive';
-    sourceIp?: string;
-    userId?: string;
-    ruleId?: string;
-    severity?: AlertSeverity;
-  }
-): Attack[] {
+export function getAllAttacks(filters?: {
+  status?: 'new' | 'investigating' | 'mitigated' | 'resolved' | 'false_positive';
+  sourceIp?: string;
+  userId?: string;
+  ruleId?: string;
+  severity?: AlertSeverity;
+}): Attack[] {
   let attacks = Array.from(detectedAttacks.values());
-  
+
   // Apply filters if provided
   if (filters) {
     if (filters.status) {
-      attacks = attacks.filter(a => a.status === filters.status);
+      attacks = attacks.filter((a) => a.status === filters.status);
     }
-    
+
     if (filters.sourceIp) {
-      attacks = attacks.filter(a => a.sourceIp === filters.sourceIp);
+      attacks = attacks.filter((a) => a.sourceIp === filters.sourceIp);
     }
-    
+
     if (filters.userId) {
-      attacks = attacks.filter(a => a.userId === filters.userId);
+      attacks = attacks.filter((a) => a.userId === filters.userId);
     }
-    
+
     if (filters.ruleId) {
-      attacks = attacks.filter(a => a.ruleId === filters.ruleId);
+      attacks = attacks.filter((a) => a.ruleId === filters.ruleId);
     }
-    
+
     if (filters.severity) {
-      attacks = attacks.filter(a => a.severity === filters.severity);
+      attacks = attacks.filter((a) => a.severity === filters.severity);
     }
   }
-  
+
   // Sort by detection time, most recent first
   attacks.sort((a, b) => b.detectedAt - a.detectedAt);
-  
+
   return attacks;
 }
 
@@ -717,29 +737,29 @@ export function updateAttackStatus(
   attackId: string,
   status: 'new' | 'investigating' | 'mitigated' | 'resolved' | 'false_positive',
   updatedBy: string,
-  notes?: string
+  notes?: string,
 ): boolean {
   const attack = detectedAttacks.get(attackId);
   if (!attack) return false;
-  
+
   // Update status
   attack.status = status;
-  
+
   // If resolved or false positive, set resolved info
   if (status === 'resolved' || status === 'false_positive') {
     attack.resolvedBy = updatedBy;
     attack.resolvedAt = Date.now();
   }
-  
+
   // Add notes if provided
   if (notes) {
     if (!attack.notes) attack.notes = [];
     attack.notes.push(`[${new Date().toISOString()}] [${updatedBy}] ${notes}`);
   }
-  
+
   // Save attack
   detectedAttacks.set(attackId, attack);
-  
+
   // Log the update
   logSecurityEvent(
     updatedBy,
@@ -747,11 +767,11 @@ export function updateAttackStatus(
     {
       attackId,
       newStatus: status,
-      notes
+      notes,
     },
-    'system'
+    'system',
   );
-  
+
   return true;
 }
 
@@ -762,28 +782,30 @@ export function assignAttack(
   attackId: string,
   assignedTo: string,
   assignedBy: string,
-  notes?: string
+  notes?: string,
 ): boolean {
   const attack = detectedAttacks.get(attackId);
   if (!attack) return false;
-  
+
   // Update assignment
   attack.assignedTo = assignedTo;
-  
+
   // Update status if it's new
   if (attack.status === 'new') {
     attack.status = 'investigating';
   }
-  
+
   // Add notes if provided
   if (notes) {
     if (!attack.notes) attack.notes = [];
-    attack.notes.push(`[${new Date().toISOString()}] [${assignedBy}] Assigned to ${assignedTo}: ${notes}`);
+    attack.notes.push(
+      `[${new Date().toISOString()}] [${assignedBy}] Assigned to ${assignedTo}: ${notes}`,
+    );
   }
-  
+
   // Save attack
   detectedAttacks.set(attackId, attack);
-  
+
   // Log the assignment
   logSecurityEvent(
     assignedBy,
@@ -791,11 +813,11 @@ export function assignAttack(
     {
       attackId,
       assignedTo,
-      notes
+      notes,
     },
-    'system'
+    'system',
   );
-  
+
   return true;
 }
 
@@ -811,9 +833,9 @@ export function processSecurityAlert(alert: SecurityAlert): void {
     sourceIp: alert.sourceIp,
     userId: alert.userId,
     details: alert.details,
-    alertId: alert.id
+    alertId: alert.id,
   };
-  
+
   // Process the event
   processSecurityEvent(event);
 }

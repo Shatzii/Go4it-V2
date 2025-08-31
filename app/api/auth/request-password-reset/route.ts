@@ -8,25 +8,22 @@ import * as Sentry from '@sentry/nextjs';
 export async function POST(req: NextRequest) {
   const t0 = Date.now();
   try {
-  const body = await req.json();
-  let email = typeof body?.email === 'string' ? body.email.trim() : '';
-  if (!email) return NextResponse.json({ error: 'Email required' }, { status: 400 });
-  // Basic sanitation
-  if (email.length > 254) return NextResponse.json({ error: 'Invalid email' }, { status: 400 });
+    const { email } = await req.json();
+    if (!email) return NextResponse.json({ error: 'Email required' }, { status: 400 });
     const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0]?.trim() || 'unknown';
     const limited = await limiters.passwordRequest(ip, email);
     if (limited instanceof NextResponse) return limited;
 
-    const user = storage.findUserByEmail
-      ? await storage.findUserByEmail(email)
-      : null;
+    const user = await storage.getUserByEmail(email);
     if (!user) return NextResponse.json({ success: true }); // do not leak
 
-  const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'please-set-a-secret-in-prod';
-  const resetToken = sign({ userId: user.id, purpose: 'pwd-reset' }, secret, { expiresIn: '1h' });
-  const rawAppUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000';
-  const appUrl = rawAppUrl.replace(/\/$/, '');
-  const resetUrl = `${appUrl}/reset-password?token=${encodeURIComponent(resetToken)}`;
+    const resetToken = sign(
+      { userId: user.id, purpose: 'pwd-reset' },
+      process.env.JWT_SECRET || 'fallback-secret',
+      { expiresIn: '1h' },
+    );
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000';
+    const resetUrl = `${appUrl}/reset-password?token=${encodeURIComponent(resetToken)}`;
     logger.info('auth.pwdreset.request', {
       email: mask.email(email),
       resetUrl,
@@ -45,7 +42,7 @@ export async function POST(req: NextRequest) {
             from: process.env.FROM_EMAIL,
             to: user.email,
             subject: 'Password reset',
-            html: `<p>Reset your password <a href="${resetUrl}">here</a></p>`,
+            html: `<p>Reset: <a href="${resetUrl}">${resetUrl}</a></p>`,
           }),
         });
       } catch (e) {

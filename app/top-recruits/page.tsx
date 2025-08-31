@@ -5,10 +5,28 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { Star, TrendingUp, MapPin, School, Phone, Mail, Video, Eye, Users, Target, RefreshCw } from 'lucide-react';
+import {
+  Star,
+  TrendingUp,
+  MapPin,
+  School,
+  Phone,
+  Mail,
+  Video,
+  Eye,
+  Users,
+  Target,
+  RefreshCw,
+} from 'lucide-react';
 
 interface AthleteProfile {
   id: string;
@@ -81,7 +99,7 @@ export default function TopRecruitsPage() {
     ranking: '',
     status: '',
     state: '',
-    search: ''
+    search: '',
   });
   const [activeTab, setActiveTab] = useState('database');
   const [selectedAthletes, setSelectedAthletes] = useState<string[]>([]);
@@ -96,10 +114,10 @@ export default function TopRecruitsPage() {
       Object.entries(filters).forEach(([key, value]) => {
         if (value) params.append(key, value);
       });
-      
+
       const response = await fetch(`/api/recruiting/athletes/database?${params}`);
       const data = await response.json();
-      
+
       if (data.success) {
         setAthletes(data.athletes);
       }
@@ -121,12 +139,12 @@ export default function TopRecruitsPage() {
           sports: ['basketball', 'football', 'baseball'],
           classYear: '2025',
           rankings: { maxNational: 100 },
-          forceUpdate: true
-        })
+          forceUpdate: true,
+        }),
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         // Refresh the athletes list after scraping
         await fetchAthletes();
@@ -140,7 +158,9 @@ export default function TopRecruitsPage() {
 
   const contactAthlete = (athlete: AthleteProfile, method: 'email' | 'social') => {
     if (method === 'email' && athlete.contact.email) {
-      window.open(`mailto:${athlete.contact.email}?subject=Recruiting Opportunity - Go4It Sports Platform`);
+      window.open(
+        `mailto:${athlete.contact.email}?subject=Recruiting Opportunity - Go4It Sports Platform`,
+      );
     } else if (method === 'social' && athlete.contact.social?.twitter) {
       window.open(`https://twitter.com/${athlete.contact.social.twitter.replace('@', '')}`);
     }
@@ -153,10 +173,8 @@ export default function TopRecruitsPage() {
   };
 
   const addToComparison = (athleteId: string) => {
-    setSelectedAthletes(prev => 
-      prev.includes(athleteId) 
-        ? prev.filter(id => id !== athleteId)
-        : [...prev, athleteId]
+    setSelectedAthletes((prev) =>
+      prev.includes(athleteId) ? prev.filter((id) => id !== athleteId) : [...prev, athleteId],
     );
   };
 
@@ -170,10 +188,14 @@ export default function TopRecruitsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'committed': return 'bg-green-500';
-      case 'open': return 'bg-blue-500';
-      case 'signed': return 'bg-purple-500';
-      default: return 'bg-slate-500';
+      case 'committed':
+        return 'bg-green-500';
+      case 'open':
+        return 'bg-blue-500';
+      case 'signed':
+        return 'bg-purple-500';
+      default:
+        return 'bg-slate-500';
     }
   };
 
@@ -200,11 +222,11 @@ export default function TopRecruitsPage() {
             <Star className="w-5 h-5 mr-2" />
             TOP RECRUITS
           </Badge>
-          
+
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
             ELITE RECRUIT DATABASE
           </h1>
-          
+
           <p className="text-xl text-slate-300 mb-8 max-w-3xl mx-auto">
             Real-time data from Rivals, 247Sports, ESPN, On3, and Hudl
           </p>
@@ -230,7 +252,7 @@ export default function TopRecruitsPage() {
                 <div>
                   <p className="text-sm text-slate-400">Top 25 Recruits</p>
                   <p className="text-2xl font-bold text-orange-400">
-                    {athletes.filter(a => a.rankings.composite <= 25).length}
+                    {athletes.filter((a) => a.rankings.composite <= 25).length}
                   </p>
                 </div>
                 <Target className="w-8 h-8 text-orange-400" />
@@ -244,7 +266,7 @@ export default function TopRecruitsPage() {
                 <div>
                   <p className="text-sm text-slate-400">Committed</p>
                   <p className="text-2xl font-bold text-green-400">
-                    {athletes.filter(a => a.recruiting.status === 'committed').length}
+                    {athletes.filter((a) => a.recruiting.status === 'committed').length}
                   </p>
                 </div>
                 <School className="w-8 h-8 text-green-400" />
@@ -258,7 +280,7 @@ export default function TopRecruitsPage() {
                 <div>
                   <p className="text-sm text-slate-400">Still Open</p>
                   <p className="text-2xl font-bold text-blue-400">
-                    {athletes.filter(a => a.recruiting.status === 'open').length}
+                    {athletes.filter((a) => a.recruiting.status === 'open').length}
                   </p>
                 </div>
                 <Eye className="w-8 h-8 text-blue-400" />
@@ -290,10 +312,13 @@ export default function TopRecruitsPage() {
                   <Input
                     placeholder="Search athletes..."
                     value={filters.search}
-                    onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                    onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
                     className="bg-slate-700 border-slate-600"
                   />
-                  <Select value={filters.sport} onValueChange={(value) => setFilters(prev => ({ ...prev, sport: value }))}>
+                  <Select
+                    value={filters.sport}
+                    onValueChange={(value) => setFilters((prev) => ({ ...prev, sport: value }))}
+                  >
                     <SelectTrigger className="bg-slate-700 border-slate-600">
                       <SelectValue placeholder="Sport" />
                     </SelectTrigger>
@@ -304,7 +329,10 @@ export default function TopRecruitsPage() {
                       <SelectItem value="Baseball">Baseball</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select value={filters.classYear} onValueChange={(value) => setFilters(prev => ({ ...prev, classYear: value }))}>
+                  <Select
+                    value={filters.classYear}
+                    onValueChange={(value) => setFilters((prev) => ({ ...prev, classYear: value }))}
+                  >
                     <SelectTrigger className="bg-slate-700 border-slate-600">
                       <SelectValue placeholder="Class" />
                     </SelectTrigger>
@@ -315,7 +343,10 @@ export default function TopRecruitsPage() {
                       <SelectItem value="2027">2027</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select value={filters.position} onValueChange={(value) => setFilters(prev => ({ ...prev, position: value }))}>
+                  <Select
+                    value={filters.position}
+                    onValueChange={(value) => setFilters((prev) => ({ ...prev, position: value }))}
+                  >
                     <SelectTrigger className="bg-slate-700 border-slate-600">
                       <SelectValue placeholder="Position" />
                     </SelectTrigger>
@@ -328,7 +359,10 @@ export default function TopRecruitsPage() {
                       <SelectItem value="C">Center</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select value={filters.ranking} onValueChange={(value) => setFilters(prev => ({ ...prev, ranking: value }))}>
+                  <Select
+                    value={filters.ranking}
+                    onValueChange={(value) => setFilters((prev) => ({ ...prev, ranking: value }))}
+                  >
                     <SelectTrigger className="bg-slate-700 border-slate-600">
                       <SelectValue placeholder="Ranking" />
                     </SelectTrigger>
@@ -340,7 +374,10 @@ export default function TopRecruitsPage() {
                       <SelectItem value="100">Top 100</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select value={filters.status} onValueChange={(value) => setFilters(prev => ({ ...prev, status: value }))}>
+                  <Select
+                    value={filters.status}
+                    onValueChange={(value) => setFilters((prev) => ({ ...prev, status: value }))}
+                  >
                     <SelectTrigger className="bg-slate-700 border-slate-600">
                       <SelectValue placeholder="Status" />
                     </SelectTrigger>
@@ -357,8 +394,11 @@ export default function TopRecruitsPage() {
 
             {/* Athletes List */}
             <div className="space-y-4">
-              {athletes.map(athlete => (
-                <Card key={athlete.id} className="bg-slate-800 border-slate-700 hover:border-red-500/50 transition-all duration-300">
+              {athletes.map((athlete) => (
+                <Card
+                  key={athlete.id}
+                  className="bg-slate-800 border-slate-700 hover:border-red-500/50 transition-all duration-300"
+                >
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -367,18 +407,23 @@ export default function TopRecruitsPage() {
                           <Badge className="bg-blue-500 text-white">
                             #{athlete.rankings.composite}
                           </Badge>
-                          <Badge className={`${getStatusColor(athlete.recruiting.status)} text-white`}>
+                          <Badge
+                            className={`${getStatusColor(athlete.recruiting.status)} text-white`}
+                          >
                             {athlete.recruiting.status.toUpperCase()}
                           </Badge>
                         </div>
-                        
+
                         <div className="flex items-center gap-4 mb-4">
                           <div className="text-sm text-slate-300">
-                            <span className="font-medium">{athlete.position}</span> • Class of {athlete.classYear}
+                            <span className="font-medium">{athlete.position}</span> • Class of{' '}
+                            {athlete.classYear}
                           </div>
                           <div className="flex items-center gap-1">
                             <MapPin className="w-4 h-4 text-slate-400" />
-                            <span className="text-sm text-slate-400">{athlete.school.current}, {athlete.school.state}</span>
+                            <span className="text-sm text-slate-400">
+                              {athlete.school.current}, {athlete.school.state}
+                            </span>
                           </div>
                         </div>
 
@@ -388,19 +433,25 @@ export default function TopRecruitsPage() {
                             <div className="space-y-1">
                               <div className="flex justify-between text-xs">
                                 <span className="text-slate-400">Composite:</span>
-                                <span className={`font-semibold ${getRankingColor(athlete.rankings.composite)}`}>
+                                <span
+                                  className={`font-semibold ${getRankingColor(athlete.rankings.composite)}`}
+                                >
                                   #{athlete.rankings.composite}
                                 </span>
                               </div>
                               <div className="flex justify-between text-xs">
                                 <span className="text-slate-400">Rivals:</span>
-                                <span className={`font-semibold ${getRankingColor(athlete.rankings.rivals)}`}>
+                                <span
+                                  className={`font-semibold ${getRankingColor(athlete.rankings.rivals)}`}
+                                >
                                   #{athlete.rankings.rivals}
                                 </span>
                               </div>
                               <div className="flex justify-between text-xs">
                                 <span className="text-slate-400">247Sports:</span>
-                                <span className={`font-semibold ${getRankingColor(athlete.rankings.sports247)}`}>
+                                <span
+                                  className={`font-semibold ${getRankingColor(athlete.rankings.sports247)}`}
+                                >
                                   #{athlete.rankings.sports247}
                                 </span>
                               </div>
@@ -410,14 +461,16 @@ export default function TopRecruitsPage() {
                           <div>
                             <h4 className="font-semibold text-white mb-2 text-sm">Stats:</h4>
                             <div className="space-y-1">
-                              {Object.entries(athlete.stats).slice(0, 3).map(([key, value]) => (
-                                <div key={key} className="flex justify-between text-xs">
-                                  <span className="text-slate-400 capitalize">
-                                    {key.replace(/([A-Z])/g, ' $1').trim()}:
-                                  </span>
-                                  <span className="text-white font-semibold">{value}</span>
-                                </div>
-                              ))}
+                              {Object.entries(athlete.stats)
+                                .slice(0, 3)
+                                .map(([key, value]) => (
+                                  <div key={key} className="flex justify-between text-xs">
+                                    <span className="text-slate-400 capitalize">
+                                      {key.replace(/([A-Z])/g, ' $1').trim()}:
+                                    </span>
+                                    <span className="text-white font-semibold">{value}</span>
+                                  </div>
+                                ))}
                             </div>
                           </div>
 
@@ -426,16 +479,22 @@ export default function TopRecruitsPage() {
                             <div className="space-y-1">
                               <div className="flex justify-between text-xs">
                                 <span className="text-slate-400">Height:</span>
-                                <span className="text-white font-semibold">{athlete.physicals.height}</span>
+                                <span className="text-white font-semibold">
+                                  {athlete.physicals.height}
+                                </span>
                               </div>
                               <div className="flex justify-between text-xs">
                                 <span className="text-slate-400">Weight:</span>
-                                <span className="text-white font-semibold">{athlete.physicals.weight}</span>
+                                <span className="text-white font-semibold">
+                                  {athlete.physicals.weight}
+                                </span>
                               </div>
                               {athlete.physicals.wingspan && (
                                 <div className="flex justify-between text-xs">
                                   <span className="text-slate-400">Wingspan:</span>
-                                  <span className="text-white font-semibold">{athlete.physicals.wingspan}</span>
+                                  <span className="text-white font-semibold">
+                                    {athlete.physicals.wingspan}
+                                  </span>
                                 </div>
                               )}
                             </div>
@@ -445,7 +504,8 @@ export default function TopRecruitsPage() {
                             <h4 className="font-semibold text-white mb-2 text-sm">Recruiting:</h4>
                             <div className="space-y-1">
                               <div className="text-xs text-slate-400">
-                                {athlete.recruiting.status === 'committed' && athlete.school.committed ? (
+                                {athlete.recruiting.status === 'committed' &&
+                                athlete.school.committed ? (
                                   <div className="flex items-center gap-1">
                                     <School className="w-3 h-3" />
                                     <span>Committed to {athlete.school.committed}</span>
@@ -466,9 +526,14 @@ export default function TopRecruitsPage() {
                           <h4 className="font-semibold text-white mb-2 text-sm">Data Sources:</h4>
                           <div className="flex flex-wrap gap-2">
                             {athlete.sources.map((source, index) => (
-                              <div key={index} className="flex items-center gap-1 px-2 py-1 bg-slate-700 rounded text-xs">
+                              <div
+                                key={index}
+                                className="flex items-center gap-1 px-2 py-1 bg-slate-700 rounded text-xs"
+                              >
                                 <span className="text-slate-300">{source.platform}</span>
-                                <span className={`font-semibold ${getConfidenceColor(source.confidence)}`}>
+                                <span
+                                  className={`font-semibold ${getConfidenceColor(source.confidence)}`}
+                                >
                                   {source.confidence}%
                                 </span>
                               </div>
@@ -510,7 +575,7 @@ export default function TopRecruitsPage() {
                         )}
                         <Button
                           size="sm"
-                          variant={selectedAthletes.includes(athlete.id) ? "default" : "outline"}
+                          variant={selectedAthletes.includes(athlete.id) ? 'default' : 'outline'}
                           onClick={() => addToComparison(athlete.id)}
                         >
                           <Eye className="w-3 h-3 mr-1" />
@@ -561,7 +626,7 @@ export default function TopRecruitsPage() {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div>
                       <h3 className="font-semibold text-white mb-2">Data Points</h3>
                       <div className="space-y-2">
@@ -610,11 +675,12 @@ export default function TopRecruitsPage() {
                         )}
                       </Button>
                     </div>
-                    
+
                     <p className="text-sm text-slate-400 mb-4">
-                      Scrape the latest recruit data from all major platforms. This process takes 2-3 minutes.
+                      Scrape the latest recruit data from all major platforms. This process takes
+                      2-3 minutes.
                     </p>
-                    
+
                     {scraping && (
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
@@ -644,14 +710,13 @@ export default function TopRecruitsPage() {
                   <Users className="w-16 h-16 text-slate-400 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold mb-4">Compare Top Recruits</h3>
                   <p className="text-slate-400 mb-6">
-                    Select athletes from the database to compare rankings, stats, and recruiting status
+                    Select athletes from the database to compare rankings, stats, and recruiting
+                    status
                   </p>
                   <div className="text-sm text-slate-400 mb-6">
-                    {selectedAthletes.length === 0 ? (
-                      'No athletes selected for comparison'
-                    ) : (
-                      `${selectedAthletes.length} athletes selected`
-                    )}
+                    {selectedAthletes.length === 0
+                      ? 'No athletes selected for comparison'
+                      : `${selectedAthletes.length} athletes selected`}
                   </div>
                   {selectedAthletes.length >= 2 && (
                     <Button className="bg-purple-500 hover:bg-purple-600">

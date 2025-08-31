@@ -1,16 +1,16 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Network, 
-  Users, 
-  Globe2, 
-  Zap, 
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Network,
+  Users,
+  Globe2,
+  Zap,
   Brain,
   MessageCircle,
   Video,
@@ -34,57 +34,57 @@ import {
   Eye,
   Heart,
   Trophy,
-  Rocket
-} from 'lucide-react'
+  Rocket,
+} from 'lucide-react';
 
 interface QuantumStudent {
-  id: string
-  name: string
-  avatar: string
-  location: string
-  timezone: string
-  school: string
-  specialization: string
-  quantumScore: number
-  isOnline: boolean
-  currentActivity: string
+  id: string;
+  name: string;
+  avatar: string;
+  location: string;
+  timezone: string;
+  school: string;
+  specialization: string;
+  quantumScore: number;
+  isOnline: boolean;
+  currentActivity: string;
   neurodivergentProfile?: {
-    type: string
-    adaptations: string[]
-  }
+    type: string;
+    adaptations: string[];
+  };
 }
 
 interface CollaborationSession {
-  id: string
-  title: string
-  type: 'project' | 'study' | 'research' | 'creative'
-  participants: string[]
-  leader: string
-  startTime: Date
-  duration: number
-  subject: string
-  quantumSyncLevel: number
-  sharedBrainpower: number
+  id: string;
+  title: string;
+  type: 'project' | 'study' | 'research' | 'creative';
+  participants: string[];
+  leader: string;
+  startTime: Date;
+  duration: number;
+  subject: string;
+  quantumSyncLevel: number;
+  sharedBrainpower: number;
 }
 
 interface QuantumIdea {
-  id: string
-  author: string
-  content: string
-  timestamp: Date
-  quantumResonance: number
-  connections: string[]
-  category: string
-  collaborative: boolean
+  id: string;
+  author: string;
+  content: string;
+  timestamp: Date;
+  quantumResonance: number;
+  connections: string[];
+  category: string;
+  collaborative: boolean;
 }
 
 export default function QuantumCollaborationHub() {
-  const [selectedSession, setSelectedSession] = useState<string | null>(null)
-  const [newMessage, setNewMessage] = useState('')
-  const [quantumSync, setQuantumSync] = useState(0)
-  const [globalBrainpower, setGlobalBrainpower] = useState(0)
-  const [connectedStudents, setConnectedStudents] = useState<QuantumStudent[]>([])
-  const [ideaStream, setIdeaStream] = useState<QuantumIdea[]>([])
+  const [selectedSession, setSelectedSession] = useState<string | null>(null);
+  const [newMessage, setNewMessage] = useState('');
+  const [quantumSync, setQuantumSync] = useState(0);
+  const [globalBrainpower, setGlobalBrainpower] = useState(0);
+  const [connectedStudents, setConnectedStudents] = useState<QuantumStudent[]>([]);
+  const [ideaStream, setIdeaStream] = useState<QuantumIdea[]>([]);
 
   const quantumStudents: QuantumStudent[] = [
     {
@@ -100,8 +100,8 @@ export default function QuantumCollaborationHub() {
       currentActivity: 'Exploring molecular structures',
       neurodivergentProfile: {
         type: 'ADHD',
-        adaptations: ['Quick transitions', 'Visual focus aids']
-      }
+        adaptations: ['Quick transitions', 'Visual focus aids'],
+      },
     },
     {
       id: '2',
@@ -116,8 +116,8 @@ export default function QuantumCollaborationHub() {
       currentActivity: 'Translating quantum concepts',
       neurodivergentProfile: {
         type: 'Autism',
-        adaptations: ['Structured communication', 'Pattern recognition']
-      }
+        adaptations: ['Structured communication', 'Pattern recognition'],
+      },
     },
     {
       id: '3',
@@ -129,7 +129,7 @@ export default function QuantumCollaborationHub() {
       specialization: 'Creative Quantum Expression',
       quantumScore: 91,
       isOnline: true,
-      currentActivity: 'Choreographing particle movements'
+      currentActivity: 'Choreographing particle movements',
     },
     {
       id: '4',
@@ -141,9 +141,9 @@ export default function QuantumCollaborationHub() {
       specialization: 'Quantum Legal Theory',
       quantumScore: 89,
       isOnline: true,
-      currentActivity: 'Analyzing parallel legal systems'
-    }
-  ]
+      currentActivity: 'Analyzing parallel legal systems',
+    },
+  ];
 
   const collaborationSessions: CollaborationSession[] = [
     {
@@ -156,7 +156,7 @@ export default function QuantumCollaborationHub() {
       duration: 90,
       subject: 'Environmental Science',
       quantumSyncLevel: 89,
-      sharedBrainpower: 276
+      sharedBrainpower: 276,
     },
     {
       id: '2',
@@ -168,51 +168,51 @@ export default function QuantumCollaborationHub() {
       duration: 60,
       subject: 'Language Arts',
       quantumSyncLevel: 76,
-      sharedBrainpower: 186
-    }
-  ]
+      sharedBrainpower: 186,
+    },
+  ];
 
   // Simulate quantum synchronization
   useEffect(() => {
     const interval = setInterval(() => {
-      setQuantumSync(prev => Math.max(0, Math.min(100, prev + (Math.random() - 0.5) * 10)))
-      setGlobalBrainpower(prev => Math.max(0, prev + Math.random() * 50 - 20))
-      
+      setQuantumSync((prev) => Math.max(0, Math.min(100, prev + (Math.random() - 0.5) * 10)));
+      setGlobalBrainpower((prev) => Math.max(0, prev + Math.random() * 50 - 20));
+
       // Add new ideas to the stream
       const newIdea: QuantumIdea = {
         id: Date.now().toString(),
         author: quantumStudents[Math.floor(Math.random() * quantumStudents.length)].name,
         content: [
-          "What if we could use sound waves to visualize mathematical equations?",
-          "Could we create a universal translator using quantum entanglement?",
-          "Imagine learning history by experiencing parallel timelines!",
-          "What if dance movements could teach physics principles?"
+          'What if we could use sound waves to visualize mathematical equations?',
+          'Could we create a universal translator using quantum entanglement?',
+          'Imagine learning history by experiencing parallel timelines!',
+          'What if dance movements could teach physics principles?',
         ][Math.floor(Math.random() * 4)],
         timestamp: new Date(),
         quantumResonance: Math.floor(Math.random() * 100),
         connections: [],
         category: ['Science', 'Art', 'Technology', 'Language'][Math.floor(Math.random() * 4)],
-        collaborative: Math.random() > 0.5
-      }
-      
-      setIdeaStream(prev => [newIdea, ...prev.slice(0, 9)])
-    }, 3000)
+        collaborative: Math.random() > 0.5,
+      };
 
-    return () => clearInterval(interval)
-  }, [])
+      setIdeaStream((prev) => [newIdea, ...prev.slice(0, 9)]);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const getQuantumColor = (score: number) => {
-    if (score > 90) return 'text-purple-600 bg-purple-50'
-    if (score > 80) return 'text-blue-600 bg-blue-50'
-    if (score > 70) return 'text-green-600 bg-green-50'
-    return 'text-yellow-600 bg-yellow-50'
-  }
+    if (score > 90) return 'text-purple-600 bg-purple-50';
+    if (score > 80) return 'text-blue-600 bg-blue-50';
+    if (score > 70) return 'text-green-600 bg-green-50';
+    return 'text-yellow-600 bg-yellow-50';
+  };
 
   const initiateQuantumConnection = (studentIds: string[]) => {
     // Simulate quantum entanglement between students
-    setConnectedStudents(quantumStudents.filter(s => studentIds.includes(s.id)))
-    setQuantumSync(85)
-  }
+    setConnectedStudents(quantumStudents.filter((s) => studentIds.includes(s.id)));
+    setQuantumSync(85);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-6">
@@ -262,7 +262,7 @@ export default function QuantumCollaborationHub() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                {quantumStudents.map(student => (
+                {quantumStudents.map((student) => (
                   <div key={student.id} className="p-3 bg-gray-700 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">
@@ -281,15 +281,15 @@ export default function QuantumCollaborationHub() {
                         </Badge>
                       </div>
                     </div>
-                    
+
                     <div className="text-xs text-gray-300 mb-2">
                       {student.school} • {student.specialization}
                     </div>
-                    
+
                     <div className="text-xs text-cyan-300 bg-cyan-900/30 p-2 rounded">
                       {student.currentActivity}
                     </div>
-                    
+
                     {student.neurodivergentProfile && (
                       <div className="mt-2">
                         <Badge variant="outline" className="text-xs">
@@ -297,7 +297,7 @@ export default function QuantumCollaborationHub() {
                         </Badge>
                       </div>
                     )}
-                    
+
                     <Button
                       size="sm"
                       className="w-full mt-2 bg-purple-600 hover:bg-purple-700"
@@ -363,7 +363,7 @@ export default function QuantumCollaborationHub() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {collaborationSessions.map(session => (
+                    {collaborationSessions.map((session) => (
                       <div key={session.id} className="p-4 bg-gray-700 rounded-lg">
                         <div className="flex items-center justify-between mb-3">
                           <div>
@@ -387,28 +387,35 @@ export default function QuantumCollaborationHub() {
                         <div className="mb-3">
                           <div className="text-sm font-medium mb-1">Participants:</div>
                           <div className="flex items-center space-x-2">
-                            {session.participants.map(participantId => {
-                              const student = quantumStudents.find(s => s.id === participantId)
+                            {session.participants.map((participantId) => {
+                              const student = quantumStudents.find((s) => s.id === participantId);
                               return student ? (
-                                <div key={participantId} className="flex items-center space-x-1 bg-gray-600 px-2 py-1 rounded">
+                                <div
+                                  key={participantId}
+                                  className="flex items-center space-x-1 bg-gray-600 px-2 py-1 rounded"
+                                >
                                   <span>{student.avatar}</span>
                                   <span className="text-xs">{student.name}</span>
                                   {participantId === session.leader && (
                                     <Star className="w-3 h-3 text-yellow-400" />
                                   )}
                                 </div>
-                              ) : null
+                              ) : null;
                             })}
                           </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4 mb-3">
                           <div className="text-center p-2 bg-blue-900/30 rounded">
-                            <div className="text-lg font-bold text-blue-400">{session.quantumSyncLevel}%</div>
+                            <div className="text-lg font-bold text-blue-400">
+                              {session.quantumSyncLevel}%
+                            </div>
                             <div className="text-xs text-gray-400">Quantum Sync</div>
                           </div>
                           <div className="text-center p-2 bg-purple-900/30 rounded">
-                            <div className="text-lg font-bold text-purple-400">{session.sharedBrainpower}</div>
+                            <div className="text-lg font-bold text-purple-400">
+                              {session.sharedBrainpower}
+                            </div>
                             <div className="text-xs text-gray-400">Shared IQ</div>
                           </div>
                         </div>
@@ -467,7 +474,7 @@ export default function QuantumCollaborationHub() {
                     </div>
 
                     <div className="space-y-3 max-h-96 overflow-y-auto">
-                      {ideaStream.map(idea => (
+                      {ideaStream.map((idea) => (
                         <div key={idea.id} className="p-3 bg-gray-700 rounded-lg">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">
@@ -486,9 +493,9 @@ export default function QuantumCollaborationHub() {
                               {idea.timestamp.toLocaleTimeString()}
                             </div>
                           </div>
-                          
+
                           <p className="text-sm mb-2">{idea.content}</p>
-                          
+
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4 text-xs">
                               <span className="text-yellow-400">
@@ -532,7 +539,7 @@ export default function QuantumCollaborationHub() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-4">
                         <h4 className="font-semibold text-cyan-400">Quantum Experiments</h4>
-                        
+
                         <div className="p-4 bg-blue-900/30 rounded-lg">
                           <h5 className="font-semibold mb-2">Parallel Learning</h5>
                           <p className="text-sm text-gray-300 mb-3">
@@ -569,18 +576,18 @@ export default function QuantumCollaborationHub() {
 
                       <div className="space-y-4">
                         <h4 className="font-semibold text-yellow-400">Quantum Insights</h4>
-                        
+
                         <div className="space-y-2">
                           <div className="p-3 bg-yellow-900/30 rounded text-sm">
-                            <strong>Entanglement Effect:</strong> When students collaborate quantumly, 
-                            their learning speed increases by an average of 340%.
+                            <strong>Entanglement Effect:</strong> When students collaborate
+                            quantumly, their learning speed increases by an average of 340%.
                           </div>
                           <div className="p-3 bg-cyan-900/30 rounded text-sm">
-                            <strong>Superposition Learning:</strong> Students can grasp contradictory 
-                            concepts simultaneously, improving critical thinking.
+                            <strong>Superposition Learning:</strong> Students can grasp
+                            contradictory concepts simultaneously, improving critical thinking.
                           </div>
                           <div className="p-3 bg-purple-900/30 rounded text-sm">
-                            <strong>Quantum Tunneling:</strong> Knowledge barriers become permeable, 
+                            <strong>Quantum Tunneling:</strong> Knowledge barriers become permeable,
                             allowing breakthrough understanding.
                           </div>
                         </div>
@@ -594,11 +601,15 @@ export default function QuantumCollaborationHub() {
                             </div>
                             <div className="flex justify-between">
                               <span>Entangled Pairs:</span>
-                              <span className="text-purple-400">{Math.floor(connectedStudents.length / 2)}</span>
+                              <span className="text-purple-400">
+                                {Math.floor(connectedStudents.length / 2)}
+                              </span>
                             </div>
                             <div className="flex justify-between">
                               <span>Quantum Field Strength:</span>
-                              <span className="text-yellow-400">{(globalBrainpower / 10).toFixed(1)} THz</span>
+                              <span className="text-yellow-400">
+                                {(globalBrainpower / 10).toFixed(1)} THz
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -623,7 +634,7 @@ export default function QuantumCollaborationHub() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-3">
                         <h4 className="font-semibold text-gold-400">Unlocked Achievements</h4>
-                        
+
                         <div className="p-3 bg-gold-900/30 rounded-lg">
                           <div className="flex items-center space-x-2 mb-2">
                             <Award className="w-5 h-5 text-gold-400" />
@@ -657,7 +668,7 @@ export default function QuantumCollaborationHub() {
 
                       <div className="space-y-3">
                         <h4 className="font-semibold text-gray-400">Next Level Goals</h4>
-                        
+
                         <div className="p-3 bg-gray-700 rounded-lg border-2 border-dashed border-gray-600">
                           <div className="flex items-center space-x-2 mb-2">
                             <Network className="w-5 h-5 text-gray-400" />
@@ -677,7 +688,9 @@ export default function QuantumCollaborationHub() {
                           <p className="text-sm text-gray-400">
                             Achieve 95%+ quantum synchronization
                           </p>
-                          <div className="mt-2 text-xs text-purple-400">Progress: {quantumSync.toFixed(0)}/95%</div>
+                          <div className="mt-2 text-xs text-purple-400">
+                            Progress: {quantumSync.toFixed(0)}/95%
+                          </div>
                         </div>
 
                         <div className="p-3 bg-gray-700 rounded-lg border-2 border-dashed border-gray-600">
@@ -688,7 +701,9 @@ export default function QuantumCollaborationHub() {
                           <p className="text-sm text-gray-400">
                             Lead 10 successful quantum collaboration sessions
                           </p>
-                          <div className="mt-2 text-xs text-yellow-400">Progress: 3/10 sessions</div>
+                          <div className="mt-2 text-xs text-yellow-400">
+                            Progress: 3/10 sessions
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -700,5 +715,5 @@ export default function QuantumCollaborationHub() {
         </div>
       </div>
     </div>
-  )
+  );
 }

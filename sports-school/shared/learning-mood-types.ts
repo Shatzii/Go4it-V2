@@ -33,7 +33,11 @@ export type InsertLearningMood = z.infer<typeof insertLearningMoodSchema>;
 // Predefined mood categories and their associated emojis
 export const moodCategories = [
   { category: 'excited', emoji: '😃', description: 'Enthusiastic and eager to learn' },
-  { category: 'happy', emoji: '😊', description: 'Content and pleased with the learning experience' },
+  {
+    category: 'happy',
+    emoji: '😊',
+    description: 'Content and pleased with the learning experience',
+  },
   { category: 'calm', emoji: '😌', description: 'Relaxed and focused' },
   { category: 'confused', emoji: '😕', description: 'Having trouble understanding concepts' },
   { category: 'frustrated', emoji: '😤', description: 'Struggling with difficult concepts' },

@@ -1,16 +1,16 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Users, 
-  BookOpen, 
-  TrendingUp, 
-  MessageCircle, 
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Users,
+  BookOpen,
+  TrendingUp,
+  MessageCircle,
   Calendar,
   Award,
   Clock,
@@ -29,85 +29,85 @@ import {
   Upload,
   Download,
   DollarSign,
-  Package
-} from 'lucide-react'
+  Package,
+} from 'lucide-react';
 
 interface ParentData {
   parent: {
-    id: string
-    name: string
-    email: string
-    preferredLanguage: string
-  }
+    id: string;
+    name: string;
+    email: string;
+    preferredLanguage: string;
+  };
   children: Array<{
-    id: string
-    name: string
-    grade: string
-    school: string
-    schoolName: string
-    neurotype: string
-    enrollmentType: string
-    status: string
-    currentGPA: number | string
-    attendance: number
+    id: string;
+    name: string;
+    grade: string;
+    school: string;
+    schoolName: string;
+    neurotype: string;
+    enrollmentType: string;
+    status: string;
+    currentGPA: number | string;
+    attendance: number;
     recentProgress: {
-      lessonsCompleted: number
-      averageScore: number
-      streak: number
-      lastActivity: string
-    }
-  }>
+      lessonsCompleted: number;
+      averageScore: number;
+      streak: number;
+      lastActivity: string;
+    };
+  }>;
   overview: {
-    totalChildren: number
-    activeEnrollments: number
-    upcomingEvents: number
-    pendingApprovals: number
-    unreadMessages: number
-    pendingPayments: number
-    nextPaymentDue: string
-    totalSpent: number
-    safetyAlerts: number
-  }
-  quickActions: string[]
+    totalChildren: number;
+    activeEnrollments: number;
+    upcomingEvents: number;
+    pendingApprovals: number;
+    unreadMessages: number;
+    pendingPayments: number;
+    nextPaymentDue: string;
+    totalSpent: number;
+    safetyAlerts: number;
+  };
+  quickActions: string[];
   recentActivity: Array<{
-    type: string
-    message: string
-    timestamp: string
-    child: string
-  }>
+    type: string;
+    message: string;
+    timestamp: string;
+    child: string;
+  }>;
 }
 
 export default function ParentPortal() {
-  const [parentData, setParentData] = useState<ParentData | null>(null)
-  const [selectedChild, setSelectedChild] = useState<string>('')
-  const [loading, setLoading] = useState(true)
+  const [parentData, setParentData] = useState<ParentData | null>(null);
+  const [selectedChild, setSelectedChild] = useState<string>('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchParentData()
-  }, [])
+    fetchParentData();
+  }, []);
 
   const fetchParentData = async () => {
     try {
       // In real implementation, get parentId from auth context
       // Use self-hosted mock data - no external APIs needed
-      setParentData(getMockParentData())
-      setSelectedChild('child1')
+      setParentData(getMockParentData());
+      setSelectedChild('child1');
     } catch (error) {
-      console.error('Failed to fetch parent data:', error)
+      console.error('Failed to fetch parent data:', error);
       // Use fallback data on error
-      setParentData(getMockParentData())
-      setSelectedChild('child1')
+      setParentData(getMockParentData());
+      setSelectedChild('child1');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const getMockParentData = (): ParentData => ({
     parent: {
       id: 'parent1',
       name: 'John & Sarah Smith',
       email: 'parents@example.com',
-      preferredLanguage: 'English'
+      preferredLanguage: 'English',
     },
     children: [
       {
@@ -125,8 +125,8 @@ export default function ParentPortal() {
           lessonsCompleted: 24,
           averageScore: 87,
           streak: 12,
-          lastActivity: '2 hours ago'
-        }
+          lastActivity: '2 hours ago',
+        },
       },
       {
         id: 'child2',
@@ -143,9 +143,9 @@ export default function ParentPortal() {
           lessonsCompleted: 18,
           averageScore: 82,
           streak: 8,
-          lastActivity: '1 hour ago'
-        }
-      }
+          lastActivity: '1 hour ago',
+        },
+      },
     ],
     overview: {
       totalChildren: 2,
@@ -156,37 +156,37 @@ export default function ParentPortal() {
       pendingPayments: 0,
       nextPaymentDue: 'Feb 15, 2025',
       totalSpent: 299,
-      safetyAlerts: 0
+      safetyAlerts: 0,
     },
     quickActions: [
       'Schedule Conference',
       'Request Transcript',
       'Update Information',
       'Message Teacher',
-      'View Calendar'
+      'View Calendar',
     ],
     recentActivity: [
       {
         type: 'achievement',
         message: 'Emma completed Math Level 5',
         timestamp: '2 hours ago',
-        child: 'Emma'
+        child: 'Emma',
       },
       {
         type: 'assignment',
         message: 'Alex submitted Science Project',
         timestamp: '4 hours ago',
-        child: 'Alex'
-      }
-    ]
-  })
+        child: 'Alex',
+      },
+    ],
+  });
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
       </div>
-    )
+    );
   }
 
   if (!parentData) {
@@ -196,10 +196,10 @@ export default function ParentPortal() {
         <h3 className="text-lg font-semibold">Unable to load parent portal</h3>
         <p className="text-gray-600">Please try again later</p>
       </div>
-    )
+    );
   }
 
-  const selectedChildData = parentData.children.find(child => child.id === selectedChild)
+  const selectedChildData = parentData.children.find((child) => child.id === selectedChild);
 
   return (
     <div className="space-y-6">
@@ -233,7 +233,7 @@ export default function ParentPortal() {
             <p className="text-xs text-muted-foreground">Active students</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Upcoming Events</CardTitle>
@@ -244,7 +244,7 @@ export default function ParentPortal() {
             <p className="text-xs text-muted-foreground">This week</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Unread Messages</CardTitle>
@@ -255,7 +255,7 @@ export default function ParentPortal() {
             <p className="text-xs text-muted-foreground">From teachers</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending Approvals</CardTitle>
@@ -266,7 +266,7 @@ export default function ParentPortal() {
             <p className="text-xs text-muted-foreground">Require action</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Overall Progress</CardTitle>
@@ -296,7 +296,9 @@ export default function ParentPortal() {
                   className="h-20 flex flex-col justify-center"
                 >
                   <span className="font-semibold">{child.name}</span>
-                  <span className="text-xs">{child.schoolName} - Grade {child.grade}</span>
+                  <span className="text-xs">
+                    {child.schoolName} - Grade {child.grade}
+                  </span>
                 </Button>
               ))}
             </div>
@@ -327,15 +329,16 @@ export default function ParentPortal() {
                     <Badge variant="outline">{selectedChildData.schoolName}</Badge>
                   </CardTitle>
                   <CardDescription>
-                    Grade {selectedChildData.grade} • {selectedChildData.neurotype} • {selectedChildData.enrollmentType}
+                    Grade {selectedChildData.grade} • {selectedChildData.neurotype} •{' '}
+                    {selectedChildData.enrollmentType}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid md:grid-cols-3 gap-6">
                     <div className="text-center">
                       <div className="text-3xl font-bold text-green-600">
-                        {typeof selectedChildData.currentGPA === 'number' 
-                          ? selectedChildData.currentGPA.toFixed(1) 
+                        {typeof selectedChildData.currentGPA === 'number'
+                          ? selectedChildData.currentGPA.toFixed(1)
                           : selectedChildData.currentGPA}
                       </div>
                       <div className="text-sm text-gray-600">Current GPA</div>
@@ -367,20 +370,28 @@ export default function ParentPortal() {
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
                         <span className="text-sm">Lessons Completed</span>
-                        <span className="font-bold">{selectedChildData.recentProgress.lessonsCompleted}</span>
+                        <span className="font-bold">
+                          {selectedChildData.recentProgress.lessonsCompleted}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm">Average Score</span>
-                        <span className="font-bold">{selectedChildData.recentProgress.averageScore}%</span>
+                        <span className="font-bold">
+                          {selectedChildData.recentProgress.averageScore}%
+                        </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm">Learning Streak</span>
-                        <span className="font-bold">{selectedChildData.recentProgress.streak} days</span>
+                        <span className="font-bold">
+                          {selectedChildData.recentProgress.streak} days
+                        </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm">Last Activity</span>
                         <span className="font-bold">
-                          {new Date(selectedChildData.recentProgress.lastActivity).toLocaleDateString()}
+                          {new Date(
+                            selectedChildData.recentProgress.lastActivity,
+                          ).toLocaleDateString()}
                         </span>
                       </div>
                     </div>
@@ -451,7 +462,11 @@ export default function ParentPortal() {
                   </div>
                 </div>
                 <Button className="w-full" asChild>
-                  <a href="/curriculum-planning?userType=parent" target="_blank" rel="noopener noreferrer">
+                  <a
+                    href="/curriculum-planning?userType=parent"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Create Family Curriculum
                   </a>
                 </Button>
@@ -485,7 +500,11 @@ export default function ParentPortal() {
                   </div>
                 </div>
                 <Button variant="outline" className="w-full" asChild>
-                  <a href="/curriculum-planning?tab=generator&userType=parent" target="_blank" rel="noopener noreferrer">
+                  <a
+                    href="/curriculum-planning?tab=generator&userType=parent"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Build Schedule
                   </a>
                 </Button>
@@ -511,7 +530,11 @@ export default function ParentPortal() {
                   <p>• Record keeping guidance</p>
                 </div>
                 <Button variant="outline" className="w-full" asChild>
-                  <a href="/curriculum-planning?tab=features&focus=compliance" target="_blank" rel="noopener noreferrer">
+                  <a
+                    href="/curriculum-planning?tab=features&focus=compliance"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Check Requirements
                   </a>
                 </Button>
@@ -543,7 +566,11 @@ export default function ParentPortal() {
                   <p>• Progress tracking tools</p>
                 </div>
                 <Button variant="outline" className="w-full" asChild>
-                  <a href="/curriculum-planning?accommodations=ADHD,Dyslexia,Autism&userType=parent" target="_blank" rel="noopener noreferrer">
+                  <a
+                    href="/curriculum-planning?accommodations=ADHD,Dyslexia,Autism&userType=parent"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Special Needs Tools
                   </a>
                 </Button>
@@ -563,22 +590,34 @@ export default function ParentPortal() {
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <Button variant="outline" size="sm" asChild>
-                    <a href={`/curriculum-planning?grade=${selectedChildData.grade}&subjects=Mathematics&userType=parent`} target="_blank">
+                    <a
+                      href={`/curriculum-planning?grade=${selectedChildData.grade}&subjects=Mathematics&userType=parent`}
+                      target="_blank"
+                    >
                       Math for Grade {selectedChildData.grade}
                     </a>
                   </Button>
                   <Button variant="outline" size="sm" asChild>
-                    <a href={`/curriculum-planning?grade=${selectedChildData.grade}&subjects=English&userType=parent`} target="_blank">
+                    <a
+                      href={`/curriculum-planning?grade=${selectedChildData.grade}&subjects=English&userType=parent`}
+                      target="_blank"
+                    >
                       English for Grade {selectedChildData.grade}
                     </a>
                   </Button>
                   <Button variant="outline" size="sm" asChild>
-                    <a href={`/curriculum-planning?grade=${selectedChildData.grade}&subjects=Science&userType=parent`} target="_blank">
+                    <a
+                      href={`/curriculum-planning?grade=${selectedChildData.grade}&subjects=Science&userType=parent`}
+                      target="_blank"
+                    >
                       Science for Grade {selectedChildData.grade}
                     </a>
                   </Button>
                   <Button variant="outline" size="sm" asChild>
-                    <a href={`/curriculum-planning?grade=${selectedChildData.grade}&accommodations=${selectedChildData.neurotype}&userType=parent`} target="_blank">
+                    <a
+                      href={`/curriculum-planning?grade=${selectedChildData.grade}&accommodations=${selectedChildData.neurotype}&userType=parent`}
+                      target="_blank"
+                    >
                       {selectedChildData.neurotype} Support
                     </a>
                   </Button>
@@ -624,7 +663,11 @@ export default function ParentPortal() {
               </div>
               <div className="mt-4 pt-4 border-t">
                 <Button variant="outline" className="w-full" asChild>
-                  <a href="/curriculum-planning?tab=resources&userType=parent" target="_blank" rel="noopener noreferrer">
+                  <a
+                    href="/curriculum-planning?tab=resources&userType=parent"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Access All Parent Resources
                   </a>
                 </Button>
@@ -647,7 +690,9 @@ export default function ParentPortal() {
                     <div className="flex-1">
                       <p className="text-sm">{activity.message}</p>
                       <div className="flex items-center justify-between mt-2">
-                        <Badge variant="outline" className="text-xs">{activity.child}</Badge>
+                        <Badge variant="outline" className="text-xs">
+                          {activity.child}
+                        </Badge>
                         <span className="text-xs text-gray-500">
                           {new Date(activity.timestamp).toLocaleDateString()}
                         </span>
@@ -698,7 +743,9 @@ export default function ParentPortal() {
           <Card>
             <CardHeader>
               <CardTitle>Academic Reports & Documents</CardTitle>
-              <CardDescription>Progress reports, transcripts, and important documents</CardDescription>
+              <CardDescription>
+                Progress reports, transcripts, and important documents
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-2 gap-4">
@@ -745,7 +792,9 @@ export default function ParentPortal() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span>Next Payment Due</span>
-                    <span className="font-semibold">{parentData.overview.nextPaymentDue || 'Feb 15, 2025'}</span>
+                    <span className="font-semibold">
+                      {parentData.overview.nextPaymentDue || 'Feb 15, 2025'}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span>Total Spent (2025)</span>
@@ -777,7 +826,9 @@ export default function ParentPortal() {
                     </div>
                     <div className="text-right">
                       <p className="font-semibold">$49.99</p>
-                      <Badge variant="outline" className="text-xs">Paid</Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Paid
+                      </Badge>
                     </div>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
@@ -787,7 +838,9 @@ export default function ParentPortal() {
                     </div>
                     <div className="text-right">
                       <p className="font-semibold">$49.99</p>
-                      <Badge variant="outline" className="text-xs">Paid</Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Paid
+                      </Badge>
                     </div>
                   </div>
                   <Button variant="outline" className="w-full">
@@ -831,7 +884,9 @@ export default function ParentPortal() {
                       <AlertCircle className="h-4 w-4 text-yellow-600 mr-2" />
                       <span>Security alerts</span>
                     </div>
-                    <Badge className="bg-yellow-100 text-yellow-800">{parentData.overview.safetyAlerts || 0}</Badge>
+                    <Badge className="bg-yellow-100 text-yellow-800">
+                      {parentData.overview.safetyAlerts || 0}
+                    </Badge>
                   </div>
                 </div>
               </CardContent>
@@ -848,7 +903,9 @@ export default function ParentPortal() {
                 <div className="space-y-4">
                   <div className="p-3 bg-purple-50 rounded-lg">
                     <h4 className="font-semibold text-purple-800">Live Session Monitoring</h4>
-                    <p className="text-sm text-purple-600">All virtual classes are recorded and monitored for safety</p>
+                    <p className="text-sm text-purple-600">
+                      All virtual classes are recorded and monitored for safety
+                    </p>
                   </div>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
@@ -877,7 +934,9 @@ export default function ParentPortal() {
             <Card>
               <CardHeader>
                 <CardTitle>Digital Wellness for {selectedChildData.name}</CardTitle>
-                <CardDescription>Monitor and manage your child's digital learning environment</CardDescription>
+                <CardDescription>
+                  Monitor and manage your child's digital learning environment
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-3 gap-6">
@@ -888,7 +947,9 @@ export default function ParentPortal() {
                       <div className="text-sm text-gray-600">Learning time</div>
                     </div>
                     <Progress value={45} className="mt-2" />
-                    <p className="text-xs text-gray-600">Recommended: 3-5 hours for Grade {selectedChildData.grade}</p>
+                    <p className="text-xs text-gray-600">
+                      Recommended: 3-5 hours for Grade {selectedChildData.grade}
+                    </p>
                   </div>
                   <div className="space-y-3">
                     <h4 className="font-semibold">Break Reminders</h4>
@@ -964,5 +1025,5 @@ export default function ParentPortal() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

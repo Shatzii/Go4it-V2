@@ -1,26 +1,39 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { 
-  BookOpen, 
-  Search, 
-  Filter, 
-  Download, 
-  Eye, 
-  Edit, 
-  Star, 
-  Clock, 
-  Users, 
-  Target, 
-  CheckCircle, 
-  Home, 
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  BookOpen,
+  Search,
+  Filter,
+  Download,
+  Eye,
+  Edit,
+  Star,
+  Clock,
+  Users,
+  Target,
+  CheckCircle,
+  Home,
   Plus,
   Bookmark,
   Share,
@@ -31,18 +44,18 @@ import {
   Tag,
   Calendar,
   FileText,
-  Award
-} from 'lucide-react'
-import Link from 'next/link'
+  Award,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function CurriculumLibraryPage() {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedGrade, setSelectedGrade] = useState('all')
-  const [selectedSubject, setSelectedSubject] = useState('all')
-  const [selectedCompliance, setSelectedCompliance] = useState('all')
-  const [viewMode, setViewMode] = useState('grid')
-  const [sortBy, setSortBy] = useState('newest')
-  const [selectedCurriculum, setSelectedCurriculum] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedGrade, setSelectedGrade] = useState('all');
+  const [selectedSubject, setSelectedSubject] = useState('all');
+  const [selectedCompliance, setSelectedCompliance] = useState('all');
+  const [viewMode, setViewMode] = useState('grid');
+  const [sortBy, setSortBy] = useState('newest');
+  const [selectedCurriculum, setSelectedCurriculum] = useState(null);
 
   // Comprehensive curriculum database with Texas standards
   const [curriculumDatabase] = useState([
@@ -66,34 +79,34 @@ export default function CurriculumLibraryPage() {
         'Students will identify all 26 letters and their corresponding sounds',
         'Students will blend 2-3 phonemes to form simple words',
         'Students will segment words into individual phonemes',
-        'Students will demonstrate phonemic awareness through sound manipulation'
+        'Students will demonstrate phonemic awareness through sound manipulation',
       ],
       activities: [
         'Letter sound identification games with manipulatives',
         'Phoneme blending activities using picture cards',
         'Sound segmentation exercises with counting bears',
         'Interactive alphabet songs and chants',
-        'Multisensory letter formation practice'
+        'Multisensory letter formation practice',
       ],
       assessments: [
         'Weekly letter-sound correspondence check',
         'Bi-weekly phoneme blending assessment',
         'Monthly phonemic awareness screening',
-        'Progress monitoring every 2 weeks'
+        'Progress monitoring every 2 weeks',
       ],
       materials: [
         'Letter cards and magnetic letters',
         'Picture cards for blending',
         'Counting bears for segmentation',
         'Interactive whiteboard activities',
-        'Assessment recording sheets'
+        'Assessment recording sheets',
       ],
       differentiation: [
         'Visual supports for ELL students',
         'Kinesthetic activities for ADHD learners',
         'Structured multisensory approach for dyslexia',
-        'Extended practice for struggling learners'
-      ]
+        'Extended practice for struggling learners',
+      ],
     },
     {
       id: 'grade1-math-001',
@@ -115,34 +128,34 @@ export default function CurriculumLibraryPage() {
         'Students will count, read, and write numbers to 120',
         'Students will understand place value for tens and ones',
         'Students will compare and order numbers within 120',
-        'Students will use place value understanding to add and subtract'
+        'Students will use place value understanding to add and subtract',
       ],
       activities: [
         'Base-ten block explorations and building',
         'Number line games and activities',
         'Counting collections and estimation',
         'Place value mats with manipulatives',
-        'Digital number sense games'
+        'Digital number sense games',
       ],
       assessments: [
         'Number recognition and writing assessment',
         'Place value understanding check',
         'Comparing numbers performance task',
-        'Weekly formative assessments'
+        'Weekly formative assessments',
       ],
       materials: [
         'Base-ten blocks and place value mats',
         'Number cards 1-120',
         'Counting collections (buttons, beans, etc.)',
         'Interactive number line',
-        'Digital assessment tools'
+        'Digital assessment tools',
       ],
       differentiation: [
         'Movement breaks for ADHD students',
         'Visual schedules for autism spectrum learners',
         'Concrete to abstract progression',
-        'Peer support partnerships'
-      ]
+        'Peer support partnerships',
+      ],
     },
     {
       id: 'grade5-science-001',
@@ -164,34 +177,34 @@ export default function CurriculumLibraryPage() {
         'Students will describe and model the water cycle',
         'Students will analyze weather patterns and predict changes',
         'Students will investigate the relationship between Earth systems',
-        'Students will design solutions to weather-related problems'
+        'Students will design solutions to weather-related problems',
       ],
       activities: [
         'Water cycle terrariums and observations',
         'Weather station data collection and analysis',
         'Climate pattern investigations using technology',
         'Engineering design challenges for weather protection',
-        'Scientific modeling and explanation development'
+        'Scientific modeling and explanation development',
       ],
       assessments: [
         'Water cycle diagram and explanation',
         'Weather prediction project',
         'Earth systems interaction model',
-        'Engineering design portfolio'
+        'Engineering design portfolio',
       ],
       materials: [
         'Weather monitoring equipment',
         'Digital weather databases',
         'Terrarium building materials',
         'Modeling clay and diagram materials',
-        'Engineering design supplies'
+        'Engineering design supplies',
       ],
       differentiation: [
         'Advanced research projects for gifted students',
         'Assistive technology for 504 accommodations',
         'Collaborative group investigations',
-        'Multiple representation options'
-      ]
+        'Multiple representation options',
+      ],
     },
     {
       id: 'grade9-algebra-001',
@@ -213,34 +226,34 @@ export default function CurriculumLibraryPage() {
         'Students will graph linear functions in multiple representations',
         'Students will write linear equations in various forms',
         'Students will solve systems of linear equations',
-        'Students will model real-world situations with linear functions'
+        'Students will model real-world situations with linear functions',
       ],
       activities: [
         'Graphing calculator explorations',
         'Real-world linear modeling projects',
         'Collaborative problem-solving sessions',
         'Technology-enhanced investigations',
-        'Peer tutoring and explanation activities'
+        'Peer tutoring and explanation activities',
       ],
       assessments: [
         'STAAR-aligned unit assessment',
         'Real-world modeling project',
         'Graphing skills demonstration',
-        'Problem-solving portfolio'
+        'Problem-solving portfolio',
       ],
       materials: [
         'Graphing calculators or technology',
         'Real-world data sets',
         'Graphing paper and tools',
         'Interactive algebra software',
-        'Assessment rubrics'
+        'Assessment rubrics',
       ],
       differentiation: [
         'Audio support for dyslexic students',
         'Movement and fidget tools for ADHD',
         'Multiple solution pathways',
-        'Flexible pacing options'
-      ]
+        'Flexible pacing options',
+      ],
     },
     {
       id: 'grade3-social-001',
@@ -262,34 +275,34 @@ export default function CurriculumLibraryPage() {
         'Students will identify characteristics of Texas communities',
         'Students will describe rights and responsibilities of citizenship',
         'Students will analyze how geography affects community development',
-        'Students will compare past and present community life'
+        'Students will compare past and present community life',
       ],
       activities: [
         'Virtual community tours and comparisons',
         'Citizenship role-playing scenarios',
         'Texas geography mapping activities',
         'Community helper interviews and presentations',
-        'Historical timeline creation'
+        'Historical timeline creation',
       ],
       assessments: [
         'Community comparison project',
         'Citizenship demonstration',
         'Texas geography quiz',
-        'Historical timeline presentation'
+        'Historical timeline presentation',
       ],
       materials: [
         'Texas maps and globes',
         'Community pictures and resources',
         'Interview recording tools',
         'Timeline creation materials',
-        'Citizenship scenario cards'
+        'Citizenship scenario cards',
       ],
       differentiation: [
         'Visual supports and translations for ELL',
         'Structured routines for autism spectrum',
         'Multiple communication options',
-        'Cultural connection opportunities'
-      ]
+        'Cultural connection opportunities',
+      ],
     },
     {
       id: 'grade11-english-001',
@@ -311,76 +324,78 @@ export default function CurriculumLibraryPage() {
         'Students will analyze themes in American literature',
         'Students will evaluate rhetorical strategies in speeches and essays',
         'Students will compose argumentative essays with textual evidence',
-        'Students will present literary analysis with supporting evidence'
+        'Students will present literary analysis with supporting evidence',
       ],
       activities: [
         'Socratic seminars on literary themes',
         'Rhetorical analysis of historical speeches',
         'Collaborative annotation and discussion',
         'Research-based argumentative writing',
-        'Multimedia presentation development'
+        'Multimedia presentation development',
       ],
       assessments: [
         'STAAR English II preparation assessment',
         'Rhetorical analysis essay',
         'Literary analysis presentation',
-        'Research-based argument paper'
+        'Research-based argument paper',
       ],
       materials: [
         'American literature anthology',
         'Historical speech recordings',
         'Research databases and resources',
         'Presentation technology',
-        'Writing assessment rubrics'
+        'Writing assessment rubrics',
       ],
       differentiation: [
         'Independent research opportunities for gifted',
         'Text-to-speech technology for dyslexia',
         'Choice in literary selections',
-        'Flexible assessment formats'
-      ]
-    }
-  ])
+        'Flexible assessment formats',
+      ],
+    },
+  ]);
 
   // Filter functions
-  const filteredCurricula = curriculumDatabase.filter(curriculum => {
-    const matchesSearch = curriculum.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         curriculum.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-    const matchesGrade = selectedGrade === 'all' || curriculum.grade === selectedGrade
-    const matchesSubject = selectedSubject === 'all' || curriculum.subject === selectedSubject
-    const matchesCompliance = selectedCompliance === 'all' || 
-                             (selectedCompliance === 'verified' && curriculum.compliance === 'TEC Verified') ||
-                             (selectedCompliance === 'staar' && curriculum.staarAligned)
-    
-    return matchesSearch && matchesGrade && matchesSubject && matchesCompliance
-  })
+  const filteredCurricula = curriculumDatabase.filter((curriculum) => {
+    const matchesSearch =
+      curriculum.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      curriculum.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesGrade = selectedGrade === 'all' || curriculum.grade === selectedGrade;
+    const matchesSubject = selectedSubject === 'all' || curriculum.subject === selectedSubject;
+    const matchesCompliance =
+      selectedCompliance === 'all' ||
+      (selectedCompliance === 'verified' && curriculum.compliance === 'TEC Verified') ||
+      (selectedCompliance === 'staar' && curriculum.staarAligned);
+
+    return matchesSearch && matchesGrade && matchesSubject && matchesCompliance;
+  });
 
   // Sort function
   const sortedCurricula = [...filteredCurricula].sort((a, b) => {
     switch (sortBy) {
       case 'newest':
-        return new Date(b.lastModified) - new Date(a.lastModified)
+        return new Date(b.lastModified) - new Date(a.lastModified);
       case 'oldest':
-        return new Date(a.lastModified) - new Date(b.lastModified)
+        return new Date(a.lastModified) - new Date(b.lastModified);
       case 'rating':
-        return b.rating - a.rating
+        return b.rating - a.rating;
       case 'downloads':
-        return b.downloads - a.downloads
+        return b.downloads - a.downloads;
       case 'alphabetical':
-        return a.title.localeCompare(b.title)
+        return a.title.localeCompare(b.title);
       default:
-        return 0
+        return 0;
     }
-  })
+  });
 
   const getGradeOptions = () => {
-    return ['K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
-  }
+    return ['K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+  };
 
   const getSubjectOptions = () => {
     return [
       'English Language Arts',
-      'Mathematics', 
+      'Mathematics',
       'Science',
       'Social Studies',
       'Art',
@@ -388,9 +403,9 @@ export default function CurriculumLibraryPage() {
       'Physical Education',
       'Health',
       'Technology',
-      'Career Education'
-    ]
-  }
+      'Career Education',
+    ];
+  };
 
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -398,8 +413,8 @@ export default function CurriculumLibraryPage() {
         key={i}
         className={`h-3 w-3 ${i < Math.floor(rating) ? 'text-yellow-400 fill-current' : 'text-gray-400'}`}
       />
-    ))
-  }
+    ));
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 p-6">
@@ -408,27 +423,34 @@ export default function CurriculumLibraryPage() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-4 mb-4">
             <Link href="/">
-              <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+              <Button
+                variant="outline"
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              >
                 <Home className="h-4 w-4 mr-2" />
                 Home
               </Button>
             </Link>
             <Link href="/curriculum-generator">
-              <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+              <Button
+                variant="outline"
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Create Curriculum
               </Button>
             </Link>
             <Link href="/compliance-center">
-              <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+              <Button
+                variant="outline"
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              >
                 <CheckCircle className="h-4 w-4 mr-2" />
                 Compliance Center
               </Button>
             </Link>
           </div>
-          <h1 className="text-4xl font-bold text-white mb-2">
-            Texas K-12 Curriculum Library
-          </h1>
+          <h1 className="text-4xl font-bold text-white mb-2">Texas K-12 Curriculum Library</h1>
           <p className="text-blue-200 text-lg">
             Comprehensive Collection | TEC Compliant | STAAR Aligned | Accessibility Ready
           </p>
@@ -437,14 +459,13 @@ export default function CurriculumLibraryPage() {
               {curriculumDatabase.length} Curricula
             </Badge>
             <Badge className="bg-green-600/20 text-green-300 px-4 py-2">
-              {curriculumDatabase.filter(c => c.compliance === 'TEC Verified').length} TEC Verified
+              {curriculumDatabase.filter((c) => c.compliance === 'TEC Verified').length} TEC
+              Verified
             </Badge>
             <Badge className="bg-orange-600/20 text-orange-300 px-4 py-2">
-              {curriculumDatabase.filter(c => c.staarAligned).length} STAAR Aligned
+              {curriculumDatabase.filter((c) => c.staarAligned).length} STAAR Aligned
             </Badge>
-            <Badge className="bg-purple-600/20 text-purple-300 px-4 py-2">
-              K-12 Coverage
-            </Badge>
+            <Badge className="bg-purple-600/20 text-purple-300 px-4 py-2">K-12 Coverage</Badge>
           </div>
         </div>
 
@@ -473,7 +494,7 @@ export default function CurriculumLibraryPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Grades</SelectItem>
-                    {getGradeOptions().map(grade => (
+                    {getGradeOptions().map((grade) => (
                       <SelectItem key={grade} value={grade}>
                         {grade === 'K' ? 'Kindergarten' : `Grade ${grade}`}
                       </SelectItem>
@@ -490,7 +511,7 @@ export default function CurriculumLibraryPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Subjects</SelectItem>
-                    {getSubjectOptions().map(subject => (
+                    {getSubjectOptions().map((subject) => (
                       <SelectItem key={subject} value={subject}>
                         {subject}
                       </SelectItem>
@@ -529,7 +550,7 @@ export default function CurriculumLibraryPage() {
                 </Select>
               </div>
             </div>
-            
+
             <div className="flex items-center justify-between mt-4">
               <div className="text-sm text-blue-200">
                 Showing {sortedCurricula.length} of {curriculumDatabase.length} curricula
@@ -559,18 +580,24 @@ export default function CurriculumLibraryPage() {
         {/* Curriculum Grid/List */}
         {viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {sortedCurricula.map(curriculum => (
-              <Card key={curriculum.id} className="bg-white/10 border-white/20 text-white hover:bg-white/15 transition-all">
+            {sortedCurricula.map((curriculum) => (
+              <Card
+                key={curriculum.id}
+                className="bg-white/10 border-white/20 text-white hover:bg-white/15 transition-all"
+              >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex gap-2">
                       <Badge className="bg-blue-600/20 text-blue-300 text-xs">
                         {curriculum.grade === 'K' ? 'K' : `G${curriculum.grade}`}
                       </Badge>
-                      <Badge className={`${
-                        curriculum.compliance === 'TEC Verified' ? 'bg-green-600/20 text-green-300' :
-                        'bg-yellow-600/20 text-yellow-300'
-                      } text-xs`}>
+                      <Badge
+                        className={`${
+                          curriculum.compliance === 'TEC Verified'
+                            ? 'bg-green-600/20 text-green-300'
+                            : 'bg-yellow-600/20 text-yellow-300'
+                        } text-xs`}
+                      >
                         {curriculum.compliance === 'TEC Verified' ? 'Verified' : 'Pending'}
                       </Badge>
                     </div>
@@ -591,19 +618,19 @@ export default function CurriculumLibraryPage() {
                       {renderStars(curriculum.rating)}
                       <span className="text-xs text-white/70 ml-1">({curriculum.downloads})</span>
                     </div>
-                    
+
                     <div className="text-xs text-white/70">
                       {curriculum.duration} • {curriculum.texCode}
                     </div>
-                    
+
                     {curriculum.staarAligned && (
                       <Badge className="bg-orange-600/20 text-orange-300 text-xs">
                         STAAR Aligned
                       </Badge>
                     )}
-                    
+
                     <div className="flex flex-wrap gap-1">
-                      {curriculum.tags.slice(0, 3).map(tag => (
+                      {curriculum.tags.slice(0, 3).map((tag) => (
                         <Badge key={tag} className="bg-purple-600/20 text-purple-300 text-xs">
                           {tag}
                         </Badge>
@@ -612,11 +639,14 @@ export default function CurriculumLibraryPage() {
                         <span className="text-xs text-white/50">+{curriculum.tags.length - 3}</span>
                       )}
                     </div>
-                    
+
                     <div className="flex gap-1 pt-2">
                       <Dialog>
                         <DialogTrigger asChild>
-                          <Button size="sm" className="flex-1 bg-blue-600/20 border-blue-600/30 text-blue-300 hover:bg-blue-600/30">
+                          <Button
+                            size="sm"
+                            className="flex-1 bg-blue-600/20 border-blue-600/30 text-blue-300 hover:bg-blue-600/30"
+                          >
                             <Eye className="h-3 w-3 mr-1" />
                             View
                           </Button>
@@ -625,7 +655,10 @@ export default function CurriculumLibraryPage() {
                           <DialogHeader>
                             <DialogTitle className="text-white">{curriculum.title}</DialogTitle>
                             <DialogDescription className="text-gray-300">
-                              {curriculum.grade === 'K' ? 'Kindergarten' : `Grade ${curriculum.grade}`} • {curriculum.subject} • {curriculum.duration}
+                              {curriculum.grade === 'K'
+                                ? 'Kindergarten'
+                                : `Grade ${curriculum.grade}`}{' '}
+                              • {curriculum.subject} • {curriculum.duration}
                             </DialogDescription>
                           </DialogHeader>
                           <div className="space-y-6 text-white">
@@ -634,25 +667,34 @@ export default function CurriculumLibraryPage() {
                                 <h4 className="font-semibold text-blue-300 mb-2">Details</h4>
                                 <div className="space-y-1 text-sm">
                                   <div>Texas Code: {curriculum.texCode}</div>
-                                  <div>Rating: {curriculum.rating}/5 ({curriculum.downloads} downloads)</div>
+                                  <div>
+                                    Rating: {curriculum.rating}/5 ({curriculum.downloads} downloads)
+                                  </div>
                                   <div>Author: {curriculum.author}</div>
                                   <div>Created: {curriculum.createdDate}</div>
                                 </div>
                               </div>
                               <div>
-                                <h4 className="font-semibold text-green-300 mb-2">Accommodations</h4>
+                                <h4 className="font-semibold text-green-300 mb-2">
+                                  Accommodations
+                                </h4>
                                 <div className="flex flex-wrap gap-1">
-                                  {curriculum.accommodations.map(acc => (
-                                    <Badge key={acc} className="bg-green-600/20 text-green-300 text-xs">
+                                  {curriculum.accommodations.map((acc) => (
+                                    <Badge
+                                      key={acc}
+                                      className="bg-green-600/20 text-green-300 text-xs"
+                                    >
                                       {acc}
                                     </Badge>
                                   ))}
                                 </div>
                               </div>
                             </div>
-                            
+
                             <div>
-                              <h4 className="font-semibold text-yellow-300 mb-2">Learning Objectives</h4>
+                              <h4 className="font-semibold text-yellow-300 mb-2">
+                                Learning Objectives
+                              </h4>
                               <ul className="space-y-1 text-sm">
                                 {curriculum.objectives.map((obj, idx) => (
                                   <li key={idx} className="flex items-start gap-2">
@@ -662,7 +704,7 @@ export default function CurriculumLibraryPage() {
                                 ))}
                               </ul>
                             </div>
-                            
+
                             <div>
                               <h4 className="font-semibold text-purple-300 mb-2">Activities</h4>
                               <ul className="space-y-1 text-sm">
@@ -674,7 +716,7 @@ export default function CurriculumLibraryPage() {
                                 ))}
                               </ul>
                             </div>
-                            
+
                             <div>
                               <h4 className="font-semibold text-orange-300 mb-2">Assessments</h4>
                               <ul className="space-y-1 text-sm">
@@ -689,8 +731,12 @@ export default function CurriculumLibraryPage() {
                           </div>
                         </DialogContent>
                       </Dialog>
-                      
-                      <Button size="sm" variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                      >
                         <Download className="h-3 w-3" />
                       </Button>
                     </div>
@@ -702,7 +748,7 @@ export default function CurriculumLibraryPage() {
         ) : (
           // List View
           <div className="space-y-4">
-            {sortedCurricula.map(curriculum => (
+            {sortedCurricula.map((curriculum) => (
               <Card key={curriculum.id} className="bg-white/10 border-white/20 text-white">
                 <CardContent className="pt-4">
                   <div className="flex items-center justify-between">
@@ -713,10 +759,13 @@ export default function CurriculumLibraryPage() {
                           <Badge className="bg-blue-600/20 text-blue-300 text-xs">
                             {curriculum.grade === 'K' ? 'K' : `Grade ${curriculum.grade}`}
                           </Badge>
-                          <Badge className={`${
-                            curriculum.compliance === 'TEC Verified' ? 'bg-green-600/20 text-green-300' :
-                            'bg-yellow-600/20 text-yellow-300'
-                          } text-xs`}>
+                          <Badge
+                            className={`${
+                              curriculum.compliance === 'TEC Verified'
+                                ? 'bg-green-600/20 text-green-300'
+                                : 'bg-yellow-600/20 text-yellow-300'
+                            } text-xs`}
+                          >
                             {curriculum.compliance}
                           </Badge>
                           {curriculum.staarAligned && (
@@ -726,7 +775,9 @@ export default function CurriculumLibraryPage() {
                           )}
                         </div>
                       </div>
-                      <div className="text-sm text-blue-300">{curriculum.subject} • {curriculum.duration}</div>
+                      <div className="text-sm text-blue-300">
+                        {curriculum.subject} • {curriculum.duration}
+                      </div>
                       <div className="flex items-center gap-4 mt-2 text-xs text-white/70">
                         <div className="flex items-center gap-1">
                           {renderStars(curriculum.rating)}
@@ -737,15 +788,27 @@ export default function CurriculumLibraryPage() {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                      >
                         <Eye className="h-3 w-3 mr-1" />
                         View
                       </Button>
-                      <Button size="sm" variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                      >
                         <Download className="h-3 w-3 mr-1" />
                         Download
                       </Button>
-                      <Button size="sm" variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                      >
                         <Bookmark className="h-3 w-3" />
                       </Button>
                     </div>
@@ -762,12 +825,12 @@ export default function CurriculumLibraryPage() {
               <BookOpen className="h-12 w-12 mx-auto mb-4 text-white/50" />
               <h3 className="text-lg font-semibold mb-2">No curricula found</h3>
               <p className="text-white/70 mb-4">Try adjusting your search or filter criteria</p>
-              <Button 
+              <Button
                 onClick={() => {
-                  setSearchTerm('')
-                  setSelectedGrade('all')
-                  setSelectedSubject('all')
-                  setSelectedCompliance('all')
+                  setSearchTerm('');
+                  setSelectedGrade('all');
+                  setSelectedSubject('all');
+                  setSelectedCompliance('all');
                 }}
                 className="bg-blue-600/20 border-blue-600/30 text-blue-300 hover:bg-blue-600/30"
               >
@@ -778,5 +841,5 @@ export default function CurriculumLibraryPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

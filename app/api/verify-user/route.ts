@@ -5,10 +5,7 @@ export async function POST(req: NextRequest) {
     const { userId, adminId } = await req.json();
 
     if (!userId || !adminId) {
-      return NextResponse.json(
-        { error: 'User ID and Admin ID are required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'User ID and Admin ID are required' }, { status: 400 });
     }
 
     // Import database connection
@@ -17,13 +14,13 @@ export async function POST(req: NextRequest) {
 
     // Check if admin has verification privileges
     const adminCheck = await db.execute(
-      sql`SELECT role FROM users WHERE id = ${adminId} AND role = 'admin' LIMIT 1`
+      sql`SELECT role FROM users WHERE id = ${adminId} AND role = 'admin' LIMIT 1`,
     );
 
     if (adminCheck.length === 0) {
       return NextResponse.json(
         { error: 'Unauthorized: Admin privileges required' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -36,24 +33,17 @@ export async function POST(req: NextRequest) {
     `);
 
     if (result.length === 0) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     return NextResponse.json({
       success: true,
       message: 'User verified successfully',
-      user: result[0]
+      user: result[0],
     });
-
   } catch (error) {
     console.error('Verification error:', error);
-    return NextResponse.json(
-      { error: 'Failed to verify user' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to verify user' }, { status: 500 });
   }
 }
 
@@ -62,10 +52,7 @@ export async function DELETE(req: NextRequest) {
     const { userId, adminId } = await req.json();
 
     if (!userId || !adminId) {
-      return NextResponse.json(
-        { error: 'User ID and Admin ID are required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'User ID and Admin ID are required' }, { status: 400 });
     }
 
     // Import database connection
@@ -74,13 +61,13 @@ export async function DELETE(req: NextRequest) {
 
     // Check if admin has verification privileges
     const adminCheck = await db.execute(
-      sql`SELECT role FROM users WHERE id = ${adminId} AND role = 'admin' LIMIT 1`
+      sql`SELECT role FROM users WHERE id = ${adminId} AND role = 'admin' LIMIT 1`,
     );
 
     if (adminCheck.length === 0) {
       return NextResponse.json(
         { error: 'Unauthorized: Admin privileges required' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -93,23 +80,16 @@ export async function DELETE(req: NextRequest) {
     `);
 
     if (result.length === 0) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     return NextResponse.json({
       success: true,
       message: 'User verification removed successfully',
-      user: result[0]
+      user: result[0],
     });
-
   } catch (error) {
     console.error('Remove verification error:', error);
-    return NextResponse.json(
-      { error: 'Failed to remove verification' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to remove verification' }, { status: 500 });
   }
 }

@@ -1,13 +1,6 @@
 'use client';
 
-import { 
-  Upload, 
-  Play, 
-  Calendar, 
-  MessageCircle, 
-  Target, 
-  TrendingUp 
-} from 'lucide-react';
+import { Upload, Play, Calendar, MessageCircle, Target, TrendingUp } from 'lucide-react';
 
 export function QuickActions() {
   const actions = [
@@ -15,38 +8,38 @@ export function QuickActions() {
       title: 'Upload Video',
       icon: Upload,
       color: 'bg-blue-500 hover:bg-blue-600',
-      href: '/gar-upload'
+      href: '/gar-upload',
     },
     {
       title: 'StarPath',
       icon: Play,
       color: 'bg-green-500 hover:bg-green-600',
-      href: '/starpath'
+      href: '/starpath',
     },
     {
       title: 'Academy',
       icon: Calendar,
       color: 'bg-purple-500 hover:bg-purple-600',
-      href: '/academy'
+      href: '/academy',
     },
     {
       title: 'AI Teachers',
       icon: MessageCircle,
       color: 'bg-orange-500 hover:bg-orange-600',
-      href: '/ai-teachers'
+      href: '/ai-teachers',
     },
     {
       title: 'Teams',
       icon: Target,
       color: 'bg-pink-500 hover:bg-pink-600',
-      href: '/teams'
+      href: '/teams',
     },
     {
       title: 'Profile',
       icon: TrendingUp,
       color: 'bg-indigo-500 hover:bg-indigo-600',
-      href: '/profile'
-    }
+      href: '/profile',
+    },
   ];
 
   return (

@@ -1,6 +1,6 @@
 /**
  * Content Management System Service
- * 
+ *
  * Complete CMS for managing landing pages, content, and media
  * Allows schools to customize their platform appearance and messaging
  */
@@ -13,27 +13,44 @@ class CMSService {
   constructor() {
     this.contentTypes = {
       'landing-page': {
-        fields: ['title', 'subtitle', 'heroImage', 'description', 'features', 'testimonials', 'callToAction'],
-        template: 'landing-page'
+        fields: [
+          'title',
+          'subtitle',
+          'heroImage',
+          'description',
+          'features',
+          'testimonials',
+          'callToAction',
+        ],
+        template: 'landing-page',
       },
       'school-info': {
-        fields: ['schoolName', 'districtName', 'address', 'phone', 'email', 'logo', 'colors', 'mission'],
-        template: 'school-info'
+        fields: [
+          'schoolName',
+          'districtName',
+          'address',
+          'phone',
+          'email',
+          'logo',
+          'colors',
+          'mission',
+        ],
+        template: 'school-info',
       },
-      'pricing': {
+      pricing: {
         fields: ['plans', 'features', 'discounts', 'promotions'],
-        template: 'pricing'
+        template: 'pricing',
       },
-      'about': {
+      about: {
         fields: ['story', 'team', 'values', 'timeline', 'achievements'],
-        template: 'about'
+        template: 'about',
       },
-      'features': {
+      features: {
         fields: ['aiTeachers', 'capabilities', 'benefits', 'screenshots', 'videos'],
-        template: 'features'
-      }
+        template: 'features',
+      },
     };
-    
+
     this.mediaStorage = this.initializeMediaStorage();
     this.contentCache = new Map();
   }
@@ -44,7 +61,7 @@ class CMSService {
   async getPageContent(pageType, schoolId = 'default') {
     try {
       const cacheKey = `${pageType}_${schoolId}`;
-      
+
       // Check cache first
       if (this.contentCache.has(cacheKey)) {
         return this.contentCache.get(cacheKey);
@@ -52,10 +69,10 @@ class CMSService {
 
       // Load from storage
       const content = await this.loadContentFromStorage(pageType, schoolId);
-      
+
       // Cache the content
       this.contentCache.set(cacheKey, content);
-      
+
       return content;
     } catch (error) {
       console.error(`Error getting page content for ${pageType}:`, error);
@@ -75,13 +92,13 @@ class CMSService {
 
       // Get current content
       const currentContent = await this.getPageContent(pageType, schoolId);
-      
+
       // Merge updates with current content
       const updatedContent = {
         ...currentContent,
         ...updates,
         lastModified: new Date().toISOString(),
-        modifiedBy: updates.modifiedBy || 'system'
+        modifiedBy: updates.modifiedBy || 'system',
       };
 
       // Validate required fields
@@ -89,18 +106,18 @@ class CMSService {
 
       // Save to storage
       await this.saveContentToStorage(pageType, schoolId, updatedContent);
-      
+
       // Update cache
       const cacheKey = `${pageType}_${schoolId}`;
       this.contentCache.set(cacheKey, updatedContent);
-      
+
       // Generate static files if needed
       await this.generateStaticFiles(pageType, schoolId, updatedContent);
 
       return {
         success: true,
         content: updatedContent,
-        message: `${pageType} content updated successfully`
+        message: `${pageType} content updated successfully`,
       };
     } catch (error) {
       console.error(`Error updating page content:`, error);
@@ -139,7 +156,7 @@ class CMSService {
         category,
         schoolId,
         uploadedAt: new Date().toISOString(),
-        uploadedBy: 'admin' // Would come from auth context
+        uploadedBy: 'admin', // Would come from auth context
       };
 
       // Save media metadata
@@ -158,12 +175,12 @@ class CMSService {
   async getMediaLibrary(schoolId = 'default', category = null) {
     try {
       const mediaRecords = await this.loadMediaRecords(schoolId, category);
-      
+
       return {
         media: mediaRecords,
         categories: await this.getMediaCategories(schoolId),
         totalSize: mediaRecords.reduce((sum, media) => sum + media.size, 0),
-        count: mediaRecords.length
+        count: mediaRecords.length,
       };
     } catch (error) {
       console.error('Error getting media library:', error);
@@ -199,14 +216,7 @@ class CMSService {
    * Create custom landing page template
    */
   async createCustomTemplate(templateData) {
-    const {
-      name,
-      description,
-      schoolId,
-      sections,
-      styling,
-      layout
-    } = templateData;
+    const { name, description, schoolId, sections, styling, layout } = templateData;
 
     const template = {
       id: this.generateTemplateId(),
@@ -218,7 +228,7 @@ class CMSService {
       layout: layout || this.getDefaultLayout(),
       isCustom: true,
       createdAt: new Date().toISOString(),
-      version: '1.0'
+      version: '1.0',
     };
 
     await this.saveTemplate(template);
@@ -232,7 +242,7 @@ class CMSService {
     try {
       // Load template
       const template = await this.getTemplate(templateId);
-      
+
       // Load content for all sections
       const content = {};
       for (const section of template.sections) {
@@ -241,12 +251,12 @@ class CMSService {
 
       // Generate HTML
       const html = await this.renderTemplate(template, content, schoolId);
-      
+
       return {
         html,
         template,
         content,
-        generatedAt: new Date().toISOString()
+        generatedAt: new Date().toISOString(),
       };
     } catch (error) {
       console.error('Error generating landing page:', error);
@@ -258,13 +268,7 @@ class CMSService {
    * Update school branding and theme
    */
   async updateSchoolBranding(schoolId, branding) {
-    const {
-      logo,
-      colors,
-      fonts,
-      customCSS,
-      favicon
-    } = branding;
+    const { logo, colors, fonts, customCSS, favicon } = branding;
 
     const brandingConfig = {
       schoolId,
@@ -274,23 +278,23 @@ class CMSService {
         secondary: colors?.secondary || '#64748b',
         accent: colors?.accent || '#0ea5e9',
         background: colors?.background || '#ffffff',
-        text: colors?.text || '#1f2937'
+        text: colors?.text || '#1f2937',
       },
       fonts: {
         heading: fonts?.heading || 'Inter',
         body: fonts?.body || 'Inter',
-        size: fonts?.size || 'medium'
+        size: fonts?.size || 'medium',
       },
       customCSS: customCSS || '',
       favicon: favicon || null,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
 
     await this.saveBrandingConfig(brandingConfig);
-    
+
     // Generate CSS file
     await this.generateBrandingCSS(schoolId, brandingConfig);
-    
+
     return brandingConfig;
   }
 
@@ -311,18 +315,18 @@ class CMSService {
   async previewPageChanges(pageType, schoolId, changes) {
     // Get current content
     const currentContent = await this.getPageContent(pageType, schoolId);
-    
+
     // Apply temporary changes
     const previewContent = { ...currentContent, ...changes };
-    
+
     // Generate preview HTML
     const previewHtml = await this.renderPagePreview(pageType, schoolId, previewContent);
-    
+
     return {
       html: previewHtml,
       changes,
       previewId: this.generatePreviewId(),
-      expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString() // 30 minutes
+      expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // 30 minutes
     };
   }
 
@@ -338,20 +342,20 @@ class CMSService {
         publishResults.push({
           pageType: change.pageType,
           success: result.success,
-          message: result.message
+          message: result.message,
         });
       }
 
       // Clear caches
       this.clearSchoolCache(schoolId);
-      
+
       // Generate sitemap
       await this.generateSitemap(schoolId);
 
       return {
         success: true,
         results: publishResults,
-        publishedAt: new Date().toISOString()
+        publishedAt: new Date().toISOString(),
       };
     } catch (error) {
       console.error('Error publishing changes:', error);
@@ -366,13 +370,22 @@ class CMSService {
     return {
       basePath,
       maxFileSize: 10 * 1024 * 1024, // 10MB
-      allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'application/pdf']
+      allowedTypes: [
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'image/webp',
+        'video/mp4',
+        'application/pdf',
+      ],
     };
   }
 
   validateMediaFile(file) {
     if (file.size > this.mediaStorage.maxFileSize) {
-      throw new Error(`File size exceeds limit of ${this.mediaStorage.maxFileSize / 1024 / 1024}MB`);
+      throw new Error(
+        `File size exceeds limit of ${this.mediaStorage.maxFileSize / 1024 / 1024}MB`,
+      );
     }
 
     if (!this.mediaStorage.allowedTypes.includes(file.mimetype)) {
@@ -412,8 +425,8 @@ class CMSService {
     const contentType = this.contentTypes[pageType];
     if (!contentType) return;
 
-    const requiredFields = contentType.fields.filter(field => 
-      contentType.required && contentType.required.includes(field)
+    const requiredFields = contentType.fields.filter(
+      (field) => contentType.required && contentType.required.includes(field),
     );
 
     for (const field of requiredFields) {
@@ -431,27 +444,31 @@ class CMSService {
         description: 'Comprehensive educational platform with AI teachers for every subject',
         features: [
           'Personalized Learning Paths',
-          'Real-time Progress Tracking', 
+          'Real-time Progress Tracking',
           'Neurodivergent Support',
-          'Parent Dashboards'
+          'Parent Dashboards',
         ],
         callToAction: {
           text: 'Start Free Trial',
-          url: '/register'
-        }
+          url: '/register',
+        },
       },
       'school-info': {
         schoolName: 'Sample School',
         districtName: 'Sample District',
-        mission: 'Empowering students through AI-enhanced education'
+        mission: 'Empowering students through AI-enhanced education',
       },
-      'pricing': {
+      pricing: {
         plans: [
           { name: 'Basic', price: 299, features: ['AI Teachers', 'Progress Tracking'] },
           { name: 'Pro', price: 599, features: ['Everything in Basic', 'Advanced Analytics'] },
-          { name: 'Enterprise', price: 1299, features: ['Everything in Pro', 'Custom Integration'] }
-        ]
-      }
+          {
+            name: 'Enterprise',
+            price: 1299,
+            features: ['Everything in Pro', 'Custom Integration'],
+          },
+        ],
+      },
     };
 
     return defaults[pageType] || {};
@@ -464,16 +481,16 @@ class CMSService {
         secondary: '#64748b',
         accent: '#0ea5e9',
         background: '#ffffff',
-        text: '#1f2937'
+        text: '#1f2937',
       },
       fonts: {
         heading: 'Inter',
         body: 'Inter',
-        size: 'medium'
+        size: 'medium',
       },
       customCSS: '',
       logo: null,
-      favicon: null
+      favicon: null,
     };
   }
 
@@ -483,7 +500,7 @@ class CMSService {
       { type: 'features', order: 2, enabled: true },
       { type: 'pricing', order: 3, enabled: true },
       { type: 'testimonials', order: 4, enabled: true },
-      { type: 'contact', order: 5, enabled: true }
+      { type: 'contact', order: 5, enabled: true },
     ];
   }
 
@@ -492,7 +509,7 @@ class CMSService {
       layout: 'modern',
       colorScheme: 'blue',
       typography: 'clean',
-      spacing: 'comfortable'
+      spacing: 'comfortable',
     };
   }
 
@@ -501,7 +518,7 @@ class CMSService {
       header: { sticky: true, transparent: false },
       footer: { minimal: false },
       sidebar: { enabled: false },
-      maxWidth: '1200px'
+      maxWidth: '1200px',
     };
   }
 
@@ -555,7 +572,7 @@ class CMSService {
       name: 'Default',
       sections: this.getDefaultSections(),
       styling: this.getDefaultStyling(),
-      layout: this.getDefaultLayout()
+      layout: this.getDefaultLayout(),
     };
   }
 
@@ -595,7 +612,11 @@ class CMSService {
   }
 
   async renderPagePreview(pageType, schoolId, content) {
-    return this.renderTemplate({ sections: [{ type: pageType }] }, { [pageType]: content }, schoolId);
+    return this.renderTemplate(
+      { sections: [{ type: pageType }] },
+      { [pageType]: content },
+      schoolId,
+    );
   }
 
   async generateStaticFiles(pageType, schoolId, content) {
@@ -622,7 +643,7 @@ class CMSService {
     const cssPath = path.join(process.cwd(), 'public', 'branding', schoolId, 'custom.css');
     await this.ensureDirectoryExists(path.dirname(cssPath));
     await fs.writeFile(cssPath, css);
-    
+
     return true;
   }
 

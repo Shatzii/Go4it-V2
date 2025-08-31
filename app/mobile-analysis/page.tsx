@@ -1,121 +1,123 @@
-'use client'
+'use client';
 
-import React, { useState, useRef } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { 
-  Smartphone, 
-  Camera, 
-  Upload, 
+import React, { useState, useRef } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import {
+  Smartphone,
+  Camera,
+  Upload,
   PlayCircle,
   Brain,
   Target,
   Activity,
   CheckCircle,
   AlertCircle,
-  Zap
-} from 'lucide-react'
+  Zap,
+} from 'lucide-react';
 
 export default function MobileAnalysisPage() {
-  const [isRecording, setIsRecording] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
-  const [analysisProgress, setAnalysisProgress] = useState(0)
-  const [currentStep, setCurrentStep] = useState<'record' | 'upload' | 'analyze' | 'results'>('record')
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const streamRef = useRef<MediaStream | null>(null)
+  const [isRecording, setIsRecording] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [analysisProgress, setAnalysisProgress] = useState(0);
+  const [currentStep, setCurrentStep] = useState<'record' | 'upload' | 'analyze' | 'results'>(
+    'record',
+  );
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
           facingMode: 'environment',
           width: { ideal: 1920 },
-          height: { ideal: 1080 }
-        }, 
-        audio: false 
-      })
-      
-      streamRef.current = stream
+          height: { ideal: 1080 },
+        },
+        audio: false,
+      });
+
+      streamRef.current = stream;
       if (videoRef.current) {
-        videoRef.current.srcObject = stream
+        videoRef.current.srcObject = stream;
       }
-      setIsRecording(true)
+      setIsRecording(true);
     } catch (error) {
-      console.error('Error accessing camera:', error)
+      console.error('Error accessing camera:', error);
     }
-  }
+  };
 
   const stopRecording = () => {
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop())
+      streamRef.current.getTracks().forEach((track) => track.stop());
     }
-    setIsRecording(false)
-    simulateUpload()
-  }
+    setIsRecording(false);
+    simulateUpload();
+  };
 
   const simulateUpload = () => {
-    setCurrentStep('upload')
-    setUploadProgress(0)
-    
+    setCurrentStep('upload');
+    setUploadProgress(0);
+
     const uploadInterval = setInterval(() => {
-      setUploadProgress(prev => {
+      setUploadProgress((prev) => {
         if (prev >= 100) {
-          clearInterval(uploadInterval)
-          simulateAnalysis()
-          return 100
+          clearInterval(uploadInterval);
+          simulateAnalysis();
+          return 100;
         }
-        return prev + 5
-      })
-    }, 100)
-  }
+        return prev + 5;
+      });
+    }, 100);
+  };
 
   const simulateAnalysis = () => {
-    setCurrentStep('analyze')
-    setAnalysisProgress(0)
-    
+    setCurrentStep('analyze');
+    setAnalysisProgress(0);
+
     const analysisInterval = setInterval(() => {
-      setAnalysisProgress(prev => {
+      setAnalysisProgress((prev) => {
         if (prev >= 100) {
-          clearInterval(analysisInterval)
-          setCurrentStep('results')
-          return 100
+          clearInterval(analysisInterval);
+          setCurrentStep('results');
+          return 100;
         }
-        return prev + 3
-      })
-    }, 150)
-  }
+        return prev + 3;
+      });
+    }, 150);
+  };
 
   const features = [
     {
       icon: Camera,
       title: 'Real-time Recording',
-      description: 'Direct camera integration with live preview and horizontal guidance'
+      description: 'Direct camera integration with live preview and horizontal guidance',
     },
     {
       icon: Brain,
       title: 'Edge Processing',
-      description: 'AI analysis happens locally on your device for instant results'
+      description: 'AI analysis happens locally on your device for instant results',
     },
     {
       icon: Zap,
       title: 'Instant Feedback',
-      description: 'Get performance insights in under 10 seconds'
+      description: 'Get performance insights in under 10 seconds',
     },
     {
       icon: Target,
       title: 'Sport-Specific',
-      description: 'Optimized analysis for basketball, football, soccer, and more'
-    }
-  ]
+      description: 'Optimized analysis for basketball, football, soccer, and more',
+    },
+  ];
 
   const steps = [
     { id: 'record', title: 'Record', description: 'Capture your technique' },
     { id: 'upload', title: 'Upload', description: 'Process video data' },
     { id: 'analyze', title: 'Analyze', description: 'AI performance analysis' },
-    { id: 'results', title: 'Results', description: 'View insights' }
-  ]
+    { id: 'results', title: 'Results', description: 'View insights' },
+  ];
 
   return (
     <div className="min-h-screen bg-slate-900 text-white p-4">
@@ -126,7 +128,7 @@ export default function MobileAnalysisPage() {
             Mobile Performance Analysis
           </h1>
           <p className="text-slate-400 max-w-2xl mx-auto">
-            Record, analyze, and improve your athletic performance directly from your mobile device 
+            Record, analyze, and improve your athletic performance directly from your mobile device
             with professional-grade AI analysis
           </p>
           <div className="flex items-center justify-center gap-2">
@@ -160,28 +162,43 @@ export default function MobileAnalysisPage() {
             <div className="flex items-center justify-between mb-6">
               {steps.map((step, index) => (
                 <div key={step.id} className="flex items-center">
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 ${
-                    currentStep === step.id ? 'border-primary bg-primary text-white' :
-                    steps.findIndex(s => s.id === currentStep) > index ? 'border-green-500 bg-green-500 text-white' :
-                    'border-slate-600 text-slate-400'
-                  }`}>
-                    {steps.findIndex(s => s.id === currentStep) > index ? (
+                  <div
+                    className={`flex items-center justify-center w-8 h-8 rounded-full border-2 ${
+                      currentStep === step.id
+                        ? 'border-primary bg-primary text-white'
+                        : steps.findIndex((s) => s.id === currentStep) > index
+                          ? 'border-green-500 bg-green-500 text-white'
+                          : 'border-slate-600 text-slate-400'
+                    }`}
+                  >
+                    {steps.findIndex((s) => s.id === currentStep) > index ? (
                       <CheckCircle className="w-4 h-4" />
                     ) : (
                       <span className="text-xs font-medium">{index + 1}</span>
                     )}
                   </div>
                   <div className="ml-2 text-sm">
-                    <div className={`font-medium ${currentStep === step.id ? 'text-primary' : 
-                      steps.findIndex(s => s.id === currentStep) > index ? 'text-green-400' : 'text-slate-400'}`}>
+                    <div
+                      className={`font-medium ${
+                        currentStep === step.id
+                          ? 'text-primary'
+                          : steps.findIndex((s) => s.id === currentStep) > index
+                            ? 'text-green-400'
+                            : 'text-slate-400'
+                      }`}
+                    >
                       {step.title}
                     </div>
                     <div className="text-xs text-slate-500">{step.description}</div>
                   </div>
                   {index < steps.length - 1 && (
-                    <div className={`w-8 h-0.5 mx-4 ${
-                      steps.findIndex(s => s.id === currentStep) > index ? 'bg-green-500' : 'bg-slate-600'
-                    }`} />
+                    <div
+                      className={`w-8 h-0.5 mx-4 ${
+                        steps.findIndex((s) => s.id === currentStep) > index
+                          ? 'bg-green-500'
+                          : 'bg-slate-600'
+                      }`}
+                    />
                   )}
                 </div>
               ))}
@@ -200,9 +217,11 @@ export default function MobileAnalysisPage() {
               {currentStep === 'results' && 'Analysis Complete!'}
             </CardTitle>
             <CardDescription>
-              {currentStep === 'record' && 'Position your device horizontally and start recording your athletic movement'}
+              {currentStep === 'record' &&
+                'Position your device horizontally and start recording your athletic movement'}
               {currentStep === 'upload' && 'Processing video data and preparing for analysis'}
-              {currentStep === 'analyze' && 'Our AI is analyzing your performance using advanced computer vision'}
+              {currentStep === 'analyze' &&
+                'Our AI is analyzing your performance using advanced computer vision'}
               {currentStep === 'results' && 'View your comprehensive performance analysis below'}
             </CardDescription>
           </CardHeader>
@@ -224,7 +243,7 @@ export default function MobileAnalysisPage() {
                       <p className="text-slate-400">Camera preview will appear here</p>
                     </div>
                   )}
-                  
+
                   {isRecording && (
                     <div className="absolute top-4 left-4 flex items-center gap-2">
                       <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
@@ -232,10 +251,14 @@ export default function MobileAnalysisPage() {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="flex items-center justify-center gap-4">
                   {!isRecording ? (
-                    <Button onClick={startRecording} size="lg" className="bg-red-600 hover:bg-red-700">
+                    <Button
+                      onClick={startRecording}
+                      size="lg"
+                      className="bg-red-600 hover:bg-red-700"
+                    >
                       <Camera className="w-4 h-4 mr-2" />
                       Start Recording
                     </Button>
@@ -246,7 +269,7 @@ export default function MobileAnalysisPage() {
                     </Button>
                   )}
                 </div>
-                
+
                 <div className="bg-slate-700/50 p-4 rounded-lg">
                   <h4 className="text-white font-medium mb-2 flex items-center gap-2">
                     <AlertCircle className="w-4 h-4 text-yellow-400" />
@@ -269,7 +292,7 @@ export default function MobileAnalysisPage() {
                   <h3 className="text-xl font-semibold text-white mb-2">Uploading Video</h3>
                   <p className="text-slate-400 mb-4">Processing your recording for AI analysis</p>
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-400">Upload Progress</span>
@@ -285,9 +308,11 @@ export default function MobileAnalysisPage() {
                 <div className="text-center">
                   <Brain className="w-16 h-16 text-primary mx-auto mb-4 animate-pulse" />
                   <h3 className="text-xl font-semibold text-white mb-2">AI Analysis in Progress</h3>
-                  <p className="text-slate-400 mb-4">Our advanced computer vision is analyzing your performance</p>
+                  <p className="text-slate-400 mb-4">
+                    Our advanced computer vision is analyzing your performance
+                  </p>
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-400">Analysis Progress</span>
@@ -295,7 +320,7 @@ export default function MobileAnalysisPage() {
                   </div>
                   <Progress value={analysisProgress} className="h-2" />
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4 text-center">
                   <div className="bg-slate-700/50 p-3 rounded-lg">
                     <Activity className="w-6 h-6 text-blue-400 mx-auto mb-1" />
@@ -328,7 +353,7 @@ export default function MobileAnalysisPage() {
                       </Badge>
                     </CardContent>
                   </Card>
-                  
+
                   <Card className="bg-slate-700/50 border-slate-600">
                     <CardContent className="p-4 text-center">
                       <div className="text-2xl font-bold text-blue-400 mb-1">92%</div>
@@ -338,7 +363,7 @@ export default function MobileAnalysisPage() {
                       </Badge>
                     </CardContent>
                   </Card>
-                  
+
                   <Card className="bg-slate-700/50 border-slate-600">
                     <CardContent className="p-4 text-center">
                       <div className="text-2xl font-bold text-purple-400 mb-1">Low</div>
@@ -394,7 +419,7 @@ export default function MobileAnalysisPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 <h4 className="font-medium text-white">Supported Devices</h4>
                 <div className="space-y-2 text-sm text-slate-400">
@@ -410,5 +435,5 @@ export default function MobileAnalysisPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

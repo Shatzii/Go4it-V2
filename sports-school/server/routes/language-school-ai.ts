@@ -3,7 +3,7 @@ import {
   generateVocabularyList,
   createLanguageDialogue,
   generateGrammarExercises,
-  generateCulturalLesson
+  generateCulturalLesson,
 } from '../services/anthropic-school-integrations';
 
 export const router = Router();
@@ -16,30 +16,26 @@ export const router = Router();
 router.post('/generate-vocabulary', async (req: Request, res: Response) => {
   try {
     const { language, proficiencyLevel, topic } = req.body;
-    
+
     if (!language || !proficiencyLevel || !topic) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Language, proficiency level, and topic are required' 
+      return res.status(400).json({
+        success: false,
+        message: 'Language, proficiency level, and topic are required',
       });
     }
 
-    const vocabularyList = await generateVocabularyList(
-      language,
-      proficiencyLevel,
-      topic
-    );
-    
+    const vocabularyList = await generateVocabularyList(language, proficiencyLevel, topic);
+
     res.json({
       success: true,
-      vocabularyList
+      vocabularyList,
     });
   } catch (error: any) {
     console.error('Error generating vocabulary list:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to generate vocabulary list',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -52,30 +48,26 @@ router.post('/generate-vocabulary', async (req: Request, res: Response) => {
 router.post('/create-dialogue', async (req: Request, res: Response) => {
   try {
     const { language, proficiencyLevel, situation } = req.body;
-    
+
     if (!language || !proficiencyLevel || !situation) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Language, proficiency level, and situation are required' 
+      return res.status(400).json({
+        success: false,
+        message: 'Language, proficiency level, and situation are required',
       });
     }
 
-    const dialogue = await createLanguageDialogue(
-      language,
-      proficiencyLevel,
-      situation
-    );
-    
+    const dialogue = await createLanguageDialogue(language, proficiencyLevel, situation);
+
     res.json({
       success: true,
-      dialogue
+      dialogue,
     });
   } catch (error: any) {
     console.error('Error creating language dialogue:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to create language dialogue',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -88,30 +80,30 @@ router.post('/create-dialogue', async (req: Request, res: Response) => {
 router.post('/generate-grammar', async (req: Request, res: Response) => {
   try {
     const { language, proficiencyLevel, grammarTopic } = req.body;
-    
+
     if (!language || !proficiencyLevel || !grammarTopic) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Language, proficiency level, and grammar topic are required' 
+      return res.status(400).json({
+        success: false,
+        message: 'Language, proficiency level, and grammar topic are required',
       });
     }
 
     const grammarExercises = await generateGrammarExercises(
       language,
       proficiencyLevel,
-      grammarTopic
+      grammarTopic,
     );
-    
+
     res.json({
       success: true,
-      grammarExercises
+      grammarExercises,
     });
   } catch (error: any) {
     console.error('Error generating grammar exercises:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to generate grammar exercises',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -124,30 +116,26 @@ router.post('/generate-grammar', async (req: Request, res: Response) => {
 router.post('/generate-cultural-lesson', async (req: Request, res: Response) => {
   try {
     const { language, proficiencyLevel, culturalTopic } = req.body;
-    
+
     if (!language || !proficiencyLevel || !culturalTopic) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Language, proficiency level, and cultural topic are required' 
+      return res.status(400).json({
+        success: false,
+        message: 'Language, proficiency level, and cultural topic are required',
       });
     }
 
-    const culturalLesson = await generateCulturalLesson(
-      language,
-      proficiencyLevel,
-      culturalTopic
-    );
-    
+    const culturalLesson = await generateCulturalLesson(language, proficiencyLevel, culturalTopic);
+
     res.json({
       success: true,
-      culturalLesson
+      culturalLesson,
     });
   } catch (error: any) {
     console.error('Error generating cultural lesson:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to generate cultural lesson',
-      error: error.message
+      error: error.message,
     });
   }
 });

@@ -1,6 +1,6 @@
 /**
  * ShatziiOS Dynamic Module Loader
- * 
+ *
  * This utility provides dynamic loading of modules to improve startup time
  * by loading services and routes only when they're needed.
  */
@@ -18,10 +18,11 @@ export async function loadModule(modulePath: string) {
     console.log(`🔄 Dynamic loading: ${modulePath}`);
     try {
       // Convert relative paths to absolute
-      const fullPath = modulePath.startsWith('./') || modulePath.startsWith('../') 
-        ? require.resolve(modulePath, { paths: [__dirname] })
-        : modulePath;
-        
+      const fullPath =
+        modulePath.startsWith('./') || modulePath.startsWith('../')
+          ? require.resolve(modulePath, { paths: [__dirname] })
+          : modulePath;
+
       const module = await import(fullPath);
       moduleCache.set(modulePath, module);
       console.log(`✅ Successfully loaded: ${modulePath}`);
@@ -39,14 +40,14 @@ export async function loadModule(modulePath: string) {
  */
 export async function preloadModules(modulePaths: string[]) {
   console.log(`🔄 Preloading ${modulePaths.length} modules...`);
-  
-  const promises = modulePaths.map(path => 
-    loadModule(path).catch(err => {
+
+  const promises = modulePaths.map((path) =>
+    loadModule(path).catch((err) => {
       console.warn(`⚠️ Non-fatal error preloading ${path}:`, err.message);
       return null;
-    })
+    }),
   );
-  
+
   await Promise.allSettled(promises);
   console.log(`✅ Preloading complete. ${moduleCache.size} modules in cache.`);
 }

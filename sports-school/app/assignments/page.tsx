@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  FileText, 
-  Clock, 
-  CheckCircle, 
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  FileText,
+  Clock,
+  CheckCircle,
   AlertCircle,
   Calendar,
   BookOpen,
@@ -16,12 +16,12 @@ import {
   Upload,
   Download,
   Edit,
-  Eye
-} from 'lucide-react'
-import Link from 'next/link'
+  Eye,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function AssignmentsPage() {
-  const [activeTab, setActiveTab] = useState('current')
+  const [activeTab, setActiveTab] = useState('current');
 
   const currentAssignments = [
     {
@@ -34,7 +34,7 @@ export default function AssignmentsPage() {
       status: 'pending',
       priority: 'high',
       description: 'Complete problems 1-25 on quadratic equations',
-      estimatedTime: '45 mins'
+      estimatedTime: '45 mins',
     },
     {
       id: 2,
@@ -46,7 +46,7 @@ export default function AssignmentsPage() {
       status: 'in-progress',
       priority: 'medium',
       description: 'Write lab report on chemical reactions experiment',
-      estimatedTime: '90 mins'
+      estimatedTime: '90 mins',
     },
     {
       id: 3,
@@ -58,9 +58,9 @@ export default function AssignmentsPage() {
       status: 'pending',
       priority: 'high',
       description: 'Analyze themes of justice and morality in the novel',
-      estimatedTime: '120 mins'
-    }
-  ]
+      estimatedTime: '120 mins',
+    },
+  ];
 
   const completedAssignments = [
     {
@@ -70,7 +70,7 @@ export default function AssignmentsPage() {
       teacher: 'Professor Timeline',
       submittedDate: '2024-01-10',
       grade: 'A-',
-      feedback: 'Excellent work on chronological accuracy!'
+      feedback: 'Excellent work on chronological accuracy!',
     },
     {
       id: 5,
@@ -79,35 +79,43 @@ export default function AssignmentsPage() {
       teacher: 'Professor Newton',
       submittedDate: '2024-01-08',
       grade: 'B+',
-      feedback: 'Good understanding, but work on proof formatting.'
-    }
-  ]
+      feedback: 'Good understanding, but work on proof formatting.',
+    },
+  ];
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'border-red-500 bg-red-50'
-      case 'medium': return 'border-yellow-500 bg-yellow-50'
-      case 'low': return 'border-green-500 bg-green-50'
-      default: return 'border-gray-500 bg-gray-50'
+      case 'high':
+        return 'border-red-500 bg-red-50';
+      case 'medium':
+        return 'border-yellow-500 bg-yellow-50';
+      case 'low':
+        return 'border-green-500 bg-green-50';
+      default:
+        return 'border-gray-500 bg-gray-50';
     }
-  }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed': return <CheckCircle className="h-4 w-4 text-green-600" />
-      case 'in-progress': return <Clock className="h-4 w-4 text-yellow-600" />
-      case 'pending': return <AlertCircle className="h-4 w-4 text-red-600" />
-      default: return <FileText className="h-4 w-4 text-gray-600" />
+      case 'completed':
+        return <CheckCircle className="h-4 w-4 text-green-600" />;
+      case 'in-progress':
+        return <Clock className="h-4 w-4 text-yellow-600" />;
+      case 'pending':
+        return <AlertCircle className="h-4 w-4 text-red-600" />;
+      default:
+        return <FileText className="h-4 w-4 text-gray-600" />;
     }
-  }
+  };
 
   const getDaysUntilDue = (dueDate: string) => {
-    const today = new Date()
-    const due = new Date(dueDate)
-    const diffTime = due.getTime() - today.getTime()
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    return diffDays
-  }
+    const today = new Date();
+    const due = new Date(dueDate);
+    const diffTime = due.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -142,9 +150,12 @@ export default function AssignmentsPage() {
           <TabsContent value="current" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
               {currentAssignments.map((assignment) => {
-                const daysUntilDue = getDaysUntilDue(assignment.dueDate)
+                const daysUntilDue = getDaysUntilDue(assignment.dueDate);
                 return (
-                  <Card key={assignment.id} className={`border-l-4 ${getPriorityColor(assignment.priority)}`}>
+                  <Card
+                    key={assignment.id}
+                    className={`border-l-4 ${getPriorityColor(assignment.priority)}`}
+                  >
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-lg">{assignment.title}</CardTitle>
@@ -159,11 +170,13 @@ export default function AssignmentsPage() {
                     </CardHeader>
                     <CardContent>
                       <p className="text-sm text-gray-700 mb-4">{assignment.description}</p>
-                      
+
                       <div className="space-y-2 mb-4">
                         <div className="flex items-center gap-2 text-sm">
                           <Calendar className="h-4 w-4 text-gray-500" />
-                          <span>Due: {assignment.dueDate} at {assignment.dueTime}</span>
+                          <span>
+                            Due: {assignment.dueDate} at {assignment.dueTime}
+                          </span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
                           <Clock className="h-4 w-4 text-gray-500" />
@@ -171,27 +184,41 @@ export default function AssignmentsPage() {
                         </div>
                         <div className="flex items-center gap-2 text-sm">
                           <Target className="h-4 w-4 text-gray-500" />
-                          <span className={`font-medium ${
-                            daysUntilDue <= 1 ? 'text-red-600' : 
-                            daysUntilDue <= 3 ? 'text-yellow-600' : 'text-green-600'
-                          }`}>
-                            {daysUntilDue === 0 ? 'Due Today' : 
-                             daysUntilDue === 1 ? 'Due Tomorrow' : 
-                             daysUntilDue > 0 ? `${daysUntilDue} days left` : 'Overdue'}
+                          <span
+                            className={`font-medium ${
+                              daysUntilDue <= 1
+                                ? 'text-red-600'
+                                : daysUntilDue <= 3
+                                  ? 'text-yellow-600'
+                                  : 'text-green-600'
+                            }`}
+                          >
+                            {daysUntilDue === 0
+                              ? 'Due Today'
+                              : daysUntilDue === 1
+                                ? 'Due Tomorrow'
+                                : daysUntilDue > 0
+                                  ? `${daysUntilDue} days left`
+                                  : 'Overdue'}
                           </span>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-2">
-                        <Badge variant={assignment.priority === 'high' ? 'destructive' : 
-                                     assignment.priority === 'medium' ? 'default' : 'secondary'}>
+                        <Badge
+                          variant={
+                            assignment.priority === 'high'
+                              ? 'destructive'
+                              : assignment.priority === 'medium'
+                                ? 'default'
+                                : 'secondary'
+                          }
+                        >
                           {assignment.priority} priority
                         </Badge>
-                        <Badge variant="outline">
-                          {assignment.status}
-                        </Badge>
+                        <Badge variant="outline">{assignment.status}</Badge>
                       </div>
-                      
+
                       <div className="flex gap-2 mt-4">
                         <Button size="sm" className="flex-1">
                           <Edit className="h-4 w-4 mr-1" />
@@ -203,7 +230,7 @@ export default function AssignmentsPage() {
                       </div>
                     </CardContent>
                   </Card>
-                )
+                );
               })}
             </div>
           </TabsContent>
@@ -275,29 +302,32 @@ export default function AssignmentsPage() {
                   <div className="font-medium text-sm py-2">Fri</div>
                   <div className="font-medium text-sm py-2">Sat</div>
                 </div>
-                
+
                 <div className="grid grid-cols-7 gap-2">
                   {Array.from({ length: 35 }, (_, i) => {
-                    const day = i - 5 // Adjust for month start
-                    const isToday = day === 12
-                    const hasAssignment = [15, 18, 20].includes(day)
-                    
+                    const day = i - 5; // Adjust for month start
+                    const isToday = day === 12;
+                    const hasAssignment = [15, 18, 20].includes(day);
+
                     return (
                       <div
                         key={i}
                         className={`aspect-square flex items-center justify-center text-sm rounded-lg ${
-                          day < 1 || day > 31 ? 'text-gray-300' :
-                          isToday ? 'bg-blue-600 text-white font-medium' :
-                          hasAssignment ? 'bg-red-100 text-red-800 font-medium' :
-                          'hover:bg-gray-50'
+                          day < 1 || day > 31
+                            ? 'text-gray-300'
+                            : isToday
+                              ? 'bg-blue-600 text-white font-medium'
+                              : hasAssignment
+                                ? 'bg-red-100 text-red-800 font-medium'
+                                : 'hover:bg-gray-50'
                         }`}
                       >
                         {day > 0 && day <= 31 ? day : ''}
                       </div>
-                    )
+                    );
                   })}
                 </div>
-                
+
                 <div className="mt-4 flex items-center gap-4 text-sm">
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 bg-blue-600 rounded"></div>
@@ -314,5 +344,5 @@ export default function AssignmentsPage() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }

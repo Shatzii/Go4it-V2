@@ -1,174 +1,195 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Search, Users, Trophy, Calendar, MapPin, Phone, Mail, ExternalLink, Download, Star, Filter, AlertCircle } from 'lucide-react'
+import { useState, useEffect } from 'react';
+import {
+  Search,
+  Users,
+  Trophy,
+  Calendar,
+  MapPin,
+  Phone,
+  Mail,
+  ExternalLink,
+  Download,
+  Star,
+  Filter,
+  AlertCircle,
+} from 'lucide-react';
 
 interface School {
-  id: string
-  name: string
-  division: 'D1' | 'D2' | 'D3' | 'NAIA' | 'JUCO'
-  conference: string
-  location: string
-  state: string
-  sport: string
-  scholarships: number
+  id: string;
+  name: string;
+  division: 'D1' | 'D2' | 'D3' | 'NAIA' | 'JUCO';
+  conference: string;
+  location: string;
+  state: string;
+  sport: string;
+  scholarships: number;
   contactInfo: {
-    headCoach: string
-    email: string
-    phone: string
-    recruitingCoordinator?: string
-  }
+    headCoach: string;
+    email: string;
+    phone: string;
+    recruitingCoordinator?: string;
+  };
   requirements: {
-    minGPA: number
-    minSAT?: number
-    minACT?: number
-    coreCredits: number
-  }
-  visited: boolean
-  interested: boolean
-  contacted: boolean
-  lastContact?: Date
+    minGPA: number;
+    minSAT?: number;
+    minACT?: number;
+    coreCredits: number;
+  };
+  visited: boolean;
+  interested: boolean;
+  contacted: boolean;
+  lastContact?: Date;
 }
 
 interface RecruitmentProfile {
-  id: string
-  athleteId: string
-  sport: string
-  position: string
-  garScore: number
+  id: string;
+  athleteId: string;
+  sport: string;
+  position: string;
+  garScore: number;
   academicInfo: {
-    gpa: number
-    sat?: number
-    act?: number
-    coreCredits: number
-  }
+    gpa: number;
+    sat?: number;
+    act?: number;
+    coreCredits: number;
+  };
   athleticStats: {
-    height: string
-    weight: string
-    stats: { [key: string]: any }
-  }
-  highlights: string[]
-  timeline: RecruitmentEvent[]
-  ncaaEligible: boolean
-  targetSchools: string[]
+    height: string;
+    weight: string;
+    stats: { [key: string]: any };
+  };
+  highlights: string[];
+  timeline: RecruitmentEvent[];
+  ncaaEligible: boolean;
+  targetSchools: string[];
 }
 
 interface RecruitmentEvent {
-  id: string
-  type: 'contact' | 'visit' | 'offer' | 'commitment' | 'rejection' | 'interest'
-  schoolId: string
-  schoolName: string
-  date: Date
-  details: string
-  followUpNeeded: boolean
-  nextAction?: string
-  nextActionDate?: Date
+  id: string;
+  type: 'contact' | 'visit' | 'offer' | 'commitment' | 'rejection' | 'interest';
+  schoolId: string;
+  schoolName: string;
+  date: Date;
+  details: string;
+  followUpNeeded: boolean;
+  nextAction?: string;
+  nextActionDate?: Date;
 }
 
 export function AdvancedRecruitmentTools() {
-  const [activeTab, setActiveTab] = useState('schools')
-  const [schools, setSchools] = useState<School[]>([])
-  const [profile, setProfile] = useState<RecruitmentProfile | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
+  const [activeTab, setActiveTab] = useState('schools');
+  const [schools, setSchools] = useState<School[]>([]);
+  const [profile, setProfile] = useState<RecruitmentProfile | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({
     division: 'all',
     state: 'all',
     minScholarships: 0,
     maxGPA: 4.0,
     visited: false,
-    interested: false
-  })
-  const [loading, setLoading] = useState(true)
+    interested: false,
+  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchRecruitmentData()
-  }, [])
+    fetchRecruitmentData();
+  }, []);
 
   const fetchRecruitmentData = async () => {
     try {
       const [schoolsResponse, profileResponse] = await Promise.all([
         fetch('/api/recruitment/schools'),
-        fetch('/api/recruitment/profile')
-      ])
+        fetch('/api/recruitment/profile'),
+      ]);
 
       if (schoolsResponse.ok) {
-        const schoolsData = await schoolsResponse.json()
-        setSchools(schoolsData.schools)
+        const schoolsData = await schoolsResponse.json();
+        setSchools(schoolsData.schools);
       }
 
       if (profileResponse.ok) {
-        const profileData = await profileResponse.json()
-        setProfile(profileData.profile)
+        const profileData = await profileResponse.json();
+        setProfile(profileData.profile);
       }
     } catch (error) {
-      console.error('Failed to fetch recruitment data:', error)
+      console.error('Failed to fetch recruitment data:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const contactSchool = async (schoolId: string) => {
     try {
       const response = await fetch(`/api/recruitment/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ schoolId })
-      })
+        body: JSON.stringify({ schoolId }),
+      });
 
       if (response.ok) {
-        await fetchRecruitmentData()
+        await fetchRecruitmentData();
       }
     } catch (error) {
-      console.error('Failed to contact school:', error)
+      console.error('Failed to contact school:', error);
     }
-  }
+  };
 
   const generatePortfolio = async () => {
     try {
       const response = await fetch('/api/recruitment/portfolio', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      })
+        headers: { 'Content-Type': 'application/json' },
+      });
 
       if (response.ok) {
-        const blob = await response.blob()
-        const url = window.URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = 'athletic-portfolio.pdf'
-        a.click()
-        window.URL.revokeObjectURL(url)
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'athletic-portfolio.pdf';
+        a.click();
+        window.URL.revokeObjectURL(url);
       }
     } catch (error) {
-      console.error('Failed to generate portfolio:', error)
+      console.error('Failed to generate portfolio:', error);
     }
-  }
+  };
 
-  const filteredSchools = schools.filter(school => {
-    const matchesSearch = school.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         school.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         school.conference.toLowerCase().includes(searchQuery.toLowerCase())
-    
-    const matchesFilters = (filters.division === 'all' || school.division === filters.division) &&
-                          (filters.state === 'all' || school.state === filters.state) &&
-                          school.scholarships >= filters.minScholarships &&
-                          school.requirements.minGPA <= filters.maxGPA &&
-                          (!filters.visited || school.visited) &&
-                          (!filters.interested || school.interested)
+  const filteredSchools = schools.filter((school) => {
+    const matchesSearch =
+      school.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      school.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      school.conference.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesSearch && matchesFilters
-  })
+    const matchesFilters =
+      (filters.division === 'all' || school.division === filters.division) &&
+      (filters.state === 'all' || school.state === filters.state) &&
+      school.scholarships >= filters.minScholarships &&
+      school.requirements.minGPA <= filters.maxGPA &&
+      (!filters.visited || school.visited) &&
+      (!filters.interested || school.interested);
+
+    return matchesSearch && matchesFilters;
+  });
 
   const getDivisionColor = (division: string) => {
     switch (division) {
-      case 'D1': return 'bg-red-600'
-      case 'D2': return 'bg-blue-600'
-      case 'D3': return 'bg-green-600'
-      case 'NAIA': return 'bg-purple-600'
-      case 'JUCO': return 'bg-orange-600'
-      default: return 'bg-gray-600'
+      case 'D1':
+        return 'bg-red-600';
+      case 'D2':
+        return 'bg-blue-600';
+      case 'D3':
+        return 'bg-green-600';
+      case 'NAIA':
+        return 'bg-purple-600';
+      case 'JUCO':
+        return 'bg-orange-600';
+      default:
+        return 'bg-gray-600';
     }
-  }
+  };
 
   const renderSchoolSearch = () => (
     <div className="space-y-6">
@@ -186,14 +207,16 @@ export function AdvancedRecruitmentTools() {
             />
           </div>
           <button
-            onClick={() => setFilters({
-              division: 'all',
-              state: 'all',
-              minScholarships: 0,
-              maxGPA: 4.0,
-              visited: false,
-              interested: false
-            })}
+            onClick={() =>
+              setFilters({
+                division: 'all',
+                state: 'all',
+                minScholarships: 0,
+                maxGPA: 4.0,
+                visited: false,
+                interested: false,
+              })
+            }
             className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg transition-colors"
           >
             Clear Filters
@@ -203,7 +226,7 @@ export function AdvancedRecruitmentTools() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <select
             value={filters.division}
-            onChange={(e) => setFilters(prev => ({ ...prev, division: e.target.value }))}
+            onChange={(e) => setFilters((prev) => ({ ...prev, division: e.target.value }))}
             className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white"
           >
             <option value="all">All Divisions</option>
@@ -216,7 +239,7 @@ export function AdvancedRecruitmentTools() {
 
           <select
             value={filters.state}
-            onChange={(e) => setFilters(prev => ({ ...prev, state: e.target.value }))}
+            onChange={(e) => setFilters((prev) => ({ ...prev, state: e.target.value }))}
             className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white"
           >
             <option value="all">All States</option>
@@ -230,7 +253,9 @@ export function AdvancedRecruitmentTools() {
           <input
             type="number"
             value={filters.minScholarships}
-            onChange={(e) => setFilters(prev => ({ ...prev, minScholarships: parseInt(e.target.value) }))}
+            onChange={(e) =>
+              setFilters((prev) => ({ ...prev, minScholarships: parseInt(e.target.value) }))
+            }
             placeholder="Min Scholarships"
             className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white"
           />
@@ -239,7 +264,9 @@ export function AdvancedRecruitmentTools() {
             type="number"
             step="0.1"
             value={filters.maxGPA}
-            onChange={(e) => setFilters(prev => ({ ...prev, maxGPA: parseFloat(e.target.value) }))}
+            onChange={(e) =>
+              setFilters((prev) => ({ ...prev, maxGPA: parseFloat(e.target.value) }))
+            }
             placeholder="Max GPA Requirement"
             className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white"
           />
@@ -257,12 +284,12 @@ export function AdvancedRecruitmentTools() {
                 <p className="text-slate-400 text-sm">{school.conference}</p>
               </div>
               <div className="flex items-center gap-2">
-                <span className={`px-2 py-1 rounded text-xs text-white ${getDivisionColor(school.division)}`}>
+                <span
+                  className={`px-2 py-1 rounded text-xs text-white ${getDivisionColor(school.division)}`}
+                >
                   {school.division}
                 </span>
-                {school.interested && (
-                  <Star className="w-4 h-4 text-yellow-500" />
-                )}
+                {school.interested && <Star className="w-4 h-4 text-yellow-500" />}
               </div>
             </div>
 
@@ -323,7 +350,7 @@ export function AdvancedRecruitmentTools() {
         ))}
       </div>
     </div>
-  )
+  );
 
   const renderProfile = () => (
     <div className="space-y-6">
@@ -424,7 +451,7 @@ export function AdvancedRecruitmentTools() {
         </div>
       </div>
     </div>
-  )
+  );
 
   const renderTimeline = () => (
     <div className="space-y-6">
@@ -443,12 +470,17 @@ export function AdvancedRecruitmentTools() {
                 </div>
                 <p className="text-sm text-slate-400 mb-2">{event.details}</p>
                 <div className="flex items-center gap-2">
-                  <span className={`px-2 py-1 rounded text-xs ${
-                    event.type === 'offer' ? 'bg-green-600 text-white' :
-                    event.type === 'contact' ? 'bg-blue-600 text-white' :
-                    event.type === 'visit' ? 'bg-purple-600 text-white' :
-                    'bg-slate-600 text-white'
-                  }`}>
+                  <span
+                    className={`px-2 py-1 rounded text-xs ${
+                      event.type === 'offer'
+                        ? 'bg-green-600 text-white'
+                        : event.type === 'contact'
+                          ? 'bg-blue-600 text-white'
+                          : event.type === 'visit'
+                            ? 'bg-purple-600 text-white'
+                            : 'bg-slate-600 text-white'
+                    }`}
+                  >
                     {event.type}
                   </span>
                   {event.followUpNeeded && (
@@ -463,14 +495,14 @@ export function AdvancedRecruitmentTools() {
         </div>
       </div>
     </div>
-  )
+  );
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -490,7 +522,7 @@ export function AdvancedRecruitmentTools() {
             {[
               { id: 'schools', label: 'School Search', icon: Search },
               { id: 'profile', label: 'My Profile', icon: Users },
-              { id: 'timeline', label: 'Timeline', icon: Calendar }
+              { id: 'timeline', label: 'Timeline', icon: Calendar },
             ].map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
@@ -516,5 +548,5 @@ export function AdvancedRecruitmentTools() {
         {activeTab === 'timeline' && renderTimeline()}
       </div>
     </div>
-  )
+  );
 }

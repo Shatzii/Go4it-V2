@@ -1,6 +1,6 @@
 /**
  * Curriculum API Routes
- * 
+ *
  * This module provides API routes for curriculum management:
  * - Curriculum Modules
  * - Learning Missions
@@ -26,7 +26,7 @@ export function setupCurriculumRoutes(router: express.Router, storage: IStorage)
     resources: z.array(z.any()).optional().default([]),
     active: z.boolean().optional().default(true),
     order: z.number().optional().default(0),
-    metadata: z.record(z.unknown()).optional()
+    metadata: z.record(z.unknown()).optional(),
   });
 
   const learningMissionSchema = z.object({
@@ -41,7 +41,7 @@ export function setupCurriculumRoutes(router: express.Router, storage: IStorage)
     objectives: z.array(z.string()),
     steps: z.array(z.any()).optional().default([]),
     active: z.boolean().optional().default(true),
-    metadata: z.record(z.unknown()).optional()
+    metadata: z.record(z.unknown()).optional(),
   });
 
   // Curriculum Modules
@@ -52,17 +52,17 @@ export function setupCurriculumRoutes(router: express.Router, storage: IStorage)
 
       if (schoolId) {
         const id = parseInt(schoolId as string);
-        modules = modules.filter(module => module.schoolId === id);
+        modules = modules.filter((module) => module.schoolId === id);
       }
-      
+
       if (schoolType) {
-        modules = modules.filter(module => module.schoolType === schoolType);
+        modules = modules.filter((module) => module.schoolType === schoolType);
       }
-      
+
       if (gradeLevel) {
-        modules = modules.filter(module => module.gradeLevel === gradeLevel);
+        modules = modules.filter((module) => module.gradeLevel === gradeLevel);
       }
-      
+
       res.json(modules);
     } catch (error) {
       console.error('Error fetching curriculum modules:', error);
@@ -74,11 +74,11 @@ export function setupCurriculumRoutes(router: express.Router, storage: IStorage)
     try {
       const id = parseInt(req.params.id);
       const module = await storage.getCurriculumModuleById(id);
-      
+
       if (!module) {
         return res.status(404).json({ error: 'Curriculum module not found' });
       }
-      
+
       res.json(module);
     } catch (error) {
       console.error('Error fetching curriculum module:', error);
@@ -104,11 +104,11 @@ export function setupCurriculumRoutes(router: express.Router, storage: IStorage)
     try {
       const id = parseInt(req.params.id);
       const module = await storage.getCurriculumModuleById(id);
-      
+
       if (!module) {
         return res.status(404).json({ error: 'Curriculum module not found' });
       }
-      
+
       const data = curriculumModuleSchema.partial().parse(req.body);
       const updatedModule = await storage.updateCurriculumModule(id, data);
       res.json(updatedModule);
@@ -125,11 +125,11 @@ export function setupCurriculumRoutes(router: express.Router, storage: IStorage)
     try {
       const id = parseInt(req.params.id);
       const module = await storage.getCurriculumModuleById(id);
-      
+
       if (!module) {
         return res.status(404).json({ error: 'Curriculum module not found' });
       }
-      
+
       await storage.deleteCurriculumModule(id);
       res.status(204).end();
     } catch (error) {
@@ -146,13 +146,13 @@ export function setupCurriculumRoutes(router: express.Router, storage: IStorage)
 
       if (moduleId) {
         const id = parseInt(moduleId as string);
-        missions = missions.filter(mission => mission.moduleId === id);
+        missions = missions.filter((mission) => mission.moduleId === id);
       }
-      
+
       if (schoolType) {
-        missions = missions.filter(mission => mission.schoolType === schoolType);
+        missions = missions.filter((mission) => mission.schoolType === schoolType);
       }
-      
+
       res.json(missions);
     } catch (error) {
       console.error('Error fetching learning missions:', error);
@@ -164,11 +164,11 @@ export function setupCurriculumRoutes(router: express.Router, storage: IStorage)
     try {
       const id = parseInt(req.params.id);
       const mission = await storage.getLearningMissionById(id);
-      
+
       if (!mission) {
         return res.status(404).json({ error: 'Learning mission not found' });
       }
-      
+
       res.json(mission);
     } catch (error) {
       console.error('Error fetching learning mission:', error);
@@ -194,11 +194,11 @@ export function setupCurriculumRoutes(router: express.Router, storage: IStorage)
     try {
       const id = parseInt(req.params.id);
       const mission = await storage.getLearningMissionById(id);
-      
+
       if (!mission) {
         return res.status(404).json({ error: 'Learning mission not found' });
       }
-      
+
       const data = learningMissionSchema.partial().parse(req.body);
       const updatedMission = await storage.updateLearningMission(id, data);
       res.json(updatedMission);
@@ -215,11 +215,11 @@ export function setupCurriculumRoutes(router: express.Router, storage: IStorage)
     try {
       const id = parseInt(req.params.id);
       const mission = await storage.getLearningMissionById(id);
-      
+
       if (!mission) {
         return res.status(404).json({ error: 'Learning mission not found' });
       }
-      
+
       await storage.deleteLearningMission(id);
       res.status(204).end();
     } catch (error) {

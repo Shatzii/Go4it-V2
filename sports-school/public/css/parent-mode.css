@@ -67,7 +67,7 @@
 }
 
 .parent-mode .i18n-original::before {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   top: 0;
@@ -85,7 +85,7 @@
 }
 
 .parent-mode .i18n-translation::before {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   top: 0;

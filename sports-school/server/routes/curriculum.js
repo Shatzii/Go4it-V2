@@ -1,6 +1,6 @@
 /**
  * Comprehensive Curriculum API Routes
- * 
+ *
  * These routes handle curriculum generation for all types of curricula:
  * - Neurodivergent Education (Alabama standards-aligned)
  * - Law Education (UAE Bar Exam preparation)
@@ -8,15 +8,15 @@
  */
 
 import express from 'express';
-import { 
-  generateComprehensiveCurriculum, 
+import {
+  generateComprehensiveCurriculum,
   getOptions,
   clearCache,
   SUBJECTS,
   GRADE_LEVELS,
   STANDARDS,
   CURRICULUM_COMPONENTS,
-  NEURODIVERGENT_ADAPTATIONS
+  NEURODIVERGENT_ADAPTATIONS,
 } from '../../services/comprehensive-curriculum-service.js';
 
 const router = express.Router();
@@ -31,10 +31,10 @@ router.get('/options', (req, res) => {
     res.json({ success: true, options });
   } catch (error) {
     console.error('Error fetching curriculum options:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to fetch curriculum options', 
-      details: error.message 
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch curriculum options',
+      details: error.message,
     });
   }
 });
@@ -46,57 +46,57 @@ router.get('/options', (req, res) => {
 router.post('/generate', async (req, res) => {
   try {
     const params = req.body;
-    
+
     // Validate required parameters
     if (!params.domain) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Missing required parameter: domain'
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required parameter: domain',
       });
     }
-    
+
     if (!params.subject) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Missing required parameter: subject'
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required parameter: subject',
       });
     }
-    
+
     if (!params.level) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Missing required parameter: level'
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required parameter: level',
       });
     }
-    
+
     // Set API to use (default to anthropic if not specified)
     params.api = params.api || 'anthropic';
-    
+
     // Ensure API keys are available
     if (params.api === 'anthropic' && !process.env.ANTHROPIC_API_KEY) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Anthropic API key not configured'
+      return res.status(400).json({
+        success: false,
+        error: 'Anthropic API key not configured',
       });
     }
-    
+
     if (params.api === 'perplexity' && !process.env.PERPLEXITY_API_KEY) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Perplexity API key not configured'
+      return res.status(400).json({
+        success: false,
+        error: 'Perplexity API key not configured',
       });
     }
-    
+
     // Generate the curriculum
     const result = await generateComprehensiveCurriculum(params);
-    
+
     res.json({ success: true, result });
   } catch (error) {
     console.error('Error generating curriculum:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to generate curriculum', 
-      details: error.message 
+    res.status(500).json({
+      success: false,
+      error: 'Failed to generate curriculum',
+      details: error.message,
     });
   }
 });
@@ -111,10 +111,10 @@ router.post('/clear-cache', (req, res) => {
     res.json({ success: true, message: 'Curriculum cache cleared successfully' });
   } catch (error) {
     console.error('Error clearing curriculum cache:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to clear curriculum cache', 
-      details: error.message 
+    res.status(500).json({
+      success: false,
+      error: 'Failed to clear curriculum cache',
+      details: error.message,
     });
   }
 });
@@ -127,14 +127,14 @@ router.post('/validate', (req, res) => {
   try {
     const params = req.body;
     const errors = [];
-    
+
     // Validate domain
     if (!params.domain) {
       errors.push('Missing required parameter: domain');
     } else if (!['neurodivergent', 'law', 'language'].includes(params.domain)) {
       errors.push(`Invalid domain: ${params.domain}`);
     }
-    
+
     // Validate subject based on domain
     if (!params.subject) {
       errors.push('Missing required parameter: subject');
@@ -144,12 +144,12 @@ router.post('/validate', (req, res) => {
         errors.push(`Invalid subject for domain ${params.domain}: ${params.subject}`);
       }
     }
-    
+
     // Validate level
     if (!params.level) {
       errors.push('Missing required parameter: level');
     }
-    
+
     // Validate standards
     if (params.standards && params.domain) {
       const validStandards = Object.keys(STANDARDS[params.domain] || {});
@@ -157,7 +157,7 @@ router.post('/validate', (req, res) => {
         errors.push(`Invalid standards for domain ${params.domain}: ${params.standards}`);
       }
     }
-    
+
     // Validate adaptation for neurodivergent domain
     if (params.domain === 'neurodivergent' && params.adaptation) {
       const validAdaptations = Object.keys(NEURODIVERGENT_ADAPTATIONS);
@@ -165,17 +165,17 @@ router.post('/validate', (req, res) => {
         errors.push(`Invalid adaptation: ${params.adaptation}`);
       }
     }
-    
+
     // Validate components
     if (params.components && Array.isArray(params.components)) {
       const validComponents = Object.keys(CURRICULUM_COMPONENTS);
-      params.components.forEach(component => {
+      params.components.forEach((component) => {
         if (!validComponents.includes(component)) {
           errors.push(`Invalid component: ${component}`);
         }
       });
     }
-    
+
     // Validate years
     if (params.years) {
       const years = parseInt(params.years);
@@ -183,26 +183,26 @@ router.post('/validate', (req, res) => {
         errors.push('Years must be a number between 1 and 4');
       }
     }
-    
+
     // Return validation result
     if (errors.length > 0) {
-      res.json({ 
-        success: false, 
-        valid: false, 
-        errors 
+      res.json({
+        success: false,
+        valid: false,
+        errors,
       });
     } else {
-      res.json({ 
-        success: true, 
-        valid: true 
+      res.json({
+        success: true,
+        valid: true,
       });
     }
   } catch (error) {
     console.error('Error validating curriculum parameters:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to validate curriculum parameters', 
-      details: error.message 
+    res.status(500).json({
+      success: false,
+      error: 'Failed to validate curriculum parameters',
+      details: error.message,
     });
   }
 });

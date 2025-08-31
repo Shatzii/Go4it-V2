@@ -6,13 +6,32 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  TrendingUp, BarChart3, Target, Zap, Timer, 
-  Activity, Award, Users, Calendar, ArrowUp, 
-  ArrowDown, AlertCircle, CheckCircle, Star,
-  PlayCircle, PauseCircle, RotateCcw
+import {
+  TrendingUp,
+  BarChart3,
+  Target,
+  Zap,
+  Timer,
+  Activity,
+  Award,
+  Users,
+  Calendar,
+  ArrowUp,
+  ArrowDown,
+  AlertCircle,
+  CheckCircle,
+  Star,
+  PlayCircle,
+  PauseCircle,
+  RotateCcw,
 } from 'lucide-react';
 
 interface PerformanceMetrics {
@@ -81,7 +100,7 @@ export default function PerformanceAnalytics() {
         unit: 'seconds',
         previous: 4.48,
         target: 4.35,
-        garScore: 8.7
+        garScore: 8.7,
       },
       {
         id: 'strength-1',
@@ -92,7 +111,7 @@ export default function PerformanceAnalytics() {
         unit: 'lbs',
         previous: 305,
         target: 335,
-        garScore: 8.4
+        garScore: 8.4,
       },
       {
         id: 'agility-1',
@@ -103,7 +122,7 @@ export default function PerformanceAnalytics() {
         unit: 'seconds',
         previous: 6.92,
         target: 6.75,
-        garScore: 8.1
+        garScore: 8.1,
       },
       {
         id: 'endurance-1',
@@ -114,7 +133,7 @@ export default function PerformanceAnalytics() {
         unit: 'minutes',
         previous: 12.8,
         target: 12.0,
-        garScore: 7.9
+        garScore: 7.9,
       },
       {
         id: 'power-1',
@@ -125,8 +144,8 @@ export default function PerformanceAnalytics() {
         unit: 'inches',
         previous: 37.2,
         target: 40.0,
-        garScore: 8.6
-      }
+        garScore: 8.6,
+      },
     ];
     setPerformanceData(mockMetrics);
   };
@@ -136,7 +155,7 @@ export default function PerformanceAnalytics() {
       { week: 'Week 1', acute: 850, chronic: 800, ratio: 1.06, injuryRisk: 'low' },
       { week: 'Week 2', acute: 920, chronic: 820, ratio: 1.12, injuryRisk: 'low' },
       { week: 'Week 3', acute: 1050, chronic: 860, ratio: 1.22, injuryRisk: 'moderate' },
-      { week: 'Week 4', acute: 980, chronic: 890, ratio: 1.10, injuryRisk: 'low' },
+      { week: 'Week 4', acute: 980, chronic: 890, ratio: 1.1, injuryRisk: 'low' },
       { week: 'Week 5', acute: 1150, chronic: 920, ratio: 1.25, injuryRisk: 'moderate' },
       { week: 'Week 6', acute: 1280, chronic: 950, ratio: 1.35, injuryRisk: 'high' },
     ];
@@ -145,11 +164,46 @@ export default function PerformanceAnalytics() {
 
   const loadSkillProgression = () => {
     const skills: SkillProgression[] = [
-      { skill: 'Sprint Technique', current: 85, target: 92, improvement: 7, timeframe: '8 weeks', priority: 'high' },
-      { skill: 'Route Running', current: 78, target: 88, improvement: 10, timeframe: '12 weeks', priority: 'high' },
-      { skill: 'Ball Security', current: 91, target: 95, improvement: 4, timeframe: '6 weeks', priority: 'medium' },
-      { skill: 'Blocking Technique', current: 72, target: 82, improvement: 10, timeframe: '10 weeks', priority: 'medium' },
-      { skill: 'Footwork', current: 88, target: 93, improvement: 5, timeframe: '8 weeks', priority: 'low' }
+      {
+        skill: 'Sprint Technique',
+        current: 85,
+        target: 92,
+        improvement: 7,
+        timeframe: '8 weeks',
+        priority: 'high',
+      },
+      {
+        skill: 'Route Running',
+        current: 78,
+        target: 88,
+        improvement: 10,
+        timeframe: '12 weeks',
+        priority: 'high',
+      },
+      {
+        skill: 'Ball Security',
+        current: 91,
+        target: 95,
+        improvement: 4,
+        timeframe: '6 weeks',
+        priority: 'medium',
+      },
+      {
+        skill: 'Blocking Technique',
+        current: 72,
+        target: 82,
+        improvement: 10,
+        timeframe: '10 weeks',
+        priority: 'medium',
+      },
+      {
+        skill: 'Footwork',
+        current: 88,
+        target: 93,
+        improvement: 5,
+        timeframe: '8 weeks',
+        priority: 'low',
+      },
     ];
     setSkillProgression(skills);
   };
@@ -163,26 +217,26 @@ export default function PerformanceAnalytics() {
         garScore: 9.1,
         ranking: 15,
         strengths: ['Speed', 'Route Running', 'Hands'],
-        improvements: ['Blocking', 'Physical Play']
+        improvements: ['Blocking', 'Physical Play'],
       },
       {
         athlete: 'Tyler Williams',
-        sport: 'Football', 
+        sport: 'Football',
         position: 'Wide Receiver',
         garScore: 8.9,
         ranking: 22,
         strengths: ['Size', 'Contested Catches', 'Red Zone'],
-        improvements: ['Speed', 'Separation']
+        improvements: ['Speed', 'Separation'],
       },
       {
         athlete: 'Devon Smith',
         sport: 'Football',
-        position: 'Wide Receiver', 
+        position: 'Wide Receiver',
         garScore: 8.7,
         ranking: 28,
         strengths: ['Agility', 'YAC', 'Slot Play'],
-        improvements: ['Deep Ball', 'Consistency']
-      }
+        improvements: ['Deep Ball', 'Consistency'],
+      },
     ];
     setCompetitors(mockCompetitors);
   };
@@ -190,12 +244,16 @@ export default function PerformanceAnalytics() {
   const getChangeIndicator = (current: number, previous: number, isLowerBetter = false) => {
     const improved = isLowerBetter ? current < previous : current > previous;
     const change = ((Math.abs(current - previous) / previous) * 100).toFixed(1);
-    
+
     return {
       improved,
       change: parseFloat(change),
-      icon: improved ? <ArrowUp className="w-4 h-4 text-green-400" /> : <ArrowDown className="w-4 h-4 text-red-400" />,
-      color: improved ? 'text-green-400' : 'text-red-400'
+      icon: improved ? (
+        <ArrowUp className="w-4 h-4 text-green-400" />
+      ) : (
+        <ArrowDown className="w-4 h-4 text-red-400" />
+      ),
+      color: improved ? 'text-green-400' : 'text-red-400',
     };
   };
 
@@ -207,19 +265,27 @@ export default function PerformanceAnalytics() {
 
   const getRiskColor = (risk: string) => {
     switch (risk) {
-      case 'low': return 'text-green-400';
-      case 'moderate': return 'text-yellow-400';
-      case 'high': return 'text-red-400';
-      default: return 'text-gray-400';
+      case 'low':
+        return 'text-green-400';
+      case 'moderate':
+        return 'text-yellow-400';
+      case 'high':
+        return 'text-red-400';
+      default:
+        return 'text-gray-400';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-600';
-      case 'medium': return 'bg-yellow-600';
-      case 'low': return 'bg-green-600';
-      default: return 'bg-gray-600';
+      case 'high':
+        return 'bg-red-600';
+      case 'medium':
+        return 'bg-yellow-600';
+      case 'low':
+        return 'bg-green-600';
+      default:
+        return 'bg-gray-600';
     }
   };
 
@@ -408,23 +474,26 @@ export default function PerformanceAnalytics() {
                   <Alert className="bg-green-900/20 border-green-700">
                     <CheckCircle className="w-4 h-4" />
                     <AlertDescription className="text-green-400">
-                      <strong>New Personal Best!</strong><br />
+                      <strong>New Personal Best!</strong>
+                      <br />
                       40-yard dash: 4.42s (-0.06s improvement)
                     </AlertDescription>
                   </Alert>
-                  
+
                   <Alert className="bg-blue-900/20 border-blue-700">
                     <Star className="w-4 h-4" />
                     <AlertDescription className="text-blue-400">
-                      <strong>Skill Milestone</strong><br />
+                      <strong>Skill Milestone</strong>
+                      <br />
                       Route running technique reached 85%
                     </AlertDescription>
                   </Alert>
-                  
+
                   <Alert className="bg-purple-900/20 border-purple-700">
                     <TrendingUp className="w-4 h-4" />
                     <AlertDescription className="text-purple-400">
-                      <strong>Consistency Streak</strong><br />
+                      <strong>Consistency Streak</strong>
+                      <br />
                       14 days of performance gains
                     </AlertDescription>
                   </Alert>
@@ -459,9 +528,7 @@ export default function PerformanceAnalytics() {
                           </div>
                           <div className="flex items-center justify-center gap-2 text-sm">
                             {change.icon}
-                            <span className={change.color}>
-                              {change.change}% change
-                            </span>
+                            <span className={change.color}>{change.change}% change</span>
                           </div>
                         </div>
 
@@ -472,15 +539,16 @@ export default function PerformanceAnalytics() {
                           </div>
                           <Progress value={progress} className="mb-2" />
                           <div className="flex justify-between text-xs text-slate-400">
-                            <span>Previous: {metric.previous} {metric.unit}</span>
-                            <span>Target: {metric.target} {metric.unit}</span>
+                            <span>
+                              Previous: {metric.previous} {metric.unit}
+                            </span>
+                            <span>
+                              Target: {metric.target} {metric.unit}
+                            </span>
                           </div>
                         </div>
 
-                        <Button 
-                          size="sm" 
-                          className="w-full bg-blue-600 hover:bg-blue-700"
-                        >
+                        <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
                           View Detailed Analysis
                         </Button>
                       </div>
@@ -503,14 +571,14 @@ export default function PerformanceAnalytics() {
                     <div key={index} className="bg-slate-700 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="font-semibold text-white">{load.week}</h4>
-                        <Badge 
-                          variant="outline" 
+                        <Badge
+                          variant="outline"
                           className={`${getRiskColor(load.injuryRisk)} border-current`}
                         >
                           {load.injuryRisk.toUpperCase()} RISK
                         </Badge>
                       </div>
-                      
+
                       <div className="grid grid-cols-3 gap-4 mb-3">
                         <div className="text-center">
                           <div className="text-sm text-slate-400">Acute Load</div>
@@ -528,10 +596,7 @@ export default function PerformanceAnalytics() {
                         </div>
                       </div>
 
-                      <Progress 
-                        value={Math.min((load.ratio / 1.5) * 100, 100)} 
-                        className="mb-2"
-                      />
+                      <Progress value={Math.min((load.ratio / 1.5) * 100, 100)} className="mb-2" />
                       <div className="text-xs text-slate-400">
                         Optimal ratio: 0.8-1.3 | Current: {load.ratio.toFixed(2)}
                       </div>
@@ -544,8 +609,9 @@ export default function PerformanceAnalytics() {
             <Alert className="bg-blue-900/20 border-blue-700">
               <AlertCircle className="w-4 h-4" />
               <AlertDescription className="text-blue-400">
-                <strong>Training Load Insights:</strong> Your acute load has increased significantly this week. 
-                Consider implementing a recovery day to prevent overreaching and reduce injury risk.
+                <strong>Training Load Insights:</strong> Your acute load has increased significantly
+                this week. Consider implementing a recovery day to prevent overreaching and reduce
+                injury risk.
               </AlertDescription>
             </Alert>
           </TabsContent>
@@ -558,9 +624,7 @@ export default function PerformanceAnalytics() {
                   <CardHeader>
                     <CardTitle className="text-white flex items-center justify-between">
                       <span>{skill.skill}</span>
-                      <Badge 
-                        className={getPriorityColor(skill.priority)}
-                      >
+                      <Badge className={getPriorityColor(skill.priority)}>
                         {skill.priority.toUpperCase()}
                       </Badge>
                     </CardTitle>
@@ -619,9 +683,7 @@ export default function PerformanceAnalytics() {
                           <div className="text-lg font-bold text-yellow-400">
                             GAR: {competitor.garScore}
                           </div>
-                          <div className="text-sm text-slate-400">
-                            Rank #{competitor.ranking}
-                          </div>
+                          <div className="text-sm text-slate-400">Rank #{competitor.ranking}</div>
                         </div>
                       </div>
 
@@ -630,17 +692,27 @@ export default function PerformanceAnalytics() {
                           <h5 className="text-sm font-medium text-green-400 mb-2">Strengths</h5>
                           <div className="space-y-1">
                             {competitor.strengths.map((strength, i) => (
-                              <Badge key={i} variant="outline" className="text-green-400 border-green-700 mr-2">
+                              <Badge
+                                key={i}
+                                variant="outline"
+                                className="text-green-400 border-green-700 mr-2"
+                              >
                                 {strength}
                               </Badge>
                             ))}
                           </div>
                         </div>
                         <div>
-                          <h5 className="text-sm font-medium text-red-400 mb-2">Areas to Improve</h5>
+                          <h5 className="text-sm font-medium text-red-400 mb-2">
+                            Areas to Improve
+                          </h5>
                           <div className="space-y-1">
                             {competitor.improvements.map((improvement, i) => (
-                              <Badge key={i} variant="outline" className="text-red-400 border-red-700 mr-2">
+                              <Badge
+                                key={i}
+                                variant="outline"
+                                className="text-red-400 border-red-700 mr-2"
+                              >
                                 {improvement}
                               </Badge>
                             ))}
@@ -656,8 +728,9 @@ export default function PerformanceAnalytics() {
             <Alert className="bg-purple-900/20 border-purple-700">
               <Target className="w-4 h-4" />
               <AlertDescription className="text-purple-400">
-                <strong>Competitive Edge:</strong> Focus on route running and speed training to move ahead of 
-                Marcus Johnson in rankings. Your blocking technique gives you an advantage over Tyler Williams.
+                <strong>Competitive Edge:</strong> Focus on route running and speed training to move
+                ahead of Marcus Johnson in rankings. Your blocking technique gives you an advantage
+                over Tyler Williams.
               </AlertDescription>
             </Alert>
           </TabsContent>

@@ -4,23 +4,14 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Trophy, 
-  Star, 
-  CheckCircle, 
-  Calendar, 
-  MapPin, 
-  Download,
-  Share2,
-  Crown
-} from 'lucide-react';
+import { Trophy, Star, CheckCircle, Calendar, MapPin, Download, Share2, Crown } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function VerifiedSuccessPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [memberNumber, setMemberNumber] = useState<number>(0);
-  
+
   useEffect(() => {
     // Generate member number (simulated - in production, this would come from the backend)
     const randomMemberNumber = Math.floor(Math.random() * 100) + 1;
@@ -32,12 +23,12 @@ export default function VerifiedSuccessPage() {
 
   const handleShareSuccess = () => {
     const shareText = `🔥 I'm one of The Verified 100! Lifetime member #${memberNumber} of Go4It Sports. Zero monthly fees, lifetime GAR Score access, and early access to all features. #Verified100 #LifetimeAthlete #GARScoreElite`;
-    
+
     if (navigator.share) {
       navigator.share({
         title: 'The Verified 100 - Lifetime Member',
         text: shareText,
-        url: window.location.origin + '/lifetime'
+        url: window.location.origin + '/lifetime',
       });
     } else {
       navigator.clipboard.writeText(shareText);
@@ -58,15 +49,15 @@ export default function VerifiedSuccessPage() {
               PAYMENT SUCCESSFUL
             </Badge>
           </div>
-          
+
           <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
             WELCOME TO THE VERIFIED 100
           </h1>
-          
+
           <p className="text-xl text-slate-300 mb-6">
             You are now <strong>Lifetime Member #{memberNumber}</strong>
           </p>
-          
+
           <div className="flex items-center justify-center gap-2 mb-8">
             <CheckCircle className="w-6 h-6 text-green-400" />
             <span className="text-lg">Verified for Life • Never Pay Again</span>
@@ -143,24 +134,25 @@ export default function VerifiedSuccessPage() {
         {/* Action Buttons */}
         <div className="text-center space-y-4">
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
+            <Button
               onClick={() => router.push('/dashboard')}
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3"
             >
               Go to Dashboard
             </Button>
-            <Button 
+            <Button
               onClick={handleShareSuccess}
-              variant="outline" 
+              variant="outline"
               className="border-slate-600 text-slate-300 hover:text-white px-8 py-3"
             >
               <Share2 className="w-4 h-4 mr-2" />
               Share Success
             </Button>
           </div>
-          
+
           <p className="text-sm text-slate-400">
-            You will receive a confirmation email with event details and your digital membership badge.
+            You will receive a confirmation email with event details and your digital membership
+            badge.
           </p>
         </div>
 

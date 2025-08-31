@@ -1,797 +1,904 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ShotziOS | AI Language Learning Generator</title>
-  <!-- Tailwind CSS via CDN -->
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <!-- Custom style for neurodivergent-friendly design -->
-  <style>
-    :root {
-      --blue-primary: #1E40AF;
-      --blue-light: #3B82F6;
-      --blue-dark: #1E3A8A;
-      --black-bg: #111827;
-      --white-text: #F9FAFB;
-      --gray-border: #374151;
-    }
-    
-    body {
-      background-color: var(--black-bg);
-      color: var(--white-text);
-      font-family: 'Arial', sans-serif;
-    }
-    
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-    
-    .blue-gradient {
-      background: linear-gradient(135deg, var(--blue-primary), var(--blue-dark));
-    }
-    
-    .card {
-      background-color: #1F2937;
-      border: 1px solid var(--gray-border);
-      border-radius: 0.5rem;
-    }
-    
-    .btn-blue {
-      background-color: var(--blue-primary);
-      color: var(--white-text);
-      padding: 0.5rem 1rem;
-      border-radius: 0.375rem;
-      font-weight: 500;
-      transition: background-color 0.2s;
-    }
-    
-    .btn-blue:hover {
-      background-color: var(--blue-light);
-    }
-    
-    .btn-outline {
-      background-color: transparent;
-      border: 1px solid var(--blue-light);
-      color: var(--blue-light);
-      padding: 0.5rem 1rem;
-      border-radius: 0.375rem;
-      font-weight: 500;
-      transition: background-color 0.2s, color 0.2s;
-    }
-    
-    .btn-outline:hover {
-      background-color: var(--blue-light);
-      color: var(--white-text);
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-    }
-    
-    input, select, textarea {
-      width: 100%;
-      padding: 0.5rem;
-      border-radius: 0.375rem;
-      background-color: #374151;
-      border: 1px solid var(--gray-border);
-      color: var(--white-text);
-      margin-bottom: 1rem;
-    }
-    
-    .result-panel {
-      max-height: 70vh;
-      overflow-y: auto;
-      padding: 1rem;
-    }
-    
-    .loader {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid var(--blue-primary);
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      animation: spin 1s linear infinite;
-      margin: 1rem auto;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    .header-nav {
-      background-color: #0F172A;
-      border-bottom: 1px solid var(--gray-border);
-      padding: 0.5rem 1rem;
-    }
-    
-    .tab {
-      padding: 0.75rem 1.25rem;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      transition: border-color 0.2s;
-    }
-    
-    .tab.active {
-      border-bottom: 2px solid var(--blue-light);
-      font-weight: 600;
-    }
-    
-    .tab-panel {
-      display: none;
-    }
-    
-    .tab-panel.active {
-      display: block;
-    }
-    
-    .vocabulary-item {
-      margin-bottom: 1rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--gray-border);
-    }
-    
-    .vocabulary-term {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--blue-light);
-    }
-    
-    .dialogue-speaker {
-      font-weight: 600;
-      color: var(--blue-light);
-    }
-    
-    .cultural-section {
-      margin-bottom: 1.5rem;
-    }
-    
-    .cultural-title {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      color: var(--blue-light);
-    }
-    
-    .help-bubble {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      width: 60px;
-      height: 60px;
-      background-color: var(--blue-primary);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-      transition: transform 0.2s, background-color 0.2s;
-    }
-    
-    .help-bubble:hover {
-      transform: scale(1.1);
-      background-color: var(--blue-light);
-    }
-    
-    .help-content {
-      position: fixed;
-      bottom: 6rem;
-      right: 2rem;
-      width: 300px;
-      background-color: #1F2937;
-      border: 1px solid var(--gray-border);
-      border-radius: 0.5rem;
-      padding: 1rem;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-      display: none;
-      z-index: 1000;
-    }
-    
-    .help-content.active {
-      display: block;
-    }
-    
-    .help-close {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.5rem;
-      cursor: pointer;
-    }
-    
-    .sentinel-panel {
-      background-color: #0F172A;
-      border: 1px solid var(--blue-dark);
-      border-radius: 0.5rem;
-      padding: 1rem;
-    }
-    
-    .security-status {
-      display: flex;
-      align-items: center;
-      margin-bottom: 0.5rem;
-    }
-    
-    .status-indicator {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      margin-right: 0.5rem;
-    }
-    
-    .status-green {
-      background-color: #10B981;
-    }
-    
-    .status-yellow {
-      background-color: #F59E0B;
-    }
-    
-    .status-red {
-      background-color: #EF4444;
-    }
-  </style>
-</head>
-<body>
-  <!-- Security Status Bar (Sentinel 4.5) -->
-  <div class="w-full px-4 py-2 bg-blue-900 flex justify-between items-center text-xs">
-    <div class="flex items-center">
-      <span class="mr-2">🛡️ Sentinel 4.5:</span>
-      <div class="security-status">
-        <div class="status-indicator status-green"></div>
-        <span>System Secure</span>
-      </div>
-    </div>
-    <div class="flex space-x-4">
-      <div class="security-status">
-        <div class="status-indicator status-green"></div>
-        <span>Firewall Active</span>
-      </div>
-      <div class="security-status">
-        <div class="status-indicator status-green"></div>
-        <span>API Protection</span>
-      </div>
-      <div class="security-status">
-        <div class="status-indicator status-green"></div>
-        <span>Content Shield</span>
-      </div>
-    </div>
-  </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShotziOS | AI Language Learning Generator</title>
+    <!-- Tailwind CSS via CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom style for neurodivergent-friendly design -->
+    <style>
+      :root {
+        --blue-primary: #1e40af;
+        --blue-light: #3b82f6;
+        --blue-dark: #1e3a8a;
+        --black-bg: #111827;
+        --white-text: #f9fafb;
+        --gray-border: #374151;
+      }
 
-  <!-- Header with Navigation -->
-  <header class="header-nav">
-    <div class="flex justify-between items-center">
-      <div class="flex items-center">
-        <img src="/assets/images/shotzi-logo.png" alt="ShotziOS Logo" class="h-8 mr-2" onerror="this.src='/assets/images/placeholder-logo.png'">
-        <h1 class="text-xl font-bold">ShotziOS Language Learning</h1>
-      </div>
-      <nav>
-        <ul class="flex space-x-4">
-          <li><a href="/" class="text-blue-300 hover:text-white">Home</a></li>
-          <li><a href="/language-school.html" class="text-blue-300 hover:text-white">Language School</a></li>
-          <li><a href="/language-school-staff.html" class="text-blue-300 hover:text-white">Staff Portal</a></li>
-          <li><a href="/language-learning-ai.html" class="text-white font-bold">AI Generator</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+      body {
+        background-color: var(--black-bg);
+        color: var(--white-text);
+        font-family: 'Arial', sans-serif;
+      }
 
-  <div class="container mt-6">
-    <div class="blue-gradient p-6 rounded-lg mb-8">
-      <h1 class="text-3xl font-bold mb-2">AI-Powered Language Learning Generator</h1>
-      <p class="text-xl">Create customized language learning materials with Anthropic Claude AI</p>
-    </div>
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
 
-    <!-- Tools Navigation Tabs -->
-    <div class="mb-6">
-      <div class="flex border-b border-gray-700">
-        <div class="tab active" data-tab="vocabulary">Vocabulary Generator</div>
-        <div class="tab" data-tab="dialogue">Dialogue Creator</div>
-        <div class="tab" data-tab="grammar">Grammar Exercises</div>
-        <div class="tab" data-tab="cultural">Cultural Lessons</div>
-        <div class="tab" data-tab="curriculum">Curriculum Planner</div>
-      </div>
-    </div>
+      .blue-gradient {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-dark));
+      }
 
-    <!-- Tab Panels -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Left Panel (Form) -->
-      <div class="col-span-1">
-        <!-- Vocabulary Generator Form -->
-        <div id="vocabulary-panel" class="tab-panel card p-4 active">
-          <h2 class="text-xl font-bold mb-4">Generate Vocabulary List</h2>
-          <form id="vocabulary-form">
-            <div class="mb-4">
-              <label for="vocab-language">Language</label>
-              <select id="vocab-language" required>
-                <option value="Spanish">Spanish</option>
-                <option value="French">French</option>
-                <option value="German">German</option>
-                <option value="Italian">Italian</option>
-                <option value="Japanese">Japanese</option>
-                <option value="Chinese">Chinese (Mandarin)</option>
-                <option value="Russian">Russian</option>
-                <option value="Arabic">Arabic</option>
-              </select>
-            </div>
-            
-            <div class="mb-4">
-              <label for="vocab-topic">Topic</label>
-              <input type="text" id="vocab-topic" placeholder="e.g., Food, Travel, Family" required>
-            </div>
-            
-            <div class="mb-4">
-              <label for="vocab-level">Proficiency Level</label>
-              <select id="vocab-level" required>
-                <option value="Beginner">Beginner</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Advanced">Advanced</option>
-              </select>
-            </div>
-            
-            <div class="mb-4">
-              <label for="vocab-count">Number of Terms</label>
-              <input type="number" id="vocab-count" min="5" max="25" value="15">
-            </div>
-            
-            <div class="mb-4">
-              <label class="inline-flex items-center">
-                <input type="checkbox" id="vocab-context" class="form-checkbox h-5 w-5 text-blue-600" checked>
-                <span class="ml-2">Include cultural context</span>
-              </label>
-            </div>
-            
-            <button type="submit" class="btn-blue w-full">Generate Vocabulary</button>
-          </form>
-        </div>
-        
-        <!-- Dialogue Creator Form -->
-        <div id="dialogue-panel" class="tab-panel card p-4">
-          <h2 class="text-xl font-bold mb-4">Create Language Dialogue</h2>
-          <form id="dialogue-form">
-            <div class="mb-4">
-              <label for="dialogue-language">Language</label>
-              <select id="dialogue-language" required>
-                <option value="Spanish">Spanish</option>
-                <option value="French">French</option>
-                <option value="German">German</option>
-                <option value="Italian">Italian</option>
-                <option value="Japanese">Japanese</option>
-                <option value="Chinese">Chinese (Mandarin)</option>
-                <option value="Russian">Russian</option>
-                <option value="Arabic">Arabic</option>
-              </select>
-            </div>
-            
-            <div class="mb-4">
-              <label for="dialogue-topic">Topic</label>
-              <input type="text" id="dialogue-topic" placeholder="e.g., Ordering at a Restaurant" required>
-            </div>
-            
-            <div class="mb-4">
-              <label for="dialogue-level">Proficiency Level</label>
-              <select id="dialogue-level" required>
-                <option value="Beginner">Beginner</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Advanced">Advanced</option>
-              </select>
-            </div>
-            
-            <div class="mb-4">
-              <label for="dialogue-context">Situational Context</label>
-              <textarea id="dialogue-context" rows="3" placeholder="Describe the setting and situation..." required></textarea>
-            </div>
-            
-            <div class="mb-4">
-              <label for="dialogue-characters">Number of Speakers</label>
-              <input type="number" id="dialogue-characters" min="2" max="4" value="2">
-            </div>
-            
-            <button type="submit" class="btn-blue w-full">Generate Dialogue</button>
-          </form>
-        </div>
-        
-        <!-- Grammar Exercises Form -->
-        <div id="grammar-panel" class="tab-panel card p-4">
-          <h2 class="text-xl font-bold mb-4">Create Grammar Exercises</h2>
-          <form id="grammar-form">
-            <div class="mb-4">
-              <label for="grammar-language">Language</label>
-              <select id="grammar-language" required>
-                <option value="Spanish">Spanish</option>
-                <option value="French">French</option>
-                <option value="German">German</option>
-                <option value="Italian">Italian</option>
-                <option value="Japanese">Japanese</option>
-                <option value="Chinese">Chinese (Mandarin)</option>
-                <option value="Russian">Russian</option>
-                <option value="Arabic">Arabic</option>
-              </select>
-            </div>
-            
-            <div class="mb-4">
-              <label for="grammar-concept">Grammar Concept</label>
-              <input type="text" id="grammar-concept" placeholder="e.g., Past Tense, Articles, Pronouns" required>
-            </div>
-            
-            <div class="mb-4">
-              <label for="grammar-level">Proficiency Level</label>
-              <select id="grammar-level" required>
-                <option value="Beginner">Beginner</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Advanced">Advanced</option>
-              </select>
-            </div>
-            
-            <div class="mb-4">
-              <label for="grammar-count">Number of Exercises</label>
-              <input type="number" id="grammar-count" min="5" max="20" value="10">
-            </div>
-            
-            <button type="submit" class="btn-blue w-full">Generate Exercises</button>
-          </form>
-        </div>
-        
-        <!-- Cultural Lessons Form -->
-        <div id="cultural-panel" class="tab-panel card p-4">
-          <h2 class="text-xl font-bold mb-4">Create Cultural Lesson</h2>
-          <form id="cultural-form">
-            <div class="mb-4">
-              <label for="cultural-language">Language/Culture</label>
-              <select id="cultural-language" required>
-                <option value="Spanish">Spanish</option>
-                <option value="French">French</option>
-                <option value="German">German</option>
-                <option value="Italian">Italian</option>
-                <option value="Japanese">Japanese</option>
-                <option value="Chinese">Chinese (Mandarin)</option>
-                <option value="Russian">Russian</option>
-                <option value="Arabic">Arabic</option>
-              </select>
-            </div>
-            
-            <div class="mb-4">
-              <label for="cultural-topic">Cultural Topic</label>
-              <input type="text" id="cultural-topic" placeholder="e.g., Festivals, Etiquette, History" required>
-            </div>
-            
-            <div class="mb-4">
-              <label for="cultural-level">Proficiency Level</label>
-              <select id="cultural-level" required>
-                <option value="Beginner">Beginner</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Advanced">Advanced</option>
-              </select>
-            </div>
-            
-            <button type="submit" class="btn-blue w-full">Generate Cultural Lesson</button>
-          </form>
-        </div>
-        
-        <!-- Curriculum Planner Form -->
-        <div id="curriculum-panel" class="tab-panel card p-4">
-          <h2 class="text-xl font-bold mb-4">Create Language Curriculum</h2>
-          <form id="curriculum-form">
-            <div class="mb-4">
-              <label for="curriculum-language">Language</label>
-              <select id="curriculum-language" required>
-                <option value="Spanish">Spanish</option>
-                <option value="French">French</option>
-                <option value="German">German</option>
-                <option value="Italian">Italian</option>
-                <option value="Japanese">Japanese</option>
-                <option value="Chinese">Chinese (Mandarin)</option>
-                <option value="Russian">Russian</option>
-                <option value="Arabic">Arabic</option>
-              </select>
-            </div>
-            
-            <div class="mb-4">
-              <label for="curriculum-level">Proficiency Level</label>
-              <select id="curriculum-level" required>
-                <option value="Beginner">Beginner</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Advanced">Advanced</option>
-              </select>
-            </div>
-            
-            <div class="mb-4">
-              <label for="curriculum-goals">Learning Goals (comma-separated)</label>
-              <textarea id="curriculum-goals" rows="3" placeholder="e.g., Basic conversation, Reading comprehension" required></textarea>
-            </div>
-            
-            <div class="mb-4">
-              <label for="curriculum-duration">Course Duration (weeks)</label>
-              <input type="number" id="curriculum-duration" min="1" max="16" value="8">
-            </div>
-            
-            <div class="mb-4">
-              <label for="curriculum-style">Learning Style</label>
-              <select id="curriculum-style" required>
-                <option value="Visual">Visual</option>
-                <option value="Auditory">Auditory</option>
-                <option value="Reading/Writing">Reading/Writing</option>
-                <option value="Kinesthetic">Kinesthetic</option>
-                <option value="Multimodal">Multimodal</option>
-              </select>
-            </div>
-            
-            <button type="submit" class="btn-blue w-full">Generate Curriculum</button>
-          </form>
-        </div>
-      </div>
-      
-      <!-- Right Panel (Results) -->
-      <div class="col-span-1 md:col-span-2">
-        <div class="card result-panel" id="result-panel">
-          <div class="flex flex-col items-center justify-center h-full">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-blue-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
-            <h3 class="text-xl font-bold text-gray-400 mb-2">AI Generator Ready</h3>
-            <p class="text-center text-gray-500">
-              Select a tool from the tabs above and fill out the form to generate AI-powered language learning content.
-            </p>
-          </div>
-        </div>
-        
-        <!-- Loading Spinner (hidden by default) -->
-        <div id="loading" class="hidden">
-          <div class="loader"></div>
-          <p class="text-center text-gray-400">Generating content with Anthropic Claude AI...</p>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Security Information Panel -->
-    <div class="mt-8 sentinel-panel">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-lg font-bold">🛡️ Sentinel 4.5 Security Status</h2>
-        <span class="px-2 py-1 bg-green-800 text-white text-xs rounded-full">All Systems Operational</span>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-        <div>
-          <p class="mb-2 font-semibold">AI Content Moderation:</p>
-          <div class="w-full bg-gray-700 rounded-full h-2.5">
-            <div class="bg-blue-600 h-2.5 rounded-full" style="width: 100%"></div>
-          </div>
-          <p class="mt-1 text-xs text-gray-400">Content filters operating normally</p>
-        </div>
-        
-        <div>
-          <p class="mb-2 font-semibold">API Security:</p>
-          <div class="w-full bg-gray-700 rounded-full h-2.5">
-            <div class="bg-blue-600 h-2.5 rounded-full" style="width: 100%"></div>
-          </div>
-          <p class="mt-1 text-xs text-gray-400">Rate limiting and authentication active</p>
-        </div>
-        
-        <div>
-          <p class="mb-2 font-semibold">Data Encryption:</p>
-          <div class="w-full bg-gray-700 rounded-full h-2.5">
-            <div class="bg-blue-600 h-2.5 rounded-full" style="width: 100%"></div>
-          </div>
-          <p class="mt-1 text-xs text-gray-400">End-to-end encryption active</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Help Bubble -->
-  <div class="help-bubble" id="help-bubble">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-  </div>
-  
-  <!-- Help Content -->
-  <div class="help-content" id="help-content">
-    <div class="help-close" id="help-close">✕</div>
-    <h3 class="text-lg font-bold mb-2">Need Help?</h3>
-    <p class="mb-4">Here's how to use the AI Language Learning Generator:</p>
-    <ul class="list-disc pl-5 mb-4 space-y-2">
-      <li><strong>Vocabulary Generator:</strong> Create custom vocabulary lists with translations and examples.</li>
-      <li><strong>Dialogue Creator:</strong> Generate realistic conversations for language practice.</li>
-      <li><strong>Grammar Exercises:</strong> Create targeted grammar practice with explanations.</li>
-      <li><strong>Cultural Lessons:</strong> Learn about cultural aspects of your target language.</li>
-      <li><strong>Curriculum Planner:</strong> Design a complete language learning path.</li>
-    </ul>
-    <p class="text-sm text-gray-400">All content is generated using Anthropic Claude AI to ensure high-quality, accurate language learning materials.</p>
-  </div>
+      .card {
+        background-color: #1f2937;
+        border: 1px solid var(--gray-border);
+        border-radius: 0.5rem;
+      }
 
-  <script>
-    // Tab switching functionality
-    document.querySelectorAll('.tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        // Remove active class from all tabs
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        // Add active class to clicked tab
-        tab.classList.add('active');
-        
-        // Hide all tab panels
-        document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
-        // Show the corresponding panel
-        const panelId = tab.getAttribute('data-tab') + '-panel';
-        document.getElementById(panelId).classList.add('active');
-      });
-    });
-    
-    // Help bubble functionality
-    const helpBubble = document.getElementById('help-bubble');
-    const helpContent = document.getElementById('help-content');
-    const helpClose = document.getElementById('help-close');
-    
-    helpBubble.addEventListener('click', () => {
-      helpContent.classList.toggle('active');
-    });
-    
-    helpClose.addEventListener('click', () => {
-      helpContent.classList.remove('active');
-    });
-    
-    // Function to show loading state
-    function showLoading() {
-      document.getElementById('result-panel').classList.add('hidden');
-      document.getElementById('loading').classList.remove('hidden');
-    }
-    
-    // Function to hide loading state
-    function hideLoading() {
-      document.getElementById('result-panel').classList.remove('hidden');
-      document.getElementById('loading').classList.add('hidden');
-    }
-    
-    // Helper function for API requests
-    async function apiRequest(endpoint, data) {
-      try {
-        showLoading();
-        
-        const response = await fetch(`/api/language-learning/${endpoint}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        });
-        
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to generate content');
+      .btn-blue {
+        background-color: var(--blue-primary);
+        color: var(--white-text);
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        transition: background-color 0.2s;
+      }
+
+      .btn-blue:hover {
+        background-color: var(--blue-light);
+      }
+
+      .btn-outline {
+        background-color: transparent;
+        border: 1px solid var(--blue-light);
+        color: var(--blue-light);
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        transition:
+          background-color 0.2s,
+          color 0.2s;
+      }
+
+      .btn-outline:hover {
+        background-color: var(--blue-light);
+        color: var(--white-text);
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+        background-color: #374151;
+        border: 1px solid var(--gray-border);
+        color: var(--white-text);
+        margin-bottom: 1rem;
+      }
+
+      .result-panel {
+        max-height: 70vh;
+        overflow-y: auto;
+        padding: 1rem;
+      }
+
+      .loader {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid var(--blue-primary);
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 1rem auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
         }
-        
-        return await response.json();
-      } catch (error) {
-        console.error(`Error in ${endpoint} request:`, error);
-        return { 
-          success: false, 
-          error: error.message || 'An unexpected error occurred' 
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .header-nav {
+        background-color: #0f172a;
+        border-bottom: 1px solid var(--gray-border);
+        padding: 0.5rem 1rem;
+      }
+
+      .tab {
+        padding: 0.75rem 1.25rem;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: border-color 0.2s;
+      }
+
+      .tab.active {
+        border-bottom: 2px solid var(--blue-light);
+        font-weight: 600;
+      }
+
+      .tab-panel {
+        display: none;
+      }
+
+      .tab-panel.active {
+        display: block;
+      }
+
+      .vocabulary-item {
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--gray-border);
+      }
+
+      .vocabulary-term {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--blue-light);
+      }
+
+      .dialogue-speaker {
+        font-weight: 600;
+        color: var(--blue-light);
+      }
+
+      .cultural-section {
+        margin-bottom: 1.5rem;
+      }
+
+      .cultural-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--blue-light);
+      }
+
+      .help-bubble {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 60px;
+        height: 60px;
+        background-color: var(--blue-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        transition:
+          transform 0.2s,
+          background-color 0.2s;
+      }
+
+      .help-bubble:hover {
+        transform: scale(1.1);
+        background-color: var(--blue-light);
+      }
+
+      .help-content {
+        position: fixed;
+        bottom: 6rem;
+        right: 2rem;
+        width: 300px;
+        background-color: #1f2937;
+        border: 1px solid var(--gray-border);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        display: none;
+        z-index: 1000;
+      }
+
+      .help-content.active {
+        display: block;
+      }
+
+      .help-close {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        cursor: pointer;
+      }
+
+      .sentinel-panel {
+        background-color: #0f172a;
+        border: 1px solid var(--blue-dark);
+        border-radius: 0.5rem;
+        padding: 1rem;
+      }
+
+      .security-status {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .status-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+      }
+
+      .status-green {
+        background-color: #10b981;
+      }
+
+      .status-yellow {
+        background-color: #f59e0b;
+      }
+
+      .status-red {
+        background-color: #ef4444;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Security Status Bar (Sentinel 4.5) -->
+    <div class="w-full px-4 py-2 bg-blue-900 flex justify-between items-center text-xs">
+      <div class="flex items-center">
+        <span class="mr-2">🛡️ Sentinel 4.5:</span>
+        <div class="security-status">
+          <div class="status-indicator status-green"></div>
+          <span>System Secure</span>
+        </div>
+      </div>
+      <div class="flex space-x-4">
+        <div class="security-status">
+          <div class="status-indicator status-green"></div>
+          <span>Firewall Active</span>
+        </div>
+        <div class="security-status">
+          <div class="status-indicator status-green"></div>
+          <span>API Protection</span>
+        </div>
+        <div class="security-status">
+          <div class="status-indicator status-green"></div>
+          <span>Content Shield</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Header with Navigation -->
+    <header class="header-nav">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center">
+          <img
+            src="/assets/images/shotzi-logo.png"
+            alt="ShotziOS Logo"
+            class="h-8 mr-2"
+            onerror="this.src='/assets/images/placeholder-logo.png'"
+          />
+          <h1 class="text-xl font-bold">ShotziOS Language Learning</h1>
+        </div>
+        <nav>
+          <ul class="flex space-x-4">
+            <li><a href="/" class="text-blue-300 hover:text-white">Home</a></li>
+            <li>
+              <a href="/language-school.html" class="text-blue-300 hover:text-white"
+                >Language School</a
+              >
+            </li>
+            <li>
+              <a href="/language-school-staff.html" class="text-blue-300 hover:text-white"
+                >Staff Portal</a
+              >
+            </li>
+            <li>
+              <a href="/language-learning-ai.html" class="text-white font-bold">AI Generator</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <div class="container mt-6">
+      <div class="blue-gradient p-6 rounded-lg mb-8">
+        <h1 class="text-3xl font-bold mb-2">AI-Powered Language Learning Generator</h1>
+        <p class="text-xl">
+          Create customized language learning materials with Anthropic Claude AI
+        </p>
+      </div>
+
+      <!-- Tools Navigation Tabs -->
+      <div class="mb-6">
+        <div class="flex border-b border-gray-700">
+          <div class="tab active" data-tab="vocabulary">Vocabulary Generator</div>
+          <div class="tab" data-tab="dialogue">Dialogue Creator</div>
+          <div class="tab" data-tab="grammar">Grammar Exercises</div>
+          <div class="tab" data-tab="cultural">Cultural Lessons</div>
+          <div class="tab" data-tab="curriculum">Curriculum Planner</div>
+        </div>
+      </div>
+
+      <!-- Tab Panels -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Left Panel (Form) -->
+        <div class="col-span-1">
+          <!-- Vocabulary Generator Form -->
+          <div id="vocabulary-panel" class="tab-panel card p-4 active">
+            <h2 class="text-xl font-bold mb-4">Generate Vocabulary List</h2>
+            <form id="vocabulary-form">
+              <div class="mb-4">
+                <label for="vocab-language">Language</label>
+                <select id="vocab-language" required>
+                  <option value="Spanish">Spanish</option>
+                  <option value="French">French</option>
+                  <option value="German">German</option>
+                  <option value="Italian">Italian</option>
+                  <option value="Japanese">Japanese</option>
+                  <option value="Chinese">Chinese (Mandarin)</option>
+                  <option value="Russian">Russian</option>
+                  <option value="Arabic">Arabic</option>
+                </select>
+              </div>
+
+              <div class="mb-4">
+                <label for="vocab-topic">Topic</label>
+                <input
+                  type="text"
+                  id="vocab-topic"
+                  placeholder="e.g., Food, Travel, Family"
+                  required
+                />
+              </div>
+
+              <div class="mb-4">
+                <label for="vocab-level">Proficiency Level</label>
+                <select id="vocab-level" required>
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                </select>
+              </div>
+
+              <div class="mb-4">
+                <label for="vocab-count">Number of Terms</label>
+                <input type="number" id="vocab-count" min="5" max="25" value="15" />
+              </div>
+
+              <div class="mb-4">
+                <label class="inline-flex items-center">
+                  <input
+                    type="checkbox"
+                    id="vocab-context"
+                    class="form-checkbox h-5 w-5 text-blue-600"
+                    checked
+                  />
+                  <span class="ml-2">Include cultural context</span>
+                </label>
+              </div>
+
+              <button type="submit" class="btn-blue w-full">Generate Vocabulary</button>
+            </form>
+          </div>
+
+          <!-- Dialogue Creator Form -->
+          <div id="dialogue-panel" class="tab-panel card p-4">
+            <h2 class="text-xl font-bold mb-4">Create Language Dialogue</h2>
+            <form id="dialogue-form">
+              <div class="mb-4">
+                <label for="dialogue-language">Language</label>
+                <select id="dialogue-language" required>
+                  <option value="Spanish">Spanish</option>
+                  <option value="French">French</option>
+                  <option value="German">German</option>
+                  <option value="Italian">Italian</option>
+                  <option value="Japanese">Japanese</option>
+                  <option value="Chinese">Chinese (Mandarin)</option>
+                  <option value="Russian">Russian</option>
+                  <option value="Arabic">Arabic</option>
+                </select>
+              </div>
+
+              <div class="mb-4">
+                <label for="dialogue-topic">Topic</label>
+                <input
+                  type="text"
+                  id="dialogue-topic"
+                  placeholder="e.g., Ordering at a Restaurant"
+                  required
+                />
+              </div>
+
+              <div class="mb-4">
+                <label for="dialogue-level">Proficiency Level</label>
+                <select id="dialogue-level" required>
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                </select>
+              </div>
+
+              <div class="mb-4">
+                <label for="dialogue-context">Situational Context</label>
+                <textarea
+                  id="dialogue-context"
+                  rows="3"
+                  placeholder="Describe the setting and situation..."
+                  required
+                ></textarea>
+              </div>
+
+              <div class="mb-4">
+                <label for="dialogue-characters">Number of Speakers</label>
+                <input type="number" id="dialogue-characters" min="2" max="4" value="2" />
+              </div>
+
+              <button type="submit" class="btn-blue w-full">Generate Dialogue</button>
+            </form>
+          </div>
+
+          <!-- Grammar Exercises Form -->
+          <div id="grammar-panel" class="tab-panel card p-4">
+            <h2 class="text-xl font-bold mb-4">Create Grammar Exercises</h2>
+            <form id="grammar-form">
+              <div class="mb-4">
+                <label for="grammar-language">Language</label>
+                <select id="grammar-language" required>
+                  <option value="Spanish">Spanish</option>
+                  <option value="French">French</option>
+                  <option value="German">German</option>
+                  <option value="Italian">Italian</option>
+                  <option value="Japanese">Japanese</option>
+                  <option value="Chinese">Chinese (Mandarin)</option>
+                  <option value="Russian">Russian</option>
+                  <option value="Arabic">Arabic</option>
+                </select>
+              </div>
+
+              <div class="mb-4">
+                <label for="grammar-concept">Grammar Concept</label>
+                <input
+                  type="text"
+                  id="grammar-concept"
+                  placeholder="e.g., Past Tense, Articles, Pronouns"
+                  required
+                />
+              </div>
+
+              <div class="mb-4">
+                <label for="grammar-level">Proficiency Level</label>
+                <select id="grammar-level" required>
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                </select>
+              </div>
+
+              <div class="mb-4">
+                <label for="grammar-count">Number of Exercises</label>
+                <input type="number" id="grammar-count" min="5" max="20" value="10" />
+              </div>
+
+              <button type="submit" class="btn-blue w-full">Generate Exercises</button>
+            </form>
+          </div>
+
+          <!-- Cultural Lessons Form -->
+          <div id="cultural-panel" class="tab-panel card p-4">
+            <h2 class="text-xl font-bold mb-4">Create Cultural Lesson</h2>
+            <form id="cultural-form">
+              <div class="mb-4">
+                <label for="cultural-language">Language/Culture</label>
+                <select id="cultural-language" required>
+                  <option value="Spanish">Spanish</option>
+                  <option value="French">French</option>
+                  <option value="German">German</option>
+                  <option value="Italian">Italian</option>
+                  <option value="Japanese">Japanese</option>
+                  <option value="Chinese">Chinese (Mandarin)</option>
+                  <option value="Russian">Russian</option>
+                  <option value="Arabic">Arabic</option>
+                </select>
+              </div>
+
+              <div class="mb-4">
+                <label for="cultural-topic">Cultural Topic</label>
+                <input
+                  type="text"
+                  id="cultural-topic"
+                  placeholder="e.g., Festivals, Etiquette, History"
+                  required
+                />
+              </div>
+
+              <div class="mb-4">
+                <label for="cultural-level">Proficiency Level</label>
+                <select id="cultural-level" required>
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn-blue w-full">Generate Cultural Lesson</button>
+            </form>
+          </div>
+
+          <!-- Curriculum Planner Form -->
+          <div id="curriculum-panel" class="tab-panel card p-4">
+            <h2 class="text-xl font-bold mb-4">Create Language Curriculum</h2>
+            <form id="curriculum-form">
+              <div class="mb-4">
+                <label for="curriculum-language">Language</label>
+                <select id="curriculum-language" required>
+                  <option value="Spanish">Spanish</option>
+                  <option value="French">French</option>
+                  <option value="German">German</option>
+                  <option value="Italian">Italian</option>
+                  <option value="Japanese">Japanese</option>
+                  <option value="Chinese">Chinese (Mandarin)</option>
+                  <option value="Russian">Russian</option>
+                  <option value="Arabic">Arabic</option>
+                </select>
+              </div>
+
+              <div class="mb-4">
+                <label for="curriculum-level">Proficiency Level</label>
+                <select id="curriculum-level" required>
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                </select>
+              </div>
+
+              <div class="mb-4">
+                <label for="curriculum-goals">Learning Goals (comma-separated)</label>
+                <textarea
+                  id="curriculum-goals"
+                  rows="3"
+                  placeholder="e.g., Basic conversation, Reading comprehension"
+                  required
+                ></textarea>
+              </div>
+
+              <div class="mb-4">
+                <label for="curriculum-duration">Course Duration (weeks)</label>
+                <input type="number" id="curriculum-duration" min="1" max="16" value="8" />
+              </div>
+
+              <div class="mb-4">
+                <label for="curriculum-style">Learning Style</label>
+                <select id="curriculum-style" required>
+                  <option value="Visual">Visual</option>
+                  <option value="Auditory">Auditory</option>
+                  <option value="Reading/Writing">Reading/Writing</option>
+                  <option value="Kinesthetic">Kinesthetic</option>
+                  <option value="Multimodal">Multimodal</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn-blue w-full">Generate Curriculum</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right Panel (Results) -->
+        <div class="col-span-1 md:col-span-2">
+          <div class="card result-panel" id="result-panel">
+            <div class="flex flex-col items-center justify-center h-full">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-16 w-16 text-blue-500 mb-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                />
+              </svg>
+              <h3 class="text-xl font-bold text-gray-400 mb-2">AI Generator Ready</h3>
+              <p class="text-center text-gray-500">
+                Select a tool from the tabs above and fill out the form to generate AI-powered
+                language learning content.
+              </p>
+            </div>
+          </div>
+
+          <!-- Loading Spinner (hidden by default) -->
+          <div id="loading" class="hidden">
+            <div class="loader"></div>
+            <p class="text-center text-gray-400">Generating content with Anthropic Claude AI...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security Information Panel -->
+      <div class="mt-8 sentinel-panel">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-bold">🛡️ Sentinel 4.5 Security Status</h2>
+          <span class="px-2 py-1 bg-green-800 text-white text-xs rounded-full"
+            >All Systems Operational</span
+          >
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div>
+            <p class="mb-2 font-semibold">AI Content Moderation:</p>
+            <div class="w-full bg-gray-700 rounded-full h-2.5">
+              <div class="bg-blue-600 h-2.5 rounded-full" style="width: 100%"></div>
+            </div>
+            <p class="mt-1 text-xs text-gray-400">Content filters operating normally</p>
+          </div>
+
+          <div>
+            <p class="mb-2 font-semibold">API Security:</p>
+            <div class="w-full bg-gray-700 rounded-full h-2.5">
+              <div class="bg-blue-600 h-2.5 rounded-full" style="width: 100%"></div>
+            </div>
+            <p class="mt-1 text-xs text-gray-400">Rate limiting and authentication active</p>
+          </div>
+
+          <div>
+            <p class="mb-2 font-semibold">Data Encryption:</p>
+            <div class="w-full bg-gray-700 rounded-full h-2.5">
+              <div class="bg-blue-600 h-2.5 rounded-full" style="width: 100%"></div>
+            </div>
+            <p class="mt-1 text-xs text-gray-400">End-to-end encryption active</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help Bubble -->
+    <div class="help-bubble" id="help-bubble">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+    </div>
+
+    <!-- Help Content -->
+    <div class="help-content" id="help-content">
+      <div class="help-close" id="help-close">✕</div>
+      <h3 class="text-lg font-bold mb-2">Need Help?</h3>
+      <p class="mb-4">Here's how to use the AI Language Learning Generator:</p>
+      <ul class="list-disc pl-5 mb-4 space-y-2">
+        <li>
+          <strong>Vocabulary Generator:</strong> Create custom vocabulary lists with translations
+          and examples.
+        </li>
+        <li>
+          <strong>Dialogue Creator:</strong> Generate realistic conversations for language practice.
+        </li>
+        <li>
+          <strong>Grammar Exercises:</strong> Create targeted grammar practice with explanations.
+        </li>
+        <li>
+          <strong>Cultural Lessons:</strong> Learn about cultural aspects of your target language.
+        </li>
+        <li><strong>Curriculum Planner:</strong> Design a complete language learning path.</li>
+      </ul>
+      <p class="text-sm text-gray-400">
+        All content is generated using Anthropic Claude AI to ensure high-quality, accurate language
+        learning materials.
+      </p>
+    </div>
+
+    <script>
+      // Tab switching functionality
+      document.querySelectorAll('.tab').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          // Remove active class from all tabs
+          document.querySelectorAll('.tab').forEach((t) => t.classList.remove('active'));
+          // Add active class to clicked tab
+          tab.classList.add('active');
+
+          // Hide all tab panels
+          document
+            .querySelectorAll('.tab-panel')
+            .forEach((panel) => panel.classList.remove('active'));
+          // Show the corresponding panel
+          const panelId = tab.getAttribute('data-tab') + '-panel';
+          document.getElementById(panelId).classList.add('active');
+        });
+      });
+
+      // Help bubble functionality
+      const helpBubble = document.getElementById('help-bubble');
+      const helpContent = document.getElementById('help-content');
+      const helpClose = document.getElementById('help-close');
+
+      helpBubble.addEventListener('click', () => {
+        helpContent.classList.toggle('active');
+      });
+
+      helpClose.addEventListener('click', () => {
+        helpContent.classList.remove('active');
+      });
+
+      // Function to show loading state
+      function showLoading() {
+        document.getElementById('result-panel').classList.add('hidden');
+        document.getElementById('loading').classList.remove('hidden');
+      }
+
+      // Function to hide loading state
+      function hideLoading() {
+        document.getElementById('result-panel').classList.remove('hidden');
+        document.getElementById('loading').classList.add('hidden');
+      }
+
+      // Helper function for API requests
+      async function apiRequest(endpoint, data) {
+        try {
+          showLoading();
+
+          const response = await fetch(`/api/language-learning/${endpoint}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to generate content');
+          }
+
+          return await response.json();
+        } catch (error) {
+          console.error(`Error in ${endpoint} request:`, error);
+          return {
+            success: false,
+            error: error.message || 'An unexpected error occurred',
+          };
+        } finally {
+          hideLoading();
+        }
+      }
+
+      // Vocabulary Generator form submission
+      document.getElementById('vocabulary-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const data = {
+          language: document.getElementById('vocab-language').value,
+          topic: document.getElementById('vocab-topic').value,
+          level: document.getElementById('vocab-level').value,
+          count: parseInt(document.getElementById('vocab-count').value),
+          includeContext: document.getElementById('vocab-context').checked,
         };
-      } finally {
-        hideLoading();
-      }
-    }
-    
-    // Vocabulary Generator form submission
-    document.getElementById('vocabulary-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const data = {
-        language: document.getElementById('vocab-language').value,
-        topic: document.getElementById('vocab-topic').value,
-        level: document.getElementById('vocab-level').value,
-        count: parseInt(document.getElementById('vocab-count').value),
-        includeContext: document.getElementById('vocab-context').checked
-      };
-      
-      const result = await apiRequest('vocabulary', data);
-      
-      if (result.success) {
-        displayVocabularyResult(result.data);
-      } else {
-        displayError(result.error);
-      }
-    });
-    
-    // Dialogue Creator form submission
-    document.getElementById('dialogue-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const data = {
-        language: document.getElementById('dialogue-language').value,
-        topic: document.getElementById('dialogue-topic').value,
-        level: document.getElementById('dialogue-level').value,
-        context: document.getElementById('dialogue-context').value,
-        characterCount: parseInt(document.getElementById('dialogue-characters').value)
-      };
-      
-      const result = await apiRequest('dialogue', data);
-      
-      if (result.success) {
-        displayDialogueResult(result.data);
-      } else {
-        displayError(result.error);
-      }
-    });
-    
-    // Grammar Exercises form submission
-    document.getElementById('grammar-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const data = {
-        language: document.getElementById('grammar-language').value,
-        grammarConcept: document.getElementById('grammar-concept').value,
-        level: document.getElementById('grammar-level').value,
-        exerciseCount: parseInt(document.getElementById('grammar-count').value)
-      };
-      
-      const result = await apiRequest('grammar', data);
-      
-      if (result.success) {
-        displayGrammarResult(result.data);
-      } else {
-        displayError(result.error);
-      }
-    });
-    
-    // Cultural Lessons form submission
-    document.getElementById('cultural-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const data = {
-        language: document.getElementById('cultural-language').value,
-        culturalTopic: document.getElementById('cultural-topic').value,
-        level: document.getElementById('cultural-level').value
-      };
-      
-      const result = await apiRequest('cultural-lesson', data);
-      
-      if (result.success) {
-        displayCulturalResult(result.data);
-      } else {
-        displayError(result.error);
-      }
-    });
-    
-    // Curriculum Planner form submission
-    document.getElementById('curriculum-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const data = {
-        language: document.getElementById('curriculum-language').value,
-        level: document.getElementById('curriculum-level').value,
-        goals: document.getElementById('curriculum-goals').value.split(',').map(goal => goal.trim()),
-        duration: parseInt(document.getElementById('curriculum-duration').value),
-        learningStyle: document.getElementById('curriculum-style').value
-      };
-      
-      const result = await apiRequest('curriculum', data);
-      
-      if (result.success) {
-        displayCurriculumResult(result.data);
-      } else {
-        displayError(result.error);
-      }
-    });
-    
-    // Function to display vocabulary results
-    function displayVocabularyResult(data) {
-      const resultPanel = document.getElementById('result-panel');
-      
-      let html = `
+
+        const result = await apiRequest('vocabulary', data);
+
+        if (result.success) {
+          displayVocabularyResult(result.data);
+        } else {
+          displayError(result.error);
+        }
+      });
+
+      // Dialogue Creator form submission
+      document.getElementById('dialogue-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const data = {
+          language: document.getElementById('dialogue-language').value,
+          topic: document.getElementById('dialogue-topic').value,
+          level: document.getElementById('dialogue-level').value,
+          context: document.getElementById('dialogue-context').value,
+          characterCount: parseInt(document.getElementById('dialogue-characters').value),
+        };
+
+        const result = await apiRequest('dialogue', data);
+
+        if (result.success) {
+          displayDialogueResult(result.data);
+        } else {
+          displayError(result.error);
+        }
+      });
+
+      // Grammar Exercises form submission
+      document.getElementById('grammar-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const data = {
+          language: document.getElementById('grammar-language').value,
+          grammarConcept: document.getElementById('grammar-concept').value,
+          level: document.getElementById('grammar-level').value,
+          exerciseCount: parseInt(document.getElementById('grammar-count').value),
+        };
+
+        const result = await apiRequest('grammar', data);
+
+        if (result.success) {
+          displayGrammarResult(result.data);
+        } else {
+          displayError(result.error);
+        }
+      });
+
+      // Cultural Lessons form submission
+      document.getElementById('cultural-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const data = {
+          language: document.getElementById('cultural-language').value,
+          culturalTopic: document.getElementById('cultural-topic').value,
+          level: document.getElementById('cultural-level').value,
+        };
+
+        const result = await apiRequest('cultural-lesson', data);
+
+        if (result.success) {
+          displayCulturalResult(result.data);
+        } else {
+          displayError(result.error);
+        }
+      });
+
+      // Curriculum Planner form submission
+      document.getElementById('curriculum-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const data = {
+          language: document.getElementById('curriculum-language').value,
+          level: document.getElementById('curriculum-level').value,
+          goals: document
+            .getElementById('curriculum-goals')
+            .value.split(',')
+            .map((goal) => goal.trim()),
+          duration: parseInt(document.getElementById('curriculum-duration').value),
+          learningStyle: document.getElementById('curriculum-style').value,
+        };
+
+        const result = await apiRequest('curriculum', data);
+
+        if (result.success) {
+          displayCurriculumResult(result.data);
+        } else {
+          displayError(result.error);
+        }
+      });
+
+      // Function to display vocabulary results
+      function displayVocabularyResult(data) {
+        const resultPanel = document.getElementById('result-panel');
+
+        let html = `
         <div class="mb-6">
           <h2 class="text-2xl font-bold text-blue-400 mb-2">${data.language} Vocabulary: ${data.topic}</h2>
           <p class="text-gray-400 mb-4">Level: ${data.level} • ${data.vocabulary.length} terms</p>
           <div class="border-t border-gray-700 pt-4">
       `;
-      
-      data.vocabulary.forEach(item => {
-        html += `
+
+        data.vocabulary.forEach((item) => {
+          html += `
           <div class="vocabulary-item">
             <div class="vocabulary-term">${item.term}</div>
             <div class="text-sm text-gray-400">${item.partOfSpeech}</div>
@@ -801,38 +908,38 @@
             ${item.culturalContext ? `<div class="mt-2 text-sm text-blue-300">Cultural note: ${item.culturalContext}</div>` : ''}
           </div>
         `;
-      });
-      
-      html += `
+        });
+
+        html += `
           </div>
         </div>
         <div class="flex justify-end">
           <button id="download-vocab" class="btn-outline">Download as PDF</button>
         </div>
       `;
-      
-      resultPanel.innerHTML = html;
-      
-      // Add event listener for download button (placeholder functionality)
-      document.getElementById('download-vocab').addEventListener('click', () => {
-        alert('PDF download feature will be implemented in a future update.');
-      });
-    }
-    
-    // Function to display dialogue results
-    function displayDialogueResult(data) {
-      const resultPanel = document.getElementById('result-panel');
-      
-      let html = `
+
+        resultPanel.innerHTML = html;
+
+        // Add event listener for download button (placeholder functionality)
+        document.getElementById('download-vocab').addEventListener('click', () => {
+          alert('PDF download feature will be implemented in a future update.');
+        });
+      }
+
+      // Function to display dialogue results
+      function displayDialogueResult(data) {
+        const resultPanel = document.getElementById('result-panel');
+
+        let html = `
         <div class="mb-6">
           <h2 class="text-2xl font-bold text-blue-400 mb-2">${data.language} Dialogue: ${data.topic}</h2>
           <p class="text-gray-400 mb-2">Level: ${data.level}</p>
           <p class="mb-4">Context: ${data.context}</p>
           <div class="border-t border-gray-700 pt-4 mb-6">
       `;
-      
-      data.dialogue.forEach(line => {
-        html += `
+
+        data.dialogue.forEach((line) => {
+          html += `
           <div class="mb-4">
             <div class="dialogue-speaker">${line.speaker}:</div>
             <div class="font-medium">${line.text}</div>
@@ -840,45 +947,45 @@
             ${line.notes ? `<div class="text-sm text-blue-300 mt-1">Note: ${line.notes}</div>` : ''}
           </div>
         `;
-      });
-      
-      html += `
+        });
+
+        html += `
           </div>
           <h3 class="text-xl font-bold text-blue-400 mb-2">Key Phrases</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       `;
-      
-      data.keyPhrases.forEach(phrase => {
-        html += `
+
+        data.keyPhrases.forEach((phrase) => {
+          html += `
           <div class="border border-gray-700 rounded p-3">
             <div class="font-medium">${phrase.phrase}</div>
             <div class="text-gray-400">${phrase.translation}</div>
             <div class="text-sm text-blue-300 mt-1">${phrase.usage}</div>
           </div>
         `;
-      });
-      
-      html += `
+        });
+
+        html += `
           </div>
         </div>
         <div class="flex justify-end">
           <button id="download-dialogue" class="btn-outline">Download as PDF</button>
         </div>
       `;
-      
-      resultPanel.innerHTML = html;
-      
-      // Add event listener for download button (placeholder functionality)
-      document.getElementById('download-dialogue').addEventListener('click', () => {
-        alert('PDF download feature will be implemented in a future update.');
-      });
-    }
-    
-    // Function to display grammar exercise results
-    function displayGrammarResult(data) {
-      const resultPanel = document.getElementById('result-panel');
-      
-      let html = `
+
+        resultPanel.innerHTML = html;
+
+        // Add event listener for download button (placeholder functionality)
+        document.getElementById('download-dialogue').addEventListener('click', () => {
+          alert('PDF download feature will be implemented in a future update.');
+        });
+      }
+
+      // Function to display grammar exercise results
+      function displayGrammarResult(data) {
+        const resultPanel = document.getElementById('result-panel');
+
+        let html = `
         <div class="mb-6">
           <h2 class="text-2xl font-bold text-blue-400 mb-2">${data.language} Grammar: ${data.grammarConcept}</h2>
           <p class="text-gray-400 mb-4">Level: ${data.level}</p>
@@ -890,61 +997,63 @@
             <h4 class="font-bold text-blue-300 mb-2">Examples</h4>
             <div class="space-y-2 mb-4">
       `;
-      
-      data.examples.forEach(example => {
-        html += `
+
+        data.examples.forEach((example) => {
+          html += `
           <div class="border-l-4 border-blue-700 pl-3">
             <div class="font-medium">${example.example}</div>
             <div class="text-gray-400">${example.translation}</div>
           </div>
         `;
-      });
-      
-      html += `
+        });
+
+        html += `
             </div>
           </div>
           
           <h3 class="text-xl font-bold mb-4">Practice Exercises</h3>
           <div class="space-y-6">
       `;
-      
-      data.exercises.forEach((exercise, index) => {
-        html += `
+
+        data.exercises.forEach((exercise, index) => {
+          html += `
           <div class="border border-gray-700 rounded-lg p-4">
             <div class="font-bold text-blue-300 mb-2">Exercise ${index + 1}</div>
             <div class="mb-3">${exercise.prompt}</div>
             <div class="border-t border-gray-700 pt-3 mt-3">
               <div class="mb-1 font-medium">Answer: ${exercise.correctAnswer}</div>
-              ${exercise.alternatives && exercise.alternatives.length > 0 ? 
-                `<div class="text-sm text-gray-400 mb-2">Alternative answers: ${exercise.alternatives.join(', ')}</div>` : ''
+              ${
+                exercise.alternatives && exercise.alternatives.length > 0
+                  ? `<div class="text-sm text-gray-400 mb-2">Alternative answers: ${exercise.alternatives.join(', ')}</div>`
+                  : ''
               }
               <div class="text-sm">${exercise.explanation}</div>
             </div>
           </div>
         `;
-      });
-      
-      html += `
+        });
+
+        html += `
           </div>
         </div>
         <div class="flex justify-end">
           <button id="download-grammar" class="btn-outline">Download as PDF</button>
         </div>
       `;
-      
-      resultPanel.innerHTML = html;
-      
-      // Add event listener for download button (placeholder functionality)
-      document.getElementById('download-grammar').addEventListener('click', () => {
-        alert('PDF download feature will be implemented in a future update.');
-      });
-    }
-    
-    // Function to display cultural lesson results
-    function displayCulturalResult(data) {
-      const resultPanel = document.getElementById('result-panel');
-      
-      let html = `
+
+        resultPanel.innerHTML = html;
+
+        // Add event listener for download button (placeholder functionality)
+        document.getElementById('download-grammar').addEventListener('click', () => {
+          alert('PDF download feature will be implemented in a future update.');
+        });
+      }
+
+      // Function to display cultural lesson results
+      function displayCulturalResult(data) {
+        const resultPanel = document.getElementById('result-panel');
+
+        let html = `
         <div class="mb-6">
           <h2 class="text-2xl font-bold text-blue-400 mb-2">${data.language} Cultural Lesson: ${data.culturalTopic}</h2>
           <p class="text-gray-400 mb-4">Level: ${data.level}</p>
@@ -957,30 +1066,30 @@
           <div class="cultural-section">
             <div class="cultural-title">Main Content</div>
       `;
-      
-      data.mainContent.forEach(paragraph => {
-        html += `<p class="mb-3">${paragraph}</p>`;
-      });
-      
-      html += `
+
+        data.mainContent.forEach((paragraph) => {
+          html += `<p class="mb-3">${paragraph}</p>`;
+        });
+
+        html += `
           </div>
           
           <div class="cultural-section">
             <div class="cultural-title">Key Vocabulary</div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       `;
-      
-      data.keyVocabulary.forEach(term => {
-        html += `
+
+        data.keyVocabulary.forEach((term) => {
+          html += `
           <div class="border border-gray-700 rounded p-3">
             <div class="font-medium">${term.term}</div>
             <div class="text-gray-400">${term.translation}</div>
             <div class="text-sm text-blue-300 mt-1">${term.usage}</div>
           </div>
         `;
-      });
-      
-      html += `
+        });
+
+        html += `
             </div>
           </div>
           
@@ -988,12 +1097,12 @@
             <div class="cultural-title">Discussion Questions</div>
             <ul class="list-disc pl-5 space-y-2">
       `;
-      
-      data.discussionQuestions.forEach(question => {
-        html += `<li>${question}</li>`;
-      });
-      
-      html += `
+
+        data.discussionQuestions.forEach((question) => {
+          html += `<li>${question}</li>`;
+        });
+
+        html += `
             </ul>
           </div>
           
@@ -1001,12 +1110,12 @@
             <div class="cultural-title">Related Topics</div>
             <div class="flex flex-wrap gap-2">
       `;
-      
-      data.relatedTopics.forEach(topic => {
-        html += `<span class="bg-blue-900 text-white px-3 py-1 rounded-full text-sm">${topic}</span>`;
-      });
-      
-      html += `
+
+        data.relatedTopics.forEach((topic) => {
+          html += `<span class="bg-blue-900 text-white px-3 py-1 rounded-full text-sm">${topic}</span>`;
+        });
+
+        html += `
             </div>
           </div>
         </div>
@@ -1014,20 +1123,20 @@
           <button id="download-cultural" class="btn-outline">Download as PDF</button>
         </div>
       `;
-      
-      resultPanel.innerHTML = html;
-      
-      // Add event listener for download button (placeholder functionality)
-      document.getElementById('download-cultural').addEventListener('click', () => {
-        alert('PDF download feature will be implemented in a future update.');
-      });
-    }
-    
-    // Function to display curriculum results
-    function displayCurriculumResult(data) {
-      const resultPanel = document.getElementById('result-panel');
-      
-      let html = `
+
+        resultPanel.innerHTML = html;
+
+        // Add event listener for download button (placeholder functionality)
+        document.getElementById('download-cultural').addEventListener('click', () => {
+          alert('PDF download feature will be implemented in a future update.');
+        });
+      }
+
+      // Function to display curriculum results
+      function displayCurriculumResult(data) {
+        const resultPanel = document.getElementById('result-panel');
+
+        let html = `
         <div class="mb-6">
           <h2 class="text-2xl font-bold text-blue-400 mb-2">${data.language} Curriculum</h2>
           <p class="text-gray-400 mb-1">Level: ${data.level}</p>
@@ -1039,16 +1148,16 @@
             
             <h3 class="text-xl font-bold mb-2">Learning Goals</h3>
             <ul class="list-disc pl-5 mb-4">
-              ${data.goals.map(goal => `<li>${goal}</li>`).join('')}
+              ${data.goals.map((goal) => `<li>${goal}</li>`).join('')}
             </ul>
           </div>
           
           <h3 class="text-xl font-bold mb-4">Weekly Plans</h3>
           <div class="space-y-6">
       `;
-      
-      data.weeklyPlans.forEach(week => {
-        html += `
+
+        data.weeklyPlans.forEach((week) => {
+          html += `
           <div class="border border-gray-700 rounded-lg p-4">
             <div class="font-bold text-blue-300 mb-1">Week ${week.week}: ${week.theme}</div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
@@ -1066,69 +1175,69 @@
               <div class="text-sm font-semibold mb-1">Activities:</div>
               <div class="space-y-2">
         `;
-        
-        week.activities.forEach(activity => {
-          html += `
+
+          week.activities.forEach((activity) => {
+            html += `
             <div class="border-l-4 border-blue-700 pl-3 py-1">
               <div class="font-medium">${activity.type}</div>
               <div class="text-sm">${activity.description}</div>
               <div class="text-xs text-gray-400">Materials: ${activity.materials.join(', ')}</div>
             </div>
           `;
-        });
-        
-        html += `
+          });
+
+          html += `
               </div>
             </div>
             
             <div>
               <div class="text-sm font-semibold mb-1">Assessments:</div>
               <ul class="list-disc pl-5">
-                ${week.assessments.map(assessment => `<li>${assessment}</li>`).join('')}
+                ${week.assessments.map((assessment) => `<li>${assessment}</li>`).join('')}
               </ul>
             </div>
           </div>
         `;
-      });
-      
-      html += `
+        });
+
+        html += `
           </div>
           
           <h3 class="text-xl font-bold my-4">Recommended Resources</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       `;
-      
-      data.resources.forEach(resource => {
-        html += `
+
+        data.resources.forEach((resource) => {
+          html += `
           <div class="border border-gray-700 rounded p-3">
             <div class="font-medium">${resource.name}</div>
             <div class="text-xs text-gray-400">${resource.type}</div>
             <div class="text-sm mt-1">${resource.description}</div>
           </div>
         `;
-      });
-      
-      html += `
+        });
+
+        html += `
           </div>
         </div>
         <div class="flex justify-end">
           <button id="download-curriculum" class="btn-outline">Download as PDF</button>
         </div>
       `;
-      
-      resultPanel.innerHTML = html;
-      
-      // Add event listener for download button (placeholder functionality)
-      document.getElementById('download-curriculum').addEventListener('click', () => {
-        alert('PDF download feature will be implemented in a future update.');
-      });
-    }
-    
-    // Function to display error messages
-    function displayError(error) {
-      const resultPanel = document.getElementById('result-panel');
-      
-      resultPanel.innerHTML = `
+
+        resultPanel.innerHTML = html;
+
+        // Add event listener for download button (placeholder functionality)
+        document.getElementById('download-curriculum').addEventListener('click', () => {
+          alert('PDF download feature will be implemented in a future update.');
+        });
+      }
+
+      // Function to display error messages
+      function displayError(error) {
+        const resultPanel = document.getElementById('result-panel');
+
+        resultPanel.innerHTML = `
         <div class="flex flex-col items-center justify-center h-full text-center">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-red-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -1140,7 +1249,7 @@
           </p>
         </div>
       `;
-    }
-  </script>
-</body>
+      }
+    </script>
+  </body>
 </html>

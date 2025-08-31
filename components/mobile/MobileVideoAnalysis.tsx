@@ -32,7 +32,7 @@ export function MobileVideoAnalysis() {
   const [analysis, setAnalysis] = useState<MobileAnalysis | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [cameraMode, setCameraMode] = useState(false);
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -46,24 +46,25 @@ export function MobileVideoAnalysis() {
 
   const startRecording = () => {
     setCameraMode(true);
-    navigator.mediaDevices.getUserMedia({ 
-      video: { 
-        facingMode: 'environment', // Back camera
-        width: { ideal: 1920 },
-        height: { ideal: 1080 }
-      }, 
-      audio: false 
-    })
-    .then(stream => {
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-    })
-    .catch(err => {
-      console.error('Camera access failed:', err);
-      alert('Camera access denied. Please use file upload instead.');
-      setCameraMode(false);
-    });
+    navigator.mediaDevices
+      .getUserMedia({
+        video: {
+          facingMode: 'environment', // Back camera
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+        },
+        audio: false,
+      })
+      .then((stream) => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      })
+      .catch((err) => {
+        console.error('Camera access failed:', err);
+        alert('Camera access denied. Please use file upload instead.');
+        setCameraMode(false);
+      });
   };
 
   const analyzeVideo = async () => {
@@ -80,12 +81,12 @@ export function MobileVideoAnalysis() {
 
       // Simulate upload progress
       const progressInterval = setInterval(() => {
-        setUploadProgress(prev => Math.min(prev + 10, 90));
+        setUploadProgress((prev) => Math.min(prev + 10, 90));
       }, 200);
 
       const response = await fetch('/api/mobile/video-analysis', {
         method: 'POST',
-        body: formData
+        body: formData,
       });
 
       clearInterval(progressInterval);
@@ -95,7 +96,7 @@ export function MobileVideoAnalysis() {
         const result = await response.json();
         if (result.success) {
           setAnalysis(result.analysis);
-          
+
           // Show success notification
           setTimeout(() => {
             alert(`Analysis complete! GAR Score: ${result.garScore}/100`);
@@ -116,11 +117,11 @@ export function MobileVideoAnalysis() {
 
   const shareHighlight = () => {
     if (!analysis) return;
-    
+
     const shareData = {
       title: `My GAR Score: ${analysis.garScore}/100`,
       text: `Just got my athletic performance analysis! GAR Score: ${analysis.garScore}/100 🚀`,
-      url: window.location.href
+      url: window.location.href,
     };
 
     if (navigator.share) {
@@ -146,9 +147,7 @@ export function MobileVideoAnalysis() {
 
         {/* Sport Selection */}
         <div className="bg-white rounded-lg p-4 mb-4 shadow-sm">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Select Sport
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Select Sport</label>
           <select
             value={sport}
             onChange={(e) => setSport(e.target.value)}
@@ -208,7 +207,7 @@ export function MobileVideoAnalysis() {
                     setCameraMode(false);
                     if (videoRef.current?.srcObject) {
                       const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
-                      tracks.forEach(track => track.stop());
+                      tracks.forEach((track) => track.stop());
                     }
                   }}
                   className="flex-1 p-2 bg-gray-500 text-white rounded-lg"
@@ -294,7 +293,9 @@ export function MobileVideoAnalysis() {
                   <div className="text-xs text-yellow-800">Timing</div>
                 </div>
                 <div className="text-center p-2 bg-purple-50 rounded">
-                  <div className="font-bold text-purple-600">{analysis.quickInsights.consistency}</div>
+                  <div className="font-bold text-purple-600">
+                    {analysis.quickInsights.consistency}
+                  </div>
                   <div className="text-xs text-purple-800">Consistency</div>
                 </div>
               </div>
@@ -310,7 +311,9 @@ export function MobileVideoAnalysis() {
                     <div className="flex-1">
                       <div className="text-sm font-medium">{highlight.timestamp}</div>
                       <div className="text-sm text-gray-600">{highlight.description}</div>
-                      <div className="text-xs text-green-600 font-medium">Score: {highlight.score}</div>
+                      <div className="text-xs text-green-600 font-medium">
+                        Score: {highlight.score}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -341,9 +344,10 @@ export function MobileVideoAnalysis() {
                   <Share2 className="w-5 h-5" />
                   Share GAR Score
                 </button>
-                
+
                 <div className="text-center text-sm text-gray-500">
-                  Best moment: {analysis.shareableHighlight.clipStart} - {analysis.shareableHighlight.clipEnd}
+                  Best moment: {analysis.shareableHighlight.clipStart} -{' '}
+                  {analysis.shareableHighlight.clipEnd}
                   <br />
                   <span className="text-xs">{analysis.shareableHighlight.description}</span>
                 </div>

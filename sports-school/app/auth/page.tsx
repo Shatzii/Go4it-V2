@@ -1,54 +1,60 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useAuth } from '../../hooks/use-auth'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useToast } from '@/hooks/use-toast'
-import { useRouter } from 'next/navigation'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Badge } from '@/components/ui/badge'
+import { useState } from 'react';
+import { useAuth } from '../../hooks/use-auth';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 
 export default function AuthPage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const { login, register, isAuthenticated } = useAuth()
-  const { toast } = useToast()
-  const router = useRouter()
-  
+  const [isLoading, setIsLoading] = useState(false);
+  const { login, register, isAuthenticated } = useAuth();
+  const { toast } = useToast();
+  const router = useRouter();
+
   // Redirect if already authenticated
   if (isAuthenticated) {
-    router.push('/')
-    return null
+    router.push('/');
+    return null;
   }
 
   const handleLogin = async (formData: FormData) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const username = formData.get('username') as string
-      const password = formData.get('password') as string
-      
-      await login(username, password)
+      const username = formData.get('username') as string;
+      const password = formData.get('password') as string;
+
+      await login(username, password);
       toast({
         title: 'Welcome back!',
         description: 'Successfully logged in to Universal One School',
-      })
-      router.push('/')
+      });
+      router.push('/');
     } catch (error: any) {
       toast({
         title: 'Login failed',
         description: error.message,
         variant: 'destructive',
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleRegister = async (formData: FormData) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       const userData = {
         username: formData.get('username') as string,
@@ -56,26 +62,26 @@ export default function AuthPage() {
         email: formData.get('email') as string,
         firstName: formData.get('firstName') as string,
         lastName: formData.get('lastName') as string,
-        role: formData.get('role') as string || 'student',
+        role: (formData.get('role') as string) || 'student',
         neurotype: formData.get('neurotype') as string,
-      }
-      
-      await register(userData)
+      };
+
+      await register(userData);
       toast({
         title: 'Welcome to Universal One School!',
         description: 'Your account has been created successfully',
-      })
-      router.push('/')
+      });
+      router.push('/');
     } catch (error: any) {
       toast({
         title: 'Registration failed',
         description: error.message,
         variant: 'destructive',
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-6">
@@ -86,9 +92,10 @@ export default function AuthPage() {
             Welcome to Universal One School
           </h1>
           <p className="text-xl text-gray-600 leading-relaxed">
-            Join our innovative educational platform designed for neurodivergent learners with specialized support across four unique schools.
+            Join our innovative educational platform designed for neurodivergent learners with
+            specialized support across four unique schools.
           </p>
-          
+
           <div className="grid grid-cols-2 gap-4 mt-8">
             <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
               <h3 className="font-semibold text-blue-800 mb-2">SuperHero School</h3>
@@ -125,7 +132,7 @@ export default function AuthPage() {
                 <TabsTrigger value="login">Sign In</TabsTrigger>
                 <TabsTrigger value="register">Create Account</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="login" className="space-y-4">
                 <form action={handleLogin} className="space-y-4">
                   <div className="space-y-2">
@@ -153,7 +160,7 @@ export default function AuthPage() {
                     {isLoading ? 'Signing in...' : 'Sign In'}
                   </Button>
                 </form>
-                
+
                 <div className="text-center mt-4">
                   <p className="text-sm text-gray-600">
                     Demo credentials: <br />
@@ -187,7 +194,7 @@ export default function AuthPage() {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="register-username">Username</Label>
                     <Input
@@ -198,7 +205,7 @@ export default function AuthPage() {
                       disabled={isLoading}
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <Input
@@ -210,7 +217,7 @@ export default function AuthPage() {
                       disabled={isLoading}
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="register-password">Password</Label>
                     <Input
@@ -222,7 +229,7 @@ export default function AuthPage() {
                       disabled={isLoading}
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="role">Role</Label>
                     <Select name="role" defaultValue="student" disabled={isLoading}>
@@ -236,7 +243,7 @@ export default function AuthPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="neurotype">Learning Profile (Optional)</Label>
                     <Select name="neurotype" disabled={isLoading}>
@@ -253,7 +260,7 @@ export default function AuthPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? 'Creating account...' : 'Create Account'}
                   </Button>
@@ -264,5 +271,5 @@ export default function AuthPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

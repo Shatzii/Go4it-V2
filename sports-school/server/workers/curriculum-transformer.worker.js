@@ -1,6 +1,6 @@
 /**
  * Curriculum Transformer Worker
- * 
+ *
  * This worker thread handles the CPU-intensive task of transforming standard
  * curriculum content for different neurodivergent learning styles.
  */
@@ -17,7 +17,7 @@ const ADAPTATION_TYPES = {
   EMPHASIS: 'emphasis',
   EXECUTIVE_FUNCTION: 'executive_function',
   SENSORY: 'sensory',
-  SEQUENCING: 'sequencing'
+  SEQUENCING: 'sequencing',
 };
 
 /**
@@ -31,31 +31,31 @@ const ADAPTATION_TYPES = {
  */
 function transformCurriculum(data) {
   const { content, learningDifference, gradeLevel, userProfile } = data;
-  
+
   // Validate input
   if (!content || !learningDifference || !gradeLevel) {
     return {
       error: 'Missing required parameters',
-      originalContent: content
+      originalContent: content,
     };
   }
-  
+
   // Check if learning difference is supported
   if (!SUPPORTED_TYPES.includes(learningDifference)) {
     return {
       error: `Unsupported learning difference: ${learningDifference}`,
       originalContent: content,
-      supportedTypes: SUPPORTED_TYPES
+      supportedTypes: SUPPORTED_TYPES,
     };
   }
-  
+
   // Extract content information
   const contentInfo = analyzeContent(content);
-  
+
   // Apply transformations based on the learning difference
   let transformedContent = content;
   const adaptations = [];
-  
+
   // Apply adaptations based on learning difference
   switch (learningDifference) {
     case 'dyslexia':
@@ -63,28 +63,28 @@ function transformCurriculum(data) {
       adaptations.push(
         { type: ADAPTATION_TYPES.TEXT_SIMPLIFICATION, applied: true },
         { type: ADAPTATION_TYPES.VISUAL_SUPPORTS, applied: true },
-        { type: ADAPTATION_TYPES.CHUNKING, applied: true }
+        { type: ADAPTATION_TYPES.CHUNKING, applied: true },
       );
       break;
-    
+
     case 'adhd':
       transformedContent = applyADHDAdaptations(content, gradeLevel, userProfile);
       adaptations.push(
         { type: ADAPTATION_TYPES.CHUNKING, applied: true },
         { type: ADAPTATION_TYPES.EMPHASIS, applied: true },
-        { type: ADAPTATION_TYPES.EXECUTIVE_FUNCTION, applied: true }
+        { type: ADAPTATION_TYPES.EXECUTIVE_FUNCTION, applied: true },
       );
       break;
-    
+
     case 'autism_spectrum':
       transformedContent = applyAutismSpectrumAdaptations(content, gradeLevel, userProfile);
       adaptations.push(
         { type: ADAPTATION_TYPES.VISUAL_SUPPORTS, applied: true },
         { type: ADAPTATION_TYPES.SENSORY, applied: true },
-        { type: ADAPTATION_TYPES.SEQUENCING, applied: true }
+        { type: ADAPTATION_TYPES.SEQUENCING, applied: true },
       );
       break;
-    
+
     case 'combined':
       transformedContent = applyCombinedAdaptations(content, gradeLevel, userProfile);
       adaptations.push(
@@ -92,19 +92,19 @@ function transformCurriculum(data) {
         { type: ADAPTATION_TYPES.VISUAL_SUPPORTS, applied: true },
         { type: ADAPTATION_TYPES.CHUNKING, applied: true },
         { type: ADAPTATION_TYPES.EMPHASIS, applied: true },
-        { type: ADAPTATION_TYPES.EXECUTIVE_FUNCTION, applied: true }
+        { type: ADAPTATION_TYPES.EXECUTIVE_FUNCTION, applied: true },
       );
       break;
-    
+
     default:
       // Apply general adaptations
       transformedContent = applyGeneralAdaptations(content, gradeLevel);
       adaptations.push(
         { type: ADAPTATION_TYPES.TEXT_SIMPLIFICATION, applied: true },
-        { type: ADAPTATION_TYPES.CHUNKING, applied: true }
+        { type: ADAPTATION_TYPES.CHUNKING, applied: true },
       );
   }
-  
+
   // Create result object
   const result = {
     title: contentInfo.title || 'Transformed Curriculum',
@@ -117,10 +117,10 @@ function transformCurriculum(data) {
       wordCount: contentInfo.wordCount,
       readingLevel: contentInfo.readingLevel,
       complexityScore: contentInfo.complexityScore,
-      transformationDate: new Date().toISOString()
-    }
+      transformationDate: new Date().toISOString(),
+    },
   };
-  
+
   return result;
 }
 
@@ -133,39 +133,42 @@ function analyzeContent(content) {
   // Extract title (first line or first heading)
   const lines = content.split('\n');
   let title = lines[0];
-  
+
   // If the first line has markdown heading markers, clean them
   title = title.replace(/^#+\s+/, '');
-  
+
   // Calculate word count
-  const wordCount = content.split(/\s+/).filter(word => word.length > 0).length;
-  
+  const wordCount = content.split(/\s+/).filter((word) => word.length > 0).length;
+
   // Simple readability assessment
   // Longer words and sentences increase complexity
-  const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 0);
+  const sentences = content.split(/[.!?]+/).filter((s) => s.trim().length > 0);
   const avgSentenceLength = sentences.length > 0 ? wordCount / sentences.length : 0;
-  
+
   // Count long words (>6 chars)
-  const longWords = content.split(/\s+/).filter(word => word.length > 6).length;
+  const longWords = content.split(/\s+/).filter((word) => word.length > 6).length;
   const longWordRatio = longWords / wordCount;
-  
+
   // Simple complexity score (1-10)
-  const complexityScore = Math.min(10, Math.round((avgSentenceLength * 0.5 + longWordRatio * 10) * 1.5));
-  
+  const complexityScore = Math.min(
+    10,
+    Math.round((avgSentenceLength * 0.5 + longWordRatio * 10) * 1.5),
+  );
+
   // Map complexity to grade-based reading level
   let readingLevel;
   if (complexityScore <= 3) readingLevel = 'K-2';
   else if (complexityScore <= 5) readingLevel = '3-5';
   else if (complexityScore <= 7) readingLevel = '6-8';
   else readingLevel = '9-12';
-  
+
   return {
     title,
     wordCount,
     sentenceCount: sentences.length,
     avgSentenceLength,
     complexityScore,
-    readingLevel
+    readingLevel,
   };
 }
 
@@ -175,26 +178,26 @@ function analyzeContent(content) {
 function applyDyslexiaAdaptations(content, gradeLevel, userProfile = {}) {
   // In a real implementation, this would apply specific transformations
   // based on evidence-based strategies for dyslexia
-  
+
   // Simulated transformation for demonstration
   let transformed = content;
-  
+
   // 1. Break text into smaller paragraphs
   transformed = transformed.replace(/([.!?])\s+/g, '$1\n\n');
-  
+
   // 2. Highlight key terms (simulated with markdown **bold**)
   const keyTerms = extractKeyTerms(content);
-  keyTerms.forEach(term => {
+  keyTerms.forEach((term) => {
     const regex = new RegExp(`\\b${term}\\b`, 'gi');
     transformed = transformed.replace(regex, `**${term}**`);
   });
-  
+
   // 3. Add subheadings to break up content
   if (transformed.length > 500) {
     const sections = splitIntoSections(transformed);
     transformed = sections.join('\n\n### Key Point\n\n');
   }
-  
+
   return transformed;
 }
 
@@ -204,25 +207,27 @@ function applyDyslexiaAdaptations(content, gradeLevel, userProfile = {}) {
 function applyADHDAdaptations(content, gradeLevel, userProfile = {}) {
   // In a real implementation, this would apply specific transformations
   // based on evidence-based strategies for ADHD
-  
+
   // Simulated transformation for demonstration
   let transformed = content;
-  
+
   // 1. Add clear structure with numbered steps
   const paragraphs = transformed.split('\n\n');
   if (paragraphs.length > 2) {
-    transformed = paragraphs.map((para, i) => {
-      if (i === 0) return para; // Skip introduction
-      return `${i}. ${para.trim()}`;
-    }).join('\n\n');
+    transformed = paragraphs
+      .map((para, i) => {
+        if (i === 0) return para; // Skip introduction
+        return `${i}. ${para.trim()}`;
+      })
+      .join('\n\n');
   }
-  
+
   // 2. Add visual breaks and emphasis
   transformed = transformed.replace(/([.!?])\s+/g, '$1\n\n');
-  
+
   // 3. Add executive function supports
   transformed = `## Learning Goal\nAfter completing this section, you will be able to understand the main concepts.\n\n## Time Required\nAbout ${Math.ceil(content.length / 500)} minutes\n\n${transformed}\n\n## Check Your Understanding\n- What was the main idea?\n- How does this connect to what you already know?`;
-  
+
   return transformed;
 }
 
@@ -232,19 +237,20 @@ function applyADHDAdaptations(content, gradeLevel, userProfile = {}) {
 function applyAutismSpectrumAdaptations(content, gradeLevel, userProfile = {}) {
   // In a real implementation, this would apply specific transformations
   // based on evidence-based strategies for autism spectrum
-  
+
   // Simulated transformation for demonstration
   let transformed = content;
-  
+
   // 1. Add clear concrete language
   transformed = transformed.replace(/may|might|could possibly|perhaps/gi, 'will');
-  
+
   // 2. Add visual structure
   transformed = `## Visual Schedule\n1. Read the content\n2. Look at any images\n3. Answer questions\n\n${transformed}`;
-  
+
   // 3. Add explicit instructions
-  transformed += '\n\n## What to do next\nWhen you finish reading, click the "Complete" button at the bottom of the page.';
-  
+  transformed +=
+    '\n\n## What to do next\nWhen you finish reading, click the "Complete" button at the bottom of the page.';
+
   return transformed;
 }
 
@@ -253,16 +259,17 @@ function applyAutismSpectrumAdaptations(content, gradeLevel, userProfile = {}) {
  */
 function applyCombinedAdaptations(content, gradeLevel, userProfile = {}) {
   // Apply multiple adaptation strategies
-  
+
   // First break content into more manageable chunks (ADHD + dyslexia)
   let transformed = content.replace(/([.!?])\s+/g, '$1\n\n');
-  
+
   // Add clear structure with visuals (autism + ADHD)
   transformed = `## Visual Outline\n- Main idea\n- Supporting details\n- Conclusion\n\n${transformed}`;
-  
+
   // Add executive function supports (ADHD)
-  transformed += '\n\n## Remember to:\n- Take breaks as needed\n- Highlight important information\n- Ask questions if something is unclear';
-  
+  transformed +=
+    '\n\n## Remember to:\n- Take breaks as needed\n- Highlight important information\n- Ask questions if something is unclear';
+
   return transformed;
 }
 
@@ -272,10 +279,10 @@ function applyCombinedAdaptations(content, gradeLevel, userProfile = {}) {
 function applyGeneralAdaptations(content, gradeLevel) {
   // Apply basic adaptations suitable for most learners
   let transformed = content;
-  
+
   // Add structure
   transformed = `## Main Points\n\n${transformed}\n\n## Summary\nReview the key ideas from this section.`;
-  
+
   return transformed;
 }
 
@@ -286,12 +293,11 @@ function extractKeyTerms(content) {
   // In a real implementation, this would use NLP techniques
   // For this demo, we'll just find capitalized words that aren't at sentence start
   const words = content.split(/\s+/);
-  const capitalizedWords = words.filter(word => 
-    word.length > 4 && 
-    word[0] === word[0].toUpperCase() && 
-    word[0] !== word[0].toLowerCase()
+  const capitalizedWords = words.filter(
+    (word) =>
+      word.length > 4 && word[0] === word[0].toUpperCase() && word[0] !== word[0].toLowerCase(),
   );
-  
+
   // Remove duplicates
   return [...new Set(capitalizedWords)].slice(0, 5);
 }
@@ -305,7 +311,7 @@ function splitIntoSections(content) {
 }
 
 // Listen for messages from the main thread
-parentPort.on('message', message => {
+parentPort.on('message', (message) => {
   try {
     const result = transformCurriculum(message);
     parentPort.postMessage({ success: true, data: result });

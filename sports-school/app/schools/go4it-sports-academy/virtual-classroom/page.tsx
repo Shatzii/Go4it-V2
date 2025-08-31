@@ -1,19 +1,19 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Video, 
-  Mic, 
-  MicOff, 
-  VideoOff, 
-  Users, 
-  MessageSquare, 
-  Settings, 
-  Monitor, 
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Video,
+  Mic,
+  MicOff,
+  VideoOff,
+  Users,
+  MessageSquare,
+  Settings,
+  Monitor,
   Camera,
   Volume2,
   ScreenShare,
@@ -24,14 +24,14 @@ import {
   Trophy,
   Target,
   Activity,
-  Play
-} from 'lucide-react'
-import Link from 'next/link'
+  Play,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function SportsVirtualClassroom() {
-  const [isMuted, setIsMuted] = useState(false)
-  const [isVideoOff, setIsVideoOff] = useState(false)
-  const [activeTab, setActiveTab] = useState('classroom')
+  const [isMuted, setIsMuted] = useState(false);
+  const [isVideoOff, setIsVideoOff] = useState(false);
+  const [activeTab, setActiveTab] = useState('classroom');
 
   const currentSessions = [
     {
@@ -40,7 +40,7 @@ export default function SportsVirtualClassroom() {
       time: 'Now - 4:00 PM',
       participants: 18,
       status: 'live',
-      sport: 'Basketball'
+      sport: 'Basketball',
     },
     {
       title: 'Swimming Technique - Stroke Analysis',
@@ -48,7 +48,7 @@ export default function SportsVirtualClassroom() {
       time: '4:30 PM - 5:30 PM',
       participants: 12,
       status: 'upcoming',
-      sport: 'Swimming'
+      sport: 'Swimming',
     },
     {
       title: 'Track & Field - Speed Training',
@@ -56,31 +56,62 @@ export default function SportsVirtualClassroom() {
       time: '2:30 PM - 3:30 PM',
       participants: 15,
       status: 'completed',
-      sport: 'Track'
-    }
-  ]
+      sport: 'Track',
+    },
+  ];
 
   const participants = [
-    { name: 'Alex Johnson', sport: 'Basketball', status: 'online', speaking: false, level: 'Varsity' },
+    {
+      name: 'Alex Johnson',
+      sport: 'Basketball',
+      status: 'online',
+      speaking: false,
+      level: 'Varsity',
+    },
     { name: 'Maya Chen', sport: 'Basketball', status: 'online', speaking: true, level: 'JV' },
-    { name: 'Carlos Rodriguez', sport: 'Basketball', status: 'online', speaking: false, level: 'Varsity' },
+    {
+      name: 'Carlos Rodriguez',
+      sport: 'Basketball',
+      status: 'online',
+      speaking: false,
+      level: 'Varsity',
+    },
     { name: 'Emma Davis', sport: 'Basketball', status: 'away', speaking: false, level: 'Varsity' },
-    { name: 'Coach Thompson', sport: 'Head Coach', status: 'online', speaking: false, level: 'Staff' }
-  ]
+    {
+      name: 'Coach Thompson',
+      sport: 'Head Coach',
+      status: 'online',
+      speaking: false,
+      level: 'Staff',
+    },
+  ];
 
   const chatMessages = [
-    { user: 'Coach Thompson', message: '🏀 Welcome to basketball strategy session! Today we focus on fast breaks.', time: '3:15 PM' },
+    {
+      user: 'Coach Thompson',
+      message: '🏀 Welcome to basketball strategy session! Today we focus on fast breaks.',
+      time: '3:15 PM',
+    },
     { user: 'Alex Johnson', message: '🚀 Ready to learn new plays, Coach!', time: '3:16 PM' },
     { user: 'Maya Chen', message: '💪 Can we practice the pick and roll?', time: '3:17 PM' },
-    { user: 'Coach Thompson', message: '⭐ Great question Maya! We\'ll cover that in detail.', time: '3:18 PM' }
-  ]
+    {
+      user: 'Coach Thompson',
+      message: "⭐ Great question Maya! We'll cover that in detail.",
+      time: '3:18 PM',
+    },
+  ];
 
   const trainingResources = [
-    { name: 'Basketball Playbook - Advanced Strategies', type: 'PDF', size: '3.2 MB', sport: 'Basketball' },
+    {
+      name: 'Basketball Playbook - Advanced Strategies',
+      type: 'PDF',
+      size: '3.2 MB',
+      sport: 'Basketball',
+    },
     { name: 'Video Analysis - Game Footage', type: 'MP4', size: '125 MB', sport: 'Basketball' },
     { name: 'Training Drill Instructions', type: 'PDF', size: '1.8 MB', sport: 'Basketball' },
-    { name: 'Fitness Assessment Form', type: 'PDF', size: '956 KB', sport: 'General' }
-  ]
+    { name: 'Fitness Assessment Form', type: 'PDF', size: '956 KB', sport: 'General' },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50">
@@ -93,15 +124,11 @@ export default function SportsVirtualClassroom() {
               <p className="text-yellow-100 mt-1">Go4it Sports Academy - Elite Athletic Training</p>
             </div>
             <div className="flex items-center gap-2">
-              <Badge className="bg-green-100 text-green-800">
-                Live Training
-              </Badge>
+              <Badge className="bg-green-100 text-green-800">Live Training</Badge>
               <Badge variant="outline" className="text-white border-white">
                 18 Athletes
               </Badge>
-              <Badge className="bg-orange-100 text-orange-800">
-                🏀 Basketball
-              </Badge>
+              <Badge className="bg-orange-100 text-orange-800">🏀 Basketball</Badge>
             </div>
           </div>
         </div>
@@ -145,35 +172,39 @@ export default function SportsVirtualClassroom() {
                     {/* Video Controls */}
                     <div className="flex items-center justify-center gap-4 p-4 bg-gray-100 rounded-lg">
                       <Button
-                        variant={isMuted ? "destructive" : "default"}
+                        variant={isMuted ? 'destructive' : 'default'}
                         size="sm"
                         onClick={() => setIsMuted(!isMuted)}
                       >
                         {isMuted ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
                       </Button>
-                      
+
                       <Button
-                        variant={isVideoOff ? "destructive" : "default"}
+                        variant={isVideoOff ? 'destructive' : 'default'}
                         size="sm"
                         onClick={() => setIsVideoOff(!isVideoOff)}
                       >
-                        {isVideoOff ? <VideoOff className="h-4 w-4" /> : <Camera className="h-4 w-4" />}
+                        {isVideoOff ? (
+                          <VideoOff className="h-4 w-4" />
+                        ) : (
+                          <Camera className="h-4 w-4" />
+                        )}
                       </Button>
-                      
+
                       <Button variant="outline" size="sm">
                         <ScreenShare className="h-4 w-4" />
                         Share Screen
                       </Button>
-                      
+
                       <Button variant="outline" size="sm">
                         <Target className="h-4 w-4" />
                         Ask Question
                       </Button>
-                      
+
                       <Button variant="outline" size="sm">
                         <Settings className="h-4 w-4" />
                       </Button>
-                      
+
                       <Button variant="destructive" size="sm">
                         Leave Training
                       </Button>
@@ -195,17 +226,22 @@ export default function SportsVirtualClassroom() {
                   <CardContent>
                     <div className="space-y-2">
                       {participants.map((participant, index) => (
-                        <div key={index} className="flex items-center gap-2 p-2 rounded bg-yellow-50">
-                          <div className={`w-2 h-2 rounded-full ${
-                            participant.status === 'online' ? 'bg-green-500' : 'bg-gray-400'
-                          }`} />
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 p-2 rounded bg-yellow-50"
+                        >
+                          <div
+                            className={`w-2 h-2 rounded-full ${
+                              participant.status === 'online' ? 'bg-green-500' : 'bg-gray-400'
+                            }`}
+                          />
                           <div className="flex-1">
                             <span className="text-sm font-medium">{participant.name}</span>
-                            <div className="text-xs text-gray-600">{participant.level} • {participant.sport}</div>
+                            <div className="text-xs text-gray-600">
+                              {participant.level} • {participant.sport}
+                            </div>
                           </div>
-                          {participant.speaking && (
-                            <Volume2 className="h-3 w-3 text-green-500" />
-                          )}
+                          {participant.speaking && <Volume2 className="h-3 w-3 text-green-500" />}
                         </div>
                       ))}
                     </div>
@@ -259,9 +295,9 @@ export default function SportsVirtualClassroom() {
                       ))}
                     </div>
                     <div className="mt-3 flex gap-2">
-                      <input 
-                        type="text" 
-                        placeholder="Ask about the play..." 
+                      <input
+                        type="text"
+                        placeholder="Ask about the play..."
                         className="flex-1 px-3 py-2 border rounded-md text-sm"
                       />
                       <Button size="sm">Send</Button>
@@ -283,19 +319,29 @@ export default function SportsVirtualClassroom() {
               <CardContent>
                 <div className="space-y-4">
                   {currentSessions.map((session, index) => (
-                    <div key={index} className={`border-2 rounded-lg p-4 ${
-                      session.status === 'live' ? 'border-green-200 bg-green-50' :
-                      session.status === 'upcoming' ? 'border-blue-200 bg-blue-50' :
-                      'border-gray-200 bg-gray-50'
-                    }`}>
+                    <div
+                      key={index}
+                      className={`border-2 rounded-lg p-4 ${
+                        session.status === 'live'
+                          ? 'border-green-200 bg-green-50'
+                          : session.status === 'upcoming'
+                            ? 'border-blue-200 bg-blue-50'
+                            : 'border-gray-200 bg-gray-50'
+                      }`}
+                    >
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="font-medium">{session.title}</h3>
                         <div className="flex items-center gap-2">
                           <Badge className="bg-orange-100 text-orange-800">{session.sport}</Badge>
-                          <Badge variant={
-                            session.status === 'live' ? 'default' :
-                            session.status === 'upcoming' ? 'secondary' : 'outline'
-                          }>
+                          <Badge
+                            variant={
+                              session.status === 'live'
+                                ? 'default'
+                                : session.status === 'upcoming'
+                                  ? 'secondary'
+                                  : 'outline'
+                            }
+                          >
                             {session.status}
                           </Badge>
                         </div>
@@ -307,8 +353,11 @@ export default function SportsVirtualClassroom() {
                       <div className="flex items-center justify-between mt-3">
                         <span className="text-sm font-medium">{session.time}</span>
                         <Button size="sm" disabled={session.status === 'completed'}>
-                          {session.status === 'live' ? 'Join Training' : 
-                           session.status === 'upcoming' ? 'Set Reminder' : 'View Recording'}
+                          {session.status === 'live'
+                            ? 'Join Training'
+                            : session.status === 'upcoming'
+                              ? 'Set Reminder'
+                              : 'View Recording'}
                         </Button>
                       </div>
                     </div>
@@ -329,12 +378,17 @@ export default function SportsVirtualClassroom() {
               <CardContent>
                 <div className="space-y-3">
                   {trainingResources.map((resource, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
                       <div className="flex items-center gap-3">
                         <Trophy className="h-5 w-5 text-yellow-600" />
                         <div>
                           <p className="font-medium">{resource.name}</p>
-                          <p className="text-sm text-gray-600">{resource.type} • {resource.size} • {resource.sport}</p>
+                          <p className="text-sm text-gray-600">
+                            {resource.type} • {resource.size} • {resource.sport}
+                          </p>
                         </div>
                       </div>
                       <Button size="sm" variant="outline">
@@ -344,10 +398,12 @@ export default function SportsVirtualClassroom() {
                     </div>
                   ))}
                 </div>
-                
+
                 <div className="mt-6 p-4 border-2 border-dashed border-gray-300 rounded-lg text-center">
                   <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                  <p className="text-sm text-gray-600">Upload your training videos and performance data</p>
+                  <p className="text-sm text-gray-600">
+                    Upload your training videos and performance data
+                  </p>
                   <Button size="sm" className="mt-2">
                     Upload Performance Files
                   </Button>
@@ -368,11 +424,11 @@ export default function SportsVirtualClassroom() {
                 <div className="text-center py-8">
                   <Play className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                   <h3 className="text-lg font-medium mb-2">Video Analysis Center</h3>
-                  <p className="text-gray-600 mb-4">Access game footage, training replays, and performance analysis videos</p>
+                  <p className="text-gray-600 mb-4">
+                    Access game footage, training replays, and performance analysis videos
+                  </p>
                   <Link href="/schools/go4it-sports-academy/assignments">
-                    <Button variant="outline">
-                      View Training Assignments
-                    </Button>
+                    <Button variant="outline">View Training Assignments</Button>
                   </Link>
                 </div>
               </CardContent>
@@ -392,9 +448,7 @@ export default function SportsVirtualClassroom() {
                   </Button>
                 </Link>
                 <Link href="/schools/go4it-sports-academy/student-dashboard">
-                  <Button variant="outline">
-                    Back to Sports Dashboard
-                  </Button>
+                  <Button variant="outline">Back to Sports Dashboard</Button>
                 </Link>
               </div>
             </div>
@@ -402,5 +456,5 @@ export default function SportsVirtualClassroom() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

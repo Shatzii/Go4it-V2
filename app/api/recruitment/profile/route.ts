@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getUserFromRequest } from '@/lib/auth'
+import { NextRequest, NextResponse } from 'next/server';
+import { getUserFromRequest } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getUserFromRequest(request)
+    const user = await getUserFromRequest(request);
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Mock recruitment profile - in production, this would come from database
@@ -19,24 +19,24 @@ export async function GET(request: NextRequest) {
         gpa: 3.8,
         sat: 1320,
         act: 28,
-        coreCredits: 16
+        coreCredits: 16,
       },
       athleticStats: {
-        height: "6'2\"",
+        height: '6\'2"',
         weight: '195 lbs',
         stats: {
           passingYards: 3240,
           touchdowns: 32,
           interceptions: 8,
           completionPercentage: 68.5,
-          qbRating: 142.3
-        }
+          qbRating: 142.3,
+        },
       },
       highlights: [
         'State Championship Winner 2023',
         'All-District First Team',
         'Region MVP Award',
-        'Academic All-State'
+        'Academic All-State',
       ],
       timeline: [
         {
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
           details: 'Initial contact from recruiting coordinator',
           followUpNeeded: true,
           nextAction: 'Send highlight reel',
-          nextActionDate: new Date('2024-07-20')
+          nextActionDate: new Date('2024-07-20'),
         },
         {
           id: '2',
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
           schoolName: 'Ohio State University',
           date: new Date('2024-06-15'),
           details: 'Unofficial campus visit',
-          followUpNeeded: false
+          followUpNeeded: false,
         },
         {
           id: '3',
@@ -68,16 +68,16 @@ export async function GET(request: NextRequest) {
           details: 'Expressed interest in program',
           followUpNeeded: true,
           nextAction: 'Schedule official visit',
-          nextActionDate: new Date('2024-07-25')
-        }
+          nextActionDate: new Date('2024-07-25'),
+        },
       ],
       ncaaEligible: true,
-      targetSchools: ['1', '2', '4']
-    }
+      targetSchools: ['1', '2', '4'],
+    };
 
-    return NextResponse.json({ profile })
+    return NextResponse.json({ profile });
   } catch (error) {
-    console.error('Failed to fetch recruitment profile:', error)
-    return NextResponse.json({ error: 'Failed to fetch recruitment profile' }, { status: 500 })
+    console.error('Failed to fetch recruitment profile:', error);
+    return NextResponse.json({ error: 'Failed to fetch recruitment profile' }, { status: 500 });
   }
 }

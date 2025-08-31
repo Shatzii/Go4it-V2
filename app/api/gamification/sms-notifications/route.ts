@@ -4,7 +4,7 @@ import { smsService } from '@/lib/twilio-client';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { 
+    const {
       athletePhone,
       athleteName,
       notificationType, // 'achievement', 'daily_challenge', 'leaderboard', 'streak', 'level_up'
@@ -15,14 +15,17 @@ export async function POST(request: NextRequest) {
       category,
       streakDays,
       newLevel,
-      additionalInfo 
+      additionalInfo,
     } = body;
 
     if (!athletePhone) {
-      return NextResponse.json({
-        success: false,
-        error: 'Athlete phone number required'
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Athlete phone number required',
+        },
+        { status: 400 },
+      );
     }
 
     let messageTemplate = '';
@@ -49,15 +52,18 @@ export async function POST(request: NextRequest) {
         break;
 
       default:
-        return NextResponse.json({
-          success: false,
-          error: 'Invalid notification type'
-        }, { status: 400 });
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Invalid notification type',
+          },
+          { status: 400 },
+        );
     }
 
     const smsResult = await smsService.sendSMS({
       to: athletePhone,
-      message: messageTemplate
+      message: messageTemplate,
     });
 
     return NextResponse.json({
@@ -66,14 +72,16 @@ export async function POST(request: NextRequest) {
       messageId: smsResult.messageId,
       notificationType,
       athleteName,
-      message: `Gamification ${notificationType} SMS sent successfully`
+      message: `Gamification ${notificationType} SMS sent successfully`,
     });
-
   } catch (error: any) {
     console.error('Gamification SMS notification error:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to send gamification SMS notification'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to send gamification SMS notification',
+      },
+      { status: 500 },
+    );
   }
 }

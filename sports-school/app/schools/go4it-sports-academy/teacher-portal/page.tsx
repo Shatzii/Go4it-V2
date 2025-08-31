@@ -1,56 +1,124 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import Link from 'next/link'
+import React, { useState } from 'react';
+import Link from 'next/link';
 
 export default function SportsTeacherPortal() {
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState('overview');
 
   const teacherData = {
     name: 'Coach Williams',
     title: 'Head Soccer Coach',
     email: 'coach.williams@go4itsports.edu',
     phone: '(555) 987-6543',
-    department: 'Athletics'
-  }
+    department: 'Athletics',
+  };
 
   const teamRoster = [
     { id: 1, name: 'Jordan Martinez', number: 12, position: 'Midfielder', grade: '11th', gpa: 3.7 },
     { id: 2, name: 'Alex Thompson', number: 9, position: 'Forward', grade: '12th', gpa: 3.2 },
     { id: 3, name: 'Sam Rodriguez', number: 5, position: 'Defender', grade: '10th', gpa: 3.9 },
     { id: 4, name: 'Taylor Kim', number: 1, position: 'Goalkeeper', grade: '11th', gpa: 3.5 },
-    { id: 5, name: 'Morgan Davis', number: 7, position: 'Midfielder', grade: '12th', gpa: 3.1 }
-  ]
+    { id: 5, name: 'Morgan Davis', number: 7, position: 'Midfielder', grade: '12th', gpa: 3.1 },
+  ];
 
   const upcomingGames = [
-    { date: 'Jan 26', opponent: 'Central High', time: '4:00 PM', location: 'Home Field', type: 'League' },
+    {
+      date: 'Jan 26',
+      opponent: 'Central High',
+      time: '4:00 PM',
+      location: 'Home Field',
+      type: 'League',
+    },
     { date: 'Feb 2', opponent: 'North Academy', time: '2:00 PM', location: 'Away', type: 'League' },
-    { date: 'Feb 9', opponent: 'East Regional', time: '3:30 PM', location: 'Home Field', type: 'Playoff' }
-  ]
+    {
+      date: 'Feb 9',
+      opponent: 'East Regional',
+      time: '3:30 PM',
+      location: 'Home Field',
+      type: 'Playoff',
+    },
+  ];
 
   const trainingSchedule = [
     { day: 'Monday', time: '3:30-5:30 PM', focus: 'Tactical Training', location: 'Main Field' },
     { day: 'Tuesday', time: '3:30-5:00 PM', focus: 'Fitness & Conditioning', location: 'Gym' },
-    { day: 'Wednesday', time: '3:30-5:30 PM', focus: 'Skills & Drills', location: 'Practice Field' },
+    {
+      day: 'Wednesday',
+      time: '3:30-5:30 PM',
+      focus: 'Skills & Drills',
+      location: 'Practice Field',
+    },
     { day: 'Thursday', time: '3:30-5:00 PM', focus: 'Scrimmage', location: 'Main Field' },
-    { day: 'Friday', time: '3:00-4:30 PM', focus: 'Game Preparation', location: 'Classroom/Field' }
-  ]
+    { day: 'Friday', time: '3:00-4:30 PM', focus: 'Game Preparation', location: 'Classroom/Field' },
+  ];
 
   const playerPerformance = [
-    { player: 'Jordan Martinez', games: 18, goals: 7, assists: 12, rating: 8.5, notes: 'Excellent leadership' },
+    {
+      player: 'Jordan Martinez',
+      games: 18,
+      goals: 7,
+      assists: 12,
+      rating: 8.5,
+      notes: 'Excellent leadership',
+    },
     { player: 'Alex Thompson', games: 17, goals: 12, assists: 4, rating: 8.2, notes: 'Top scorer' },
-    { player: 'Sam Rodriguez', games: 18, goals: 1, assists: 3, rating: 7.8, notes: 'Solid defender' },
-    { player: 'Taylor Kim', games: 18, goals: 0, assists: 0, rating: 8.0, notes: 'Reliable keeper' },
-    { player: 'Morgan Davis', games: 15, goals: 3, assists: 8, rating: 7.5, notes: 'Good vision' }
-  ]
+    {
+      player: 'Sam Rodriguez',
+      games: 18,
+      goals: 1,
+      assists: 3,
+      rating: 7.8,
+      notes: 'Solid defender',
+    },
+    {
+      player: 'Taylor Kim',
+      games: 18,
+      goals: 0,
+      assists: 0,
+      rating: 8.0,
+      notes: 'Reliable keeper',
+    },
+    { player: 'Morgan Davis', games: 15, goals: 3, assists: 8, rating: 7.5, notes: 'Good vision' },
+  ];
 
   const academicTracking = [
-    { player: 'Jordan Martinez', gpa: 3.7, attendance: '95%', status: 'Eligible', notes: 'Strong student' },
-    { player: 'Alex Thompson', gpa: 3.2, attendance: '92%', status: 'Eligible', notes: 'Improving grades' },
-    { player: 'Sam Rodriguez', gpa: 3.9, attendance: '98%', status: 'Eligible', notes: 'Honor roll' },
-    { player: 'Taylor Kim', gpa: 3.5, attendance: '94%', status: 'Eligible', notes: 'Consistent work' },
-    { player: 'Morgan Davis', gpa: 3.1, attendance: '89%', status: 'Watch', notes: 'Needs attention' }
-  ]
+    {
+      player: 'Jordan Martinez',
+      gpa: 3.7,
+      attendance: '95%',
+      status: 'Eligible',
+      notes: 'Strong student',
+    },
+    {
+      player: 'Alex Thompson',
+      gpa: 3.2,
+      attendance: '92%',
+      status: 'Eligible',
+      notes: 'Improving grades',
+    },
+    {
+      player: 'Sam Rodriguez',
+      gpa: 3.9,
+      attendance: '98%',
+      status: 'Eligible',
+      notes: 'Honor roll',
+    },
+    {
+      player: 'Taylor Kim',
+      gpa: 3.5,
+      attendance: '94%',
+      status: 'Eligible',
+      notes: 'Consistent work',
+    },
+    {
+      player: 'Morgan Davis',
+      gpa: 3.1,
+      attendance: '89%',
+      status: 'Watch',
+      notes: 'Needs attention',
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-900 via-emerald-900 to-teal-900">
@@ -58,7 +126,10 @@ export default function SportsTeacherPortal() {
       <header className="bg-white/10 backdrop-blur-sm border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <Link href="/schools/go4it-sports-academy" className="text-white font-semibold text-lg hover:text-green-300">
+            <Link
+              href="/schools/go4it-sports-academy"
+              className="text-white font-semibold text-lg hover:text-green-300"
+            >
               ← Go4it Sports Academy
             </Link>
             <h1 className="text-2xl font-bold text-white">Coach Portal</h1>
@@ -85,7 +156,7 @@ export default function SportsTeacherPortal() {
               <div className="text-green-200 text-sm">Team Players</div>
             </div>
           </div>
-          
+
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
             <div className="text-center">
               <div className="text-4xl mb-2">🏆</div>
@@ -93,7 +164,7 @@ export default function SportsTeacherPortal() {
               <div className="text-green-200 text-sm">Season Record</div>
             </div>
           </div>
-          
+
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
             <div className="text-center">
               <div className="text-4xl mb-2">⚽</div>
@@ -101,7 +172,7 @@ export default function SportsTeacherPortal() {
               <div className="text-green-200 text-sm">Goals Scored</div>
             </div>
           </div>
-          
+
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
             <div className="text-center">
               <div className="text-4xl mb-2">📚</div>
@@ -119,7 +190,7 @@ export default function SportsTeacherPortal() {
                 { id: 'overview', name: 'Overview', icon: '📊' },
                 { id: 'roster', name: 'Team Roster', icon: '👥' },
                 { id: 'performance', name: 'Performance', icon: '⚽' },
-                { id: 'academic', name: 'Academic', icon: '📚' }
+                { id: 'academic', name: 'Academic', icon: '📚' },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -145,15 +216,21 @@ export default function SportsTeacherPortal() {
                     {upcomingGames.map((game, index) => (
                       <div key={index} className="bg-white/5 rounded-lg p-4 border border-white/10">
                         <div className="flex items-center justify-between mb-2">
-                          <span className={`px-3 py-1 rounded-full text-sm ${
-                            game.type === 'League' ? 'bg-blue-500/30 text-blue-200' : 'bg-red-500/30 text-red-200'
-                          }`}>
+                          <span
+                            className={`px-3 py-1 rounded-full text-sm ${
+                              game.type === 'League'
+                                ? 'bg-blue-500/30 text-blue-200'
+                                : 'bg-red-500/30 text-red-200'
+                            }`}
+                          >
                             {game.type}
                           </span>
                           <span className="text-green-200 text-sm">{game.time}</span>
                         </div>
                         <h4 className="font-semibold text-white mb-1">vs. {game.opponent}</h4>
-                        <p className="text-green-200 text-sm">{game.date} • {game.location}</p>
+                        <p className="text-green-200 text-sm">
+                          {game.date} • {game.location}
+                        </p>
                       </div>
                     ))}
                   </div>
@@ -186,10 +263,14 @@ export default function SportsTeacherPortal() {
                       <tr className="border-b border-white/20">
                         <th className="text-left py-3 px-4 text-green-200 font-semibold">#</th>
                         <th className="text-left py-3 px-4 text-green-200 font-semibold">Name</th>
-                        <th className="text-left py-3 px-4 text-green-200 font-semibold">Position</th>
+                        <th className="text-left py-3 px-4 text-green-200 font-semibold">
+                          Position
+                        </th>
                         <th className="text-left py-3 px-4 text-green-200 font-semibold">Grade</th>
                         <th className="text-left py-3 px-4 text-green-200 font-semibold">GPA</th>
-                        <th className="text-left py-3 px-4 text-green-200 font-semibold">Actions</th>
+                        <th className="text-left py-3 px-4 text-green-200 font-semibold">
+                          Actions
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -200,11 +281,15 @@ export default function SportsTeacherPortal() {
                           <td className="py-3 px-4 text-green-200">{player.position}</td>
                           <td className="py-3 px-4 text-green-200">{player.grade}</td>
                           <td className="py-3 px-4">
-                            <span className={`px-2 py-1 rounded text-sm ${
-                              player.gpa >= 3.5 ? 'bg-green-500/30 text-green-200' :
-                              player.gpa >= 3.0 ? 'bg-yellow-500/30 text-yellow-200' :
-                              'bg-red-500/30 text-red-200'
-                            }`}>
+                            <span
+                              className={`px-2 py-1 rounded text-sm ${
+                                player.gpa >= 3.5
+                                  ? 'bg-green-500/30 text-green-200'
+                                  : player.gpa >= 3.0
+                                    ? 'bg-yellow-500/30 text-yellow-200'
+                                    : 'bg-red-500/30 text-red-200'
+                              }`}
+                            >
                               {player.gpa}
                             </span>
                           </td>
@@ -231,7 +316,9 @@ export default function SportsTeacherPortal() {
                         <th className="text-left py-3 px-4 text-green-200 font-semibold">Player</th>
                         <th className="text-left py-3 px-4 text-green-200 font-semibold">Games</th>
                         <th className="text-left py-3 px-4 text-green-200 font-semibold">Goals</th>
-                        <th className="text-left py-3 px-4 text-green-200 font-semibold">Assists</th>
+                        <th className="text-left py-3 px-4 text-green-200 font-semibold">
+                          Assists
+                        </th>
                         <th className="text-left py-3 px-4 text-green-200 font-semibold">Rating</th>
                         <th className="text-left py-3 px-4 text-green-200 font-semibold">Notes</th>
                       </tr>
@@ -244,11 +331,15 @@ export default function SportsTeacherPortal() {
                           <td className="py-3 px-4 text-green-200">{player.goals}</td>
                           <td className="py-3 px-4 text-green-200">{player.assists}</td>
                           <td className="py-3 px-4">
-                            <span className={`px-2 py-1 rounded text-sm ${
-                              player.rating >= 8.0 ? 'bg-green-500/30 text-green-200' :
-                              player.rating >= 7.5 ? 'bg-yellow-500/30 text-yellow-200' :
-                              'bg-red-500/30 text-red-200'
-                            }`}>
+                            <span
+                              className={`px-2 py-1 rounded text-sm ${
+                                player.rating >= 8.0
+                                  ? 'bg-green-500/30 text-green-200'
+                                  : player.rating >= 7.5
+                                    ? 'bg-yellow-500/30 text-yellow-200'
+                                    : 'bg-red-500/30 text-red-200'
+                              }`}
+                            >
                               {player.rating}
                             </span>
                           </td>
@@ -270,10 +361,16 @@ export default function SportsTeacherPortal() {
                       <tr className="border-b border-white/20">
                         <th className="text-left py-3 px-4 text-green-200 font-semibold">Player</th>
                         <th className="text-left py-3 px-4 text-green-200 font-semibold">GPA</th>
-                        <th className="text-left py-3 px-4 text-green-200 font-semibold">Attendance</th>
-                        <th className="text-left py-3 px-4 text-green-200 font-semibold">Eligibility</th>
+                        <th className="text-left py-3 px-4 text-green-200 font-semibold">
+                          Attendance
+                        </th>
+                        <th className="text-left py-3 px-4 text-green-200 font-semibold">
+                          Eligibility
+                        </th>
                         <th className="text-left py-3 px-4 text-green-200 font-semibold">Notes</th>
-                        <th className="text-left py-3 px-4 text-green-200 font-semibold">Actions</th>
+                        <th className="text-left py-3 px-4 text-green-200 font-semibold">
+                          Actions
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -281,21 +378,29 @@ export default function SportsTeacherPortal() {
                         <tr key={index} className="border-b border-white/10 hover:bg-white/5">
                           <td className="py-3 px-4 text-white font-semibold">{student.player}</td>
                           <td className="py-3 px-4">
-                            <span className={`px-2 py-1 rounded text-sm ${
-                              student.gpa >= 3.5 ? 'bg-green-500/30 text-green-200' :
-                              student.gpa >= 3.0 ? 'bg-yellow-500/30 text-yellow-200' :
-                              'bg-red-500/30 text-red-200'
-                            }`}>
+                            <span
+                              className={`px-2 py-1 rounded text-sm ${
+                                student.gpa >= 3.5
+                                  ? 'bg-green-500/30 text-green-200'
+                                  : student.gpa >= 3.0
+                                    ? 'bg-yellow-500/30 text-yellow-200'
+                                    : 'bg-red-500/30 text-red-200'
+                              }`}
+                            >
                               {student.gpa}
                             </span>
                           </td>
                           <td className="py-3 px-4 text-green-200">{student.attendance}</td>
                           <td className="py-3 px-4">
-                            <span className={`px-2 py-1 rounded text-sm ${
-                              student.status === 'Eligible' ? 'bg-green-500/30 text-green-200' :
-                              student.status === 'Watch' ? 'bg-yellow-500/30 text-yellow-200' :
-                              'bg-red-500/30 text-red-200'
-                            }`}>
+                            <span
+                              className={`px-2 py-1 rounded text-sm ${
+                                student.status === 'Eligible'
+                                  ? 'bg-green-500/30 text-green-200'
+                                  : student.status === 'Watch'
+                                    ? 'bg-yellow-500/30 text-yellow-200'
+                                    : 'bg-red-500/30 text-red-200'
+                              }`}
+                            >
                               {student.status}
                             </span>
                           </td>
@@ -335,5 +440,5 @@ export default function SportsTeacherPortal() {
         </div>
       </div>
     </div>
-  )
+  );
 }

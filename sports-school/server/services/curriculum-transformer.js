@@ -1,7 +1,7 @@
 /**
  * Curriculum Transformer Service
- * 
- * This service is responsible for transforming traditional curriculum 
+ *
+ * This service is responsible for transforming traditional curriculum
  * materials into formats optimized for neurodivergent learners.
  * It leverages worker threads for CPU-intensive processing and
  * integrates with the AI engine for content adaptation.
@@ -17,7 +17,7 @@ import { createHash } from 'crypto';
 export const LEARNING_DIFFERENCES = {
   DYSLEXIA: 'dyslexia',
   ADHD: 'adhd',
-  AUTISM: 'autism'
+  AUTISM: 'autism',
 };
 
 // Supported content types
@@ -26,14 +26,14 @@ export const CONTENT_TYPES = {
   HTML: 'html',
   MARKDOWN: 'markdown',
   DOCX: 'docx',
-  PDF: 'pdf'
+  PDF: 'pdf',
 };
 
 // Import methods (multiple ways to ingest content)
 export const IMPORT_METHODS = {
   TEXT_INPUT: 'text_input',
   FILE_UPLOAD: 'file_upload',
-  URL: 'url'
+  URL: 'url',
 };
 
 // Processing queue for batch operations
@@ -47,13 +47,13 @@ async function processQueue() {
   if (isProcessing || processingQueue.length === 0) {
     return;
   }
-  
+
   isProcessing = true;
-  
+
   try {
     const task = processingQueue.shift();
     const { content, learningDifference, gradeLevel, options, resolve, reject } = task;
-    
+
     try {
       const result = await transformCurriculum(content, learningDifference, gradeLevel, options);
       resolve(result);
@@ -62,7 +62,7 @@ async function processQueue() {
     }
   } finally {
     isProcessing = false;
-    
+
     // Process the next item if there are any
     if (processingQueue.length > 0) {
       setTimeout(processQueue, 0);
@@ -81,9 +81,9 @@ export function queueTransformation(content, learningDifference, gradeLevel, opt
       gradeLevel,
       options,
       resolve,
-      reject
+      reject,
     });
-    
+
     // Start processing if not already in progress
     if (!isProcessing) {
       processQueue();
@@ -99,26 +99,21 @@ export async function transformCurriculum(content, learningDifference, gradeLeve
   if (!content || content.trim().length === 0) {
     throw new Error('Content cannot be empty');
   }
-  
+
   if (!Object.values(LEARNING_DIFFERENCES).includes(learningDifference)) {
     throw new Error(`Invalid learning difference: ${learningDifference}`);
   }
-  
+
   if (!gradeLevel || isNaN(parseInt(gradeLevel))) {
     throw new Error('Grade level must be a valid number');
   }
-  
+
   try {
     // Use worker pool for CPU-intensive transformations
-    return await transformCurriculumWithWorker(
-      content, 
-      learningDifference, 
-      gradeLevel, 
-      options
-    );
+    return await transformCurriculumWithWorker(content, learningDifference, gradeLevel, options);
   } catch (error) {
     console.error('Error transforming curriculum:', error);
-    
+
     // Fallback to a basic transformation if the worker fails
     return await performBasicTransformation(content, learningDifference, gradeLevel, options);
   }
@@ -131,44 +126,46 @@ async function performBasicTransformation(content, learningDifference, gradeLeve
   // Simple fallback transformations based on learning difference
   let transformed = content;
   const adaptations = [];
-  
+
   if (learningDifference === LEARNING_DIFFERENCES.DYSLEXIA) {
     // Basic dyslexia adaptations
     transformed = transformed.replace(/([a-z]{7,})/gi, '<strong>$1</strong>');
     adaptations.push('Highlighted longer words for easier reading');
-    
+
     // Add line spacing
     if (options.format === 'html') {
       transformed = `<div style="line-height: 1.5; letter-spacing: 0.12em;">${transformed}</div>`;
       adaptations.push('Increased line spacing and letter spacing');
     }
-  } 
-  else if (learningDifference === LEARNING_DIFFERENCES.ADHD) {
+  } else if (learningDifference === LEARNING_DIFFERENCES.ADHD) {
     // Basic ADHD adaptations
     transformed = transformed.replace(/\n\n/g, '\n\n<hr />\n\n');
     adaptations.push('Added visual breaks between paragraphs');
-    
+
     // Break longer paragraphs
     const paragraphs = transformed.split('\n\n');
-    transformed = paragraphs.map(p => {
-      if (p.length > 300) {
-        return p.slice(0, 300) + '\n\n' + p.slice(300);
-      }
-      return p;
-    }).join('\n\n');
+    transformed = paragraphs
+      .map((p) => {
+        if (p.length > 300) {
+          return p.slice(0, 300) + '\n\n' + p.slice(300);
+        }
+        return p;
+      })
+      .join('\n\n');
     adaptations.push('Split longer paragraphs into smaller chunks');
-  }
-  else if (learningDifference === LEARNING_DIFFERENCES.AUTISM) {
+  } else if (learningDifference === LEARNING_DIFFERENCES.AUTISM) {
     // Basic autism adaptations
     transformed = transformed.replace(/([!?])/g, '$1\n');
     adaptations.push('Added line breaks after exclamatory sentences');
-    
+
     // Simplify figures of speech
-    transformed = transformed.replace(/([Ii]n a nutshell|[Bb]y and large|[Aa] piece of cake)/g, 
-      '<span title="This is a figure of speech">$1</span>');
+    transformed = transformed.replace(
+      /([Ii]n a nutshell|[Bb]y and large|[Aa] piece of cake)/g,
+      '<span title="This is a figure of speech">$1</span>',
+    );
     adaptations.push('Identified figures of speech');
   }
-  
+
   return {
     title: options.title || `Transformed Curriculum (${learningDifference})`,
     original: content,
@@ -176,52 +173,54 @@ async function performBasicTransformation(content, learningDifference, gradeLeve
     adaptations: adaptations,
     learningDifference: learningDifference,
     gradeLevel: gradeLevel,
-    fallback: true
+    fallback: true,
   };
 }
 
 /**
  * Transform curriculum from a file upload
  */
-export async function transformCurriculumFromFile(file, learningDifference, gradeLevel, options = {}) {
+export async function transformCurriculumFromFile(
+  file,
+  learningDifference,
+  gradeLevel,
+  options = {},
+) {
   try {
     let content;
     let fileType = file.mimetype || '';
-    
+
     // Extract content based on file type
     if (fileType.includes('text/plain')) {
       content = file.buffer.toString('utf-8');
       options.format = 'text';
-    }
-    else if (fileType.includes('text/html')) {
+    } else if (fileType.includes('text/html')) {
       content = file.buffer.toString('utf-8');
       options.format = 'html';
-    }
-    else if (fileType.includes('text/markdown')) {
+    } else if (fileType.includes('text/markdown')) {
       content = file.buffer.toString('utf-8');
       options.format = 'markdown';
-    }
-    else if (fileType.includes('application/pdf')) {
+    } else if (fileType.includes('application/pdf')) {
       // For PDF we would need a PDF parser library
       // For now, we'll use a basic approach
       content = `[PDF content extraction not implemented yet: ${file.originalname}]`;
       options.format = 'text';
-    }
-    else if (fileType.includes('application/vnd.openxmlformats-officedocument.wordprocessingml.document')) {
+    } else if (
+      fileType.includes('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    ) {
       // For DOCX we would need a DOCX parser library
       // For now, we'll use a basic approach
       content = `[DOCX content extraction not implemented yet: ${file.originalname}]`;
       options.format = 'text';
-    }
-    else {
+    } else {
       throw new Error(`Unsupported file type: ${fileType}`);
     }
-    
+
     // Set title from filename if not provided
     if (!options.title) {
       options.title = path.basename(file.originalname, path.extname(file.originalname));
     }
-    
+
     // Transform the extracted content
     return await transformCurriculum(content, learningDifference, gradeLevel, options);
   } catch (error) {
@@ -240,15 +239,15 @@ export async function saveTransformedCurriculum(transformed, options = {}) {
       .update(transformed.original.substring(0, 100))
       .digest('hex')
       .substring(0, 8);
-    
-    const filename = options.filename || 
-      `transform_${transformed.learningDifference}_${hash}_${timestamp}.html`;
-    
+
+    const filename =
+      options.filename || `transform_${transformed.learningDifference}_${hash}_${timestamp}.html`;
+
     const outputDir = options.outputDir || path.join(os.tmpdir(), 'shatzii-transforms');
     await fs.mkdir(outputDir, { recursive: true });
-    
+
     const filePath = path.join(outputDir, filename);
-    
+
     // Create an HTML document with the transformed content
     const htmlContent = `<!DOCTYPE html>
 <html lang="en">
@@ -271,12 +270,17 @@ export async function saveTransformedCurriculum(transformed, options = {}) {
       margin-bottom: 20px;
     }
     .transformed-content {
-      ${transformed.learningDifference === 'dyslexia' ? 
-        'line-height: 1.8; letter-spacing: 0.12em; word-spacing: 0.16em;' : ''}
-      ${transformed.learningDifference === 'adhd' ? 
-        'max-width: 600px; margin: 0 auto;' : ''}
-      ${transformed.learningDifference === 'autism' ? 
-        'background-color: #f9f9f9; padding: 15px; border-radius: 5px;' : ''}
+      ${
+        transformed.learningDifference === 'dyslexia'
+          ? 'line-height: 1.8; letter-spacing: 0.12em; word-spacing: 0.16em;'
+          : ''
+      }
+      ${transformed.learningDifference === 'adhd' ? 'max-width: 600px; margin: 0 auto;' : ''}
+      ${
+        transformed.learningDifference === 'autism'
+          ? 'background-color: #f9f9f9; padding: 15px; border-radius: 5px;'
+          : ''
+      }
     }
   </style>
 </head>
@@ -286,7 +290,7 @@ export async function saveTransformedCurriculum(transformed, options = {}) {
   <div class="adaptations">
     <h3>Adaptations for ${transformed.learningDifference}</h3>
     <ul>
-      ${transformed.adaptations.map(adaptation => `<li>${adaptation}</li>`).join('')}
+      ${transformed.adaptations.map((adaptation) => `<li>${adaptation}</li>`).join('')}
     </ul>
   </div>
   
@@ -295,14 +299,14 @@ export async function saveTransformedCurriculum(transformed, options = {}) {
   </div>
 </body>
 </html>`;
-    
+
     await fs.writeFile(filePath, htmlContent, 'utf-8');
-    
+
     return {
       success: true,
       filePath,
       url: `/downloads/${filename}`,
-      filename
+      filename,
     };
   } catch (error) {
     console.error('Error saving transformed curriculum:', error);

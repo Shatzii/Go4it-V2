@@ -25,7 +25,7 @@ export async function GET() {
         on3_rpm: 0.9847,
         offers: ['Duke', 'UNC', 'Kentucky', 'UCLA'],
         highlight_url: 'https://tiktok.com/@marcushoops/video/1234567890',
-        thumbnail: '/highlights/marcus-basketball.jpg'
+        thumbnail: '/highlights/marcus-basketball.jpg',
       },
       {
         id: 'vh_002',
@@ -48,7 +48,7 @@ export async function GET() {
         on3_rpm: 0.9234,
         offers: ['Stanford', 'UNC', 'UCLA', 'Florida State'],
         highlight_url: 'https://instagram.com/p/sarah-soccer-goals',
-        thumbnail: '/highlights/sarah-soccer.jpg'
+        thumbnail: '/highlights/sarah-soccer.jpg',
       },
       {
         id: 'vh_003',
@@ -71,7 +71,7 @@ export async function GET() {
         on3_rpm: 0.9678,
         offers: ['Texas', 'Alabama', 'Georgia', 'Ohio State', 'LSU'],
         highlight_url: 'https://tiktok.com/@tylerqb1/video/2345678901',
-        thumbnail: '/highlights/tyler-football.jpg'
+        thumbnail: '/highlights/tyler-football.jpg',
       },
       {
         id: 'vh_004',
@@ -94,7 +94,7 @@ export async function GET() {
         on3_rpm: 0.8912,
         offers: ['Oregon', 'USC', 'Texas', 'Baylor'],
         highlight_url: 'https://instagram.com/p/emma-track-record',
-        thumbnail: '/highlights/emma-track.jpg'
+        thumbnail: '/highlights/emma-track.jpg',
       },
       {
         id: 'vh_005',
@@ -117,8 +117,8 @@ export async function GET() {
         on3_rpm: 0.8756,
         offers: ['Vanderbilt', 'Rice', 'Texas', 'TCU'],
         highlight_url: 'https://tiktok.com/@jasonpitcher/video/3456789012',
-        thumbnail: '/highlights/jason-baseball.jpg'
-      }
+        thumbnail: '/highlights/jason-baseball.jpg',
+      },
     ];
 
     // Platform integration metrics
@@ -129,7 +129,7 @@ export async function GET() {
         ai_analysis_accuracy: 97.2,
         top_sports: ['Football', 'Basketball', 'Baseball', 'Soccer'],
         integration_status: 'Active',
-        api_calls_today: 45672
+        api_calls_today: 45672,
       },
       rivals: {
         prospects_tracked: 356000,
@@ -137,7 +137,7 @@ export async function GET() {
         daily_commitments: 89,
         crystal_ball_predictions: 1847,
         integration_status: 'Active',
-        data_freshness: '15 minutes'
+        data_freshness: '15 minutes',
       },
       on3: {
         rpm_database_size: 567000,
@@ -145,7 +145,7 @@ export async function GET() {
         transfer_portal_entries: 2847,
         prediction_accuracy: 89.4,
         integration_status: 'Active',
-        live_updates: true
+        live_updates: true,
       },
       sports247: {
         composite_rankings: 34567,
@@ -153,7 +153,7 @@ export async function GET() {
         crystal_ball_entries: 1847,
         industry_ratings: 'A+',
         integration_status: 'Active',
-        expert_predictions: 5678
+        expert_predictions: 5678,
       },
       social_media: {
         tiktok_highlights_tracked: 47000,
@@ -161,8 +161,8 @@ export async function GET() {
         viral_threshold: 100000,
         ai_content_analysis: 'Advanced',
         trending_hashtags: ['#footballhighlights', '#basketballskills', '#soccergoals'],
-        daily_viral_discoveries: 127
-      }
+        daily_viral_discoveries: 127,
+      },
     };
 
     // AI-powered insights and recommendations
@@ -172,21 +172,21 @@ export async function GET() {
         { sport: 'Football', growth: '+18%', viral_potential: 'Elite' },
         { sport: 'Soccer', growth: '+15%', viral_potential: 'High' },
         { sport: 'Baseball', growth: '+12%', viral_potential: 'Medium' },
-        { sport: 'Track & Field', growth: '+8%', viral_potential: 'Medium' }
+        { sport: 'Track & Field', growth: '+8%', viral_potential: 'Medium' },
       ],
       recruitment_opportunities: {
         high_potential_athletes: 247,
         undervalued_prospects: 89,
         viral_breakout_candidates: 156,
-        geographical_hotspots: ['Texas', 'California', 'Florida', 'Georgia']
+        geographical_hotspots: ['Texas', 'California', 'Florida', 'Georgia'],
       },
       platform_recommendations: {
         best_for_discovery: 'TikTok',
         best_for_engagement: 'Instagram',
         best_for_analytics: 'Hudl',
         best_for_rankings: 'Rivals',
-        emerging_platform: 'BeReal Sports'
-      }
+        emerging_platform: 'BeReal Sports',
+      },
     };
 
     return NextResponse.json({
@@ -197,15 +197,11 @@ export async function GET() {
       platforms_integrated: 6,
       daily_discoveries: 127,
       success_rate: 94.7,
-      last_updated: new Date().toISOString()
+      last_updated: new Date().toISOString(),
     });
-
   } catch (error) {
     console.error('Error fetching viral highlights:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch viral highlights data' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch viral highlights data' }, { status: 500 });
   }
 }
 
@@ -223,20 +219,16 @@ export async function POST(request: Request) {
       status: 'active',
       created_at: new Date().toISOString(),
       expected_discoveries: Math.floor(Math.random() * 100) + 50,
-      estimated_reach: Math.floor(Math.random() * 1000000) + 500000
+      estimated_reach: Math.floor(Math.random() * 1000000) + 500000,
     };
 
     return NextResponse.json({
       success: true,
       campaign: newCampaign,
-      message: 'Viral highlight tracking campaign created successfully'
+      message: 'Viral highlight tracking campaign created successfully',
     });
-
   } catch (error) {
     console.error('Error creating viral highlight campaign:', error);
-    return NextResponse.json(
-      { error: 'Failed to create campaign' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create campaign' }, { status: 500 });
   }
 }

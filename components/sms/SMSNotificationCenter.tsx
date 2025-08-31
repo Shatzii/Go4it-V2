@@ -5,7 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { MessageSquare, Send, Users, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 
@@ -29,7 +35,7 @@ export default function SMSNotificationCenter() {
     totalSent: 0,
     totalFailed: 0,
     totalUsers: 0,
-    lastSent: ''
+    lastSent: '',
   });
 
   const [selectedTemplate, setSelectedTemplate] = useState<string>('');
@@ -44,36 +50,36 @@ export default function SMSNotificationCenter() {
       name: 'Payment Confirmation',
       category: 'Billing',
       template: '✅ Payment confirmed: ${{amount}} for {{description}}. Thank you!',
-      variables: ['amount', 'description']
+      variables: ['amount', 'description'],
     },
     {
       id: 'gar_score',
       name: 'GAR Score Update',
       category: 'Performance',
       template: '🏆 GAR Analysis Complete! Your score: {{score}}/100. {{improvement}}',
-      variables: ['score', 'improvement']
+      variables: ['score', 'improvement'],
     },
     {
       id: 'coach_reminder',
       name: 'Coach Session Reminder',
       category: 'Coaching',
       template: '⏰ Reminder: {{sessionType}} with {{coachName}} in 30 minutes.',
-      variables: ['sessionType', 'coachName']
+      variables: ['sessionType', 'coachName'],
     },
     {
       id: 'emergency_alert',
       name: 'Emergency Alert',
       category: 'Safety',
       template: '🚨 ALERT: {{alertType}} - {{message}}. Check go4it.app for updates.',
-      variables: ['alertType', 'message']
+      variables: ['alertType', 'message'],
     },
     {
       id: 'camp_registration',
       name: 'Camp Registration',
       category: 'Camps',
-      template: '✅ {{childName}} registered for {{campName}} on {{date}}. We can\'t wait!',
-      variables: ['childName', 'campName', 'date']
-    }
+      template: "✅ {{childName}} registered for {{campName}} on {{date}}. We can't wait!",
+      variables: ['childName', 'campName', 'date'],
+    },
   ];
 
   const sendSMS = async () => {
@@ -89,10 +95,13 @@ export default function SMSNotificationCenter() {
 
     setIsSending(true);
     try {
-      const phoneNumbers = recipients.split(',').map(p => p.trim()).filter(p => p);
-      const recipientData = phoneNumbers.map(phone => ({
+      const phoneNumbers = recipients
+        .split(',')
+        .map((p) => p.trim())
+        .filter((p) => p);
+      const recipientData = phoneNumbers.map((phone) => ({
         phone,
-        message: customMessage || templates.find(t => t.id === selectedTemplate)?.template || ''
+        message: customMessage || templates.find((t) => t.id === selectedTemplate)?.template || '',
       }));
 
       const response = await fetch('/api/sms/bulk', {
@@ -100,13 +109,13 @@ export default function SMSNotificationCenter() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           recipients: recipientData,
-          type: 'manual'
-        })
+          type: 'manual',
+        }),
       });
 
       const result = await response.json();
       setSendResults(result);
-      
+
       if (result.success) {
         setCustomMessage('');
         setRecipients('');
@@ -127,7 +136,7 @@ export default function SMSNotificationCenter() {
         totalSent: 1247,
         totalFailed: 23,
         totalUsers: 156,
-        lastSent: new Date().toLocaleString()
+        lastSent: new Date().toLocaleString(),
       });
     } catch (error) {
       console.error('Failed to load SMS stats:', error);
@@ -210,7 +219,7 @@ export default function SMSNotificationCenter() {
                   <SelectValue placeholder="Select a template (optional)" />
                 </SelectTrigger>
                 <SelectContent className="bg-slate-700 border-slate-600">
-                  {templates.map(template => (
+                  {templates.map((template) => (
                     <SelectItem key={template.id} value={template.id} className="text-white">
                       <div className="flex items-center justify-between w-full">
                         <span>{template.name}</span>
@@ -235,9 +244,7 @@ export default function SMSNotificationCenter() {
                 className="bg-slate-700 border-slate-600 text-white min-h-[100px]"
                 maxLength={160}
               />
-              <p className="text-xs text-slate-400 mt-1">
-                {customMessage.length}/160 characters
-              </p>
+              <p className="text-xs text-slate-400 mt-1">{customMessage.length}/160 characters</p>
             </div>
 
             <div>
@@ -251,9 +258,7 @@ export default function SMSNotificationCenter() {
                 className="bg-slate-700 border-slate-600 text-white"
                 rows={3}
               />
-              <p className="text-xs text-slate-400 mt-1">
-                Separate multiple numbers with commas
-              </p>
+              <p className="text-xs text-slate-400 mt-1">Separate multiple numbers with commas</p>
             </div>
 
             <Button
@@ -275,7 +280,7 @@ export default function SMSNotificationCenter() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {templates.map(template => (
+              {templates.map((template) => (
                 <div key={template.id} className="p-3 bg-slate-700 rounded-lg">
                   <div className="flex items-start justify-between mb-2">
                     <h4 className="font-medium text-white">{template.name}</h4>
@@ -283,7 +288,7 @@ export default function SMSNotificationCenter() {
                   </div>
                   <p className="text-sm text-slate-300 mb-2">{template.template}</p>
                   <div className="flex flex-wrap gap-1">
-                    {template.variables.map(variable => (
+                    {template.variables.map((variable) => (
                       <Badge key={variable} variant="secondary" className="text-xs">
                         {variable}
                       </Badge>

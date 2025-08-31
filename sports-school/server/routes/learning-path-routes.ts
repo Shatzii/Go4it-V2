@@ -40,11 +40,11 @@ router.get('/:pathId', async (req, res) => {
   try {
     const { pathId } = req.params;
     const path = await storage.getLearningPath(pathId);
-    
+
     if (!path) {
       return res.status(404).json({ error: 'Learning path not found' });
     }
-    
+
     res.json(path);
   } catch (error) {
     console.error('Error fetching learning path:', error);
@@ -71,11 +71,11 @@ router.post('/create', async (req, res) => {
 router.post('/generate-adaptive', async (req, res) => {
   try {
     const { userId, schoolId, subject, grade } = req.body;
-    
+
     if (!userId || !schoolId || !subject || !grade) {
       return res.status(400).json({ error: 'Missing required parameters' });
     }
-    
+
     const adaptivePath = await storage.generateAdaptivePath(userId, schoolId, subject, grade);
     res.json(adaptivePath);
   } catch (error) {
@@ -89,7 +89,7 @@ router.put('/:pathId/progress', async (req, res) => {
   try {
     const { pathId } = req.params;
     const validatedData = updateProgressSchema.parse(req.body);
-    
+
     const updatedPath = await storage.updateLearningPathProgress(pathId, validatedData);
     res.json(updatedPath);
   } catch (error) {

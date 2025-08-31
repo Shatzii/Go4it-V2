@@ -1,740 +1,365 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Check, Star, Trophy, Target, Zap, Crown, Heart, Brain, BookOpen, Shield } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
+import { toast } from 'sonner';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import { Check, Star, Zap, Crown, ArrowRight, Shield, Sparkles } from 'lucide-react';
 
-const pricingTiers = [
-  {
-    id: 'free',
-    name: 'Free Profile',
-    price: 0,
-    period: 'forever',
-    description: 'Perfect for getting started with recruiting',
-    popular: false,
-    features: [
-      'Create athlete profile',
-      'Upload highlight videos',
-      'Contact college coaches',
-      'Basic recruiting tools',
-      'Access to coach database',
-      'Profile sharing',
-      'Basic analytics'
-    ],
-    limitations: [
-      'Limited video uploads (5 per month)',
-      'Basic profile customization',
-      'Standard support'
-    ],
-    icon: Star,
-    color: 'bg-slate-600',
-    textColor: 'text-slate-100'
-  },
-  {
-    id: 'starter',
-    name: 'Starter',
-    price: 19,
-    period: 'month',
-    description: 'Enhanced features for serious athletes',
-    popular: true,
-    features: [
-      'Everything in Free',
-      'Unlimited video uploads',
-      'AI-powered coaching',
-      'StarPath skill progression',
-      'Advanced profile customization',
-      'Priority coach matching',
-      'Enhanced analytics dashboard',
-      'Email support',
-      'Recruiting timeline tracking',
-      'Profile optimization tips'
-    ],
-    academyAddOn: {
-      price: 20,
-      features: [
-        'Access to Academy curriculum',
-        'Basic course enrollment',
-        'Progress tracking',
-        'Study materials access'
-      ]
-    },
-    icon: Target,
-    color: 'bg-blue-600',
-    textColor: 'text-white'
-  },
-  {
-    id: 'pro',
-    name: 'Pro Athlete',
-    price: 49,
-    period: 'month',
-    description: 'Professional tools for elite performance',
-    popular: false,
-    features: [
-      'Everything in Starter',
-      'Monthly GAR analysis',
-      'Advanced AI coaching',
-      'Recruiting strategy consultation',
-      'College fit assessment',
-      'Performance predictions',
-      'Scholarship opportunity alerts',
-      'Direct coach messaging',
-      'Video analysis tools'
-    ],
-    academyAddOn: {
-      price: 35,
-      features: [
-        'Complete Academy curriculum',
-        'Advanced course enrollment',
-        'Personalized learning paths',
-        'Grade tracking & GPA calculation',
-        'NCAA compliance monitoring'
-      ]
-    },
-    icon: Trophy,
-    color: 'bg-purple-600',
-    textColor: 'text-white'
-  },
-  {
-    id: 'elite',
-    name: 'Elite Academy',
-    price: 99,
-    period: 'month',
-    description: 'Complete academy experience',
-    popular: false,
-    features: [
-      'Everything in Pro',
-      'Full academy access',
-      'Personal coaching sessions',
-      'College preparation program',
-      'NCAA compliance monitoring',
-      'Academic support',
-      'Mental performance training',
-      'Nutrition planning',
-      'Live coaching calls',
-      'Priority customer success'
-    ],
-    academyAddOn: {
-      price: 50,
-      features: [
-        'Premium Academy experience',
-        'All curriculum subjects',
-        'Personal academic advisor',
-        'College-prep coursework',
-        'Advanced NCAA compliance',
-        'Family academic dashboard'
-      ]
-    },
-    icon: Crown,
-    color: 'bg-gradient-to-r from-yellow-500 to-orange-500',
-    textColor: 'text-white'
-  }
-]
+// Load Stripe
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
-const oneTimeServices = [
-  {
-    id: 'gar-analysis',
-    name: 'GAR Analysis',
-    price: 49,
-    description: 'Comprehensive Growth and Ability Rating analysis',
-    category: 'Performance',
-    features: [
-      'Detailed video analysis',
-      'Performance scoring',
-      'Strengths & weaknesses report',
-      'Improvement recommendations',
-      'College readiness assessment',
-      'Shareable coach report'
-    ],
-    icon: Zap,
-    color: 'bg-green-600',
-    popular: true
-  },
-  {
-    id: 'college-recruitment-report',
-    name: 'College Recruitment Report',
-    price: 79,
-    description: 'Personalized college match analysis with 15+ recommendations',
-    category: 'Recruitment',
-    features: [
-      'Personalized college match analysis',
-      '15+ college recommendations with fit scores',
-      'Academic eligibility assessment',
-      'Scholarship probability calculations',
-      'Direct coach contact information',
-      'Timeline and strategy guide'
-    ],
-    icon: Target,
-    color: 'bg-blue-600',
-    popular: false
-  },
-  {
-    id: 'highlight-reel-creation',
-    name: 'Professional Highlight Reel',
-    price: 99,
-    description: 'AI-curated professional highlight compilation',
-    category: 'Content',
-    features: [
-      'AI-curated highlight compilation',
-      'Professional editing and effects',
-      'Multiple format exports',
-      'Background music and graphics',
-      'Shareable coach packages',
-      '48-hour delivery guarantee'
-    ],
-    icon: Trophy,
-    color: 'bg-purple-600',
-    popular: true
-  },
-  {
-    id: 'performance-benchmarking',
-    name: 'Performance Benchmarking Report',
-    price: 69,
-    description: 'Position-specific comparisons and national rankings',
-    category: 'Analytics',
-    features: [
-      'Position-specific comparisons',
-      'National/regional ranking analysis',
-      'Strengths/weaknesses breakdown',
-      'Performance trends over time',
-      'Improvement roadmap',
-      'Competitive positioning insights'
-    ],
-    icon: Star,
-    color: 'bg-indigo-600',
-    popular: false
-  },
-  {
-    id: 'mental-performance-profile',
-    name: 'Mental Performance Profile',
-    price: 79,
-    description: 'Cognitive assessment and mental coaching for sports',
-    category: 'Mental',
-    features: [
-      'Cognitive assessment for sports',
-      'Focus and attention analysis',
-      'Stress management strategies',
-      'Competition mindset coaching',
-      'Neurodivergent optimization plan',
-      'Mental training exercises'
-    ],
-    icon: Brain,
-    color: 'bg-pink-600',
-    popular: false
-  },
-  {
-    id: 'injury-risk-assessment',
-    name: 'Injury Risk Assessment',
-    price: 59,
-    description: 'Biomechanical analysis with prevention recommendations',
-    category: 'Health',
-    features: [
-      'Biomechanical analysis report',
-      'Movement pattern evaluation',
-      'Injury prevention recommendations',
-      'Training load optimization',
-      'Recovery protocol suggestions',
-      'Monthly check-in included'
-    ],
-    icon: Heart,
-    color: 'bg-red-600',
-    popular: false
-  },
-  {
-    id: 'personalized-training-program',
-    name: 'Personalized Training Program',
-    price: 99,
-    description: 'Sport-specific workout and nutrition optimization',
-    category: 'Training',
-    features: [
-      'Sport-specific workout plans',
-      'Nutrition optimization guide',
-      'Recovery protocol design',
-      'Equipment recommendations',
-      'Progress tracking system',
-      '12-week program included'
-    ],
-    icon: Trophy,
-    color: 'bg-orange-600',
-    popular: false
-  },
-  {
-    id: 'scholarship-application-package',
-    name: 'Scholarship Application Package',
-    price: 89,
-    description: 'Complete scholarship application assistance',
-    category: 'Academic',
-    features: [
-      'Essay writing assistance',
-      'Application strategy planning',
-      'Deadline management system',
-      'Letter of recommendation guidance',
-      'Interview preparation materials',
-      'Follow-up templates included'
-    ],
-    icon: BookOpen,
-    color: 'bg-teal-600',
-    popular: false
-  },
-  {
-    id: 'ncaa-compliance-audit',
-    name: 'NCAA Compliance Audit',
-    price: 39,
-    description: 'Complete eligibility verification and planning',
-    category: 'Compliance',
-    features: [
-      'Complete eligibility verification',
-      'Course requirement analysis',
-      'GPA/test score optimization plan',
-      'Transfer credit evaluation',
-      'Compliance timeline roadmap',
-      'Quarterly updates included'
-    ],
-    icon: Shield,
-    color: 'bg-cyan-600',
-    popular: false
-  }
-]
-
-const annualDiscounts = {
-  starter: { monthly: 19, annual: 190, savings: 38 },
-  pro: { monthly: 49, annual: 490, savings: 98 },
-  elite: { monthly: 99, annual: 990, savings: 198 }
+interface SubscriptionTier {
+  id: string;
+  name: string;
+  price: number;
+  interval: 'month' | 'year';
+  features: string[];
+  stripePriceId: string;
+  popular?: boolean;
 }
 
 export default function PricingPage() {
-  const [isAnnual, setIsAnnual] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState('All')
-  const router = useRouter()
+  const [billingInterval, setBillingInterval] = useState<'month' | 'year'>('month');
+  const [subscriptionTiers, setSubscriptionTiers] = useState<SubscriptionTier[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [processingTier, setProcessingTier] = useState<string | null>(null);
 
-  const filteredServices = selectedCategory === 'All' 
-    ? oneTimeServices 
-    : oneTimeServices.filter(service => service.category === selectedCategory)
+  // Mock user ID - in real app this would come from authentication
+  const mockUserId = 'user_12345';
+  const mockUserEmail = 'athlete@example.com';
 
-  const handleSubscribe = async (tierId: string) => {
-    if (tierId === 'free') {
-      router.push('/register')
-      return
+  useEffect(() => {
+    fetchSubscriptionTiers();
+  }, []);
+
+  const fetchSubscriptionTiers = async () => {
+    try {
+      const response = await fetch('/api/stripe/create-subscription');
+      const result = await response.json();
+
+      if (result.success && result.data?.tiers) {
+        setSubscriptionTiers(result.data.tiers);
+      }
+    } catch (error) {
+      console.error('Error fetching subscription tiers:', error);
+      toast.error('Failed to load subscription plans');
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleSubscribe = async (tier: SubscriptionTier) => {
+    if (processingTier) return;
+
+    setProcessingTier(tier.id);
 
     try {
-      const response = await fetch('/api/create-subscription', {
+      const response = await fetch('/api/stripe/create-subscription', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
         },
         body: JSON.stringify({
-          priceId: tierId,
-          isAnnual
-        })
-      })
+          userId: mockUserId,
+          email: mockUserEmail,
+          tier: tier.id,
+          name: 'John Athlete',
+        }),
+      });
 
-      if (!response.ok) {
-        throw new Error('Failed to create subscription')
+      const result = await response.json();
+
+      if (result.success && result.data?.clientSecret) {
+        // In a real app, this would redirect to a Stripe checkout page
+        // or open a payment modal with the client secret
+        window.location.href = `/checkout?tier=${tier.id}&client_secret=${result.data.clientSecret}`;
+      } else {
+        throw new Error(result.message || 'Failed to create subscription');
       }
-
-      const { url } = await response.json()
-      window.location.href = url
     } catch (error) {
-      console.error('Subscription error:', error)
+      console.error('Subscription error:', error);
+      toast.error(error.message || 'Failed to start subscription process');
+    } finally {
+      setProcessingTier(null);
     }
-  }
+  };
 
-  const handleOneTimePayment = async (serviceId: string) => {
-    try {
-      const response = await fetch('/api/create-payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
-        },
-        body: JSON.stringify({
-          serviceId,
-          amount: oneTimeServices.find(s => s.id === serviceId)?.price || 49
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to create payment')
-      }
-
-      const { url } = await response.json()
-      window.location.href = url
-    } catch (error) {
-      console.error('Payment error:', error)
+  const getTierIcon = (tierId: string) => {
+    switch (tierId) {
+      case 'starter':
+        return <Star className="w-6 h-6" />;
+      case 'pro':
+        return <Zap className="w-6 h-6" />;
+      case 'elite':
+        return <Crown className="w-6 h-6" />;
+      default:
+        return <Star className="w-6 h-6" />;
     }
+  };
+
+  const getTierColor = (tierId: string) => {
+    switch (tierId) {
+      case 'starter':
+        return 'text-blue-500';
+      case 'pro':
+        return 'text-purple-500';
+      case 'elite':
+        return 'text-amber-500';
+      default:
+        return 'text-gray-500';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-white">Loading pricing information...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
+      <div className="container mx-auto px-4 py-16">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">
-            Choose Your Athletic Journey
-          </h1>
-          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-            From free profile creation to elite academy access - find the perfect plan for your recruiting and development goals
-          </p>
-          
-          {/* Billing Toggle */}
-          <div className="flex items-center justify-center mt-8 bg-slate-800 rounded-lg p-1 w-fit mx-auto">
-            <button
-              onClick={() => setIsAnnual(false)}
-              className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
-                !isAnnual
-                  ? 'bg-blue-600 text-white'
-                  : 'text-slate-300 hover:text-white'
-              }`}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setIsAnnual(true)}
-              className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
-                isAnnual
-                  ? 'bg-blue-600 text-white'
-                  : 'text-slate-300 hover:text-white'
-              }`}
-            >
-              Annual
-              <Badge variant="secondary" className="ml-2 bg-green-600 text-white">
-                Save 20%
-              </Badge>
-            </button>
-          </div>
-        </div>
-
-        {/* One-Time Services */}
-        <div className="mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-white mb-4">
-              Premium One-Time Services
-            </h2>
-            <p className="text-xl text-slate-400 max-w-3xl mx-auto">
-              Professional services designed to solve specific challenges in your athletic journey
-            </p>
-          </div>
-
-          {/* Service Categories */}
-          <div className="mb-8">
-            <div className="flex flex-wrap justify-center gap-2">
-              {['All', 'Performance', 'Recruitment', 'Training', 'Mental', 'Academic', 'Analytics', 'Content', 'Health', 'Compliance'].map((category) => (
-                <Button
-                  key={category}
-                  variant={selectedCategory === category ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setSelectedCategory(category)}
-                  className="mb-2"
-                >
-                  {category}
-                </Button>
-              ))}
+        <div className="text-center mb-16">
+          <div className="flex items-center justify-center mb-6">
+            <div className="bg-blue-500/20 p-3 rounded-full backdrop-blur-sm border border-blue-500/30">
+              <Sparkles className="w-8 h-8 text-blue-400" />
             </div>
           </div>
+          <h1 className="text-5xl font-bold text-white mb-6">
+            Choose Your{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+              Athletic Journey
+            </span>
+          </h1>
+          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            Unlock advanced AI-powered training, social media automation, and recruitment tools to
+            accelerate your athletic performance and college prospects.
+          </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {filteredServices.map((service) => {
-              const Icon = service.icon
-              return (
-                <Card
-                  key={service.id}
-                  className={`bg-slate-800 border-slate-700 ${
-                    service.popular ? 'ring-2 ring-primary' : ''
-                  } hover:shadow-xl transition-all duration-300 group`}
+          {/* Billing Toggle */}
+          <div className="flex items-center justify-center space-x-4 mb-8">
+            <span
+              className={`text-sm ${billingInterval === 'month' ? 'text-white' : 'text-gray-400'}`}
+            >
+              Monthly
+            </span>
+            <Switch
+              checked={billingInterval === 'year'}
+              onCheckedChange={(checked) => setBillingInterval(checked ? 'year' : 'month')}
+            />
+            <span
+              className={`text-sm ${billingInterval === 'year' ? 'text-white' : 'text-gray-400'}`}
+            >
+              Yearly
+            </span>
+            <Badge
+              variant="secondary"
+              className="ml-2 bg-green-500/20 text-green-400 border-green-500/30"
+            >
+              Save 20%
+            </Badge>
+          </div>
+        </div>
+
+        {/* Pricing Cards */}
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {subscriptionTiers.map((tier) => (
+            <Card
+              key={tier.id}
+              className={`relative overflow-hidden backdrop-blur-md border-2 transition-all duration-300 hover:scale-105 ${
+                tier.popular
+                  ? 'border-purple-500/50 bg-purple-500/10 shadow-2xl shadow-purple-500/20'
+                  : 'border-gray-700/50 bg-gray-900/50 hover:border-blue-500/30'
+              }`}
+            >
+              {tier.popular && (
+                <div className="absolute top-0 right-0 bg-gradient-to-l from-purple-500 to-blue-500 text-white px-3 py-1 text-sm font-semibold rounded-bl-lg">
+                  Most Popular
+                </div>
+              )}
+
+              <CardHeader className="text-center pb-4">
+                <div
+                  className={`mx-auto mb-4 p-3 rounded-full bg-gradient-to-r ${
+                    tier.id === 'starter'
+                      ? 'from-blue-500/20 to-cyan-500/20'
+                      : tier.id === 'pro'
+                        ? 'from-purple-500/20 to-pink-500/20'
+                        : 'from-amber-500/20 to-yellow-500/20'
+                  } backdrop-blur-sm border ${
+                    tier.id === 'starter'
+                      ? 'border-blue-500/30'
+                      : tier.id === 'pro'
+                        ? 'border-purple-500/30'
+                        : 'border-amber-500/30'
+                  }`}
                 >
-                  {service.popular && (
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                      <Badge className="bg-primary text-white">Most Popular</Badge>
+                  <div className={getTierColor(tier.id)}>{getTierIcon(tier.id)}</div>
+                </div>
+
+                <CardTitle className="text-2xl font-bold text-white mb-2">{tier.name}</CardTitle>
+
+                <div className="mb-4">
+                  <span className="text-4xl font-bold text-white">
+                    ${billingInterval === 'year' ? (tier.price * 10).toFixed(0) : tier.price}
+                  </span>
+                  <span className="text-gray-400 ml-1">
+                    /{billingInterval === 'year' ? 'year' : 'month'}
+                  </span>
+                </div>
+
+                {billingInterval === 'year' && (
+                  <Badge
+                    variant="outline"
+                    className="bg-green-500/20 text-green-400 border-green-500/30"
+                  >
+                    2 months free
+                  </Badge>
+                )}
+              </CardHeader>
+
+              <CardContent className="space-y-6">
+                <ul className="space-y-3">
+                  {tier.features.map((feature, index) => (
+                    <li key={index} className="flex items-center text-gray-300">
+                      <Check className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                      <span className="text-sm">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Separator className="bg-gray-700" />
+
+                <Button
+                  onClick={() => handleSubscribe(tier)}
+                  disabled={processingTier !== null}
+                  className={`w-full py-3 font-semibold transition-all duration-300 ${
+                    tier.popular
+                      ? 'bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg shadow-purple-500/25'
+                      : 'bg-gray-800 hover:bg-gray-700 text-white border border-gray-600 hover:border-gray-500'
+                  }`}
+                >
+                  {processingTier === tier.id ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                      Processing...
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center">
+                      Get Started
+                      <ArrowRight className="w-4 h-4 ml-2" />
                     </div>
                   )}
-                  
-                  <CardHeader>
-                    <div className="flex items-start justify-between mb-4">
-                      <div className={`w-12 h-12 rounded-lg ${service.color} flex items-center justify-center`}>
-                        <Icon className="w-6 h-6 text-white" />
-                      </div>
-                      <Badge variant="outline" className="text-xs">
-                        {service.category}
-                      </Badge>
-                    </div>
-                    
-                    <CardTitle className="text-white text-lg">{service.name}</CardTitle>
-                    <CardDescription className="text-slate-300 text-sm">
-                      {service.description}
-                    </CardDescription>
-                    
-                    <div className="mt-4">
-                      <div className="flex items-baseline">
-                        <span className="text-2xl font-bold text-white">${service.price}</span>
-                        <span className="text-slate-400 ml-1 text-sm">one-time</span>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-4">
-                    <Button
-                      onClick={() => handleOneTimePayment(service.id)}
-                      className="w-full group-hover:bg-primary/90 transition-colors"
-                      variant={service.popular ? 'default' : 'outline'}
-                    >
-                      Purchase Service
-                    </Button>
-
-                    <div className="space-y-2">
-                      {service.features.slice(0, 4).map((feature, index) => (
-                        <div key={index} className="flex items-start gap-2">
-                          <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
-                          <span className="text-xs text-slate-300">{feature}</span>
-                        </div>
-                      ))}
-                      {service.features.length > 4 && (
-                        <div className="text-xs text-slate-400 italic">
-                          +{service.features.length - 4} more features...
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              )
-            })}
-          </div>
-
-          {/* Package Deals */}
-          <div className="mt-12 text-center">
-            <Card className="bg-gradient-to-r from-primary/10 to-blue-500/10 border-primary/30 max-w-2xl mx-auto">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center justify-center gap-2">
-                  <Star className="w-5 h-5 text-primary" />
-                  Package Deals Available
-                </CardTitle>
-                <CardDescription>
-                  Save 20% when purchasing 2+ services together
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-300">
-                  <div>
-                    <strong className="text-white">Recruitment Package:</strong>
-                    <br />College Report + Highlight Reel = $142 (save $36)
-                  </div>
-                  <div>
-                    <strong className="text-white">Performance Package:</strong>
-                    <br />GAR Analysis + Training Program = $118 (save $30)
-                  </div>
-                </div>
-                <Button 
-                  className="mt-4" 
-                  variant="outline"
-                  onClick={() => {/* Handle package inquiry */}}
-                >
-                  Contact for Package Pricing
                 </Button>
               </CardContent>
             </Card>
-          </div>
+          ))}
         </div>
 
-        {/* Subscription Plans */}
-        <div className="mb-16">
-          <h2 className="text-2xl font-bold text-white text-center mb-8">
-            Subscription Plans
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {pricingTiers.map((tier) => {
-            const Icon = tier.icon
-            const annualPrice = annualDiscounts[tier.id as keyof typeof annualDiscounts]
-            const displayPrice = isAnnual && annualPrice ? annualPrice.annual : tier.price
-            const displayPeriod = isAnnual && annualPrice ? 'year' : tier.period
-            
-            return (
-              <Card
-                key={tier.id}
-                className={`relative bg-slate-800 border-slate-700 ${
-                  tier.popular ? 'ring-2 ring-blue-500' : ''
-                } hover:shadow-xl transition-shadow duration-300`}
+        {/* Features Comparison */}
+        <div className="mt-20">
+          <h2 className="text-3xl font-bold text-center text-white mb-12">Feature Comparison</h2>
+
+          <div className="bg-gray-900/50 backdrop-blur-md border border-gray-700 rounded-2xl overflow-hidden">
+            <div className="grid grid-cols-4 gap-4 p-6 border-b border-gray-700">
+              <div className="text-white font-semibold">Features</div>
+              <div className="text-center text-blue-400 font-semibold">Starter</div>
+              <div className="text-center text-purple-400 font-semibold">Pro</div>
+              <div className="text-center text-amber-400 font-semibold">Elite</div>
+            </div>
+
+            {[
+              {
+                feature: 'GAR Video Analysis',
+                starter: 'Basic',
+                pro: 'Advanced',
+                elite: 'Advanced + AI',
+              },
+              {
+                feature: 'Social Media Accounts',
+                starter: '3',
+                pro: 'Unlimited',
+                elite: 'Unlimited',
+              },
+              { feature: 'AI Coaching', starter: false, pro: true, elite: true },
+              { feature: 'Recruitment Tools', starter: false, pro: 'Basic', elite: 'Advanced' },
+              { feature: 'Team Management', starter: false, pro: false, elite: true },
+              { feature: 'Custom Training Plans', starter: false, pro: false, elite: true },
+              { feature: 'Priority Support', starter: false, pro: true, elite: 'Dedicated' },
+            ].map((row, index) => (
+              <div
+                key={index}
+                className="grid grid-cols-4 gap-4 p-4 border-b border-gray-700/50 last:border-b-0"
               >
-                {tier.popular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-blue-600 text-white">Most Popular</Badge>
-                  </div>
-                )}
-                
-                <CardHeader className="text-center">
-                  <div className={`w-12 h-12 mx-auto rounded-lg ${tier.color} flex items-center justify-center mb-4`}>
-                    <Icon className={`w-6 h-6 ${tier.textColor}`} />
-                  </div>
-                  <CardTitle className="text-white">{tier.name}</CardTitle>
-                  <CardDescription className="text-slate-300">
-                    {tier.description}
-                  </CardDescription>
-                  
-                  <div className="mt-4">
-                    <div className="flex items-baseline justify-center">
-                      <span className="text-4xl font-bold text-white">
-                        ${displayPrice}
-                      </span>
-                      {tier.price > 0 && (
-                        <span className="text-slate-400 ml-2">
-                          /{displayPeriod}
-                        </span>
-                      )}
-                    </div>
-                    {isAnnual && annualPrice && (
-                      <div className="text-sm text-green-400 mt-1">
-                        Save ${annualPrice.savings}/year
-                      </div>
-                    )}
-                  </div>
-                </CardHeader>
-
-                <CardContent className="space-y-4">
-                  <Button
-                    onClick={() => handleSubscribe(tier.id)}
-                    className={`w-full ${
-                      tier.popular
-                        ? 'bg-blue-600 hover:bg-blue-700'
-                        : 'bg-slate-700 hover:bg-slate-600'
-                    } text-white`}
-                  >
-                    {tier.price === 0 ? 'Get Started Free' : 'Start Subscription'}
-                  </Button>
-
-                  <div className="space-y-2">
-                    {tier.features.map((feature, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
-                        <span className="text-sm text-slate-300">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {tier.limitations && (
-                    <div className="pt-4 border-t border-slate-700">
-                      <p className="text-xs text-slate-500 mb-2">Limitations:</p>
-                      {tier.limitations.map((limitation, index) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <span className="w-4 h-4 text-slate-500 flex-shrink-0">•</span>
-                          <span className="text-xs text-slate-500">{limitation}</span>
-                        </div>
-                      ))}
-                    </div>
+                <div className="text-gray-300">{row.feature}</div>
+                <div className="text-center text-gray-400">
+                  {typeof row.starter === 'boolean' ? (
+                    row.starter ? (
+                      <Check className="w-5 h-5 text-green-400 mx-auto" />
+                    ) : (
+                      '—'
+                    )
+                  ) : (
+                    row.starter
                   )}
-
-                  {/* Academy Add-On Section */}
-                  {tier.academyAddOn && (
-                    <div className="mt-4 pt-4 border-t border-slate-700">
-                      <div className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 p-4 rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-semibold text-white flex items-center">
-                            <BookOpen className="w-4 h-4 mr-1 text-blue-400" />
-                            +Academy Add-On
-                          </h4>
-                          <span className="text-lg font-bold text-blue-400">
-                            +${tier.academyAddOn.price}/mo
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-300 mb-3">
-                          Complete 7th-12th grade curriculum from CK-12 Foundation & OER Commons
-                        </p>
-                        <div className="space-y-1">
-                          {tier.academyAddOn.features.map((feature, index) => (
-                            <div key={index} className="flex items-start gap-2">
-                              <Check className="w-3 h-3 text-blue-400 flex-shrink-0 mt-0.5" />
-                              <span className="text-xs text-slate-300">{feature}</span>
-                            </div>
-                          ))}
-                        </div>
-                        <Button
-                          size="sm"
-                          className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-xs"
-                          onClick={() => router.push('/academy-plus')}
-                        >
-                          View Academy Features
-                        </Button>
-                      </div>
-                    </div>
+                </div>
+                <div className="text-center text-gray-400">
+                  {typeof row.pro === 'boolean' ? (
+                    row.pro ? (
+                      <Check className="w-5 h-5 text-green-400 mx-auto" />
+                    ) : (
+                      '—'
+                    )
+                  ) : (
+                    row.pro
                   )}
-                </CardContent>
-              </Card>
-            )
-          })}
-        </div>
-
-        {/* FAQ Section */}
-        <div className="mt-20 text-center">
-          <h2 className="text-2xl font-bold text-white mb-8">
-            Frequently Asked Questions
-          </h2>
-          
-          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-white text-left">Can I upgrade or downgrade anytime?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-slate-300 text-left">
-                  Yes, you can change your subscription plan at any time. Upgrades take effect immediately, and downgrades occur at the end of your current billing cycle.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-white text-left">What happens to my free profile?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-slate-300 text-left">
-                  Your free profile and uploaded videos remain accessible forever. Premium features are added on top of your existing free account.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-white text-left">Are there team or bulk discounts?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-slate-300 text-left">
-                  Yes! Teams of 5+ athletes receive 25% off, and schools/clubs get custom pricing. Contact us for bulk pricing options.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-white text-left">Can I cancel anytime?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-slate-300 text-left">
-                  Absolutely. Cancel your subscription anytime with one click. You'll retain access until the end of your current billing period.
-                </p>
-              </CardContent>
-            </Card>
+                </div>
+                <div className="text-center text-gray-400">
+                  {typeof row.elite === 'boolean' ? (
+                    row.elite ? (
+                      <Check className="w-5 h-5 text-green-400 mx-auto" />
+                    ) : (
+                      '—'
+                    )
+                  ) : (
+                    row.elite
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Contact Section */}
+        {/* Trust Indicators */}
         <div className="mt-16 text-center">
-          <Card className="bg-slate-800 border-slate-700 max-w-2xl mx-auto">
-            <CardHeader>
-              <CardTitle className="text-white">Need Help Choosing?</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-slate-300 mb-4">
-                Our team is here to help you find the perfect plan for your athletic journey.
-              </p>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                Schedule a Call
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+          <div className="flex items-center justify-center space-x-8 text-gray-400">
+            <div className="flex items-center">
+              <Shield className="w-5 h-5 mr-2" />
+              <span className="text-sm">Secure Payments</span>
+            </div>
+            <div className="flex items-center">
+              <Check className="w-5 h-5 mr-2 text-green-400" />
+              <span className="text-sm">Cancel Anytime</span>
+            </div>
+            <div className="flex items-center">
+              <Sparkles className="w-5 h-5 mr-2" />
+              <span className="text-sm">7-Day Free Trial</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

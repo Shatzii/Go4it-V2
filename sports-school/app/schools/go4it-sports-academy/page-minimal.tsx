@@ -19,11 +19,18 @@ export default function Go4itSportsAcademy() {
                 Train Global. Learn Local. Dominate Everywhere.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
+                >
                   <PlayCircle className="mr-2 h-5 w-5" />
                   Join the Waitlist
                 </Button>
-                <Button size="lg" variant="outline" className="border-green-400 text-green-400 hover:bg-green-400 hover:text-black">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-green-400 text-green-400 hover:bg-green-400 hover:text-black"
+                >
                   <Trophy className="mr-2 h-5 w-5" />
                   Explore Programs
                 </Button>

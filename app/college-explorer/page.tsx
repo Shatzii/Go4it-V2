@@ -5,9 +5,27 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { School, MapPin, Users, Trophy, DollarSign, GraduationCap, Star, Search, Filter, Eye, Heart } from 'lucide-react';
+import {
+  School,
+  MapPin,
+  Users,
+  Trophy,
+  DollarSign,
+  GraduationCap,
+  Star,
+  Search,
+  Filter,
+  Eye,
+  Heart,
+} from 'lucide-react';
 
 interface College {
   id: string;
@@ -39,7 +57,7 @@ export default function CollegeExplorerPage() {
     state: '',
     maxTuition: '',
     minAcceptance: '',
-    search: ''
+    search: '',
   });
 
   useEffect(() => {
@@ -54,7 +72,7 @@ export default function CollegeExplorerPage() {
     try {
       const response = await fetch('/api/colleges');
       const data = await response.json();
-      
+
       if (data.success) {
         setColleges(data.colleges);
         setFilteredColleges(data.colleges);
@@ -68,45 +86,38 @@ export default function CollegeExplorerPage() {
 
   const applyFilters = () => {
     let filtered = colleges;
-    
+
     if (filters.division) {
-      filtered = filtered.filter(college => 
-        college.division === filters.division
-      );
+      filtered = filtered.filter((college) => college.division === filters.division);
     }
-    
+
     if (filters.sport) {
-      filtered = filtered.filter(college => 
-        college.sports_offered.includes(filters.sport)
-      );
+      filtered = filtered.filter((college) => college.sports_offered.includes(filters.sport));
     }
-    
+
     if (filters.state) {
-      filtered = filtered.filter(college => 
-        college.state === filters.state
-      );
+      filtered = filtered.filter((college) => college.state === filters.state);
     }
-    
+
     if (filters.maxTuition) {
-      filtered = filtered.filter(college => 
-        college.tuition <= parseInt(filters.maxTuition)
-      );
+      filtered = filtered.filter((college) => college.tuition <= parseInt(filters.maxTuition));
     }
-    
+
     if (filters.minAcceptance) {
-      filtered = filtered.filter(college => 
-        college.acceptance_rate >= parseInt(filters.minAcceptance)
+      filtered = filtered.filter(
+        (college) => college.acceptance_rate >= parseInt(filters.minAcceptance),
       );
     }
-    
+
     if (filters.search) {
-      filtered = filtered.filter(college => 
-        college.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-        college.location.toLowerCase().includes(filters.search.toLowerCase()) ||
-        college.conference.toLowerCase().includes(filters.search.toLowerCase())
+      filtered = filtered.filter(
+        (college) =>
+          college.name.toLowerCase().includes(filters.search.toLowerCase()) ||
+          college.location.toLowerCase().includes(filters.search.toLowerCase()) ||
+          college.conference.toLowerCase().includes(filters.search.toLowerCase()),
       );
     }
-    
+
     setFilteredColleges(filtered);
   };
 
@@ -117,17 +128,22 @@ export default function CollegeExplorerPage() {
       state: '',
       maxTuition: '',
       minAcceptance: '',
-      search: ''
+      search: '',
     });
   };
 
   const getDivisionColor = (division: string) => {
     switch (division) {
-      case 'D1': return 'bg-red-500';
-      case 'D2': return 'bg-blue-500';
-      case 'D3': return 'bg-green-500';
-      case 'NAIA': return 'bg-purple-500';
-      default: return 'bg-slate-500';
+      case 'D1':
+        return 'bg-red-500';
+      case 'D2':
+        return 'bg-blue-500';
+      case 'D3':
+        return 'bg-green-500';
+      case 'NAIA':
+        return 'bg-purple-500';
+      default:
+        return 'bg-slate-500';
     }
   };
 
@@ -136,7 +152,7 @@ export default function CollegeExplorerPage() {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(amount);
   };
 
@@ -161,11 +177,11 @@ export default function CollegeExplorerPage() {
             <School className="w-5 h-5 mr-2" />
             COLLEGE EXPLORER
           </Badge>
-          
+
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
             DISCOVER YOUR PERFECT COLLEGE
           </h1>
-          
+
           <p className="text-xl text-slate-300 mb-8 max-w-3xl mx-auto">
             Explore thousands of colleges with advanced filtering and AI-powered recommendations
           </p>
@@ -182,7 +198,7 @@ export default function CollegeExplorerPage() {
           <Card className="bg-slate-800 border-slate-700">
             <CardContent className="p-6 text-center">
               <div className="text-3xl font-bold text-blue-400 mb-2">
-                {colleges.filter(c => c.division === 'D1').length}
+                {colleges.filter((c) => c.division === 'D1').length}
               </div>
               <div className="text-sm text-slate-300">Division I</div>
             </CardContent>
@@ -190,7 +206,7 @@ export default function CollegeExplorerPage() {
           <Card className="bg-slate-800 border-slate-700">
             <CardContent className="p-6 text-center">
               <div className="text-3xl font-bold text-purple-400 mb-2">
-                {new Set(colleges.flatMap(c => c.sports_offered)).size}
+                {new Set(colleges.flatMap((c) => c.sports_offered)).size}
               </div>
               <div className="text-sm text-slate-300">Sports Offered</div>
             </CardContent>
@@ -198,7 +214,7 @@ export default function CollegeExplorerPage() {
           <Card className="bg-slate-800 border-slate-700">
             <CardContent className="p-6 text-center">
               <div className="text-3xl font-bold text-orange-400 mb-2">
-                {new Set(colleges.map(c => c.state)).size}
+                {new Set(colleges.map((c) => c.state)).size}
               </div>
               <div className="text-sm text-slate-300">States Covered</div>
             </CardContent>
@@ -219,12 +235,15 @@ export default function CollegeExplorerPage() {
                 <Input
                   placeholder="Search colleges..."
                   value={filters.search}
-                  onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                  onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
                   className="bg-slate-700 border-slate-600"
                 />
               </div>
               <div>
-                <Select value={filters.division} onValueChange={(value) => setFilters(prev => ({ ...prev, division: value }))}>
+                <Select
+                  value={filters.division}
+                  onValueChange={(value) => setFilters((prev) => ({ ...prev, division: value }))}
+                >
                   <SelectTrigger className="bg-slate-700 border-slate-600">
                     <SelectValue placeholder="Division" />
                   </SelectTrigger>
@@ -238,7 +257,10 @@ export default function CollegeExplorerPage() {
                 </Select>
               </div>
               <div>
-                <Select value={filters.sport} onValueChange={(value) => setFilters(prev => ({ ...prev, sport: value }))}>
+                <Select
+                  value={filters.sport}
+                  onValueChange={(value) => setFilters((prev) => ({ ...prev, sport: value }))}
+                >
                   <SelectTrigger className="bg-slate-700 border-slate-600">
                     <SelectValue placeholder="Sport" />
                   </SelectTrigger>
@@ -253,7 +275,10 @@ export default function CollegeExplorerPage() {
                 </Select>
               </div>
               <div>
-                <Select value={filters.state} onValueChange={(value) => setFilters(prev => ({ ...prev, state: value }))}>
+                <Select
+                  value={filters.state}
+                  onValueChange={(value) => setFilters((prev) => ({ ...prev, state: value }))}
+                >
                   <SelectTrigger className="bg-slate-700 border-slate-600">
                     <SelectValue placeholder="State" />
                   </SelectTrigger>
@@ -268,7 +293,10 @@ export default function CollegeExplorerPage() {
                 </Select>
               </div>
               <div>
-                <Select value={filters.maxTuition} onValueChange={(value) => setFilters(prev => ({ ...prev, maxTuition: value }))}>
+                <Select
+                  value={filters.maxTuition}
+                  onValueChange={(value) => setFilters((prev) => ({ ...prev, maxTuition: value }))}
+                >
                   <SelectTrigger className="bg-slate-700 border-slate-600">
                     <SelectValue placeholder="Max Tuition" />
                   </SelectTrigger>
@@ -298,8 +326,11 @@ export default function CollegeExplorerPage() {
 
         {/* Colleges Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredColleges.map(college => (
-            <Card key={college.id} className="bg-slate-800 border-slate-700 hover:border-green-500/50 transition-all duration-300">
+          {filteredColleges.map((college) => (
+            <Card
+              key={college.id}
+              className="bg-slate-800 border-slate-700 hover:border-green-500/50 transition-all duration-300"
+            >
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
@@ -321,18 +352,24 @@ export default function CollegeExplorerPage() {
                 {/* Key Stats */}
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div className="text-center">
-                    <div className="text-lg font-semibold text-blue-400">{college.acceptance_rate}%</div>
+                    <div className="text-lg font-semibold text-blue-400">
+                      {college.acceptance_rate}%
+                    </div>
                     <div className="text-xs text-slate-300">Acceptance Rate</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-semibold text-green-400">{formatNumber(college.enrollment)}</div>
+                    <div className="text-lg font-semibold text-green-400">
+                      {formatNumber(college.enrollment)}
+                    </div>
                     <div className="text-xs text-slate-300">Enrollment</div>
                   </div>
                 </div>
 
                 {/* Tuition */}
                 <div className="text-center mb-4">
-                  <div className="text-xl font-bold text-purple-400">{formatTuition(college.tuition)}</div>
+                  <div className="text-xl font-bold text-purple-400">
+                    {formatTuition(college.tuition)}
+                  </div>
                   <div className="text-xs text-slate-300">Annual Tuition</div>
                 </div>
 
@@ -341,7 +378,11 @@ export default function CollegeExplorerPage() {
                   <h4 className="font-semibold text-white mb-2 text-sm">Sports Offered</h4>
                   <div className="flex flex-wrap gap-1">
                     {college.sports_offered.slice(0, 4).map((sport, index) => (
-                      <Badge key={index} variant="secondary" className="bg-slate-700 text-slate-300 text-xs">
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="bg-slate-700 text-slate-300 text-xs"
+                      >
                         {sport}
                       </Badge>
                     ))}
@@ -356,11 +397,15 @@ export default function CollegeExplorerPage() {
                 {/* Rankings */}
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div className="text-center">
-                    <div className="text-sm font-semibold text-orange-400">#{college.academic_ranking}</div>
+                    <div className="text-sm font-semibold text-orange-400">
+                      #{college.academic_ranking}
+                    </div>
                     <div className="text-xs text-slate-400">Academic Rank</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-sm font-semibold text-yellow-400">#{college.athletic_ranking}</div>
+                    <div className="text-sm font-semibold text-yellow-400">
+                      #{college.athletic_ranking}
+                    </div>
                     <div className="text-xs text-slate-400">Athletic Rank</div>
                   </div>
                 </div>
@@ -396,19 +441,13 @@ export default function CollegeExplorerPage() {
           <Card className="bg-gradient-to-r from-green-500/20 to-blue-500/20 border-green-500/30 max-w-2xl mx-auto">
             <CardContent className="p-8">
               <School className="w-16 h-16 text-green-400 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold mb-4 text-white">
-                Find Your Perfect Match
-              </h3>
+              <h3 className="text-2xl font-bold mb-4 text-white">Find Your Perfect Match</h3>
               <p className="text-slate-300 mb-6">
                 Use our AI-powered matching system to discover colleges that fit your profile
               </p>
               <div className="flex gap-4 justify-center">
-                <Button className="bg-green-500 hover:bg-green-600">
-                  Start Matching
-                </Button>
-                <Button variant="outline">
-                  Compare Colleges
-                </Button>
+                <Button className="bg-green-500 hover:bg-green-600">Start Matching</Button>
+                <Button variant="outline">Compare Colleges</Button>
               </div>
             </CardContent>
           </Card>

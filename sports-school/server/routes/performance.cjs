@@ -1,6 +1,6 @@
 /**
  * Performance Optimization API Routes
- * 
+ *
  * These routes handle performance tracking, analysis, and optimization recommendations.
  */
 
@@ -18,29 +18,21 @@ router.get('/health', (req, res) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    message: 'Performance Optimization API is operational'
+    message: 'Performance Optimization API is operational',
   });
 });
 
 // Record a performance metric
 router.post('/metrics', (req, res) => {
   try {
-    const {
-      studentId,
-      assignmentId,
-      subject,
-      dimension,
-      value,
-      context,
-      tags
-    } = req.body;
-    
+    const { studentId, assignmentId, subject, dimension, value, context, tags } = req.body;
+
     if (!studentId || !subject || dimension === undefined || value === undefined) {
       return res.status(400).json({
-        error: 'Missing required fields: studentId, subject, dimension, and value are required'
+        error: 'Missing required fields: studentId, subject, dimension, and value are required',
       });
     }
-    
+
     const metricData = {
       studentId,
       assignmentId,
@@ -48,16 +40,16 @@ router.post('/metrics', (req, res) => {
       dimension,
       value: parseFloat(value),
       context: context || {},
-      tags: tags || []
+      tags: tags || [],
     };
-    
+
     const metric = performanceService.recordPerformanceMetric(metricData);
     res.status(201).json(metric);
   } catch (error) {
     console.error('Error recording performance metric:', error);
     res.status(500).json({
       error: 'Failed to record performance metric',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -66,32 +58,26 @@ router.post('/metrics', (req, res) => {
 router.get('/metrics/:studentId', (req, res) => {
   try {
     const { studentId } = req.params;
-    const {
-      subject,
-      dimension,
-      startDate,
-      endDate,
-      limit
-    } = req.query;
-    
+    const { subject, dimension, startDate, endDate, limit } = req.query;
+
     const filters = {};
     if (subject) filters.subject = subject;
     if (dimension) filters.dimension = dimension;
     if (startDate) filters.startDate = startDate;
     if (endDate) filters.endDate = endDate;
-    
+
     const metrics = performanceService.getStudentPerformanceMetrics(
       studentId,
       filters,
-      limit ? parseInt(limit) : 100
+      limit ? parseInt(limit) : 100,
     );
-    
+
     res.json(metrics);
   } catch (error) {
     console.error('Error retrieving performance metrics:', error);
     res.status(500).json({
       error: 'Failed to retrieve performance metrics',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -100,24 +86,20 @@ router.get('/metrics/:studentId', (req, res) => {
 router.get('/summary/:studentId', (req, res) => {
   try {
     const { studentId } = req.params;
-    const {
-      timeFrame,
-      dimensions,
-      subjects
-    } = req.query;
-    
+    const { timeFrame, dimensions, subjects } = req.query;
+
     const options = {};
     if (timeFrame) options.timeFrame = timeFrame;
     if (dimensions) options.dimensions = dimensions.split(',');
     if (subjects) options.subjects = subjects.split(',');
-    
+
     const summary = performanceService.generatePerformanceSummary(studentId, options);
     res.json(summary);
   } catch (error) {
     console.error('Error generating performance summary:', error);
     res.status(500).json({
       error: 'Failed to generate performance summary',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -127,18 +109,18 @@ router.get('/recommendations/:studentId', (req, res) => {
   try {
     const { studentId } = req.params;
     const { neurotype } = req.query;
-    
+
     const recommendations = performanceService.generateOptimizationRecommendations(
       studentId,
-      neurotype
+      neurotype,
     );
-    
+
     res.json(recommendations);
   } catch (error) {
     console.error('Error generating optimization recommendations:', error);
     res.status(500).json({
       error: 'Failed to generate optimization recommendations',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -148,18 +130,18 @@ router.get('/optimizations/:studentId', (req, res) => {
   try {
     const { studentId } = req.params;
     const { limit } = req.query;
-    
+
     const optimizations = performanceService.getStudentOptimizations(
       studentId,
-      limit ? parseInt(limit) : 10
+      limit ? parseInt(limit) : 10,
     );
-    
+
     res.json(optimizations);
   } catch (error) {
     console.error('Error retrieving optimization history:', error);
     res.status(500).json({
       error: 'Failed to retrieve optimization history',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -167,37 +149,30 @@ router.get('/optimizations/:studentId', (req, res) => {
 // Track medication efficacy
 router.post('/medication/track', (req, res) => {
   try {
-    const {
-      studentId,
-      medication,
-      dosage,
-      timeOfDay,
-      effects,
-      context
-    } = req.body;
-    
+    const { studentId, medication, dosage, timeOfDay, effects, context } = req.body;
+
     if (!studentId || !medication || !dosage) {
       return res.status(400).json({
-        error: 'Missing required fields: studentId, medication, and dosage are required'
+        error: 'Missing required fields: studentId, medication, and dosage are required',
       });
     }
-    
+
     const efficacyData = {
       studentId,
       medication,
       dosage,
       timeOfDay: timeOfDay || 'unknown',
       effects: effects || {},
-      context: context || {}
+      context: context || {},
     };
-    
+
     const efficacy = performanceService.trackMedicationEfficacy(efficacyData);
     res.status(201).json(efficacy);
   } catch (error) {
     console.error('Error tracking medication efficacy:', error);
     res.status(500).json({
       error: 'Failed to track medication efficacy',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -207,18 +182,18 @@ router.get('/medication/analyze/:studentId', (req, res) => {
   try {
     const { studentId } = req.params;
     const { medication } = req.query;
-    
+
     const analysis = performanceService.analyzeMedicationPerformanceCorrelation(
       studentId,
-      medication
+      medication,
     );
-    
+
     res.json(analysis);
   } catch (error) {
     console.error('Error analyzing medication-performance correlation:', error);
     res.status(500).json({
       error: 'Failed to analyze medication-performance correlation',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -227,50 +202,50 @@ router.get('/medication/analyze/:studentId', (req, res) => {
 router.post('/sample/:studentId', (req, res) => {
   try {
     const { studentId } = req.params;
-    const { 
+    const {
       subjects = ['Math', 'Science', 'English', 'History'],
       days = 30,
-      includeADHD = false
+      includeADHD = false,
     } = req.body;
-    
+
     const dimensions = ['speed', 'accuracy', 'comprehension', 'overall'];
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
-    
+
     const metrics = [];
-    
+
     // Generate sample metrics
     for (let day = 0; day < days; day++) {
       const date = new Date(startDate);
       date.setDate(date.getDate() + day);
-      
-      subjects.forEach(subject => {
-        dimensions.forEach(dimension => {
+
+      subjects.forEach((subject) => {
+        dimensions.forEach((dimension) => {
           // Create a base value between 60-90
           let baseValue = 60 + Math.random() * 30;
-          
+
           // Add some trend over time
           baseValue += (day / days) * 10 * (Math.random() > 0.5 ? 1 : -1);
-          
+
           // Add some daily variation
           const value = Math.min(100, Math.max(0, baseValue + (Math.random() * 10 - 5)));
-          
+
           const metricData = {
             studentId,
             subject,
             dimension,
             value,
             context: {
-              source: 'sample_data'
+              source: 'sample_data',
             },
-            tags: ['sample']
+            tags: ['sample'],
           };
-          
+
           const metric = performanceService.recordPerformanceMetric(metricData);
           metrics.push(metric);
         });
       });
-      
+
       // If ADHD data is requested, add medication tracking
       if (includeADHD && day % 3 === 0) {
         const medicationData = {
@@ -281,28 +256,28 @@ router.post('/sample/:studentId', (req, res) => {
           effects: {
             focus: 70 + Math.random() * 20,
             duration: 4 + Math.random() * 2,
-            side_effects: Math.random() * 30
+            side_effects: Math.random() * 30,
           },
           context: {
             sleep_quality: Math.random() > 0.7 ? 'poor' : 'good',
             activity_level: Math.random() > 0.5 ? 'high' : 'low',
-            source: 'sample_data'
-          }
+            source: 'sample_data',
+          },
         };
-        
+
         performanceService.trackMedicationEfficacy(medicationData);
       }
     }
-    
+
     res.status(201).json({
       message: 'Sample data generated successfully',
-      metrics_count: metrics.length
+      metrics_count: metrics.length,
     });
   } catch (error) {
     console.error('Error generating sample data:', error);
     res.status(500).json({
       error: 'Failed to generate sample data',
-      details: error.message
+      details: error.message,
     });
   }
 });

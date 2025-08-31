@@ -1,6 +1,6 @@
 /**
  * Easter Egg Service
- * 
+ *
  * This service handles Easter egg functionality, including checking for Easter eggs
  * at specific paths, tracking user discoveries, and statistics.
  */
@@ -20,14 +20,14 @@ const sampleEasterEggs = [
       facts: [
         'The brain forms new neural connections when learning new information, a process called neuroplasticity.',
         'Taking short breaks during study sessions can improve long-term memory retention by up to 30%.',
-        'Learning a musical instrument can enhance mathematical and spatial-temporal reasoning skills.'
+        'Learning a musical instrument can enhance mathematical and spatial-temporal reasoning skills.',
       ],
-      source: 'Journal of Cognitive Neuroscience'
+      source: 'Journal of Cognitive Neuroscience',
     },
     reward: {
       xp: 50,
-      badge: { name: 'Brain Explorer' }
-    }
+      badge: { name: 'Brain Explorer' },
+    },
   },
   {
     id: 'egg2',
@@ -43,20 +43,30 @@ const sampleEasterEggs = [
       questions: [
         {
           question: 'What legal principle states that a person is innocent until proven guilty?',
-          options: ['Habeas corpus', 'Presumption of innocence', 'Double jeopardy', 'Burden of proof'],
-          correctIndex: 1
+          options: [
+            'Habeas corpus',
+            'Presumption of innocence',
+            'Double jeopardy',
+            'Burden of proof',
+          ],
+          correctIndex: 1,
         },
         {
           question: 'In contract law, what is consideration?',
-          options: ['The act of thinking about an offer', 'Something of value exchanged in a contract', 'The physical location where a contract is signed', 'The amount of time given to accept an offer'],
-          correctIndex: 1
-        }
-      ]
+          options: [
+            'The act of thinking about an offer',
+            'Something of value exchanged in a contract',
+            'The physical location where a contract is signed',
+            'The amount of time given to accept an offer',
+          ],
+          correctIndex: 1,
+        },
+      ],
     },
     reward: {
       xp: 100,
-      badge: { name: 'Legal Eagle' }
-    }
+      badge: { name: 'Legal Eagle' },
+    },
   },
   {
     id: 'egg3',
@@ -78,21 +88,21 @@ const sampleEasterEggs = [
           { word: 'adiós', translation: 'goodbye' },
           { word: 'por favor', translation: 'please' },
           { word: 'disculpe', translation: 'excuse me' },
-          { word: 'buenos días', translation: 'good morning' }
-        ]
-      }
+          { word: 'buenos días', translation: 'good morning' },
+        ],
+      },
     },
     reward: {
       xp: 200,
       badge: { name: 'Code Linguist' },
-      unlocks: { 
+      unlocks: {
         name: 'Bonus vocabulary lists',
         type: 'content',
         data: {
-          url: '/api/language/bonus-vocabulary'
-        }
-      }
-    }
+          url: '/api/language/bonus-vocabulary',
+        },
+      },
+    },
   },
   {
     id: 'egg4',
@@ -104,13 +114,14 @@ const sampleEasterEggs = [
     difficulty: 'medium',
     content: {
       title: 'A Message from the ShotziOS Team',
-      message: 'Thank you for exploring our platform so thoroughly! We built ShotziOS with love and dedication to create an inclusive educational experience for all learners. Keep exploring, and you might find more surprises!'
+      message:
+        'Thank you for exploring our platform so thoroughly! We built ShotziOS with love and dedication to create an inclusive educational experience for all learners. Keep exploring, and you might find more surprises!',
     },
     reward: {
       xp: 75,
-      specialMessage: 'The developers appreciate your curiosity!'
-    }
-  }
+      specialMessage: 'The developers appreciate your curiosity!',
+    },
+  },
 ];
 
 // In-memory storage for Easter eggs and user discoveries
@@ -124,81 +135,80 @@ class EasterEggService {
   getAllEasterEggs() {
     return easterEggs;
   }
-  
+
   /**
    * Get Easter egg by ID
    */
   getEasterEggById(id) {
-    return easterEggs.find(egg => egg.id === id) || null;
+    return easterEggs.find((egg) => egg.id === id) || null;
   }
-  
+
   /**
    * Check for Easter eggs at a specific path and with a specific action
    */
   checkForEasterEgg(path, action, userId) {
     // Find a matching Easter egg
-    const easterEgg = easterEggs.find(egg => 
-      egg.path === path && 
-      (egg.action === null || egg.action === action)
+    const easterEgg = easterEggs.find(
+      (egg) => egg.path === path && (egg.action === null || egg.action === action),
     );
-    
+
     if (!easterEgg) {
-      return { 
-        success: true, 
-        found: false 
+      return {
+        success: true,
+        found: false,
       };
     }
-    
+
     // Check if this is a new discovery for the user
     if (!userDiscoveries[userId]) {
       userDiscoveries[userId] = [];
     }
-    
+
     const isNewDiscovery = !userDiscoveries[userId].some(
-      discovery => discovery.easterEggId === easterEgg.id
+      (discovery) => discovery.easterEggId === easterEgg.id,
     );
-    
+
     // If it's a new discovery, add it to the user's discoveries
     if (isNewDiscovery) {
       userDiscoveries[userId].push({
         easterEggId: easterEgg.id,
         easterEggName: easterEgg.name,
         discoveredAt: new Date().toISOString(),
-        completed: false
+        completed: false,
       });
     }
-    
+
     return {
       success: true,
       found: true,
       easterEgg,
-      isNewDiscovery
+      isNewDiscovery,
     };
   }
-  
+
   /**
    * Complete an Easter egg and earn rewards
    */
   completeEasterEgg(userId, easterEggId, earnedReward) {
     // Find the Easter egg
-    const easterEgg = easterEggs.find(egg => egg.id === easterEggId);
-    
+    const easterEgg = easterEggs.find((egg) => egg.id === easterEggId);
+
     if (!easterEgg) {
       return {
         success: false,
-        error: 'Easter egg not found'
+        error: 'Easter egg not found',
       };
     }
-    
+
     // Find the user's discovery
     if (!userDiscoveries[userId]) {
       userDiscoveries[userId] = [];
     }
-    
+
     const discoveryIndex = userDiscoveries[userId].findIndex(
-      discovery => discovery.easterEggId === easterEggId
+      (discovery) => discovery.easterEggId === easterEggId,
     );
-    
+
     if (discoveryIndex === -1) {
       // If the user hasn't discovered this Easter egg yet, add it
       userDiscoveries[userId].push({
@@ -206,23 +216,23 @@ class EasterEggService {
         easterEggName: easterEgg.name,
         discoveredAt: new Date().toISOString(),
         completed: true,
-        earnedReward: earnedReward
+        earnedReward: earnedReward,
       });
     } else {
       // Update the existing discovery
       userDiscoveries[userId][discoveryIndex].completed = true;
       userDiscoveries[userId][discoveryIndex].earnedReward = earnedReward;
     }
-    
+
     // In a real app, we would also update the user's XP, badges, etc.
-    
+
     return {
       success: true,
       message: 'Easter egg completed successfully',
-      reward: earnedReward ? easterEgg.reward : null
+      reward: earnedReward ? easterEgg.reward : null,
     };
   }
-  
+
   /**
    * Get Easter egg stats for a user
    */
@@ -236,7 +246,7 @@ class EasterEggService {
       byDifficulty: {
         easy: 0,
         medium: 0,
-        hard: 0
+        hard: 0,
       },
       byType: {
         quiz: 0,
@@ -244,31 +254,31 @@ class EasterEggService {
         challenge: 0,
         mini_game: 0,
         hidden_message: 0,
-        achievement: 0
+        achievement: 0,
       },
-      recentDiscoveries: []
+      recentDiscoveries: [],
     };
-    
+
     if (userDiscoveries[userId]) {
       const discoveries = userDiscoveries[userId];
       userStats.discoveredCount = discoveries.length;
-      userStats.completedCount = discoveries.filter(d => d.completed).length;
+      userStats.completedCount = discoveries.filter((d) => d.completed).length;
       userStats.percentageFound = Math.round((discoveries.length / easterEggs.length) * 100);
-      
+
       // Get recent discoveries
       userStats.recentDiscoveries = discoveries
         .sort((a, b) => new Date(b.discoveredAt) - new Date(a.discoveredAt))
         .slice(0, 5)
-        .map(d => ({
+        .map((d) => ({
           id: d.easterEggId,
           easterEggName: d.easterEggName,
           discoveredAt: d.discoveredAt,
-          completed: d.completed
+          completed: d.completed,
         }));
-      
+
       // Count by difficulty and type
-      discoveries.forEach(discovery => {
-        const egg = easterEggs.find(e => e.id === discovery.easterEggId);
+      discoveries.forEach((discovery) => {
+        const egg = easterEggs.find((e) => e.id === discovery.easterEggId);
         if (egg) {
           if (egg.difficulty) {
             userStats.byDifficulty[egg.difficulty]++;
@@ -279,32 +289,32 @@ class EasterEggService {
         }
       });
     }
-    
+
     return {
       success: true,
-      data: userStats
+      data: userStats,
     };
   }
-  
+
   /**
    * Create a new Easter egg (admin only)
    */
   createEasterEgg(easterEggData) {
     // Check if an Easter egg with this ID already exists
-    if (easterEggs.some(egg => egg.id === easterEggData.id)) {
+    if (easterEggs.some((egg) => egg.id === easterEggData.id)) {
       return {
         success: false,
-        error: 'An Easter egg with this ID already exists'
+        error: 'An Easter egg with this ID already exists',
       };
     }
-    
+
     // Add the Easter egg
     easterEggs.push(easterEggData);
-    
+
     return {
       success: true,
       message: 'Easter egg created successfully',
-      data: easterEggData
+      data: easterEggData,
     };
   }
 }

@@ -177,50 +177,50 @@
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .main-nav {
     width: 100%;
     margin-top: 1rem;
   }
-  
+
   .main-nav ul {
     flex-direction: column;
   }
-  
+
   .main-nav li {
     margin: 0;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
-  
+
   .main-nav a {
     display: block;
     padding: 0.75rem 0;
   }
-  
+
   .dropdown-content {
     position: static;
     background-color: rgba(255, 255, 255, 0.05);
     box-shadow: none;
     min-width: auto;
   }
-  
+
   .dropdown-content a {
     color: rgba(255, 255, 255, 0.8);
     padding-left: 1.5rem;
   }
-  
+
   .menu-toggle {
     display: block;
     position: absolute;
     top: 1rem;
     right: 1rem;
   }
-  
+
   /* Hide the navigation by default on mobile */
   .main-nav {
     display: none;
   }
-  
+
   /* Show the navigation when the menu is active */
   .main-nav.active {
     display: block;

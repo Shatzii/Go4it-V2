@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
             reduceAnimations: false,
             highContrast: false,
             largeText: false,
-            reducedMotion: false
+            reducedMotion: false,
           },
           audioDescriptions: false,
           focusMode: false,
@@ -36,14 +36,14 @@ export async function GET(request: NextRequest) {
             timers: true,
             reminders: true,
             taskBreaking: true,
-            progressTracking: true
+            progressTracking: true,
           },
           language: 'en',
           culturalSettings: {
             region: 'US',
             timeFormat: '12h',
-            dateFormat: 'MM/DD/YYYY'
-          }
+            dateFormat: 'MM/DD/YYYY',
+          },
         })
         .returning();
 
@@ -51,13 +51,9 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(preferences[0]);
-
   } catch (error) {
     console.error('User preferences fetch error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch preferences' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch preferences' }, { status: 500 });
   }
 }
 
@@ -77,12 +73,8 @@ export async function PUT(request: NextRequest) {
       .returning();
 
     return NextResponse.json(updatedPreferences);
-
   } catch (error) {
     console.error('User preferences update error:', error);
-    return NextResponse.json(
-      { error: 'Failed to update preferences' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to update preferences' }, { status: 500 });
   }
 }

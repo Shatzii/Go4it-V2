@@ -24,15 +24,29 @@ export const API_KEY_EXPIRY_DAYS = 90;
 
 // File upload security settings
 export const ALLOWED_FILE_EXTENSIONS = [
-  '.jpg', '.jpeg', '.png', '.gif', '.svg', // Images
-  '.pdf', '.doc', '.docx', '.txt', '.md', // Documents
-  '.mp3', '.wav', '.mp4', '.webm', // Media
-  '.json', '.xml', '.csv' // Data
+  '.jpg',
+  '.jpeg',
+  '.png',
+  '.gif',
+  '.svg', // Images
+  '.pdf',
+  '.doc',
+  '.docx',
+  '.txt',
+  '.md', // Documents
+  '.mp3',
+  '.wav',
+  '.mp4',
+  '.webm', // Media
+  '.json',
+  '.xml',
+  '.csv', // Data
 ];
 
 // JWT and cookie security
 export const JWT_SECRET = process.env.JWT_SECRET || 'shatzios-sentinel-security-jwt-secret';
-export const COOKIE_SECRET = process.env.COOKIE_SECRET || 'shatzios-sentinel-security-cookie-secret';
+export const COOKIE_SECRET =
+  process.env.COOKIE_SECRET || 'shatzios-sentinel-security-cookie-secret';
 
 // Alert notification configurations
 export const ALERT_EMAIL = 'security@shatzios.com';
@@ -61,5 +75,5 @@ export const SECURITY_MODULES_STATUS = {
   securityEducation: true,
   healthChecker: true,
   complianceFramework: true,
-  chaosTesting: true
+  chaosTesting: true,
 };

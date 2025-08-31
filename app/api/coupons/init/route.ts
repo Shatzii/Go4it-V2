@@ -11,15 +11,15 @@ export async function POST() {
         description: 'Get one month completely free on any plan',
         discountType: 'free',
         discountValue: '100',
-        status: 'active'
+        status: 'active',
       },
       {
         code: 'SAVE20',
-        name: '20% Off Discount', 
+        name: '20% Off Discount',
         description: 'Save 20% on your subscription',
         discountType: 'percentage',
         discountValue: '20',
-        status: 'active'
+        status: 'active',
       },
       {
         code: 'HALFOFF',
@@ -27,7 +27,7 @@ export async function POST() {
         description: 'Limited time 50% discount',
         discountType: 'percentage',
         discountValue: '50',
-        status: 'active'
+        status: 'active',
       },
       {
         code: 'SUPERSTAR75',
@@ -35,22 +35,24 @@ export async function POST() {
         description: 'Massive 75% savings for serious athletes',
         discountType: 'percentage',
         discountValue: '75',
-        status: 'active'
-      }
+        status: 'active',
+      },
     ];
 
     return NextResponse.json({
       success: true,
       message: 'Coupon codes initialized successfully',
       coupons,
-      count: coupons.length
+      count: coupons.length,
     });
-
   } catch (error) {
     console.error('Coupon initialization error:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to initialize coupons'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to initialize coupons',
+      },
+      { status: 500 },
+    );
   }
 }

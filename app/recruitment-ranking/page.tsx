@@ -5,12 +5,28 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Trophy, TrendingUp, MapPin, Users, Target, Star, Award, Calendar, Filter } from 'lucide-react';
+import {
+  Trophy,
+  TrendingUp,
+  MapPin,
+  Users,
+  Target,
+  Star,
+  Award,
+  Calendar,
+  Filter,
+} from 'lucide-react';
 
 interface AthleteRanking {
   id: string;
@@ -33,7 +49,16 @@ interface AthleteRanking {
   recruitmentPrediction?: any;
 }
 
-const SPORTS = ['Basketball', 'Football', 'Soccer', 'Tennis', 'Track & Field', 'Baseball', 'Swimming', 'Volleyball'];
+const SPORTS = [
+  'Basketball',
+  'Football',
+  'Soccer',
+  'Tennis',
+  'Track & Field',
+  'Baseball',
+  'Swimming',
+  'Volleyball',
+];
 const REGIONS = ['Northeast', 'Southeast', 'Midwest', 'Southwest', 'West'];
 const STATES = ['AL', 'CA', 'FL', 'GA', 'IL', 'MI', 'OH', 'TX', 'NY', 'NC'];
 const RANKING_TYPES = ['national', 'regional', 'state', 'city'];
@@ -46,7 +71,7 @@ export default function RecruitmentRanking() {
     region: '',
     state: '',
     city: '',
-    type: 'national'
+    type: 'national',
   });
   const [selectedAthlete, setSelectedAthlete] = useState<AthleteRanking | null>(null);
   const [collegeMatches, setCollegeMatches] = useState<any[]>([]);
@@ -68,7 +93,7 @@ export default function RecruitmentRanking() {
 
       const response = await fetch(`/api/recruitment-ranking?${params}`);
       const data = await response.json();
-      
+
       if (data.success) {
         setAthletes(data.athletes);
         setSummary(data.summary);
@@ -81,7 +106,7 @@ export default function RecruitmentRanking() {
   };
 
   const handleFilterChange = (key: string, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+    setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   const clearFilters = () => {
@@ -90,7 +115,7 @@ export default function RecruitmentRanking() {
       region: '',
       state: '',
       city: '',
-      type: 'national'
+      type: 'national',
     });
   };
 
@@ -110,7 +135,7 @@ export default function RecruitmentRanking() {
 
   const viewAthleteDetails = async (athlete: AthleteRanking) => {
     setSelectedAthlete(athlete);
-    
+
     // Fetch college matches
     try {
       const response = await fetch('/api/recruitment-ranking', {
@@ -118,10 +143,10 @@ export default function RecruitmentRanking() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'college-match',
-          athleteId: athlete.id
-        })
+          athleteId: athlete.id,
+        }),
       });
-      
+
       const data = await response.json();
       if (data.success) {
         setCollegeMatches(data.matches);
@@ -162,7 +187,10 @@ export default function RecruitmentRanking() {
                 <Trophy className="w-5 h-5 text-purple-500" />
                 <span className="text-purple-500 font-medium">ELITE Tier Feature</span>
               </div>
-              <a href="/pricing" className="text-sm text-purple-500 hover:text-purple-400 underline">
+              <a
+                href="/pricing"
+                className="text-sm text-purple-500 hover:text-purple-400 underline"
+              >
                 Upgrade to ELITE for full rankings access
               </a>
             </div>
@@ -188,7 +216,9 @@ export default function RecruitmentRanking() {
                 <div className="flex items-center gap-3">
                   <TrendingUp className="w-8 h-8 text-green-400" />
                   <div>
-                    <div className="text-2xl font-bold text-white">{summary.averageGARScore.toFixed(1)}</div>
+                    <div className="text-2xl font-bold text-white">
+                      {summary.averageGARScore.toFixed(1)}
+                    </div>
                     <div className="text-sm text-slate-400">Average GAR Score</div>
                   </div>
                 </div>
@@ -210,7 +240,9 @@ export default function RecruitmentRanking() {
                 <div className="flex items-center gap-3">
                   <Award className="w-8 h-8 text-blue-400" />
                   <div>
-                    <div className="text-2xl font-bold text-white">{summary.scholarshipCandidates}</div>
+                    <div className="text-2xl font-bold text-white">
+                      {summary.scholarshipCandidates}
+                    </div>
                     <div className="text-sm text-slate-400">Scholarship Candidates</div>
                   </div>
                 </div>
@@ -231,7 +263,10 @@ export default function RecruitmentRanking() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
               <div>
                 <Label className="text-slate-300">Ranking Type</Label>
-                <Select value={filters.type} onValueChange={(value) => handleFilterChange('type', value)}>
+                <Select
+                  value={filters.type}
+                  onValueChange={(value) => handleFilterChange('type', value)}
+                >
                   <SelectTrigger className="bg-slate-700 border-slate-600">
                     <SelectValue />
                   </SelectTrigger>
@@ -245,42 +280,57 @@ export default function RecruitmentRanking() {
               </div>
               <div>
                 <Label className="text-slate-300">Sport</Label>
-                <Select value={filters.sport} onValueChange={(value) => handleFilterChange('sport', value)}>
+                <Select
+                  value={filters.sport}
+                  onValueChange={(value) => handleFilterChange('sport', value)}
+                >
                   <SelectTrigger className="bg-slate-700 border-slate-600">
                     <SelectValue placeholder="All sports" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">All Sports</SelectItem>
-                    {SPORTS.map(sport => (
-                      <SelectItem key={sport} value={sport}>{sport}</SelectItem>
+                    {SPORTS.map((sport) => (
+                      <SelectItem key={sport} value={sport}>
+                        {sport}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label className="text-slate-300">Region</Label>
-                <Select value={filters.region} onValueChange={(value) => handleFilterChange('region', value)}>
+                <Select
+                  value={filters.region}
+                  onValueChange={(value) => handleFilterChange('region', value)}
+                >
                   <SelectTrigger className="bg-slate-700 border-slate-600">
                     <SelectValue placeholder="All regions" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">All Regions</SelectItem>
-                    {REGIONS.map(region => (
-                      <SelectItem key={region} value={region}>{region}</SelectItem>
+                    {REGIONS.map((region) => (
+                      <SelectItem key={region} value={region}>
+                        {region}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label className="text-slate-300">State</Label>
-                <Select value={filters.state} onValueChange={(value) => handleFilterChange('state', value)}>
+                <Select
+                  value={filters.state}
+                  onValueChange={(value) => handleFilterChange('state', value)}
+                >
                   <SelectTrigger className="bg-slate-700 border-slate-600">
                     <SelectValue placeholder="All states" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">All States</SelectItem>
-                    {STATES.map(state => (
-                      <SelectItem key={state} value={state}>{state}</SelectItem>
+                    {STATES.map((state) => (
+                      <SelectItem key={state} value={state}>
+                        {state}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -299,9 +349,7 @@ export default function RecruitmentRanking() {
               <Button onClick={clearFilters} variant="outline" className="border-slate-600">
                 Clear Filters
               </Button>
-              <span className="text-slate-400">
-                Showing {athletes.length} athletes
-              </span>
+              <span className="text-slate-400">Showing {athletes.length} athletes</span>
             </div>
           </CardContent>
         </Card>
@@ -309,13 +357,18 @@ export default function RecruitmentRanking() {
         {/* Rankings List */}
         <div className="grid grid-cols-1 gap-4">
           {athletes.map((athlete, index) => (
-            <Card key={athlete.id} className="bg-slate-800 border-slate-700 hover:border-primary/50 transition-colors">
+            <Card
+              key={athlete.id}
+              className="bg-slate-800 border-slate-700 hover:border-primary/50 transition-colors"
+            >
               <CardContent className="p-6">
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                   {/* Athlete Info */}
                   <div className="lg:col-span-2">
                     <div className="flex items-start gap-4">
-                      <div className={`text-3xl font-bold ${getRankingColor(athlete[`${filters.type}Rank`])}`}>
+                      <div
+                        className={`text-3xl font-bold ${getRankingColor(athlete[`${filters.type}Rank`])}`}
+                      >
                         #{athlete[`${filters.type}Rank`]}
                       </div>
                       <div className="flex-1">
@@ -328,7 +381,9 @@ export default function RecruitmentRanking() {
                         </div>
                         <div className="flex items-center gap-2 text-slate-300 mb-2">
                           <MapPin className="w-4 h-4" />
-                          <span className="text-sm">{athlete.city}, {athlete.state}</span>
+                          <span className="text-sm">
+                            {athlete.city}, {athlete.state}
+                          </span>
                         </div>
                         <div className="flex flex-wrap gap-1 mb-3">
                           {athlete.highlights.slice(0, 3).map((highlight, i) => (
@@ -347,7 +402,9 @@ export default function RecruitmentRanking() {
                       <div className="flex items-center justify-between">
                         <span className="text-slate-400">GAR Score</span>
                         <div className="flex items-center gap-2">
-                          <div className={`w-3 h-3 rounded-full ${getGARColor(athlete.garScore)}`}></div>
+                          <div
+                            className={`w-3 h-3 rounded-full ${getGARColor(athlete.garScore)}`}
+                          ></div>
                           <span className="font-bold text-white">{athlete.garScore}</span>
                         </div>
                       </div>
@@ -392,12 +449,14 @@ export default function RecruitmentRanking() {
                       <div>
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-slate-400">Scholarship Potential</span>
-                          <span className="font-bold text-white">{athlete.scholarshipPotential}%</span>
+                          <span className="font-bold text-white">
+                            {athlete.scholarshipPotential}%
+                          </span>
                         </div>
                         <Progress value={athlete.scholarshipPotential} className="h-2" />
                       </div>
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         className="w-full mt-3"
                         onClick={() => viewAthleteDetails(athlete)}
                       >
@@ -429,7 +488,7 @@ export default function RecruitmentRanking() {
                       </Badge>
                     </div>
                   </div>
-                  <Button 
+                  <Button
                     onClick={() => setSelectedAthlete(null)}
                     variant="ghost"
                     className="text-slate-400 hover:text-white"
@@ -486,7 +545,9 @@ export default function RecruitmentRanking() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <Card className="bg-slate-700 border-slate-600 text-center">
                         <CardContent className="p-4">
-                          <div className={`text-3xl font-bold ${getRankingColor(selectedAthlete.nationalRank)}`}>
+                          <div
+                            className={`text-3xl font-bold ${getRankingColor(selectedAthlete.nationalRank)}`}
+                          >
                             #{selectedAthlete.nationalRank}
                           </div>
                           <div className="text-sm text-slate-400">National</div>
@@ -494,7 +555,9 @@ export default function RecruitmentRanking() {
                       </Card>
                       <Card className="bg-slate-700 border-slate-600 text-center">
                         <CardContent className="p-4">
-                          <div className={`text-3xl font-bold ${getRankingColor(selectedAthlete.regionalRank)}`}>
+                          <div
+                            className={`text-3xl font-bold ${getRankingColor(selectedAthlete.regionalRank)}`}
+                          >
                             #{selectedAthlete.regionalRank}
                           </div>
                           <div className="text-sm text-slate-400">Regional</div>
@@ -502,7 +565,9 @@ export default function RecruitmentRanking() {
                       </Card>
                       <Card className="bg-slate-700 border-slate-600 text-center">
                         <CardContent className="p-4">
-                          <div className={`text-3xl font-bold ${getRankingColor(selectedAthlete.stateRank)}`}>
+                          <div
+                            className={`text-3xl font-bold ${getRankingColor(selectedAthlete.stateRank)}`}
+                          >
                             #{selectedAthlete.stateRank}
                           </div>
                           <div className="text-sm text-slate-400">State</div>
@@ -510,7 +575,9 @@ export default function RecruitmentRanking() {
                       </Card>
                       <Card className="bg-slate-700 border-slate-600 text-center">
                         <CardContent className="p-4">
-                          <div className={`text-3xl font-bold ${getRankingColor(selectedAthlete.cityRank)}`}>
+                          <div
+                            className={`text-3xl font-bold ${getRankingColor(selectedAthlete.cityRank)}`}
+                          >
                             #{selectedAthlete.cityRank}
                           </div>
                           <div className="text-sm text-slate-400">City</div>
@@ -531,23 +598,38 @@ export default function RecruitmentRanking() {
                               <div>
                                 <div className="flex justify-between mb-1">
                                   <span className="text-slate-300">Division I</span>
-                                  <span className="text-white">{selectedAthlete.recruitmentPrediction.d1Probability}%</span>
+                                  <span className="text-white">
+                                    {selectedAthlete.recruitmentPrediction.d1Probability}%
+                                  </span>
                                 </div>
-                                <Progress value={selectedAthlete.recruitmentPrediction.d1Probability} className="h-2" />
+                                <Progress
+                                  value={selectedAthlete.recruitmentPrediction.d1Probability}
+                                  className="h-2"
+                                />
                               </div>
                               <div>
                                 <div className="flex justify-between mb-1">
                                   <span className="text-slate-300">Division II</span>
-                                  <span className="text-white">{selectedAthlete.recruitmentPrediction.d2Probability}%</span>
+                                  <span className="text-white">
+                                    {selectedAthlete.recruitmentPrediction.d2Probability}%
+                                  </span>
                                 </div>
-                                <Progress value={selectedAthlete.recruitmentPrediction.d2Probability} className="h-2" />
+                                <Progress
+                                  value={selectedAthlete.recruitmentPrediction.d2Probability}
+                                  className="h-2"
+                                />
                               </div>
                               <div>
                                 <div className="flex justify-between mb-1">
                                   <span className="text-slate-300">Division III</span>
-                                  <span className="text-white">{selectedAthlete.recruitmentPrediction.d3Probability}%</span>
+                                  <span className="text-white">
+                                    {selectedAthlete.recruitmentPrediction.d3Probability}%
+                                  </span>
                                 </div>
-                                <Progress value={selectedAthlete.recruitmentPrediction.d3Probability} className="h-2" />
+                                <Progress
+                                  value={selectedAthlete.recruitmentPrediction.d3Probability}
+                                  className="h-2"
+                                />
                               </div>
                             </div>
                           </CardContent>
@@ -558,12 +640,14 @@ export default function RecruitmentRanking() {
                           </CardHeader>
                           <CardContent>
                             <div className="space-y-2">
-                              {selectedAthlete.recruitmentPrediction.recommendedActions.map((action: string, i: number) => (
-                                <div key={i} className="flex items-center gap-2">
-                                  <Target className="w-4 h-4 text-primary" />
-                                  <span className="text-slate-300">{action}</span>
-                                </div>
-                              ))}
+                              {selectedAthlete.recruitmentPrediction.recommendedActions.map(
+                                (action: string, i: number) => (
+                                  <div key={i} className="flex items-center gap-2">
+                                    <Target className="w-4 h-4 text-primary" />
+                                    <span className="text-slate-300">{action}</span>
+                                  </div>
+                                ),
+                              )}
                             </div>
                           </CardContent>
                         </Card>

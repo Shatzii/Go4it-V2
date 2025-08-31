@@ -49,19 +49,19 @@ export interface PerformanceMetrics {
     maxHeartRate: number;
     caloriesBurned: number;
     totalDistance: number;
-    
+
     // Performance specific
     maxSpeed: number;
     avgSpeed: number;
     accelerations: number;
     decelerations: number;
     jumps?: number;
-    
+
     // Recovery & wellness
     fatigueLevel: number;
     readinessScore: number;
     stressLevel: number;
-    
+
     // Sport specific
     sportSpecific: Record<string, number>;
   };
@@ -73,9 +73,9 @@ export interface PerformanceMetrics {
     zone5: number; // 90-100% max HR
   };
   workload: {
-    acute: number;     // 7-day average
-    chronic: number;   // 28-day average
-    ratio: number;     // acute/chronic
+    acute: number; // 7-day average
+    chronic: number; // 28-day average
+    ratio: number; // acute/chronic
     riskLevel: 'low' | 'moderate' | 'high';
   };
 }
@@ -115,20 +115,20 @@ class IoTIntegrationSystem {
     if (typeof window !== 'undefined') {
       try {
         this.websocket = new WebSocket('ws://localhost:5000/ws/iot');
-        
+
         this.websocket.onopen = () => {
           console.log('IoT WebSocket connected');
         };
-        
+
         this.websocket.onmessage = (event) => {
           const data = JSON.parse(event.data);
           this.handleRealtimeData(data);
         };
-        
+
         this.websocket.onerror = (error) => {
           console.error('IoT WebSocket error:', error);
         };
-        
+
         this.websocket.onclose = () => {
           console.log('IoT WebSocket disconnected');
           // Reconnect after 5 seconds
@@ -151,13 +151,13 @@ class IoTIntegrationSystem {
 
       // Store device configuration
       this.devices.set(config.deviceId, config);
-      
+
       // Initialize data storage for this device
       this.realtimeData.set(config.deviceId, []);
-      
+
       // Start data sync
       await this.startDeviceSync(config.deviceId);
-      
+
       return true;
     } catch (error) {
       console.error('Failed to register device:', error);
@@ -193,8 +193,8 @@ class IoTIntegrationSystem {
       // Test API call to Fitbit
       const response = await fetch('https://api.fitbit.com/1/user/-/profile.json', {
         headers: {
-          'Authorization': `Bearer ${config.credentials.accessToken}`
-        }
+          Authorization: `Bearer ${config.credentials.accessToken}`,
+        },
       });
 
       return response.ok;
@@ -214,9 +214,9 @@ class IoTIntegrationSystem {
       // Test Garmin Connect IQ API
       const response = await fetch('https://apis.garmin.com/wellness-api/rest/user', {
         headers: {
-          'Authorization': `Bearer ${config.credentials.accessToken}`,
-          'X-API-Key': config.credentials.apiKey
-        }
+          Authorization: `Bearer ${config.credentials.accessToken}`,
+          'X-API-Key': config.credentials.apiKey,
+        },
       });
 
       return response.ok;
@@ -249,8 +249,8 @@ class IoTIntegrationSystem {
 
       const response = await fetch('https://api.prod.whoop.com/developer/v1/user/profile/basic', {
         headers: {
-          'Authorization': `Bearer ${config.credentials.accessToken}`
-        }
+          Authorization: `Bearer ${config.credentials.accessToken}`,
+        },
       });
 
       return response.ok;
@@ -269,8 +269,8 @@ class IoTIntegrationSystem {
 
       const response = await fetch('https://www.polaraccesslink.com/v3/users', {
         headers: {
-          'Authorization': `Bearer ${config.credentials.accessToken}`
-        }
+          Authorization: `Bearer ${config.credentials.accessToken}`,
+        },
       });
 
       return response.ok;
@@ -333,7 +333,6 @@ class IoTIntegrationSystem {
 
       // Process for performance metrics
       await this.processPerformanceMetrics(device.athleteId, data);
-
     } catch (error) {
       console.error(`Failed to sync data from ${deviceId}:`, error);
     }
@@ -347,16 +346,25 @@ class IoTIntegrationSystem {
     try {
       // Get various data types
       const endpoints = [
-        { url: `https://api.fitbit.com/1/user/-/activities/heart/date/${today}/1d.json`, type: 'heartRate' },
-        { url: `https://api.fitbit.com/1/user/-/activities/steps/date/${today}/1d.json`, type: 'steps' },
-        { url: `https://api.fitbit.com/1/user/-/activities/calories/date/${today}/1d.json`, type: 'calories' }
+        {
+          url: `https://api.fitbit.com/1/user/-/activities/heart/date/${today}/1d.json`,
+          type: 'heartRate',
+        },
+        {
+          url: `https://api.fitbit.com/1/user/-/activities/steps/date/${today}/1d.json`,
+          type: 'steps',
+        },
+        {
+          url: `https://api.fitbit.com/1/user/-/activities/calories/date/${today}/1d.json`,
+          type: 'calories',
+        },
       ];
 
       for (const endpoint of endpoints) {
         const response = await fetch(endpoint.url, {
           headers: {
-            'Authorization': `Bearer ${device.credentials?.accessToken}`
-          }
+            Authorization: `Bearer ${device.credentials?.accessToken}`,
+          },
         });
 
         if (response.ok) {
@@ -373,21 +381,25 @@ class IoTIntegrationSystem {
   }
 
   // Process Fitbit API response
-  private processFitbitResponse(response: any, device: DeviceConfig, dataType: string): BiometricData {
+  private processFitbitResponse(
+    response: any,
+    device: DeviceConfig,
+    dataType: string,
+  ): BiometricData {
     const now = new Date();
-    
+
     return {
       timestamp: now,
       deviceId: device.deviceId,
       deviceType: device.deviceType,
-      data: this.extractFitbitData(response, dataType)
+      data: this.extractFitbitData(response, dataType),
     };
   }
 
   // Extract specific data from Fitbit response
   private extractFitbitData(response: any, dataType: string): any {
     const data: any = {};
-    
+
     switch (dataType) {
       case 'heartRate':
         if (response['activities-heart']) {
@@ -405,7 +417,7 @@ class IoTIntegrationSystem {
         }
         break;
     }
-    
+
     return data;
   }
 
@@ -446,8 +458,8 @@ class IoTIntegrationSystem {
 
     // Generate last hour of data (every minute)
     for (let i = 0; i < 60; i++) {
-      const timestamp = new Date(now.getTime() - (i * 60 * 1000));
-      
+      const timestamp = new Date(now.getTime() - i * 60 * 1000);
+
       data.push({
         timestamp,
         deviceId: device.deviceId,
@@ -461,15 +473,15 @@ class IoTIntegrationSystem {
           acceleration: {
             x: Math.random() * 2 - 1,
             y: Math.random() * 2 - 1,
-            z: Math.random() * 2 - 1
+            z: Math.random() * 2 - 1,
           },
           temperature: 36.5 + Math.random() * 2,
           recovery: {
             hrv: 30 + Math.random() * 40,
             restingHr: 50 + Math.random() * 20,
-            strain: Math.random() * 10
-          }
-        }
+            strain: Math.random() * 10,
+          },
+        },
       });
     }
 
@@ -480,11 +492,11 @@ class IoTIntegrationSystem {
   private storeDeviceData(deviceId: string, data: BiometricData[]): void {
     const existing = this.realtimeData.get(deviceId) || [];
     const updated = [...existing, ...data];
-    
+
     // Keep only last 24 hours of data in memory
     const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const filtered = updated.filter(d => d.timestamp > cutoff);
-    
+    const filtered = updated.filter((d) => d.timestamp > cutoff);
+
     this.realtimeData.set(deviceId, filtered);
   }
 
@@ -494,12 +506,14 @@ class IoTIntegrationSystem {
 
     const sessionId = `session-${Date.now()}`;
     const sport = 'general'; // Would be determined from activity context
-    
+
     // Calculate aggregated metrics
-    const heartRates = data.map(d => d.data.heartRate).filter(hr => hr !== undefined) as number[];
-    const speeds = data.map(d => d.data.speed).filter(s => s !== undefined) as number[];
-    const distances = data.map(d => d.data.distance).filter(d => d !== undefined) as number[];
-    
+    const heartRates = data
+      .map((d) => d.data.heartRate)
+      .filter((hr) => hr !== undefined) as number[];
+    const speeds = data.map((d) => d.data.speed).filter((s) => s !== undefined) as number[];
+    const distances = data.map((d) => d.data.distance).filter((d) => d !== undefined) as number[];
+
     if (heartRates.length === 0) return;
 
     const avgHeartRate = heartRates.reduce((a, b) => a + b, 0) / heartRates.length;
@@ -533,10 +547,10 @@ class IoTIntegrationSystem {
         fatigueLevel: this.calculateFatigueLevel(heartRates),
         readinessScore: this.calculateReadinessScore(data),
         stressLevel: this.calculateStressLevel(heartRates),
-        sportSpecific: {}
+        sportSpecific: {},
       },
       zones,
-      workload
+      workload,
     };
 
     // Store performance metrics
@@ -548,8 +562,8 @@ class IoTIntegrationSystem {
   // Calculate heart rate zones
   private calculateHeartRateZones(heartRates: number[], maxHR: number) {
     const zones = { zone1: 0, zone2: 0, zone3: 0, zone4: 0, zone5: 0 };
-    
-    heartRates.forEach(hr => {
+
+    heartRates.forEach((hr) => {
       const percentage = (hr / maxHR) * 100;
       if (percentage < 60) zones.zone1++;
       else if (percentage < 70) zones.zone2++;
@@ -562,23 +576,29 @@ class IoTIntegrationSystem {
   }
 
   // Calculate workload and injury risk
-  private async calculateWorkload(athleteId: string, avgHeartRate: number, sessionDate: Date): Promise<any> {
+  private async calculateWorkload(
+    athleteId: string,
+    avgHeartRate: number,
+    sessionDate: Date,
+  ): Promise<any> {
     const history = this.performanceHistory.get(athleteId) || [];
-    
+
     // Get last 7 days (acute) and 28 days (chronic)
     const sevenDaysAgo = new Date(sessionDate.getTime() - 7 * 24 * 60 * 60 * 1000);
     const twentyEightDaysAgo = new Date(sessionDate.getTime() - 28 * 24 * 60 * 60 * 1000);
-    
-    const acute = history
-      .filter(m => m.startTime > sevenDaysAgo)
-      .reduce((sum, m) => sum + m.metrics.avgHeartRate, 0) / 7;
-    
-    const chronic = history
-      .filter(m => m.startTime > twentyEightDaysAgo)
-      .reduce((sum, m) => sum + m.metrics.avgHeartRate, 0) / 28;
-    
+
+    const acute =
+      history
+        .filter((m) => m.startTime > sevenDaysAgo)
+        .reduce((sum, m) => sum + m.metrics.avgHeartRate, 0) / 7;
+
+    const chronic =
+      history
+        .filter((m) => m.startTime > twentyEightDaysAgo)
+        .reduce((sum, m) => sum + m.metrics.avgHeartRate, 0) / 28;
+
     const ratio = chronic > 0 ? acute / chronic : 1;
-    
+
     let riskLevel: 'low' | 'moderate' | 'high' = 'low';
     if (ratio > 1.5) riskLevel = 'high';
     else if (ratio > 1.2) riskLevel = 'moderate';
@@ -610,20 +630,21 @@ class IoTIntegrationSystem {
   private calculateFatigueLevel(heartRates: number[]): number {
     // Simplified fatigue calculation based on heart rate variability
     const avg = heartRates.reduce((a, b) => a + b, 0) / heartRates.length;
-    const variance = heartRates.reduce((sum, hr) => sum + Math.pow(hr - avg, 2), 0) / heartRates.length;
-    
+    const variance =
+      heartRates.reduce((sum, hr) => sum + Math.pow(hr - avg, 2), 0) / heartRates.length;
+
     // Lower HRV = higher fatigue
     return Math.max(0, Math.min(100, 100 - Math.sqrt(variance)));
   }
 
   private calculateReadinessScore(data: BiometricData[]): number {
     // Simplified readiness score based on multiple factors
-    const recoveryData = data.filter(d => d.data.recovery).map(d => d.data.recovery!);
+    const recoveryData = data.filter((d) => d.data.recovery).map((d) => d.data.recovery!);
     if (recoveryData.length === 0) return 75; // Default value
-    
+
     const avgHRV = recoveryData.reduce((sum, r) => sum + r.hrv, 0) / recoveryData.length;
     const avgStrain = recoveryData.reduce((sum, r) => sum + r.strain, 0) / recoveryData.length;
-    
+
     return Math.max(0, Math.min(100, avgHRV - avgStrain * 5));
   }
 
@@ -637,29 +658,31 @@ class IoTIntegrationSystem {
   private handleRealtimeData(data: any): void {
     // Process incoming real-time data
     console.log('Received real-time IoT data:', data);
-    
+
     // Broadcast to subscribers
     if (this.websocket?.readyState === WebSocket.OPEN) {
-      this.websocket.send(JSON.stringify({
-        type: 'performance_update',
-        data: data
-      }));
+      this.websocket.send(
+        JSON.stringify({
+          type: 'performance_update',
+          data: data,
+        }),
+      );
     }
   }
 
   // Public API methods
-  
+
   // Get real-time data for an athlete
   getRealtimeData(athleteId: string): BiometricData[] {
     const allData: BiometricData[] = [];
-    
+
     for (const [deviceId, device] of this.devices) {
       if (device.athleteId === athleteId) {
         const deviceData = this.realtimeData.get(deviceId) || [];
         allData.push(...deviceData);
       }
     }
-    
+
     return allData.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
   }
 
@@ -667,55 +690,52 @@ class IoTIntegrationSystem {
   getPerformanceHistory(athleteId: string, days: number = 30): PerformanceMetrics[] {
     const history = this.performanceHistory.get(athleteId) || [];
     const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-    
-    return history.filter(m => m.startTime > cutoff);
+
+    return history.filter((m) => m.startTime > cutoff);
   }
 
   // Get injury risk assessment
   getInjuryRisk(athleteId: string): { level: string; score: number; recommendations: string[] } {
     const recent = this.getPerformanceHistory(athleteId, 7);
-    
+
     if (recent.length === 0) {
       return {
         level: 'unknown',
         score: 0,
-        recommendations: ['Insufficient data for assessment']
+        recommendations: ['Insufficient data for assessment'],
       };
     }
 
     const avgWorkloadRatio = recent.reduce((sum, m) => sum + m.workload.ratio, 0) / recent.length;
     const avgFatigue = recent.reduce((sum, m) => sum + m.metrics.fatigueLevel, 0) / recent.length;
-    
+
     let score = 0;
     if (avgWorkloadRatio > 1.5) score += 40;
     else if (avgWorkloadRatio > 1.2) score += 20;
-    
+
     if (avgFatigue > 80) score += 30;
     else if (avgFatigue > 60) score += 15;
-    
+
     let level = 'low';
     let recommendations: string[] = [];
-    
+
     if (score > 50) {
       level = 'high';
       recommendations = [
         'Reduce training intensity',
         'Focus on recovery activities',
         'Consider rest day',
-        'Monitor symptoms closely'
+        'Monitor symptoms closely',
       ];
     } else if (score > 25) {
       level = 'moderate';
       recommendations = [
         'Monitor workload carefully',
         'Ensure adequate recovery',
-        'Consider lighter training'
+        'Consider lighter training',
       ];
     } else {
-      recommendations = [
-        'Continue current training',
-        'Maintain good recovery habits'
-      ];
+      recommendations = ['Continue current training', 'Maintain good recovery habits'];
     }
 
     return { level, score, recommendations };
@@ -736,17 +756,17 @@ class IoTIntegrationSystem {
   // Get connected devices for an athlete
   getConnectedDevices(athleteId: string): DeviceConfig[] {
     const devices: DeviceConfig[] = [];
-    
+
     for (const [deviceId, device] of this.devices) {
       if (device.athleteId === athleteId) {
         // Return device config without credentials for security
         devices.push({
           ...device,
-          credentials: undefined
+          credentials: undefined,
         });
       }
     }
-    
+
     return devices;
   }
 }

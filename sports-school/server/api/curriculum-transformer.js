@@ -1,6 +1,6 @@
 /**
  * Curriculum Transformer API
- * 
+ *
  * Backend implementation for transforming curriculum content for neurodivergent learners.
  * Provides endpoints for text and file transformation, with support for different
  * learning differences, grade levels, and languages.
@@ -29,13 +29,13 @@ const storage = multer.diskStorage({
     }
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     const extension = path.extname(file.originalname);
     cb(null, 'curriculum-' + uniqueSuffix + extension);
-  }
+  },
 });
 
-const upload = multer({ 
+const upload = multer({
   storage,
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB file size limit
@@ -46,20 +46,20 @@ const upload = multer({
       'application/pdf',
       'application/msword',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'text/plain'
+      'text/plain',
     ];
-    
+
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
       cb(new Error('Invalid file type. Only PDF, Word, and text files are allowed.'), false);
     }
-  }
+  },
 });
 
 /**
  * Set up the curriculum transformer routes
- * 
+ *
  * @param {Express} app - Express application
  */
 export default function setupCurriculumTransformerRoutes(app) {
@@ -68,7 +68,7 @@ export default function setupCurriculumTransformerRoutes(app) {
     res.json({
       status: 'online',
       version: '1.0.0',
-      message: 'Curriculum transformer API is running'
+      message: 'Curriculum transformer API is running',
     });
   });
 
@@ -78,7 +78,7 @@ export default function setupCurriculumTransformerRoutes(app) {
       learningDifferences: ['dyslexia', 'adhd', 'autism', 'all'],
       gradeLevels: ['elementary', 'middle', 'highschool', 'college'],
       visualStyles: ['superhero', 'modern', 'professional'],
-      languages: ['en', 'de', 'es']
+      languages: ['en', 'de', 'es'],
     });
   });
 
@@ -86,18 +86,18 @@ export default function setupCurriculumTransformerRoutes(app) {
   app.post('/api/curriculum-transformer/transform-text', async (req, res) => {
     try {
       const { text, options } = req.body;
-      
+
       if (!text || text.trim() === '') {
         return res.status(400).json({ message: 'Text content is required' });
       }
-      
+
       if (!options) {
         return res.status(400).json({ message: 'Transformation options are required' });
       }
-      
+
       // Process the text based on learning difference
       const transformedContent = await transformCurriculumText(text, options);
-      
+
       res.json(transformedContent);
     } catch (error) {
       console.error('Error transforming text:', error);
@@ -106,69 +106,73 @@ export default function setupCurriculumTransformerRoutes(app) {
   });
 
   // Route to transform uploaded file
-  app.post('/api/curriculum-transformer/transform-file', upload.single('file'), async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ message: 'File is required' });
-      }
-      
-      const filePath = req.file.path;
-      let options;
-      
+  app.post(
+    '/api/curriculum-transformer/transform-file',
+    upload.single('file'),
+    async (req, res) => {
       try {
-        options = JSON.parse(req.body.options);
-      } catch (error) {
-        return res.status(400).json({ message: 'Invalid options format' });
-      }
-      
-      // Extract text from the file based on type
-      const extractedText = await extractTextFromFile(filePath, req.file.mimetype);
-      
-      // Process the text based on learning difference
-      const transformedContent = await transformCurriculumText(extractedText, options);
-      
-      // Add file metadata
-      transformedContent.metadata = {
-        ...transformedContent.metadata,
-        originalFileName: req.file.originalname,
-        fileSize: req.file.size
-      };
-      
-      // Clean up the uploaded file
-      try {
-        await unlink(filePath);
-      } catch (cleanupError) {
-        console.error('Error cleaning up temporary file:', cleanupError);
-      }
-      
-      res.json(transformedContent);
-    } catch (error) {
-      console.error('Error transforming file:', error);
-      
-      // Clean up the uploaded file in case of error
-      if (req.file && req.file.path) {
+        if (!req.file) {
+          return res.status(400).json({ message: 'File is required' });
+        }
+
+        const filePath = req.file.path;
+        let options;
+
         try {
-          await unlink(req.file.path);
+          options = JSON.parse(req.body.options);
+        } catch (error) {
+          return res.status(400).json({ message: 'Invalid options format' });
+        }
+
+        // Extract text from the file based on type
+        const extractedText = await extractTextFromFile(filePath, req.file.mimetype);
+
+        // Process the text based on learning difference
+        const transformedContent = await transformCurriculumText(extractedText, options);
+
+        // Add file metadata
+        transformedContent.metadata = {
+          ...transformedContent.metadata,
+          originalFileName: req.file.originalname,
+          fileSize: req.file.size,
+        };
+
+        // Clean up the uploaded file
+        try {
+          await unlink(filePath);
         } catch (cleanupError) {
           console.error('Error cleaning up temporary file:', cleanupError);
         }
+
+        res.json(transformedContent);
+      } catch (error) {
+        console.error('Error transforming file:', error);
+
+        // Clean up the uploaded file in case of error
+        if (req.file && req.file.path) {
+          try {
+            await unlink(req.file.path);
+          } catch (cleanupError) {
+            console.error('Error cleaning up temporary file:', cleanupError);
+          }
+        }
+
+        res.status(500).json({ message: 'Error transforming file: ' + error.message });
       }
-      
-      res.status(500).json({ message: 'Error transforming file: ' + error.message });
-    }
-  });
+    },
+  );
 }
 
 /**
  * Transform curriculum text for neurodivergent learners
- * 
+ *
  * @param {string} text - The original text content
  * @param {Object} options - Transformation options
  * @returns {Promise<Object>} - Transformed content
  */
 async function transformCurriculumText(text, options) {
   const { learningDifference, gradeLevel, visualStyle, outputLanguage } = options;
-  
+
   try {
     // Prepare the prompt for the AI
     const systemPrompt = `You are an educational specialist for neurodivergent learners with expertise in transforming curriculum content. 
@@ -191,19 +195,19 @@ Start with a title and include well-structured content with appropriate headings
     // Process with AI service
     console.log('Sending transformation request to AI service');
     const transformedContent = await aiEngineService.generateText(systemPrompt, text);
-    
+
     return {
       title,
       content: transformedContent,
       metadata: {
         originalLength: text.length,
         transformedLength: transformedContent.length,
-        options
-      }
+        options,
+      },
     };
   } catch (error) {
     console.error('Error during text transformation:', error);
-    
+
     // Fallback implementation if AI service fails
     return generateFallbackTransformation(text, options);
   }
@@ -211,7 +215,7 @@ Start with a title and include well-structured content with appropriate headings
 
 /**
  * Extract text from uploaded file based on file type
- * 
+ *
  * @param {string} filePath - Path to the uploaded file
  * @param {string} mimeType - MIME type of the file
  * @returns {Promise<string>} - Extracted text content
@@ -219,12 +223,12 @@ Start with a title and include well-structured content with appropriate headings
 async function extractTextFromFile(filePath, mimeType) {
   // For this implementation, we'll handle only text files directly
   // For PDF and Word files, we'd typically use libraries like pdf-parse or mammoth
-  
+
   if (mimeType === 'text/plain') {
     const buffer = await readFile(filePath);
     return buffer.toString('utf-8');
   }
-  
+
   // For other file types, we'd need to implement extraction logic
   // For now, return a placeholder response
   return `This is extracted text from a file of type: ${mimeType}. 
@@ -235,83 +239,93 @@ this placeholder text to show the transformation process.`;
 
 /**
  * Extract a title from the original text
- * 
+ *
  * @param {string} text - Original text content
  * @returns {string} - Extracted title
  */
 function extractTitle(text) {
   // Try to get the first line as title
   const firstLine = text.split('\n')[0].trim();
-  
+
   if (firstLine && firstLine.length > 0 && firstLine.length < 100) {
     return firstLine;
   }
-  
+
   // Try to get the first sentence
   const firstSentence = text.split(/[.!?][\s\\r\\n]/)[0];
-  
+
   if (firstSentence && firstSentence.length > 0 && firstSentence.length < 100) {
     return firstSentence;
   }
-  
+
   // Default title
   return 'Transformed Curriculum';
 }
 
 /**
  * Generate a fallback transformation when AI service is unavailable
- * 
+ *
  * @param {string} text - Original text content
  * @param {Object} options - Transformation options
  * @returns {Object} - Fallback transformed content
  */
 function generateFallbackTransformation(text, options) {
   const { learningDifference, visualStyle } = options;
-  
+
   // Generate a simple HTML structure with the text
   let content = '<div class="transformed-content">';
-  
+
   // Add appropriate styling based on options
   switch (learningDifference) {
     case 'dyslexia':
       content += '<div class="dyslexia-friendly">';
       content += '<h3>Dyslexia-Friendly Version</h3>';
-      content += '<p style="font-family: Arial; line-height: 1.8; letter-spacing: 0.5px; word-spacing: 3px;">';
-      content += text.split('\n').join('</p><p style="font-family: Arial; line-height: 1.8; letter-spacing: 0.5px; word-spacing: 3px;">');
+      content +=
+        '<p style="font-family: Arial; line-height: 1.8; letter-spacing: 0.5px; word-spacing: 3px;">';
+      content += text
+        .split('\n')
+        .join(
+          '</p><p style="font-family: Arial; line-height: 1.8; letter-spacing: 0.5px; word-spacing: 3px;">',
+        );
       content += '</p></div>';
       break;
-      
+
     case 'adhd':
       content += '<div class="adhd-friendly">';
       content += '<h3>ADHD-Friendly Version</h3>';
       // Divide content into smaller chunks with visual breaks
-      const adhdChunks = text.split('\n').filter(line => line.trim() !== '');
-      adhdChunks.forEach(chunk => {
+      const adhdChunks = text.split('\n').filter((line) => line.trim() !== '');
+      adhdChunks.forEach((chunk) => {
         content += `<div class="focus-block" style="margin-bottom: 20px; padding: 15px; border-left: 5px solid #3f51b5;">${chunk}</div>`;
       });
       content += '</div>';
       break;
-      
+
     case 'autism':
       content += '<div class="autism-friendly">';
       content += '<h3>Autism-Friendly Version</h3>';
-      content += '<p style="font-family: sans-serif; line-height: 1.6; color: #333; background-color: #f9f9f9; padding: 15px; border-radius: 5px;">';
-      content += text.split('\n').join('</p><p style="font-family: sans-serif; line-height: 1.6; color: #333; background-color: #f9f9f9; padding: 15px; border-radius: 5px;">');
+      content +=
+        '<p style="font-family: sans-serif; line-height: 1.6; color: #333; background-color: #f9f9f9; padding: 15px; border-radius: 5px;">';
+      content += text
+        .split('\n')
+        .join(
+          '</p><p style="font-family: sans-serif; line-height: 1.6; color: #333; background-color: #f9f9f9; padding: 15px; border-radius: 5px;">',
+        );
       content += '</p></div>';
       break;
-      
+
     default: // 'all'
       content += '<div class="neurodivergent-friendly">';
       content += '<h3>Universally Accessible Version</h3>';
-      
+
       // Combine features from all adaptations
-      const allChunks = text.split('\n').filter(line => line.trim() !== '');
-      allChunks.forEach(chunk => {
+      const allChunks = text.split('\n').filter((line) => line.trim() !== '');
+      allChunks.forEach((chunk) => {
         content += `<div class="universal-block" style="margin-bottom: 20px; padding: 15px; border-left: 5px solid #4caf50; line-height: 1.8; letter-spacing: 0.5px; word-spacing: 3px; background-color: #f9f9f9; border-radius: 5px;">${chunk}</div>`;
       });
       content += '</div>';
   }
-  
+
   // Add visual style based on options
   switch (visualStyle) {
     case 'superhero':
@@ -320,14 +334,14 @@ function generateFallbackTransformation(text, options) {
       content += '<p>This content has super powers to help you learn better!</p>';
       content += '</div>';
       break;
-      
+
     case 'modern':
       content += '<div class="modern-theme" style="margin-top: 30px;">';
       content += '<h4 style="color: #2196f3;">Modern Learning Format</h4>';
       content += '<p>Streamlined for your learning style.</p>';
       content += '</div>';
       break;
-      
+
     case 'professional':
       content += '<div class="professional-theme" style="margin-top: 30px;">';
       content += '<h4 style="color: #3f51b5;">Professional Learning Edition</h4>';
@@ -335,12 +349,12 @@ function generateFallbackTransformation(text, options) {
       content += '</div>';
       break;
   }
-  
+
   content += '</div>';
-  
+
   // Extract title from original text
   const title = extractTitle(text);
-  
+
   return {
     title,
     content,
@@ -348,7 +362,7 @@ function generateFallbackTransformation(text, options) {
       originalLength: text.length,
       transformedLength: content.length,
       options,
-      generatedBy: 'fallback'
-    }
+      generatedBy: 'fallback',
+    },
   };
 }

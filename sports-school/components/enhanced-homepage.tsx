@@ -1,18 +1,18 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { 
-  GraduationCap, 
-  Users, 
-  BookOpen, 
-  Award, 
-  TrendingUp, 
-  Star, 
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import {
+  GraduationCap,
+  Users,
+  BookOpen,
+  Award,
+  TrendingUp,
+  Star,
   Zap,
   Brain,
   Heart,
@@ -22,17 +22,17 @@ import {
   ChevronRight,
   Globe,
   Clock,
-  UserCheck
-} from 'lucide-react'
-import Link from 'next/link'
+  UserCheck,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function EnhancedHomepage() {
   const [stats, setStats] = useState({
     totalStudents: 0,
     coursesCompleted: 0,
     activeSchools: 0,
-    satisfactionRate: 0
-  })
+    satisfactionRate: 0,
+  });
 
   const schools = [
     {
@@ -43,7 +43,7 @@ export default function EnhancedHomepage() {
       color: 'blue',
       icon: Shield,
       features: ['Superhero Theme', 'K-6 Curriculum', 'AI Tutoring', 'Progress Tracking'],
-      stats: '2,500+ Students'
+      stats: '2,500+ Students',
     },
     {
       id: 'secondary',
@@ -53,7 +53,7 @@ export default function EnhancedHomepage() {
       color: 'purple',
       icon: Target,
       features: ['Sports Science', 'Technology', 'Agriculture', 'Gaming', 'Entrepreneurship'],
-      stats: '1,800+ Students'
+      stats: '1,800+ Students',
     },
     {
       id: 'law',
@@ -63,7 +63,7 @@ export default function EnhancedHomepage() {
       color: 'green',
       icon: Award,
       features: ['Case Studies', 'Mock Trials', 'Legal Research', 'Bar Prep'],
-      stats: '650+ Students'
+      stats: '650+ Students',
     },
     {
       id: 'language',
@@ -73,7 +73,7 @@ export default function EnhancedHomepage() {
       color: 'orange',
       icon: Globe,
       features: ['50+ Languages', 'Cultural Immersion', 'Native Speakers', 'Certification'],
-      stats: '3,200+ Students'
+      stats: '3,200+ Students',
     },
     {
       id: 'sports',
@@ -82,10 +82,15 @@ export default function EnhancedHomepage() {
       href: '/schools/sports',
       color: 'red',
       icon: TrendingUp,
-      features: ['Performance Analytics', 'Nutrition Science', 'Mental Training', 'Injury Prevention'],
-      stats: '1,100+ Students'
-    }
-  ]
+      features: [
+        'Performance Analytics',
+        'Nutrition Science',
+        'Mental Training',
+        'Injury Prevention',
+      ],
+      stats: '1,100+ Students',
+    },
+  ];
 
   const aiTeachers = [
     {
@@ -93,76 +98,79 @@ export default function EnhancedHomepage() {
       subject: 'Mathematics',
       specialty: 'Dyscalculia Support',
       icon: Brain,
-      description: 'Advanced math concepts with personalized learning paths'
+      description: 'Advanced math concepts with personalized learning paths',
     },
     {
       name: 'Dr. Curie',
       subject: 'Science',
       specialty: 'Hands-on Experiments',
       icon: Zap,
-      description: 'Interactive science experiments and real-world applications'
+      description: 'Interactive science experiments and real-world applications',
     },
     {
       name: 'Ms. Shakespeare',
       subject: 'English Language Arts',
       specialty: 'Dyslexia Support',
       icon: BookOpen,
-      description: 'Literature and writing with multi-sensory approaches'
+      description: 'Literature and writing with multi-sensory approaches',
     },
     {
       name: 'Dr. Inclusive',
       subject: 'Special Education',
       specialty: 'Neurodivergent Support',
       icon: Heart,
-      description: 'Comprehensive support for diverse learning needs'
-    }
-  ]
+      description: 'Comprehensive support for diverse learning needs',
+    },
+  ];
 
   const testimonials = [
     {
       name: 'Sarah Johnson',
       role: 'Parent of 3rd Grader',
-      content: 'My daughter has ADHD and struggled in traditional schools. The AI support and superhero theme have transformed her learning experience.',
+      content:
+        'My daughter has ADHD and struggled in traditional schools. The AI support and superhero theme have transformed her learning experience.',
       rating: 5,
-      school: 'Primary School'
+      school: 'Primary School',
     },
     {
       name: 'Marcus Chen',
       role: 'S.T.A.G.E Prep Student',
-      content: 'The Technology program prepared me for real-world programming. I already have internship offers!',
+      content:
+        'The Technology program prepared me for real-world programming. I already have internship offers!',
       rating: 5,
-      school: 'S.T.A.G.E Prep'
+      school: 'S.T.A.G.E Prep',
     },
     {
       name: 'Elena Rodriguez',
       role: 'Language School Graduate',
-      content: 'I became fluent in 3 languages through the cultural immersion program. The AI tutoring is incredible.',
+      content:
+        'I became fluent in 3 languages through the cultural immersion program. The AI tutoring is incredible.',
       rating: 5,
-      school: 'Language School'
-    }
-  ]
+      school: 'Language School',
+    },
+  ];
 
   useEffect(() => {
     // Animate counters
     const animateCounter = (target: number, setter: (value: number) => void) => {
-      let current = 0
-      const increment = target / 50
+      let current = 0;
+      const increment = target / 50;
       const timer = setInterval(() => {
-        current += increment
+        current += increment;
         if (current >= target) {
-          setter(target)
-          clearInterval(timer)
+          setter(target);
+          clearInterval(timer);
         } else {
-          setter(Math.floor(current))
+          setter(Math.floor(current));
         }
-      }, 30)
-    }
+      }, 30);
+    };
 
-    animateCounter(9250, (value) => setStats(prev => ({ ...prev, totalStudents: value })))
-    animateCounter(15430, (value) => setStats(prev => ({ ...prev, coursesCompleted: value })))
-    animateCounter(5, (value) => setStats(prev => ({ ...prev, activeSchools: value })))
-    animateCounter(98, (value) => setStats(prev => ({ ...prev, satisfactionRate: value })))
-  }, [])
+    animateCounter(9250, (value) => setStats((prev) => ({ ...prev, totalStudents: value })));
+    animateCounter(15430, (value) => setStats((prev) => ({ ...prev, coursesCompleted: value })));
+    animateCounter(5, (value) => setStats((prev) => ({ ...prev, activeSchools: value })));
+    animateCounter(98, (value) => setStats((prev) => ({ ...prev, satisfactionRate: value })));
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -186,21 +194,26 @@ export default function EnhancedHomepage() {
                   Neurodivergent Support
                 </Badge>
               </div>
-              
+
               <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
                 Universal One School
               </h1>
-              
+
               <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
-                Where every student discovers their unique learning superpowers through AI-powered education across 5 specialized schools
+                Where every student discovers their unique learning superpowers through AI-powered
+                education across 5 specialized schools
               </p>
-              
+
               <div className="flex flex-wrap justify-center gap-4 mb-12">
                 <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50">
                   <Play className="w-5 h-5 mr-2" />
                   Watch Demo
                 </Button>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-white text-white hover:bg-white/10"
+                >
                   <UserCheck className="w-5 h-5 mr-2" />
                   Get Started Free
                 </Button>
@@ -225,7 +238,7 @@ export default function EnhancedHomepage() {
               </div>
               <div className="text-gray-600">Active Students</div>
             </motion.div>
-            
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -237,7 +250,7 @@ export default function EnhancedHomepage() {
               </div>
               <div className="text-gray-600">Courses Completed</div>
             </motion.div>
-            
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -249,7 +262,7 @@ export default function EnhancedHomepage() {
               </div>
               <div className="text-gray-600">Specialized Schools</div>
             </motion.div>
-            
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -270,14 +283,14 @@ export default function EnhancedHomepage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <Badge className="mb-4" variant="secondary">
-              <GraduationCap className="w-4 h-4 mr-2" />
-              5 Specialized Schools
+              <GraduationCap className="w-4 h-4 mr-2" />5 Specialized Schools
             </Badge>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
               Choose Your Learning Path
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Each school is designed with unique themes, specialized curricula, and AI-powered support tailored to different learning styles and career paths.
+              Each school is designed with unique themes, specialized curricula, and AI-powered
+              support tailored to different learning styles and career paths.
             </p>
           </div>
 
@@ -291,7 +304,9 @@ export default function EnhancedHomepage() {
               >
                 <Card className="h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group">
                   <CardHeader>
-                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br from-${school.color}-500 to-${school.color}-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                    <div
+                      className={`w-16 h-16 rounded-2xl bg-gradient-to-br from-${school.color}-500 to-${school.color}-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}
+                    >
                       <school.icon className="w-8 h-8 text-white" />
                     </div>
                     <CardTitle className="text-xl mb-2">{school.name}</CardTitle>
@@ -308,7 +323,7 @@ export default function EnhancedHomepage() {
                           </Badge>
                         ))}
                       </div>
-                      
+
                       <div className="flex items-center justify-between text-sm text-gray-500">
                         <span>{school.stats}</span>
                         <div className="flex items-center">
@@ -316,7 +331,7 @@ export default function EnhancedHomepage() {
                           <span>4.9</span>
                         </div>
                       </div>
-                      
+
                       <Link href={school.href}>
                         <Button className="w-full group-hover:bg-blue-600 transition-colors">
                           Explore School
@@ -344,7 +359,8 @@ export default function EnhancedHomepage() {
               Meet Your AI Teachers
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Our specialized AI teachers provide personalized instruction, adaptive learning, and comprehensive support for neurodivergent students.
+              Our specialized AI teachers provide personalized instruction, adaptive learning, and
+              comprehensive support for neurodivergent students.
             </p>
           </div>
 
@@ -370,9 +386,7 @@ export default function EnhancedHomepage() {
                     <Badge className="mb-3" variant="outline">
                       {teacher.specialty}
                     </Badge>
-                    <p className="text-sm text-gray-600">
-                      {teacher.description}
-                    </p>
+                    <p className="text-sm text-gray-600">{teacher.description}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -409,9 +423,7 @@ export default function EnhancedHomepage() {
                         <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
                       ))}
                     </div>
-                    <p className="text-gray-700 mb-4 italic">
-                      "{testimonial.content}"
-                    </p>
+                    <p className="text-gray-700 mb-4 italic">"{testimonial.content}"</p>
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="font-semibold text-gray-900">{testimonial.name}</div>
@@ -439,7 +451,8 @@ export default function EnhancedHomepage() {
               Ready to Discover Your Superpowers?
             </h2>
             <p className="text-xl mb-8 text-blue-100 max-w-2xl mx-auto">
-              Join thousands of students who are already experiencing personalized, AI-powered education designed for every learning style.
+              Join thousands of students who are already experiencing personalized, AI-powered
+              education designed for every learning style.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50">
@@ -447,7 +460,11 @@ export default function EnhancedHomepage() {
                 Start Learning Today
               </Button>
               <Link href="/dashboards">
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-white text-white hover:bg-white/10"
+                >
                   <Target className="w-5 h-5 mr-2" />
                   Access Dashboard
                 </Button>
@@ -457,5 +474,5 @@ export default function EnhancedHomepage() {
         </div>
       </section>
     </div>
-  )
+  );
 }

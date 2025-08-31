@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
         guidanceUsed: true,
         qualityScore,
         filePath: `/uploads/mobile-videos/${filename}`,
-        syncStatus: 'synced'
+        syncStatus: 'synced',
       })
       .returning();
 
@@ -59,14 +59,10 @@ export async function POST(request: NextRequest) {
       success: true,
       sessionId: recordingSession.id,
       qualityScore,
-      message: 'Video uploaded successfully and ready for GAR analysis'
+      message: 'Video uploaded successfully and ready for GAR analysis',
     });
-
   } catch (error) {
     console.error('Mobile video upload error:', error);
-    return NextResponse.json(
-      { error: 'Failed to upload video' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to upload video' }, { status: 500 });
   }
 }

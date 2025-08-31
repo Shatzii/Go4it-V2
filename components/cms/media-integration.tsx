@@ -32,15 +32,16 @@ export function MediaIntegration({
   categories = ['all'],
   showVideos = true,
   showImages = true,
-  maxSelection = 1
+  maxSelection = 1,
 }: MediaIntegrationProps) {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'compact'>('grid');
 
-  const filteredAssets = mediaAssets.filter(asset => {
+  const filteredAssets = mediaAssets.filter((asset) => {
     const categoryMatch = selectedCategory === 'all' || asset.category === selectedCategory;
-    const typeMatch = (showVideos && asset.type === 'video') || 
-                      (showImages && (asset.type === 'image' || asset.type === 'logo'));
+    const typeMatch =
+      (showVideos && asset.type === 'video') ||
+      (showImages && (asset.type === 'image' || asset.type === 'logo'));
     return categoryMatch && typeMatch && asset.isActive;
   });
 
@@ -58,16 +59,14 @@ export function MediaIntegration({
 
   const availableCategories = [
     'all',
-    ...Array.from(new Set(mediaAssets.map(asset => asset.category)))
+    ...Array.from(new Set(mediaAssets.map((asset) => asset.category))),
   ];
 
   return (
     <div className="bg-slate-800 rounded-lg border border-slate-700 p-4">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-white">Media Library</h3>
-        <div className="text-sm text-slate-400">
-          {filteredAssets.length} assets available
-        </div>
+        <div className="text-sm text-slate-400">{filteredAssets.length} assets available</div>
       </div>
 
       {/* Category Filter */}
@@ -77,9 +76,11 @@ export function MediaIntegration({
           onChange={(e) => setSelectedCategory(e.target.value)}
           className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white text-sm focus:border-blue-500 focus:outline-none"
         >
-          {availableCategories.map(category => (
+          {availableCategories.map((category) => (
             <option key={category} value={category}>
-              {category === 'all' ? 'All Categories' : category.charAt(0).toUpperCase() + category.slice(1)}
+              {category === 'all'
+                ? 'All Categories'
+                : category.charAt(0).toUpperCase() + category.slice(1)}
             </option>
           ))}
         </select>
@@ -104,12 +105,14 @@ export function MediaIntegration({
       {/* Assets Display */}
       {viewMode === 'grid' ? (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {filteredAssets.map(asset => (
+          {filteredAssets.map((asset) => (
             <div
               key={asset.id}
               onClick={() => onSelectAsset(asset)}
               className={`relative cursor-pointer border rounded-lg overflow-hidden transition-all hover:border-blue-500 ${
-                selectedAssetId === asset.id ? 'border-blue-500 ring-2 ring-blue-500/50' : 'border-slate-600'
+                selectedAssetId === asset.id
+                  ? 'border-blue-500 ring-2 ring-blue-500/50'
+                  : 'border-slate-600'
               }`}
             >
               <div className="aspect-video bg-slate-700 flex items-center justify-center">
@@ -117,8 +120,8 @@ export function MediaIntegration({
                   <div className="relative">
                     <Play className="w-8 h-8 text-blue-400" />
                     {asset.thumbnailUrl && (
-                      <img 
-                        src={asset.thumbnailUrl} 
+                      <img
+                        src={asset.thumbnailUrl}
                         alt={asset.originalName}
                         className="absolute inset-0 w-full h-full object-cover rounded"
                       />
@@ -127,8 +130,8 @@ export function MediaIntegration({
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     {asset.url.match(/\.(jpg|jpeg|png|gif|svg)$/i) ? (
-                      <img 
-                        src={asset.url} 
+                      <img
+                        src={asset.url}
                         alt={asset.originalName}
                         className="w-full h-full object-cover"
                       />
@@ -164,7 +167,7 @@ export function MediaIntegration({
         </div>
       ) : (
         <div className="space-y-2">
-          {filteredAssets.map(asset => (
+          {filteredAssets.map((asset) => (
             <div
               key={asset.id}
               onClick={() => onSelectAsset(asset)}
@@ -172,18 +175,14 @@ export function MediaIntegration({
                 selectedAssetId === asset.id ? 'border-blue-500 bg-blue-500/10' : 'border-slate-600'
               }`}
             >
-              <div className="flex-shrink-0">
-                {getTypeIcon(asset.type)}
-              </div>
+              <div className="flex-shrink-0">{getTypeIcon(asset.type)}</div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">
-                  {asset.originalName}
-                </p>
+                <p className="text-sm font-medium text-white truncate">{asset.originalName}</p>
                 <p className="text-xs text-slate-400 truncate">
                   {asset.description || 'No description'}
                 </p>
                 <div className="flex gap-1 mt-1">
-                  {asset.tags.slice(0, 2).map(tag => (
+                  {asset.tags.slice(0, 2).map((tag) => (
                     <span
                       key={tag}
                       className="px-1 py-0.5 bg-slate-700 text-xs text-slate-300 rounded"
@@ -194,9 +193,7 @@ export function MediaIntegration({
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-400 capitalize">
-                  {asset.category}
-                </span>
+                <span className="text-xs text-slate-400 capitalize">{asset.category}</span>
                 {selectedAssetId === asset.id && (
                   <Star className="w-4 h-4 text-blue-500 fill-current" />
                 )}
@@ -224,7 +221,7 @@ export function MediaIntegration({
 export function FeaturedMediaSection({
   mediaAssets,
   featuredAssets = [],
-  onUpdateFeatured
+  onUpdateFeatured,
 }: {
   mediaAssets: MediaAsset[];
   featuredAssets: string[];
@@ -234,30 +231,26 @@ export function FeaturedMediaSection({
 
   const toggleAsset = (assetId: string) => {
     const newSelection = selectedAssets.includes(assetId)
-      ? selectedAssets.filter(id => id !== assetId)
+      ? selectedAssets.filter((id) => id !== assetId)
       : [...selectedAssets, assetId];
-    
+
     setSelectedAssets(newSelection);
     onUpdateFeatured(newSelection);
   };
 
-  const featuredMediaAssets = mediaAssets.filter(asset => 
-    selectedAssets.includes(asset.id)
-  );
+  const featuredMediaAssets = mediaAssets.filter((asset) => selectedAssets.includes(asset.id));
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-white">Featured Media</h3>
-        <div className="text-sm text-slate-400">
-          {selectedAssets.length}/6 selected
-        </div>
+        <div className="text-sm text-slate-400">{selectedAssets.length}/6 selected</div>
       </div>
 
       {/* Featured Assets Display */}
       {featuredMediaAssets.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-          {featuredMediaAssets.map(asset => (
+          {featuredMediaAssets.map((asset) => (
             <div key={asset.id} className="relative group">
               <div className="aspect-video bg-slate-700 rounded-lg overflow-hidden">
                 {asset.type === 'video' ? (
@@ -265,8 +258,8 @@ export function FeaturedMediaSection({
                     <Play className="w-8 h-8 text-blue-400" />
                   </div>
                 ) : (
-                  <img 
-                    src={asset.url} 
+                  <img
+                    src={asset.url}
                     alt={asset.originalName}
                     className="w-full h-full object-cover"
                   />
@@ -288,7 +281,9 @@ export function FeaturedMediaSection({
       <MediaIntegration
         mediaAssets={mediaAssets}
         onSelectAsset={(asset) => toggleAsset(asset.id)}
-        selectedAssetId={selectedAssets.length > 0 ? selectedAssets[selectedAssets.length - 1] : undefined}
+        selectedAssetId={
+          selectedAssets.length > 0 ? selectedAssets[selectedAssets.length - 1] : undefined
+        }
         showVideos={true}
         showImages={true}
         maxSelection={6}

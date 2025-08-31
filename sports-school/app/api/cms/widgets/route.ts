@@ -33,19 +33,19 @@ const widgets: Widget[] = [
       subtitle: 'Empowering neurodivergent learners',
       backgroundImage: '/hero-bg.jpg',
       ctaText: 'Explore Schools',
-      ctaLink: '/schools'
+      ctaLink: '/schools',
     },
     preview: '/widget-previews/hero-section.png',
     config: {
       customizable: true,
       responsive: true,
       accessibility: true,
-      neurotypeFriendly: true
+      neurotypeFriendly: true,
     },
     usage: {
       count: 45,
-      popularIn: ['landing-pages', 'school-pages']
-    }
+      popularIn: ['landing-pages', 'school-pages'],
+    },
   },
   {
     id: 'course-card',
@@ -60,19 +60,19 @@ const widgets: Widget[] = [
       duration: '45 minutes',
       difficulty: 'Beginner',
       price: 'Free',
-      image: '/course-math.jpg'
+      image: '/course-math.jpg',
     },
     preview: '/widget-previews/course-card.png',
     config: {
       customizable: true,
       responsive: true,
       accessibility: true,
-      neurotypeFriendly: true
+      neurotypeFriendly: true,
     },
     usage: {
       count: 78,
-      popularIn: ['course-catalog', 'school-pages']
-    }
+      popularIn: ['course-catalog', 'school-pages'],
+    },
   },
   {
     id: 'student-progress',
@@ -85,19 +85,19 @@ const widgets: Widget[] = [
       showPercentage: true,
       showBadges: true,
       showStreak: true,
-      colorScheme: 'superhero'
+      colorScheme: 'superhero',
     },
     preview: '/widget-previews/student-progress.png',
     config: {
       customizable: true,
       responsive: true,
       accessibility: true,
-      neurotypeFriendly: true
+      neurotypeFriendly: true,
     },
     usage: {
       count: 92,
-      popularIn: ['dashboard', 'student-pages']
-    }
+      popularIn: ['dashboard', 'student-pages'],
+    },
   },
   {
     id: 'ai-tutor-chat',
@@ -107,21 +107,21 @@ const widgets: Widget[] = [
     component: 'AITutorChat',
     props: {
       tutorName: 'Dean Wonder',
-      initialMessage: 'Hi! I\'m here to help you learn. What would you like to explore today?',
+      initialMessage: "Hi! I'm here to help you learn. What would you like to explore today?",
       personality: 'encouraging',
-      adaptations: ['dyslexia', 'adhd', 'autism']
+      adaptations: ['dyslexia', 'adhd', 'autism'],
     },
     preview: '/widget-previews/ai-tutor-chat.png',
     config: {
       customizable: true,
       responsive: true,
       accessibility: true,
-      neurotypeFriendly: true
+      neurotypeFriendly: true,
     },
     usage: {
       count: 67,
-      popularIn: ['all-schools', 'learning-pages']
-    }
+      popularIn: ['all-schools', 'learning-pages'],
+    },
   },
   {
     id: 'social-media-feed',
@@ -133,19 +133,19 @@ const widgets: Widget[] = [
       userId: 'demo_student',
       showOnlySafe: true,
       platforms: ['instagram', 'tiktok'],
-      maxItems: 5
+      maxItems: 5,
     },
     preview: '/widget-previews/social-feed.png',
     config: {
       customizable: true,
       responsive: true,
       accessibility: true,
-      neurotypeFriendly: false
+      neurotypeFriendly: false,
     },
     usage: {
       count: 23,
-      popularIn: ['dashboard', 'social-pages']
-    }
+      popularIn: ['dashboard', 'social-pages'],
+    },
   },
   {
     id: 'achievement-badge',
@@ -157,19 +157,19 @@ const widgets: Widget[] = [
       studentId: 'demo_student',
       badgeType: 'math-hero',
       showProgress: true,
-      animateUnlock: true
+      animateUnlock: true,
     },
     preview: '/widget-previews/achievement-badge.png',
     config: {
       customizable: true,
       responsive: true,
       accessibility: true,
-      neurotypeFriendly: true
+      neurotypeFriendly: true,
     },
     usage: {
       count: 156,
-      popularIn: ['superhero-school', 'student-dashboard']
-    }
+      popularIn: ['superhero-school', 'student-dashboard'],
+    },
   },
   {
     id: 'calendar-widget',
@@ -182,19 +182,19 @@ const widgets: Widget[] = [
       showEvents: true,
       showAssignments: true,
       colorCode: true,
-      neurotypeFriendly: true
+      neurotypeFriendly: true,
     },
     preview: '/widget-previews/calendar.png',
     config: {
       customizable: true,
       responsive: true,
       accessibility: true,
-      neurotypeFriendly: true
+      neurotypeFriendly: true,
     },
     usage: {
       count: 34,
-      popularIn: ['dashboard', 'organization-pages']
-    }
+      popularIn: ['dashboard', 'organization-pages'],
+    },
   },
   {
     id: 'neurodivergent-tools',
@@ -205,19 +205,19 @@ const widgets: Widget[] = [
     props: {
       tools: ['focus-mode', 'reading-ruler', 'sensory-break'],
       userPreferences: 'auto-detect',
-      quickAccess: true
+      quickAccess: true,
     },
     preview: '/widget-previews/neurodivergent-tools.png',
     config: {
       customizable: true,
       responsive: true,
       accessibility: true,
-      neurotypeFriendly: true
+      neurotypeFriendly: true,
     },
     usage: {
       count: 89,
-      popularIn: ['all-schools', 'learning-support']
-    }
+      popularIn: ['all-schools', 'learning-support'],
+    },
   },
   {
     id: 'virtual-classroom',
@@ -229,19 +229,19 @@ const widgets: Widget[] = [
       classroomId: 'demo-class',
       showLive: true,
       showRecorded: true,
-      aiEnhanced: true
+      aiEnhanced: true,
     },
     preview: '/widget-previews/virtual-classroom.png',
     config: {
       customizable: true,
       responsive: true,
       accessibility: true,
-      neurotypeFriendly: true
+      neurotypeFriendly: true,
     },
     usage: {
       count: 41,
-      popularIn: ['education-pages', 'remote-learning']
-    }
+      popularIn: ['education-pages', 'remote-learning'],
+    },
   },
   {
     id: 'parent-dashboard',
@@ -254,20 +254,20 @@ const widgets: Widget[] = [
       showProgress: true,
       showSafety: true,
       showSchedule: true,
-      alerts: true
+      alerts: true,
     },
     preview: '/widget-previews/parent-dashboard.png',
     config: {
       customizable: true,
       responsive: true,
       accessibility: true,
-      neurotypeFriendly: false
+      neurotypeFriendly: false,
     },
     usage: {
       count: 52,
-      popularIn: ['parent-portal', 'family-pages']
-    }
-  }
+      popularIn: ['parent-portal', 'family-pages'],
+    },
+  },
 ];
 
 export async function GET(request: NextRequest) {
@@ -280,18 +280,19 @@ export async function GET(request: NextRequest) {
 
     // Apply category filter
     if (category && category !== 'all') {
-      filteredWidgets = filteredWidgets.filter(widget => 
-        widget.category.toLowerCase() === category.toLowerCase()
+      filteredWidgets = filteredWidgets.filter(
+        (widget) => widget.category.toLowerCase() === category.toLowerCase(),
       );
     }
 
     // Apply search filter
     if (search) {
       const searchLower = search.toLowerCase();
-      filteredWidgets = filteredWidgets.filter(widget =>
-        widget.name.toLowerCase().includes(searchLower) ||
-        widget.description.toLowerCase().includes(searchLower) ||
-        widget.category.toLowerCase().includes(searchLower)
+      filteredWidgets = filteredWidgets.filter(
+        (widget) =>
+          widget.name.toLowerCase().includes(searchLower) ||
+          widget.description.toLowerCase().includes(searchLower) ||
+          widget.category.toLowerCase().includes(searchLower),
       );
     }
 
@@ -300,8 +301,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       widgets: filteredWidgets,
-      categories: [...new Set(widgets.map(w => w.category))],
-      total: filteredWidgets.length
+      categories: [...new Set(widgets.map((w) => w.category))],
+      total: filteredWidgets.length,
     });
   } catch (error) {
     console.error('Error fetching widgets:', error);
@@ -312,7 +313,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     const newWidget: Widget = {
       id: `widget_${Date.now()}`,
       name: body.name || 'New Widget',
@@ -326,12 +327,12 @@ export async function POST(request: NextRequest) {
         responsive: true,
         accessibility: true,
         neurotypeFriendly: true,
-        ...body.config
+        ...body.config,
       },
       usage: {
         count: 0,
-        popularIn: []
-      }
+        popularIn: [],
+      },
     };
 
     widgets.push(newWidget);

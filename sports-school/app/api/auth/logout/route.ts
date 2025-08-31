@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
 
     const response = NextResponse.json({
       success: true,
-      message: 'Logged out successfully.'
+      message: 'Logged out successfully.',
     });
 
     // Clear the refresh token cookie
@@ -18,20 +18,19 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 0, // Expire immediately
-      path: '/'
+      path: '/',
     });
 
     return response;
-
   } catch (error) {
     console.error('Logout error:', error);
     return NextResponse.json(
       {
         success: false,
         error: 'Internal server error.',
-        code: 'SERVER_ERROR'
+        code: 'SERVER_ERROR',
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

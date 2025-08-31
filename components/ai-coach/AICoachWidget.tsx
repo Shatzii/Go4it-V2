@@ -4,13 +4,30 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Mic, MessageCircle, Video, Brain, Trophy, 
-  Play, Pause, Volume2, VolumeX, Zap, Star
+import {
+  Mic,
+  MessageCircle,
+  Video,
+  Brain,
+  Trophy,
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Zap,
+  Star,
 } from 'lucide-react';
 
 interface AICoachWidgetProps {
-  feature: 'gar_analysis' | 'starpath' | 'challenges' | 'recruiting_reports' | 'flag_football' | 'parent_dashboard' | 'mobile_analysis' | 'team_sports';
+  feature:
+    | 'gar_analysis'
+    | 'starpath'
+    | 'challenges'
+    | 'recruiting_reports'
+    | 'flag_football'
+    | 'parent_dashboard'
+    | 'mobile_analysis'
+    | 'team_sports';
   context?: any;
   userId?: string;
   className?: string;
@@ -29,59 +46,59 @@ export function AICoachWidget({ feature, context, userId, className }: AICoachWi
         icon: Video,
         color: 'bg-green-500',
         description: 'Get voice coaching on your GAR performance',
-        actions: ['generate_voice_feedback', 'real_time_coaching']
+        actions: ['generate_voice_feedback', 'real_time_coaching'],
       },
       starpath: {
         title: 'StarPath Progress Coach',
         icon: Star,
         color: 'bg-purple-500',
         description: 'Voice guidance through your skill progression',
-        actions: ['voice_progression_guide', 'celebrate_achievement']
+        actions: ['voice_progression_guide', 'celebrate_achievement'],
       },
       challenges: {
         title: 'Challenge Coaching',
         icon: Trophy,
         color: 'bg-blue-500',
         description: 'Real-time coaching during challenges',
-        actions: ['voice_challenge_coaching', 'technique_correction']
+        actions: ['voice_challenge_coaching', 'technique_correction'],
       },
       recruiting_reports: {
         title: 'Recruiting Coach',
         icon: Brain,
         color: 'bg-orange-500',
         description: 'Voice analysis of recruiting opportunities',
-        actions: ['voice_recruiting_summary', 'improvement_guidance']
+        actions: ['voice_recruiting_summary', 'improvement_guidance'],
       },
       flag_football: {
         title: 'Flag Football Coach',
         icon: Zap,
         color: 'bg-yellow-500',
         description: 'Specialized flag football coaching',
-        actions: ['flag_football_coaching', 'playbook_creation']
+        actions: ['flag_football_coaching', 'playbook_creation'],
       },
       parent_dashboard: {
         title: 'Parent Updates Coach',
         icon: MessageCircle,
         color: 'bg-pink-500',
         description: 'Voice reports for parents',
-        actions: ['parent_voice_reports', 'communication_summary']
+        actions: ['parent_voice_reports', 'communication_summary'],
       },
       mobile_analysis: {
         title: 'Mobile Analysis Coach',
         icon: Video,
         color: 'bg-cyan-500',
         description: 'Instant voice feedback on mobile uploads',
-        actions: ['mobile_voice_analysis', 'quick_coaching']
+        actions: ['mobile_voice_analysis', 'quick_coaching'],
       },
       team_sports: {
         title: 'Multi-Sport Coach',
         icon: Trophy,
         color: 'bg-red-500',
         description: 'Cross-sport coaching and strategy',
-        actions: ['multi_sport_coaching', 'team_strategy']
-      }
+        actions: ['multi_sport_coaching', 'team_strategy'],
+      },
     };
-    
+
     return configs[feature] || configs.gar_analysis;
   };
 
@@ -97,15 +114,15 @@ export function AICoachWidget({ feature, context, userId, className }: AICoachWi
         body: JSON.stringify({
           feature,
           action: action || config.actions[0],
-          data: context
-        })
+          data: context,
+        }),
       });
 
       if (response.ok) {
         const result = await response.json();
         setCoaching(result);
         setIsActive(true);
-        
+
         // Open ElevenLabs voice coaching if available
         if (result.elevenlabsUrl && voiceEnabled) {
           window.open(result.elevenlabsUrl, '_blank', 'width=800,height=600');
@@ -124,11 +141,15 @@ export function AICoachWidget({ feature, context, userId, className }: AICoachWi
   };
 
   return (
-    <Card className={`${className} border-slate-700 bg-slate-800 transition-all duration-300 ${isActive ? 'border-green-500 shadow-lg shadow-green-500/20' : ''}`}>
+    <Card
+      className={`${className} border-slate-700 bg-slate-800 transition-all duration-300 ${isActive ? 'border-green-500 shadow-lg shadow-green-500/20' : ''}`}
+    >
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 ${config.color}/20 rounded-lg flex items-center justify-center`}>
+            <div
+              className={`w-10 h-10 ${config.color}/20 rounded-lg flex items-center justify-center`}
+            >
               <IconComponent className={`w-5 h-5 text-${config.color.split('-')[1]}-400`} />
             </div>
             <div>
@@ -136,7 +157,7 @@ export function AICoachWidget({ feature, context, userId, className }: AICoachWi
               <p className="text-sm text-slate-400">{config.description}</p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
@@ -146,11 +167,9 @@ export function AICoachWidget({ feature, context, userId, className }: AICoachWi
             >
               {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
             </Button>
-            
+
             {isActive && (
-              <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                Active
-              </Badge>
+              <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Active</Badge>
             )}
           </div>
         </div>
@@ -166,17 +185,17 @@ export function AICoachWidget({ feature, context, userId, className }: AICoachWi
                   onClick={() => startAICoaching(action)}
                   disabled={loading}
                   className={`w-full justify-start text-left ${
-                    index === 0 
-                      ? `${config.color} hover:${config.color}/80` 
+                    index === 0
+                      ? `${config.color} hover:${config.color}/80`
                       : 'bg-slate-700 hover:bg-slate-600'
                   }`}
                 >
                   <Mic className="w-4 h-4 mr-2" />
-                  {action.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  {action.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
                 </Button>
               ))}
             </div>
-            
+
             {loading && (
               <div className="flex items-center justify-center py-4">
                 <div className="animate-spin w-6 h-6 border-2 border-green-400 border-t-transparent rounded-full" />
@@ -189,7 +208,7 @@ export function AICoachWidget({ feature, context, userId, className }: AICoachWi
             {coaching && (
               <div className="bg-slate-700/50 rounded-lg p-4">
                 <h4 className="font-semibold text-white mb-2">AI Coaching Active</h4>
-                
+
                 {coaching.voiceFeedback && (
                   <div className="mb-3">
                     <p className="text-sm text-slate-300 mb-2">{coaching.voiceFeedback.message}</p>
@@ -207,7 +226,9 @@ export function AICoachWidget({ feature, context, userId, className }: AICoachWi
                       {coaching.improvements.slice(0, 3).map((improvement: any, index: number) => (
                         <li key={index} className="flex items-start gap-2">
                           <Star className="w-3 h-3 text-yellow-400 mt-0.5 flex-shrink-0" />
-                          <span>{improvement.area}: {improvement.specific_focus}</span>
+                          <span>
+                            {improvement.area}: {improvement.specific_focus}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -240,10 +261,12 @@ export function AICoachWidget({ feature, context, userId, className }: AICoachWi
                 <Pause className="w-4 h-4 mr-2" />
                 Stop Coaching
               </Button>
-              
+
               {coaching?.elevenlabsUrl && (
                 <Button
-                  onClick={() => window.open(coaching.elevenlabsUrl, '_blank', 'width=800,height=600')}
+                  onClick={() =>
+                    window.open(coaching.elevenlabsUrl, '_blank', 'width=800,height=600')
+                  }
                   size="sm"
                   className="bg-green-600 hover:bg-green-700"
                 >

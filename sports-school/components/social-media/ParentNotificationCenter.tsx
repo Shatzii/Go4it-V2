@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -8,20 +8,26 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  Bell, 
-  BellOff, 
-  Shield, 
-  AlertTriangle, 
-  Clock, 
-  MessageSquare, 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Bell,
+  BellOff,
+  Shield,
+  AlertTriangle,
+  Clock,
+  MessageSquare,
   Settings,
   User,
   Phone,
   Mail,
   CheckCircle,
-  X
+  X,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
@@ -56,12 +62,12 @@ export function ParentNotificationCenter({ childUserId }: ParentNotificationCent
   const { data: alerts, isLoading: alertsLoading } = useQuery({
     queryKey: ['/api/social-media/parent-alerts', childUserId],
     queryFn: async () => {
-      const url = childUserId 
+      const url = childUserId
         ? `/api/social-media/parent-alerts?childId=${childUserId}`
         : '/api/social-media/parent-alerts';
       const response = await apiRequest('GET', url);
-      return await response.json() as SecurityAlert[];
-    }
+      return (await response.json()) as SecurityAlert[];
+    },
   });
 
   const { data: settings, isLoading: settingsLoading } = useQuery({
@@ -71,8 +77,8 @@ export function ParentNotificationCenter({ childUserId }: ParentNotificationCent
         ? `/api/social-media/notification-settings?childId=${childUserId}`
         : '/api/social-media/notification-settings';
       const response = await apiRequest('GET', url);
-      return await response.json() as NotificationSettings;
-    }
+      return (await response.json()) as NotificationSettings;
+    },
   });
 
   const { data: parentalControls } = useQuery({
@@ -82,29 +88,33 @@ export function ParentNotificationCenter({ childUserId }: ParentNotificationCent
         ? `/api/social-media/parental-controls?childId=${childUserId}`
         : '/api/social-media/parental-controls';
       const response = await apiRequest('GET', url);
-      return await response.json() as ParentalControls;
-    }
+      return (await response.json()) as ParentalControls;
+    },
   });
 
   const updateSettingsMutation = useMutation({
     mutationFn: async (newSettings: Partial<NotificationSettings>) => {
-      const response = await apiRequest('PATCH', '/api/social-media/notification-settings', newSettings);
+      const response = await apiRequest(
+        'PATCH',
+        '/api/social-media/notification-settings',
+        newSettings,
+      );
       return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/social-media/notification-settings'] });
       toast({
-        title: "Settings Updated",
-        description: "Notification preferences have been saved successfully.",
+        title: 'Settings Updated',
+        description: 'Notification preferences have been saved successfully.',
       });
     },
     onError: () => {
       toast({
-        title: "Update Failed",
-        description: "Failed to update notification settings. Please try again.",
-        variant: "destructive",
+        title: 'Update Failed',
+        description: 'Failed to update notification settings. Please try again.',
+        variant: 'destructive',
       });
-    }
+    },
   });
 
   const acknowledgeAlertMutation = useMutation({
@@ -115,18 +125,22 @@ export function ParentNotificationCenter({ childUserId }: ParentNotificationCent
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/social-media/parent-alerts'] });
       toast({
-        title: "Alert Acknowledged",
-        description: "Alert has been marked as reviewed.",
+        title: 'Alert Acknowledged',
+        description: 'Alert has been marked as reviewed.',
       });
-    }
+    },
   });
 
   const getSeverityColor = (severity: string): string => {
     switch (severity) {
-      case 'critical': return 'text-red-600 bg-red-100 border-red-200';
-      case 'high': return 'text-orange-600 bg-orange-100 border-orange-200';
-      case 'medium': return 'text-yellow-600 bg-yellow-100 border-yellow-200';
-      default: return 'text-blue-600 bg-blue-100 border-blue-200';
+      case 'critical':
+        return 'text-red-600 bg-red-100 border-red-200';
+      case 'high':
+        return 'text-orange-600 bg-orange-100 border-orange-200';
+      case 'medium':
+        return 'text-yellow-600 bg-yellow-100 border-yellow-200';
+      default:
+        return 'text-blue-600 bg-blue-100 border-blue-200';
     }
   };
 
@@ -135,13 +149,13 @@ export function ParentNotificationCenter({ childUserId }: ParentNotificationCent
     const diff = now.getTime() - new Date(date).getTime();
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const days = Math.floor(hours / 24);
-    
+
     if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
     if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
     return 'Just now';
   };
 
-  const criticalAlerts = alerts?.filter(alert => alert.severity === 'critical') || [];
+  const criticalAlerts = alerts?.filter((alert) => alert.severity === 'critical') || [];
   const recentAlerts = alerts?.slice(0, 10) || [];
 
   if (alertsLoading || settingsLoading) {
@@ -150,7 +164,7 @@ export function ParentNotificationCenter({ childUserId }: ParentNotificationCent
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[1, 2].map(i => (
+            {[1, 2].map((i) => (
               <div key={i} className="h-48 bg-gray-200 rounded"></div>
             ))}
           </div>
@@ -181,7 +195,9 @@ export function ParentNotificationCenter({ childUserId }: ParentNotificationCent
         <Alert className="border-red-200 bg-red-50">
           <AlertTriangle className="h-4 w-4 text-red-600" />
           <AlertDescription className="text-red-800">
-            <strong>Immediate Attention Required:</strong> {criticalAlerts.length} critical safety alert{criticalAlerts.length > 1 ? 's' : ''} need{criticalAlerts.length === 1 ? 's' : ''} your review.
+            <strong>Immediate Attention Required:</strong> {criticalAlerts.length} critical safety
+            alert{criticalAlerts.length > 1 ? 's' : ''} need{criticalAlerts.length === 1 ? 's' : ''}{' '}
+            your review.
           </AlertDescription>
         </Alert>
       )}
@@ -199,21 +215,21 @@ export function ParentNotificationCenter({ childUserId }: ParentNotificationCent
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
               <Bell className="h-5 w-5 text-orange-600" />
               <div>
                 <div className="text-2xl font-bold text-orange-600">
-                  {alerts?.filter(a => a.severity === 'high').length || 0}
+                  {alerts?.filter((a) => a.severity === 'high').length || 0}
                 </div>
                 <div className="text-xs text-muted-foreground">High Priority</div>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
@@ -227,14 +243,16 @@ export function ParentNotificationCenter({ childUserId }: ParentNotificationCent
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
               <MessageSquare className="h-5 w-5 text-blue-600" />
               <div>
                 <div className="text-2xl font-bold text-blue-600">
-                  {alerts?.filter(a => new Date(a.createdAt).getTime() > Date.now() - 24*60*60*1000).length || 0}
+                  {alerts?.filter(
+                    (a) => new Date(a.createdAt).getTime() > Date.now() - 24 * 60 * 60 * 1000,
+                  ).length || 0}
                 </div>
                 <div className="text-xs text-muted-foreground">Today's Alerts</div>
               </div>
@@ -263,7 +281,10 @@ export function ParentNotificationCenter({ childUserId }: ParentNotificationCent
               {recentAlerts.length > 0 ? (
                 <div className="space-y-4">
                   {recentAlerts.map((alert) => (
-                    <div key={alert.id} className={`p-4 border rounded-lg ${getSeverityColor(alert.severity)}`}>
+                    <div
+                      key={alert.id}
+                      className={`p-4 border rounded-lg ${getSeverityColor(alert.severity)}`}
+                    >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
@@ -341,7 +362,7 @@ export function ParentNotificationCenter({ childUserId }: ParentNotificationCent
                     </div>
                     <Switch
                       checked={settings?.emailAlerts || false}
-                      onCheckedChange={(checked) => 
+                      onCheckedChange={(checked) =>
                         updateSettingsMutation.mutate({ emailAlerts: checked })
                       }
                     />
@@ -353,7 +374,7 @@ export function ParentNotificationCenter({ childUserId }: ParentNotificationCent
                     </div>
                     <Switch
                       checked={settings?.smsAlerts || false}
-                      onCheckedChange={(checked) => 
+                      onCheckedChange={(checked) =>
                         updateSettingsMutation.mutate({ smsAlerts: checked })
                       }
                     />
@@ -365,7 +386,7 @@ export function ParentNotificationCenter({ childUserId }: ParentNotificationCent
                     </div>
                     <Switch
                       checked={settings?.pushNotifications || false}
-                      onCheckedChange={(checked) => 
+                      onCheckedChange={(checked) =>
                         updateSettingsMutation.mutate({ pushNotifications: checked })
                       }
                     />
@@ -376,9 +397,9 @@ export function ParentNotificationCenter({ childUserId }: ParentNotificationCent
               {/* Alert Level */}
               <div>
                 <h4 className="font-semibold mb-3">Alert Threshold</h4>
-                <Select 
+                <Select
                   value={settings?.alertLevel || 'medium'}
-                  onValueChange={(value) => 
+                  onValueChange={(value) =>
                     updateSettingsMutation.mutate({ alertLevel: value as any })
                   }
                 >
@@ -404,12 +425,12 @@ export function ParentNotificationCenter({ childUserId }: ParentNotificationCent
                   <span>Enable quiet hours</span>
                   <Switch
                     checked={settings?.quietHours?.enabled || false}
-                    onCheckedChange={(checked) => 
-                      updateSettingsMutation.mutate({ 
-                        quietHours: { 
-                          ...settings?.quietHours, 
-                          enabled: checked 
-                        }
+                    onCheckedChange={(checked) =>
+                      updateSettingsMutation.mutate({
+                        quietHours: {
+                          ...settings?.quietHours,
+                          enabled: checked,
+                        },
                       })
                     }
                   />
@@ -421,12 +442,12 @@ export function ParentNotificationCenter({ childUserId }: ParentNotificationCent
                       <input
                         type="time"
                         value={settings?.quietHours?.start || '22:00'}
-                        onChange={(e) => 
+                        onChange={(e) =>
                           updateSettingsMutation.mutate({
                             quietHours: {
                               ...settings?.quietHours,
-                              start: e.target.value
-                            }
+                              start: e.target.value,
+                            },
                           })
                         }
                         className="w-full p-2 border rounded"
@@ -437,12 +458,12 @@ export function ParentNotificationCenter({ childUserId }: ParentNotificationCent
                       <input
                         type="time"
                         value={settings?.quietHours?.end || '07:00'}
-                        onChange={(e) => 
+                        onChange={(e) =>
                           updateSettingsMutation.mutate({
                             quietHours: {
                               ...settings?.quietHours,
-                              end: e.target.value
-                            }
+                              end: e.target.value,
+                            },
                           })
                         }
                         className="w-full p-2 border rounded"
@@ -474,15 +495,28 @@ export function ParentNotificationCenter({ childUserId }: ParentNotificationCent
                   </div>
                   <Switch checked={parentalControls?.monitoringEnabled || false} />
                 </div>
-                
+
                 <div className="border-t pt-4">
                   <h4 className="font-semibold mb-2">Current Settings Summary</h4>
                   <div className="text-sm space-y-1 text-muted-foreground">
-                    <p>Alert Level: <span className="capitalize">{parentalControls?.alertLevel}</span></p>
-                    <p>Allowed Platforms: {(parentalControls?.allowedPlatforms as string[])?.length || 0} configured</p>
-                    <p>Time Restrictions: {parentalControls?.timeRestrictions ? 'Enabled' : 'Disabled'}</p>
-                    <p>Last Review: {parentalControls?.lastReviewDate ? 
-                      formatTimeAgo(parentalControls.lastReviewDate) : 'Never'}</p>
+                    <p>
+                      Alert Level:{' '}
+                      <span className="capitalize">{parentalControls?.alertLevel}</span>
+                    </p>
+                    <p>
+                      Allowed Platforms:{' '}
+                      {(parentalControls?.allowedPlatforms as string[])?.length || 0} configured
+                    </p>
+                    <p>
+                      Time Restrictions:{' '}
+                      {parentalControls?.timeRestrictions ? 'Enabled' : 'Disabled'}
+                    </p>
+                    <p>
+                      Last Review:{' '}
+                      {parentalControls?.lastReviewDate
+                        ? formatTimeAgo(parentalControls.lastReviewDate)
+                        : 'Never'}
+                    </p>
                   </div>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
@@ -12,7 +12,7 @@ export async function GET() {
         timestamp: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
         read: false,
         actionUrl: '/dashboard',
-        priority: 'medium'
+        priority: 'medium',
       },
       {
         id: '2',
@@ -22,7 +22,7 @@ export async function GET() {
         timestamp: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
         read: false,
         actionUrl: '/video-analysis',
-        priority: 'high'
+        priority: 'high',
       },
       {
         id: '3',
@@ -31,13 +31,13 @@ export async function GET() {
         message: 'New features have been added to the AI coaching system',
         timestamp: new Date(Date.now() - 60 * 60 * 1000), // 1 hour ago
         read: true,
-        priority: 'low'
-      }
-    ]
+        priority: 'low',
+      },
+    ];
 
-    return NextResponse.json({ notifications })
+    return NextResponse.json({ notifications });
   } catch (error) {
-    console.error('Error fetching notifications:', error)
-    return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 })
+    console.error('Error fetching notifications:', error);
+    return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 });
   }
 }

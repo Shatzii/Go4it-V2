@@ -6,9 +6,9 @@ export function optimizeRouting(app: Express) {
   // Centralized school routing system
   const schoolRoutes = {
     'primary-school': '/schools/primary-school/',
-    'secondary-school': '/schools/secondary-school/', 
+    'secondary-school': '/schools/secondary-school/',
     'law-school': '/schools/law-school/',
-    'language-school': '/schools/language-school/'
+    'language-school': '/schools/language-school/',
   };
 
   // Legacy route redirects for seamless migration
@@ -18,7 +18,7 @@ export function optimizeRouting(app: Express) {
     '/lawyer-makers': '/schools/law-school/',
     '/language': '/schools/language-school/',
     '/schools/lawyer-makers': '/schools/law-school/',
-    '/schools/lawyer-makers/': '/schools/law-school/'
+    '/schools/lawyer-makers/': '/schools/law-school/',
   };
 
   // Apply legacy redirects
@@ -32,7 +32,7 @@ export function optimizeRouting(app: Express) {
   Object.entries(schoolRoutes).forEach(([schoolId, routePath]) => {
     app.get(routePath, (req, res) => {
       const schoolIndexPath = path.join(process.cwd(), 'public', 'schools', schoolId, 'index.html');
-      
+
       if (fs.existsSync(schoolIndexPath)) {
         res.sendFile(schoolIndexPath);
       } else {
@@ -45,7 +45,7 @@ export function optimizeRouting(app: Express) {
   // API endpoint for dynamic school information
   app.get('/api/schools/:schoolId', (req, res) => {
     const { schoolId } = req.params;
-    
+
     const schoolsData = {
       'primary-school': {
         name: 'Primary School Heroes',
@@ -53,15 +53,15 @@ export function optimizeRouting(app: Express) {
         instructor: 'Captain Knowledge',
         theme: 'superhero',
         colors: { primary: '#ff6b6b', secondary: '#ffa726', accent: '#66bb6a' },
-        features: ['Interactive Stories', 'Visual Learning', 'Adaptive Pace', 'Superhero Missions']
+        features: ['Interactive Stories', 'Visual Learning', 'Adaptive Pace', 'Superhero Missions'],
       },
       'secondary-school': {
-        name: 'Secondary School Excellence', 
+        name: 'Secondary School Excellence',
         subtitle: 'Grades 7-12 Academic Leadership',
         instructor: 'Dr. Mentor',
         theme: 'academic',
         colors: { primary: '#4ecdc4', secondary: '#44a08d', accent: '#f39c12' },
-        features: ['Project-Based', 'Self-Paced', 'Career Focused', 'College Prep']
+        features: ['Project-Based', 'Self-Paced', 'Career Focused', 'College Prep'],
       },
       'law-school': {
         name: 'The Lawyer Makers',
@@ -69,16 +69,16 @@ export function optimizeRouting(app: Express) {
         instructor: 'Professor Justice',
         theme: 'professional',
         colors: { primary: '#1e40af', secondary: '#3b82f6', accent: '#f59e0b' },
-        features: ['Case Studies', 'Simulations', 'Legal Writing', 'Bar Preparation']
+        features: ['Case Studies', 'Simulations', 'Legal Writing', 'Bar Preparation'],
       },
       'language-school': {
         name: 'Global Language Academy',
         subtitle: 'Multilingual Education',
-        instructor: 'Professor Polyglot', 
+        instructor: 'Professor Polyglot',
         theme: 'cultural',
         colors: { primary: '#96ceb4', secondary: '#85c1e9', accent: '#f7dc6f' },
-        features: ['English', 'German', 'Spanish', 'Cultural Immersion']
-      }
+        features: ['English', 'German', 'Spanish', 'Cultural Immersion'],
+      },
     };
 
     const schoolData = schoolsData[schoolId as keyof typeof schoolsData];

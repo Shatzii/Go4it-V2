@@ -5,14 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Trophy, 
-  Star, 
-  Users, 
-  Calendar, 
-  MapPin, 
-  Clock, 
-  CheckCircle, 
+import {
+  Trophy,
+  Star,
+  Users,
+  Calendar,
+  MapPin,
+  Clock,
+  CheckCircle,
   Timer,
   TrendingUp,
   Award,
@@ -26,7 +26,7 @@ import {
   MessageSquare,
   Video,
   Camera,
-  Mic
+  Mic,
 } from 'lucide-react';
 
 const TOTAL_SPOTS = 100;
@@ -41,23 +41,28 @@ export default function Verified100PromoPage() {
       platform: 'Instagram',
       icon: Instagram,
       color: 'bg-pink-500',
-      content: "🔥 I'm joining The Verified 100! \n\nOnly 100 athletes get LIFETIME access to:\n✅ GAR Score Testing\n✅ AI Coaching\n✅ NCAA Tools\n✅ Recruitment Analytics\n\n$100 once. Never pay again.\n\nFirst combine: Vienna, July 22-24 🇦🇹\n\n#Verified100 #LifetimeAthlete #GARScoreElite #Go4ItSports",
-      hashtags: "#Verified100 #LifetimeAthlete #GARScoreElite #Go4ItSports #ViennaEvent #FridayNightLights"
+      content:
+        "🔥 I'm joining The Verified 100! \n\nOnly 100 athletes get LIFETIME access to:\n✅ GAR Score Testing\n✅ AI Coaching\n✅ NCAA Tools\n✅ Recruitment Analytics\n\n$100 once. Never pay again.\n\nFirst combine: Vienna, July 22-24 🇦🇹\n\n#Verified100 #LifetimeAthlete #GARScoreElite #Go4ItSports",
+      hashtags:
+        '#Verified100 #LifetimeAthlete #GARScoreElite #Go4ItSports #ViennaEvent #FridayNightLights',
     },
     {
       platform: 'TikTok',
       icon: Video,
       color: 'bg-black',
-      content: "POV: You paid $100 once and never have to pay for sports analytics again 🔥\n\nThe Verified 100 is DIFFERENT:\n• Lifetime GAR Score testing\n• AI coaching forever\n• First 100 athletes ONLY\n• Vienna event July 22-24\n\nThis is how legends are made ⚡",
-      hashtags: "#Verified100 #LifetimeAthlete #GARScore #SportsAnalytics #Vienna #FridayNightLights"
+      content:
+        'POV: You paid $100 once and never have to pay for sports analytics again 🔥\n\nThe Verified 100 is DIFFERENT:\n• Lifetime GAR Score testing\n• AI coaching forever\n• First 100 athletes ONLY\n• Vienna event July 22-24\n\nThis is how legends are made ⚡',
+      hashtags:
+        '#Verified100 #LifetimeAthlete #GARScore #SportsAnalytics #Vienna #FridayNightLights',
     },
     {
       platform: 'Twitter',
       icon: Twitter,
       color: 'bg-blue-500',
-      content: "🚨 THE VERIFIED 100 IS LIVE\n\n$100 = Lifetime access to:\n→ GAR Score testing\n→ AI coaching\n→ NCAA eligibility tools\n→ Recruitment analytics\n\nFirst combine: Vienna 🇦🇹 July 22-24\nFriday Night Lights @ 7PM\n\nOnly 73 spots left ⏰",
-      hashtags: "#Verified100 #LifetimeAthlete #GARScoreElite #Vienna #SportsAnalytics"
-    }
+      content:
+        '🚨 THE VERIFIED 100 IS LIVE\n\n$100 = Lifetime access to:\n→ GAR Score testing\n→ AI coaching\n→ NCAA eligibility tools\n→ Recruitment analytics\n\nFirst combine: Vienna 🇦🇹 July 22-24\nFriday Night Lights @ 7PM\n\nOnly 73 spots left ⏰',
+      hashtags: '#Verified100 #LifetimeAthlete #GARScoreElite #Vienna #SportsAnalytics',
+    },
   ];
 
   const contentIdeas = [
@@ -65,23 +70,26 @@ export default function Verified100PromoPage() {
       type: 'Video',
       title: 'Why I Joined The Verified 100',
       description: 'Short video explaining the value of lifetime membership',
-      script: "I just locked in my spot in The Verified 100. Here's why: [Show calculator] Other platforms charge $1,000+ per year. Go4It? $100 ONCE. Forever. GAR Score testing, AI coaching, NCAA tools, recruitment help - everything I need to go pro. Vienna event July 22-24 is where legends are made. 73 spots left.",
-      duration: '30-60 seconds'
+      script:
+        "I just locked in my spot in The Verified 100. Here's why: [Show calculator] Other platforms charge $1,000+ per year. Go4It? $100 ONCE. Forever. GAR Score testing, AI coaching, NCAA tools, recruitment help - everything I need to go pro. Vienna event July 22-24 is where legends are made. 73 spots left.",
+      duration: '30-60 seconds',
     },
     {
       type: 'Story Series',
       title: 'Road to Vienna',
       description: 'Document your journey to the Vienna event',
-      script: "Day 1: Just joined The Verified 100 💪\nDay 2: Training with AI coach recommendations\nDay 3: Uploaded highlight reel\n...\nDay 30: Vienna bound! 🇦🇹",
-      duration: 'Daily posts'
+      script:
+        'Day 1: Just joined The Verified 100 💪\nDay 2: Training with AI coach recommendations\nDay 3: Uploaded highlight reel\n...\nDay 30: Vienna bound! 🇦🇹',
+      duration: 'Daily posts',
     },
     {
       type: 'Comparison Post',
       title: 'The Math That Made Me Join',
       description: 'Show cost comparison with other platforms',
-      script: "NCSA: $1,320/year\nSportsRecruits: $399/year\nStack Sports: $270/year\n\nGo4It Verified 100: $100 ONCE\n\nAfter 1 year: I save $1,220+\nAfter 4 years: I save $4,000+\n\nThis was the easiest decision ever.",
-      duration: 'Single post'
-    }
+      script:
+        'NCSA: $1,320/year\nSportsRecruits: $399/year\nStack Sports: $270/year\n\nGo4It Verified 100: $100 ONCE\n\nAfter 1 year: I save $1,220+\nAfter 4 years: I save $4,000+\n\nThis was the easiest decision ever.',
+      duration: 'Single post',
+    },
   ];
 
   const copyToClipboard = (text: string, type: string) => {
@@ -93,7 +101,7 @@ export default function Verified100PromoPage() {
   const shareContent = (platform: string, content: string) => {
     const encodedContent = encodeURIComponent(content);
     const url = 'https://go4itsports.org/lifetime';
-    
+
     let shareUrl = '';
     switch (platform) {
       case 'Instagram':
@@ -120,15 +128,16 @@ export default function Verified100PromoPage() {
           <Badge className="mb-6 bg-yellow-500 text-black font-bold text-lg px-6 py-2">
             VERIFIED 100 PROMO KIT
           </Badge>
-          
+
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
             DRIVE LEGENDARY SIGN-UPS
           </h1>
-          
+
           <p className="text-xl text-slate-300 mb-8 max-w-3xl mx-auto">
-            Everything you need to create viral content and drive massive sign-ups for The Verified 100 launch
+            Everything you need to create viral content and drive massive sign-ups for The Verified
+            100 launch
           </p>
-          
+
           <div className="flex items-center justify-center gap-8 mb-12">
             <div className="text-center">
               <div className="text-3xl font-bold text-yellow-400">{SPOTS_REMAINING}</div>
@@ -155,7 +164,9 @@ export default function Verified100PromoPage() {
                 <Card key={index} className="bg-slate-800 border-slate-700">
                   <CardHeader>
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 ${post.color} rounded-full flex items-center justify-center`}>
+                      <div
+                        className={`w-10 h-10 ${post.color} rounded-full flex items-center justify-center`}
+                      >
                         <Icon className="w-5 h-5 text-white" />
                       </div>
                       <CardTitle className="text-white">{post.platform}</CardTitle>
@@ -204,8 +215,12 @@ export default function Verified100PromoPage() {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center">
                       {idea.type === 'Video' && <Video className="w-5 h-5 text-purple-500" />}
-                      {idea.type === 'Story Series' && <Camera className="w-5 h-5 text-purple-500" />}
-                      {idea.type === 'Comparison Post' && <TrendingUp className="w-5 h-5 text-purple-500" />}
+                      {idea.type === 'Story Series' && (
+                        <Camera className="w-5 h-5 text-purple-500" />
+                      )}
+                      {idea.type === 'Comparison Post' && (
+                        <TrendingUp className="w-5 h-5 text-purple-500" />
+                      )}
                     </div>
                     <CardTitle className="text-white text-lg">{idea.title}</CardTitle>
                   </div>
@@ -280,7 +295,8 @@ export default function Verified100PromoPage() {
                   <strong>Legacy:</strong> "Be early. Be legendary."
                 </div>
                 <div className="text-slate-300">
-                  <strong>Community:</strong> "Founders get lifetime status. Everyone else? Pay per event."
+                  <strong>Community:</strong> "Founders get lifetime status. Everyone else? Pay per
+                  event."
                 </div>
               </CardContent>
             </Card>
@@ -295,18 +311,19 @@ export default function Verified100PromoPage() {
                 Ready to Create Legendary Members?
               </h3>
               <p className="text-slate-300 mb-6">
-                Use these assets to drive massive sign-ups and build the ultimate founding member community.
+                Use these assets to drive massive sign-ups and build the ultimate founding member
+                community.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
+                <Button
                   onClick={() => window.open('/lifetime', '_blank')}
                   className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold px-8 py-3"
                 >
                   <Crown className="w-5 h-5 mr-2" />
                   View Lifetime Page
                 </Button>
-                <Button 
+                <Button
                   onClick={() => copyToClipboard('https://go4itsports.org/lifetime', 'URL')}
                   variant="outline"
                   className="border-slate-600 text-slate-300 px-8 py-3"

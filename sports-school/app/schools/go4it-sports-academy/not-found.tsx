@@ -8,7 +8,9 @@ export default function NotFound() {
       <div className="text-center p-8">
         <div className="text-6xl mb-8">🏈</div>
         <h1 className="text-4xl font-bold text-white mb-4">Page Not Found</h1>
-        <p className="text-white/70 mb-8">The Go4it Sports Academy page you're looking for doesn't exist.</p>
+        <p className="text-white/70 mb-8">
+          The Go4it Sports Academy page you're looking for doesn't exist.
+        </p>
         <div className="flex gap-4 justify-center">
           <Link href="/schools">
             <Button className="bg-blue-600 hover:bg-blue-700">

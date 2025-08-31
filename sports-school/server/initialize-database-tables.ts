@@ -1,6 +1,6 @@
 /**
  * Direct Database Table Initialization
- * 
+ *
  * This script manually creates the necessary database tables for the ShatziiOS platform
  * as an alternative to using drizzle-kit when it's having issues.
  */
@@ -10,10 +10,10 @@ import { sql } from 'drizzle-orm';
 
 async function createTables() {
   console.log('🔄 Directly creating database tables...');
-  
+
   try {
     // === Language School Tables ===
-    
+
     // Create vocabularyLists table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "vocabularyLists" (
@@ -28,7 +28,7 @@ async function createTables() {
       );
     `);
     console.log('✅ Created vocabularyLists table');
-    
+
     // Create vocabularyItems table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "vocabularyItems" (
@@ -46,7 +46,7 @@ async function createTables() {
       );
     `);
     console.log('✅ Created vocabularyItems table');
-    
+
     // Create userVocabularyProgress table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "userVocabularyProgress" (
@@ -63,7 +63,7 @@ async function createTables() {
       );
     `);
     console.log('✅ Created userVocabularyProgress table');
-    
+
     // Create languageCourses table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "languageCourses" (
@@ -78,7 +78,7 @@ async function createTables() {
       );
     `);
     console.log('✅ Created languageCourses table');
-    
+
     // Create languageModules table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "languageModules" (
@@ -93,7 +93,7 @@ async function createTables() {
       );
     `);
     console.log('✅ Created languageModules table');
-    
+
     // Create languageMissions table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "languageMissions" (
@@ -110,7 +110,7 @@ async function createTables() {
       );
     `);
     console.log('✅ Created languageMissions table');
-    
+
     // Create userLanguageProgress table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "userLanguageProgress" (
@@ -126,7 +126,7 @@ async function createTables() {
       );
     `);
     console.log('✅ Created userLanguageProgress table');
-    
+
     // Create userLanguageMissions table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "userLanguageMissions" (
@@ -143,11 +143,11 @@ async function createTables() {
       );
     `);
     console.log('✅ Created userLanguageMissions table');
-    
+
     console.log('✅ All language school tables created successfully');
-    
+
     // === Neurodivergent School (Superhero School) Tables ===
-    
+
     // Create superheroCurricula table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "superheroCurricula" (
@@ -163,7 +163,7 @@ async function createTables() {
       );
     `);
     console.log('✅ Created superheroCurricula table');
-    
+
     // Create superheroModules table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "superheroModules" (
@@ -183,7 +183,7 @@ async function createTables() {
       );
     `);
     console.log('✅ Created superheroModules table');
-    
+
     // Create superheroMissions table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "superheroMissions" (
@@ -203,7 +203,7 @@ async function createTables() {
       );
     `);
     console.log('✅ Created superheroMissions table');
-    
+
     // Create superheroMissionProgress table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "superheroMissionProgress" (
@@ -223,7 +223,7 @@ async function createTables() {
       );
     `);
     console.log('✅ Created superheroMissionProgress table');
-    
+
     // Create learningStyleResults table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "learning_style_results" (
@@ -243,7 +243,7 @@ async function createTables() {
       );
     `);
     console.log('✅ Created learningStyleResults table');
-    
+
     // Create learningPersona table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "learning_personas" (
@@ -262,7 +262,7 @@ async function createTables() {
       );
     `);
     console.log('✅ Created learningPersonas table');
-    
+
     // Create moodEntries table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "mood_entries" (
@@ -277,11 +277,11 @@ async function createTables() {
       );
     `);
     console.log('✅ Created moodEntries table');
-    
+
     console.log('✅ All neurodivergent school tables created successfully');
-    
+
     // === Law School Tables ===
-    
+
     // Create barExams table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "bar_exams" (
@@ -296,7 +296,7 @@ async function createTables() {
       );
     `);
     console.log('✅ Created barExams table');
-    
+
     // Create barExamStudyPlans table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "bar_exam_study_plans" (
@@ -312,7 +312,7 @@ async function createTables() {
       );
     `);
     console.log('✅ Created barExamStudyPlans table');
-    
+
     // Create barExamMemoryAids table
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS "bar_exam_memory_aids" (
@@ -327,9 +327,9 @@ async function createTables() {
       );
     `);
     console.log('✅ Created barExamMemoryAids table');
-    
+
     console.log('✅ All law school tables created successfully');
-    
+
     return true;
   } catch (error) {
     console.error('❌ Error creating tables:', error);
@@ -344,7 +344,7 @@ createTables()
     console.log('Database initialization complete');
     process.exit(0);
   })
-  .catch(error => {
+  .catch((error) => {
     console.error('Error initializing database:', error);
     process.exit(1);
   });

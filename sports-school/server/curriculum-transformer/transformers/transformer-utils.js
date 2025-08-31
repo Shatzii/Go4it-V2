@@ -1,6 +1,6 @@
 /**
  * Curriculum Transformer Utilities
- * 
+ *
  * This module provides utility functions for different types of transformations.
  */
 
@@ -12,38 +12,65 @@ const { TransformationTypes, NeurodivergentProfiles } = require('../transformer'
  * @returns {Object} Transformed content
  */
 function transform(options) {
-  const { content, inputFormat, outputFormat, transformationTypes, neurodivergentProfile, customOptions } = options;
-  
+  const {
+    content,
+    inputFormat,
+    outputFormat,
+    transformationTypes,
+    neurodivergentProfile,
+    customOptions,
+  } = options;
+
   // Parse content if needed
   const parsedContent = parseContent(content, inputFormat);
-  
+
   // Apply transformations
   let transformedContent = parsedContent;
-  
+
   // Sequential application of transformations
   if (transformationTypes.includes(TransformationTypes.VISUAL)) {
-    transformedContent = applyVisualTransformation(transformedContent, neurodivergentProfile, customOptions);
+    transformedContent = applyVisualTransformation(
+      transformedContent,
+      neurodivergentProfile,
+      customOptions,
+    );
   }
-  
+
   if (transformationTypes.includes(TransformationTypes.PATTERN)) {
-    transformedContent = applyPatternTransformation(transformedContent, neurodivergentProfile, customOptions);
+    transformedContent = applyPatternTransformation(
+      transformedContent,
+      neurodivergentProfile,
+      customOptions,
+    );
   }
-  
+
   if (transformationTypes.includes(TransformationTypes.MULTISENSORY)) {
-    transformedContent = applyMultisensoryTransformation(transformedContent, neurodivergentProfile, customOptions);
+    transformedContent = applyMultisensoryTransformation(
+      transformedContent,
+      neurodivergentProfile,
+      customOptions,
+    );
   }
-  
+
   if (transformationTypes.includes(TransformationTypes.EXECUTIVE)) {
-    transformedContent = applyExecutiveTransformation(transformedContent, neurodivergentProfile, customOptions);
+    transformedContent = applyExecutiveTransformation(
+      transformedContent,
+      neurodivergentProfile,
+      customOptions,
+    );
   }
-  
+
   if (transformationTypes.includes(TransformationTypes.SOCIAL)) {
-    transformedContent = applySocialTransformation(transformedContent, neurodivergentProfile, customOptions);
+    transformedContent = applySocialTransformation(
+      transformedContent,
+      neurodivergentProfile,
+      customOptions,
+    );
   }
-  
+
   // Format output
   const result = formatOutput(transformedContent, outputFormat, customOptions);
-  
+
   return result;
 }
 
@@ -56,7 +83,7 @@ function transform(options) {
 function parseContent(content, inputFormat) {
   // Convert buffer to string if needed
   const contentStr = Buffer.isBuffer(content) ? content.toString('utf8') : content;
-  
+
   // Parse based on input format
   switch (inputFormat) {
     case 'pdf':
@@ -122,8 +149,8 @@ function parseTxt(content) {
   const lines = content.split('\n');
   const paragraphs = [];
   let currentParagraph = '';
-  
-  lines.forEach(line => {
+
+  lines.forEach((line) => {
     if (line.trim() === '') {
       if (currentParagraph.trim() !== '') {
         paragraphs.push(currentParagraph.trim());
@@ -133,17 +160,17 @@ function parseTxt(content) {
       currentParagraph += line + ' ';
     }
   });
-  
+
   if (currentParagraph.trim() !== '') {
     paragraphs.push(currentParagraph.trim());
   }
-  
+
   return {
     type: 'document',
-    elements: paragraphs.map(text => ({
+    elements: paragraphs.map((text) => ({
       type: 'paragraph',
-      text
-    }))
+      text,
+    })),
   };
 }
 
@@ -158,44 +185,44 @@ function formatHtml(content, options) {
   let html = '<!DOCTYPE html>\n<html>\n<head>\n';
   html += '<meta charset="UTF-8">\n';
   html += '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n';
-  
+
   // Add title if available
   if (options.title) {
     html += `<title>${escapeHtml(options.title)}</title>\n`;
   } else {
     html += '<title>Transformed Document</title>\n';
   }
-  
+
   // Add custom CSS
   html += '<style>\n';
   html += getBaseStyles();
-  
+
   if (options.customCss) {
     html += options.customCss;
   }
-  
+
   html += '\n</style>\n';
   html += '</head>\n<body>\n';
-  
+
   // Add content based on type
   if (content.type === 'document') {
     html += formatDocumentHtml(content);
   } else if (content.type === 'presentation') {
     html += formatPresentationHtml(content);
   }
-  
+
   html += '</body>\n</html>';
-  
+
   return {
     format: 'html',
-    content: html
+    content: html,
   };
 }
 
 function formatDocumentHtml(document) {
   let html = '';
-  
-  document.elements.forEach(element => {
+
+  document.elements.forEach((element) => {
     switch (element.type) {
       case 'heading':
         const headingLevel = element.level || 1;
@@ -207,13 +234,13 @@ function formatDocumentHtml(document) {
       case 'list':
         if (element.ordered) {
           html += '<ol>\n';
-          element.items.forEach(item => {
+          element.items.forEach((item) => {
             html += `<li>${escapeHtml(item)}</li>\n`;
           });
           html += '</ol>\n';
         } else {
           html += '<ul>\n';
-          element.items.forEach(item => {
+          element.items.forEach((item) => {
             html += `<li>${escapeHtml(item)}</li>\n`;
           });
           html += '</ul>\n';
@@ -229,15 +256,15 @@ function formatDocumentHtml(document) {
         html += '<table>\n';
         if (element.headers) {
           html += '<thead>\n<tr>\n';
-          element.headers.forEach(header => {
+          element.headers.forEach((header) => {
             html += `<th>${escapeHtml(header)}</th>\n`;
           });
           html += '</tr>\n</thead>\n';
         }
         html += '<tbody>\n';
-        element.rows.forEach(row => {
+        element.rows.forEach((row) => {
           html += '<tr>\n';
-          row.forEach(cell => {
+          row.forEach((cell) => {
             html += `<td>${escapeHtml(cell)}</td>\n`;
           });
           html += '</tr>\n';
@@ -260,39 +287,39 @@ function formatDocumentHtml(document) {
         }
     }
   });
-  
+
   return html;
 }
 
 function formatPresentationHtml(presentation) {
   let html = '<div class="presentation">\n';
-  
+
   presentation.slides.forEach((slide, index) => {
     html += `<div class="slide" id="slide-${index + 1}">\n`;
-    
+
     if (slide.title) {
       html += `<h2 class="slide-title">${escapeHtml(slide.title)}</h2>\n`;
     }
-    
+
     if (slide.content) {
-      slide.content.forEach(element => {
+      slide.content.forEach((element) => {
         // Format each element based on type
         // Similar to formatDocumentHtml but for slides
       });
     }
-    
+
     html += '</div>\n';
   });
-  
+
   html += '</div>\n';
-  
+
   // Add simple navigation controls
   html += `<div class="slide-controls">
     <button id="prev-slide">Previous</button>
     <span id="slide-indicator">1/${presentation.slides.length}</span>
     <button id="next-slide">Next</button>
   </div>\n`;
-  
+
   // Add simple slide navigation script
   html += `<script>
     (function() {
@@ -329,7 +356,7 @@ function formatPresentationHtml(presentation) {
       showSlide(currentSlide);
     })();
   </script>\n`;
-  
+
   return html;
 }
 
@@ -337,14 +364,14 @@ function formatPdf(content, options) {
   // TODO: Implement PDF generation using a PDF generation library
   return {
     format: 'pdf',
-    content: Buffer.from('PDF content')
+    content: Buffer.from('PDF content'),
   };
 }
 
 function formatInteractive(content, options) {
   // Create an interactive HTML version with additional JavaScript
   let html = formatHtml(content, options).content;
-  
+
   // Add interactive elements and scripts
   const interactiveScript = `
   <script>
@@ -366,13 +393,13 @@ function formatInteractive(content, options) {
     }
   </script>
   `;
-  
+
   // Insert script before closing body tag
   html = html.replace('</body>', interactiveScript + '</body>');
-  
+
   return {
     format: 'interactive',
-    content: html
+    content: html,
   };
 }
 
@@ -380,33 +407,33 @@ function formatInteractive(content, options) {
 function formatVisualMap(element) {
   // Format visual concept map
   let html = `<div class="visual-map" id="visual-map-${element.id || '1'}">\n`;
-  
+
   // TODO: Implement visual map rendering
-  
+
   html += '</div>\n';
-  
+
   return html;
 }
 
 function formatPatternHighlight(element) {
   // Format pattern highlighting
   let html = `<div class="pattern-highlight" id="pattern-${element.id || '1'}">\n`;
-  
+
   // TODO: Implement pattern highlighting
-  
+
   html += '</div>\n';
-  
+
   return html;
 }
 
 function formatInteractiveElement(element) {
   // Format interactive element
   let html = `<div class="interactive-element" id="interactive-${element.id || '1'}" data-type="${element.interactiveType}">\n`;
-  
+
   // TODO: Implement interactive element
-  
+
   html += '</div>\n';
-  
+
   return html;
 }
 
@@ -414,42 +441,42 @@ function formatInteractiveElement(element) {
 function applyVisualTransformation(content, profile, options) {
   // Apply visual transformation based on profile
   // TODO: Implement visual transformation
-  
+
   // Add visual elements based on content type
   if (content.type === 'document') {
     // Transform document for visual learners
   } else if (content.type === 'presentation') {
     // Transform presentation for visual learners
   }
-  
+
   return content;
 }
 
 function applyPatternTransformation(content, profile, options) {
   // Apply pattern recognition transformation based on profile
   // TODO: Implement pattern transformation
-  
+
   return content;
 }
 
 function applyMultisensoryTransformation(content, profile, options) {
   // Apply multisensory transformation based on profile
   // TODO: Implement multisensory transformation
-  
+
   return content;
 }
 
 function applyExecutiveTransformation(content, profile, options) {
   // Apply executive function transformation based on profile
   // TODO: Implement executive function transformation
-  
+
   return content;
 }
 
 function applySocialTransformation(content, profile, options) {
   // Apply social context transformation based on profile
   // TODO: Implement social context transformation
-  
+
   return content;
 }
 
@@ -599,5 +626,5 @@ module.exports = {
   applyPatternTransformation,
   applyMultisensoryTransformation,
   applyExecutiveTransformation,
-  applySocialTransformation
+  applySocialTransformation,
 };

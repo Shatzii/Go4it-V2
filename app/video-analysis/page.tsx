@@ -1,16 +1,112 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Play, Upload, BarChart3, Target, TrendingUp, Clock, Medal } from 'lucide-react';
+import {
+  Play,
+  Upload,
+  BarChart3,
+  Target,
+  TrendingUp,
+  Clock,
+  Medal,
+  History,
+  Eye,
+} from 'lucide-react';
+
+interface AnalysisHistory {
+  id: string;
+  videoName: string;
+  garScore: number;
+  analysisDate: Date;
+  status: 'completed' | 'processing' | 'failed';
+  sport: string;
+  duration: number;
+  improvements: Array<{
+    category: string;
+    score: number;
+    improvement: string;
+  }>;
+}
 
 export default function VideoAnalysisPage() {
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisHistory, setAnalysisHistory] = useState<AnalysisHistory[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadAnalysisHistory();
+  }, []);
+
+  const loadAnalysisHistory = async () => {
+    try {
+      const response = await fetch('/api/video-analysis/history?userId=demo-user');
+      const result = await response.json();
+
+      if (result.success) {
+        setAnalysisHistory(result.history || []);
+      } else {
+        setAnalysisHistory(generateSampleHistory());
+      }
+    } catch (error) {
+      console.error('Failed to load analysis history:', error);
+      setAnalysisHistory(generateSampleHistory());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateSampleHistory = (): AnalysisHistory[] => {
+    return [
+      {
+        id: '1',
+        videoName: 'Sprint Training Session.mp4',
+        garScore: 8.5,
+        analysisDate: new Date('2025-01-15'),
+        status: 'completed',
+        sport: 'Track & Field',
+        duration: 120,
+        improvements: [
+          { category: 'Starting Form', score: 8.2, improvement: '+0.8' },
+          { category: 'Acceleration', score: 8.9, improvement: '+0.3' },
+          { category: 'Top Speed', score: 8.1, improvement: '+0.5' },
+        ],
+      },
+      {
+        id: '2',
+        videoName: 'Basketball Scrimmage.mp4',
+        garScore: 7.8,
+        analysisDate: new Date('2025-01-12'),
+        status: 'completed',
+        sport: 'Basketball',
+        duration: 300,
+        improvements: [
+          { category: 'Shooting Form', score: 9.1, improvement: '+0.2' },
+          { category: 'Court Vision', score: 7.8, improvement: '+1.2' },
+          { category: 'Defense', score: 6.5, improvement: '+0.9' },
+        ],
+      },
+      {
+        id: '3',
+        videoName: 'Football Practice.mp4',
+        garScore: 9.2,
+        analysisDate: new Date('2025-01-10'),
+        status: 'completed',
+        sport: 'Football',
+        duration: 180,
+        improvements: [
+          { category: 'Footwork', score: 9.2, improvement: '+0.4' },
+          { category: 'Route Running', score: 8.9, improvement: '+0.6' },
+          { category: 'Catching', score: 9.5, improvement: '+0.1' },
+        ],
+      },
+    ];
+  };
 
   const mockAnalysisData = {
     garScore: 8.5,
@@ -18,22 +114,22 @@ export default function VideoAnalysisPage() {
       { category: 'Footwork', score: 7.2, improvement: '+0.8' },
       { category: 'Ball Handling', score: 8.9, improvement: '+0.3' },
       { category: 'Shooting Form', score: 9.1, improvement: '+0.2' },
-      { category: 'Court Vision', score: 7.8, improvement: '+1.2' }
+      { category: 'Court Vision', score: 7.8, improvement: '+1.2' },
     ],
     keyFrames: [
       { timestamp: '0:23', description: 'Excellent crossover technique', score: 9.2 },
       { timestamp: '1:45', description: 'Improved defensive stance', score: 8.7 },
       { timestamp: '2:31', description: 'Perfect shooting form', score: 9.5 },
-      { timestamp: '3:12', description: 'Good court awareness', score: 8.3 }
-    ]
+      { timestamp: '3:12', description: 'Good court awareness', score: 8.3 },
+    ],
   };
 
   const handleAnalysis = () => {
     setIsAnalyzing(true);
     setAnalysisProgress(0);
-    
+
     const interval = setInterval(() => {
-      setAnalysisProgress(prev => {
+      setAnalysisProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           setIsAnalyzing(false);
@@ -73,7 +169,7 @@ export default function VideoAnalysisPage() {
                   {isAnalyzing ? 'Analyzing...' : 'Upload Video'}
                 </Button>
               </div>
-              
+
               {isAnalyzing && (
                 <div className="mt-6">
                   <div className="flex justify-between items-center mb-2">
@@ -135,7 +231,7 @@ export default function VideoAnalysisPage() {
                 <TabsTrigger value="metrics">Metrics</TabsTrigger>
                 <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="overview" className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="bg-blue-50 p-4 rounded-lg">
@@ -168,7 +264,7 @@ export default function VideoAnalysisPage() {
                   </div>
                 </div>
               </TabsContent>
-              
+
               <TabsContent value="keyframes" className="space-y-4">
                 <div className="space-y-3">
                   {mockAnalysisData.keyFrames.map((frame, index) => (
@@ -185,7 +281,7 @@ export default function VideoAnalysisPage() {
                   ))}
                 </div>
               </TabsContent>
-              
+
               <TabsContent value="metrics" className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -209,13 +305,14 @@ export default function VideoAnalysisPage() {
                         Your performance has improved by an average of 15% over the last month.
                       </p>
                       <p className="text-sm text-gray-600">
-                        Focus areas: Footwork and court vision show the most potential for improvement.
+                        Focus areas: Footwork and court vision show the most potential for
+                        improvement.
                       </p>
                     </div>
                   </div>
                 </div>
               </TabsContent>
-              
+
               <TabsContent value="recommendations" className="space-y-4">
                 <div className="space-y-4">
                   <div className="bg-blue-50 p-4 rounded-lg">

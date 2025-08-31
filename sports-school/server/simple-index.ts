@@ -1,21 +1,23 @@
-import express from "express";
-import path from "path";
-import { createServer } from "http";
+import express from 'express';
+import path from 'path';
+import { createServer } from 'http';
 
 const PORT = process.env.PORT || 5000;
 const app = express();
 
 // Serve static files from the public directory with correct MIME types
-app.use(express.static(path.join(process.cwd(), 'public'), {
-  setHeaders: (res, filePath) => {
-    if (filePath.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css');
-    }
-    if (filePath.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript');
-    }
-  }
-}));
+app.use(
+  express.static(path.join(process.cwd(), 'public'), {
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith('.css')) {
+        res.setHeader('Content-Type', 'text/css');
+      }
+      if (filePath.endsWith('.js')) {
+        res.setHeader('Content-Type', 'application/javascript');
+      }
+    },
+  }),
+);
 
 // Parse JSON request bodies
 app.use(express.json());
@@ -30,11 +32,11 @@ app.post('/api/contact', (req, res) => {
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ 
+  res.json({
     status: 'ok',
     message: 'The Universal One School platform is running',
     version: '1.0.0',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 });
 
@@ -47,7 +49,7 @@ app.get('/api/schools', (req, res) => {
       url: 'https://superhero.shatzii.com',
       theme: 'superhero',
       description: 'Superhero-themed K-6 education tailored for young neurodivergent minds.',
-      features: ['Interactive Stories', 'Visual Learning', 'Adaptive Pace']
+      features: ['Interactive Stories', 'Visual Learning', 'Adaptive Pace'],
     },
     {
       id: 'secondary',
@@ -55,7 +57,7 @@ app.get('/api/schools', (req, res) => {
       url: 'https://secondary.shatzii.com',
       theme: 'mature',
       description: 'Grades 7-12 with mature themes designed for adolescent learners.',
-      features: ['Project-Based', 'Self-Paced', 'Career Focused']
+      features: ['Project-Based', 'Self-Paced', 'Career Focused'],
     },
     {
       id: 'law',
@@ -63,7 +65,7 @@ app.get('/api/schools', (req, res) => {
       url: 'https://law.shatzii.com',
       theme: 'professional',
       description: 'College-level legal education designed for neurodivergent students.',
-      features: ['Case Studies', 'Simulations', 'Legal Writing']
+      features: ['Case Studies', 'Simulations', 'Legal Writing'],
     },
     {
       id: 'language',
@@ -71,8 +73,8 @@ app.get('/api/schools', (req, res) => {
       url: 'https://language.shatzii.com',
       theme: 'global',
       description: 'Multilingual education in English, German, and Spanish.',
-      features: ['Conversation', 'Cultural Context', 'Practical Usage']
-    }
+      features: ['Conversation', 'Cultural Context', 'Practical Usage'],
+    },
   ];
   res.json(schools);
 });
@@ -83,13 +85,13 @@ app.get('/api/demo-credentials', (req, res) => {
     admin: {
       username: process.env.DEMO_ADMIN_USERNAME || 'admin',
       password: process.env.DEMO_ADMIN_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
-      note: 'Use these credentials for admin access to all schools'
+      note: 'Use these credentials for admin access to all schools',
     },
     student: {
       username: process.env.DEMO_STUDENT_USERNAME || 'student',
       password: process.env.DEMO_STUDENT_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
-      note: 'Use these credentials for student demo access to all schools'
-    }
+      note: 'Use these credentials for student demo access to all schools',
+    },
   };
   res.json(credentials);
 });

@@ -7,17 +7,17 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Shield, 
-  ShieldCheck, 
-  Smartphone, 
-  Key, 
-  QrCode, 
+import {
+  Shield,
+  ShieldCheck,
+  Smartphone,
+  Key,
+  QrCode,
   AlertTriangle,
   CheckCircle,
   Copy,
   RefreshCw,
-  Settings
+  Settings,
 } from 'lucide-react';
 
 interface TwoFactorSetup {
@@ -32,7 +32,7 @@ interface TwoFactorSetup {
 export function TwoFactorAuth() {
   const [setup, setSetup] = useState<TwoFactorSetup>({
     isEnabled: false,
-    method: 'sms'
+    method: 'sms',
   });
   const [currentStep, setCurrentStep] = useState(0);
   const [verificationCode, setVerificationCode] = useState('');
@@ -60,14 +60,14 @@ export function TwoFactorAuth() {
   const setupSMS = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch('/api/auth/2fa/setup-sms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phoneNumber })
+        body: JSON.stringify({ phoneNumber }),
       });
-      
+
       if (response.ok) {
         setCurrentStep(1);
         setSuccess('Verification code sent to your phone');
@@ -85,19 +85,19 @@ export function TwoFactorAuth() {
   const setupAuthenticator = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch('/api/auth/2fa/setup-authenticator', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
-      
+
       if (response.ok) {
         const data = await response.json();
-        setSetup(prev => ({
+        setSetup((prev) => ({
           ...prev,
           qrCode: data.qrCode,
-          secretKey: data.secretKey
+          secretKey: data.secretKey,
         }));
         setCurrentStep(1);
       } else {
@@ -114,24 +114,24 @@ export function TwoFactorAuth() {
   const verifySetup = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch('/api/auth/2fa/verify-setup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           code: verificationCode,
           method: setup.method,
-          phoneNumber: setup.method === 'sms' ? phoneNumber : undefined
-        })
+          phoneNumber: setup.method === 'sms' ? phoneNumber : undefined,
+        }),
       });
-      
+
       if (response.ok) {
         const data = await response.json();
-        setSetup(prev => ({
+        setSetup((prev) => ({
           ...prev,
           isEnabled: true,
-          backupCodes: data.backupCodes
+          backupCodes: data.backupCodes,
         }));
         setCurrentStep(2);
         setSuccess('Two-factor authentication enabled successfully!');
@@ -149,17 +149,17 @@ export function TwoFactorAuth() {
   const disable2FA = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch('/api/auth/2fa/disable', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
-      
+
       if (response.ok) {
         setSetup({
           isEnabled: false,
-          method: 'sms'
+          method: 'sms',
         });
         setCurrentStep(0);
         setSuccess('Two-factor authentication disabled');
@@ -177,18 +177,18 @@ export function TwoFactorAuth() {
   const generateBackupCodes = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch('/api/auth/2fa/backup-codes', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
-      
+
       if (response.ok) {
         const data = await response.json();
-        setSetup(prev => ({
+        setSetup((prev) => ({
           ...prev,
-          backupCodes: data.backupCodes
+          backupCodes: data.backupCodes,
         }));
         setSuccess('New backup codes generated');
       } else {
@@ -220,9 +220,7 @@ export function TwoFactorAuth() {
             <ShieldCheck className="w-5 h-5 text-green-600" />
             Two-Factor Authentication
           </CardTitle>
-          <CardDescription>
-            Your account is protected with 2FA
-          </CardDescription>
+          <CardDescription>Your account is protected with 2FA</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center gap-4 p-4 bg-green-50 border border-green-200 rounded-lg">
@@ -230,7 +228,8 @@ export function TwoFactorAuth() {
             <div>
               <h3 className="font-semibold text-green-800">2FA is Active</h3>
               <p className="text-sm text-green-700">
-                Your account is secured with {setup.method === 'sms' ? 'SMS' : 'authenticator app'} verification
+                Your account is secured with {setup.method === 'sms' ? 'SMS' : 'authenticator app'}{' '}
+                verification
               </p>
             </div>
             <Badge variant="secondary" className="bg-green-100 text-green-800">
@@ -259,7 +258,12 @@ export function TwoFactorAuth() {
                   {setup.backupCodes?.length || 0} codes available
                 </p>
               </div>
-              <Button variant="outline" size="sm" onClick={generateBackupCodes} disabled={isLoading}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={generateBackupCodes}
+                disabled={isLoading}
+              >
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Generate New Codes
               </Button>
@@ -293,11 +297,7 @@ export function TwoFactorAuth() {
           </div>
 
           <div className="border-t pt-4">
-            <Button 
-              variant="destructive" 
-              onClick={disable2FA}
-              disabled={isLoading}
-            >
+            <Button variant="destructive" onClick={disable2FA} disabled={isLoading}>
               Disable Two-Factor Authentication
             </Button>
           </div>
@@ -313,9 +313,7 @@ export function TwoFactorAuth() {
           <Shield className="w-5 h-5" />
           Two-Factor Authentication Setup
         </CardTitle>
-        <CardDescription>
-          Add an extra layer of security to your account
-        </CardDescription>
+        <CardDescription>Add an extra layer of security to your account</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {error && (
@@ -332,7 +330,12 @@ export function TwoFactorAuth() {
           </Alert>
         )}
 
-        <Tabs value={setup.method} onValueChange={(value) => setSetup(prev => ({ ...prev, method: value as 'sms' | 'authenticator' }))}>
+        <Tabs
+          value={setup.method}
+          onValueChange={(value) =>
+            setSetup((prev) => ({ ...prev, method: value as 'sms' | 'authenticator' }))
+          }
+        >
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="sms" className="flex items-center gap-2">
               <Smartphone className="w-4 h-4" />
@@ -381,7 +384,10 @@ export function TwoFactorAuth() {
                   />
                 </div>
                 <div className="flex gap-2">
-                  <Button onClick={verifySetup} disabled={isLoading || verificationCode.length !== 6}>
+                  <Button
+                    onClick={verifySetup}
+                    disabled={isLoading || verificationCode.length !== 6}
+                  >
                     {isLoading ? 'Verifying...' : 'Verify Code'}
                   </Button>
                   <Button variant="outline" onClick={() => setCurrentStep(0)}>
@@ -426,8 +432,8 @@ export function TwoFactorAuth() {
                   </p>
                   <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border">
                     <code className="text-sm flex-1">{setup.secretKey}</code>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={() => copyToClipboard(setup.secretKey!)}
                     >
@@ -451,7 +457,10 @@ export function TwoFactorAuth() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button onClick={verifySetup} disabled={isLoading || verificationCode.length !== 6}>
+                  <Button
+                    onClick={verifySetup}
+                    disabled={isLoading || verificationCode.length !== 6}
+                  >
                     {isLoading ? 'Verifying...' : 'Verify & Enable'}
                   </Button>
                   <Button variant="outline" onClick={() => setCurrentStep(0)}>

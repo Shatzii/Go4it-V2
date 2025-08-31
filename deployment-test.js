@@ -26,7 +26,7 @@ try {
 console.log('\n2. Checking build output...');
 if (fs.existsSync('.next')) {
   console.log('✅ .next directory exists');
-  
+
   // Check for static files
   if (fs.existsSync('.next/static')) {
     console.log('✅ Static files generated');

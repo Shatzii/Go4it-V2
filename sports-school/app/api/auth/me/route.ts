@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,16 +16,16 @@ export async function GET(request: NextRequest) {
         visualLearning: true,
         auditoryLearning: false,
         kinestheticLearning: true,
-        readingWriting: false
+        readingWriting: false,
       },
       profileImageUrl: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    }
+    };
 
-    return NextResponse.json(mockUser)
+    return NextResponse.json(mockUser);
   } catch (error) {
-    console.error('Error fetching user:', error)
-    return NextResponse.json({ error: 'Failed to fetch user' }, { status: 500 })
+    console.error('Error fetching user:', error);
+    return NextResponse.json({ error: 'Failed to fetch user' }, { status: 500 });
   }
 }

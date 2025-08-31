@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const modelStatuses = {
       ollama: await checkOllamaStatus(),
       huggingface: await checkHuggingFaceStatus(),
-      localInference: await checkLocalInferenceStatus()
+      localInference: await checkLocalInferenceStatus(),
     };
 
     return NextResponse.json({
@@ -21,8 +21,8 @@ export async function GET(request: NextRequest) {
       availableProviders: {
         openai: !!process.env.OPENAI_API_KEY,
         anthropic: !!process.env.ANTHROPIC_API_KEY,
-        local: modelStatuses.ollama || modelStatuses.localInference
-      }
+        local: modelStatuses.ollama || modelStatuses.localInference,
+      },
     });
   } catch (error) {
     console.error('Error checking model status:', error);
@@ -34,7 +34,7 @@ async function checkOllamaStatus(): Promise<boolean> {
   try {
     const response = await fetch('http://localhost:11434/api/tags', {
       method: 'GET',
-      signal: AbortSignal.timeout(2000) // 2 second timeout
+      signal: AbortSignal.timeout(2000), // 2 second timeout
     });
     return response.ok;
   } catch (error) {
@@ -46,7 +46,7 @@ async function checkHuggingFaceStatus(): Promise<boolean> {
   try {
     const response = await fetch('http://localhost:8080/health', {
       method: 'GET',
-      signal: AbortSignal.timeout(2000)
+      signal: AbortSignal.timeout(2000),
     });
     return response.ok;
   } catch (error) {
@@ -58,7 +58,7 @@ async function checkLocalInferenceStatus(): Promise<boolean> {
   try {
     const response = await fetch('http://localhost:3001/health', {
       method: 'GET',
-      signal: AbortSignal.timeout(2000)
+      signal: AbortSignal.timeout(2000),
     });
     return response.ok;
   } catch (error) {

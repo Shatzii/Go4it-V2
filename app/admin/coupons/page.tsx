@@ -1,34 +1,34 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import { Plus, Edit, Trash2, Copy, Gift, Percent, DollarSign, Star } from 'lucide-react'
+import React, { useState, useEffect } from 'react';
+import { Plus, Edit, Trash2, Copy, Gift, Percent, DollarSign, Star } from 'lucide-react';
 
 interface Coupon {
-  id: string
-  code: string
-  name: string
-  description?: string
-  discountType: string
-  discountValue: string
-  maxUses?: number
-  currentUses: number
-  isActive: boolean
-  validFrom: string
-  validUntil?: string
-  applicablePlans?: string[]
-  minimumAmount?: string
+  id: string;
+  code: string;
+  name: string;
+  description?: string;
+  discountType: string;
+  discountValue: string;
+  maxUses?: number;
+  currentUses: number;
+  isActive: boolean;
+  validFrom: string;
+  validUntil?: string;
+  applicablePlans?: string[];
+  minimumAmount?: string;
 }
 
 export default function AdminCouponManagement() {
-  const [coupons, setCoupons] = useState<Coupon[]>([])
-  const [loading, setLoading] = useState(true)
-  const [editing, setEditing] = useState<string | null>(null)
-  const [editForm, setEditForm] = useState<Partial<Coupon>>({})
-  const [showCreateForm, setShowCreateForm] = useState(false)
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<Partial<Coupon>>({});
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   useEffect(() => {
-    loadCoupons()
-  }, [])
+    loadCoupons();
+  }, []);
 
   const loadCoupons = async () => {
     try {
@@ -47,7 +47,7 @@ export default function AdminCouponManagement() {
           validFrom: new Date().toISOString(),
           validUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
           applicablePlans: ['starter', 'pro', 'elite'],
-          minimumAmount: '0'
+          minimumAmount: '0',
         },
         {
           id: '2',
@@ -62,7 +62,7 @@ export default function AdminCouponManagement() {
           validFrom: new Date().toISOString(),
           validUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
           applicablePlans: ['starter', 'pro', 'elite'],
-          minimumAmount: '0'
+          minimumAmount: '0',
         },
         {
           id: '3',
@@ -77,7 +77,7 @@ export default function AdminCouponManagement() {
           validFrom: new Date().toISOString(),
           validUntil: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
           applicablePlans: ['pro', 'elite'],
-          minimumAmount: '25'
+          minimumAmount: '25',
         },
         {
           id: '4',
@@ -92,16 +92,16 @@ export default function AdminCouponManagement() {
           validFrom: new Date().toISOString(),
           validUntil: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString(),
           applicablePlans: ['starter', 'pro', 'elite'],
-          minimumAmount: '15'
-        }
-      ]
-      setCoupons(mockCoupons)
+          minimumAmount: '15',
+        },
+      ];
+      setCoupons(mockCoupons);
     } catch (error) {
-      console.error('Failed to load coupons:', error)
+      console.error('Failed to load coupons:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleCreateCoupon = async () => {
     try {
@@ -118,58 +118,60 @@ export default function AdminCouponManagement() {
         validFrom: editForm.validFrom || new Date().toISOString(),
         validUntil: editForm.validUntil,
         applicablePlans: editForm.applicablePlans || ['starter', 'pro', 'elite'],
-        minimumAmount: editForm.minimumAmount || '0'
-      }
+        minimumAmount: editForm.minimumAmount || '0',
+      };
 
-      setCoupons([...coupons, newCoupon])
-      setShowCreateForm(false)
-      setEditForm({})
-      alert('Coupon created successfully!')
+      setCoupons([...coupons, newCoupon]);
+      setShowCreateForm(false);
+      setEditForm({});
+      alert('Coupon created successfully!');
     } catch (error) {
-      console.error('Failed to create coupon:', error)
-      alert('Failed to create coupon')
+      console.error('Failed to create coupon:', error);
+      alert('Failed to create coupon');
     }
-  }
+  };
 
   const handleUpdateCoupon = async (id: string) => {
     try {
-      setCoupons(coupons.map(coupon => 
-        coupon.id === id ? { ...coupon, ...editForm } : coupon
-      ))
-      setEditing(null)
-      setEditForm({})
-      alert('Coupon updated successfully!')
+      setCoupons(coupons.map((coupon) => (coupon.id === id ? { ...coupon, ...editForm } : coupon)));
+      setEditing(null);
+      setEditForm({});
+      alert('Coupon updated successfully!');
     } catch (error) {
-      console.error('Failed to update coupon:', error)
-      alert('Failed to update coupon')
+      console.error('Failed to update coupon:', error);
+      alert('Failed to update coupon');
     }
-  }
+  };
 
   const handleDeleteCoupon = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this coupon?')) return
+    if (!confirm('Are you sure you want to delete this coupon?')) return;
 
     try {
-      setCoupons(coupons.filter(coupon => coupon.id !== id))
-      alert('Coupon deleted successfully!')
+      setCoupons(coupons.filter((coupon) => coupon.id !== id));
+      alert('Coupon deleted successfully!');
     } catch (error) {
-      console.error('Failed to delete coupon:', error)
-      alert('Failed to delete coupon')
+      console.error('Failed to delete coupon:', error);
+      alert('Failed to delete coupon');
     }
-  }
+  };
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-    alert('Copied to clipboard!')
-  }
+    navigator.clipboard.writeText(text);
+    alert('Copied to clipboard!');
+  };
 
   const getDiscountIcon = (type: string) => {
     switch (type) {
-      case 'free': return <Gift className="w-5 h-5 text-green-400" />
-      case 'percentage': return <Percent className="w-5 h-5 text-blue-400" />
-      case 'fixed': return <DollarSign className="w-5 h-5 text-yellow-400" />
-      default: return <Gift className="w-5 h-5 text-slate-400" />
+      case 'free':
+        return <Gift className="w-5 h-5 text-green-400" />;
+      case 'percentage':
+        return <Percent className="w-5 h-5 text-blue-400" />;
+      case 'fixed':
+        return <DollarSign className="w-5 h-5 text-yellow-400" />;
+      default:
+        return <Gift className="w-5 h-5 text-slate-400" />;
     }
-  }
+  };
 
   const renderCouponForm = (coupon?: Coupon) => (
     <div className="space-y-6">
@@ -184,7 +186,7 @@ export default function AdminCouponManagement() {
             placeholder="FREEMONTH"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-2">Coupon Name</label>
           <input
@@ -221,10 +223,15 @@ export default function AdminCouponManagement() {
             <option value="free">Free Access</option>
           </select>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-2">
-            Discount Value {editForm.discountType === 'percentage' ? '(%)' : editForm.discountType === 'fixed' ? '($)' : ''}
+            Discount Value{' '}
+            {editForm.discountType === 'percentage'
+              ? '(%)'
+              : editForm.discountType === 'fixed'
+                ? '($)'
+                : ''}
           </label>
           <input
             type="number"
@@ -234,7 +241,7 @@ export default function AdminCouponManagement() {
             placeholder={editForm.discountType === 'free' ? '100' : '20'}
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-2">Max Uses</label>
           <input
@@ -252,18 +259,31 @@ export default function AdminCouponManagement() {
           <label className="block text-sm font-medium text-slate-300 mb-2">Valid From</label>
           <input
             type="datetime-local"
-            value={editForm.validFrom ? new Date(editForm.validFrom).toISOString().slice(0, 16) : ''}
-            onChange={(e) => setEditForm({ ...editForm, validFrom: new Date(e.target.value).toISOString() })}
+            value={
+              editForm.validFrom ? new Date(editForm.validFrom).toISOString().slice(0, 16) : ''
+            }
+            onChange={(e) =>
+              setEditForm({ ...editForm, validFrom: new Date(e.target.value).toISOString() })
+            }
             className="form-input"
           />
         </div>
-        
+
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">Valid Until (Optional)</label>
+          <label className="block text-sm font-medium text-slate-300 mb-2">
+            Valid Until (Optional)
+          </label>
           <input
             type="datetime-local"
-            value={editForm.validUntil ? new Date(editForm.validUntil).toISOString().slice(0, 16) : ''}
-            onChange={(e) => setEditForm({ ...editForm, validUntil: e.target.value ? new Date(e.target.value).toISOString() : undefined })}
+            value={
+              editForm.validUntil ? new Date(editForm.validUntil).toISOString().slice(0, 16) : ''
+            }
+            onChange={(e) =>
+              setEditForm({
+                ...editForm,
+                validUntil: e.target.value ? new Date(e.target.value).toISOString() : undefined,
+              })
+            }
             className="form-input"
           />
         </div>
@@ -272,17 +292,17 @@ export default function AdminCouponManagement() {
       <div>
         <label className="block text-sm font-medium text-slate-300 mb-2">Applicable Plans</label>
         <div className="flex gap-4">
-          {['starter', 'pro', 'elite'].map(plan => (
+          {['starter', 'pro', 'elite'].map((plan) => (
             <label key={plan} className="flex items-center gap-2">
               <input
                 type="checkbox"
                 checked={editForm.applicablePlans?.includes(plan) || false}
                 onChange={(e) => {
-                  const plans = editForm.applicablePlans || []
+                  const plans = editForm.applicablePlans || [];
                   if (e.target.checked) {
-                    setEditForm({ ...editForm, applicablePlans: [...plans, plan] })
+                    setEditForm({ ...editForm, applicablePlans: [...plans, plan] });
                   } else {
-                    setEditForm({ ...editForm, applicablePlans: plans.filter(p => p !== plan) })
+                    setEditForm({ ...editForm, applicablePlans: plans.filter((p) => p !== plan) });
                   }
                 }}
                 className="rounded"
@@ -305,7 +325,7 @@ export default function AdminCouponManagement() {
         </label>
       </div>
     </div>
-  )
+  );
 
   if (loading) {
     return (
@@ -316,7 +336,7 @@ export default function AdminCouponManagement() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -324,21 +344,23 @@ export default function AdminCouponManagement() {
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold neon-text mb-2">Coupon Management</h1>
-          <p className="text-slate-400">Create and manage discount coupons and full access passes</p>
+          <p className="text-slate-400">
+            Create and manage discount coupons and full access passes
+          </p>
         </div>
 
         {/* Create Button */}
         <div className="mb-8">
           <button
             onClick={() => {
-              setShowCreateForm(true)
+              setShowCreateForm(true);
               setEditForm({
                 discountType: 'percentage',
                 discountValue: '20',
                 isActive: true,
                 validFrom: new Date().toISOString(),
-                applicablePlans: ['starter', 'pro', 'elite']
-              })
+                applicablePlans: ['starter', 'pro', 'elite'],
+              });
             }}
             className="btn-primary px-6 py-3"
           >
@@ -349,8 +371,11 @@ export default function AdminCouponManagement() {
 
         {/* Coupon Cards */}
         <div className="grid md:grid-cols-2 gap-6">
-          {coupons.map(coupon => (
-            <div key={coupon.id} className="hero-bg neon-border rounded-xl p-6 relative overflow-hidden">
+          {coupons.map((coupon) => (
+            <div
+              key={coupon.id}
+              className="hero-bg neon-border rounded-xl p-6 relative overflow-hidden"
+            >
               {/* Special Full Access Badge */}
               {coupon.code === 'FULLACCESS2025' && (
                 <div className="absolute top-4 right-4">
@@ -363,11 +388,13 @@ export default function AdminCouponManagement() {
 
               {/* Status Badge */}
               <div className="absolute top-4 left-4">
-                <div className={`px-3 py-1 rounded-full text-sm font-bold ${
-                  coupon.isActive
-                    ? 'bg-green-900/30 text-green-400 border border-green-700'
-                    : 'bg-red-900/30 text-red-400 border border-red-700'
-                }`}>
+                <div
+                  className={`px-3 py-1 rounded-full text-sm font-bold ${
+                    coupon.isActive
+                      ? 'bg-green-900/30 text-green-400 border border-green-700'
+                      : 'bg-red-900/30 text-red-400 border border-red-700'
+                  }`}
+                >
                   {coupon.isActive ? 'Active' : 'Inactive'}
                 </div>
               </div>
@@ -378,7 +405,7 @@ export default function AdminCouponManagement() {
                   <h3 className="text-xl font-bold text-white">{coupon.name}</h3>
                 </div>
                 <p className="text-slate-400 mb-4">{coupon.description}</p>
-                
+
                 <div className="bg-slate-800/50 p-4 rounded-lg mb-4">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-slate-400">Coupon Code:</span>
@@ -394,16 +421,18 @@ export default function AdminCouponManagement() {
                       </button>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-slate-400">Discount:</span>
                     <span className="text-blue-400 font-bold">
-                      {coupon.discountType === 'percentage' ? `${coupon.discountValue}%` :
-                       coupon.discountType === 'fixed' ? `$${coupon.discountValue}` :
-                       'FREE ACCESS'}
+                      {coupon.discountType === 'percentage'
+                        ? `${coupon.discountValue}%`
+                        : coupon.discountType === 'fixed'
+                          ? `$${coupon.discountValue}`
+                          : 'FREE ACCESS'}
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-slate-400">Usage:</span>
                     <span className="text-slate-300">
@@ -416,8 +445,8 @@ export default function AdminCouponManagement() {
               <div className="flex gap-2">
                 <button
                   onClick={() => {
-                    setEditing(coupon.id)
-                    setEditForm(coupon)
+                    setEditing(coupon.id);
+                    setEditForm(coupon);
                   }}
                   className="btn-primary flex-1 py-2 text-sm"
                 >
@@ -451,9 +480,9 @@ export default function AdminCouponManagement() {
                 </h2>
                 <button
                   onClick={() => {
-                    setShowCreateForm(false)
-                    setEditing(null)
-                    setEditForm({})
+                    setShowCreateForm(false);
+                    setEditing(null);
+                    setEditForm({});
                   }}
                   className="text-slate-400 hover:text-white"
                 >
@@ -467,9 +496,9 @@ export default function AdminCouponManagement() {
                 <button
                   onClick={() => {
                     if (showCreateForm) {
-                      handleCreateCoupon()
+                      handleCreateCoupon();
                     } else if (editing) {
-                      handleUpdateCoupon(editing)
+                      handleUpdateCoupon(editing);
                     }
                   }}
                   className="btn-primary px-6 py-3"
@@ -478,9 +507,9 @@ export default function AdminCouponManagement() {
                 </button>
                 <button
                   onClick={() => {
-                    setShowCreateForm(false)
-                    setEditing(null)
-                    setEditForm({})
+                    setShowCreateForm(false);
+                    setEditing(null);
+                    setEditForm({});
                   }}
                   className="btn-secondary px-6 py-3"
                 >
@@ -492,5 +521,5 @@ export default function AdminCouponManagement() {
         )}
       </div>
     </div>
-  )
+  );
 }

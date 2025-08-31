@@ -15,7 +15,7 @@ export default function IDEPreviewPage() {
   const deviceDimensions = {
     desktop: { width: '100%', height: '100%' },
     tablet: { width: '768px', height: '1024px' },
-    mobile: { width: '375px', height: '667px' }
+    mobile: { width: '375px', height: '667px' },
   };
 
   const refreshPreview = () => {
@@ -105,13 +105,15 @@ export default function IDEPreviewPage() {
               </CardHeader>
               <CardContent className="h-full p-0">
                 <div className="h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-b-lg">
-                  <div 
+                  <div
                     className="bg-white rounded-lg shadow-lg transition-all duration-300 mx-auto"
                     style={{
                       width: deviceDimensions[previewMode].width,
                       height: deviceDimensions[previewMode].height,
-                      maxWidth: previewMode === 'desktop' ? '100%' : deviceDimensions[previewMode].width,
-                      maxHeight: previewMode === 'desktop' ? '100%' : deviceDimensions[previewMode].height
+                      maxWidth:
+                        previewMode === 'desktop' ? '100%' : deviceDimensions[previewMode].width,
+                      maxHeight:
+                        previewMode === 'desktop' ? '100%' : deviceDimensions[previewMode].height,
                     }}
                   >
                     <div className="w-full h-full border-2 border-gray-300 rounded-lg overflow-hidden">
@@ -161,12 +163,14 @@ export default function IDEPreviewPage() {
                   </CardHeader>
                   <CardContent className="p-2">
                     <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-2 h-64">
-                      <div 
+                      <div
                         className="bg-white rounded border mx-auto"
                         style={{
-                          width: device === 'desktop' ? '100%' : device === 'tablet' ? '80px' : '40px',
-                          height: device === 'desktop' ? '100%' : device === 'tablet' ? '106px' : '71px',
-                          minHeight: '60px'
+                          width:
+                            device === 'desktop' ? '100%' : device === 'tablet' ? '80px' : '40px',
+                          height:
+                            device === 'desktop' ? '100%' : device === 'tablet' ? '106px' : '71px',
+                          minHeight: '60px',
                         }}
                       >
                         <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 rounded flex items-center justify-center text-xs text-gray-600">

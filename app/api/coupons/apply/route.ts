@@ -24,17 +24,16 @@ export async function POST(request: NextRequest) {
     const { couponId, userId, orderAmount, planId } = applyCouponSchema.parse(body);
 
     // Get coupon details
-    const coupon = await db
-      .select()
-      .from(coupons)
-      .where(eq(coupons.id, couponId))
-      .limit(1);
+    const coupon = await db.select().from(coupons).where(eq(coupons.id, couponId)).limit(1);
 
     if (!coupon.length) {
-      return NextResponse.json({
-        success: false,
-        error: 'Coupon not found',
-      }, { status: 404 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Coupon not found',
+        },
+        { status: 404 },
+      );
     }
 
     const couponData = coupon[0];
@@ -112,21 +111,26 @@ export async function POST(request: NextRequest) {
         stripeCouponId,
       },
     });
-
   } catch (error) {
     console.error('Apply coupon error:', error);
-    
+
     if (error instanceof z.ZodError) {
-      return NextResponse.json({
-        success: false,
-        error: 'Invalid request data',
-        details: error.errors,
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Invalid request data',
+          details: error.errors,
+        },
+        { status: 400 },
+      );
     }
 
-    return NextResponse.json({
-      success: false,
-      error: 'Internal server error',
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Internal server error',
+      },
+      { status: 500 },
+    );
   }
 }

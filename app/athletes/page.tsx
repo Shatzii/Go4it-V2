@@ -1,143 +1,161 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { CheckCircle, Search, Filter, ArrowLeft, Trophy, Star, Calendar, MapPin } from 'lucide-react'
-import Link from 'next/link'
+import { useState, useEffect } from 'react';
+import {
+  CheckCircle,
+  Search,
+  Filter,
+  ArrowLeft,
+  Trophy,
+  Star,
+  Calendar,
+  MapPin,
+} from 'lucide-react';
+import Link from 'next/link';
 
 interface AthleteProfile {
-  id: string
-  name: string
-  position: string
-  sport: string
-  classYear: string
+  id: string;
+  name: string;
+  position: string;
+  sport: string;
+  classYear: string;
   rankings: {
-    rivals: number
-    espn: number
-    sports247: number
-    on3: number
-    composite: number
-  }
+    rivals: number;
+    espn: number;
+    sports247: number;
+    on3: number;
+    composite: number;
+  };
   physicals: {
-    height: string
-    weight: string
-    wingspan?: string
-    fortyTime?: string
-  }
+    height: string;
+    weight: string;
+    wingspan?: string;
+    fortyTime?: string;
+  };
   academics: {
-    gpa: number
-    sat?: number
-    act?: number
-    coreGPA?: number
-  }
+    gpa: number;
+    sat?: number;
+    act?: number;
+    coreGPA?: number;
+  };
   school: {
-    current: string
-    state: string
-    committed?: string
-    offers: string[]
-    visits: string[]
-  }
+    current: string;
+    state: string;
+    committed?: string;
+    offers: string[];
+    visits: string[];
+  };
   recruiting: {
-    status: 'open' | 'committed' | 'signed'
-    timeline: string
-    topSchools: string[]
-    recruitingNotes: string
-  }
+    status: 'open' | 'committed' | 'signed';
+    timeline: string;
+    topSchools: string[];
+    recruitingNotes: string;
+  };
   highlights: {
     videos: Array<{
-      url: string
-      title: string
-      platform: string
-      views: number
-    }>
-    images: string[]
-  }
+      url: string;
+      title: string;
+      platform: string;
+      views: number;
+    }>;
+    images: string[];
+  };
 }
 
 export default function AthletesPage() {
-  const [athletes, setAthletes] = useState<AthleteProfile[]>([])
-  const [filteredAthletes, setFilteredAthletes] = useState<AthleteProfile[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedSport, setSelectedSport] = useState('')
-  const [selectedClass, setSelectedClass] = useState('')
-  const [selectedStatus, setSelectedStatus] = useState('')
+  const [athletes, setAthletes] = useState<AthleteProfile[]>([]);
+  const [filteredAthletes, setFilteredAthletes] = useState<AthleteProfile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedSport, setSelectedSport] = useState('');
+  const [selectedClass, setSelectedClass] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
 
   useEffect(() => {
     const fetchAthletes = async () => {
       try {
-        const response = await fetch('/api/recruiting/athletes/database')
+        const response = await fetch('/api/recruiting/athletes/database');
         if (response.ok) {
-          const data = await response.json()
+          const data = await response.json();
           if (data.success && data.athletes) {
-            setAthletes(data.athletes)
-            setFilteredAthletes(data.athletes)
+            setAthletes(data.athletes);
+            setFilteredAthletes(data.athletes);
           }
         }
       } catch (error) {
-        console.error('Failed to fetch athletes:', error)
+        console.error('Failed to fetch athletes:', error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchAthletes()
-  }, [])
+    fetchAthletes();
+  }, []);
 
   useEffect(() => {
-    let filtered = athletes
+    let filtered = athletes;
 
     if (searchTerm) {
-      filtered = filtered.filter(athlete =>
-        athlete.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        athlete.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        athlete.school.current.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      filtered = filtered.filter(
+        (athlete) =>
+          athlete.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          athlete.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          athlete.school.current.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
     }
 
     if (selectedSport) {
-      filtered = filtered.filter(athlete => athlete.sport === selectedSport)
+      filtered = filtered.filter((athlete) => athlete.sport === selectedSport);
     }
 
     if (selectedClass) {
-      filtered = filtered.filter(athlete => athlete.classYear === selectedClass)
+      filtered = filtered.filter((athlete) => athlete.classYear === selectedClass);
     }
 
     if (selectedStatus) {
-      filtered = filtered.filter(athlete => athlete.recruiting.status === selectedStatus)
+      filtered = filtered.filter((athlete) => athlete.recruiting.status === selectedStatus);
     }
 
-    setFilteredAthletes(filtered)
-  }, [searchTerm, selectedSport, selectedClass, selectedStatus, athletes])
+    setFilteredAthletes(filtered);
+  }, [searchTerm, selectedSport, selectedClass, selectedStatus, athletes]);
 
   const calculateGARScore = (athlete: AthleteProfile) => {
-    const rankingScore = Math.max(100 - (athlete.rankings.composite * 2), 60)
-    const academicBonus = athlete.academics.gpa > 3.5 ? 5 : 0
-    const commitmentBonus = athlete.recruiting.status === 'committed' ? 3 : 0
-    
-    return Math.min(rankingScore + academicBonus + commitmentBonus, 100)
-  }
+    const rankingScore = Math.max(100 - athlete.rankings.composite * 2, 60);
+    const academicBonus = athlete.academics.gpa > 3.5 ? 5 : 0;
+    const commitmentBonus = athlete.recruiting.status === 'committed' ? 3 : 0;
+
+    return Math.min(rankingScore + academicBonus + commitmentBonus, 100);
+  };
 
   const getAthleteImage = (athlete: AthleteProfile) => {
     if (athlete.highlights.images && athlete.highlights.images.length > 0) {
-      return athlete.highlights.images[0]
+      return athlete.highlights.images[0];
     }
     const sportImages = {
-      'Basketball': 'https://images.unsplash.com/photo-1627245076516-93e232cba261?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YmFza2V0YmFsbCUyMHBsYXllcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60',
-      'Soccer': 'https://images.unsplash.com/photo-1511067007398-7e4b9499a637?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=60',
-      'American Football': 'https://images.unsplash.com/photo-1566577739112-5180d4bf9390?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=60',
-      'Track & Field': 'https://images.unsplash.com/photo-1527334919515-b8dee906a34b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8dHJhY2slMjBmaWVsZHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60'
-    }
-    return sportImages[athlete.sport] || sportImages['Basketball']
-  }
+      Basketball:
+        'https://images.unsplash.com/photo-1627245076516-93e232cba261?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YmFza2V0YmFsbCUyMHBsYXllcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60',
+      Soccer:
+        'https://images.unsplash.com/photo-1511067007398-7e4b9499a637?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=60',
+      'American Football':
+        'https://images.unsplash.com/photo-1566577739112-5180d4bf9390?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=60',
+      'Track & Field':
+        'https://images.unsplash.com/photo-1527334919515-b8dee906a34b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8dHJhY2slMjBmaWVsZHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60',
+    };
+    return sportImages[athlete.sport] || sportImages['Basketball'];
+  };
 
   const getUniqueValues = (field: string) => {
-    return [...new Set(athletes.map(athlete => {
-      if (field === 'sport') return athlete.sport
-      if (field === 'classYear') return athlete.classYear
-      if (field === 'status') return athlete.recruiting.status
-      return ''
-    }))].filter(Boolean)
-  }
+    return [
+      ...new Set(
+        athletes.map((athlete) => {
+          if (field === 'sport') return athlete.sport;
+          if (field === 'classYear') return athlete.classYear;
+          if (field === 'status') return athlete.recruiting.status;
+          return '';
+        }),
+      ),
+    ].filter(Boolean);
+  };
 
   if (loading) {
     return (
@@ -147,7 +165,7 @@ export default function AthletesPage() {
           <p className="text-slate-300">Loading athletes...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -191,8 +209,10 @@ export default function AthletesPage() {
               className="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">All Sports</option>
-              {getUniqueValues('sport').map(sport => (
-                <option key={sport} value={sport}>{sport}</option>
+              {getUniqueValues('sport').map((sport) => (
+                <option key={sport} value={sport}>
+                  {sport}
+                </option>
               ))}
             </select>
 
@@ -203,8 +223,10 @@ export default function AthletesPage() {
               className="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">All Classes</option>
-              {getUniqueValues('classYear').map(year => (
-                <option key={year} value={year}>Class of {year}</option>
+              {getUniqueValues('classYear').map((year) => (
+                <option key={year} value={year}>
+                  Class of {year}
+                </option>
               ))}
             </select>
 
@@ -215,18 +237,20 @@ export default function AthletesPage() {
               className="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">All Status</option>
-              {getUniqueValues('status').map(status => (
-                <option key={status} value={status}>{status.charAt(0).toUpperCase() + status.slice(1)}</option>
+              {getUniqueValues('status').map((status) => (
+                <option key={status} value={status}>
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                </option>
               ))}
             </select>
 
             {/* Clear Filters */}
             <button
               onClick={() => {
-                setSearchTerm('')
-                setSelectedSport('')
-                setSelectedClass('')
-                setSelectedStatus('')
+                setSearchTerm('');
+                setSelectedSport('');
+                setSelectedClass('');
+                setSelectedStatus('');
               }}
               className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white transition-colors"
             >
@@ -283,7 +307,9 @@ export default function AthletesPage() {
                     <h3 className="font-semibold text-white mb-1 group-hover:text-blue-400 transition-colors">
                       {athlete.name}
                     </h3>
-                    <p className="text-slate-400 text-sm mb-2">{athlete.position} • {athlete.sport}</p>
+                    <p className="text-slate-400 text-sm mb-2">
+                      {athlete.position} • {athlete.sport}
+                    </p>
 
                     <div className="space-y-1 mb-3">
                       <div className="flex items-center gap-1 text-xs text-slate-400">
@@ -295,8 +321,7 @@ export default function AthletesPage() {
                         {athlete.school.current}, {athlete.school.state}
                       </div>
                       <div className="flex items-center gap-1 text-xs text-slate-400">
-                        <Trophy className="w-3 h-3" />
-                        #{athlete.rankings.composite} National
+                        <Trophy className="w-3 h-3" />#{athlete.rankings.composite} National
                       </div>
                     </div>
 
@@ -323,7 +348,9 @@ export default function AthletesPage() {
                           />
                         ))}
                       </div>
-                      <span className="text-xs text-slate-400">GAR {calculateGARScore(athlete)}/100</span>
+                      <span className="text-xs text-slate-400">
+                        GAR {calculateGARScore(athlete)}/100
+                      </span>
                     </div>
                   </div>
                 </Link>
@@ -333,5 +360,5 @@ export default function AthletesPage() {
         </div>
       </section>
     </div>
-  )
+  );
 }

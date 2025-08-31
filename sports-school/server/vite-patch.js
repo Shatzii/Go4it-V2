@@ -1,6 +1,6 @@
 /**
  * Patch for Vite Environment Variable Processing Issue
- * 
+ *
  * This patches Vite's environment variable handling to prevent the
  * "value.replace is not a function" error when loading the app.
  */
@@ -10,7 +10,7 @@ import * as vite from 'vite';
 
 // Create a simple wrapper around Vite's loadEnv that handles null/undefined values
 const originalLoadEnv = vite.loadEnv;
-const patchedLoadEnv = function(mode, envDir, prefixes) {
+const patchedLoadEnv = function (mode, envDir, prefixes) {
   try {
     return originalLoadEnv(mode, envDir, prefixes);
   } catch (error) {

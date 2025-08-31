@@ -1,6 +1,6 @@
 /**
  * Specialized Schools API Routes
- * 
+ *
  * This module provides API routes for specialized school types:
  * - Neurodivergent Schools
  * - Law Schools
@@ -29,12 +29,14 @@ export function setupSpecializedSchoolsRoutes(router: express.Router, storage: I
     neurotypes: z.array(z.string()),
     learningStyles: z.array(z.string()),
     mascot: z.string().optional(),
-    superheroTheme: z.object({
-      primaryColor: z.string(),
-      secondaryColor: z.string(),
-      mascotName: z.string(),
-      powers: z.array(z.string())
-    }).optional()
+    superheroTheme: z
+      .object({
+        primaryColor: z.string(),
+        secondaryColor: z.string(),
+        mascotName: z.string(),
+        powers: z.array(z.string()),
+      })
+      .optional(),
   });
 
   const lawSchoolSchema = z.object({
@@ -51,7 +53,7 @@ export function setupSpecializedSchoolsRoutes(router: express.Router, storage: I
     specializations: z.array(z.string()),
     jurisdictions: z.array(z.string()),
     courses: z.array(z.string()),
-    accreditation: z.string().optional()
+    accreditation: z.string().optional(),
   });
 
   const languageSchoolSchema = z.object({
@@ -67,7 +69,7 @@ export function setupSpecializedSchoolsRoutes(router: express.Router, storage: I
     languages: z.array(z.string()),
     methodologies: z.array(z.string()),
     proficiencyLevels: z.array(z.string()),
-    culturalImmersion: z.boolean()
+    culturalImmersion: z.boolean(),
   });
 
   // Neurodivergent schools
@@ -75,7 +77,7 @@ export function setupSpecializedSchoolsRoutes(router: express.Router, storage: I
     try {
       // Assuming the Schools table has a type field to filter by
       const schools = await storage.getSchools();
-      const neurodivergentSchools = schools.filter(school => school.type === 'neurodivergent');
+      const neurodivergentSchools = schools.filter((school) => school.type === 'neurodivergent');
       res.json(neurodivergentSchools);
     } catch (error) {
       console.error('Error fetching neurodivergent schools:', error);
@@ -87,11 +89,11 @@ export function setupSpecializedSchoolsRoutes(router: express.Router, storage: I
     try {
       const id = parseInt(req.params.id);
       const school = await storage.getSchoolById(id);
-      
+
       if (!school || school.type !== 'neurodivergent') {
         return res.status(404).json({ error: 'Neurodivergent school not found' });
       }
-      
+
       res.json(school);
     } catch (error) {
       console.error('Error fetching neurodivergent school:', error);
@@ -117,11 +119,11 @@ export function setupSpecializedSchoolsRoutes(router: express.Router, storage: I
     try {
       const id = parseInt(req.params.id);
       const school = await storage.getSchoolById(id);
-      
+
       if (!school || school.type !== 'neurodivergent') {
         return res.status(404).json({ error: 'Neurodivergent school not found' });
       }
-      
+
       const data = neurodivergentSchoolSchema.partial().parse(req.body);
       const updatedSchool = await storage.updateSchool(id, data);
       res.json(updatedSchool);
@@ -138,7 +140,7 @@ export function setupSpecializedSchoolsRoutes(router: express.Router, storage: I
   router.get('/schools/type/law', async (req, res) => {
     try {
       const schools = await storage.getSchools();
-      const lawSchools = schools.filter(school => school.type === 'law');
+      const lawSchools = schools.filter((school) => school.type === 'law');
       res.json(lawSchools);
     } catch (error) {
       console.error('Error fetching law schools:', error);
@@ -150,11 +152,11 @@ export function setupSpecializedSchoolsRoutes(router: express.Router, storage: I
     try {
       const id = parseInt(req.params.id);
       const school = await storage.getSchoolById(id);
-      
+
       if (!school || school.type !== 'law') {
         return res.status(404).json({ error: 'Law school not found' });
       }
-      
+
       res.json(school);
     } catch (error) {
       console.error('Error fetching law school:', error);
@@ -180,11 +182,11 @@ export function setupSpecializedSchoolsRoutes(router: express.Router, storage: I
     try {
       const id = parseInt(req.params.id);
       const school = await storage.getSchoolById(id);
-      
+
       if (!school || school.type !== 'law') {
         return res.status(404).json({ error: 'Law school not found' });
       }
-      
+
       const data = lawSchoolSchema.partial().parse(req.body);
       const updatedSchool = await storage.updateSchool(id, data);
       res.json(updatedSchool);
@@ -201,7 +203,7 @@ export function setupSpecializedSchoolsRoutes(router: express.Router, storage: I
   router.get('/schools/type/language', async (req, res) => {
     try {
       const schools = await storage.getSchools();
-      const languageSchools = schools.filter(school => school.type === 'language');
+      const languageSchools = schools.filter((school) => school.type === 'language');
       res.json(languageSchools);
     } catch (error) {
       console.error('Error fetching language schools:', error);
@@ -213,11 +215,11 @@ export function setupSpecializedSchoolsRoutes(router: express.Router, storage: I
     try {
       const id = parseInt(req.params.id);
       const school = await storage.getSchoolById(id);
-      
+
       if (!school || school.type !== 'language') {
         return res.status(404).json({ error: 'Language school not found' });
       }
-      
+
       res.json(school);
     } catch (error) {
       console.error('Error fetching language school:', error);
@@ -243,11 +245,11 @@ export function setupSpecializedSchoolsRoutes(router: express.Router, storage: I
     try {
       const id = parseInt(req.params.id);
       const school = await storage.getSchoolById(id);
-      
+
       if (!school || school.type !== 'language') {
         return res.status(404).json({ error: 'Language school not found' });
       }
-      
+
       const data = languageSchoolSchema.partial().parse(req.body);
       const updatedSchool = await storage.updateSchool(id, data);
       res.json(updatedSchool);
@@ -279,22 +281,22 @@ export function setupSpecializedSchoolsRoutes(router: express.Router, storage: I
     partOfSpeech: z.string().nullable().optional(),
     audioUrl: z.string().nullable().optional(),
     imageUrl: z.string().nullable().optional(),
-    active: z.boolean().optional().default(true)
+    active: z.boolean().optional().default(true),
   });
 
   router.get('/vocabulary-lists', async (req, res) => {
     try {
       const { category, difficulty } = req.query;
       let lists = await storage.getVocabularyLists();
-      
+
       if (category) {
-        lists = lists.filter(list => list.category === category);
+        lists = lists.filter((list) => list.category === category);
       }
-      
+
       if (difficulty) {
-        lists = lists.filter(list => list.difficulty === difficulty);
+        lists = lists.filter((list) => list.difficulty === difficulty);
       }
-      
+
       res.json(lists);
     } catch (error) {
       console.error('Error fetching vocabulary lists:', error);
@@ -306,18 +308,18 @@ export function setupSpecializedSchoolsRoutes(router: express.Router, storage: I
     try {
       const id = parseInt(req.params.id);
       const list = await storage.getVocabularyList(id);
-      
+
       if (!list) {
         return res.status(404).json({ error: 'Vocabulary list not found' });
       }
-      
+
       // Also get the vocabulary items for this list
       const items = await storage.getVocabularyItems(id);
-      
+
       // Return both the list and its items
       res.json({
         ...list,
-        items
+        items,
       });
     } catch (error) {
       console.error('Error fetching vocabulary list:', error);
@@ -330,7 +332,7 @@ export function setupSpecializedSchoolsRoutes(router: express.Router, storage: I
     try {
       const listId = parseInt(req.params.listId);
       const items = await storage.getVocabularyItems(listId);
-      
+
       res.json(items);
     } catch (error) {
       console.error('Error fetching vocabulary items:', error);
@@ -343,11 +345,11 @@ export function setupSpecializedSchoolsRoutes(router: express.Router, storage: I
     try {
       const id = parseInt(req.params.id);
       const item = await storage.getVocabularyItem(id);
-      
+
       if (!item) {
         return res.status(404).json({ error: 'Vocabulary item not found' });
       }
-      
+
       res.json(item);
     } catch (error) {
       console.error('Error fetching vocabulary item:', error);
@@ -388,11 +390,11 @@ export function setupSpecializedSchoolsRoutes(router: express.Router, storage: I
     try {
       const id = parseInt(req.params.id);
       const list = await storage.getVocabularyListById(id);
-      
+
       if (!list) {
         return res.status(404).json({ error: 'Vocabulary list not found' });
       }
-      
+
       const data = vocabularyListSchema.partial().parse(req.body);
       const updatedList = await storage.updateVocabularyList(id, data);
       res.json(updatedList);
@@ -409,11 +411,11 @@ export function setupSpecializedSchoolsRoutes(router: express.Router, storage: I
     try {
       const id = parseInt(req.params.id);
       const list = await storage.getVocabularyListById(id);
-      
+
       if (!list) {
         return res.status(404).json({ error: 'Vocabulary list not found' });
       }
-      
+
       await storage.deleteVocabularyList(id);
       res.status(204).end();
     } catch (error) {

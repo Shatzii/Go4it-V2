@@ -1,5 +1,5 @@
-import React from 'react'
-import Link from 'next/link'
+import React from 'react';
+import Link from 'next/link';
 
 export default function AdminDashboard() {
   return (
@@ -36,7 +36,7 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-green-100 rounded-lg">
@@ -48,7 +48,7 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-yellow-100 rounded-lg">
@@ -60,7 +60,7 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-purple-100 rounded-lg">
@@ -79,17 +79,24 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-lg shadow-sm border">
             <div className="p-6 border-b border-gray-200">
               <h2 className="text-lg font-semibold text-gray-900">Development Tools</h2>
-              <p className="text-sm text-gray-600 mt-1">Advanced development and content creation tools</p>
+              <p className="text-sm text-gray-600 mt-1">
+                Advanced development and content creation tools
+              </p>
             </div>
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Link href="/admin/ide" className="p-4 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-all duration-300">
+                <Link
+                  href="/admin/ide"
+                  className="p-4 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-all duration-300"
+                >
                   <div className="flex items-center">
                     <div className="p-2 bg-blue-100 rounded-lg mr-3">
                       <span className="text-xl">💻</span>
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">Integrated Development Environment</h3>
+                      <h3 className="font-medium text-gray-900">
+                        Integrated Development Environment
+                      </h3>
                       <p className="text-sm text-gray-600">Full-featured IDE with Monaco Editor</p>
                       <div className="mt-2">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -99,8 +106,11 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                 </Link>
-                
-                <Link href="/ai-content-creator" className="p-4 border border-gray-200 rounded-lg hover:bg-green-50 hover:border-green-300 transition-all duration-300">
+
+                <Link
+                  href="/ai-content-creator"
+                  className="p-4 border border-gray-200 rounded-lg hover:bg-green-50 hover:border-green-300 transition-all duration-300"
+                >
                   <div className="flex items-center">
                     <div className="p-2 bg-green-100 rounded-lg mr-3">
                       <span className="text-xl">🎨</span>
@@ -116,8 +126,11 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                 </Link>
-                
-                <Link href="/marketplace" className="p-4 border border-gray-200 rounded-lg hover:bg-purple-50 hover:border-purple-300 transition-all duration-300">
+
+                <Link
+                  href="/marketplace"
+                  className="p-4 border border-gray-200 rounded-lg hover:bg-purple-50 hover:border-purple-300 transition-all duration-300"
+                >
                   <div className="flex items-center">
                     <div className="p-2 bg-purple-100 rounded-lg mr-3">
                       <span className="text-xl">🛒</span>
@@ -148,37 +161,55 @@ export default function AdminDashboard() {
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-2 gap-4">
-                  <Link href="/admin/students" className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                  <Link
+                    href="/admin/students"
+                    className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                  >
                     <div className="flex items-center space-x-3">
                       <span className="text-2xl">📚</span>
                       <div>
                         <h3 className="font-medium text-gray-900">Student Records</h3>
-                        <p className="text-sm text-gray-500">Manage enrollment, demographics, and academic records</p>
+                        <p className="text-sm text-gray-500">
+                          Manage enrollment, demographics, and academic records
+                        </p>
                       </div>
                     </div>
                   </Link>
-                  
-                  <Link href="/admin/enrollment" className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+
+                  <Link
+                    href="/admin/enrollment"
+                    className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                  >
                     <div className="flex items-center space-x-3">
                       <span className="text-2xl">✏️</span>
                       <div>
                         <h3 className="font-medium text-gray-900">Enrollment Management</h3>
-                        <p className="text-sm text-gray-500">Process new enrollments and transfers</p>
+                        <p className="text-sm text-gray-500">
+                          Process new enrollments and transfers
+                        </p>
                       </div>
                     </div>
                   </Link>
-                  
-                  <Link href="/admin/attendance" className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+
+                  <Link
+                    href="/admin/attendance"
+                    className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                  >
                     <div className="flex items-center space-x-3">
                       <span className="text-2xl">📅</span>
                       <div>
                         <h3 className="font-medium text-gray-900">Attendance Tracking</h3>
-                        <p className="text-sm text-gray-500">Monitor daily attendance and absences</p>
+                        <p className="text-sm text-gray-500">
+                          Monitor daily attendance and absences
+                        </p>
                       </div>
                     </div>
                   </Link>
-                  
-                  <Link href="/admin/gradebook" className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+
+                  <Link
+                    href="/admin/gradebook"
+                    className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                  >
                     <div className="flex items-center space-x-3">
                       <span className="text-2xl">📊</span>
                       <div>
@@ -199,16 +230,28 @@ export default function AdminDashboard() {
                 <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
               </div>
               <div className="p-6 space-y-3">
-                <Link href="/admin/announcements/new" className="block w-full text-left p-3 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors">
+                <Link
+                  href="/admin/announcements/new"
+                  className="block w-full text-left p-3 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors"
+                >
                   📢 Send School Announcement
                 </Link>
-                <Link href="/admin/visitors/check-in" className="block w-full text-left p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
+                <Link
+                  href="/admin/visitors/check-in"
+                  className="block w-full text-left p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors"
+                >
                   🏃‍♂️ Visitor Check-in
                 </Link>
-                <Link href="/admin/emergency" className="block w-full text-left p-3 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors">
+                <Link
+                  href="/admin/emergency"
+                  className="block w-full text-left p-3 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors"
+                >
                   🚨 Emergency Protocols
                 </Link>
-                <Link href="/admin/reports/generate" className="block w-full text-left p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">
+                <Link
+                  href="/admin/reports/generate"
+                  className="block w-full text-left p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
+                >
                   📋 Generate Reports
                 </Link>
               </div>
@@ -241,27 +284,42 @@ export default function AdminDashboard() {
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Link href="/admin/curriculum" className="p-6 border rounded-lg hover:bg-gray-50 transition-colors">
+              <Link
+                href="/admin/curriculum"
+                className="p-6 border rounded-lg hover:bg-gray-50 transition-colors"
+              >
                 <div className="text-center">
                   <span className="text-4xl mb-4 block">📖</span>
                   <h3 className="font-semibold text-gray-900 mb-2">Curriculum Management</h3>
-                  <p className="text-sm text-gray-500">Manage courses, standards alignment, and neurodivergent adaptations</p>
+                  <p className="text-sm text-gray-500">
+                    Manage courses, standards alignment, and neurodivergent adaptations
+                  </p>
                 </div>
               </Link>
-              
-              <Link href="/admin/assessments" className="p-6 border rounded-lg hover:bg-gray-50 transition-colors">
+
+              <Link
+                href="/admin/assessments"
+                className="p-6 border rounded-lg hover:bg-gray-50 transition-colors"
+              >
                 <div className="text-center">
                   <span className="text-4xl mb-4 block">📝</span>
                   <h3 className="font-semibold text-gray-900 mb-2">Assessment Center</h3>
-                  <p className="text-sm text-gray-500">Create and manage assessments, including STAAR preparation</p>
+                  <p className="text-sm text-gray-500">
+                    Create and manage assessments, including STAAR preparation
+                  </p>
                 </div>
               </Link>
-              
-              <Link href="/admin/iep" className="p-6 border rounded-lg hover:bg-gray-50 transition-colors">
+
+              <Link
+                href="/admin/iep"
+                className="p-6 border rounded-lg hover:bg-gray-50 transition-colors"
+              >
                 <div className="text-center">
                   <span className="text-4xl mb-4 block">🎯</span>
                   <h3 className="font-semibold text-gray-900 mb-2">Special Education</h3>
-                  <p className="text-sm text-gray-500">Manage IEPs, 504 plans, and behavioral interventions</p>
+                  <p className="text-sm text-gray-500">
+                    Manage IEPs, 504 plans, and behavioral interventions
+                  </p>
                 </div>
               </Link>
             </div>
@@ -275,25 +333,37 @@ export default function AdminDashboard() {
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Link href="/admin/staff" className="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center">
+              <Link
+                href="/admin/staff"
+                className="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center"
+              >
                 <span className="text-3xl block mb-2">👥</span>
                 <h3 className="font-medium text-gray-900">Staff Management</h3>
                 <p className="text-xs text-gray-500 mt-1">HR, scheduling, substitutes</p>
               </Link>
-              
-              <Link href="/admin/health" className="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center">
+
+              <Link
+                href="/admin/health"
+                className="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center"
+              >
                 <span className="text-3xl block mb-2">🏥</span>
                 <h3 className="font-medium text-gray-900">Health Services</h3>
                 <p className="text-xs text-gray-500 mt-1">Medical records, incidents</p>
               </Link>
-              
-              <Link href="/admin/transportation" className="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center">
+
+              <Link
+                href="/admin/transportation"
+                className="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center"
+              >
                 <span className="text-3xl block mb-2">🚌</span>
                 <h3 className="font-medium text-gray-900">Transportation</h3>
                 <p className="text-xs text-gray-500 mt-1">Routes, schedules, safety</p>
               </Link>
-              
-              <Link href="/admin/finance" className="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center">
+
+              <Link
+                href="/admin/finance"
+                className="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center"
+              >
                 <span className="text-3xl block mb-2">💰</span>
                 <h3 className="font-medium text-gray-900">Financial Management</h3>
                 <p className="text-xs text-gray-500 mt-1">Tuition, payments, budgets</p>
@@ -309,27 +379,42 @@ export default function AdminDashboard() {
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Link href="/admin/devices" className="p-6 border rounded-lg hover:bg-gray-50 transition-colors">
+              <Link
+                href="/admin/devices"
+                className="p-6 border rounded-lg hover:bg-gray-50 transition-colors"
+              >
                 <div className="text-center">
                   <span className="text-4xl mb-4 block">💻</span>
                   <h3 className="font-semibold text-gray-900 mb-2">Device Management</h3>
-                  <p className="text-sm text-gray-500">1:1 device tracking, assignments, and maintenance</p>
+                  <p className="text-sm text-gray-500">
+                    1:1 device tracking, assignments, and maintenance
+                  </p>
                 </div>
               </Link>
-              
-              <Link href="/admin/visitors" className="p-6 border rounded-lg hover:bg-gray-50 transition-colors">
+
+              <Link
+                href="/admin/visitors"
+                className="p-6 border rounded-lg hover:bg-gray-50 transition-colors"
+              >
                 <div className="text-center">
                   <span className="text-4xl mb-4 block">🏛️</span>
                   <h3 className="font-semibold text-gray-900 mb-2">Visitor Management</h3>
-                  <p className="text-sm text-gray-500">Check-in/out system and security protocols</p>
+                  <p className="text-sm text-gray-500">
+                    Check-in/out system and security protocols
+                  </p>
                 </div>
               </Link>
-              
-              <Link href="/admin/communications" className="p-6 border rounded-lg hover:bg-gray-50 transition-colors">
+
+              <Link
+                href="/admin/communications"
+                className="p-6 border rounded-lg hover:bg-gray-50 transition-colors"
+              >
                 <div className="text-center">
                   <span className="text-4xl mb-4 block">📱</span>
                   <h3 className="font-semibold text-gray-900 mb-2">Communications Hub</h3>
-                  <p className="text-sm text-gray-500">Multi-language messaging and announcements</p>
+                  <p className="text-sm text-gray-500">
+                    Multi-language messaging and announcements
+                  </p>
                 </div>
               </Link>
             </div>
@@ -343,22 +428,32 @@ export default function AdminDashboard() {
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Link href="/texas-reporting" className="p-6 border rounded-lg hover:bg-gray-50 transition-colors">
+              <Link
+                href="/texas-reporting"
+                className="p-6 border rounded-lg hover:bg-gray-50 transition-colors"
+              >
                 <div className="flex items-center space-x-4">
                   <span className="text-4xl">🏛️</span>
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-2">Texas Compliance Center</h3>
-                    <p className="text-sm text-gray-500">PEIMS reporting, TEA compliance, state assessments</p>
+                    <p className="text-sm text-gray-500">
+                      PEIMS reporting, TEA compliance, state assessments
+                    </p>
                   </div>
                 </div>
               </Link>
-              
-              <Link href="/admin/analytics" className="p-6 border rounded-lg hover:bg-gray-50 transition-colors">
+
+              <Link
+                href="/admin/analytics"
+                className="p-6 border rounded-lg hover:bg-gray-50 transition-colors"
+              >
                 <div className="flex items-center space-x-4">
                   <span className="text-4xl">📊</span>
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-2">Analytics Dashboard</h3>
-                    <p className="text-sm text-gray-500">Performance metrics, predictive analytics, custom reports</p>
+                    <p className="text-sm text-gray-500">
+                      Performance metrics, predictive analytics, custom reports
+                    </p>
                   </div>
                 </div>
               </Link>
@@ -367,5 +462,5 @@ export default function AdminDashboard() {
         </div>
       </div>
     </div>
-  )
+  );
 }

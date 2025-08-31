@@ -12,10 +12,10 @@ export async function POST(request: NextRequest) {
     let user = await getUserFromRequest(request);
     if (!user) {
       // Create demo user for testing
-      user = { 
-        id: 1, 
+      user = {
+        id: 1,
         username: 'demo_user',
-        email: 'demo@example.com', 
+        email: 'demo@example.com',
         password: '',
         role: 'athlete',
         firstName: 'Demo',
@@ -27,13 +27,13 @@ export async function POST(request: NextRequest) {
         gpa: '3.5',
         isActive: true,
         createdAt: new Date(),
-        lastLoginAt: new Date()
+        lastLoginAt: new Date(),
       };
     }
 
     const formData = await request.formData();
     const file = formData.get('video') as File | null;
-    const sport = formData.get('sport') as string || 'basketball';
+    const sport = (formData.get('sport') as string) || 'basketball';
 
     if (!file) {
       return NextResponse.json({ error: 'Video file is required' }, { status: 400 });
@@ -51,16 +51,16 @@ export async function POST(request: NextRequest) {
     const timestamp = Date.now();
     const fileName = `${user.id}_${timestamp}_${file.name}`;
     const filePath = path.join(uploadsDir, fileName);
-    
+
     await writeFile(filePath, buffer);
 
     // Perform REAL computer vision analysis
     try {
       const analysis = await productionAnalyzer.analyzeVideo(filePath, sport);
-      
+
       console.log('Real computer vision analysis completed:', {
         sport: sport,
-        garScore: analysis.garScore
+        garScore: analysis.garScore,
       });
 
       // Save real analysis to database
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
           sport: sport,
           garScore: analysis.garScore.toString(),
           analysisData: analysis,
-          feedback: analysis.feedback.join('. ')
+          feedback: analysis.feedback.join('. '),
         })
         .returning();
 
@@ -82,44 +82,45 @@ export async function POST(request: NextRequest) {
         analysisId: savedAnalysis.id,
         garScore: analysis.garScore,
         analysis: analysis,
-        message: 'Computer vision analysis completed successfully'
+        message: 'Computer vision analysis completed successfully',
       });
-      
     } catch (error: any) {
       console.error('Computer vision analysis failed:', error);
-      
+
       if (error.message.includes('Computer vision analysis failed')) {
-        return NextResponse.json({
-          success: false,
-          error: 'Computer vision analysis failed',
-          message: `Failed to analyze ${sport} video: ${error.message}`,
-          sport: sport,
-          videoPath: filePath,
-          analysisType: 'real_computer_vision',
-          suggestion: 'Try with a clearer video or different sport setting'
-        }, { status: 500 });
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Computer vision analysis failed',
+            message: `Failed to analyze ${sport} video: ${error.message}`,
+            sport: sport,
+            videoPath: filePath,
+            analysisType: 'real_computer_vision',
+            suggestion: 'Try with a clearer video or different sport setting',
+          },
+          { status: 500 },
+        );
       }
-      
+
       throw error;
     }
-
   } catch (error: any) {
     console.error('Local GAR analysis error:', error);
-    
+
     if (error.message.includes('Missing required models')) {
       return NextResponse.json(
-        { 
+        {
           error: 'Local AI models not installed. Please download models first.',
           needsModels: true,
-          missingModels: error.message
+          missingModels: error.message,
         },
-        { status: 503 }
+        { status: 503 },
       );
     }
 
     return NextResponse.json(
       { error: 'Local analysis failed. Please try again.' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

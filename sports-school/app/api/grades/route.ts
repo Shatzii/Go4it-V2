@@ -8,23 +8,23 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
     const courseId = searchParams.get('courseId');
-    
+
     if (userId && courseId) {
       const userGrades = await storage.getGradesByUser(userId);
-      const courseGrades = userGrades.filter(g => g.courseId === courseId);
+      const courseGrades = userGrades.filter((g) => g.courseId === courseId);
       return NextResponse.json(courseGrades);
     }
-    
+
     if (userId) {
       const grades = await storage.getGradesByUser(userId);
       return NextResponse.json(grades);
     }
-    
+
     if (courseId) {
       const grades = await storage.getGradesByCourse(courseId);
       return NextResponse.json(grades);
     }
-    
+
     const grades = await storage.getGrades();
     return NextResponse.json(grades);
   } catch (error) {
@@ -41,7 +41,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(grade, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid grade data', details: error.errors }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Invalid grade data', details: error.errors },
+        { status: 400 },
+      );
     }
     console.error('Error creating grade:', error);
     return NextResponse.json({ error: 'Failed to create grade' }, { status: 500 });

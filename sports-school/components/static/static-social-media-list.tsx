@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,7 +8,9 @@ interface StaticSocialMediaListProps {
   showParentalControls?: boolean;
 }
 
-export function StaticSocialMediaList({ showParentalControls = false }: StaticSocialMediaListProps) {
+export function StaticSocialMediaList({
+  showParentalControls = false,
+}: StaticSocialMediaListProps) {
   // Mock static data for demonstration
   const staticAccounts = [
     {
@@ -20,8 +22,8 @@ export function StaticSocialMediaList({ showParentalControls = false }: StaticSo
       lastActivity: '2024-01-15T14:30:00Z',
       parentalControls: {
         enabled: true,
-        restrictions: ['No DMs from strangers', 'Content filtering']
-      }
+        restrictions: ['No DMs from strangers', 'Content filtering'],
+      },
     },
     {
       id: '2',
@@ -32,8 +34,8 @@ export function StaticSocialMediaList({ showParentalControls = false }: StaticSo
       lastActivity: '2024-01-15T12:45:00Z',
       parentalControls: {
         enabled: true,
-        restrictions: ['Time limits', 'Age-appropriate content']
-      }
+        restrictions: ['Time limits', 'Age-appropriate content'],
+      },
     },
     {
       id: '3',
@@ -44,26 +46,34 @@ export function StaticSocialMediaList({ showParentalControls = false }: StaticSo
       lastActivity: '2024-01-15T09:15:00Z',
       parentalControls: {
         enabled: false,
-        restrictions: []
-      }
-    }
+        restrictions: [],
+      },
+    },
   ];
 
   const getRiskColor = (level: string) => {
     switch (level) {
-      case 'low': return 'text-green-500';
-      case 'medium': return 'text-yellow-500';
-      case 'high': return 'text-red-500';
-      default: return 'text-gray-500';
+      case 'low':
+        return 'text-green-500';
+      case 'medium':
+        return 'text-yellow-500';
+      case 'high':
+        return 'text-red-500';
+      default:
+        return 'text-gray-500';
     }
   };
 
   const getRiskIcon = (level: string) => {
     switch (level) {
-      case 'low': return CheckCircle;
-      case 'medium': return Shield;
-      case 'high': return AlertTriangle;
-      default: return Shield;
+      case 'low':
+        return CheckCircle;
+      case 'medium':
+        return Shield;
+      case 'high':
+        return AlertTriangle;
+      default:
+        return Shield;
     }
   };
 
@@ -72,7 +82,7 @@ export function StaticSocialMediaList({ showParentalControls = false }: StaticSo
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {staticAccounts.map((account) => {
           const RiskIcon = getRiskIcon(account.riskLevel);
-          
+
           return (
             <Card key={account.id} className="hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
@@ -89,12 +99,13 @@ export function StaticSocialMediaList({ showParentalControls = false }: StaticSo
                   <div className="flex items-center gap-2">
                     <RiskIcon className={`w-4 h-4 ${getRiskColor(account.riskLevel)}`} />
                     <span className="text-sm">
-                      Risk Level: <span className={`font-medium ${getRiskColor(account.riskLevel)}`}>
+                      Risk Level:{' '}
+                      <span className={`font-medium ${getRiskColor(account.riskLevel)}`}>
                         {account.riskLevel}
                       </span>
                     </span>
                   </div>
-                  
+
                   <div className="text-sm text-gray-600">
                     Last Activity: {new Date(account.lastActivity).toLocaleDateString()}
                   </div>
@@ -104,7 +115,10 @@ export function StaticSocialMediaList({ showParentalControls = false }: StaticSo
                       <div className="flex items-center gap-2 mb-2">
                         <Shield className="w-4 h-4 text-blue-500" />
                         <span className="text-sm font-medium">Parental Controls</span>
-                        <Badge variant={account.parentalControls.enabled ? 'default' : 'secondary'} className="text-xs">
+                        <Badge
+                          variant={account.parentalControls.enabled ? 'default' : 'secondary'}
+                          className="text-xs"
+                        >
                           {account.parentalControls.enabled ? 'On' : 'Off'}
                         </Badge>
                       </div>

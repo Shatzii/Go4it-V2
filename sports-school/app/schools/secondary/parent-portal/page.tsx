@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import Link from 'next/link'
+import React, { useState } from 'react';
+import Link from 'next/link';
 
 export default function SecondaryParentPortal() {
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState('overview');
 
   const studentData = {
     name: 'Marcus Williams',
@@ -12,42 +12,55 @@ export default function SecondaryParentPortal() {
     gpa: 3.85,
     credits: { completed: 16, required: 24 },
     graduationYear: '2027',
-    rank: '15/142'
-  }
+    rank: '15/142',
+  };
 
   const courses = [
     { name: 'Advanced Biology', grade: 'A-', teacher: 'Dr. Chen', progress: 87 },
     { name: 'Algebra II', grade: 'B+', teacher: 'Ms. Rodriguez', progress: 82 },
     { name: 'World History', grade: 'A', teacher: 'Mr. Johnson', progress: 94 },
-    { name: 'English Literature', grade: 'B', teacher: 'Mrs. Davis', progress: 78 }
-  ]
+    { name: 'English Literature', grade: 'B', teacher: 'Mrs. Davis', progress: 78 },
+  ];
 
   const recentActivities = [
     { date: 'Today', activity: 'Submitted Biology Lab Report', type: 'assignment', grade: 'A-' },
-    { date: 'Yesterday', activity: 'Attended Virtual Tutoring Session', type: 'support', grade: 'Excellent' },
+    {
+      date: 'Yesterday',
+      activity: 'Attended Virtual Tutoring Session',
+      type: 'support',
+      grade: 'Excellent',
+    },
     { date: 'Jan 22', activity: 'Completed Algebra II Quiz', type: 'assessment', grade: 'B+' },
-    { date: 'Jan 21', activity: 'Participated in Study Group', type: 'collaboration', grade: 'Active' }
-  ]
+    {
+      date: 'Jan 21',
+      activity: 'Participated in Study Group',
+      type: 'collaboration',
+      grade: 'Active',
+    },
+  ];
 
   const upcomingEvents = [
     { date: 'Jan 26', event: 'Parent-Teacher Conferences', time: '4:00 PM' },
     { date: 'Jan 30', event: 'College Fair', time: '10:00 AM' },
     { date: 'Feb 5', event: 'SAT Prep Workshop', time: '2:00 PM' },
-    { date: 'Feb 12', event: 'Science Fair', time: '6:00 PM' }
-  ]
+    { date: 'Feb 12', event: 'Science Fair', time: '6:00 PM' },
+  ];
 
   const accommodations = [
     { name: 'Extended Test Time', active: true, effectiveness: 'High' },
     { name: 'Note-taking Assistance', active: true, effectiveness: 'Medium' },
-    { name: 'Preferential Seating', active: false, effectiveness: 'N/A' }
-  ]
+    { name: 'Preferential Seating', active: false, effectiveness: 'N/A' },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
       <header className="bg-white/10 backdrop-blur-sm border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <Link href="/schools/secondary-school" className="text-white font-semibold text-lg hover:text-purple-300">
+            <Link
+              href="/schools/secondary-school"
+              className="text-white font-semibold text-lg hover:text-purple-300"
+            >
               ← Stage Prep Academy
             </Link>
             <h1 className="text-2xl font-bold text-white">Parent Portal</h1>
@@ -69,13 +82,17 @@ export default function SecondaryParentPortal() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-3xl font-bold text-white">{studentData.name}</h2>
-              <p className="text-lg text-purple-200">{studentData.grade} • Class Rank: {studentData.rank}</p>
+              <p className="text-lg text-purple-200">
+                {studentData.grade} • Class Rank: {studentData.rank}
+              </p>
               <p className="text-purple-300">Graduation: {studentData.graduationYear}</p>
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold text-white">{studentData.gpa}</div>
               <div className="text-purple-200">Cumulative GPA</div>
-              <div className="text-sm text-purple-300 mt-1">{studentData.credits.completed}/{studentData.credits.required} Credits</div>
+              <div className="text-sm text-purple-300 mt-1">
+                {studentData.credits.completed}/{studentData.credits.required} Credits
+              </div>
             </div>
           </div>
 
@@ -89,9 +106,9 @@ export default function SecondaryParentPortal() {
                 </div>
                 <div className="text-purple-200 text-sm">{course.teacher}</div>
                 <div className="w-full bg-white/20 rounded-full h-2 mt-2">
-                  <div 
-                    className="bg-purple-500 h-2 rounded-full" 
-                    style={{width: `${course.progress}%`}}
+                  <div
+                    className="bg-purple-500 h-2 rounded-full"
+                    style={{ width: `${course.progress}%` }}
                   ></div>
                 </div>
               </div>
@@ -106,7 +123,7 @@ export default function SecondaryParentPortal() {
                 { id: 'overview', name: 'Overview', icon: '📊' },
                 { id: 'academics', name: 'Academics', icon: '📚' },
                 { id: 'college', name: 'College Prep', icon: '🎓' },
-                { id: 'communication', name: 'Messages', icon: '💬' }
+                { id: 'communication', name: 'Messages', icon: '💬' },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -133,12 +150,17 @@ export default function SecondaryParentPortal() {
                       <div key={index} className="bg-white/5 rounded-lg p-4 border border-white/10">
                         <div className="flex justify-between items-start mb-2">
                           <div className="flex items-center space-x-3">
-                            <span className={`px-3 py-1 rounded-full text-sm ${
-                              activity.type === 'assignment' ? 'bg-blue-500/30 text-blue-200' :
-                              activity.type === 'assessment' ? 'bg-green-500/30 text-green-200' :
-                              activity.type === 'support' ? 'bg-purple-500/30 text-purple-200' :
-                              'bg-yellow-500/30 text-yellow-200'
-                            }`}>
+                            <span
+                              className={`px-3 py-1 rounded-full text-sm ${
+                                activity.type === 'assignment'
+                                  ? 'bg-blue-500/30 text-blue-200'
+                                  : activity.type === 'assessment'
+                                    ? 'bg-green-500/30 text-green-200'
+                                    : activity.type === 'support'
+                                      ? 'bg-purple-500/30 text-purple-200'
+                                      : 'bg-yellow-500/30 text-yellow-200'
+                              }`}
+                            >
                               {activity.type}
                             </span>
                             <span className="text-purple-300 text-sm">{activity.date}</span>
@@ -174,16 +196,19 @@ export default function SecondaryParentPortal() {
                     <h4 className="text-lg font-semibold text-white mb-4">Current Courses</h4>
                     <div className="space-y-4">
                       {courses.map((course, index) => (
-                        <div key={index} className="bg-white/5 rounded-lg p-4 border border-white/10">
+                        <div
+                          key={index}
+                          className="bg-white/5 rounded-lg p-4 border border-white/10"
+                        >
                           <div className="flex justify-between items-center mb-2">
                             <h5 className="text-white font-semibold">{course.name}</h5>
                             <span className="text-purple-300 font-bold">{course.grade}</span>
                           </div>
                           <div className="text-purple-200 text-sm mb-2">{course.teacher}</div>
                           <div className="w-full bg-white/20 rounded-full h-2">
-                            <div 
-                              className="bg-purple-500 h-2 rounded-full" 
-                              style={{width: `${course.progress}%`}}
+                            <div
+                              className="bg-purple-500 h-2 rounded-full"
+                              style={{ width: `${course.progress}%` }}
                             ></div>
                           </div>
                         </div>
@@ -195,12 +220,19 @@ export default function SecondaryParentPortal() {
                     <h4 className="text-lg font-semibold text-white mb-4">Accommodations</h4>
                     <div className="space-y-4">
                       {accommodations.map((accommodation, index) => (
-                        <div key={index} className="bg-white/5 rounded-lg p-4 border border-white/10">
+                        <div
+                          key={index}
+                          className="bg-white/5 rounded-lg p-4 border border-white/10"
+                        >
                           <div className="flex justify-between items-start mb-2">
                             <h5 className="text-white font-semibold">{accommodation.name}</h5>
-                            <span className={`px-2 py-1 rounded text-xs ${
-                              accommodation.active ? 'bg-green-500/30 text-green-200' : 'bg-gray-500/30 text-gray-200'
-                            }`}>
+                            <span
+                              className={`px-2 py-1 rounded text-xs ${
+                                accommodation.active
+                                  ? 'bg-green-500/30 text-green-200'
+                                  : 'bg-gray-500/30 text-gray-200'
+                              }`}
+                            >
                               {accommodation.active ? 'Active' : 'Inactive'}
                             </span>
                           </div>
@@ -269,7 +301,7 @@ export default function SecondaryParentPortal() {
                     New Message
                   </button>
                 </div>
-                
+
                 <div className="space-y-4">
                   <div className="bg-white/5 rounded-lg p-6 border border-white/10">
                     <div className="flex justify-between items-start mb-3">
@@ -277,9 +309,15 @@ export default function SecondaryParentPortal() {
                         <h4 className="text-white font-semibold">From: Dr. Chen (Biology)</h4>
                         <p className="text-purple-200 text-sm">Today, 3:15 PM</p>
                       </div>
-                      <span className="bg-blue-500/30 text-blue-200 px-2 py-1 rounded text-xs">Teacher Update</span>
+                      <span className="bg-blue-500/30 text-blue-200 px-2 py-1 rounded text-xs">
+                        Teacher Update
+                      </span>
                     </div>
-                    <p className="text-white">Marcus showed excellent understanding in today's lab on cellular respiration. His analytical skills and attention to detail are really improving. Great work!</p>
+                    <p className="text-white">
+                      Marcus showed excellent understanding in today's lab on cellular respiration.
+                      His analytical skills and attention to detail are really improving. Great
+                      work!
+                    </p>
                   </div>
 
                   <div className="bg-white/5 rounded-lg p-6 border border-white/10">
@@ -288,9 +326,14 @@ export default function SecondaryParentPortal() {
                         <h4 className="text-white font-semibold">From: College Counselor</h4>
                         <p className="text-purple-200 text-sm">Yesterday, 1:30 PM</p>
                       </div>
-                      <span className="bg-green-500/30 text-green-200 px-2 py-1 rounded text-xs">College Prep</span>
+                      <span className="bg-green-500/30 text-green-200 px-2 py-1 rounded text-xs">
+                        College Prep
+                      </span>
                     </div>
-                    <p className="text-white">Marcus is on track for his college applications. We should schedule a meeting to discuss his personal statement and finalize his college list.</p>
+                    <p className="text-white">
+                      Marcus is on track for his college applications. We should schedule a meeting
+                      to discuss his personal statement and finalize his college list.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -317,5 +360,5 @@ export default function SecondaryParentPortal() {
         </div>
       </div>
     </div>
-  )
+  );
 }

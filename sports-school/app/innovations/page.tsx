@@ -1,26 +1,26 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import Link from 'next/link'
-import LearningAnalyticsDashboard from '@/components/analytics/learning-analytics-dashboard'
-import InteractiveClassroom from '@/components/virtual-classroom/interactive-classroom'
-import MobileDashboard from '@/components/mobile-pwa/mobile-dashboard'
-import AIContentGenerator from '@/components/ai-content-studio/content-generator'
-import ParentEngagementPlatform from '@/components/parent-platform/parent-engagement'
-import NeuralLearningInterface from '@/components/breakthrough-innovations/neural-learning-interface'
-import EmotionalAICompanion from '@/components/breakthrough-innovations/emotional-ai-companion'
-import HolographicLearningSpace from '@/components/breakthrough-innovations/holographic-learning-space'
-import QuantumCollaborationHub from '@/components/breakthrough-innovations/quantum-collaboration-hub'
-import TimeDimensionLearning from '@/components/breakthrough-innovations/time-dimension-learning'
-import { 
-  Brain, 
-  Users, 
-  Smartphone, 
-  Wand2, 
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import Link from 'next/link';
+import LearningAnalyticsDashboard from '@/components/analytics/learning-analytics-dashboard';
+import InteractiveClassroom from '@/components/virtual-classroom/interactive-classroom';
+import MobileDashboard from '@/components/mobile-pwa/mobile-dashboard';
+import AIContentGenerator from '@/components/ai-content-studio/content-generator';
+import ParentEngagementPlatform from '@/components/parent-platform/parent-engagement';
+import NeuralLearningInterface from '@/components/breakthrough-innovations/neural-learning-interface';
+import EmotionalAICompanion from '@/components/breakthrough-innovations/emotional-ai-companion';
+import HolographicLearningSpace from '@/components/breakthrough-innovations/holographic-learning-space';
+import QuantumCollaborationHub from '@/components/breakthrough-innovations/quantum-collaboration-hub';
+import TimeDimensionLearning from '@/components/breakthrough-innovations/time-dimension-learning';
+import {
+  Brain,
+  Users,
+  Smartphone,
+  Wand2,
   Heart,
   Eye,
   Zap,
@@ -32,52 +32,56 @@ import {
   Target,
   TrendingUp,
   Award,
-  Rocket
-} from 'lucide-react'
+  Rocket,
+} from 'lucide-react';
 
 export default function InnovationsPage() {
-  const [activeInnovation, setActiveInnovation] = useState<string | null>(null)
+  const [activeInnovation, setActiveInnovation] = useState<string | null>(null);
 
   const innovations = [
     {
       id: 'analytics',
       title: 'Real-Time Learning Analytics',
-      description: 'AI-powered insights with live neural feedback and predictive learning analytics',
+      description:
+        'AI-powered insights with live neural feedback and predictive learning analytics',
       icon: TrendingUp,
       color: 'bg-blue-500',
       category: 'Enhanced Learning',
       value: '$15K-20K',
-      component: LearningAnalyticsDashboard
+      component: LearningAnalyticsDashboard,
     },
     {
       id: 'classroom',
       title: 'Interactive Virtual Classroom',
-      description: 'Live collaborative learning with AI teaching assistant and real-time interaction',
+      description:
+        'Live collaborative learning with AI teaching assistant and real-time interaction',
       icon: Users,
       color: 'bg-green-500',
       category: 'Enhanced Learning',
       value: '$20K-25K',
-      component: InteractiveClassroom
+      component: InteractiveClassroom,
     },
     {
       id: 'mobile',
       title: 'Mobile-First PWA',
-      description: 'Offline learning, voice notes, push notifications, and native mobile experience',
+      description:
+        'Offline learning, voice notes, push notifications, and native mobile experience',
       icon: Smartphone,
       color: 'bg-purple-500',
       category: 'Enhanced Learning',
       value: '$15K-20K',
-      component: MobileDashboard
+      component: MobileDashboard,
     },
     {
       id: 'content',
       title: 'AI Content Generation Studio',
-      description: 'Dynamic lesson creation based on individual learning styles and neurodivergent needs',
+      description:
+        'Dynamic lesson creation based on individual learning styles and neurodivergent needs',
       icon: Wand2,
       color: 'bg-orange-500',
       category: 'Enhanced Learning',
       value: '$25K-35K',
-      component: AIContentGenerator
+      component: AIContentGenerator,
     },
     {
       id: 'parent',
@@ -87,27 +91,29 @@ export default function InnovationsPage() {
       color: 'bg-pink-500',
       category: 'Enhanced Learning',
       value: '$10K-15K',
-      component: ParentEngagementPlatform
+      component: ParentEngagementPlatform,
     },
     {
       id: 'neural',
       title: 'Neural Learning Interface',
-      description: 'Real-time brain-computer interface with EEG monitoring and cognitive optimization',
+      description:
+        'Real-time brain-computer interface with EEG monitoring and cognitive optimization',
       icon: Brain,
       color: 'bg-indigo-500',
       category: 'Breakthrough Innovation',
       value: '$50K-75K',
-      component: NeuralLearningInterface
+      component: NeuralLearningInterface,
     },
     {
       id: 'emotional',
       title: 'Emotional AI Companion',
-      description: 'Empathetic learning partners with emotional intelligence and personalized support',
+      description:
+        'Empathetic learning partners with emotional intelligence and personalized support',
       icon: Heart,
       color: 'bg-rose-500',
       category: 'Breakthrough Innovation',
       value: '$40K-60K',
-      component: EmotionalAICompanion
+      component: EmotionalAICompanion,
     },
     {
       id: 'holographic',
@@ -117,17 +123,18 @@ export default function InnovationsPage() {
       color: 'bg-cyan-500',
       category: 'Breakthrough Innovation',
       value: '$75K-100K',
-      component: HolographicLearningSpace
+      component: HolographicLearningSpace,
     },
     {
       id: 'quantum',
       title: 'Quantum Collaboration Hub',
-      description: 'Global mind-linking technology for instantaneous knowledge sharing across continents',
+      description:
+        'Global mind-linking technology for instantaneous knowledge sharing across continents',
       icon: Network,
       color: 'bg-violet-500',
       category: 'Breakthrough Innovation',
       value: '$60K-80K',
-      component: QuantumCollaborationHub
+      component: QuantumCollaborationHub,
     },
     {
       id: 'time',
@@ -137,33 +144,30 @@ export default function InnovationsPage() {
       color: 'bg-amber-500',
       category: 'Breakthrough Innovation',
       value: '$100K-150K',
-      component: TimeDimensionLearning
-    }
-  ]
+      component: TimeDimensionLearning,
+    },
+  ];
 
-  const enhancedFeatures = innovations.filter(i => i.category === 'Enhanced Learning')
-  const breakthroughFeatures = innovations.filter(i => i.category === 'Breakthrough Innovation')
+  const enhancedFeatures = innovations.filter((i) => i.category === 'Enhanced Learning');
+  const breakthroughFeatures = innovations.filter((i) => i.category === 'Breakthrough Innovation');
 
   const totalValue = innovations.reduce((sum, innovation) => {
-    const values = innovation.value.replace(/[\$K-]/g, '').split(/\s+/)
-    const avgValue = (parseInt(values[0]) + parseInt(values[1])) / 2
-    return sum + avgValue
-  }, 0)
+    const values = innovation.value.replace(/[\$K-]/g, '').split(/\s+/);
+    const avgValue = (parseInt(values[0]) + parseInt(values[1])) / 2;
+    return sum + avgValue;
+  }, 0);
 
   if (activeInnovation) {
-    const innovation = innovations.find(i => i.id === activeInnovation)
+    const innovation = innovations.find((i) => i.id === activeInnovation);
     if (innovation) {
-      const Component = innovation.component
+      const Component = innovation.component;
       return (
         <div className="min-h-screen">
           <div className="sticky top-0 z-50 bg-white border-b shadow-sm">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex justify-between items-center py-4">
                 <div className="flex items-center space-x-4">
-                  <Button
-                    variant="ghost"
-                    onClick={() => setActiveInnovation(null)}
-                  >
+                  <Button variant="ghost" onClick={() => setActiveInnovation(null)}>
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Back to Innovations
                   </Button>
@@ -172,15 +176,13 @@ export default function InnovationsPage() {
                     <p className="text-sm text-gray-600">{innovation.description}</p>
                   </div>
                 </div>
-                <Badge className={`${innovation.color} text-white`}>
-                  {innovation.category}
-                </Badge>
+                <Badge className={`${innovation.color} text-white`}>{innovation.category}</Badge>
               </div>
             </div>
           </div>
           <Component />
         </div>
-      )
+      );
     }
   }
 
@@ -221,8 +223,12 @@ export default function InnovationsPage() {
 
         <Tabs defaultValue="enhanced" className="space-y-8">
           <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
-            <TabsTrigger value="enhanced">Enhanced Learning ({enhancedFeatures.length})</TabsTrigger>
-            <TabsTrigger value="breakthrough">Breakthrough Tech ({breakthroughFeatures.length})</TabsTrigger>
+            <TabsTrigger value="enhanced">
+              Enhanced Learning ({enhancedFeatures.length})
+            </TabsTrigger>
+            <TabsTrigger value="breakthrough">
+              Breakthrough Tech ({breakthroughFeatures.length})
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="enhanced" className="space-y-6">
@@ -234,10 +240,15 @@ export default function InnovationsPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {enhancedFeatures.map((innovation) => (
-                <Card key={innovation.id} className="hover:shadow-lg transition-shadow cursor-pointer group">
+                <Card
+                  key={innovation.id}
+                  className="hover:shadow-lg transition-shadow cursor-pointer group"
+                >
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <div className={`w-12 h-12 ${innovation.color} rounded-lg flex items-center justify-center text-white group-hover:scale-110 transition-transform`}>
+                      <div
+                        className={`w-12 h-12 ${innovation.color} rounded-lg flex items-center justify-center text-white group-hover:scale-110 transition-transform`}
+                      >
                         <innovation.icon className="w-6 h-6" />
                       </div>
                       <Badge variant="outline">{innovation.value}</Badge>
@@ -246,10 +257,7 @@ export default function InnovationsPage() {
                     <CardDescription>{innovation.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <Button 
-                      className="w-full"
-                      onClick={() => setActiveInnovation(innovation.id)}
-                    >
+                    <Button className="w-full" onClick={() => setActiveInnovation(innovation.id)}>
                       <Eye className="w-4 h-4 mr-2" />
                       Experience Feature
                     </Button>
@@ -268,10 +276,15 @@ export default function InnovationsPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {breakthroughFeatures.map((innovation) => (
-                <Card key={innovation.id} className="hover:shadow-xl transition-all cursor-pointer group border-l-4 border-l-indigo-500">
+                <Card
+                  key={innovation.id}
+                  className="hover:shadow-xl transition-all cursor-pointer group border-l-4 border-l-indigo-500"
+                >
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <div className={`w-14 h-14 ${innovation.color} rounded-xl flex items-center justify-center text-white group-hover:scale-110 transition-transform`}>
+                      <div
+                        className={`w-14 h-14 ${innovation.color} rounded-xl flex items-center justify-center text-white group-hover:scale-110 transition-transform`}
+                      >
                         <innovation.icon className="w-7 h-7" />
                       </div>
                       <div className="text-right">
@@ -279,25 +292,36 @@ export default function InnovationsPage() {
                           <Sparkles className="w-3 h-3 mr-1" />
                           Breakthrough
                         </Badge>
-                        <div className="text-sm font-semibold text-green-600">{innovation.value}</div>
+                        <div className="text-sm font-semibold text-green-600">
+                          {innovation.value}
+                        </div>
                       </div>
                     </div>
                     <CardTitle className="text-xl">{innovation.title}</CardTitle>
-                    <CardDescription className="text-base">{innovation.description}</CardDescription>
+                    <CardDescription className="text-base">
+                      {innovation.description}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
                       <div className="bg-gray-50 p-3 rounded-lg">
-                        <div className="text-sm font-medium text-gray-700 mb-1">Innovation Impact:</div>
+                        <div className="text-sm font-medium text-gray-700 mb-1">
+                          Innovation Impact:
+                        </div>
                         <div className="text-xs text-gray-600">
-                          {innovation.id === 'neural' && 'Direct brain-computer interface for optimized learning'}
-                          {innovation.id === 'emotional' && 'Emotional intelligence AI for personalized support'}
-                          {innovation.id === 'holographic' && '3D spatial computing for immersive education'}
-                          {innovation.id === 'quantum' && 'Global consciousness linking for collaborative learning'}
-                          {innovation.id === 'time' && 'Temporal learning across historical dimensions'}
+                          {innovation.id === 'neural' &&
+                            'Direct brain-computer interface for optimized learning'}
+                          {innovation.id === 'emotional' &&
+                            'Emotional intelligence AI for personalized support'}
+                          {innovation.id === 'holographic' &&
+                            '3D spatial computing for immersive education'}
+                          {innovation.id === 'quantum' &&
+                            'Global consciousness linking for collaborative learning'}
+                          {innovation.id === 'time' &&
+                            'Temporal learning across historical dimensions'}
                         </div>
                       </div>
-                      <Button 
+                      <Button
                         className="w-full bg-indigo-600 hover:bg-indigo-700"
                         onClick={() => setActiveInnovation(innovation.id)}
                       >
@@ -341,5 +365,5 @@ export default function InnovationsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

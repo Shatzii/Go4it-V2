@@ -11,12 +11,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { 
-  Menu, 
-  X, 
-  GraduationCap, 
-  School, 
-  Brain, 
+import {
+  Menu,
+  X,
+  GraduationCap,
+  School,
+  Brain,
   ChevronDown,
   User,
   Settings,
@@ -24,18 +24,43 @@ import {
   Home,
   BookOpen,
   Users,
-  BarChart3
+  BarChart3,
 } from 'lucide-react';
 
 export function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const schoolLinks = [
-    { href: '/schools/primary', title: 'SuperHero School', description: 'K-6 Elementary', badge: 'K-6' },
-    { href: '/schools/secondary', title: 'Stage Prep School', description: '7-12 Academic Excellence', badge: '7-12' },
-    { href: '/schools/law', title: 'Future Legal Professionals', description: 'Law & Justice', badge: 'Law' },
-    { href: '/schools/language', title: 'Global Language Academy', description: 'World Languages', badge: 'Lang' },
-    { href: '/schools/go4it-sports-academy', title: 'Go4it Sports Academy', description: 'Athletic Education', badge: 'Sports' }
+    {
+      href: '/schools/primary',
+      title: 'SuperHero School',
+      description: 'K-6 Elementary',
+      badge: 'K-6',
+    },
+    {
+      href: '/schools/secondary',
+      title: 'Stage Prep School',
+      description: '7-12 Academic Excellence',
+      badge: '7-12',
+    },
+    {
+      href: '/schools/law',
+      title: 'Future Legal Professionals',
+      description: 'Law & Justice',
+      badge: 'Law',
+    },
+    {
+      href: '/schools/language',
+      title: 'Global Language Academy',
+      description: 'World Languages',
+      badge: 'Lang',
+    },
+    {
+      href: '/schools/go4it-sports-academy',
+      title: 'Go4it Sports Academy',
+      description: 'Athletic Education',
+      badge: 'Sports',
+    },
   ];
 
   const aiFeatures = [
@@ -44,14 +69,14 @@ export function Navigation() {
     { href: '/virtual-classroom', title: 'Virtual Classroom', description: 'Interactive learning' },
     { href: '/ai-analytics', title: 'Learning Analytics', description: 'Performance insights' },
     { href: '/ai-content-creator', title: 'Content Creator', description: 'Generate materials' },
-    { href: '/study-buddy', title: 'Study Buddy', description: 'Personalized planning' }
+    { href: '/study-buddy', title: 'Study Buddy', description: 'Personalized planning' },
   ];
 
   const adminLinks = [
     { href: '/admin', title: 'Dashboard', icon: Home },
     { href: '/admin/students', title: 'Students', icon: Users },
     { href: '/admin/courses', title: 'Courses', icon: BookOpen },
-    { href: '/admin/analytics', title: 'Analytics', icon: BarChart3 }
+    { href: '/admin/analytics', title: 'Analytics', icon: BarChart3 },
   ];
 
   return (
@@ -85,12 +110,17 @@ export function Navigation() {
                   <h3 className="font-medium text-sm text-gray-900 mb-2">Choose Your School</h3>
                   {schoolLinks.map((school) => (
                     <DropdownMenuItem key={school.href} asChild>
-                      <Link href={school.href} className="flex items-center justify-between w-full p-2 rounded-md hover:bg-gray-50">
+                      <Link
+                        href={school.href}
+                        className="flex items-center justify-between w-full p-2 rounded-md hover:bg-gray-50"
+                      >
                         <div>
                           <div className="font-medium text-sm">{school.title}</div>
                           <div className="text-xs text-gray-600">{school.description}</div>
                         </div>
-                        <Badge variant="secondary" className="text-xs">{school.badge}</Badge>
+                        <Badge variant="secondary" className="text-xs">
+                          {school.badge}
+                        </Badge>
                       </Link>
                     </DropdownMenuItem>
                   ))}
@@ -113,7 +143,10 @@ export function Navigation() {
                   <div className="grid grid-cols-1 gap-1">
                     {aiFeatures.map((feature) => (
                       <DropdownMenuItem key={feature.href} asChild>
-                        <Link href={feature.href} className="flex flex-col items-start w-full p-2 rounded-md hover:bg-gray-50">
+                        <Link
+                          href={feature.href}
+                          className="flex flex-col items-start w-full p-2 rounded-md hover:bg-gray-50"
+                        >
                           <div className="font-medium text-sm">{feature.title}</div>
                           <div className="text-xs text-gray-600">{feature.description}</div>
                         </Link>
@@ -128,7 +161,7 @@ export function Navigation() {
             <Link href="/dashboard" className="text-gray-700 hover:text-blue-600 font-medium">
               Dashboard
             </Link>
-            
+
             <Link href="/demo" className="text-gray-700 hover:text-blue-600 font-medium">
               Demo
             </Link>
@@ -227,7 +260,9 @@ export function Navigation() {
                         <div className="font-medium text-sm">{school.title}</div>
                         <div className="text-xs text-gray-600">{school.description}</div>
                       </div>
-                      <Badge variant="secondary" className="text-xs">{school.badge}</Badge>
+                      <Badge variant="secondary" className="text-xs">
+                        {school.badge}
+                      </Badge>
                     </div>
                   </Link>
                 ))}
@@ -251,16 +286,32 @@ export function Navigation() {
 
               {/* Other Links */}
               <div className="border-t border-gray-200 pt-4">
-                <Link href="/dashboard" className="block px-3 py-2 text-gray-700 hover:bg-gray-50" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link
+                  href="/dashboard"
+                  className="block px-3 py-2 text-gray-700 hover:bg-gray-50"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   Dashboard
                 </Link>
-                <Link href="/demo" className="block px-3 py-2 text-gray-700 hover:bg-gray-50" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link
+                  href="/demo"
+                  className="block px-3 py-2 text-gray-700 hover:bg-gray-50"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   Demo
                 </Link>
-                <Link href="/admin" className="block px-3 py-2 text-gray-700 hover:bg-gray-50" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link
+                  href="/admin"
+                  className="block px-3 py-2 text-gray-700 hover:bg-gray-50"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   Admin
                 </Link>
-                <Link href="/auth" className="block px-3 py-2 text-gray-700 hover:bg-gray-50" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link
+                  href="/auth"
+                  className="block px-3 py-2 text-gray-700 hover:bg-gray-50"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   Sign In
                 </Link>
               </div>

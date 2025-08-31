@@ -1,64 +1,64 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/ui/switch'
-import { Slider } from '@/components/ui/slider'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Eye, 
-  Ear, 
-  Hand, 
-  Brain, 
-  Monitor, 
-  Type, 
-  Palette, 
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Slider } from '@/components/ui/slider';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Eye,
+  Ear,
+  Hand,
+  Brain,
+  Monitor,
+  Type,
+  Palette,
   Volume2,
   MousePointer,
   Keyboard,
   Zap,
   Settings,
   RotateCcw,
-  Save
-} from 'lucide-react'
+  Save,
+} from 'lucide-react';
 
 interface AccessibilitySettings {
   visual: {
-    fontSize: number
-    contrast: 'normal' | 'high' | 'inverted'
-    dyslexiaFont: boolean
-    reduceMotion: boolean
-    colorBlindness: 'none' | 'protanopia' | 'deuteranopia' | 'tritanopia'
-    focusIndicator: boolean
-    screenReader: boolean
-  }
+    fontSize: number;
+    contrast: 'normal' | 'high' | 'inverted';
+    dyslexiaFont: boolean;
+    reduceMotion: boolean;
+    colorBlindness: 'none' | 'protanopia' | 'deuteranopia' | 'tritanopia';
+    focusIndicator: boolean;
+    screenReader: boolean;
+  };
   auditory: {
-    captionsEnabled: boolean
-    audioDescriptions: boolean
-    soundEffects: boolean
-    voiceSpeed: number
-    voicePitch: number
-    backgroundAudio: boolean
-  }
+    captionsEnabled: boolean;
+    audioDescriptions: boolean;
+    soundEffects: boolean;
+    voiceSpeed: number;
+    voicePitch: number;
+    backgroundAudio: boolean;
+  };
   motor: {
-    keyboardNavigation: boolean
-    stickyKeys: boolean
-    slowKeys: boolean
-    mouseKeys: boolean
-    clickAssist: boolean
-    hoverDelay: number
-  }
+    keyboardNavigation: boolean;
+    stickyKeys: boolean;
+    slowKeys: boolean;
+    mouseKeys: boolean;
+    clickAssist: boolean;
+    hoverDelay: number;
+  };
   cognitive: {
-    simplifiedInterface: boolean
-    focusMode: boolean
-    readingGuide: boolean
-    autoSave: boolean
-    sessionTimeouts: boolean
-    breakReminders: boolean
-    progressIndicators: boolean
-  }
+    simplifiedInterface: boolean;
+    focusMode: boolean;
+    readingGuide: boolean;
+    autoSave: boolean;
+    sessionTimeouts: boolean;
+    breakReminders: boolean;
+    progressIndicators: boolean;
+  };
 }
 
 export default function AccessibilityControls() {
@@ -70,7 +70,7 @@ export default function AccessibilityControls() {
       reduceMotion: false,
       colorBlindness: 'none',
       focusIndicator: true,
-      screenReader: false
+      screenReader: false,
     },
     auditory: {
       captionsEnabled: true,
@@ -78,7 +78,7 @@ export default function AccessibilityControls() {
       soundEffects: true,
       voiceSpeed: 1.0,
       voicePitch: 1.0,
-      backgroundAudio: false
+      backgroundAudio: false,
     },
     motor: {
       keyboardNavigation: true,
@@ -86,7 +86,7 @@ export default function AccessibilityControls() {
       slowKeys: false,
       mouseKeys: false,
       clickAssist: false,
-      hoverDelay: 500
+      hoverDelay: 500,
     },
     cognitive: {
       simplifiedInterface: false,
@@ -95,84 +95,84 @@ export default function AccessibilityControls() {
       autoSave: true,
       sessionTimeouts: false,
       breakReminders: true,
-      progressIndicators: true
-    }
-  })
+      progressIndicators: true,
+    },
+  });
 
-  const [activePreset, setActivePreset] = useState<string>('custom')
-  const [hasChanges, setHasChanges] = useState(false)
-
-  useEffect(() => {
-    loadUserSettings()
-  }, [])
+  const [activePreset, setActivePreset] = useState<string>('custom');
+  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
-    applySettings()
-    setHasChanges(true)
-  }, [settings])
+    loadUserSettings();
+  }, []);
+
+  useEffect(() => {
+    applySettings();
+    setHasChanges(true);
+  }, [settings]);
 
   const loadUserSettings = async () => {
     // In production, load from user preferences API
-    const savedSettings = localStorage.getItem('accessibility_settings')
+    const savedSettings = localStorage.getItem('accessibility_settings');
     if (savedSettings) {
-      setSettings(JSON.parse(savedSettings))
+      setSettings(JSON.parse(savedSettings));
     }
-  }
+  };
 
   const applySettings = () => {
-    const root = document.documentElement
+    const root = document.documentElement;
 
     // Apply visual settings
-    root.style.setProperty('--base-font-size', `${settings.visual.fontSize}px`)
-    
+    root.style.setProperty('--base-font-size', `${settings.visual.fontSize}px`);
+
     if (settings.visual.contrast === 'high') {
-      root.classList.add('high-contrast')
-      root.classList.remove('inverted-contrast')
+      root.classList.add('high-contrast');
+      root.classList.remove('inverted-contrast');
     } else if (settings.visual.contrast === 'inverted') {
-      root.classList.add('inverted-contrast')
-      root.classList.remove('high-contrast')
+      root.classList.add('inverted-contrast');
+      root.classList.remove('high-contrast');
     } else {
-      root.classList.remove('high-contrast', 'inverted-contrast')
+      root.classList.remove('high-contrast', 'inverted-contrast');
     }
 
     if (settings.visual.dyslexiaFont) {
-      root.classList.add('dyslexia-font')
+      root.classList.add('dyslexia-font');
     } else {
-      root.classList.remove('dyslexia-font')
+      root.classList.remove('dyslexia-font');
     }
 
     if (settings.visual.reduceMotion) {
-      root.classList.add('reduce-motion')
+      root.classList.add('reduce-motion');
     } else {
-      root.classList.remove('reduce-motion')
+      root.classList.remove('reduce-motion');
     }
 
     // Apply cognitive settings
     if (settings.cognitive.simplifiedInterface) {
-      root.classList.add('simplified-ui')
+      root.classList.add('simplified-ui');
     } else {
-      root.classList.remove('simplified-ui')
+      root.classList.remove('simplified-ui');
     }
 
     if (settings.cognitive.focusMode) {
-      root.classList.add('focus-mode')
+      root.classList.add('focus-mode');
     } else {
-      root.classList.remove('focus-mode')
+      root.classList.remove('focus-mode');
     }
 
     // Apply motor settings
     if (settings.motor.keyboardNavigation) {
-      root.classList.add('keyboard-nav')
+      root.classList.add('keyboard-nav');
     } else {
-      root.classList.remove('keyboard-nav')
+      root.classList.remove('keyboard-nav');
     }
-  }
+  };
 
   const saveSettings = async () => {
-    localStorage.setItem('accessibility_settings', JSON.stringify(settings))
+    localStorage.setItem('accessibility_settings', JSON.stringify(settings));
     // In production, save to user preferences API
-    setHasChanges(false)
-  }
+    setHasChanges(false);
+  };
 
   const resetToDefaults = () => {
     setSettings({
@@ -183,7 +183,7 @@ export default function AccessibilityControls() {
         reduceMotion: false,
         colorBlindness: 'none',
         focusIndicator: true,
-        screenReader: false
+        screenReader: false,
       },
       auditory: {
         captionsEnabled: true,
@@ -191,7 +191,7 @@ export default function AccessibilityControls() {
         soundEffects: true,
         voiceSpeed: 1.0,
         voicePitch: 1.0,
-        backgroundAudio: false
+        backgroundAudio: false,
       },
       motor: {
         keyboardNavigation: true,
@@ -199,7 +199,7 @@ export default function AccessibilityControls() {
         slowKeys: false,
         mouseKeys: false,
         clickAssist: false,
-        hoverDelay: 500
+        hoverDelay: 500,
       },
       cognitive: {
         simplifiedInterface: false,
@@ -208,104 +208,104 @@ export default function AccessibilityControls() {
         autoSave: true,
         sessionTimeouts: false,
         breakReminders: true,
-        progressIndicators: true
-      }
-    })
-    setActivePreset('default')
-  }
+        progressIndicators: true,
+      },
+    });
+    setActivePreset('default');
+  };
 
   const applyPreset = (preset: string) => {
-    setActivePreset(preset)
-    
+    setActivePreset(preset);
+
     switch (preset) {
       case 'dyslexia':
-        setSettings(prev => ({
+        setSettings((prev) => ({
           ...prev,
           visual: {
             ...prev.visual,
             dyslexiaFont: true,
             fontSize: 18,
             contrast: 'normal',
-            reduceMotion: true
+            reduceMotion: true,
           },
           cognitive: {
             ...prev.cognitive,
             simplifiedInterface: true,
             readingGuide: true,
-            focusMode: true
-          }
-        }))
-        break
-      
+            focusMode: true,
+          },
+        }));
+        break;
+
       case 'adhd':
-        setSettings(prev => ({
+        setSettings((prev) => ({
           ...prev,
           visual: {
             ...prev.visual,
             reduceMotion: true,
-            focusIndicator: true
+            focusIndicator: true,
           },
           cognitive: {
             ...prev.cognitive,
             focusMode: true,
             breakReminders: true,
             progressIndicators: true,
-            simplifiedInterface: true
+            simplifiedInterface: true,
           },
           auditory: {
             ...prev.auditory,
             backgroundAudio: false,
-            soundEffects: false
-          }
-        }))
-        break
-      
+            soundEffects: false,
+          },
+        }));
+        break;
+
       case 'autism':
-        setSettings(prev => ({
+        setSettings((prev) => ({
           ...prev,
           visual: {
             ...prev.visual,
             reduceMotion: true,
-            contrast: 'normal'
+            contrast: 'normal',
           },
           cognitive: {
             ...prev.cognitive,
             simplifiedInterface: true,
             focusMode: true,
-            progressIndicators: true
+            progressIndicators: true,
           },
           auditory: {
             ...prev.auditory,
             soundEffects: false,
-            backgroundAudio: false
+            backgroundAudio: false,
           },
           motor: {
             ...prev.motor,
-            hoverDelay: 1000
-          }
-        }))
-        break
-      
+            hoverDelay: 1000,
+          },
+        }));
+        break;
+
       case 'low_vision':
-        setSettings(prev => ({
+        setSettings((prev) => ({
           ...prev,
           visual: {
             ...prev.visual,
             fontSize: 24,
             contrast: 'high',
             focusIndicator: true,
-            screenReader: true
+            screenReader: true,
           },
           auditory: {
             ...prev.auditory,
             audioDescriptions: true,
-            captionsEnabled: true
-          }
-        }))
-        break
-      
+            captionsEnabled: true,
+          },
+        }));
+        break;
+
       case 'motor_impairment':
-        setSettings(prev => ({
+        setSettings((prev) => ({
           ...prev,
           motor: {
             ...prev.motor,
@@ -313,45 +313,45 @@ export default function AccessibilityControls() {
             stickyKeys: true,
             slowKeys: true,
             clickAssist: true,
-            hoverDelay: 1500
+            hoverDelay: 1500,
           },
           cognitive: {
             ...prev.cognitive,
             autoSave: true,
-            sessionTimeouts: false
-          }
-        }))
-        break
+            sessionTimeouts: false,
+          },
+        }));
+        break;
     }
-  }
+  };
 
   const updateVisualSetting = (key: keyof AccessibilitySettings['visual'], value: any) => {
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
-      visual: { ...prev.visual, [key]: value }
-    }))
-  }
+      visual: { ...prev.visual, [key]: value },
+    }));
+  };
 
   const updateAuditorySetting = (key: keyof AccessibilitySettings['auditory'], value: any) => {
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
-      auditory: { ...prev.auditory, [key]: value }
-    }))
-  }
+      auditory: { ...prev.auditory, [key]: value },
+    }));
+  };
 
   const updateMotorSetting = (key: keyof AccessibilitySettings['motor'], value: any) => {
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
-      motor: { ...prev.motor, [key]: value }
-    }))
-  }
+      motor: { ...prev.motor, [key]: value },
+    }));
+  };
 
   const updateCognitiveSetting = (key: keyof AccessibilitySettings['cognitive'], value: any) => {
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
-      cognitive: { ...prev.cognitive, [key]: value }
-    }))
-  }
+      cognitive: { ...prev.cognitive, [key]: value },
+    }));
+  };
 
   return (
     <div className="space-y-6">
@@ -411,7 +411,7 @@ export default function AccessibilityControls() {
               Motor Support
             </Button>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <Badge variant={hasChanges ? 'destructive' : 'secondary'}>
               {hasChanges ? 'Unsaved Changes' : 'All Changes Saved'}
@@ -461,7 +461,9 @@ export default function AccessibilityControls() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <label className="text-sm font-medium mb-2 block">Font Size: {settings.visual.fontSize}px</label>
+                <label className="text-sm font-medium mb-2 block">
+                  Font Size: {settings.visual.fontSize}px
+                </label>
                 <Slider
                   value={[settings.visual.fontSize]}
                   onValueChange={([value]) => updateVisualSetting('fontSize', value)}
@@ -568,7 +570,9 @@ export default function AccessibilityControls() {
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Voice Speed: {settings.auditory.voiceSpeed}x</label>
+                <label className="text-sm font-medium mb-2 block">
+                  Voice Speed: {settings.auditory.voiceSpeed}x
+                </label>
                 <Slider
                   value={[settings.auditory.voiceSpeed]}
                   onValueChange={([value]) => updateAuditorySetting('voiceSpeed', value)}
@@ -632,7 +636,9 @@ export default function AccessibilityControls() {
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Hover Delay: {settings.motor.hoverDelay}ms</label>
+                <label className="text-sm font-medium mb-2 block">
+                  Hover Delay: {settings.motor.hoverDelay}ms
+                </label>
                 <Slider
                   value={[settings.motor.hoverDelay]}
                   onValueChange={([value]) => updateMotorSetting('hoverDelay', value)}
@@ -659,7 +665,9 @@ export default function AccessibilityControls() {
                 <label className="text-sm font-medium">Simplified Interface</label>
                 <Switch
                   checked={settings.cognitive.simplifiedInterface}
-                  onCheckedChange={(checked) => updateCognitiveSetting('simplifiedInterface', checked)}
+                  onCheckedChange={(checked) =>
+                    updateCognitiveSetting('simplifiedInterface', checked)
+                  }
                 />
               </div>
 
@@ -699,7 +707,9 @@ export default function AccessibilityControls() {
                 <label className="text-sm font-medium">Progress Indicators</label>
                 <Switch
                   checked={settings.cognitive.progressIndicators}
-                  onCheckedChange={(checked) => updateCognitiveSetting('progressIndicators', checked)}
+                  onCheckedChange={(checked) =>
+                    updateCognitiveSetting('progressIndicators', checked)
+                  }
                 />
               </div>
 
@@ -715,5 +725,5 @@ export default function AccessibilityControls() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

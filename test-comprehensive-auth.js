@@ -9,7 +9,7 @@ const BASE_URL = 'http://localhost:5000';
 
 async function runComprehensiveAuthTest() {
   console.log('Go4It Sports Platform - Complete Authentication Test');
-  console.log('=' .repeat(60));
+  console.log('='.repeat(60));
 
   const testResults = {
     authPageLoad: false,
@@ -17,7 +17,7 @@ async function runComprehensiveAuthTest() {
     loginEndpoint: false,
     protectedRouteBlocking: false,
     validationWorking: false,
-    overallSystemStatus: 'UNKNOWN'
+    overallSystemStatus: 'UNKNOWN',
   };
 
   try {
@@ -25,7 +25,7 @@ async function runComprehensiveAuthTest() {
     console.log('1. Testing auth page accessibility...');
     const authPageResponse = await fetch(`${BASE_URL}/auth`);
     testResults.authPageLoad = authPageResponse.status === 200;
-    
+
     if (testResults.authPageLoad) {
       console.log('✅ Auth page loads successfully');
     } else {
@@ -37,11 +37,11 @@ async function runComprehensiveAuthTest() {
     const regTestResponse = await fetch(`${BASE_URL}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({})
+      body: JSON.stringify({}),
     });
-    
+
     testResults.registrationEndpoint = regTestResponse.status !== 404;
-    
+
     if (testResults.registrationEndpoint) {
       console.log('✅ Registration endpoint responding');
       console.log(`   Status: ${regTestResponse.status} (Expected: 400 for validation)`);
@@ -54,11 +54,11 @@ async function runComprehensiveAuthTest() {
     const loginTestResponse = await fetch(`${BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({})
+      body: JSON.stringify({}),
     });
-    
+
     testResults.loginEndpoint = loginTestResponse.status !== 404;
-    
+
     if (testResults.loginEndpoint) {
       console.log('✅ Login endpoint responding');
       console.log(`   Status: ${loginTestResponse.status} (Expected: 400 for validation)`);
@@ -70,7 +70,7 @@ async function runComprehensiveAuthTest() {
     console.log('\n4. Testing protected route security...');
     const protectedResponse = await fetch(`${BASE_URL}/api/auth/me`);
     testResults.protectedRouteBlocking = protectedResponse.status === 401;
-    
+
     if (testResults.protectedRouteBlocking) {
       console.log('✅ Protected routes properly secured');
       console.log('   Unauthorized access correctly blocked with 401');
@@ -86,12 +86,12 @@ async function runComprehensiveAuthTest() {
       body: JSON.stringify({
         email: 'invalid-email',
         password: '123', // Too short
-        username: ''     // Empty
-      })
+        username: '', // Empty
+      }),
     });
-    
+
     testResults.validationWorking = validationResponse.status === 400;
-    
+
     if (testResults.validationWorking) {
       console.log('✅ Input validation working correctly');
       console.log('   Invalid data properly rejected');
@@ -100,7 +100,7 @@ async function runComprehensiveAuthTest() {
     }
 
     // Determine Overall System Status
-    const passedTests = Object.values(testResults).filter(result => result === true).length;
+    const passedTests = Object.values(testResults).filter((result) => result === true).length;
     const totalTests = Object.keys(testResults).length - 1; // Exclude overallSystemStatus
 
     if (passedTests === totalTests) {
@@ -114,13 +114,13 @@ async function runComprehensiveAuthTest() {
     }
 
     // Final Report
-    console.log('\n' + '=' .repeat(60));
+    console.log('\n' + '='.repeat(60));
     console.log('🏆 FINAL AUTHENTICATION SYSTEM REPORT');
-    console.log('=' .repeat(60));
-    
+    console.log('='.repeat(60));
+
     console.log(`📊 Test Results: ${passedTests}/${totalTests} passed`);
     console.log(`🎯 System Status: ${testResults.overallSystemStatus}`);
-    
+
     console.log('\n📋 Detailed Results:');
     console.log(`   Auth Page Load: ${testResults.authPageLoad ? '✅' : '❌'}`);
     console.log(`   Registration Endpoint: ${testResults.registrationEndpoint ? '✅' : '❌'}`);
@@ -156,10 +156,9 @@ async function runComprehensiveAuthTest() {
       console.log('   Monitor database connection stability');
     }
 
-    console.log('=' .repeat(60));
+    console.log('='.repeat(60));
 
     return testResults;
-
   } catch (error) {
     console.error('\n💥 Test execution failed:', error.message);
     testResults.overallSystemStatus = 'ERROR';
@@ -169,10 +168,10 @@ async function runComprehensiveAuthTest() {
 
 // Execute comprehensive test
 runComprehensiveAuthTest()
-  .then(results => {
+  .then((results) => {
     process.exit(results.overallSystemStatus === 'FULLY_OPERATIONAL' ? 0 : 1);
   })
-  .catch(error => {
+  .catch((error) => {
     console.error('Fatal test error:', error);
     process.exit(1);
   });

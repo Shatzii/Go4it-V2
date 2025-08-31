@@ -1,103 +1,109 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  BookOpen, 
-  Users, 
-  Trophy, 
-  Target, 
-  Calendar, 
-  GraduationCap, 
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  BookOpen,
+  Users,
+  Trophy,
+  Target,
+  Calendar,
+  GraduationCap,
   Brain,
   Clock,
   Award,
   CheckCircle,
   Star,
   TrendingUp,
-  School
-} from 'lucide-react'
-import Link from 'next/link'
+  School,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function StagePrep() {
-  const [selectedGrade, setSelectedGrade] = useState('9')
+  const [selectedGrade, setSelectedGrade] = useState('9');
 
   const academicPrograms = [
     {
-      name: "Advanced Placement Program",
-      description: "Rigorous college-level courses for high achievers",
+      name: 'Advanced Placement Program',
+      description: 'Rigorous college-level courses for high achievers',
       icon: <GraduationCap className="w-6 h-6 text-blue-600" />,
-      courses: ["AP Mathematics", "AP Sciences", "AP Literature", "AP History", "AP Languages"]
+      courses: ['AP Mathematics', 'AP Sciences', 'AP Literature', 'AP History', 'AP Languages'],
     },
     {
-      name: "STEM Excellence Track",
-      description: "Science, Technology, Engineering, and Mathematics focus",
+      name: 'STEM Excellence Track',
+      description: 'Science, Technology, Engineering, and Mathematics focus',
       icon: <Brain className="w-6 h-6 text-green-600" />,
-      courses: ["Advanced Chemistry", "Physics", "Computer Science", "Engineering", "Statistics"]
+      courses: ['Advanced Chemistry', 'Physics', 'Computer Science', 'Engineering', 'Statistics'],
     },
     {
-      name: "College Preparatory Program",
-      description: "Comprehensive preparation for higher education",
+      name: 'College Preparatory Program',
+      description: 'Comprehensive preparation for higher education',
       icon: <School className="w-6 h-6 text-purple-600" />,
-      courses: ["Advanced English", "Pre-Calculus", "World History", "Biology", "Foreign Language"]
+      courses: ['Advanced English', 'Pre-Calculus', 'World History', 'Biology', 'Foreign Language'],
     },
     {
-      name: "Leadership Development",
+      name: 'Leadership Development',
       description: "Building tomorrow's leaders through practical experience",
       icon: <Trophy className="w-6 h-6 text-orange-600" />,
-      courses: ["Student Government", "Community Service", "Public Speaking", "Ethics", "Project Management"]
-    }
-  ]
+      courses: [
+        'Student Government',
+        'Community Service',
+        'Public Speaking',
+        'Ethics',
+        'Project Management',
+      ],
+    },
+  ];
 
   const gradePrograms = {
     '7': {
-      title: "Foundation Year",
-      description: "Building strong academic foundations",
-      keySubjects: ["Mathematics", "English Language Arts", "Science", "Social Studies", "Health"],
-      specialPrograms: ["Study Skills", "Time Management", "Academic Writing"]
+      title: 'Foundation Year',
+      description: 'Building strong academic foundations',
+      keySubjects: ['Mathematics', 'English Language Arts', 'Science', 'Social Studies', 'Health'],
+      specialPrograms: ['Study Skills', 'Time Management', 'Academic Writing'],
     },
     '8': {
-      title: "Preparation Year", 
-      description: "Preparing for high school academics",
-      keySubjects: ["Pre-Algebra", "Literature", "Physical Science", "American History", "Arts"],
-      specialPrograms: ["High School Readiness", "Research Skills", "Critical Thinking"]
+      title: 'Preparation Year',
+      description: 'Preparing for high school academics',
+      keySubjects: ['Pre-Algebra', 'Literature', 'Physical Science', 'American History', 'Arts'],
+      specialPrograms: ['High School Readiness', 'Research Skills', 'Critical Thinking'],
     },
     '9': {
-      title: "Freshman Excellence",
-      description: "Strong start to high school academics",
-      keySubjects: ["Algebra I", "English I", "Biology", "World Geography", "Health"],
-      specialPrograms: ["Academic Planning", "College Exploration", "Leadership Skills"]
+      title: 'Freshman Excellence',
+      description: 'Strong start to high school academics',
+      keySubjects: ['Algebra I', 'English I', 'Biology', 'World Geography', 'Health'],
+      specialPrograms: ['Academic Planning', 'College Exploration', 'Leadership Skills'],
     },
     '10': {
-      title: "Sophomore Achievement",
-      description: "Expanding academic horizons",
-      keySubjects: ["Geometry", "English II", "Chemistry", "World History", "Foreign Language"],
-      specialPrograms: ["Career Exploration", "Advanced Study Skills", "Community Service"]
+      title: 'Sophomore Achievement',
+      description: 'Expanding academic horizons',
+      keySubjects: ['Geometry', 'English II', 'Chemistry', 'World History', 'Foreign Language'],
+      specialPrograms: ['Career Exploration', 'Advanced Study Skills', 'Community Service'],
     },
     '11': {
-      title: "Junior Preparation",
-      description: "Intensive college preparation",
-      keySubjects: ["Algebra II", "English III", "Physics", "US History", "Advanced Arts"],
-      specialPrograms: ["College Prep", "SAT/ACT Preparation", "Advanced Placement"]
+      title: 'Junior Preparation',
+      description: 'Intensive college preparation',
+      keySubjects: ['Algebra II', 'English III', 'Physics', 'US History', 'Advanced Arts'],
+      specialPrograms: ['College Prep', 'SAT/ACT Preparation', 'Advanced Placement'],
     },
     '12': {
-      title: "Senior Excellence",
-      description: "Graduation and beyond preparation",
-      keySubjects: ["Pre-Calculus", "English IV", "Advanced Science", "Government", "Economics"],
-      specialPrograms: ["College Applications", "Career Readiness", "Leadership Capstone"]
-    }
-  }
+      title: 'Senior Excellence',
+      description: 'Graduation and beyond preparation',
+      keySubjects: ['Pre-Calculus', 'English IV', 'Advanced Science', 'Government', 'Economics'],
+      specialPrograms: ['College Applications', 'Career Readiness', 'Leadership Capstone'],
+    },
+  };
 
   const achievements = [
-    { title: "Honor Roll", students: "1,200+", icon: <Award className="w-5 h-5" /> },
-    { title: "AP Scholars", students: "450+", icon: <Star className="w-5 h-5" /> },
-    { title: "College Acceptances", students: "98%", icon: <GraduationCap className="w-5 h-5" /> },
-    { title: "Scholarship Recipients", students: "320+", icon: <Trophy className="w-5 h-5" /> }
-  ]
+    { title: 'Honor Roll', students: '1,200+', icon: <Award className="w-5 h-5" /> },
+    { title: 'AP Scholars', students: '450+', icon: <Star className="w-5 h-5" /> },
+    { title: 'College Acceptances', students: '98%', icon: <GraduationCap className="w-5 h-5" /> },
+    { title: 'Scholarship Recipients', students: '320+', icon: <Trophy className="w-5 h-5" /> },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
@@ -105,15 +111,11 @@ export default function StagePrep() {
       <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white">
         <div className="max-w-7xl mx-auto px-4 py-12">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              S.T.A.G.E Prep School
-            </h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">S.T.A.G.E Prep School</h1>
             <p className="text-xl text-purple-100 mb-2">
               Strategic Teaching for Academic Growth & Excellence
             </p>
-            <p className="text-lg text-purple-200">
-              Grades 7-12 • Academic Excellence Program
-            </p>
+            <p className="text-lg text-purple-200">Grades 7-12 • Academic Excellence Program</p>
           </div>
         </div>
       </div>
@@ -127,12 +129,8 @@ export default function StagePrep() {
                 <div className="flex items-center justify-center mb-3 text-purple-600">
                   {achievement.icon}
                 </div>
-                <div className="text-2xl font-bold text-gray-900 mb-1">
-                  {achievement.students}
-                </div>
-                <div className="text-sm text-gray-600">
-                  {achievement.title}
-                </div>
+                <div className="text-2xl font-bold text-gray-900 mb-1">{achievement.students}</div>
+                <div className="text-sm text-gray-600">{achievement.title}</div>
               </CardContent>
             </Card>
           ))}
@@ -183,9 +181,7 @@ export default function StagePrep() {
               <Target className="w-6 h-6 text-purple-600" />
               Grade Level Programs
             </CardTitle>
-            <CardDescription>
-              Tailored academic programs for each grade level
-            </CardDescription>
+            <CardDescription>Tailored academic programs for each grade level</CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs value={selectedGrade} onValueChange={setSelectedGrade}>
@@ -283,5 +279,5 @@ export default function StagePrep() {
         </div>
       </div>
     </div>
-  )
+  );
 }

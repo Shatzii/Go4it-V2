@@ -15,7 +15,7 @@ export const UniversalHeader: React.FC<UniversalHeaderProps> = ({
   schoolType = 'main',
   isAuthenticated = false,
   user,
-  onLogout
+  onLogout,
 }) => {
   const [location] = useLocation();
 
@@ -53,7 +53,7 @@ export const UniversalHeader: React.FC<UniversalHeaderProps> = ({
     const baseItems = [
       { path: '/', label: 'Home' },
       { path: '/curriculum', label: 'Curriculum' },
-      { path: '/progress', label: 'Progress' }
+      { path: '/progress', label: 'Progress' },
     ];
 
     switch (schoolType) {
@@ -61,31 +61,31 @@ export const UniversalHeader: React.FC<UniversalHeaderProps> = ({
         return [
           ...baseItems,
           { path: '/adventures', label: 'Adventures' },
-          { path: '/powers', label: 'My Powers' }
+          { path: '/powers', label: 'My Powers' },
         ];
       case 'secondary':
         return [
           ...baseItems,
           { path: '/projects', label: 'Projects' },
-          { path: '/career', label: 'Career Path' }
+          { path: '/career', label: 'Career Path' },
         ];
       case 'law':
         return [
           ...baseItems,
           { path: '/cases', label: 'Case Studies' },
-          { path: '/courtroom', label: 'Courtroom' }
+          { path: '/courtroom', label: 'Courtroom' },
         ];
       case 'language':
         return [
           ...baseItems,
           { path: '/conversation', label: 'Conversation' },
-          { path: '/culture', label: 'Culture' }
+          { path: '/culture', label: 'Culture' },
         ];
       default:
         return [
           { path: '/', label: 'Home' },
           { path: '/schools', label: 'Schools' },
-          { path: '/about', label: 'About' }
+          { path: '/about', label: 'About' },
         ];
     }
   };
@@ -100,10 +100,15 @@ export const UniversalHeader: React.FC<UniversalHeaderProps> = ({
               <div className="flex items-center cursor-pointer">
                 <div className="w-10 h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
                   <span className="text-xl font-bold">
-                    {schoolType === 'primary' ? '🦸' : 
-                     schoolType === 'secondary' ? '🎓' :
-                     schoolType === 'law' ? '⚖️' :
-                     schoolType === 'language' ? '🌍' : '🏫'}
+                    {schoolType === 'primary'
+                      ? '🦸'
+                      : schoolType === 'secondary'
+                        ? '🎓'
+                        : schoolType === 'law'
+                          ? '⚖️'
+                          : schoolType === 'language'
+                            ? '🌍'
+                            : '🏫'}
                   </span>
                 </div>
                 <span className="ml-3 text-xl font-bold">{getSchoolName()}</span>
@@ -163,7 +168,12 @@ export const UniversalHeader: React.FC<UniversalHeaderProps> = ({
           <div className="md:hidden">
             <button className="text-white p-2">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               </svg>
             </button>
           </div>

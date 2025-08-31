@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getUserFromRequest } from '@/lib/auth'
+import { NextRequest, NextResponse } from 'next/server';
+import { getUserFromRequest } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getUserFromRequest(request)
+    const user = await getUserFromRequest(request);
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Mock integrations data - in production, this would come from database
@@ -23,14 +23,14 @@ export async function GET(request: NextRequest) {
           'Heart rate monitoring',
           'Step counting',
           'Sleep tracking',
-          'Calorie burn estimation'
+          'Calorie burn estimation',
         ],
         data: {
           'Steps Today': '8,432',
           'Heart Rate': '72 bpm',
           'Sleep Score': '84/100',
-          'Calories Burned': '2,140'
-        }
+          'Calories Burned': '2,140',
+        },
       },
       {
         id: '2',
@@ -40,12 +40,7 @@ export async function GET(request: NextRequest) {
         description: 'Comprehensive fitness and health monitoring',
         isConnected: false,
         syncStatus: 'paused',
-        features: [
-          'Workout tracking',
-          'ECG monitoring',
-          'Blood oxygen levels',
-          'Activity rings'
-        ]
+        features: ['Workout tracking', 'ECG monitoring', 'Blood oxygen levels', 'Activity rings'],
       },
       {
         id: '3',
@@ -56,18 +51,13 @@ export async function GET(request: NextRequest) {
         isConnected: true,
         lastSync: new Date('2024-07-15T08:15:00Z'),
         syncStatus: 'active',
-        features: [
-          'GPS tracking',
-          'Performance analysis',
-          'Training logs',
-          'Social features'
-        ],
+        features: ['GPS tracking', 'Performance analysis', 'Training logs', 'Social features'],
         data: {
           'Weekly Distance': '25.3 mi',
           'Avg Pace': '7:42/mi',
           'Elevation Gain': '1,240 ft',
-          'Activities': '4'
-        }
+          Activities: '4',
+        },
       },
       {
         id: '4',
@@ -82,8 +72,8 @@ export async function GET(request: NextRequest) {
           'Grade tracking',
           'Assignment monitoring',
           'Attendance records',
-          'NCAA eligibility tracking'
-        ]
+          'NCAA eligibility tracking',
+        ],
       },
       {
         id: '5',
@@ -97,8 +87,8 @@ export async function GET(request: NextRequest) {
           'Course materials',
           'Assignment submissions',
           'Grade book access',
-          'Calendar integration'
-        ]
+          'Calendar integration',
+        ],
       },
       {
         id: '6',
@@ -113,8 +103,8 @@ export async function GET(request: NextRequest) {
           'Auto-post highlights',
           'Achievement sharing',
           'Recruitment updates',
-          'Team announcements'
-        ]
+          'Team announcements',
+        ],
       },
       {
         id: '7',
@@ -128,14 +118,14 @@ export async function GET(request: NextRequest) {
           'Photo/video sharing',
           'Story highlights',
           'Recruitment posts',
-          'Behind-the-scenes content'
-        ]
-      }
-    ]
+          'Behind-the-scenes content',
+        ],
+      },
+    ];
 
-    return NextResponse.json({ integrations })
+    return NextResponse.json({ integrations });
   } catch (error) {
-    console.error('Failed to fetch integrations:', error)
-    return NextResponse.json({ error: 'Failed to fetch integrations' }, { status: 500 })
+    console.error('Failed to fetch integrations:', error);
+    return NextResponse.json({ error: 'Failed to fetch integrations' }, { status: 500 });
   }
 }

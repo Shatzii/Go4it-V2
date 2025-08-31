@@ -8,12 +8,31 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Heart, Brain, Utensils, Activity, Droplet, Moon, 
-  Target, TrendingUp, AlertTriangle, CheckCircle, 
-  Calendar, Clock, Zap, Shield, Users, BookOpen 
+import {
+  Heart,
+  Brain,
+  Utensils,
+  Activity,
+  Droplet,
+  Moon,
+  Target,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle,
+  Calendar,
+  Clock,
+  Zap,
+  Shield,
+  Users,
+  BookOpen,
 } from 'lucide-react';
 
 interface WellnessMetrics {
@@ -70,121 +89,71 @@ export default function WellnessHub() {
     loadMentalHealthModules();
   }, [selectedSport, selectedPhase]);
 
-  const loadWellnessData = () => {
-    // Mock wellness tracking data
-    const mockData: WellnessMetrics[] = Array.from({ length: 7 }, (_, i) => ({
-      id: `wellness-${i}`,
-      date: new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      sleep: Math.random() * 3 + 7, // 7-10 hours
-      hydration: Math.random() * 40 + 60, // 60-100%
-      stress: Math.random() * 6 + 2, // 2-8 scale
-      energy: Math.random() * 4 + 6, // 6-10 scale
-      mood: Math.random() * 4 + 6, // 6-10 scale
-      recovery: Math.random() * 30 + 70 // 70-100%
-    }));
-    setWellnessData(mockData);
+  const loadWellnessData = async () => {
+    try {
+      const response = await fetch(`/api/wellness/tracking?userId=demo-user&days=7`);
+      const result = await response.json();
+      if (result.success) {
+        const formattedData = result.data.map((item: any) => ({
+          id: item.id,
+          date: new Date(item.date).toISOString().split('T')[0],
+          sleep: item.sleep || 0,
+          hydration: item.hydration || 0,
+          stress: item.stress || 0,
+          energy: item.energy || 0,
+          mood: item.mood || 0,
+          recovery: item.recovery || 0,
+        }));
+        setWellnessData(formattedData);
+      }
+    } catch (error) {
+      console.error('Failed to load wellness data:', error);
+    }
   };
 
-  const loadNutritionPlan = () => {
-    const plans: Record<string, NutritionPlan> = {
-      football: {
-        id: 'football-training',
-        sport: 'Football',
-        phase: selectedPhase as 'training' | 'competition' | 'recovery',
-        calories: selectedPhase === 'competition' ? 3800 : selectedPhase === 'training' ? 3500 : 3200,
-        protein: 180,
-        carbs: 420,
-        fats: 120,
-        meals: [
-          {
-            name: 'Pre-Training Fuel',
-            time: '6:00 AM',
-            calories: 600,
-            description: 'Oatmeal with banana, berries, and protein powder',
-            benefits: 'Sustained energy for morning training'
-          },
-          {
-            name: 'Post-Training Recovery',
-            time: '9:00 AM',
-            calories: 450,
-            description: 'Greek yogurt with granola and chocolate milk',
-            benefits: 'Muscle recovery and glycogen replenishment'
-          },
-          {
-            name: 'Power Lunch',
-            time: '12:30 PM',
-            calories: 800,
-            description: 'Grilled chicken, quinoa, roasted vegetables',
-            benefits: 'Complete protein and complex carbohydrates'
-          },
-          {
-            name: 'Pre-Workout Snack',
-            time: '3:30 PM',
-            calories: 300,
-            description: 'Apple with almond butter and honey',
-            benefits: 'Quick energy for afternoon training'
-          },
-          {
-            name: 'Recovery Dinner',
-            time: '7:00 PM',
-            calories: 900,
-            description: 'Salmon, sweet potato, steamed broccoli',
-            benefits: 'Anti-inflammatory and muscle repair'
-          },
-          {
-            name: 'Evening Restoration',
-            time: '9:30 PM',
-            calories: 250,
-            description: 'Cottage cheese with berries',
-            benefits: 'Overnight muscle recovery'
-          }
-        ]
+  const loadNutritionPlan = async () => {
+    try {
+      const response = await fetch(
+        `/api/wellness/nutrition?userId=demo-user&sport=${selectedSport}&phase=${selectedPhase}`,
+      );
+      const result = await response.json();
+      if (result.success) {
+        const plan = result.nutritionPlan;
+        setNutritionPlan({
+          id: plan.id,
+          sport: plan.sport,
+          phase: plan.phase,
+          calories: plan.calories,
+          protein: plan.protein,
+          carbs: plan.carbs,
+          fats: plan.fats,
+          meals: plan.meals || [],
+        });
       }
-    };
-    
-    setNutritionPlan(plans[selectedSport] || plans.football);
+    } catch (error) {
+      console.error('Failed to load nutrition plan:', error);
+    }
   };
 
-  const loadMentalHealthModules = () => {
-    const modules: MentalHealthModule[] = [
-      {
-        id: 'breathing-1',
-        title: 'Pre-Game Breathing',
-        type: 'breathing',
-        duration: 5,
-        description: '4-7-8 breathing technique for calm focus',
-        benefits: ['Reduces anxiety', 'Improves focus', 'Activates parasympathetic system'],
-        completed: false
-      },
-      {
-        id: 'meditation-1',
-        title: 'Body Scan Meditation',
-        type: 'meditation',
-        duration: 10,
-        description: 'Progressive muscle awareness for recovery',
-        benefits: ['Identifies tension', 'Promotes recovery', 'Increases body awareness'],
-        completed: true
-      },
-      {
-        id: 'visualization-1',
-        title: 'Perfect Performance',
-        type: 'visualization',
-        duration: 15,
-        description: 'Mental rehearsal of optimal athletic performance',
-        benefits: ['Builds confidence', 'Improves technique', 'Reduces performance anxiety'],
-        completed: false
-      },
-      {
-        id: 'focus-1',
-        title: 'Attention Training',
-        type: 'focus',
-        duration: 8,
-        description: 'Concentration exercises for competitive situations',
-        benefits: ['Enhances focus', 'Improves decision making', 'Builds mental resilience'],
-        completed: false
+  const loadMentalHealthModules = async () => {
+    try {
+      const response = await fetch('/api/wellness/mental-health');
+      const result = await response.json();
+      if (result.success) {
+        const modules = result.modules.map((module: any) => ({
+          id: module.id,
+          title: module.title,
+          type: module.type,
+          duration: module.duration,
+          description: module.description,
+          benefits: module.benefits || [],
+          completed: Math.random() > 0.7, // Random completion status for demo
+        }));
+        setMentalModules(modules);
       }
-    ];
-    setMentalModules(modules);
+    } catch (error) {
+      console.error('Failed to load mental health modules:', error);
+    }
   };
 
   const getWellnessAverage = (metric: keyof WellnessMetrics) => {
@@ -200,7 +169,7 @@ export default function WellnessHub() {
       stress: { good: 4, warning: 6 },
       energy: { good: 8, warning: 6 },
       mood: { good: 8, warning: 6 },
-      recovery: { good: 85, warning: 75 }
+      recovery: { good: 85, warning: 75 },
     };
 
     const threshold = thresholds[metric as keyof typeof thresholds];
@@ -215,19 +184,27 @@ export default function WellnessHub() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'good': return 'text-green-400';
-      case 'warning': return 'text-yellow-400';
-      case 'danger': return 'text-red-400';
-      default: return 'text-gray-400';
+      case 'good':
+        return 'text-green-400';
+      case 'warning':
+        return 'text-yellow-400';
+      case 'danger':
+        return 'text-red-400';
+      default:
+        return 'text-gray-400';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'good': return <CheckCircle className="w-4 h-4" />;
-      case 'warning': return <AlertTriangle className="w-4 h-4" />;
-      case 'danger': return <AlertTriangle className="w-4 h-4" />;
-      default: return <Activity className="w-4 h-4" />;
+      case 'good':
+        return <CheckCircle className="w-4 h-4" />;
+      case 'warning':
+        return <AlertTriangle className="w-4 h-4" />;
+      case 'danger':
+        return <AlertTriangle className="w-4 h-4" />;
+      default:
+        return <Activity className="w-4 h-4" />;
     }
   };
 
@@ -311,19 +288,21 @@ export default function WellnessHub() {
                 <CardContent>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-slate-300">Average</span>
-                    <span className={`font-bold ${getStatusColor(getWellnessStatus(getWellnessAverage('sleep'), 'sleep'))}`}>
+                    <span
+                      className={`font-bold ${getStatusColor(getWellnessStatus(getWellnessAverage('sleep'), 'sleep'))}`}
+                    >
                       {getWellnessAverage('sleep').toFixed(1)}h
                     </span>
                   </div>
-                  <Progress 
-                    value={(getWellnessAverage('sleep') / 10) * 100} 
-                    className="mb-2"
-                  />
+                  <Progress value={(getWellnessAverage('sleep') / 10) * 100} className="mb-2" />
                   <div className="flex items-center gap-2 text-sm">
                     {getStatusIcon(getWellnessStatus(getWellnessAverage('sleep'), 'sleep'))}
                     <span className="text-slate-400">
-                      {getWellnessStatus(getWellnessAverage('sleep'), 'sleep') === 'good' ? 'Excellent sleep habits' : 
-                       getWellnessStatus(getWellnessAverage('sleep'), 'sleep') === 'warning' ? 'Consider more sleep' : 'Sleep improvement needed'}
+                      {getWellnessStatus(getWellnessAverage('sleep'), 'sleep') === 'good'
+                        ? 'Excellent sleep habits'
+                        : getWellnessStatus(getWellnessAverage('sleep'), 'sleep') === 'warning'
+                          ? 'Consider more sleep'
+                          : 'Sleep improvement needed'}
                     </span>
                   </div>
                 </CardContent>
@@ -339,14 +318,13 @@ export default function WellnessHub() {
                 <CardContent>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-slate-300">Daily Average</span>
-                    <span className={`font-bold ${getStatusColor(getWellnessStatus(getWellnessAverage('hydration'), 'hydration'))}`}>
+                    <span
+                      className={`font-bold ${getStatusColor(getWellnessStatus(getWellnessAverage('hydration'), 'hydration'))}`}
+                    >
                       {getWellnessAverage('hydration').toFixed(0)}%
                     </span>
                   </div>
-                  <Progress 
-                    value={getWellnessAverage('hydration')} 
-                    className="mb-2"
-                  />
+                  <Progress value={getWellnessAverage('hydration')} className="mb-2" />
                   <div className="flex items-center gap-2 text-sm">
                     {getStatusIcon(getWellnessStatus(getWellnessAverage('hydration'), 'hydration'))}
                     <span className="text-slate-400">Target: 100% daily intake</span>
@@ -364,18 +342,19 @@ export default function WellnessHub() {
                 <CardContent>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-slate-300">Current</span>
-                    <span className={`font-bold ${getStatusColor(getWellnessStatus(getWellnessAverage('energy'), 'energy'))}`}>
+                    <span
+                      className={`font-bold ${getStatusColor(getWellnessStatus(getWellnessAverage('energy'), 'energy'))}`}
+                    >
                       {getWellnessAverage('energy').toFixed(1)}/10
                     </span>
                   </div>
-                  <Progress 
-                    value={(getWellnessAverage('energy') / 10) * 100} 
-                    className="mb-2"
-                  />
+                  <Progress value={(getWellnessAverage('energy') / 10) * 100} className="mb-2" />
                   <div className="flex items-center gap-2 text-sm">
                     {getStatusIcon(getWellnessStatus(getWellnessAverage('energy'), 'energy'))}
                     <span className="text-slate-400">
-                      {getWellnessAverage('energy') >= 8 ? 'Optimal energy levels' : 'Consider recovery strategies'}
+                      {getWellnessAverage('energy') >= 8
+                        ? 'Optimal energy levels'
+                        : 'Consider recovery strategies'}
                     </span>
                   </div>
                 </CardContent>
@@ -384,30 +363,28 @@ export default function WellnessHub() {
 
             {/* Quick Actions */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Button 
+              <Button
                 className="bg-green-600 hover:bg-green-700 h-auto p-4 flex-col gap-2"
                 onClick={() => setActiveTab('nutrition')}
               >
                 <Utensils className="w-6 h-6" />
                 <span>View Meal Plan</span>
               </Button>
-              <Button 
+              <Button
                 className="bg-blue-600 hover:bg-blue-700 h-auto p-4 flex-col gap-2"
                 onClick={() => setActiveTab('mental')}
               >
                 <Brain className="w-6 h-6" />
                 <span>Mental Training</span>
               </Button>
-              <Button 
+              <Button
                 className="bg-purple-600 hover:bg-purple-700 h-auto p-4 flex-col gap-2"
                 onClick={() => setActiveTab('analytics')}
               >
                 <TrendingUp className="w-6 h-6" />
                 <span>View Analytics</span>
               </Button>
-              <Button 
-                className="bg-red-600 hover:bg-red-700 h-auto p-4 flex-col gap-2"
-              >
+              <Button className="bg-red-600 hover:bg-red-700 h-auto p-4 flex-col gap-2">
                 <Shield className="w-6 h-6" />
                 <span>Emergency Support</span>
               </Button>
@@ -422,25 +399,35 @@ export default function WellnessHub() {
                 <Card className="bg-slate-800 border-slate-700">
                   <CardHeader>
                     <CardTitle className="text-white">
-                      {nutritionPlan.sport} - {nutritionPlan.phase.charAt(0).toUpperCase() + nutritionPlan.phase.slice(1)} Phase
+                      {nutritionPlan.sport} -{' '}
+                      {nutritionPlan.phase.charAt(0).toUpperCase() + nutritionPlan.phase.slice(1)}{' '}
+                      Phase
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="text-center bg-slate-700 rounded-lg p-4">
-                        <div className="text-2xl font-bold text-blue-400">{nutritionPlan.calories}</div>
+                        <div className="text-2xl font-bold text-blue-400">
+                          {nutritionPlan.calories}
+                        </div>
                         <div className="text-sm text-slate-400">Daily Calories</div>
                       </div>
                       <div className="text-center bg-slate-700 rounded-lg p-4">
-                        <div className="text-2xl font-bold text-green-400">{nutritionPlan.protein}g</div>
+                        <div className="text-2xl font-bold text-green-400">
+                          {nutritionPlan.protein}g
+                        </div>
                         <div className="text-sm text-slate-400">Protein</div>
                       </div>
                       <div className="text-center bg-slate-700 rounded-lg p-4">
-                        <div className="text-2xl font-bold text-yellow-400">{nutritionPlan.carbs}g</div>
+                        <div className="text-2xl font-bold text-yellow-400">
+                          {nutritionPlan.carbs}g
+                        </div>
                         <div className="text-sm text-slate-400">Carbohydrates</div>
                       </div>
                       <div className="text-center bg-slate-700 rounded-lg p-4">
-                        <div className="text-2xl font-bold text-purple-400">{nutritionPlan.fats}g</div>
+                        <div className="text-2xl font-bold text-purple-400">
+                          {nutritionPlan.fats}g
+                        </div>
                         <div className="text-sm text-slate-400">Healthy Fats</div>
                       </div>
                     </div>
@@ -484,7 +471,8 @@ export default function WellnessHub() {
             <Alert className="bg-slate-800 border-slate-700">
               <Brain className="w-4 h-4" />
               <AlertDescription className="text-slate-300">
-                Mental wellness is crucial for athletic performance. These evidence-based techniques can help manage stress, improve focus, and enhance overall well-being.
+                Mental wellness is crucial for athletic performance. These evidence-based techniques
+                can help manage stress, improve focus, and enhance overall well-being.
               </AlertDescription>
             </Alert>
 
@@ -494,9 +482,9 @@ export default function WellnessHub() {
                   <CardHeader>
                     <CardTitle className="text-white flex items-center justify-between">
                       <span>{module.title}</span>
-                      <Badge 
-                        variant={module.completed ? "default" : "outline"}
-                        className={module.completed ? "bg-green-600" : "text-slate-300"}
+                      <Badge
+                        variant={module.completed ? 'default' : 'outline'}
+                        className={module.completed ? 'bg-green-600' : 'text-slate-300'}
                       >
                         {module.duration} min
                       </Badge>
@@ -505,12 +493,15 @@ export default function WellnessHub() {
                   <CardContent>
                     <div className="space-y-4">
                       <p className="text-slate-300">{module.description}</p>
-                      
+
                       <div className="space-y-2">
                         <div className="text-sm font-medium text-green-400">Benefits:</div>
                         <ul className="space-y-1">
                           {module.benefits.map((benefit, index) => (
-                            <li key={index} className="text-sm text-slate-400 flex items-center gap-2">
+                            <li
+                              key={index}
+                              className="text-sm text-slate-400 flex items-center gap-2"
+                            >
                               <CheckCircle className="w-3 h-3 text-green-400" />
                               {benefit}
                             </li>
@@ -518,15 +509,15 @@ export default function WellnessHub() {
                         </ul>
                       </div>
 
-                      <Button 
+                      <Button
                         className={`w-full ${
-                          module.completed 
-                            ? 'bg-green-600 hover:bg-green-700' 
+                          module.completed
+                            ? 'bg-green-600 hover:bg-green-700'
                             : 'bg-blue-600 hover:bg-blue-700'
                         }`}
                         onClick={() => {
-                          const updatedModules = mentalModules.map(m => 
-                            m.id === module.id ? { ...m, completed: !m.completed } : m
+                          const updatedModules = mentalModules.map((m) =>
+                            m.id === module.id ? { ...m, completed: !m.completed } : m,
                           );
                           setMentalModules(updatedModules);
                         }}
@@ -581,12 +572,18 @@ export default function WellnessHub() {
                     {wellnessData.slice(-7).map((data, index) => (
                       <div key={data.id} className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-slate-300">{new Date(data.date).toLocaleDateString()}</span>
+                          <span className="text-slate-300">
+                            {new Date(data.date).toLocaleDateString()}
+                          </span>
                           <div className="flex gap-4 text-sm">
-                            <span className={getStatusColor(getWellnessStatus(data.sleep, 'sleep'))}>
+                            <span
+                              className={getStatusColor(getWellnessStatus(data.sleep, 'sleep'))}
+                            >
                               Sleep: {data.sleep.toFixed(1)}h
                             </span>
-                            <span className={getStatusColor(getWellnessStatus(data.energy, 'energy'))}>
+                            <span
+                              className={getStatusColor(getWellnessStatus(data.energy, 'energy'))}
+                            >
                               Energy: {data.energy.toFixed(1)}/10
                             </span>
                           </div>
@@ -598,7 +595,9 @@ export default function WellnessHub() {
                           </div>
                           <div className="bg-slate-700 rounded p-2 text-center">
                             <div className="text-xs text-slate-400">Hydration</div>
-                            <div className="text-sm font-semibold">{data.hydration.toFixed(0)}%</div>
+                            <div className="text-sm font-semibold">
+                              {data.hydration.toFixed(0)}%
+                            </div>
                           </div>
                           <div className="bg-slate-700 rounded p-2 text-center">
                             <div className="text-xs text-slate-400">Stress</div>
@@ -621,21 +620,24 @@ export default function WellnessHub() {
                     <Alert className="bg-green-900/20 border-green-700">
                       <TrendingUp className="w-4 h-4" />
                       <AlertDescription className="text-green-400">
-                        Your sleep quality has improved 15% this week! Keep up the consistent bedtime routine.
+                        Your sleep quality has improved 15% this week! Keep up the consistent
+                        bedtime routine.
                       </AlertDescription>
                     </Alert>
 
                     <Alert className="bg-yellow-900/20 border-yellow-700">
                       <AlertTriangle className="w-4 h-4" />
                       <AlertDescription className="text-yellow-400">
-                        Hydration levels below optimal. Consider increasing water intake during training days.
+                        Hydration levels below optimal. Consider increasing water intake during
+                        training days.
                       </AlertDescription>
                     </Alert>
 
                     <Alert className="bg-blue-900/20 border-blue-700">
                       <Target className="w-4 h-4" />
                       <AlertDescription className="text-blue-400">
-                        Your mental health sessions correlate with improved energy levels. Continue regular practice.
+                        Your mental health sessions correlate with improved energy levels. Continue
+                        regular practice.
                       </AlertDescription>
                     </Alert>
 

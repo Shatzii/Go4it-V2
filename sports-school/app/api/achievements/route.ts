@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId') || 'demo_student'
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId') || 'demo_student';
 
     // Mock achievements data for demo
     const mockAchievements = [
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
         earnedAt: '2025-01-20T10:00:00Z',
         progress: 100,
         requirements: 'Complete 10 math lessons in a row',
-        unlocked: true
+        unlocked: true,
       },
       {
         id: 'reading_champion',
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
         earnedAt: '2025-01-18T14:30:00Z',
         progress: 100,
         requirements: 'Read 5 complete books',
-        unlocked: true
+        unlocked: true,
       },
       {
         id: 'focus_master',
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
         earnedAt: '2025-01-19T16:15:00Z',
         progress: 100,
         requirements: 'Sustain focus for 45+ minutes',
-        unlocked: true
+        unlocked: true,
       },
       {
         id: 'streak_warrior',
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
         earnedAt: '2025-01-20T09:00:00Z',
         progress: 100,
         requirements: 'Maintain 10+ day learning streak',
-        unlocked: true
+        unlocked: true,
       },
       {
         id: 'science_explorer',
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
         earnedAt: null,
         progress: 73,
         requirements: 'Complete 15 hands-on experiments',
-        unlocked: false
+        unlocked: false,
       },
       {
         id: 'super_helper',
@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
         earnedAt: null,
         progress: 60,
         requirements: 'Assist 10 different classmates',
-        unlocked: false
+        unlocked: false,
       },
       {
         id: 'creativity_king',
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
         earnedAt: null,
         progress: 40,
         requirements: 'Submit 5 original creative works',
-        unlocked: false
+        unlocked: false,
       },
       {
         id: 'brain_champion',
@@ -109,13 +109,13 @@ export async function GET(request: NextRequest) {
         earnedAt: null,
         progress: 86,
         requirements: 'Maintain optimal brainwave patterns',
-        unlocked: false
-      }
-    ]
+        unlocked: false,
+      },
+    ];
 
     // Separate earned and unearned achievements
-    const earnedAchievements = mockAchievements.filter(a => a.unlocked)
-    const availableAchievements = mockAchievements.filter(a => !a.unlocked)
+    const earnedAchievements = mockAchievements.filter((a) => a.unlocked);
+    const availableAchievements = mockAchievements.filter((a) => !a.unlocked);
 
     const response = {
       userId,
@@ -127,21 +127,19 @@ export async function GET(request: NextRequest) {
         .sort((a, b) => new Date(b.earnedAt!).getTime() - new Date(a.earnedAt!).getTime())
         .slice(0, 3),
       achievementsByCategory: {
-        academic: mockAchievements.filter(a => a.category === 'academic'),
-        social: mockAchievements.filter(a => a.category === 'social'),
-        creative: mockAchievements.filter(a => a.category === 'creative'),
-        neurodivergent: mockAchievements.filter(a => a.category === 'neurodivergent'),
-        consistency: mockAchievements.filter(a => a.category === 'consistency'),
-        literacy: mockAchievements.filter(a => a.category === 'literacy')
+        academic: mockAchievements.filter((a) => a.category === 'academic'),
+        social: mockAchievements.filter((a) => a.category === 'social'),
+        creative: mockAchievements.filter((a) => a.category === 'creative'),
+        neurodivergent: mockAchievements.filter((a) => a.category === 'neurodivergent'),
+        consistency: mockAchievements.filter((a) => a.category === 'consistency'),
+        literacy: mockAchievements.filter((a) => a.category === 'literacy'),
       },
-      nextMilestones: availableAchievements
-        .sort((a, b) => b.progress - a.progress)
-        .slice(0, 3)
-    }
+      nextMilestones: availableAchievements.sort((a, b) => b.progress - a.progress).slice(0, 3),
+    };
 
-    return NextResponse.json(response)
+    return NextResponse.json(response);
   } catch (error) {
-    console.error('Error fetching achievements:', error)
-    return NextResponse.json({ error: 'Failed to fetch achievements' }, { status: 500 })
+    console.error('Error fetching achievements:', error);
+    return NextResponse.json({ error: 'Failed to fetch achievements' }, { status: 500 });
   }
 }

@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import { useState, useEffect, ReactNode } from 'react'
+import { useState, useEffect, ReactNode } from 'react';
 
 // Universal hydration fix for Universal One School 3.0
 export function HydrationFix({ children }: { children: ReactNode }) {
-  const [hasMounted, setHasMounted] = useState(false)
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
-    setHasMounted(true)
-  }, [])
+    setHasMounted(true);
+  }, []);
 
   if (!hasMounted) {
     return (
@@ -19,72 +19,68 @@ export function HydrationFix({ children }: { children: ReactNode }) {
           <div className="text-gray-400 text-sm">Loading Advanced AI Learning Platform...</div>
         </div>
       </div>
-    )
+    );
   }
 
-  return <>{children}</>
+  return <>{children}</>;
 }
 
 // Client-only wrapper for components that require browser APIs
 export function ClientOnly({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
-  const [hasMounted, setHasMounted] = useState(false)
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
-    setHasMounted(true)
-  }, [])
+    setHasMounted(true);
+  }, []);
 
   if (!hasMounted) {
-    return fallback ? <>{fallback}</> : null
+    return fallback ? <>{fallback}</> : null;
   }
 
-  return <>{children}</>
+  return <>{children}</>;
 }
 
 // Safe localStorage hook that prevents hydration mismatches
 export function useClientStorage(key: string, defaultValue: any) {
-  const [value, setValue] = useState(defaultValue)
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [value, setValue] = useState(defaultValue);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     try {
-      const item = localStorage.getItem(key)
+      const item = localStorage.getItem(key);
       if (item) {
-        setValue(JSON.parse(item))
+        setValue(JSON.parse(item));
       }
     } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error)
+      console.warn(`Error reading localStorage key "${key}":`, error);
     }
-    setIsLoaded(true)
-  }, [key])
+    setIsLoaded(true);
+  }, [key]);
 
   const setStoredValue = (newValue: any) => {
-    setValue(newValue)
+    setValue(newValue);
     try {
-      localStorage.setItem(key, JSON.stringify(newValue))
+      localStorage.setItem(key, JSON.stringify(newValue));
     } catch (error) {
-      console.warn(`Error setting localStorage key "${key}":`, error)
+      console.warn(`Error setting localStorage key "${key}":`, error);
     }
-  }
+  };
 
-  return [value, setStoredValue, isLoaded] as const
+  return [value, setStoredValue, isLoaded] as const;
 }
 
 // Theme-aware component wrapper
 export function ThemeAwareComponent({ children }: { children: ReactNode }) {
-  const [mounted, setMounted] = useState(false)
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   if (!mounted) {
     // Return a theme-neutral loading state
-    return (
-      <div className="bg-gray-900 text-gray-100 min-h-screen">
-        {children}
-      </div>
-    )
+    return <div className="bg-gray-900 text-gray-100 min-h-screen">{children}</div>;
   }
 
-  return <>{children}</>
+  return <>{children}</>;
 }

@@ -1,6 +1,6 @@
 /**
  * UAE Law School Professor AI Service
- * 
+ *
  * This service provides specialized AI professor functionality for the UAE Law School,
  * focusing on UAE-specific legal curriculum, bar exam preparation, and legal case studies.
  */
@@ -53,25 +53,25 @@ export interface LegalResourceRequest {
 export class UAELawProfessor {
   private model: AIModel;
   private aiService: AIService;
-  
+
   constructor(model?: AIModel) {
     // Default to latest Claude model for legal analysis
     this.model = model || { provider: 'anthropic', model: 'claude-3-7-sonnet-20250219' };
     this.aiService = new AIService();
   }
-  
+
   /**
    * Answers a legal question with UAE-specific context
    */
   async answerLegalQuestion(question: LegalQuestion): Promise<LegalQuestionResponse> {
     try {
       const difficultyText = {
-        'basic': 'first-year law student',
-        'intermediate': 'second or third-year law student',
-        'advanced': 'final-year law student or recent graduate',
-        'bar-exam': 'UAE Bar Exam candidate'
+        basic: 'first-year law student',
+        intermediate: 'second or third-year law student',
+        advanced: 'final-year law student or recent graduate',
+        'bar-exam': 'UAE Bar Exam candidate',
       }[question.difficulty];
-      
+
       const prompt = `As a UAE Law Professor, answer the following legal question about ${question.topic}${question.subtopic ? ` (specifically ${question.subtopic})` : ''}.
       
 Question: ${question.question}
@@ -93,38 +93,39 @@ Format your response as JSON with the following structure:
 }`;
 
       const response = await this.aiService.getCompletion(prompt, this.model);
-      
+
       // Parse the JSON response
       try {
         const jsonMatch = response.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {
-          throw new Error("Failed to extract JSON from response");
+          throw new Error('Failed to extract JSON from response');
         }
-        
+
         const parsedResponse = JSON.parse(jsonMatch[0]);
         return {
           id: question.id,
           question: question.question,
-          ...parsedResponse
+          ...parsedResponse,
         };
       } catch (jsonError) {
         // If JSON parsing fails, format response manually
-        console.error("Failed to parse JSON response:", jsonError);
+        console.error('Failed to parse JSON response:', jsonError);
         return {
           id: question.id,
           question: question.question,
-          answer: response.split('\n\n')[0] || "Unable to generate a structured answer",
-          explanation: response.split('\n\n').slice(1).join('\n\n') || "No detailed explanation available",
+          answer: response.split('\n\n')[0] || 'Unable to generate a structured answer',
+          explanation:
+            response.split('\n\n').slice(1).join('\n\n') || 'No detailed explanation available',
           references: [],
-          relatedConcepts: []
+          relatedConcepts: [],
         };
       }
     } catch (error) {
-      console.error("Error in answerLegalQuestion:", error);
-      throw new Error("Failed to answer legal question");
+      console.error('Error in answerLegalQuestion:', error);
+      throw new Error('Failed to answer legal question');
     }
   }
-  
+
   /**
    * Analyzes a legal case study with UAE legal context
    */
@@ -137,10 +138,10 @@ Title: ${caseStudy.title}
 Facts: ${caseStudy.facts}
 
 Legal Issues: 
-${caseStudy.legalIssues.map(issue => `- ${issue}`).join('\n')}
+${caseStudy.legalIssues.map((issue) => `- ${issue}`).join('\n')}
 
 Relevant Laws: 
-${caseStudy.relevantLaws.map(law => `- ${law}`).join('\n')}
+${caseStudy.relevantLaws.map((law) => `- ${law}`).join('\n')}
 
 Provide a comprehensive analysis that includes:
 1. A concise summary of the case
@@ -159,64 +160,71 @@ Format your response as JSON with the following structure:
 }`;
 
       const response = await this.aiService.getCompletion(prompt, this.model);
-      
+
       // Parse the JSON response
       try {
         const jsonMatch = response.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {
-          throw new Error("Failed to extract JSON from response");
+          throw new Error('Failed to extract JSON from response');
         }
-        
+
         const parsedResponse = JSON.parse(jsonMatch[0]);
         return {
           id: caseStudy.id,
           title: caseStudy.title,
-          ...parsedResponse
+          ...parsedResponse,
         };
       } catch (jsonError) {
         // If JSON parsing fails, format response manually
-        console.error("Failed to parse JSON response:", jsonError);
-        
+        console.error('Failed to parse JSON response:', jsonError);
+
         // Extract sections using regex
         const summaryMatch = response.match(/summary:?\s*(.*?)(?=\n\n|$)/is);
         const analysisMatch = response.match(/analysis:?\s*([\s\S]*?)(?=\n\n[A-Z]|$)/i);
         const conclusionMatch = response.match(/conclusion:?\s*([\s\S]*?)(?=\n\n[A-Z]|$)/i);
-        
+
         return {
           id: caseStudy.id,
           title: caseStudy.title,
-          summary: summaryMatch ? summaryMatch[1].trim() : "Unable to generate a summary",
-          analysis: analysisMatch ? analysisMatch[1].trim() : "Unable to generate analysis",
-          keyPrinciples: extractListItems(response, /key (?:legal )?principles:?\s*([\s\S]*?)(?=\n\n[A-Z]|$)/i),
-          conclusion: conclusionMatch ? conclusionMatch[1].trim() : "Unable to generate conclusion",
-          relevantCases: extractListItems(response, /relevant cases:?\s*([\s\S]*?)(?=\n\n[A-Z]|$)/i)
+          summary: summaryMatch ? summaryMatch[1].trim() : 'Unable to generate a summary',
+          analysis: analysisMatch ? analysisMatch[1].trim() : 'Unable to generate analysis',
+          keyPrinciples: extractListItems(
+            response,
+            /key (?:legal )?principles:?\s*([\s\S]*?)(?=\n\n[A-Z]|$)/i,
+          ),
+          conclusion: conclusionMatch ? conclusionMatch[1].trim() : 'Unable to generate conclusion',
+          relevantCases: extractListItems(
+            response,
+            /relevant cases:?\s*([\s\S]*?)(?=\n\n[A-Z]|$)/i,
+          ),
         };
       }
     } catch (error) {
-      console.error("Error in analyzeCaseStudy:", error);
-      throw new Error("Failed to analyze case study");
+      console.error('Error in analyzeCaseStudy:', error);
+      throw new Error('Failed to analyze case study');
     }
   }
-  
+
   /**
    * Generates UAE law school educational resources
    */
   async generateLegalResource(request: LegalResourceRequest): Promise<string> {
     try {
       const resourceTypeInstructions = {
-        'summary': "a comprehensive summary covering the key aspects, principles, and applications",
-        'outline': "a structured outline with main headings, subheadings, and key points organized hierarchically",
-        'practice-questions': "a set of 5-7 practice questions with detailed answer explanations",
-        'flashcards': "15-20 flashcard pairs with terms/concepts and their definitions/explanations"
+        summary: 'a comprehensive summary covering the key aspects, principles, and applications',
+        outline:
+          'a structured outline with main headings, subheadings, and key points organized hierarchically',
+        'practice-questions': 'a set of 5-7 practice questions with detailed answer explanations',
+        flashcards: '15-20 flashcard pairs with terms/concepts and their definitions/explanations',
       }[request.resourceType];
-      
+
       const difficultyText = {
-        'basic': 'first-year law students with basic understanding',
-        'intermediate': 'second or third-year law students with intermediate knowledge',
-        'advanced': 'final-year law students or new graduates with advanced understanding',
-        'bar-exam': 'students preparing for the UAE Bar Exam'
+        basic: 'first-year law students with basic understanding',
+        intermediate: 'second or third-year law students with intermediate knowledge',
+        advanced: 'final-year law students or new graduates with advanced understanding',
+        'bar-exam': 'students preparing for the UAE Bar Exam',
       }[request.difficultyLevel];
-      
+
       const prompt = `As a UAE Law Professor, create ${resourceTypeInstructions} on the topic of ${request.topic}${request.subtopic ? ` (specifically ${request.subtopic})` : ''}.
 
 The resource should be tailored for ${difficultyText} and must incorporate UAE-specific legal context, including:
@@ -229,11 +237,11 @@ The resource should be comprehensive, accurate, and pedagogically effective for 
 
       return await this.aiService.getCompletion(prompt, this.model);
     } catch (error) {
-      console.error("Error in generateLegalResource:", error);
-      throw new Error("Failed to generate legal resource");
+      console.error('Error in generateLegalResource:', error);
+      throw new Error('Failed to generate legal resource');
     }
   }
-  
+
   /**
    * Generates bar exam practice questions for UAE law students
    */
@@ -241,7 +249,7 @@ The resource should be comprehensive, accurate, and pedagogically effective for 
     try {
       // Limit count to a reasonable range
       count = Math.min(Math.max(count, 1), 10);
-      
+
       const prompt = `As a UAE Bar Exam expert, generate ${count} challenging bar exam practice questions on the topic of ${topic}.
 
 Each question should:
@@ -270,58 +278,64 @@ Format your response as JSON with the following structure:
 }`;
 
       const response = await this.aiService.getCompletion(prompt, this.model);
-      
+
       // Parse the JSON response
       try {
         const jsonMatch = response.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {
-          throw new Error("Failed to extract JSON from response");
+          throw new Error('Failed to extract JSON from response');
         }
-        
+
         const parsedResponse = JSON.parse(jsonMatch[0]);
         return parsedResponse.questions || [];
       } catch (jsonError) {
         // If JSON parsing fails, extract questions using regex
-        console.error("Failed to parse JSON response:", jsonError);
-        
-        const questionRegex = /Q(?:uestion)?\s*(\d+)[:\)]\s*([\s\S]*?)(?=Q(?:uestion)?\s*\d+[:\)]|$)/gi;
+        console.error('Failed to parse JSON response:', jsonError);
+
+        const questionRegex =
+          /Q(?:uestion)?\s*(\d+)[:\)]\s*([\s\S]*?)(?=Q(?:uestion)?\s*\d+[:\)]|$)/gi;
         const questions: LegalQuestion[] = [];
-        
+
         let match;
         while ((match = questionRegex.exec(response)) !== null) {
           questions.push({
             id: `q${match[1]}`,
             question: match[2].trim(),
             topic: topic,
-            difficulty: 'bar-exam'
+            difficulty: 'bar-exam',
           });
         }
-        
+
         // If we still couldn't extract questions, create a fallback
         if (questions.length === 0) {
-          const paragraphs = response.split('\n\n').filter(p => p.length > 50);
+          const paragraphs = response.split('\n\n').filter((p) => p.length > 50);
           for (let i = 0; i < Math.min(paragraphs.length, count); i++) {
             questions.push({
-              id: `q${i+1}`,
+              id: `q${i + 1}`,
               question: paragraphs[i].trim(),
               topic: topic,
-              difficulty: 'bar-exam'
+              difficulty: 'bar-exam',
             });
           }
         }
-        
+
         return questions.slice(0, count);
       }
     } catch (error) {
-      console.error("Error in generateBarExamQuestions:", error);
-      throw new Error("Failed to generate bar exam questions");
+      console.error('Error in generateBarExamQuestions:', error);
+      throw new Error('Failed to generate bar exam questions');
     }
   }
-  
+
   /**
    * Gets feedback on a student's answer to a legal question
    */
-  async getAnswerFeedback(question: string, studentAnswer: string, topic: string, difficulty: 'basic' | 'intermediate' | 'advanced' | 'bar-exam'): Promise<{
+  async getAnswerFeedback(
+    question: string,
+    studentAnswer: string,
+    topic: string,
+    difficulty: 'basic' | 'intermediate' | 'advanced' | 'bar-exam',
+  ): Promise<{
     isCorrect: boolean;
     feedback: string;
     correctAnswer: string;
@@ -330,12 +344,12 @@ Format your response as JSON with the following structure:
   }> {
     try {
       const difficultyText = {
-        'basic': 'first-year law student',
-        'intermediate': 'second or third-year law student',
-        'advanced': 'final-year law student',
-        'bar-exam': 'UAE Bar Exam candidate'
+        basic: 'first-year law student',
+        intermediate: 'second or third-year law student',
+        advanced: 'final-year law student',
+        'bar-exam': 'UAE Bar Exam candidate',
       }[difficulty];
-      
+
       const prompt = `As a UAE Law Professor, evaluate the following student's answer to a legal question. 
 
 Topic: ${topic}
@@ -359,29 +373,29 @@ Format your response as JSON with the following structure:
 }`;
 
       const response = await this.aiService.getCompletion(prompt, this.model);
-      
+
       // Parse the JSON response
       try {
         const jsonMatch = response.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {
-          throw new Error("Failed to extract JSON from response");
+          throw new Error('Failed to extract JSON from response');
         }
-        
+
         return JSON.parse(jsonMatch[0]);
       } catch (jsonError) {
         // If JSON parsing fails, return a default response
-        console.error("Failed to parse JSON response:", jsonError);
+        console.error('Failed to parse JSON response:', jsonError);
         return {
-          isCorrect: response.toLowerCase().includes("correct"),
+          isCorrect: response.toLowerCase().includes('correct'),
           feedback: response,
-          correctAnswer: "",
+          correctAnswer: '',
           score: 0,
-          improvementAreas: []
+          improvementAreas: [],
         };
       }
     } catch (error) {
-      console.error("Error in getAnswerFeedback:", error);
-      throw new Error("Failed to provide feedback on answer");
+      console.error('Error in getAnswerFeedback:', error);
+      throw new Error('Failed to provide feedback on answer');
     }
   }
 }
@@ -390,22 +404,25 @@ Format your response as JSON with the following structure:
 function extractListItems(text: string, sectionRegex: RegExp): string[] {
   const sectionMatch = text.match(sectionRegex);
   if (!sectionMatch) return [];
-  
+
   const sectionText = sectionMatch[1];
   const items: string[] = [];
-  
+
   // Try to extract items formatted with bullet points or numbers
   const listItemRegex = /(?:^|\n)(?:[-*•]|\d+\.)\s*(.+)/g;
   let match;
   while ((match = listItemRegex.exec(sectionText)) !== null) {
     items.push(match[1].trim());
   }
-  
+
   // If no items found with bullet points or numbers, split by newlines
   if (items.length === 0) {
-    const lines = sectionText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    const lines = sectionText
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
     return lines;
   }
-  
+
   return items;
 }

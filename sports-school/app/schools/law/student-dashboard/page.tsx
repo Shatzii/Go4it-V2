@@ -7,11 +7,25 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Scale, Gavel, BookOpen, FileText, Users,
-  Clock, Trophy, Target, TrendingUp, Brain,
-  Search, BarChart3, Award, Calendar,
-  Briefcase, Library, Pen, CheckCircle
+import {
+  Scale,
+  Gavel,
+  BookOpen,
+  FileText,
+  Users,
+  Clock,
+  Trophy,
+  Target,
+  TrendingUp,
+  Brain,
+  Search,
+  BarChart3,
+  Award,
+  Calendar,
+  Briefcase,
+  Library,
+  Pen,
+  CheckCircle,
 } from 'lucide-react';
 
 // Law School Student Data
@@ -25,33 +39,84 @@ const lawStudentData = {
   classRank: '25th percentile',
   barPrepProgress: 15,
   courses: [
-    { name: 'Constitutional Law II', professor: 'Prof. Barrett', grade: 'A-', credits: 3, progress: 78 },
-    { name: 'Criminal Procedure', professor: 'Prof. Martinez', grade: 'B+', credits: 4, progress: 85 },
+    {
+      name: 'Constitutional Law II',
+      professor: 'Prof. Barrett',
+      grade: 'A-',
+      credits: 3,
+      progress: 78,
+    },
+    {
+      name: 'Criminal Procedure',
+      professor: 'Prof. Martinez',
+      grade: 'B+',
+      credits: 4,
+      progress: 85,
+    },
     { name: 'Evidence Law', professor: 'Prof. Chen', grade: 'A', credits: 3, progress: 92 },
     { name: 'Legal Writing II', professor: 'Prof. Williams', grade: 'B', credits: 2, progress: 70 },
-    { name: 'Contract Law Advanced', professor: 'Prof. Johnson', grade: 'A-', credits: 3, progress: 88 }
+    {
+      name: 'Contract Law Advanced',
+      professor: 'Prof. Johnson',
+      grade: 'A-',
+      credits: 3,
+      progress: 88,
+    },
   ],
   recentCases: [
-    { name: 'Miranda v. Arizona', subject: 'Criminal Procedure', briefed: true, score: 94, date: '2 days ago' },
-    { name: 'Brown v. Board of Education', subject: 'Constitutional Law', briefed: true, score: 89, date: '1 week ago' },
-    { name: 'Daubert v. Merrell Dow', subject: 'Evidence Law', briefed: false, score: null, date: 'Due tomorrow' }
+    {
+      name: 'Miranda v. Arizona',
+      subject: 'Criminal Procedure',
+      briefed: true,
+      score: 94,
+      date: '2 days ago',
+    },
+    {
+      name: 'Brown v. Board of Education',
+      subject: 'Constitutional Law',
+      briefed: true,
+      score: 89,
+      date: '1 week ago',
+    },
+    {
+      name: 'Daubert v. Merrell Dow',
+      subject: 'Evidence Law',
+      briefed: false,
+      score: null,
+      date: 'Due tomorrow',
+    },
   ],
   upcomingDeadlines: [
-    { type: 'Case Brief', title: 'Daubert v. Merrell Dow', course: 'Evidence Law', due: 'Tomorrow 11:59 PM' },
-    { type: 'Memo', title: 'Fourth Amendment Analysis', course: 'Criminal Procedure', due: 'Friday 5:00 PM' },
-    { type: 'Exam', title: 'Constitutional Law Midterm', course: 'Constitutional Law II', due: 'Next Monday' }
+    {
+      type: 'Case Brief',
+      title: 'Daubert v. Merrell Dow',
+      course: 'Evidence Law',
+      due: 'Tomorrow 11:59 PM',
+    },
+    {
+      type: 'Memo',
+      title: 'Fourth Amendment Analysis',
+      course: 'Criminal Procedure',
+      due: 'Friday 5:00 PM',
+    },
+    {
+      type: 'Exam',
+      title: 'Constitutional Law Midterm',
+      course: 'Constitutional Law II',
+      due: 'Next Monday',
+    },
   ],
   clinics: [
     { name: 'Criminal Defense Clinic', role: 'Student Attorney', hours: 45, cases: 3 },
-    { name: 'Immigration Law Clinic', role: 'Research Assistant', hours: 20, cases: 1 }
+    { name: 'Immigration Law Clinic', role: 'Research Assistant', hours: 20, cases: 1 },
   ],
   barPrep: {
     mbeScore: 145,
     targetScore: 175,
     studyHours: 45,
     completedTopics: 12,
-    totalTopics: 30
-  }
+    totalTopics: 30,
+  },
 };
 
 // Law School Dashboard Header
@@ -67,16 +132,16 @@ function LawSchoolDashboardHeader() {
           </Avatar>
           <div>
             <h2 className="text-2xl font-bold text-white">{lawStudentData.name}</h2>
-            <p className="text-amber-200">{lawStudentData.year} • {lawStudentData.school}</p>
+            <p className="text-amber-200">
+              {lawStudentData.year} • {lawStudentData.school}
+            </p>
             <p className="text-orange-200 font-semibold">{lawStudentData.concentration}</p>
             <div className="flex items-center gap-3 mt-2">
               <Badge className="bg-white/20 text-white">
                 <Scale className="w-3 h-3 mr-1" />
                 GPA: {lawStudentData.currentGPA}
               </Badge>
-              <Badge className="bg-white/20 text-white">
-                Rank: {lawStudentData.classRank}
-              </Badge>
+              <Badge className="bg-white/20 text-white">Rank: {lawStudentData.classRank}</Badge>
             </div>
           </div>
         </div>
@@ -104,7 +169,10 @@ function CurrentCourses() {
       <CardContent>
         <div className="space-y-4">
           {lawStudentData.courses.map((course, i) => (
-            <div key={i} className="flex items-center gap-4 p-4 bg-black/30 rounded-lg border border-blue-400/30">
+            <div
+              key={i}
+              className="flex items-center gap-4 p-4 bg-black/30 rounded-lg border border-blue-400/30"
+            >
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center">
                 <Scale className="w-6 h-6 text-white" />
               </div>
@@ -116,11 +184,15 @@ function CurrentCourses() {
                     <p className="text-sm text-gray-400">{course.professor}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge className={`${
-                      course.grade.includes('A') ? 'bg-green-500' :
-                      course.grade.includes('B') ? 'bg-blue-500' :
-                      'bg-yellow-500'
-                    }`}>
+                    <Badge
+                      className={`${
+                        course.grade.includes('A')
+                          ? 'bg-green-500'
+                          : course.grade.includes('B')
+                            ? 'bg-blue-500'
+                            : 'bg-yellow-500'
+                      }`}
+                    >
                       {course.grade}
                     </Badge>
                     <span className="text-xs text-gray-400">{course.credits} Credits</span>
@@ -157,7 +229,10 @@ function CaseStudiesAndResearch() {
           <CardContent>
             <div className="space-y-3">
               {lawStudentData.recentCases.map((caseStudy, i) => (
-                <div key={i} className="flex items-center gap-4 p-4 bg-black/30 rounded-lg border border-purple-400/30">
+                <div
+                  key={i}
+                  className="flex items-center gap-4 p-4 bg-black/30 rounded-lg border border-purple-400/30"
+                >
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
                     {caseStudy.briefed ? (
                       <CheckCircle className="w-6 h-6 text-white" />
@@ -198,12 +273,19 @@ function CaseStudiesAndResearch() {
           <CardContent>
             <div className="space-y-3">
               {lawStudentData.upcomingDeadlines.map((deadline, i) => (
-                <div key={i} className="flex items-center gap-4 p-4 bg-black/30 rounded-lg border border-orange-400/30">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                    deadline.type === 'Exam' ? 'bg-red-500' :
-                    deadline.type === 'Memo' ? 'bg-blue-500' :
-                    'bg-purple-500'
-                  }`}>
+                <div
+                  key={i}
+                  className="flex items-center gap-4 p-4 bg-black/30 rounded-lg border border-orange-400/30"
+                >
+                  <div
+                    className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                      deadline.type === 'Exam'
+                        ? 'bg-red-500'
+                        : deadline.type === 'Memo'
+                          ? 'bg-blue-500'
+                          : 'bg-purple-500'
+                    }`}
+                  >
                     {deadline.type === 'Exam' && <BarChart3 className="w-6 h-6 text-white" />}
                     {deadline.type === 'Memo' && <FileText className="w-6 h-6 text-white" />}
                     {deadline.type === 'Case Brief' && <Gavel className="w-6 h-6 text-white" />}
@@ -213,11 +295,15 @@ function CaseStudiesAndResearch() {
                     <h4 className="font-semibold text-white">{deadline.title}</h4>
                     <div className="flex items-center justify-between mt-2">
                       <span className="text-sm text-gray-400">{deadline.course}</span>
-                      <Badge className={`${
-                        deadline.due.includes('Tomorrow') ? 'bg-red-500' :
-                        deadline.due.includes('Friday') ? 'bg-orange-500' :
-                        'bg-yellow-500'
-                      }`}>
+                      <Badge
+                        className={`${
+                          deadline.due.includes('Tomorrow')
+                            ? 'bg-red-500'
+                            : deadline.due.includes('Friday')
+                              ? 'bg-orange-500'
+                              : 'bg-yellow-500'
+                        }`}
+                      >
                         {deadline.due}
                       </Badge>
                     </div>
@@ -270,11 +356,15 @@ function ClinicalAndBarPrep() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-3 bg-black/30 rounded-lg">
-                <div className="text-2xl font-bold text-yellow-400">{lawStudentData.barPrep.mbeScore}</div>
+                <div className="text-2xl font-bold text-yellow-400">
+                  {lawStudentData.barPrep.mbeScore}
+                </div>
                 <div className="text-xs text-gray-400">Current MBE</div>
               </div>
               <div className="text-center p-3 bg-black/30 rounded-lg">
-                <div className="text-2xl font-bold text-amber-400">{lawStudentData.barPrep.targetScore}</div>
+                <div className="text-2xl font-bold text-amber-400">
+                  {lawStudentData.barPrep.targetScore}
+                </div>
                 <div className="text-xs text-gray-400">Target MBE</div>
               </div>
             </div>
@@ -286,9 +376,12 @@ function ClinicalAndBarPrep() {
                   {lawStudentData.barPrep.completedTopics}/{lawStudentData.barPrep.totalTopics}
                 </span>
               </div>
-              <Progress 
-                value={(lawStudentData.barPrep.completedTopics / lawStudentData.barPrep.totalTopics) * 100} 
-                className="h-2" 
+              <Progress
+                value={
+                  (lawStudentData.barPrep.completedTopics / lawStudentData.barPrep.totalTopics) *
+                  100
+                }
+                className="h-2"
               />
             </div>
 
@@ -326,7 +419,6 @@ export default function LawSchoolStudentDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  
                   <Button className="w-full bg-green-600 hover:bg-green-700">
                     <Users className="w-4 h-4 mr-2" />
                     Study Groups

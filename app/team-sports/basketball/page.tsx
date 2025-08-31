@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Users, Calendar, Trophy, Star, Clock, MapPin, Zap } from 'lucide-react'
-import Link from 'next/link'
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Users, Calendar, Trophy, Star, Clock, MapPin, Zap } from 'lucide-react';
+import Link from 'next/link';
 
 export default function BasketballPage() {
-  const [selectedDivision, setSelectedDivision] = useState('all')
+  const [selectedDivision, setSelectedDivision] = useState('all');
 
   const divisions = [
     { id: 'u10', name: 'U10', ages: '8-10', teams: 2, players: 24 },
@@ -16,8 +16,8 @@ export default function BasketballPage() {
     { id: 'u14', name: 'U14', ages: '13-14', teams: 2, players: 28 },
     { id: 'u16', name: 'U16', ages: '15-16', teams: 2, players: 32 },
     { id: 'u18', name: 'U18', ages: '17-18', teams: 1, players: 15 },
-    { id: 'adult', name: 'Adult', ages: '18+', teams: 1, players: 12 }
-  ]
+    { id: 'adult', name: 'Adult', ages: '18+', teams: 1, players: 12 },
+  ];
 
   const upcomingGames = [
     {
@@ -27,7 +27,7 @@ export default function BasketballPage() {
       division: 'U16',
       date: '2025-01-27',
       time: '6:00 PM',
-      location: 'Gym A'
+      location: 'Gym A',
     },
     {
       id: 2,
@@ -36,7 +36,7 @@ export default function BasketballPage() {
       division: 'U14',
       date: '2025-01-27',
       time: '7:30 PM',
-      location: 'Gym B'
+      location: 'Gym B',
     },
     {
       id: 3,
@@ -45,18 +45,53 @@ export default function BasketballPage() {
       division: 'U12',
       date: '2025-01-28',
       time: '5:00 PM',
-      location: 'Gym A'
-    }
-  ]
+      location: 'Gym A',
+    },
+  ];
 
   const teams = [
-    { name: 'Court Kings', division: 'U16', coach: 'Coach Jackson', players: 12, wins: 15, losses: 4 },
-    { name: 'Slam Dunkers', division: 'U14', coach: 'Coach Anderson', players: 11, wins: 10, losses: 7 },
-    { name: 'Hoop Heroes', division: 'U14', coach: 'Coach Wilson', players: 13, wins: 12, losses: 5 },
-    { name: 'Fast Break', division: 'U16', coach: 'Coach Thompson', players: 14, wins: 8, losses: 9 },
-    { name: 'Shooters', division: 'U12', coach: 'Coach Martinez', players: 12, wins: 14, losses: 3 },
+    {
+      name: 'Court Kings',
+      division: 'U16',
+      coach: 'Coach Jackson',
+      players: 12,
+      wins: 15,
+      losses: 4,
+    },
+    {
+      name: 'Slam Dunkers',
+      division: 'U14',
+      coach: 'Coach Anderson',
+      players: 11,
+      wins: 10,
+      losses: 7,
+    },
+    {
+      name: 'Hoop Heroes',
+      division: 'U14',
+      coach: 'Coach Wilson',
+      players: 13,
+      wins: 12,
+      losses: 5,
+    },
+    {
+      name: 'Fast Break',
+      division: 'U16',
+      coach: 'Coach Thompson',
+      players: 14,
+      wins: 8,
+      losses: 9,
+    },
+    {
+      name: 'Shooters',
+      division: 'U12',
+      coach: 'Coach Martinez',
+      players: 12,
+      wins: 14,
+      losses: 3,
+    },
     { name: 'Rebounds', division: 'U12', coach: 'Coach Davis', players: 11, wins: 9, losses: 8 },
-  ]
+  ];
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
@@ -73,8 +108,8 @@ export default function BasketballPage() {
               </div>
               <h1 className="text-4xl font-bold mb-4">🏀 Basketball Development Program</h1>
               <p className="text-xl text-orange-100 max-w-2xl">
-                Competitive basketball program emphasizing fundamentals, teamwork, and character development 
-                through disciplined training and game experience.
+                Competitive basketball program emphasizing fundamentals, teamwork, and character
+                development through disciplined training and game experience.
               </p>
             </div>
             <div className="hidden md:block">
@@ -136,8 +171,8 @@ export default function BasketballPage() {
           <h2 className="text-2xl font-bold mb-6">Age Divisions</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {divisions.map((division) => (
-              <Card 
-                key={division.id} 
+              <Card
+                key={division.id}
                 className="bg-slate-800 border-slate-700 hover:border-orange-500 cursor-pointer transition-all"
                 onClick={() => setSelectedDivision(division.id)}
               >
@@ -199,9 +234,7 @@ export default function BasketballPage() {
                     <CardTitle className="text-white">{team.name}</CardTitle>
                     <Badge className="bg-orange-600 text-white">{team.division}</Badge>
                   </div>
-                  <CardDescription className="text-slate-400">
-                    Coach: {team.coach}
-                  </CardDescription>
+                  <CardDescription className="text-slate-400">Coach: {team.coach}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-3 gap-4 text-center">
@@ -286,5 +319,5 @@ export default function BasketballPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -6,15 +6,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Brain, 
-  Users, 
-  Zap, 
-  Globe, 
-  Award, 
-  Activity, 
-  Network, 
-  CheckCircle, 
+import {
+  Brain,
+  Users,
+  Zap,
+  Globe,
+  Award,
+  Activity,
+  Network,
+  CheckCircle,
   Target,
   TrendingUp,
   DollarSign,
@@ -25,7 +25,7 @@ import {
   BookOpen,
   Cpu,
   Heart,
-  GraduationCap
+  GraduationCap,
 } from 'lucide-react';
 
 interface Suggestion {
@@ -75,7 +75,7 @@ const categoryIcons: Record<string, any> = {
   'Community Building': Users,
   'Academic Flexibility': Target,
   'Holistic Development': Activity,
-  'Long-term Success': Trophy
+  'Long-term Success': Trophy,
 };
 
 const categoryColors: Record<string, string> = {
@@ -88,7 +88,7 @@ const categoryColors: Record<string, string> = {
   'Community Building': 'bg-cyan-500',
   'Academic Flexibility': 'bg-yellow-500',
   'Holistic Development': 'bg-indigo-500',
-  'Long-term Success': 'bg-emerald-500'
+  'Long-term Success': 'bg-emerald-500',
 };
 
 export default function AcademyImprovements() {
@@ -99,10 +99,10 @@ export default function AcademyImprovements() {
 
   useEffect(() => {
     fetchImprovements();
-    
+
     // Simulate implementation progress
     const timer = setInterval(() => {
-      setImplementationProgress(prev => {
+      setImplementationProgress((prev) => {
         if (prev >= 100) {
           clearInterval(timer);
           return 100;
@@ -150,11 +150,12 @@ export default function AcademyImprovements() {
     );
   }
 
-  const filteredSuggestions = selectedCategory === 'all' 
-    ? data.data.suggestions 
-    : data.data.suggestions.filter(s => s.category === selectedCategory);
+  const filteredSuggestions =
+    selectedCategory === 'all'
+      ? data.data.suggestions
+      : data.data.suggestions.filter((s) => s.category === selectedCategory);
 
-  const uniqueCategories = Array.from(new Set(data.data.suggestions.map(s => s.category)));
+  const uniqueCategories = Array.from(new Set(data.data.suggestions.map((s) => s.category)));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-black text-white">
@@ -171,7 +172,7 @@ export default function AcademyImprovements() {
               Academy Improvements
             </h1>
           </div>
-          
+
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-4xl mx-auto">
             10 Expert-Designed Enhancements to Transform Student-Athlete Education
           </p>
@@ -184,10 +185,9 @@ export default function AcademyImprovements() {
             </div>
             <Progress value={implementationProgress} className="h-3 bg-white/20" />
             <p className="text-sm text-white/70 mt-2">
-              {implementationProgress < 100 
-                ? "Deploying cutting-edge features..." 
-                : "All improvements successfully implemented!"
-              }
+              {implementationProgress < 100
+                ? 'Deploying cutting-edge features...'
+                : 'All improvements successfully implemented!'}
             </p>
           </div>
 
@@ -230,10 +230,18 @@ export default function AcademyImprovements() {
         <div className="container mx-auto">
           <Tabs defaultValue="improvements" className="space-y-8">
             <TabsList className="grid w-full grid-cols-4 bg-white/10">
-              <TabsTrigger value="improvements" className="text-white">Improvements</TabsTrigger>
-              <TabsTrigger value="implementation" className="text-white">Implementation</TabsTrigger>
-              <TabsTrigger value="metrics" className="text-white">Success Metrics</TabsTrigger>
-              <TabsTrigger value="investment" className="text-white">Investment</TabsTrigger>
+              <TabsTrigger value="improvements" className="text-white">
+                Improvements
+              </TabsTrigger>
+              <TabsTrigger value="implementation" className="text-white">
+                Implementation
+              </TabsTrigger>
+              <TabsTrigger value="metrics" className="text-white">
+                Success Metrics
+              </TabsTrigger>
+              <TabsTrigger value="investment" className="text-white">
+                Investment
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="improvements" className="space-y-8">
@@ -263,12 +271,17 @@ export default function AcademyImprovements() {
                 {filteredSuggestions.map((suggestion) => {
                   const IconComponent = categoryIcons[suggestion.category] || BookOpen;
                   const categoryColor = categoryColors[suggestion.category] || 'bg-gray-500';
-                  
+
                   return (
-                    <Card key={suggestion.id} className="bg-white/10 border-white/20 hover:bg-white/15 transition-all duration-300 group">
+                    <Card
+                      key={suggestion.id}
+                      className="bg-white/10 border-white/20 hover:bg-white/15 transition-all duration-300 group"
+                    >
                       <CardHeader>
                         <div className="flex items-center justify-between mb-4">
-                          <div className={`w-12 h-12 ${categoryColor} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                          <div
+                            className={`w-12 h-12 ${categoryColor} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}
+                          >
                             <IconComponent className="w-6 h-6 text-white" />
                           </div>
                           <Badge variant="secondary" className="bg-white/20 text-white">
@@ -284,41 +297,51 @@ export default function AcademyImprovements() {
                         <CardDescription className="text-white/80 mb-4">
                           {suggestion.description}
                         </CardDescription>
-                        
+
                         {/* Key Features */}
                         {suggestion.implementation && (
                           <div className="space-y-3">
                             {suggestion.implementation.concept && (
                               <div>
                                 <h4 className="font-semibold text-yellow-400 mb-2">Concept:</h4>
-                                <p className="text-sm text-white/70">{suggestion.implementation.concept}</p>
+                                <p className="text-sm text-white/70">
+                                  {suggestion.implementation.concept}
+                                </p>
                               </div>
                             )}
-                            
+
                             {suggestion.implementation.investment && (
                               <div className="flex items-center justify-between bg-white/10 rounded-lg p-3">
                                 <span className="text-sm font-medium">Investment:</span>
-                                <span className="text-green-400 font-bold">{suggestion.implementation.investment}</span>
+                                <span className="text-green-400 font-bold">
+                                  {suggestion.implementation.investment}
+                                </span>
                               </div>
                             )}
-                            
+
                             {suggestion.implementation.roi_timeline && (
                               <div className="flex items-center justify-between bg-white/10 rounded-lg p-3">
                                 <span className="text-sm font-medium">ROI Timeline:</span>
-                                <span className="text-blue-400 font-bold">{suggestion.implementation.roi_timeline}</span>
+                                <span className="text-blue-400 font-bold">
+                                  {suggestion.implementation.roi_timeline}
+                                </span>
                               </div>
                             )}
-                            
+
                             {/* Success Metrics Preview */}
                             {suggestion.implementation.success_metrics && (
                               <div className="space-y-2">
-                                <h4 className="font-semibold text-yellow-400">Expected Outcomes:</h4>
-                                {Object.entries(suggestion.implementation.success_metrics).map(([key, value]) => (
-                                  <div key={key} className="flex items-center text-sm">
-                                    <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
-                                    <span className="text-white/80">{value as string}</span>
-                                  </div>
-                                ))}
+                                <h4 className="font-semibold text-yellow-400">
+                                  Expected Outcomes:
+                                </h4>
+                                {Object.entries(suggestion.implementation.success_metrics).map(
+                                  ([key, value]) => (
+                                    <div key={key} className="flex items-center text-sm">
+                                      <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
+                                      <span className="text-white/80">{value as string}</span>
+                                    </div>
+                                  ),
+                                )}
                               </div>
                             )}
                           </div>
@@ -344,12 +367,14 @@ export default function AcademyImprovements() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    {data.data.implementation_priority_matrix.immediate_implementation.map((item, index) => (
-                      <div key={index} className="flex items-center p-3 bg-white/10 rounded-lg">
-                        <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
-                        <span className="text-white">{item}</span>
-                      </div>
-                    ))}
+                    {data.data.implementation_priority_matrix.immediate_implementation.map(
+                      (item, index) => (
+                        <div key={index} className="flex items-center p-3 bg-white/10 rounded-lg">
+                          <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
+                          <span className="text-white">{item}</span>
+                        </div>
+                      ),
+                    )}
                   </CardContent>
                 </Card>
 
@@ -365,12 +390,14 @@ export default function AcademyImprovements() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    {data.data.implementation_priority_matrix.short_term_development.map((item, index) => (
-                      <div key={index} className="flex items-center p-3 bg-white/10 rounded-lg">
-                        <Calendar className="w-5 h-5 text-yellow-400 mr-3" />
-                        <span className="text-white">{item}</span>
-                      </div>
-                    ))}
+                    {data.data.implementation_priority_matrix.short_term_development.map(
+                      (item, index) => (
+                        <div key={index} className="flex items-center p-3 bg-white/10 rounded-lg">
+                          <Calendar className="w-5 h-5 text-yellow-400 mr-3" />
+                          <span className="text-white">{item}</span>
+                        </div>
+                      ),
+                    )}
                   </CardContent>
                 </Card>
 
@@ -386,12 +413,14 @@ export default function AcademyImprovements() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    {data.data.implementation_priority_matrix.long_term_vision.map((item, index) => (
-                      <div key={index} className="flex items-center p-3 bg-white/10 rounded-lg">
-                        <Rocket className="w-5 h-5 text-purple-400 mr-3" />
-                        <span className="text-white">{item}</span>
-                      </div>
-                    ))}
+                    {data.data.implementation_priority_matrix.long_term_vision.map(
+                      (item, index) => (
+                        <div key={index} className="flex items-center p-3 bg-white/10 rounded-lg">
+                          <Rocket className="w-5 h-5 text-purple-400 mr-3" />
+                          <span className="text-white">{item}</span>
+                        </div>
+                      ),
+                    )}
                   </CardContent>
                 </Card>
               </div>
@@ -408,15 +437,19 @@ export default function AcademyImprovements() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {Object.entries(data.data.success_metrics.academic_performance).map(([key, value]) => (
-                      <div key={key} className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-white/70 capitalize">{key.replace('_', ' ')}</span>
-                          <Badge className="bg-blue-500 text-white">Target</Badge>
+                    {Object.entries(data.data.success_metrics.academic_performance).map(
+                      ([key, value]) => (
+                        <div key={key} className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-white/70 capitalize">
+                              {key.replace('_', ' ')}
+                            </span>
+                            <Badge className="bg-blue-500 text-white">Target</Badge>
+                          </div>
+                          <p className="text-white font-medium">{value}</p>
                         </div>
-                        <p className="text-white font-medium">{value}</p>
-                      </div>
-                    ))}
+                      ),
+                    )}
                   </CardContent>
                 </Card>
 
@@ -429,15 +462,19 @@ export default function AcademyImprovements() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {Object.entries(data.data.success_metrics.athletic_performance).map(([key, value]) => (
-                      <div key={key} className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-white/70 capitalize">{key.replace('_', ' ')}</span>
-                          <Badge className="bg-orange-500 text-white">Goal</Badge>
+                    {Object.entries(data.data.success_metrics.athletic_performance).map(
+                      ([key, value]) => (
+                        <div key={key} className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-white/70 capitalize">
+                              {key.replace('_', ' ')}
+                            </span>
+                            <Badge className="bg-orange-500 text-white">Goal</Badge>
+                          </div>
+                          <p className="text-white font-medium">{value}</p>
                         </div>
-                        <p className="text-white font-medium">{value}</p>
-                      </div>
-                    ))}
+                      ),
+                    )}
                   </CardContent>
                 </Card>
 
@@ -450,15 +487,19 @@ export default function AcademyImprovements() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {Object.entries(data.data.success_metrics.holistic_development).map(([key, value]) => (
-                      <div key={key} className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-white/70 capitalize">{key.replace('_', ' ')}</span>
-                          <Badge className="bg-green-500 text-white">Objective</Badge>
+                    {Object.entries(data.data.success_metrics.holistic_development).map(
+                      ([key, value]) => (
+                        <div key={key} className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-white/70 capitalize">
+                              {key.replace('_', ' ')}
+                            </span>
+                            <Badge className="bg-green-500 text-white">Objective</Badge>
+                          </div>
+                          <p className="text-white font-medium">{value}</p>
                         </div>
-                        <p className="text-white font-medium">{value}</p>
-                      </div>
-                    ))}
+                      ),
+                    )}
                   </CardContent>
                 </Card>
               </div>
@@ -478,12 +519,17 @@ export default function AcademyImprovements() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {Object.entries(data.data.investment_analysis.roi_projection).map(([year, projection]) => (
-                      <div key={year} className="flex justify-between items-center p-3 bg-white/10 rounded-lg">
-                        <span className="font-medium capitalize">{year}</span>
-                        <span className="text-green-400 font-bold">{projection}</span>
-                      </div>
-                    ))}
+                    {Object.entries(data.data.investment_analysis.roi_projection).map(
+                      ([year, projection]) => (
+                        <div
+                          key={year}
+                          className="flex justify-between items-center p-3 bg-white/10 rounded-lg"
+                        >
+                          <span className="font-medium capitalize">{year}</span>
+                          <span className="text-green-400 font-bold">{projection}</span>
+                        </div>
+                      ),
+                    )}
                   </CardContent>
                 </Card>
 
@@ -499,12 +545,14 @@ export default function AcademyImprovements() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    {data.data.investment_analysis.competitive_advantages.map((advantage, index) => (
-                      <div key={index} className="flex items-start p-3 bg-white/10 rounded-lg">
-                        <Star className="w-5 h-5 text-yellow-400 mr-3 mt-0.5 flex-shrink-0" />
-                        <span className="text-white">{advantage}</span>
-                      </div>
-                    ))}
+                    {data.data.investment_analysis.competitive_advantages.map(
+                      (advantage, index) => (
+                        <div key={index} className="flex items-start p-3 bg-white/10 rounded-lg">
+                          <Star className="w-5 h-5 text-yellow-400 mr-3 mt-0.5 flex-shrink-0" />
+                          <span className="text-white">{advantage}</span>
+                        </div>
+                      ),
+                    )}
                   </CardContent>
                 </Card>
               </div>
@@ -518,14 +566,21 @@ export default function AcademyImprovements() {
         <div className="container mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6">Ready to Transform Student-Athlete Education?</h2>
           <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
-            These revolutionary improvements will position Go4it Academy as the world's leading 
+            These revolutionary improvements will position Go4it Academy as the world's leading
             student-athlete development institution.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white px-8 py-4">
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white px-8 py-4"
+            >
               Begin Implementation
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-black px-8 py-4">
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-white text-white hover:bg-white hover:text-black px-8 py-4"
+            >
               Download Full Report
             </Button>
           </div>

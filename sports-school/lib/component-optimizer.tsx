@@ -4,7 +4,7 @@ import { Performance, usePerformanceTracking } from './performance';
 // Component lazy loading utilities
 const createLazyComponent = <T extends object>(
   componentImport: () => Promise<{ default: React.ComponentType<T> }>,
-  fallback?: React.ComponentType
+  fallback?: React.ComponentType,
 ) => {
   return lazy(componentImport);
 };
@@ -12,7 +12,7 @@ const createLazyComponent = <T extends object>(
 // Memoization wrapper for expensive components
 export function withMemoization<T extends object>(
   Component: React.ComponentType<T>,
-  areEqual?: (prevProps: T, nextProps: T) => boolean
+  areEqual?: (prevProps: T, nextProps: T) => boolean,
 ) {
   return memo(Component, areEqual);
 }
@@ -20,11 +20,11 @@ export function withMemoization<T extends object>(
 // Performance-optimized component wrapper
 export function withOptimization<T extends object>(
   Component: React.ComponentType<T>,
-  componentName: string
+  componentName: string,
 ) {
   return memo(function OptimizedComponent(props: T) {
     usePerformanceTracking(componentName);
-    
+
     return <Component {...props} />;
   });
 }
@@ -43,15 +43,15 @@ export function VirtualizedList({
   renderItem,
   itemHeight,
   containerHeight,
-  overscan = 5
+  overscan = 5,
 }: VirtualizedListProps) {
   const [scrollTop, setScrollTop] = React.useState(0);
-  
+
   const visibleRange = useMemo(() => {
     const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
     const endIndex = Math.min(
       items.length - 1,
-      Math.ceil((scrollTop + containerHeight) / itemHeight) + overscan
+      Math.ceil((scrollTop + containerHeight) / itemHeight) + overscan,
     );
     return { startIndex, endIndex };
   }, [scrollTop, itemHeight, containerHeight, items.length, overscan]);
@@ -65,10 +65,7 @@ export function VirtualizedList({
   }, []);
 
   return (
-    <div
-      style={{ height: containerHeight, overflow: 'auto' }}
-      onScroll={handleScroll}
-    >
+    <div style={{ height: containerHeight, overflow: 'auto' }} onScroll={handleScroll}>
       <div style={{ height: items.length * itemHeight, position: 'relative' }}>
         {visibleItems.map((item, index) => (
           <div
@@ -77,7 +74,7 @@ export function VirtualizedList({
               position: 'absolute',
               top: (visibleRange.startIndex + index) * itemHeight,
               height: itemHeight,
-              width: '100%'
+              width: '100%',
             }}
           >
             {renderItem(item, visibleRange.startIndex + index)}
@@ -105,7 +102,7 @@ export function useLazyLoad(threshold = 0.1) {
           setHasLoaded(true);
         }
       },
-      { threshold }
+      { threshold },
     );
 
     observer.observe(target);
@@ -150,7 +147,7 @@ export function DebouncedInput({
   onChange,
   delay = 300,
   placeholder,
-  className
+  className,
 }: DebouncedInputProps) {
   const [localValue, setLocalValue] = React.useState(value);
   const timeoutRef = React.useRef<NodeJS.Timeout>();
@@ -159,18 +156,21 @@ export function DebouncedInput({
     setLocalValue(value);
   }, [value]);
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setLocalValue(newValue);
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.value;
+      setLocalValue(newValue);
 
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
 
-    timeoutRef.current = setTimeout(() => {
-      onChange(newValue);
-    }, delay);
-  }, [onChange, delay]);
+      timeoutRef.current = setTimeout(() => {
+        onChange(newValue);
+      }, delay);
+    },
+    [onChange, delay],
+  );
 
   React.useEffect(() => {
     return () => {
@@ -213,18 +213,18 @@ export class PerformanceErrorBoundary extends React.Component<
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     this.setState({ error, errorInfo });
-    
+
     // Track error for performance monitoring
     Performance.start('error-boundary');
     Performance.end('error-boundary');
-    
+
     console.error('Component error caught by boundary:', error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
       const FallbackComponent = this.props.fallback;
-      
+
       if (FallbackComponent && this.state.error) {
         return <FallbackComponent error={this.state.error} />;
       }
@@ -250,16 +250,14 @@ interface OptimizedSuspenseProps {
   errorFallback?: React.ComponentType<{ error: Error }>;
 }
 
-export function OptimizedSuspense({ 
-  children, 
+export function OptimizedSuspense({
+  children,
   fallback = <div>Loading...</div>,
-  errorFallback 
+  errorFallback,
 }: OptimizedSuspenseProps) {
   return (
     <PerformanceErrorBoundary fallback={errorFallback}>
-      <Suspense fallback={fallback}>
-        {children}
-      </Suspense>
+      <Suspense fallback={fallback}>{children}</Suspense>
     </PerformanceErrorBoundary>
   );
 }
@@ -268,14 +266,18 @@ export function OptimizedSuspense({
 export const createOptimizedRoute = (
   componentImport: () => Promise<{ default: React.ComponentType<any> }>,
   componentName: string,
-  fallback?: React.ReactNode
+  fallback?: React.ReactNode,
 ) => {
   const LazyComponent = lazy(componentImport);
-  
+
   return function OptimizedRoute(props: any) {
     return (
-      <OptimizedSuspense 
-        fallback={fallback || <div className="flex items-center justify-center p-8">Loading {componentName}...</div>}
+      <OptimizedSuspense
+        fallback={
+          fallback || (
+            <div className="flex items-center justify-center p-8">Loading {componentName}...</div>
+          )
+        }
       >
         <LazyComponent {...props} />
       </OptimizedSuspense>
@@ -286,14 +288,12 @@ export const createOptimizedRoute = (
 // Memory optimization hook
 export function useMemoryOptimization(dependencies: any[] = []) {
   const previousDeps = React.useRef(dependencies);
-  
+
   React.useEffect(() => {
     // Force garbage collection hint (in development)
     if (process.env.NODE_ENV === 'development' && global.gc) {
-      const hasChanged = dependencies.some((dep, index) => 
-        dep !== previousDeps.current[index]
-      );
-      
+      const hasChanged = dependencies.some((dep, index) => dep !== previousDeps.current[index]);
+
       if (hasChanged) {
         setTimeout(() => {
           if (global.gc) {
@@ -302,7 +302,7 @@ export function useMemoryOptimization(dependencies: any[] = []) {
         }, 1000);
       }
     }
-    
+
     previousDeps.current = dependencies;
   }, dependencies);
 }
@@ -316,23 +316,24 @@ export function analyzeComponentSize(Component: React.ComponentType<any>) {
   return function AnalyzedComponent(props: any) {
     const startTime = performance.now();
     const startMemory = (performance as any).memory?.usedJSHeapSize || 0;
-    
+
     React.useEffect(() => {
       const endTime = performance.now();
       const endMemory = (performance as any).memory?.usedJSHeapSize || 0;
-      
+
       const renderTime = endTime - startTime;
       const memoryDelta = endMemory - startMemory;
-      
-      if (renderTime > 16 || memoryDelta > 1024 * 1024) { // 16ms or 1MB
+
+      if (renderTime > 16 || memoryDelta > 1024 * 1024) {
+        // 16ms or 1MB
         console.warn(`Component performance warning:`, {
           component: Component.name,
           renderTime: `${renderTime.toFixed(2)}ms`,
-          memoryUsage: `${Math.round(memoryDelta / 1024)}KB`
+          memoryUsage: `${Math.round(memoryDelta / 1024)}KB`,
         });
       }
     });
-    
+
     return <Component {...props} />;
   };
 }
@@ -348,5 +349,5 @@ export const ComponentOptimizer = {
   debouncedInput: DebouncedInput,
   suspense: OptimizedSuspense,
   errorBoundary: PerformanceErrorBoundary,
-  analyze: analyzeComponentSize
+  analyze: analyzeComponentSize,
 };

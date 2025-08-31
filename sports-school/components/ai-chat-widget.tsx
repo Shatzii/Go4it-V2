@@ -1,75 +1,76 @@
-'use client'
+'use client';
 
-import { useState, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { 
-  MessageCircle, 
-  X, 
-  Send, 
-  Bot, 
-  User, 
-  Minimize2, 
-  Maximize2, 
+import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  MessageCircle,
+  X,
+  Send,
+  Bot,
+  User,
+  Minimize2,
+  Maximize2,
   Brain,
-  Sparkles
-} from 'lucide-react'
+  Sparkles,
+} from 'lucide-react';
 
 interface Message {
-  id: string
-  content: string
-  sender: 'user' | 'ai'
-  timestamp: Date
-  context?: string
+  id: string;
+  content: string;
+  sender: 'user' | 'ai';
+  timestamp: Date;
+  context?: string;
 }
 
 interface AIChatWidgetProps {
-  userId?: number
-  context?: string
+  userId?: number;
+  context?: string;
 }
 
 export default function AIChatWidget({ userId, context = 'general' }: AIChatWidgetProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [isMinimized, setIsMinimized] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: "Hello! I'm your AI learning assistant. I can help you with coursework, explain concepts, provide study tips, and support your learning journey. What would you like to know?",
+      content:
+        "Hello! I'm your AI learning assistant. I can help you with coursework, explain concepts, provide study tips, and support your learning journey. What would you like to know?",
       sender: 'ai',
       timestamp: new Date(),
-      context: 'greeting'
-    }
-  ])
-  const [inputValue, setInputValue] = useState('')
-  const [isTyping, setIsTyping] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+      context: 'greeting',
+    },
+  ]);
+  const [inputValue, setInputValue] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   useEffect(() => {
-    scrollToBottom()
-  }, [messages])
+    scrollToBottom();
+  }, [messages]);
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim()) return
+    if (!inputValue.trim()) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       content: inputValue,
       sender: 'user',
       timestamp: new Date(),
-      context
-    }
+      context,
+    };
 
-    setMessages(prev => [...prev, userMessage])
-    setInputValue('')
-    setIsTyping(true)
+    setMessages((prev) => [...prev, userMessage]);
+    setInputValue('');
+    setIsTyping(true);
 
     try {
       const response = await fetch('/api/ai-chat', {
@@ -80,46 +81,47 @@ export default function AIChatWidget({ userId, context = 'general' }: AIChatWidg
         body: JSON.stringify({
           message: inputValue,
           userId,
-          context
-        })
-      })
+          context,
+        }),
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: data.message,
         sender: 'ai',
         timestamp: new Date(data.timestamp),
-        context: data.context
-      }
+        context: data.context,
+      };
 
-      setMessages(prev => [...prev, aiMessage])
+      setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
-      console.error('Error sending message:', error)
+      console.error('Error sending message:', error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment.",
+        content:
+          "I'm sorry, I'm having trouble connecting right now. Please try again in a moment.",
         sender: 'ai',
         timestamp: new Date(),
-        context: 'error'
-      }
-      setMessages(prev => [...prev, errorMessage])
+        context: 'error',
+      };
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
-      setIsTyping(false)
+      setIsTyping(false);
     }
-  }
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSendMessage()
+      e.preventDefault();
+      handleSendMessage();
     }
-  }
+  };
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  }
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
 
   return (
     <>
@@ -151,7 +153,9 @@ export default function AIChatWidget({ userId, context = 'general' }: AIChatWidg
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             className="fixed bottom-6 right-6 z-50"
           >
-            <Card className={`w-96 ${isMinimized ? 'h-16' : 'h-[500px]'} flex flex-col shadow-2xl border-0 bg-white/95 backdrop-blur-sm`}>
+            <Card
+              className={`w-96 ${isMinimized ? 'h-16' : 'h-[500px]'} flex flex-col shadow-2xl border-0 bg-white/95 backdrop-blur-sm`}
+            >
               {/* Header */}
               <CardHeader className="flex-row items-center justify-between space-y-0 pb-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-t-lg">
                 <div className="flex items-center space-x-2">
@@ -173,7 +177,11 @@ export default function AIChatWidget({ userId, context = 'general' }: AIChatWidg
                     onClick={() => setIsMinimized(!isMinimized)}
                     className="h-8 w-8 text-white hover:bg-white/20"
                   >
-                    {isMinimized ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
+                    {isMinimized ? (
+                      <Maximize2 className="w-4 h-4" />
+                    ) : (
+                      <Minimize2 className="w-4 h-4" />
+                    )}
                   </Button>
                   <Button
                     variant="ghost"
@@ -210,9 +218,11 @@ export default function AIChatWidget({ userId, context = 'general' }: AIChatWidg
                               <div className="flex-1">
                                 <p className="text-sm">{message.content}</p>
                                 <div className="flex items-center justify-between mt-1">
-                                  <span className={`text-xs ${
-                                    message.sender === 'user' ? 'text-blue-100' : 'text-gray-500'
-                                  }`}>
+                                  <span
+                                    className={`text-xs ${
+                                      message.sender === 'user' ? 'text-blue-100' : 'text-gray-500'
+                                    }`}
+                                  >
                                     {formatTime(message.timestamp)}
                                   </span>
                                   {message.context && message.context !== 'general' && (
@@ -226,7 +236,7 @@ export default function AIChatWidget({ userId, context = 'general' }: AIChatWidg
                           </div>
                         </div>
                       ))}
-                      
+
                       {/* Typing Indicator */}
                       {isTyping && (
                         <div className="flex justify-start">
@@ -235,14 +245,20 @@ export default function AIChatWidget({ userId, context = 'general' }: AIChatWidg
                               <Bot className="w-4 h-4 text-blue-500" />
                               <div className="flex space-x-1">
                                 <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
-                                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                                <div
+                                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                                  style={{ animationDelay: '0.1s' }}
+                                />
+                                <div
+                                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                                  style={{ animationDelay: '0.2s' }}
+                                />
                               </div>
                             </div>
                           </div>
                         </div>
                       )}
-                      
+
                       <div ref={messagesEndRef} />
                     </div>
                   </ScrollArea>
@@ -278,5 +294,5 @@ export default function AIChatWidget({ userId, context = 'general' }: AIChatWidg
         )}
       </AnimatePresence>
     </>
-  )
+  );
 }

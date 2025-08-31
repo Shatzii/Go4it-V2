@@ -1,92 +1,97 @@
-import { NextRequest, NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
+import { NextRequest, NextResponse } from 'next/server';
+import Anthropic from '@anthropic-ai/sdk';
 
 // Initialize Anthropic client
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
-})
+});
 
-const DEFAULT_MODEL_STR = "claude-sonnet-4-20250514"
+const DEFAULT_MODEL_STR = 'claude-sonnet-4-20250514';
 
 interface ChatMessage {
-  role: 'user' | 'assistant'
-  content: string
+  role: 'user' | 'assistant';
+  content: string;
 }
 
 interface TutoringSession {
-  sessionId: string
-  userId: string
-  agentId: string
-  messages: ChatMessage[]
-  subject?: string
-  gradeLevel?: string
-  neurotype?: string
-  createdAt: Date
-  lastActivity: Date
+  sessionId: string;
+  userId: string;
+  agentId: string;
+  messages: ChatMessage[];
+  subject?: string;
+  gradeLevel?: string;
+  neurotype?: string;
+  createdAt: Date;
+  lastActivity: Date;
 }
 
 // In-memory session storage (in production, use database)
-const activeSessions = new Map<string, TutoringSession>()
+const activeSessions = new Map<string, TutoringSession>();
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { action, sessionId, userId, agentId, message, context } = body
+    const body = await request.json();
+    const { action, sessionId, userId, agentId, message, context } = body;
 
     switch (action) {
       case 'start_session':
-        const session = await startTutoringSession(userId, agentId, context)
-        return NextResponse.json(session)
+        const session = await startTutoringSession(userId, agentId, context);
+        return NextResponse.json(session);
 
       case 'send_message':
-        const response = await processMessage(sessionId, message, context)
-        return NextResponse.json(response)
+        const response = await processMessage(sessionId, message, context);
+        return NextResponse.json(response);
 
       case 'end_session':
-        await endTutoringSession(sessionId)
-        return NextResponse.json({ success: true, message: 'Session ended' })
+        await endTutoringSession(sessionId);
+        return NextResponse.json({ success: true, message: 'Session ended' });
 
       default:
-        return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
+        return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
   } catch (error) {
-    console.error('AI Tutoring error:', error)
-    return NextResponse.json({ error: 'Failed to process tutoring request' }, { status: 500 })
+    console.error('AI Tutoring error:', error);
+    return NextResponse.json({ error: 'Failed to process tutoring request' }, { status: 500 });
   }
 }
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const sessionId = searchParams.get('sessionId')
-    const userId = searchParams.get('userId')
+    const { searchParams } = new URL(request.url);
+    const sessionId = searchParams.get('sessionId');
+    const userId = searchParams.get('userId');
 
     if (sessionId) {
-      const session = activeSessions.get(sessionId)
+      const session = activeSessions.get(sessionId);
       if (!session) {
-        return NextResponse.json({ error: 'Session not found' }, { status: 404 })
+        return NextResponse.json({ error: 'Session not found' }, { status: 404 });
       }
-      return NextResponse.json(session)
+      return NextResponse.json(session);
     }
 
     if (userId) {
-      const userSessions = Array.from(activeSessions.values())
-        .filter(session => session.userId === userId)
-      return NextResponse.json(userSessions)
+      const userSessions = Array.from(activeSessions.values()).filter(
+        (session) => session.userId === userId,
+      );
+      return NextResponse.json(userSessions);
     }
 
-    return NextResponse.json({ error: 'SessionId or userId required' }, { status: 400 })
+    return NextResponse.json({ error: 'SessionId or userId required' }, { status: 400 });
   } catch (error) {
-    console.error('Get tutoring session error:', error)
-    return NextResponse.json({ error: 'Failed to retrieve session' }, { status: 500 })
+    console.error('Get tutoring session error:', error);
+    return NextResponse.json({ error: 'Failed to retrieve session' }, { status: 500 });
   }
 }
 
-async function startTutoringSession(userId: string, agentId: string, context: any): Promise<TutoringSession> {
-  const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-  
-  const welcomeMessage = await generateWelcomeMessage(agentId, context)
-  
+async function startTutoringSession(
+  userId: string,
+  agentId: string,
+  context: any,
+): Promise<TutoringSession> {
+  const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+  const welcomeMessage = await generateWelcomeMessage(agentId, context);
+
   const session: TutoringSession = {
     sessionId,
     userId,
@@ -94,49 +99,49 @@ async function startTutoringSession(userId: string, agentId: string, context: an
     messages: [
       {
         role: 'assistant',
-        content: welcomeMessage
-      }
+        content: welcomeMessage,
+      },
     ],
     subject: context?.subject,
     gradeLevel: context?.gradeLevel,
     neurotype: context?.neurotype,
     createdAt: new Date(),
-    lastActivity: new Date()
-  }
+    lastActivity: new Date(),
+  };
 
-  activeSessions.set(sessionId, session)
-  return session
+  activeSessions.set(sessionId, session);
+  return session;
 }
 
 async function processMessage(sessionId: string, userMessage: string, context: any) {
-  const session = activeSessions.get(sessionId)
+  const session = activeSessions.get(sessionId);
   if (!session) {
-    throw new Error('Session not found')
+    throw new Error('Session not found');
   }
 
   // Add user message to session
   session.messages.push({
     role: 'user',
-    content: userMessage
-  })
+    content: userMessage,
+  });
 
   // Generate AI response
-  const aiResponse = await generateAIResponse(session, userMessage, context)
+  const aiResponse = await generateAIResponse(session, userMessage, context);
 
   // Add AI response to session
   session.messages.push({
     role: 'assistant',
-    content: aiResponse
-  })
+    content: aiResponse,
+  });
 
-  session.lastActivity = new Date()
-  activeSessions.set(sessionId, session)
+  session.lastActivity = new Date();
+  activeSessions.set(sessionId, session);
 
   return {
     sessionId,
     message: aiResponse,
-    timestamp: new Date().toISOString()
-  }
+    timestamp: new Date().toISOString(),
+  };
 }
 
 async function generateWelcomeMessage(agentId: string, context: any): Promise<string> {
@@ -144,46 +149,53 @@ async function generateWelcomeMessage(agentId: string, context: any): Promise<st
     dean_wonder: {
       name: 'Dean Wonder',
       persona: 'enthusiastic superhero-themed tutor for K-6 students',
-      greeting: "🦸‍♂️ Hey there, future superhero! I'm Dean Wonder, and I'm here to help you discover your learning superpowers!"
+      greeting:
+        "🦸‍♂️ Hey there, future superhero! I'm Dean Wonder, and I'm here to help you discover your learning superpowers!",
     },
     dean_sterling: {
       name: 'Dean Sterling',
       persona: 'dramatic theater arts tutor for 7-12 students',
-      greeting: "🎭 Welcome to the stage of learning! I'm Dean Sterling, your theatrical learning companion."
+      greeting:
+        "🎭 Welcome to the stage of learning! I'm Dean Sterling, your theatrical learning companion.",
     },
     professor_babel: {
       name: 'Professor Babel',
       persona: 'multilingual language learning tutor',
-      greeting: "🌍 Hola! Bonjour! Hello! I'm Professor Babel, ready to explore languages with you!"
+      greeting:
+        "🌍 Hola! Bonjour! Hello! I'm Professor Babel, ready to explore languages with you!",
     },
     professor_barrett: {
       name: 'Professor Barrett',
       persona: 'analytical legal studies tutor',
-      greeting: "⚖️ Welcome to the halls of justice and learning! I'm Professor Barrett."
-    }
-  }
+      greeting: "⚖️ Welcome to the halls of justice and learning! I'm Professor Barrett.",
+    },
+  };
 
-  const agent = agentPersonalities[agentId as keyof typeof agentPersonalities]
+  const agent = agentPersonalities[agentId as keyof typeof agentPersonalities];
   if (!agent) {
-    return "Hello! I'm your AI tutor, ready to help you learn and grow. What would you like to explore today?"
+    return "Hello! I'm your AI tutor, ready to help you learn and grow. What would you like to explore today?";
   }
 
-  let contextualGreeting = agent.greeting
-  
+  let contextualGreeting = agent.greeting;
+
   if (context?.subject) {
-    contextualGreeting += ` I see you're interested in ${context.subject}. `
-  }
-  
-  if (context?.neurotype && context.neurotype !== 'neurotypical') {
-    contextualGreeting += `I'm specially trained to support ${context.neurotype} learners with personalized approaches. `
+    contextualGreeting += ` I see you're interested in ${context.subject}. `;
   }
 
-  contextualGreeting += "What learning adventure should we go on today?"
-  
-  return contextualGreeting
+  if (context?.neurotype && context.neurotype !== 'neurotypical') {
+    contextualGreeting += `I'm specially trained to support ${context.neurotype} learners with personalized approaches. `;
+  }
+
+  contextualGreeting += 'What learning adventure should we go on today?';
+
+  return contextualGreeting;
 }
 
-async function generateAIResponse(session: TutoringSession, userMessage: string, context: any): Promise<string> {
+async function generateAIResponse(
+  session: TutoringSession,
+  userMessage: string,
+  context: any,
+): Promise<string> {
   const agentPrompts = {
     dean_wonder: `You are Dean Wonder, an enthusiastic superhero-themed AI tutor for elementary students (K-6). 
     - Use superhero metaphors and exciting language
@@ -215,11 +227,12 @@ async function generateAIResponse(session: TutoringSession, userMessage: string,
     - Break down complex legal concepts systematically
     - Encourage analytical and critical thinking
     - Reference case law and legal principles when relevant
-    - Support pre-law and legal studies students`
-  }
+    - Support pre-law and legal studies students`,
+  };
 
-  const agentPrompt = agentPrompts[session.agentId as keyof typeof agentPrompts] || 
-    "You are a helpful AI tutor. Provide clear, educational responses."
+  const agentPrompt =
+    agentPrompts[session.agentId as keyof typeof agentPrompts] ||
+    'You are a helpful AI tutor. Provide clear, educational responses.';
 
   const systemPrompt = `${agentPrompt}
 
@@ -236,7 +249,7 @@ Always:
 4. Provide examples when helpful
 5. Keep responses appropriate for the grade level
 6. If the student seems frustrated, offer different approaches
-7. Celebrate progress and effort`
+7. Celebrate progress and effort`;
 
   try {
     const response = await anthropic.messages.create({
@@ -248,52 +261,58 @@ Always:
         ...session.messages.slice(-6), // Last 6 messages for context
         {
           role: 'user',
-          content: userMessage
-        }
-      ]
-    })
+          content: userMessage,
+        },
+      ],
+    });
 
-    const aiMessage = response.content[0]
+    const aiMessage = response.content[0];
     if (aiMessage.type === 'text') {
-      return aiMessage.text
+      return aiMessage.text;
     } else {
-      throw new Error('Unexpected response format from AI')
+      throw new Error('Unexpected response format from AI');
     }
   } catch (error) {
-    console.error('Error generating AI response:', error)
-    
+    console.error('Error generating AI response:', error);
+
     // Fallback response based on agent
     const fallbackResponses = {
-      dean_wonder: "🦸‍♂️ Oops! Even superheroes need a moment to recharge! Can you try asking that again? I'm here to help you learn!",
-      dean_sterling: "🎭 Ah, a momentary intermission in our learning performance! Please, ask your question again so we can continue this educational masterpiece!",
-      professor_babel: "🌍 Pardón! There seems to be a small communication interruption. Could you please repeat your question?",
-      professor_barrett: "⚖️ I apologize, but I need a moment to properly consider your inquiry. Could you please restate your question?"
-    }
-    
-    return fallbackResponses[session.agentId as keyof typeof fallbackResponses] || 
+      dean_wonder:
+        "🦸‍♂️ Oops! Even superheroes need a moment to recharge! Can you try asking that again? I'm here to help you learn!",
+      dean_sterling:
+        '🎭 Ah, a momentary intermission in our learning performance! Please, ask your question again so we can continue this educational masterpiece!',
+      professor_babel:
+        '🌍 Pardón! There seems to be a small communication interruption. Could you please repeat your question?',
+      professor_barrett:
+        '⚖️ I apologize, but I need a moment to properly consider your inquiry. Could you please restate your question?',
+    };
+
+    return (
+      fallbackResponses[session.agentId as keyof typeof fallbackResponses] ||
       "I apologize, but I'm having trouble processing that right now. Could you please try asking again?"
+    );
   }
 }
 
 async function endTutoringSession(sessionId: string): Promise<void> {
-  const session = activeSessions.get(sessionId)
+  const session = activeSessions.get(sessionId);
   if (session) {
     // In production, save session to database here
-    console.log(`Ending tutoring session ${sessionId} for user ${session.userId}`)
-    activeSessions.delete(sessionId)
+    console.log(`Ending tutoring session ${sessionId} for user ${session.userId}`);
+    activeSessions.delete(sessionId);
   }
 }
 
 // Cleanup function to remove old sessions (call periodically)
 export function cleanupOldSessions() {
-  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000)
-  
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+
   for (const [sessionId, session] of activeSessions.entries()) {
     if (session.lastActivity < oneHourAgo) {
-      activeSessions.delete(sessionId)
+      activeSessions.delete(sessionId);
     }
   }
 }
 
 // Run cleanup every 30 minutes
-setInterval(cleanupOldSessions, 30 * 60 * 1000)
+setInterval(cleanupOldSessions, 30 * 60 * 1000);

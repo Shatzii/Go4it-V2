@@ -19,11 +19,7 @@ interface AICoachingEngineProps {
   adhdSupport?: boolean;
 }
 
-export function AICoachingEngine({ 
-  userId, 
-  sportType, 
-  adhdSupport = true 
-}: AICoachingEngineProps) {
+export function AICoachingEngine({ userId, sportType, adhdSupport = true }: AICoachingEngineProps) {
   const [insights, setInsights] = useState<CoachingInsight[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedInsight, setSelectedInsight] = useState<CoachingInsight | null>(null);
@@ -32,48 +28,51 @@ export function AICoachingEngine({
     const fetchInsights = async () => {
       try {
         // Simulate AI coaching analysis
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
         const mockInsights: CoachingInsight[] = [
           {
             id: '1',
             type: 'technique',
             title: 'Footwork Improvement Detected',
-            description: 'Your latest video shows 15% improvement in footwork timing. Focus on maintaining this rhythm.',
+            description:
+              'Your latest video shows 15% improvement in footwork timing. Focus on maintaining this rhythm.',
             priority: 'high',
             actionItems: [
               'Practice ladder drills 3x per week',
               'Focus on quick, light steps',
-              'Record yourself for self-assessment'
+              'Record yourself for self-assessment',
             ],
-            adhdFriendly: true
+            adhdFriendly: true,
           },
           {
             id: '2',
             type: 'mental',
             title: 'Focus Enhancement Strategy',
-            description: 'ADHD-optimized training routine to maintain concentration during practice.',
+            description:
+              'ADHD-optimized training routine to maintain concentration during practice.',
             priority: 'medium',
             actionItems: [
               'Break practice into 15-minute segments',
               'Use visual cues for technique reminders',
-              'Implement reward system for completed drills'
+              'Implement reward system for completed drills',
             ],
-            adhdFriendly: true
+            adhdFriendly: true,
           },
           {
             id: '3',
             type: 'fitness',
             title: 'Strength Training Progression',
-            description: 'Ready to advance to next level of strength training based on recent performance.',
+            description:
+              'Ready to advance to next level of strength training based on recent performance.',
             priority: 'medium',
             actionItems: [
               'Increase weight by 5-10%',
               'Add plyometric exercises',
-              'Monitor recovery between sessions'
+              'Monitor recovery between sessions',
             ],
-            adhdFriendly: false
-          }
+            adhdFriendly: false,
+          },
         ];
 
         setInsights(mockInsights);
@@ -161,32 +160,30 @@ export function AICoachingEngine({
                   ? 'border-blue-500 bg-blue-500/5'
                   : 'border-slate-600'
               }`}
-              onClick={() => setSelectedInsight(
-                selectedInsight?.id === insight.id ? null : insight
-              )}
+              onClick={() =>
+                setSelectedInsight(selectedInsight?.id === insight.id ? null : insight)
+              }
             >
               <div className="flex items-start space-x-3">
                 <Icon className="h-5 w-5 text-blue-400 mt-0.5" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
-                    <h4 className="text-sm font-medium text-white">
-                      {insight.title}
-                    </h4>
+                    <h4 className="text-sm font-medium text-white">{insight.title}</h4>
                     <div className="flex items-center space-x-2">
                       {insight.adhdFriendly && (
                         <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded">
                           ADHD
                         </span>
                       )}
-                      <span className={`text-xs px-2 py-1 rounded ${getPriorityColor(insight.priority)}`}>
+                      <span
+                        className={`text-xs px-2 py-1 rounded ${getPriorityColor(insight.priority)}`}
+                      >
                         {insight.priority}
                       </span>
                     </div>
                   </div>
-                  <p className="text-sm text-slate-400 mb-2">
-                    {insight.description}
-                  </p>
-                  
+                  <p className="text-sm text-slate-400 mb-2">{insight.description}</p>
+
                   {selectedInsight?.id === insight.id && (
                     <div className="mt-3 pt-3 border-t border-slate-600">
                       <h5 className="text-xs font-medium text-slate-300 mb-2">Action Items:</h5>

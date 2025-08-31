@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  Download, 
-  HardDrive, 
-  Cpu, 
-  MemoryStick, 
-  CheckCircle, 
-  Clock, 
+import {
+  Download,
+  HardDrive,
+  Cpu,
+  MemoryStick,
+  CheckCircle,
+  Clock,
   AlertCircle,
   Settings,
   Play,
@@ -18,7 +18,7 @@ import {
   Shield,
   Key,
   Lock,
-  Unlock
+  Unlock,
 } from 'lucide-react';
 
 interface LocalModelInfo {
@@ -74,13 +74,13 @@ export default function ModelsPage() {
         const data = await response.json();
         setModels(data.models || []);
         setSystemRequirements(data.systemRequirements);
-        
+
         // Check status of each model
         await Promise.all(
           data.models.map(async (model: LocalModelInfo) => {
             const status = await checkModelStatus(model.name);
             model.status = status;
-          })
+          }),
         );
         setModels([...data.models]);
       }
@@ -96,9 +96,9 @@ export default function ModelsPage() {
       const response = await fetch('/api/models/download', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ modelName })
+        body: JSON.stringify({ modelName }),
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         return data.status;
@@ -116,24 +116,24 @@ export default function ModelsPage() {
 
   const downloadModel = async (modelName: string, installationType: 'download' | 'ollama') => {
     setDownloadingModel(modelName);
-    
+
     try {
       const response = await fetch('/api/models/download', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ modelName, installationType })
+        body: JSON.stringify({ modelName, installationType }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        
+
         // Update model status
-        setModels(prevModels => 
-          prevModels.map(model => 
-            model.name === modelName 
+        setModels((prevModels) =>
+          prevModels.map((model) =>
+            model.name === modelName
               ? { ...model, status: data.status, downloadProgress: data.downloadProgress }
-              : model
-          )
+              : model,
+          ),
         );
 
         // Simulate download progress for demonstration
@@ -155,22 +155,20 @@ export default function ModelsPage() {
       if (progress >= 100) {
         progress = 100;
         clearInterval(interval);
-        
+
         // Update model status to installed
-        setModels(prevModels => 
-          prevModels.map(model => 
-            model.name === modelName 
+        setModels((prevModels) =>
+          prevModels.map((model) =>
+            model.name === modelName
               ? { ...model, status: 'installed', downloadProgress: 100 }
-              : model
-          )
+              : model,
+          ),
         );
       } else {
-        setModels(prevModels => 
-          prevModels.map(model => 
-            model.name === modelName 
-              ? { ...model, downloadProgress: progress }
-              : model
-          )
+        setModels((prevModels) =>
+          prevModels.map((model) =>
+            model.name === modelName ? { ...model, downloadProgress: progress } : model,
+          ),
         );
       }
     }, 500);
@@ -192,34 +190,36 @@ export default function ModelsPage() {
           modelName,
           features: ['offline_use', 'commercial_use'],
           maxActivations: 1,
-          validityDays: 365
-        })
+          validityDays: 365,
+        }),
       });
 
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
           // Update model with license info
-          setModels(prevModels => 
-            prevModels.map(model => 
-              model.name === modelName 
-                ? { 
-                    ...model, 
+          setModels((prevModels) =>
+            prevModels.map((model) =>
+              model.name === modelName
+                ? {
+                    ...model,
                     status: 'licensed',
                     licenseInfo: {
                       id: data.license.id,
                       licenseKey: data.license.licenseKey,
                       expirationDate: data.license.expirationDate,
                       features: data.license.features,
-                      encrypted: false
-                    }
+                      encrypted: false,
+                    },
                   }
-                : model
-            )
+                : model,
+            ),
           );
-          
+
           // Show license key to user
-          alert(`License generated successfully!\nLicense Key: ${data.license.licenseKey}\n\nPlease save this key securely.`);
+          alert(
+            `License generated successfully!\nLicense Key: ${data.license.licenseKey}\n\nPlease save this key securely.`,
+          );
         }
       }
     } catch (error) {
@@ -234,32 +234,32 @@ export default function ModelsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'validate',
-          licenseKey
-        })
+          licenseKey,
+        }),
       });
 
       if (response.ok) {
         const data = await response.json();
         if (data.valid) {
           // Update model with validated license
-          setModels(prevModels => 
-            prevModels.map(model => 
-              model.name === modelName 
-                ? { 
-                    ...model, 
+          setModels((prevModels) =>
+            prevModels.map((model) =>
+              model.name === modelName
+                ? {
+                    ...model,
                     status: 'ready',
                     licenseInfo: {
                       id: data.license.id,
                       licenseKey: licenseKey,
                       expirationDate: data.license.expirationDate,
                       features: data.license.features,
-                      encrypted: true
-                    }
+                      encrypted: true,
+                    },
                   }
-                : model
-            )
+                : model,
+            ),
           );
-          
+
           setShowLicenseModal(false);
           setLicenseKey('');
           setSelectedModelForLicense(null);
@@ -348,8 +348,8 @@ export default function ModelsPage() {
               <button
                 onClick={toggleLocalModels}
                 className={`px-4 py-2 rounded-lg transition-colors ${
-                  useLocalModels 
-                    ? 'bg-primary text-primary-foreground neon-border' 
+                  useLocalModels
+                    ? 'bg-primary text-primary-foreground neon-border'
                     : 'bg-muted text-muted-foreground hover:bg-muted/80'
                 }`}
               >
@@ -371,19 +371,27 @@ export default function ModelsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="flex items-center space-x-2">
                 <MemoryStick className="h-4 w-4 text-primary" />
-                <span className="text-sm text-muted-foreground">RAM: {systemRequirements.minimumRam} minimum</span>
+                <span className="text-sm text-muted-foreground">
+                  RAM: {systemRequirements.minimumRam} minimum
+                </span>
               </div>
               <div className="flex items-center space-x-2">
                 <HardDrive className="h-4 w-4 text-primary" />
-                <span className="text-sm text-muted-foreground">Storage: {systemRequirements.minimumStorage} minimum</span>
+                <span className="text-sm text-muted-foreground">
+                  Storage: {systemRequirements.minimumStorage} minimum
+                </span>
               </div>
               <div className="flex items-center space-x-2">
                 <Cpu className="h-4 w-4 text-primary" />
-                <span className="text-sm text-muted-foreground">GPU: {systemRequirements.recommendedGpu}</span>
+                <span className="text-sm text-muted-foreground">
+                  GPU: {systemRequirements.recommendedGpu}
+                </span>
               </div>
               <div className="flex items-center space-x-2">
                 <Settings className="h-4 w-4 text-primary" />
-                <span className="text-sm text-muted-foreground">Recommended: {systemRequirements.recommendedRam} RAM</span>
+                <span className="text-sm text-muted-foreground">
+                  Recommended: {systemRequirements.recommendedRam} RAM
+                </span>
               </div>
             </div>
           </div>
@@ -392,7 +400,10 @@ export default function ModelsPage() {
         {/* Models Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {models.map((model) => (
-            <div key={model.name} className="bg-card border border-border rounded-lg p-6 neon-border">
+            <div
+              key={model.name}
+              className="bg-card border border-border rounded-lg p-6 neon-border"
+            >
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-semibold text-foreground">{model.name}</h3>
@@ -449,7 +460,7 @@ export default function ModelsPage() {
                     <span className="text-foreground">{Math.round(model.downloadProgress)}%</span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2">
-                    <div 
+                    <div
                       className="bg-primary h-2 rounded-full transition-all duration-300"
                       style={{ width: `${model.downloadProgress}%` }}
                     />
@@ -465,7 +476,9 @@ export default function ModelsPage() {
                     <Shield className="h-4 w-4 text-primary" />
                   </div>
                   <div className="text-xs text-muted-foreground space-y-1">
-                    <div>Expires: {new Date(model.licenseInfo.expirationDate).toLocaleDateString()}</div>
+                    <div>
+                      Expires: {new Date(model.licenseInfo.expirationDate).toLocaleDateString()}
+                    </div>
                     <div>Features: {model.licenseInfo.features.join(', ')}</div>
                     <div>Encrypted: {model.licenseInfo.encrypted ? 'Yes' : 'No'}</div>
                   </div>
@@ -540,11 +553,17 @@ export default function ModelsPage() {
           <div className="space-y-4 text-sm text-muted-foreground">
             <div>
               <h3 className="font-medium text-foreground mb-2">Option 1: Direct Download</h3>
-              <p>Download model files directly to your local machine. Models run using built-in inference engine.</p>
+              <p>
+                Download model files directly to your local machine. Models run using built-in
+                inference engine.
+              </p>
             </div>
             <div>
               <h3 className="font-medium text-foreground mb-2">Option 2: Ollama Integration</h3>
-              <p>Use Ollama for model management. Install Ollama first, then download models through the Ollama interface.</p>
+              <p>
+                Use Ollama for model management. Install Ollama first, then download models through
+                the Ollama interface.
+              </p>
             </div>
             <div>
               <h3 className="font-medium text-foreground mb-2">Performance Tips</h3>
@@ -571,7 +590,7 @@ export default function ModelsPage() {
                   ×
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
@@ -585,10 +604,13 @@ export default function ModelsPage() {
                     className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                 </div>
-                
+
                 <div className="flex space-x-2">
                   <button
-                    onClick={() => selectedModelForLicense && validateLicense(selectedModelForLicense, licenseKey)}
+                    onClick={() =>
+                      selectedModelForLicense &&
+                      validateLicense(selectedModelForLicense, licenseKey)
+                    }
                     disabled={!licenseKey.trim()}
                     className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 neon-border"
                   >

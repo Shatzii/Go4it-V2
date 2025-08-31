@@ -37,7 +37,7 @@ export class DatabaseManager {
 
   async initialize(): Promise<void> {
     const client = await this.pool.connect();
-    
+
     try {
       // Create main tables
       await client.query(`
@@ -108,9 +108,13 @@ export class DatabaseManager {
       // Create indexes for performance
       await client.query(`CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)`);
       await client.query(`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`);
-      await client.query(`CREATE INDEX IF NOT EXISTS idx_curriculum_school ON curriculum(school_id)`);
+      await client.query(
+        `CREATE INDEX IF NOT EXISTS idx_curriculum_school ON curriculum(school_id)`,
+      );
       await client.query(`CREATE INDEX IF NOT EXISTS idx_progress_user ON user_progress(user_id)`);
-      await client.query(`CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(session_token)`);
+      await client.query(
+        `CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(session_token)`,
+      );
 
       console.log('Database initialization completed successfully');
     } finally {
@@ -120,7 +124,7 @@ export class DatabaseManager {
 
   async seedDefaultData(): Promise<void> {
     const client = await this.pool.connect();
-    
+
     try {
       // Insert default schools
       const schools: SchoolData[] = [
@@ -131,8 +135,8 @@ export class DatabaseManager {
           config: {
             ageRange: '5-11',
             primaryColor: '#4299E1',
-            features: ['interactive-stories', 'visual-learning', 'adaptive-pace']
-          }
+            features: ['interactive-stories', 'visual-learning', 'adaptive-pace'],
+          },
         },
         {
           id: 'secondary-school',
@@ -141,8 +145,8 @@ export class DatabaseManager {
           config: {
             ageRange: '12-18',
             primaryColor: '#7C3AED',
-            features: ['project-based', 'self-paced', 'career-focused']
-          }
+            features: ['project-based', 'self-paced', 'career-focused'],
+          },
         },
         {
           id: 'law-school',
@@ -151,8 +155,8 @@ export class DatabaseManager {
           config: {
             ageRange: '18+',
             primaryColor: '#1E40AF',
-            features: ['case-studies', 'simulations', 'legal-writing']
-          }
+            features: ['case-studies', 'simulations', 'legal-writing'],
+          },
         },
         {
           id: 'language-school',
@@ -162,9 +166,9 @@ export class DatabaseManager {
             ageRange: 'all',
             primaryColor: '#059669',
             languages: ['english', 'german', 'spanish'],
-            features: ['conversation', 'cultural-context', 'practical-usage']
-          }
-        }
+            features: ['conversation', 'cultural-context', 'practical-usage'],
+          },
+        },
       ];
 
       for (const school of schools) {
@@ -173,36 +177,36 @@ export class DatabaseManager {
            VALUES ($1, $2, $3, $4, $5) 
            ON CONFLICT (id) DO UPDATE SET 
            name = $2, theme = $3, subdomain = $4, config = $5`,
-          [school.id, school.name, school.theme, school.id.replace('-school', ''), school.config]
+          [school.id, school.name, school.theme, school.id.replace('-school', ''), school.config],
         );
       }
 
       // Create default admin user
       const bcrypt = require('bcryptjs');
       const adminPasswordHash = await bcrypt.hash('admin123', 12);
-      
+
       await client.query(
         `INSERT INTO users (username, email, password_hash, role, school_access) 
          VALUES ($1, $2, $3, $4, $5) 
          ON CONFLICT (username) DO NOTHING`,
-        ['admin', 'admin@universaloneschool.com', adminPasswordHash, 'admin', ['all']]
+        ['admin', 'admin@universaloneschool.com', adminPasswordHash, 'admin', ['all']],
       );
 
       // Create demo student user
       const studentPasswordHash = await bcrypt.hash('student123', 12);
-      
+
       await client.query(
         `INSERT INTO users (username, email, password_hash, role, school_access, learning_profile) 
          VALUES ($1, $2, $3, $4, $5, $6) 
          ON CONFLICT (username) DO NOTHING`,
         [
-          'student', 
-          'student@universaloneschool.com', 
-          studentPasswordHash, 
-          'student', 
+          'student',
+          'student@universaloneschool.com',
+          studentPasswordHash,
+          'student',
           ['primary-school', 'secondary-school'],
-          { type: 'typical', adaptations: ['visual-supports', 'extended-time'] }
-        ]
+          { type: 'typical', adaptations: ['visual-supports', 'extended-time'] },
+        ],
       );
 
       console.log('Default data seeded successfully');
@@ -224,7 +228,7 @@ export class DatabaseManager {
   async getUserByUsername(username: string): Promise<any> {
     const result = await this.query(
       'SELECT * FROM users WHERE username = $1 AND is_active = true',
-      [username]
+      [username],
     );
     return result.rows[0] || null;
   }
@@ -239,37 +243,32 @@ export class DatabaseManager {
         userData.passwordHash,
         userData.role || 'student',
         userData.schoolAccess || [],
-        userData.learningProfile || null
-      ]
+        userData.learningProfile || null,
+      ],
     );
     return result.rows[0];
   }
 
   async updateUserLastLogin(userId: number): Promise<void> {
-    await this.query(
-      'UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = $1',
-      [userId]
-    );
+    await this.query('UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = $1', [userId]);
   }
 
   async getSchools(): Promise<any[]> {
-    const result = await this.query(
-      'SELECT * FROM schools WHERE is_active = true ORDER BY name'
-    );
+    const result = await this.query('SELECT * FROM schools WHERE is_active = true ORDER BY name');
     return result.rows;
   }
 
   async getCurriculumBySchool(schoolId: string, gradeLevel?: string): Promise<any[]> {
     let query = 'SELECT * FROM curriculum WHERE school_id = $1';
     const params = [schoolId];
-    
+
     if (gradeLevel) {
       query += ' AND grade_level = $2';
       params.push(gradeLevel);
     }
-    
+
     query += ' ORDER BY subject, title';
-    
+
     const result = await this.query(query, params);
     return result.rows;
   }
@@ -283,14 +282,14 @@ export class DatabaseManager {
       WHERE up.user_id = $1
     `;
     const params = [userId];
-    
+
     if (schoolId) {
       query += ' AND c.school_id = $2';
       params.push(schoolId);
     }
-    
+
     query += ' ORDER BY up.last_accessed DESC';
-    
+
     const result = await this.query(query, params);
     return result.rows;
   }
@@ -307,5 +306,5 @@ export const dbManager = new DatabaseManager({
   database: process.env.DB_NAME || 'universal_one_school',
   username: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'password',
-  ssl: process.env.NODE_ENV === 'production'
+  ssl: process.env.NODE_ENV === 'production',
 });

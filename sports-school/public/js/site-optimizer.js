@@ -1,11 +1,10 @@
 /**
  * Universal One School Site Optimizer
- * 
+ *
  * Comprehensive optimization system for seamless navigation and performance
  */
 
-window.SiteOptimizer = (function() {
-  
+window.SiteOptimizer = (function () {
   // Centralized school configuration
   const SCHOOL_CONFIG = {
     'primary-school': {
@@ -13,29 +12,29 @@ window.SiteOptimizer = (function() {
       name: 'Primary School Heroes',
       instructor: 'Captain Knowledge',
       theme: 'superhero',
-      colors: { primary: '#ff6b6b', secondary: '#ffa726' }
+      colors: { primary: '#ff6b6b', secondary: '#ffa726' },
     },
     'secondary-school': {
       path: '/schools/secondary-school/',
-      name: 'Secondary School Excellence', 
+      name: 'Secondary School Excellence',
       instructor: 'Dr. Mentor',
       theme: 'academic',
-      colors: { primary: '#4ecdc4', secondary: '#44a08d' }
+      colors: { primary: '#4ecdc4', secondary: '#44a08d' },
     },
     'law-school': {
       path: '/schools/law-school/',
       name: 'The Lawyer Makers',
       instructor: 'Professor Justice',
       theme: 'professional',
-      colors: { primary: '#1e40af', secondary: '#3b82f6' }
+      colors: { primary: '#1e40af', secondary: '#3b82f6' },
     },
     'language-school': {
       path: '/schools/language-school/',
       name: 'Global Language Academy',
       instructor: 'Professor Polyglot',
       theme: 'cultural',
-      colors: { primary: '#96ceb4', secondary: '#85c1e9' }
-    }
+      colors: { primary: '#96ceb4', secondary: '#85c1e9' },
+    },
   };
 
   // Legacy path mappings for seamless migration
@@ -45,7 +44,7 @@ window.SiteOptimizer = (function() {
     '/lawyer-makers': '/schools/law-school/',
     '/language': '/schools/language-school/',
     '/schools/lawyer-makers': '/schools/law-school/',
-    '/schools/lawyer-makers/': '/schools/law-school/'
+    '/schools/lawyer-makers/': '/schools/law-school/',
   };
 
   /**
@@ -53,13 +52,18 @@ window.SiteOptimizer = (function() {
    */
   function optimizeLinks() {
     const links = document.querySelectorAll('a[href]');
-    
-    links.forEach(link => {
+
+    links.forEach((link) => {
       const href = link.getAttribute('href');
-      
+
       // Skip external links and anchors
-      if (!href || href.startsWith('http') || href.startsWith('#') || 
-          href.startsWith('mailto:') || href.startsWith('tel:')) {
+      if (
+        !href ||
+        href.startsWith('http') ||
+        href.startsWith('#') ||
+        href.startsWith('mailto:') ||
+        href.startsWith('tel:')
+      ) {
         return;
       }
 
@@ -76,7 +80,7 @@ window.SiteOptimizer = (function() {
         const patterns = [
           new RegExp(`/${schoolId}(?:/|$)`),
           new RegExp(`/schools?/${schoolId}(?:/|$)`),
-          new RegExp(`/${schoolId.replace('-', '-?')}(?:/|$)`)
+          new RegExp(`/${schoolId.replace('-', '-?')}(?:/|$)`),
         ];
 
         for (const pattern of patterns) {
@@ -97,7 +101,7 @@ window.SiteOptimizer = (function() {
     // Lazy load images
     const images = document.querySelectorAll('img[data-src]');
     const imageObserver = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting) {
           const img = entry.target;
           img.src = img.dataset.src;
@@ -106,11 +110,11 @@ window.SiteOptimizer = (function() {
         }
       });
     });
-    
-    images.forEach(img => imageObserver.observe(img));
+
+    images.forEach((img) => imageObserver.observe(img));
 
     // Preload critical school pages
-    Object.values(SCHOOL_CONFIG).forEach(school => {
+    Object.values(SCHOOL_CONFIG).forEach((school) => {
       const link = document.createElement('link');
       link.rel = 'prefetch';
       link.href = school.path;
@@ -124,17 +128,17 @@ window.SiteOptimizer = (function() {
   function optimizeNavigation() {
     const currentPath = window.location.pathname;
     const navLinks = document.querySelectorAll('nav a[href], .navigation a[href]');
-    
-    navLinks.forEach(link => {
+
+    navLinks.forEach((link) => {
       const href = link.getAttribute('href');
       link.classList.remove('active');
-      
+
       // Exact match
       if (href === currentPath) {
         link.classList.add('active');
         return;
       }
-      
+
       // School page matching
       for (const [schoolId, config] of Object.entries(SCHOOL_CONFIG)) {
         if (currentPath.startsWith(config.path) && href === config.path) {
@@ -142,7 +146,7 @@ window.SiteOptimizer = (function() {
           return;
         }
       }
-      
+
       // Partial match for nested pages
       if (href !== '/' && currentPath.startsWith(href)) {
         link.classList.add('active');
@@ -155,10 +159,10 @@ window.SiteOptimizer = (function() {
    */
   function createBreadcrumbs() {
     const currentPath = window.location.pathname;
-    const pathSegments = currentPath.split('/').filter(segment => segment);
-    
+    const pathSegments = currentPath.split('/').filter((segment) => segment);
+
     if (pathSegments.length <= 1) return; // No breadcrumbs for home page
-    
+
     const breadcrumbContainer = document.createElement('nav');
     breadcrumbContainer.className = 'breadcrumb-nav';
     breadcrumbContainer.style.cssText = `
@@ -167,30 +171,31 @@ window.SiteOptimizer = (function() {
       color: #666;
       border-bottom: 1px solid #eee;
     `;
-    
+
     let breadcrumbHTML = '<a href="/" style="color: #667eea; text-decoration: none;">Home</a>';
     let currentPathBuilder = '';
-    
+
     pathSegments.forEach((segment, index) => {
       currentPathBuilder += '/' + segment;
-      
+
       // Get friendly name for school pages
-      const schoolConfig = Object.values(SCHOOL_CONFIG).find(config => 
-        config.path === currentPathBuilder + '/'
+      const schoolConfig = Object.values(SCHOOL_CONFIG).find(
+        (config) => config.path === currentPathBuilder + '/',
       );
-      
-      const displayName = schoolConfig ? schoolConfig.name : 
-        segment.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-      
+
+      const displayName = schoolConfig
+        ? schoolConfig.name
+        : segment.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+
       if (index === pathSegments.length - 1) {
         breadcrumbHTML += ` <span style="margin: 0 0.5rem;">/</span> <span>${displayName}</span>`;
       } else {
         breadcrumbHTML += ` <span style="margin: 0 0.5rem;">/</span> <a href="${currentPathBuilder}/" style="color: #667eea; text-decoration: none;">${displayName}</a>`;
       }
     });
-    
+
     breadcrumbContainer.innerHTML = breadcrumbHTML;
-    
+
     // Insert after header
     const header = document.querySelector('header');
     if (header && header.nextSibling) {
@@ -204,7 +209,7 @@ window.SiteOptimizer = (function() {
   function handleNotFound() {
     if (document.title.includes('404') || document.body.textContent.includes('Not Found')) {
       const currentPath = window.location.pathname;
-      
+
       // Check if this might be a legacy school path
       for (const [legacyPath, newPath] of Object.entries(LEGACY_MAPPINGS)) {
         if (currentPath.includes(legacyPath.substring(1))) {
@@ -212,7 +217,7 @@ window.SiteOptimizer = (function() {
           return;
         }
       }
-      
+
       // Suggest alternative pages
       console.log('Page not found, suggesting alternatives...');
     }
@@ -222,14 +227,14 @@ window.SiteOptimizer = (function() {
    * Smooth scrolling for anchor links
    */
   function enableSmoothScrolling() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
       anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
           target.scrollIntoView({
             behavior: 'smooth',
-            block: 'start'
+            block: 'start',
           });
         }
       });
@@ -274,9 +279,8 @@ window.SiteOptimizer = (function() {
     optimizePerformance,
     createBreadcrumbs,
     getSchoolConfig: (schoolId) => SCHOOL_CONFIG[schoolId],
-    getAllSchools: () => SCHOOL_CONFIG
+    getAllSchools: () => SCHOOL_CONFIG,
   };
-
 })();
 
 // Load optimization on every page

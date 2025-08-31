@@ -8,17 +8,17 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const assignmentId = searchParams.get('assignmentId');
     const userId = searchParams.get('userId');
-    
+
     if (assignmentId) {
       const submissions = await storage.getSubmissionsByAssignment(assignmentId);
       return NextResponse.json(submissions);
     }
-    
+
     if (userId) {
       const submissions = await storage.getSubmissionsByUser(userId);
       return NextResponse.json(submissions);
     }
-    
+
     const submissions = await storage.getSubmissions();
     return NextResponse.json(submissions);
   } catch (error) {
@@ -35,7 +35,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(submission, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid submission data', details: error.errors }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Invalid submission data', details: error.errors },
+        { status: 400 },
+      );
     }
     console.error('Error creating submission:', error);
     return NextResponse.json({ error: 'Failed to create submission' }, { status: 500 });

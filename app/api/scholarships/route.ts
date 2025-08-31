@@ -14,17 +14,17 @@ const scholarships = [
       'NCAA Division I basketball eligibility',
       'Minimum 2.5 GPA',
       'Complete NCAA Clearinghouse registration',
-      'Coach recommendation required'
+      'Coach recommendation required',
     ],
     sport: 'Basketball',
     eligibility: {
       gpa: 2.5,
       testScore: 900,
-      athleticLevel: 'Division I'
+      athleticLevel: 'Division I',
     },
     competitiveness: 'high',
     renewability: true,
-    lastUpdated: '2024-01-15'
+    lastUpdated: '2024-01-15',
   },
   {
     id: 'stanford-academic-merit',
@@ -38,16 +38,16 @@ const scholarships = [
       'Minimum 3.8 GPA',
       'SAT score of 1450 or higher',
       'Demonstrated leadership experience',
-      'Essay submission required'
+      'Essay submission required',
     ],
     eligibility: {
       gpa: 3.8,
       testScore: 1450,
-      athleticLevel: 'Any'
+      athleticLevel: 'Any',
     },
     competitiveness: 'high',
     renewability: true,
-    lastUpdated: '2024-01-14'
+    lastUpdated: '2024-01-14',
   },
   {
     id: 'duke-leadership-scholarship',
@@ -61,16 +61,16 @@ const scholarships = [
       'Minimum 3.5 GPA',
       'Demonstrated leadership in community service',
       'Two letters of recommendation',
-      'Personal statement required'
+      'Personal statement required',
     ],
     eligibility: {
       gpa: 3.5,
       testScore: 1250,
-      athleticLevel: 'Any'
+      athleticLevel: 'Any',
     },
     competitiveness: 'medium',
     renewability: true,
-    lastUpdated: '2024-01-13'
+    lastUpdated: '2024-01-13',
   },
   {
     id: 'texas-athletic-baseball',
@@ -84,17 +84,17 @@ const scholarships = [
       'NCAA Division I baseball eligibility',
       'Minimum 2.3 GPA',
       'Baseball skills demonstration',
-      'Coach evaluation required'
+      'Coach evaluation required',
     ],
     sport: 'Baseball',
     eligibility: {
       gpa: 2.3,
       testScore: 850,
-      athleticLevel: 'Division I'
+      athleticLevel: 'Division I',
     },
     competitiveness: 'high',
     renewability: true,
-    lastUpdated: '2024-01-12'
+    lastUpdated: '2024-01-12',
   },
   {
     id: 'florida-need-based',
@@ -108,16 +108,16 @@ const scholarships = [
       'Demonstrated financial need',
       'FAFSA completion required',
       'Minimum 3.0 GPA',
-      'Florida residency preferred'
+      'Florida residency preferred',
     ],
     eligibility: {
       gpa: 3.0,
       testScore: 1000,
-      athleticLevel: 'Any'
+      athleticLevel: 'Any',
     },
     competitiveness: 'low',
     renewability: true,
-    lastUpdated: '2024-01-11'
+    lastUpdated: '2024-01-11',
   },
   {
     id: 'notre-dame-academic',
@@ -131,16 +131,16 @@ const scholarships = [
       'Minimum 3.7 GPA',
       'SAT score of 1400 or higher',
       'Catholic faith background preferred',
-      'Community service record'
+      'Community service record',
     ],
     eligibility: {
       gpa: 3.7,
       testScore: 1400,
-      athleticLevel: 'Any'
+      athleticLevel: 'Any',
     },
     competitiveness: 'high',
     renewability: true,
-    lastUpdated: '2024-01-10'
+    lastUpdated: '2024-01-10',
   },
   {
     id: 'michigan-athletic-basketball',
@@ -154,17 +154,17 @@ const scholarships = [
       'NCAA Division I basketball eligibility',
       'Minimum 2.8 GPA',
       'Big Ten Conference standards',
-      'Character evaluation'
+      'Character evaluation',
     ],
     sport: 'Basketball',
     eligibility: {
       gpa: 2.8,
       testScore: 950,
-      athleticLevel: 'Division I'
+      athleticLevel: 'Division I',
     },
     competitiveness: 'high',
     renewability: true,
-    lastUpdated: '2024-01-09'
+    lastUpdated: '2024-01-09',
   },
   {
     id: 'arizona-merit-scholarship',
@@ -178,16 +178,16 @@ const scholarships = [
       'Minimum 3.3 GPA',
       'SAT score of 1200 or higher',
       'Arizona residency',
-      'Extracurricular involvement'
+      'Extracurricular involvement',
     ],
     eligibility: {
       gpa: 3.3,
       testScore: 1200,
-      athleticLevel: 'Any'
+      athleticLevel: 'Any',
     },
     competitiveness: 'medium',
     renewability: true,
-    lastUpdated: '2024-01-08'
+    lastUpdated: '2024-01-08',
   },
   {
     id: 'unc-academic-excellence',
@@ -201,16 +201,16 @@ const scholarships = [
       'Minimum 3.6 GPA',
       'SAT score of 1350 or higher',
       'North Carolina residency',
-      'Academic achievements'
+      'Academic achievements',
     ],
     eligibility: {
       gpa: 3.6,
       testScore: 1350,
-      athleticLevel: 'Any'
+      athleticLevel: 'Any',
     },
     competitiveness: 'medium',
     renewability: true,
-    lastUpdated: '2024-01-07'
+    lastUpdated: '2024-01-07',
   },
   {
     id: 'oregon-athletic-track',
@@ -224,17 +224,17 @@ const scholarships = [
       'NCAA Division I track eligibility',
       'Minimum 2.5 GPA',
       'Qualifying track times',
-      'Coach recommendation'
+      'Coach recommendation',
     ],
     sport: 'Track & Field',
     eligibility: {
       gpa: 2.5,
       testScore: 900,
-      athleticLevel: 'Division I'
+      athleticLevel: 'Division I',
     },
     competitiveness: 'high',
     renewability: true,
-    lastUpdated: '2024-01-06'
+    lastUpdated: '2024-01-06',
   },
   {
     id: 'cal-berkeley-stem',
@@ -248,16 +248,16 @@ const scholarships = [
       'STEM field of study',
       'Minimum 3.8 GPA',
       'SAT Math score of 750+',
-      'Research experience preferred'
+      'Research experience preferred',
     ],
     eligibility: {
       gpa: 3.8,
       testScore: 1450,
-      athleticLevel: 'Any'
+      athleticLevel: 'Any',
     },
     competitiveness: 'high',
     renewability: true,
-    lastUpdated: '2024-01-05'
+    lastUpdated: '2024-01-05',
   },
   {
     id: 'usc-athletic-soccer',
@@ -271,43 +271,43 @@ const scholarships = [
       'NCAA Division I soccer eligibility',
       'Minimum 2.7 GPA',
       'Soccer skills evaluation',
-      'Character assessment'
+      'Character assessment',
     ],
     sport: 'Soccer',
     eligibility: {
       gpa: 2.7,
       testScore: 920,
-      athleticLevel: 'Division I'
+      athleticLevel: 'Division I',
     },
     competitiveness: 'high',
     renewability: true,
-    lastUpdated: '2024-01-04'
-  }
+    lastUpdated: '2024-01-04',
+  },
 ];
 
 // Calculate scholarship tracker statistics
 const calculateTracker = (scholarships: any[]) => {
-  const applied = scholarships.filter(s => s.status === 'applied' || s.status === 'pending');
-  const awarded = scholarships.filter(s => s.status === 'awarded');
+  const applied = scholarships.filter((s) => s.status === 'applied' || s.status === 'pending');
+  const awarded = scholarships.filter((s) => s.status === 'awarded');
   const totalValue = awarded.reduce((sum, s) => sum + s.amount, 0);
-  
+
   return {
     totalApplied: applied.length,
     totalAwarded: awarded.length,
     totalValue: totalValue,
-    pendingApplications: scholarships.filter(s => s.status === 'pending').length,
+    pendingApplications: scholarships.filter((s) => s.status === 'pending').length,
     successRate: applied.length > 0 ? Math.round((awarded.length / applied.length) * 100) : 0,
-    averageAmount: awarded.length > 0 ? Math.round(totalValue / awarded.length) : 0
+    averageAmount: awarded.length > 0 ? Math.round(totalValue / awarded.length) : 0,
   };
 };
 
 export async function GET() {
   try {
     // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 200));
-    
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
     const tracker = calculateTracker(scholarships);
-    
+
     return NextResponse.json({
       success: true,
       scholarships: scholarships,
@@ -318,115 +318,139 @@ export async function GET() {
         databaseVersion: 'ScholarshipDB v2.1',
         coverage: {
           types: {
-            'athletic': scholarships.filter(s => s.type === 'athletic').length,
-            'academic': scholarships.filter(s => s.type === 'academic').length,
-            'need-based': scholarships.filter(s => s.type === 'need-based').length,
-            'merit': scholarships.filter(s => s.type === 'merit').length
+            athletic: scholarships.filter((s) => s.type === 'athletic').length,
+            academic: scholarships.filter((s) => s.type === 'academic').length,
+            'need-based': scholarships.filter((s) => s.type === 'need-based').length,
+            merit: scholarships.filter((s) => s.type === 'merit').length,
           },
           statuses: {
-            'available': scholarships.filter(s => s.status === 'available').length,
-            'applied': scholarships.filter(s => s.status === 'applied').length,
-            'pending': scholarships.filter(s => s.status === 'pending').length,
-            'awarded': scholarships.filter(s => s.status === 'awarded').length,
-            'declined': scholarships.filter(s => s.status === 'declined').length
+            available: scholarships.filter((s) => s.status === 'available').length,
+            applied: scholarships.filter((s) => s.status === 'applied').length,
+            pending: scholarships.filter((s) => s.status === 'pending').length,
+            awarded: scholarships.filter((s) => s.status === 'awarded').length,
+            declined: scholarships.filter((s) => s.status === 'declined').length,
           },
           totalValue: scholarships.reduce((sum, s) => sum + s.amount, 0),
-          averageAmount: Math.round(scholarships.reduce((sum, s) => sum + s.amount, 0) / scholarships.length)
-        }
-      }
+          averageAmount: Math.round(
+            scholarships.reduce((sum, s) => sum + s.amount, 0) / scholarships.length,
+          ),
+        },
+      },
     });
   } catch (error) {
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to fetch scholarships',
-      details: error.message
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to fetch scholarships',
+        details: error.message,
+      },
+      { status: 500 },
+    );
   }
 }
 
 export async function POST(request: Request) {
   try {
     const { scholarshipId, action, athleteProfile } = await request.json();
-    
+
     // Find scholarship
-    const scholarship = scholarships.find(s => s.id === scholarshipId);
+    const scholarship = scholarships.find((s) => s.id === scholarshipId);
     if (!scholarship) {
-      return NextResponse.json({
-        success: false,
-        error: 'Scholarship not found'
-      }, { status: 404 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Scholarship not found',
+        },
+        { status: 404 },
+      );
     }
-    
+
     // Process action
     if (action === 'apply') {
       // Check eligibility
       const eligible = checkEligibility(athleteProfile, scholarship);
       if (!eligible.qualified) {
-        return NextResponse.json({
-          success: false,
-          error: 'Not eligible for this scholarship',
-          reasons: eligible.reasons
-        }, { status: 400 });
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Not eligible for this scholarship',
+            reasons: eligible.reasons,
+          },
+          { status: 400 },
+        );
       }
-      
+
       // Update status
       scholarship.status = 'applied';
-      
+
       return NextResponse.json({
         success: true,
         message: `Application submitted for ${scholarship.name}`,
         scholarship: scholarship,
-        estimatedResponse: '2-4 weeks'
+        estimatedResponse: '2-4 weeks',
       });
     } else if (action === 'track') {
       // Add to tracking
       return NextResponse.json({
         success: true,
         message: `Now tracking ${scholarship.name}`,
-        scholarship: scholarship
+        scholarship: scholarship,
       });
     }
-    
-    return NextResponse.json({
-      success: false,
-      error: 'Invalid action'
-    }, { status: 400 });
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Invalid action',
+      },
+      { status: 400 },
+    );
   } catch (error) {
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to process scholarship action',
-      details: error.message
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to process scholarship action',
+        details: error.message,
+      },
+      { status: 500 },
+    );
   }
 }
 
-function checkEligibility(profile: any, scholarship: any): { qualified: boolean; reasons: string[] } {
+function checkEligibility(
+  profile: any,
+  scholarship: any,
+): { qualified: boolean; reasons: string[] } {
   const reasons: string[] = [];
-  
+
   // Check GPA
   if (profile.academics?.gpa < scholarship.eligibility.gpa) {
-    reasons.push(`GPA requirement: ${scholarship.eligibility.gpa} (you have ${profile.academics.gpa})`);
+    reasons.push(
+      `GPA requirement: ${scholarship.eligibility.gpa} (you have ${profile.academics.gpa})`,
+    );
   }
-  
+
   // Check test scores
   if (profile.academics?.sat < scholarship.eligibility.testScore) {
-    reasons.push(`Test score requirement: ${scholarship.eligibility.testScore} (you have ${profile.academics.sat})`);
+    reasons.push(
+      `Test score requirement: ${scholarship.eligibility.testScore} (you have ${profile.academics.sat})`,
+    );
   }
-  
+
   // Check athletic requirements
   if (scholarship.type === 'athletic' && scholarship.sport) {
     if (profile.sport !== scholarship.sport) {
       reasons.push(`Sport requirement: ${scholarship.sport} (you play ${profile.sport})`);
     }
   }
-  
+
   // Check deadline
   if (new Date() > new Date(scholarship.deadline)) {
     reasons.push('Application deadline has passed');
   }
-  
+
   return {
     qualified: reasons.length === 0,
-    reasons: reasons
+    reasons: reasons,
   };
 }

@@ -1,482 +1,496 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Student Dashboard - SuperHero School</title>
-    <link rel="stylesheet" href="/styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <style>
-        :root {
-            --hero-red: #dc2626;
-            --hero-blue: #2563eb;
-            --hero-yellow: #fbbf24;
-            --hero-green: #16a34a;
-            --hero-purple: #7c3aed;
-            --hero-orange: #ea580c;
-        }
+      :root {
+        --hero-red: #dc2626;
+        --hero-blue: #2563eb;
+        --hero-yellow: #fbbf24;
+        --hero-green: #16a34a;
+        --hero-purple: #7c3aed;
+        --hero-orange: #ea580c;
+      }
 
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 20px;
+      }
 
-        .dashboard-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
+      .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
 
-        .dashboard-header {
-            background: linear-gradient(135deg, var(--hero-red), var(--hero-blue));
-            color: white;
-            padding: 2rem;
-            text-align: center;
-            position: relative;
-        }
+      .dashboard-header {
+        background: linear-gradient(135deg, var(--hero-red), var(--hero-blue));
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+      }
 
-        .hero-avatar {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--hero-yellow), var(--hero-orange));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            margin: 0 auto 1rem;
-            position: relative;
-            z-index: 1;
-        }
+      .hero-avatar {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--hero-yellow), var(--hero-orange));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        margin: 0 auto 1rem;
+        position: relative;
+        z-index: 1;
+      }
 
-        .welcome-text h1 {
-            font-size: 2.5rem;
-            margin: 0 0 0.5rem;
-            font-weight: 700;
-        }
+      .welcome-text h1 {
+        font-size: 2.5rem;
+        margin: 0 0 0.5rem;
+        font-weight: 700;
+      }
 
-        .welcome-text p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            margin: 0;
-        }
+      .welcome-text p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin: 0;
+      }
 
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        padding: 2rem;
+        background: #f8f9fa;
+      }
+
+      .stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        border: 3px solid transparent;
+        transition: all 0.3s ease;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .stat-card.level {
+        border-color: var(--hero-red);
+      }
+      .stat-card.xp {
+        border-color: var(--hero-blue);
+      }
+      .stat-card.missions {
+        border-color: var(--hero-green);
+      }
+      .stat-card.badges {
+        border-color: var(--hero-purple);
+      }
+
+      .stat-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        display: block;
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        color: #666;
+        font-weight: 500;
+      }
+
+      .dashboard-content {
+        padding: 2rem;
+      }
+
+      .section-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .missions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+      }
+
+      .mission-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        border-left: 5px solid var(--hero-blue);
+        transition: all 0.3s ease;
+      }
+
+      .mission-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .mission-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .mission-icon {
+        font-size: 1.5rem;
+      }
+
+      .mission-title {
+        font-weight: 600;
+        color: #333;
+      }
+
+      .mission-description {
+        color: #666;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+      }
+
+      .progress-container {
+        margin-bottom: 1rem;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: #e0e0e0;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(45deg, var(--hero-green), var(--hero-yellow));
+        border-radius: 4px;
+        transition: width 0.3s ease;
+      }
+
+      .progress-text {
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      .mission-button {
+        background: linear-gradient(135deg, var(--hero-blue), var(--hero-purple));
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .mission-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .achievements-section {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .badges-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .badge {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 1rem;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .badge-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        display: block;
+      }
+
+      .badge-name {
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      .nav-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .nav-button {
+        background: linear-gradient(135deg, var(--hero-green), var(--hero-yellow));
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .nav-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      @media (max-width: 768px) {
         .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            padding: 2rem;
-            background: #f8f9fa;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-            border: 3px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .stat-card.level { border-color: var(--hero-red); }
-        .stat-card.xp { border-color: var(--hero-blue); }
-        .stat-card.missions { border-color: var(--hero-green); }
-        .stat-card.badges { border-color: var(--hero-purple); }
-
-        .stat-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            color: #666;
-            font-weight: 500;
-        }
-
-        .dashboard-content {
-            padding: 2rem;
-        }
-
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            color: #333;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+          grid-template-columns: repeat(2, 1fr);
         }
 
         .missions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
+          grid-template-columns: 1fr;
         }
 
-        .mission-card {
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-            border-left: 5px solid var(--hero-blue);
-            transition: all 0.3s ease;
+        .welcome-text h1 {
+          font-size: 2rem;
         }
-
-        .mission-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .mission-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .mission-icon {
-            font-size: 1.5rem;
-        }
-
-        .mission-title {
-            font-weight: 600;
-            color: #333;
-        }
-
-        .mission-description {
-            color: #666;
-            margin-bottom: 1rem;
-            line-height: 1.5;
-        }
-
-        .progress-container {
-            margin-bottom: 1rem;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 0.5rem;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(45deg, var(--hero-green), var(--hero-yellow));
-            border-radius: 4px;
-            transition: width 0.3s ease;
-        }
-
-        .progress-text {
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        .mission-button {
-            background: linear-gradient(135deg, var(--hero-blue), var(--hero-purple));
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .mission-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .achievements-section {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .badges-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .badge {
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            padding: 1rem;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .badge-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-
-        .badge-name {
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .nav-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-top: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .nav-button {
-            background: linear-gradient(135deg, var(--hero-green), var(--hero-yellow));
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 25px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .nav-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-        }
-
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .missions-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .welcome-text h1 {
-                font-size: 2rem;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="dashboard-container">
-        <!-- Dashboard Header -->
-        <div class="dashboard-header">
-            <div class="hero-avatar">🦸‍♂️</div>
-            <div class="welcome-text">
-                <h1>Welcome Back, Hero!</h1>
-                <p>Ready to discover your superpowers today?</p>
+      <!-- Dashboard Header -->
+      <div class="dashboard-header">
+        <div class="hero-avatar">🦸‍♂️</div>
+        <div class="welcome-text">
+          <h1>Welcome Back, Hero!</h1>
+          <p>Ready to discover your superpowers today?</p>
+        </div>
+      </div>
+
+      <!-- Hero Stats -->
+      <div class="stats-grid">
+        <div class="stat-card level">
+          <span class="stat-icon">🏆</span>
+          <div class="stat-number">Level 8</div>
+          <div class="stat-label">Hero Level</div>
+        </div>
+        <div class="stat-card xp">
+          <span class="stat-icon">⚡</span>
+          <div class="stat-number">2,450</div>
+          <div class="stat-label">Experience Points</div>
+        </div>
+        <div class="stat-card missions">
+          <span class="stat-icon">🎯</span>
+          <div class="stat-number">12/15</div>
+          <div class="stat-label">Missions Complete</div>
+        </div>
+        <div class="stat-card badges">
+          <span class="stat-icon">🏅</span>
+          <div class="stat-number">8</div>
+          <div class="stat-label">Badges Earned</div>
+        </div>
+      </div>
+
+      <!-- Dashboard Content -->
+      <div class="dashboard-content">
+        <!-- Active Missions -->
+        <h2 class="section-title">
+          <span>🚀</span>
+          Active Missions
+        </h2>
+
+        <div class="missions-grid">
+          <div class="mission-card">
+            <div class="mission-header">
+              <span class="mission-icon">📚</span>
+              <div class="mission-title">Reading Adventure</div>
             </div>
+            <div class="mission-description">
+              Explore the magical world of reading with dyslexia-friendly tools and techniques.
+            </div>
+            <div class="progress-container">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 75%"></div>
+              </div>
+              <div class="progress-text">Progress: 75% complete</div>
+            </div>
+            <a href="#" class="mission-button">Continue Mission</a>
+          </div>
+
+          <div class="mission-card">
+            <div class="mission-header">
+              <span class="mission-icon">🧮</span>
+              <div class="mission-title">Math Superhero</div>
+            </div>
+            <div class="mission-description">
+              Use your ADHD focus powers to solve exciting math challenges and puzzles.
+            </div>
+            <div class="progress-container">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 45%"></div>
+              </div>
+              <div class="progress-text">Progress: 45% complete</div>
+            </div>
+            <a href="#" class="mission-button">Continue Mission</a>
+          </div>
+
+          <div class="mission-card">
+            <div class="mission-header">
+              <span class="mission-icon">🎨</span>
+              <div class="mission-title">Creative Expression</div>
+            </div>
+            <div class="mission-description">
+              Channel your autism pattern recognition into amazing artistic creations.
+            </div>
+            <div class="progress-container">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 90%"></div>
+              </div>
+              <div class="progress-text">Progress: 90% complete</div>
+            </div>
+            <a href="#" class="mission-button">Continue Mission</a>
+          </div>
         </div>
 
-        <!-- Hero Stats -->
-        <div class="stats-grid">
-            <div class="stat-card level">
-                <span class="stat-icon">🏆</span>
-                <div class="stat-number">Level 8</div>
-                <div class="stat-label">Hero Level</div>
+        <!-- Achievements Section -->
+        <div class="achievements-section">
+          <h2 class="section-title" style="color: white">
+            <span>🏅</span>
+            Your Hero Badges
+          </h2>
+          <div class="badges-grid">
+            <div class="badge">
+              <span class="badge-icon">🦸‍♀️</span>
+              <div class="badge-name">Focus Master</div>
             </div>
-            <div class="stat-card xp">
-                <span class="stat-icon">⚡</span>
-                <div class="stat-number">2,450</div>
-                <div class="stat-label">Experience Points</div>
+            <div class="badge">
+              <span class="badge-icon">📖</span>
+              <div class="badge-name">Reading Hero</div>
             </div>
-            <div class="stat-card missions">
-                <span class="stat-icon">🎯</span>
-                <div class="stat-number">12/15</div>
-                <div class="stat-label">Missions Complete</div>
+            <div class="badge">
+              <span class="badge-icon">🧠</span>
+              <div class="badge-name">Pattern Expert</div>
             </div>
-            <div class="stat-card badges">
-                <span class="stat-icon">🏅</span>
-                <div class="stat-number">8</div>
-                <div class="stat-label">Badges Earned</div>
+            <div class="badge">
+              <span class="badge-icon">⭐</span>
+              <div class="badge-name">Creative Genius</div>
             </div>
+            <div class="badge">
+              <span class="badge-icon">🎯</span>
+              <div class="badge-name">Mission Master</div>
+            </div>
+            <div class="badge">
+              <span class="badge-icon">🚀</span>
+              <div class="badge-name">Super Learner</div>
+            </div>
+            <div class="badge">
+              <span class="badge-icon">🎨</span>
+              <div class="badge-name">Art Champion</div>
+            </div>
+            <div class="badge">
+              <span class="badge-icon">💡</span>
+              <div class="badge-name">Problem Solver</div>
+            </div>
+          </div>
         </div>
 
-        <!-- Dashboard Content -->
-        <div class="dashboard-content">
-            <!-- Active Missions -->
-            <h2 class="section-title">
-                <span>🚀</span>
-                Active Missions
-            </h2>
-            
-            <div class="missions-grid">
-                <div class="mission-card">
-                    <div class="mission-header">
-                        <span class="mission-icon">📚</span>
-                        <div class="mission-title">Reading Adventure</div>
-                    </div>
-                    <div class="mission-description">
-                        Explore the magical world of reading with dyslexia-friendly tools and techniques.
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 75%;"></div>
-                        </div>
-                        <div class="progress-text">Progress: 75% complete</div>
-                    </div>
-                    <a href="#" class="mission-button">Continue Mission</a>
-                </div>
-
-                <div class="mission-card">
-                    <div class="mission-header">
-                        <span class="mission-icon">🧮</span>
-                        <div class="mission-title">Math Superhero</div>
-                    </div>
-                    <div class="mission-description">
-                        Use your ADHD focus powers to solve exciting math challenges and puzzles.
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 45%;"></div>
-                        </div>
-                        <div class="progress-text">Progress: 45% complete</div>
-                    </div>
-                    <a href="#" class="mission-button">Continue Mission</a>
-                </div>
-
-                <div class="mission-card">
-                    <div class="mission-header">
-                        <span class="mission-icon">🎨</span>
-                        <div class="mission-title">Creative Expression</div>
-                    </div>
-                    <div class="mission-description">
-                        Channel your autism pattern recognition into amazing artistic creations.
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 90%;"></div>
-                        </div>
-                        <div class="progress-text">Progress: 90% complete</div>
-                    </div>
-                    <a href="#" class="mission-button">Continue Mission</a>
-                </div>
-            </div>
-
-            <!-- Achievements Section -->
-            <div class="achievements-section">
-                <h2 class="section-title" style="color: white;">
-                    <span>🏅</span>
-                    Your Hero Badges
-                </h2>
-                <div class="badges-grid">
-                    <div class="badge">
-                        <span class="badge-icon">🦸‍♀️</span>
-                        <div class="badge-name">Focus Master</div>
-                    </div>
-                    <div class="badge">
-                        <span class="badge-icon">📖</span>
-                        <div class="badge-name">Reading Hero</div>
-                    </div>
-                    <div class="badge">
-                        <span class="badge-icon">🧠</span>
-                        <div class="badge-name">Pattern Expert</div>
-                    </div>
-                    <div class="badge">
-                        <span class="badge-icon">⭐</span>
-                        <div class="badge-name">Creative Genius</div>
-                    </div>
-                    <div class="badge">
-                        <span class="badge-icon">🎯</span>
-                        <div class="badge-name">Mission Master</div>
-                    </div>
-                    <div class="badge">
-                        <span class="badge-icon">🚀</span>
-                        <div class="badge-name">Super Learner</div>
-                    </div>
-                    <div class="badge">
-                        <span class="badge-icon">🎨</span>
-                        <div class="badge-name">Art Champion</div>
-                    </div>
-                    <div class="badge">
-                        <span class="badge-icon">💡</span>
-                        <div class="badge-name">Problem Solver</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Navigation Buttons -->
-            <div class="nav-buttons">
-                <a href="/schools/primary-school/" class="nav-button">
-                    <span>🏠</span>
-                    Back to School
-                </a>
-                <a href="/learning-path-demo" class="nav-button">
-                    <span>🗺️</span>
-                    Learning Path
-                </a>
-                <a href="/demo/" class="nav-button">
-                    <span>🤖</span>
-                    AI Tutor
-                </a>
-                <a href="/admin/primary-school/parent/" class="nav-button">
-                    <span>👨‍👩‍👧‍👦</span>
-                    Parent Portal
-                </a>
-            </div>
+        <!-- Navigation Buttons -->
+        <div class="nav-buttons">
+          <a href="/schools/primary-school/" class="nav-button">
+            <span>🏠</span>
+            Back to School
+          </a>
+          <a href="/learning-path-demo" class="nav-button">
+            <span>🗺️</span>
+            Learning Path
+          </a>
+          <a href="/demo/" class="nav-button">
+            <span>🤖</span>
+            AI Tutor
+          </a>
+          <a href="/admin/primary-school/parent/" class="nav-button">
+            <span>👨‍👩‍👧‍👦</span>
+            Parent Portal
+          </a>
         </div>
+      </div>
     </div>
 
     <script>
-        // Add some interactive functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animate progress bars
-            const progressBars = document.querySelectorAll('.progress-fill');
-            progressBars.forEach(bar => {
-                const width = bar.style.width;
-                bar.style.width = '0%';
-                setTimeout(() => {
-                    bar.style.width = width;
-                }, 500);
-            });
-
-            // Add click effects to mission buttons
-            const missionButtons = document.querySelectorAll('.mission-button');
-            missionButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    this.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        this.style.transform = '';
-                    }, 150);
-                });
-            });
+      // Add some interactive functionality
+      document.addEventListener('DOMContentLoaded', function () {
+        // Animate progress bars
+        const progressBars = document.querySelectorAll('.progress-fill');
+        progressBars.forEach((bar) => {
+          const width = bar.style.width;
+          bar.style.width = '0%';
+          setTimeout(() => {
+            bar.style.width = width;
+          }, 500);
         });
+
+        // Add click effects to mission buttons
+        const missionButtons = document.querySelectorAll('.mission-button');
+        missionButtons.forEach((button) => {
+          button.addEventListener('click', function (e) {
+            e.preventDefault();
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+              this.style.transform = '';
+            }, 150);
+          });
+        });
+      });
     </script>
-</body>
+  </body>
 </html>

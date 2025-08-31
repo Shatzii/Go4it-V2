@@ -1,6 +1,6 @@
 /**
  * Curriculum Assessment Integration
- * 
+ *
  * This module integrates the ShatziiOS assessment system with the curriculum creator
  * and knowledge base. It allows the creation of personalized curriculum content
  * based on assessment results and learning profiles.
@@ -15,29 +15,29 @@ let learningPersona = null;
  * @param {Object} options - Configuration options
  * @param {string} options.userId - User ID
  * @param {string} options.learningStyle - Learning style override (from URL param)
- * @param {string} options.neurotype - Neurotype override (from URL param) 
+ * @param {string} options.neurotype - Neurotype override (from URL param)
  */
 async function initCurriculumAssessmentIntegration(options = {}) {
   const { userId, learningStyle, neurotype } = options;
-  
+
   // If learningStyle and neurotype were provided in the URL (from dashboard),
   // use those values directly
   if (learningStyle && neurotype) {
     assessmentData = {
       primaryStyle: learningStyle,
-      neurotype: neurotype
+      neurotype: neurotype,
     };
-    
+
     applyLearningProfile();
     return;
   }
-  
+
   // Otherwise, load from API
   if (userId) {
     await loadUserAssessmentData(userId);
     applyLearningProfile();
   }
-  
+
   // Add event listeners
   setupEventListeners();
 }
@@ -54,22 +54,32 @@ async function loadUserAssessmentData(userId) {
     if (!assessmentResponse.ok) {
       throw new Error(`Failed to load assessment results: ${assessmentResponse.statusText}`);
     }
-    
+
     const assessmentResult = await assessmentResponse.json();
-    if (assessmentResult.status === 'success' && assessmentResult.results && assessmentResult.results.length > 0) {
+    if (
+      assessmentResult.status === 'success' &&
+      assessmentResult.results &&
+      assessmentResult.results.length > 0
+    ) {
       // Get the most recent assessment
       assessmentData = assessmentResult.results[0];
-      
+
       // Get the learning persona for this assessment
       const personaResponse = await fetch(`/api/assessment/personas/${userId}`);
       if (personaResponse.ok) {
         const personaData = await personaResponse.json();
-        if (personaData.status === 'success' && personaData.personas && personaData.personas.length > 0) {
+        if (
+          personaData.status === 'success' &&
+          personaData.personas &&
+          personaData.personas.length > 0
+        ) {
           // Find the persona that matches this assessment
-          learningPersona = personaData.personas.find(p => p.assessmentId === assessmentData.id) || personaData.personas[0];
+          learningPersona =
+            personaData.personas.find((p) => p.assessmentId === assessmentData.id) ||
+            personaData.personas[0];
         }
       }
-      
+
       return true;
     } else {
       throw new Error('No assessment results found');
@@ -85,16 +95,16 @@ async function loadUserAssessmentData(userId) {
  */
 function applyLearningProfile() {
   if (!assessmentData) return;
-  
+
   const learningStyle = assessmentData.primaryStyle || 'visual';
   const neurotype = assessmentData.neurotype || 'general';
-  
+
   // Create profile indicator in UI
   createProfileIndicator(learningStyle, neurotype);
-  
+
   // Update form fields if they exist
   updateFormFields(learningStyle, neurotype);
-  
+
   // Apply specific adaptations based on neurotype
   applyNeurotypeAdaptations(neurotype);
 }
@@ -110,7 +120,7 @@ function createProfileIndicator(learningStyle, neurotype) {
   if (existingIndicator) {
     existingIndicator.remove();
   }
-  
+
   // Create new indicator
   const indicator = document.createElement('div');
   indicator.id = 'profile-indicator';
@@ -123,26 +133,26 @@ function createProfileIndicator(learningStyle, neurotype) {
   indicator.style.alignItems = 'center';
   indicator.style.justifyContent = 'space-between';
   indicator.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
-  
+
   // Learning style color mapping
   const styleColors = {
     visual: '#4299E1', // blue
     auditory: '#F6AD55', // orange
     kinesthetic: '#68D391', // green
-    reading: '#9F7AEA' // purple
+    reading: '#9F7AEA', // purple
   };
-  
+
   // Neurotype icon mapping
   const neurotypeIcons = {
     general: '👤',
     dyslexia: '📖',
     adhd: '⚡',
-    autism: '🧩'
+    autism: '🧩',
   };
-  
+
   const styleColor = styleColors[learningStyle] || styleColors.visual;
   const neurotypeIcon = neurotypeIcons[neurotype] || neurotypeIcons.general;
-  
+
   indicator.innerHTML = `
     <div style="display: flex; align-items: center;">
       <span style="font-size: 1.5rem; margin-right: 0.75rem;">${neurotypeIcon}</span>
@@ -158,9 +168,12 @@ function createProfileIndicator(learningStyle, neurotype) {
       Change
     </button>
   `;
-  
+
   // Find insertion point - ideally before the first form
-  const formElement = document.querySelector('form') || document.querySelector('.curriculum-form') || document.querySelector('.form-container');
+  const formElement =
+    document.querySelector('form') ||
+    document.querySelector('.curriculum-form') ||
+    document.querySelector('.form-container');
   if (formElement) {
     formElement.parentNode.insertBefore(indicator, formElement);
   } else {
@@ -169,13 +182,16 @@ function createProfileIndicator(learningStyle, neurotype) {
     if (headerElement) {
       headerElement.parentNode.insertBefore(indicator, headerElement.nextSibling);
     } else {
-      const mainContent = document.querySelector('main') || document.querySelector('.main-content') || document.querySelector('.container');
+      const mainContent =
+        document.querySelector('main') ||
+        document.querySelector('.main-content') ||
+        document.querySelector('.container');
       if (mainContent) {
         mainContent.prepend(indicator);
       }
     }
   }
-  
+
   // Style the learning style
   const styleIndicator = document.createElement('div');
   styleIndicator.className = 'learning-style-indicator';
@@ -190,7 +206,7 @@ function createProfileIndicator(learningStyle, neurotype) {
   styleIndicator.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
   styleIndicator.style.zIndex = '1000';
   styleIndicator.textContent = `${capitalizeFirstLetter(learningStyle)} Learning`;
-  
+
   document.body.appendChild(styleIndicator);
 }
 
@@ -201,24 +217,32 @@ function createProfileIndicator(learningStyle, neurotype) {
  */
 function updateFormFields(learningStyle, neurotype) {
   // Find learning style field
-  const learningStyleField = document.querySelector('select[name="learningStyle"], select[id="learning-style"], select[id="learningStyle"]');
+  const learningStyleField = document.querySelector(
+    'select[name="learningStyle"], select[id="learning-style"], select[id="learningStyle"]',
+  );
   if (learningStyleField) {
     learningStyleField.value = learningStyle;
   }
-  
+
   // Find neurotype field
-  const neurotypeField = document.querySelector('select[name="neurotype"], select[id="neurotype"], select[id="adaptation"]');
+  const neurotypeField = document.querySelector(
+    'select[name="neurotype"], select[id="neurotype"], select[id="adaptation"]',
+  );
   if (neurotypeField) {
     neurotypeField.value = neurotype;
   }
-  
+
   // Update any hidden fields
-  const hiddenLearningStyleField = document.querySelector('input[name="learningStyle"], input[id="learning-style-hidden"]');
+  const hiddenLearningStyleField = document.querySelector(
+    'input[name="learningStyle"], input[id="learning-style-hidden"]',
+  );
   if (hiddenLearningStyleField) {
     hiddenLearningStyleField.value = learningStyle;
   }
-  
-  const hiddenNeurotypeField = document.querySelector('input[name="neurotype"], input[id="neurotype-hidden"]');
+
+  const hiddenNeurotypeField = document.querySelector(
+    'input[name="neurotype"], input[id="neurotype-hidden"]',
+  );
   if (hiddenNeurotypeField) {
     hiddenNeurotypeField.value = neurotype;
   }
@@ -231,7 +255,7 @@ function updateFormFields(learningStyle, neurotype) {
 function applyNeurotypeAdaptations(neurotype) {
   // Remove existing adaptations
   document.body.classList.remove('dyslexia-adaptations', 'adhd-adaptations', 'autism-adaptations');
-  
+
   // Apply new adaptations
   if (neurotype === 'dyslexia') {
     applyDyslexiaAdaptations();
@@ -247,7 +271,7 @@ function applyNeurotypeAdaptations(neurotype) {
  */
 function applyDyslexiaAdaptations() {
   document.body.classList.add('dyslexia-adaptations');
-  
+
   const styleElement = document.createElement('style');
   styleElement.textContent = `
     .dyslexia-adaptations {
@@ -271,7 +295,7 @@ function applyDyslexiaAdaptations() {
     }
   `;
   document.head.appendChild(styleElement);
-  
+
   // Add accessibility toolbar option if it exists
   const accessibilityToolbar = document.querySelector('.accessibility-toolbar, .a11y-toolbar');
   if (accessibilityToolbar) {
@@ -290,7 +314,7 @@ function applyDyslexiaAdaptations() {
  */
 function applyADHDAdaptations() {
   document.body.classList.add('adhd-adaptations');
-  
+
   const styleElement = document.createElement('style');
   styleElement.textContent = `
     .adhd-adaptations form {
@@ -323,7 +347,7 @@ function applyADHDAdaptations() {
     }
   `;
   document.head.appendChild(styleElement);
-  
+
   // Add accessibility toolbar option if it exists
   const accessibilityToolbar = document.querySelector('.accessibility-toolbar, .a11y-toolbar');
   if (accessibilityToolbar) {
@@ -335,13 +359,13 @@ function applyADHDAdaptations() {
     `;
     accessibilityToolbar.appendChild(adhdOption);
   }
-  
+
   // Find all form groups and add focus styles
   const formGroups = document.querySelectorAll('.form-group, .input-group, .field-group');
-  formGroups.forEach(group => {
+  formGroups.forEach((group) => {
     group.classList.add('adhd-form-group');
   });
-  
+
   // Add progress indicator if form has multiple steps
   const form = document.querySelector('form');
   if (form) {
@@ -352,7 +376,7 @@ function applyADHDAdaptations() {
       progressIndicator.style.marginBottom = '1.5rem';
       progressIndicator.style.display = 'flex';
       progressIndicator.style.justifyContent = 'space-between';
-      
+
       for (let i = 0; i < formSteps.length; i++) {
         const step = document.createElement('div');
         step.className = 'progress-step';
@@ -364,10 +388,10 @@ function applyADHDAdaptations() {
         step.style.borderRadius = '4px';
         step.style.marginRight = i < formSteps.length - 1 ? '0.5rem' : '0';
         step.textContent = `Step ${i + 1}`;
-        
+
         progressIndicator.appendChild(step);
       }
-      
+
       form.prepend(progressIndicator);
     }
   }
@@ -378,7 +402,7 @@ function applyADHDAdaptations() {
  */
 function applyAutismAdaptations() {
   document.body.classList.add('autism-adaptations');
-  
+
   const styleElement = document.createElement('style');
   styleElement.textContent = `
     .autism-adaptations * {
@@ -408,7 +432,7 @@ function applyAutismAdaptations() {
     }
   `;
   document.head.appendChild(styleElement);
-  
+
   // Add accessibility toolbar option if it exists
   const accessibilityToolbar = document.querySelector('.accessibility-toolbar, .a11y-toolbar');
   if (accessibilityToolbar) {
@@ -420,24 +444,24 @@ function applyAutismAdaptations() {
     `;
     accessibilityToolbar.appendChild(autismOption);
   }
-  
+
   // Add helper text to form fields
   const formGroups = document.querySelectorAll('.form-group, .input-group, .field-group');
-  formGroups.forEach(group => {
+  formGroups.forEach((group) => {
     // Only add helper if not already present
     if (!group.querySelector('.form-helper, .helper-text, .hint')) {
       const input = group.querySelector('input, select, textarea');
       const label = group.querySelector('label');
-      
+
       if (input && label) {
         const helperText = document.createElement('div');
         helperText.className = 'form-helper';
         helperText.style.color = '#A0AEC0';
         helperText.style.fontSize = '0.9rem';
-        
+
         // Generate helper text based on input type and label
         const labelText = label.textContent.toLowerCase();
-        
+
         if (input.type === 'text' && labelText.includes('name')) {
           helperText.textContent = 'Enter a descriptive name for your curriculum.';
         } else if (input.type === 'text' && labelText.includes('title')) {
@@ -454,7 +478,7 @@ function applyAutismAdaptations() {
           // Don't add a generic helper if we can't generate something specific
           return;
         }
-        
+
         group.appendChild(helperText);
       }
     }
@@ -478,7 +502,7 @@ function createProfileSelector() {
   modalOverlay.style.justifyContent = 'center';
   modalOverlay.style.alignItems = 'center';
   modalOverlay.style.zIndex = '2000';
-  
+
   // Create modal content
   const modalContent = document.createElement('div');
   modalContent.style.backgroundColor = 'var(--card-bg, #282846)';
@@ -488,7 +512,7 @@ function createProfileSelector() {
   modalContent.style.maxWidth = '500px';
   modalContent.style.position = 'relative';
   modalContent.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.5)';
-  
+
   // Close button
   const closeButton = document.createElement('button');
   closeButton.innerHTML = '&times;';
@@ -507,33 +531,33 @@ function createProfileSelector() {
   closeButton.style.alignItems = 'center';
   closeButton.style.borderRadius = '50%';
   closeButton.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-  
+
   closeButton.addEventListener('click', () => {
     document.body.removeChild(modalOverlay);
   });
-  
+
   modalContent.appendChild(closeButton);
-  
+
   // Modal title
   const modalTitle = document.createElement('h2');
   modalTitle.style.color = 'var(--text-primary, white)';
   modalTitle.style.marginBottom = '1.5rem';
   modalTitle.style.textAlign = 'center';
   modalTitle.textContent = 'Select Learning Profile';
-  
+
   modalContent.appendChild(modalTitle);
-  
+
   // Learning style selector
   const learningStyleSection = document.createElement('div');
   learningStyleSection.style.marginBottom = '1.5rem';
-  
+
   const learningStyleLabel = document.createElement('label');
   learningStyleLabel.style.display = 'block';
   learningStyleLabel.style.marginBottom = '0.5rem';
   learningStyleLabel.style.color = 'var(--text-primary, white)';
   learningStyleLabel.style.fontWeight = 'bold';
   learningStyleLabel.textContent = 'Learning Style:';
-  
+
   const learningStyleSelect = document.createElement('select');
   learningStyleSelect.id = 'profile-learning-style';
   learningStyleSelect.style.width = '100%';
@@ -542,40 +566,40 @@ function createProfileSelector() {
   learningStyleSelect.style.color = 'var(--text-primary, white)';
   learningStyleSelect.style.border = '1px solid rgba(255, 255, 255, 0.2)';
   learningStyleSelect.style.borderRadius = '4px';
-  
+
   const styleOptions = [
     { value: 'visual', label: 'Visual (learns best with images and visual aids)' },
     { value: 'auditory', label: 'Auditory (learns best by listening and discussing)' },
     { value: 'kinesthetic', label: 'Kinesthetic (learns best through activities and movement)' },
-    { value: 'reading', label: 'Reading/Writing (learns best through text and notes)' }
+    { value: 'reading', label: 'Reading/Writing (learns best through text and notes)' },
   ];
-  
-  styleOptions.forEach(option => {
+
+  styleOptions.forEach((option) => {
     const optionElement = document.createElement('option');
     optionElement.value = option.value;
     optionElement.textContent = option.label;
     learningStyleSelect.appendChild(optionElement);
   });
-  
+
   // Set default value from assessment if available
   if (assessmentData && assessmentData.primaryStyle) {
     learningStyleSelect.value = assessmentData.primaryStyle;
   }
-  
+
   learningStyleSection.appendChild(learningStyleLabel);
   learningStyleSection.appendChild(learningStyleSelect);
-  
+
   // Neurotype selector
   const neurotypeSection = document.createElement('div');
   neurotypeSection.style.marginBottom = '1.5rem';
-  
+
   const neurotypeLabel = document.createElement('label');
   neurotypeLabel.style.display = 'block';
   neurotypeLabel.style.marginBottom = '0.5rem';
   neurotypeLabel.style.color = 'var(--text-primary, white)';
   neurotypeLabel.style.fontWeight = 'bold';
   neurotypeLabel.textContent = 'Adaptations For:';
-  
+
   const neurotypeSelect = document.createElement('select');
   neurotypeSelect.id = 'profile-neurotype';
   neurotypeSelect.style.width = '100%';
@@ -584,29 +608,29 @@ function createProfileSelector() {
   neurotypeSelect.style.color = 'var(--text-primary, white)';
   neurotypeSelect.style.border = '1px solid rgba(255, 255, 255, 0.2)';
   neurotypeSelect.style.borderRadius = '4px';
-  
+
   const neurotypeOptions = [
     { value: 'general', label: 'General' },
     { value: 'dyslexia', label: 'Dyslexia' },
     { value: 'adhd', label: 'ADHD' },
-    { value: 'autism', label: 'Autism Spectrum' }
+    { value: 'autism', label: 'Autism Spectrum' },
   ];
-  
-  neurotypeOptions.forEach(option => {
+
+  neurotypeOptions.forEach((option) => {
     const optionElement = document.createElement('option');
     optionElement.value = option.value;
     optionElement.textContent = option.label;
     neurotypeSelect.appendChild(optionElement);
   });
-  
+
   // Set default value from assessment if available
   if (assessmentData && assessmentData.neurotype) {
     neurotypeSelect.value = assessmentData.neurotype;
   }
-  
+
   neurotypeSection.appendChild(neurotypeLabel);
   neurotypeSection.appendChild(neurotypeSelect);
-  
+
   // Apply button
   const applyButton = document.createElement('button');
   applyButton.style.backgroundColor = 'var(--accent-color, #44AAFF)';
@@ -620,31 +644,31 @@ function createProfileSelector() {
   applyButton.style.fontSize = '1rem';
   applyButton.style.marginTop = '1rem';
   applyButton.textContent = 'Apply Learning Profile';
-  
+
   applyButton.addEventListener('click', () => {
     // Get selected values
     const learningStyle = document.getElementById('profile-learning-style').value;
     const neurotype = document.getElementById('profile-neurotype').value;
-    
+
     // Update assessment data
     assessmentData = {
       ...assessmentData,
       primaryStyle: learningStyle,
-      neurotype: neurotype
+      neurotype: neurotype,
     };
-    
+
     // Apply changes
     applyLearningProfile();
-    
+
     // Close modal
     document.body.removeChild(modalOverlay);
   });
-  
+
   // Assemble modal content
   modalContent.appendChild(learningStyleSection);
   modalContent.appendChild(neurotypeSection);
   modalContent.appendChild(applyButton);
-  
+
   modalOverlay.appendChild(modalContent);
   document.body.appendChild(modalOverlay);
 }
@@ -654,63 +678,64 @@ function createProfileSelector() {
  */
 function setupEventListeners() {
   // Change profile button
-  document.addEventListener('click', function(e) {
+  document.addEventListener('click', function (e) {
     if (e.target && e.target.id === 'change-profile-btn') {
       createProfileSelector();
     }
   });
-  
+
   // Intercept curriculum form submission to add learning profile
-  document.addEventListener('submit', function(e) {
+  document.addEventListener('submit', function (e) {
     // Only intercept curriculum creation forms
-    if (e.target && 
-        (e.target.id === 'curriculum-form' || 
-         e.target.className.includes('curriculum-form') || 
-         e.target.action.includes('curriculum'))) {
-      
+    if (
+      e.target &&
+      (e.target.id === 'curriculum-form' ||
+        e.target.className.includes('curriculum-form') ||
+        e.target.action.includes('curriculum'))
+    ) {
       // Don't intercept if form already has learning profile fields
       const hasLearningStyleField = e.target.querySelector('[name="learningStyle"]');
       const hasNeurotypeField = e.target.querySelector('[name="neurotype"]');
-      
+
       if (!hasLearningStyleField || !hasNeurotypeField) {
         e.preventDefault();
-        
+
         // Get learning profile data
         const learningStyle = assessmentData ? assessmentData.primaryStyle : 'visual';
         const neurotype = assessmentData ? assessmentData.neurotype : 'general';
-        
+
         // Add hidden fields to the form
         const learningStyleField = document.createElement('input');
         learningStyleField.type = 'hidden';
         learningStyleField.name = 'learningStyle';
         learningStyleField.value = learningStyle;
-        
+
         const neurotypeField = document.createElement('input');
         neurotypeField.type = 'hidden';
         neurotypeField.name = 'neurotype';
         neurotypeField.value = neurotype;
-        
+
         e.target.appendChild(learningStyleField);
         e.target.appendChild(neurotypeField);
-        
+
         // Submit the form
         e.target.submit();
       }
     }
   });
-  
+
   // Listen for learning profile change events from other components
-  window.addEventListener('learningProfileChanged', function(e) {
+  window.addEventListener('learningProfileChanged', function (e) {
     if (e.detail) {
       const { learningStyle, neurotype } = e.detail;
-      
+
       // Update assessment data
       assessmentData = {
         ...assessmentData,
         primaryStyle: learningStyle || (assessmentData ? assessmentData.primaryStyle : 'visual'),
-        neurotype: neurotype || (assessmentData ? assessmentData.neurotype : 'general')
+        neurotype: neurotype || (assessmentData ? assessmentData.neurotype : 'general'),
       };
-      
+
       // Apply changes
       applyLearningProfile();
     }
@@ -724,24 +749,24 @@ function setupEventListeners() {
  */
 function enhanceWithLearningProfile(curriculumData) {
   if (!assessmentData) return curriculumData;
-  
+
   const learningStyle = assessmentData.primaryStyle || 'visual';
   const neurotype = assessmentData.neurotype || 'general';
-  
+
   // Only add if not already present
   if (!curriculumData.learningStyle) {
     curriculumData.learningStyle = learningStyle;
   }
-  
+
   if (!curriculumData.neurotype && neurotype !== 'general') {
     curriculumData.neurotype = neurotype;
   }
-  
+
   // Add adaptation level if available from persona
   if (learningPersona && learningPersona.adaptationLevel && !curriculumData.adaptationLevel) {
     curriculumData.adaptationLevel = learningPersona.adaptationLevel;
   }
-  
+
   return curriculumData;
 }
 
@@ -752,65 +777,65 @@ function enhanceWithLearningProfile(curriculumData) {
  */
 function enhanceCurriculumResponse(curriculumResponse) {
   if (!assessmentData || !curriculumResponse) return curriculumResponse;
-  
+
   const learningStyle = assessmentData.primaryStyle || 'visual';
-  
+
   // Add visual markers based on learning style
   if (learningStyle === 'visual' && curriculumResponse.units) {
-    curriculumResponse.units = curriculumResponse.units.map(unit => {
+    curriculumResponse.units = curriculumResponse.units.map((unit) => {
       if (!unit.visualAids) {
         unit.visualAids = [
           'Concept maps for key ideas',
           'Color-coded section markers',
-          'Infographics for complex concepts'
+          'Infographics for complex concepts',
         ];
       }
       return unit;
     });
   }
-  
+
   // Add auditory components for auditory learners
   if (learningStyle === 'auditory' && curriculumResponse.units) {
-    curriculumResponse.units = curriculumResponse.units.map(unit => {
+    curriculumResponse.units = curriculumResponse.units.map((unit) => {
       if (!unit.auditoryActivities) {
         unit.auditoryActivities = [
           'Discussion prompts for each concept',
           'Verbal explanation guides',
-          'Audio summaries of key points'
+          'Audio summaries of key points',
         ];
       }
       return unit;
     });
   }
-  
+
   // Add hands-on activities for kinesthetic learners
   if (learningStyle === 'kinesthetic' && curriculumResponse.units) {
-    curriculumResponse.units = curriculumResponse.units.map(unit => {
+    curriculumResponse.units = curriculumResponse.units.map((unit) => {
       if (!unit.kinestheticActivities) {
         unit.kinestheticActivities = [
           'Hands-on experiments and activities',
           'Role-playing exercises',
-          'Physical manipulation of concepts'
+          'Physical manipulation of concepts',
         ];
       }
       return unit;
     });
   }
-  
+
   // Add reading/writing activities for reading/writing learners
   if (learningStyle === 'reading' && curriculumResponse.units) {
-    curriculumResponse.units = curriculumResponse.units.map(unit => {
+    curriculumResponse.units = curriculumResponse.units.map((unit) => {
       if (!unit.readingActivities) {
         unit.readingActivities = [
           'Extended reading lists',
           'Journal prompts and reflection activities',
-          'Written summaries and analyses'
+          'Written summaries and analyses',
         ];
       }
       return unit;
     });
   }
-  
+
   return curriculumResponse;
 }
 
@@ -828,5 +853,5 @@ window.curriculumAssessmentIntegration = {
   initCurriculumAssessmentIntegration,
   loadUserAssessmentData,
   enhanceWithLearningProfile,
-  enhanceCurriculumResponse
+  enhanceCurriculumResponse,
 };

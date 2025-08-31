@@ -1,6 +1,6 @@
 /**
  * Enhanced CMS Router
- * 
+ *
  * This file exports the combined CMS routers for the ShatziiOS platform.
  * Includes comprehensive APIs for managing all three school types:
  * - Neurodivergent Schools
@@ -24,16 +24,17 @@ router.get('/schools', (req, res) => {
   try {
     // Filter by type if provided in query
     const type = req.query.type as string | undefined;
-    
+
     // @ts-ignore - added by cms-storage
-    storage.getSchools()
-      .then(schools => {
+    storage
+      .getSchools()
+      .then((schools) => {
         if (type) {
-          schools = schools.filter(school => school.type === type);
+          schools = schools.filter((school) => school.type === type);
         }
         res.json(schools);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Error fetching schools:', err);
         res.status(500).json({ error: 'Failed to fetch schools' });
       });
@@ -50,16 +51,17 @@ router.get('/schools/:id', (req, res) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid school ID' });
     }
-    
+
     // @ts-ignore - added by cms-storage
-    storage.getSchoolById(id)
-      .then(school => {
+    storage
+      .getSchoolById(id)
+      .then((school) => {
         if (!school) {
           return res.status(404).json({ error: 'School not found' });
         }
         res.json(school);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Error fetching school:', err);
         res.status(500).json({ error: 'Failed to fetch school' });
       });

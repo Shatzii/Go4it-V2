@@ -6,12 +6,12 @@ const BASE_URL = 'http://localhost:5000';
 
 async function testExistingUser() {
   console.log('🔵 Testing with existing user...');
-  
+
   // Get an existing user from the database
   try {
     const response = await fetch(`${BASE_URL}/api/notifications`);
     console.log('✅ API connection working');
-    
+
     // Test camp registration page
     const campResponse = await fetch(`${BASE_URL}/camp-registration`);
     if (campResponse.ok) {
@@ -19,14 +19,14 @@ async function testExistingUser() {
     } else {
       console.log('❌ Camp registration page failed:', campResponse.status);
     }
-    
+
     // Test auth endpoint
     const authResponse = await fetch(`${BASE_URL}/api/auth/me`);
     console.log('Auth endpoint status:', authResponse.status);
     if (authResponse.status === 401) {
       console.log('✅ Auth protection working (401 expected for non-authenticated)');
     }
-    
+
     return true;
   } catch (error) {
     console.error('❌ Test failed:', error.message);
@@ -36,7 +36,7 @@ async function testExistingUser() {
 
 async function testLandingPage() {
   console.log('🔵 Testing landing page...');
-  
+
   try {
     const response = await fetch(`${BASE_URL}/`);
     if (response.ok) {
@@ -61,22 +61,22 @@ async function testLandingPage() {
 async function runTests() {
   console.log('🚀 Starting Simple Authentication & Database Test');
   console.log('=================================================');
-  
+
   const results = {
     existingUser: await testExistingUser(),
-    landingPage: await testLandingPage()
+    landingPage: await testLandingPage(),
   };
-  
+
   console.log('\n📊 TEST RESULTS');
   console.log('================');
   console.log(`API Connection:    ${results.existingUser ? '✅ PASS' : '❌ FAIL'}`);
   console.log(`Landing Page:      ${results.landingPage ? '✅ PASS' : '❌ FAIL'}`);
-  
+
   const passed = Object.values(results).filter(Boolean).length;
   const total = Object.keys(results).length;
-  
+
   console.log(`\n🎯 Overall: ${passed}/${total} tests passed`);
-  
+
   if (passed === total) {
     console.log('🎉 Core functionality is working!');
     console.log('\n📋 Database Status:');

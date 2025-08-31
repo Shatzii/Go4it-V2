@@ -13,7 +13,14 @@ async function main() {
   const regRes = await fetch(`${BASE_URL}/api/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, email, password, firstName: 'Flow', lastName: 'Test', acceptTerms: true })
+    body: JSON.stringify({
+      username,
+      email,
+      password,
+      firstName: 'Flow',
+      lastName: 'Test',
+      acceptTerms: true,
+    }),
   });
   const regText = await regRes.text();
   console.log('Status:', regRes.status);
@@ -29,7 +36,10 @@ async function main() {
 
   // 3) Logout
   console.log('> POST /api/auth/logout');
-  const outRes = await fetch(`${BASE_URL}/api/auth/logout`, { method: 'POST', headers: { Cookie: regCookie } });
+  const outRes = await fetch(`${BASE_URL}/api/auth/logout`, {
+    method: 'POST',
+    headers: { Cookie: regCookie },
+  });
   console.log('Status:', outRes.status);
   if (!outRes.ok) throw new Error('Logout failed');
 
@@ -38,7 +48,7 @@ async function main() {
   const loginRes = await fetch(`${BASE_URL}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify({ email, password }),
   });
   const loginText = await loginRes.text();
   console.log('Status:', loginRes.status);

@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { 
+import { useState } from 'react';
+import Link from 'next/link';
+import {
   ArrowLeft,
-  Download, 
-  Calendar, 
-  TrendingUp, 
+  Download,
+  Calendar,
+  TrendingUp,
   BarChart3,
   PieChart,
   FileText,
@@ -22,39 +22,39 @@ import {
   BookOpen,
   Users,
   CheckCircle,
-  AlertTriangle
-} from 'lucide-react'
+  AlertTriangle,
+} from 'lucide-react';
 
 interface ReportData {
-  period: string
-  overallGrade: number
+  period: string;
+  overallGrade: number;
   subjects: {
-    name: string
-    grade: number
-    assignments: number
-    participation: number
-    trend: 'up' | 'down' | 'stable'
-  }[]
+    name: string;
+    grade: number;
+    assignments: number;
+    participation: number;
+    trend: 'up' | 'down' | 'stable';
+  }[];
   attendance: {
-    present: number
-    total: number
-    tardies: number
-    excused: number
-  }
-  behaviorNotes: string[]
-  achievements: string[]
-  recommendations: string[]
+    present: number;
+    total: number;
+    tardies: number;
+    excused: number;
+  };
+  behaviorNotes: string[];
+  achievements: string[];
+  recommendations: string[];
 }
 
 export default function ParentReports() {
-  const [selectedPeriod, setSelectedPeriod] = useState('current')
-  const [selectedStudent, setSelectedStudent] = useState('emma')
-  const [reportType, setReportType] = useState<'detailed' | 'summary' | 'progress'>('detailed')
+  const [selectedPeriod, setSelectedPeriod] = useState('current');
+  const [selectedStudent, setSelectedStudent] = useState('emma');
+  const [reportType, setReportType] = useState<'detailed' | 'summary' | 'progress'>('detailed');
 
   const students = [
     { id: 'emma', name: 'Emma Rodriguez', grade: 'K' },
-    { id: 'marcus', name: 'Marcus Johnson', grade: '3' }
-  ]
+    { id: 'marcus', name: 'Marcus Johnson', grade: '3' },
+  ];
 
   const reportData: ReportData = {
     period: 'Quarter 1, 2024-25',
@@ -65,96 +65,99 @@ export default function ParentReports() {
         grade: 95,
         assignments: 18,
         participation: 98,
-        trend: 'up'
+        trend: 'up',
       },
       {
         name: 'English Language Arts',
         grade: 89,
         assignments: 15,
         participation: 92,
-        trend: 'stable'
+        trend: 'stable',
       },
       {
         name: 'Science',
         grade: 92,
         assignments: 12,
         participation: 95,
-        trend: 'up'
+        trend: 'up',
       },
       {
         name: 'Social Studies',
         grade: 86,
         assignments: 10,
         participation: 88,
-        trend: 'down'
+        trend: 'down',
       },
       {
         name: 'Fine Arts',
         grade: 94,
         assignments: 8,
         participation: 96,
-        trend: 'up'
+        trend: 'up',
       },
       {
         name: 'Physical Education',
         grade: 97,
         assignments: 6,
         participation: 99,
-        trend: 'stable'
-      }
+        trend: 'stable',
+      },
     ],
     attendance: {
       present: 42,
       total: 45,
       tardies: 1,
-      excused: 2
+      excused: 2,
     },
     behaviorNotes: [
       'Excellent collaboration during group activities',
       'Shows leadership qualities in classroom discussions',
-      'Consistently follows classroom rules and procedures'
+      'Consistently follows classroom rules and procedures',
     ],
     achievements: [
       'Math Master Award - Completed 10 consecutive assignments with A grades',
       'Helpful Hero Recognition - Consistently assists classmates',
-      'Perfect Attendance Star - Only 1 absence this quarter'
+      'Perfect Attendance Star - Only 1 absence this quarter',
     ],
     recommendations: [
       'Continue practicing reading at home to strengthen comprehension skills',
       'Encourage creative writing activities to improve English Language Arts performance',
-      'Consider advanced math enrichment activities to challenge mathematical thinking'
-    ]
-  }
+      'Consider advanced math enrichment activities to challenge mathematical thinking',
+    ],
+  };
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
-      case 'up': return <TrendingUp className="w-4 h-4 text-green-500" />
-      case 'down': return <TrendingUp className="w-4 h-4 text-red-500 rotate-180" />
-      default: return <div className="w-4 h-4 bg-gray-400 rounded-full" />
+      case 'up':
+        return <TrendingUp className="w-4 h-4 text-green-500" />;
+      case 'down':
+        return <TrendingUp className="w-4 h-4 text-red-500 rotate-180" />;
+      default:
+        return <div className="w-4 h-4 bg-gray-400 rounded-full" />;
     }
-  }
+  };
 
   const getGradeColor = (grade: number) => {
-    if (grade >= 90) return 'text-green-600'
-    if (grade >= 80) return 'text-blue-600'
-    if (grade >= 70) return 'text-yellow-600'
-    return 'text-red-600'
-  }
+    if (grade >= 90) return 'text-green-600';
+    if (grade >= 80) return 'text-blue-600';
+    if (grade >= 70) return 'text-yellow-600';
+    return 'text-red-600';
+  };
 
   const getGradeLetter = (grade: number) => {
-    if (grade >= 97) return 'A+'
-    if (grade >= 93) return 'A'
-    if (grade >= 90) return 'A-'
-    if (grade >= 87) return 'B+'
-    if (grade >= 83) return 'B'
-    if (grade >= 80) return 'B-'
-    if (grade >= 77) return 'C+'
-    if (grade >= 73) return 'C'
-    if (grade >= 70) return 'C-'
-    return 'F'
-  }
+    if (grade >= 97) return 'A+';
+    if (grade >= 93) return 'A';
+    if (grade >= 90) return 'A-';
+    if (grade >= 87) return 'B+';
+    if (grade >= 83) return 'B';
+    if (grade >= 80) return 'B-';
+    if (grade >= 77) return 'C+';
+    if (grade >= 73) return 'C';
+    if (grade >= 70) return 'C-';
+    return 'F';
+  };
 
-  const selectedStudentData = students.find(s => s.id === selectedStudent)
+  const selectedStudentData = students.find((s) => s.id === selectedStudent);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -247,11 +250,15 @@ export default function ParentReports() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">{selectedStudentData?.name}</h2>
-              <p className="text-gray-600">Grade {selectedStudentData?.grade} • SuperHero Elementary</p>
+              <p className="text-gray-600">
+                Grade {selectedStudentData?.grade} • SuperHero Elementary
+              </p>
               <p className="text-gray-600">{reportData.period}</p>
             </div>
             <div className="text-right">
-              <div className="text-3xl font-bold text-green-600">{getGradeLetter(reportData.overallGrade)}</div>
+              <div className="text-3xl font-bold text-green-600">
+                {getGradeLetter(reportData.overallGrade)}
+              </div>
               <div className="text-lg text-gray-600">{reportData.overallGrade}%</div>
               <div className="text-sm text-gray-500">Overall Grade</div>
             </div>
@@ -279,7 +286,11 @@ export default function ParentReports() {
             </div>
             <div className="text-center p-4 bg-yellow-50 rounded-lg">
               <div className="text-2xl font-bold text-yellow-600">
-                {Math.round(reportData.subjects.reduce((sum, s) => sum + s.participation, 0) / reportData.subjects.length)}%
+                {Math.round(
+                  reportData.subjects.reduce((sum, s) => sum + s.participation, 0) /
+                    reportData.subjects.length,
+                )}
+                %
               </div>
               <div className="text-sm text-gray-600">Avg Participation</div>
             </div>
@@ -306,29 +317,31 @@ export default function ParentReports() {
                         <div className="text-sm text-gray-500">{subject.grade}%</div>
                       </div>
                     </div>
-                    
+
                     <div className="grid gap-4 md:grid-cols-2">
                       <div>
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-sm text-gray-600">Assignments</span>
-                          <span className="text-sm font-semibold">{subject.assignments} completed</span>
+                          <span className="text-sm font-semibold">
+                            {subject.assignments} completed
+                          </span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-blue-500 h-2 rounded-full" 
+                          <div
+                            className="bg-blue-500 h-2 rounded-full"
                             style={{ width: `${Math.min(100, (subject.assignments / 20) * 100)}%` }}
                           ></div>
                         </div>
                       </div>
-                      
+
                       <div>
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-sm text-gray-600">Participation</span>
                           <span className="text-sm font-semibold">{subject.participation}%</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-green-500 h-2 rounded-full" 
+                          <div
+                            className="bg-green-500 h-2 rounded-full"
                             style={{ width: `${subject.participation}%` }}
                           ></div>
                         </div>
@@ -346,7 +359,10 @@ export default function ParentReports() {
                 <div>
                   <div className="text-center p-6 border-2 border-green-200 rounded-lg bg-green-50">
                     <div className="text-3xl font-bold text-green-600 mb-2">
-                      {Math.round((reportData.attendance.present / reportData.attendance.total) * 100)}%
+                      {Math.round(
+                        (reportData.attendance.present / reportData.attendance.total) * 100,
+                      )}
+                      %
                     </div>
                     <div className="text-sm text-gray-600">Attendance Rate</div>
                     <div className="text-xs text-gray-500 mt-1">
@@ -357,15 +373,21 @@ export default function ParentReports() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <span className="text-sm text-gray-600">Days Present</span>
-                    <span className="font-semibold text-green-600">{reportData.attendance.present}</span>
+                    <span className="font-semibold text-green-600">
+                      {reportData.attendance.present}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <span className="text-sm text-gray-600">Excused Absences</span>
-                    <span className="font-semibold text-blue-600">{reportData.attendance.excused}</span>
+                    <span className="font-semibold text-blue-600">
+                      {reportData.attendance.excused}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <span className="text-sm text-gray-600">Tardies</span>
-                    <span className="font-semibold text-yellow-600">{reportData.attendance.tardies}</span>
+                    <span className="font-semibold text-yellow-600">
+                      {reportData.attendance.tardies}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -440,5 +462,5 @@ export default function ParentReports() {
         </div>
       </div>
     </div>
-  )
+  );
 }

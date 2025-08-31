@@ -1,6 +1,6 @@
 /**
  * Sentinel 4.5 Honeypot System
- * 
+ *
  * This module provides honeypot routes and detection mechanisms to catch
  * unauthorized access attempts and potential attackers.
  */
@@ -25,7 +25,7 @@ const HONEYPOT_ROUTES = [
   '/actuator',
   '/graphql/console',
   '/v1/secret',
-  '/swagger'
+  '/swagger',
 ];
 
 /**
@@ -36,16 +36,16 @@ export function honeypotHandler(req: Request, res: Response): void {
   const url = req.originalUrl;
   const method = req.method;
   const userAgent = req.headers['user-agent'] || '';
-  
+
   // Log the honeypot access
   logSecurityEvent(
     'HONEYPOT',
     `Honeypot accessed: ${method} ${url}`,
     { headers: req.headers, query: req.query, body: req.body },
     ip,
-    userAgent
+    userAgent,
   );
-  
+
   // Send security alert
   sendAlert(
     AlertSeverity.MEDIUM,
@@ -54,12 +54,12 @@ export function honeypotHandler(req: Request, res: Response): void {
     { ip, userAgent, method, url },
     undefined,
     ip,
-    userAgent
+    userAgent,
   );
-  
+
   // Return a generic response to not reveal it's a honeypot
-  res.status(403).json({ 
-    message: 'Access denied. This attempt has been logged.'
+  res.status(403).json({
+    message: 'Access denied. This attempt has been logged.',
   });
 }
 
@@ -67,19 +67,19 @@ export function honeypotHandler(req: Request, res: Response): void {
  * Register honeypot routes with the Express app
  */
 export function registerHoneypots(app: any): void {
-  HONEYPOT_ROUTES.forEach(route => {
+  HONEYPOT_ROUTES.forEach((route) => {
     // Register GET handler
     app.get(route, honeypotHandler);
-    
+
     // Register POST handler
     app.post(route, honeypotHandler);
   });
-  
+
   // Create fake API endpoints
   app.get('/api/v1/internal/users', honeypotHandler);
   app.get('/api/v1/internal/config', honeypotHandler);
   app.post('/api/v1/internal/auth', honeypotHandler);
-  
+
   console.log(`✅ Registered ${HONEYPOT_ROUTES.length} honeypot routes`);
 }
 
@@ -87,16 +87,8 @@ export function registerHoneypots(app: any): void {
  * Check if a login is for a honeypot user
  */
 export function isHoneypotUser(username: string): boolean {
-  const honeypotUsers = [
-    'admin',
-    'administrator',
-    'root',
-    'user',
-    'test',
-    'guest',
-    'system'
-  ];
-  
+  const honeypotUsers = ['admin', 'administrator', 'root', 'user', 'test', 'guest', 'system'];
+
   return honeypotUsers.includes(username.toLowerCase());
 }
 
@@ -107,16 +99,16 @@ export function handleHoneypotUserLogin(req: Request, res: Response): void {
   const username = req.body.username;
   const ip = getRequestIP(req);
   const userAgent = req.headers['user-agent'] || '';
-  
+
   // Log the honeypot user access
   logSecurityEvent(
     'HONEYPOT_USER',
     `Login attempt with honeypot username: ${username}`,
     { ip, userAgent },
     ip,
-    userAgent
+    userAgent,
   );
-  
+
   // Send security alert
   sendAlert(
     AlertSeverity.MEDIUM,
@@ -125,14 +117,14 @@ export function handleHoneypotUserLogin(req: Request, res: Response): void {
     { ip, userAgent },
     username,
     ip,
-    userAgent
+    userAgent,
   );
-  
+
   // Return a realistic-looking error to not reveal it's a honeypot
   setTimeout(() => {
-    res.status(401).json({ 
+    res.status(401).json({
       success: false,
-      message: 'Invalid username or password'
+      message: 'Invalid username or password',
     });
   }, 1000); // Add delay to simulate processing
 }

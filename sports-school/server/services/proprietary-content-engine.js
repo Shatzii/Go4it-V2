@@ -1,6 +1,6 @@
 /**
  * Proprietary Content Engine
- * 
+ *
  * Core AI-powered content generation system for educational materials.
  * Generates curriculum, games, worksheets, and assessments for K-12 education.
  */
@@ -14,9 +14,9 @@ class ProprietaryContentEngine {
       curriculum: 'llama2:7b-chat-q4_0', // Primary educational content
       games: 'codellama:7b-instruct-q4_0', // Interactive content & games
       assessment: 'mistral:7b-instruct-q4_0', // Assessments & rubrics
-      neuroadapt: 'phi:2.7b-chat-v2-q4_0' // Neurodivergent adaptations
+      neuroadapt: 'phi:2.7b-chat-v2-q4_0', // Neurodivergent adaptations
     };
-    
+
     this.educationStandards = this.loadEducationStandards();
     this.contentTemplates = this.loadContentTemplates();
   }
@@ -34,29 +34,37 @@ class ProprietaryContentEngine {
       neurodivergentAdaptations = [],
       includeAssessment = true,
       includeGames = true,
-      includeWorksheets = true
+      includeWorksheets = true,
     } = options;
 
     console.log(`Generating complete lesson: ${subject} - ${topic} (Grade ${gradeLevel})`);
 
     // Generate core lesson content
     const lessonContent = await this.generateLessonContent({
-      subject, gradeLevel, topic, duration, learningObjectives
+      subject,
+      gradeLevel,
+      topic,
+      duration,
+      learningObjectives,
     });
 
     // Create neurodivergent adaptations
     const adaptations = {};
     for (const adaptation of neurodivergentAdaptations) {
       adaptations[adaptation] = await this.generateNeurodivergentAdaptation(
-        lessonContent, adaptation, gradeLevel
+        lessonContent,
+        adaptation,
+        gradeLevel,
       );
     }
 
     // Generate components in parallel for efficiency
     const [games, assessment, worksheets] = await Promise.all([
       includeGames ? this.generateEducationalGames({ topic, gradeLevel, learningObjectives }) : [],
-      includeAssessment ? this.generateAssessment({ topic, gradeLevel, learningObjectives, lessonContent }) : null,
-      includeWorksheets ? this.generateWorksheets({ topic, gradeLevel, lessonContent }) : []
+      includeAssessment
+        ? this.generateAssessment({ topic, gradeLevel, learningObjectives, lessonContent })
+        : null,
+      includeWorksheets ? this.generateWorksheets({ topic, gradeLevel, lessonContent }) : [],
     ]);
 
     return {
@@ -74,8 +82,8 @@ class ProprietaryContentEngine {
         estimatedTime: duration,
         difficulty: this.calculateDifficulty(gradeLevel, topic),
         generatedAt: new Date().toISOString(),
-        version: '1.0'
-      }
+        version: '1.0',
+      },
     };
   }
 
@@ -84,11 +92,11 @@ class ProprietaryContentEngine {
    */
   async generateLessonContent(options) {
     const { subject, gradeLevel, topic, duration, learningObjectives } = options;
-    
+
     const prompt = `Create a comprehensive ${duration}-minute lesson plan for Grade ${gradeLevel} ${subject} on the topic "${topic}".
 
 Learning Objectives:
-${learningObjectives.map(obj => `- ${obj}`).join('\n')}
+${learningObjectives.map((obj) => `- ${obj}`).join('\n')}
 
 Structure the lesson with:
 1. **Opening Hook** (5 minutes) - Engaging activity to capture attention
@@ -109,7 +117,7 @@ Include real-world connections and make content engaging and age-appropriate.`;
 
     const response = await this.aiServer.generateText(prompt, 'curriculum', {
       temperature: 0.7,
-      max_tokens: 3000
+      max_tokens: 3000,
     });
 
     return this.formatLessonContent(response.text);
@@ -123,10 +131,14 @@ Include real-world connections and make content engaging and age-appropriate.`;
     const gameTypes = ['quiz', 'puzzle', 'simulation', 'memory', 'sorting'];
     const games = [];
 
-    for (let i = 0; i < 3; i++) { // Generate 3 different games
+    for (let i = 0; i < 3; i++) {
+      // Generate 3 different games
       const gameType = gameTypes[i % gameTypes.length];
       const game = await this.generateSingleGame({
-        topic, gradeLevel, learningObjectives, gameType
+        topic,
+        gradeLevel,
+        learningObjectives,
+        gameType,
       });
       games.push(game);
     }
@@ -139,7 +151,7 @@ Include real-world connections and make content engaging and age-appropriate.`;
    */
   async generateSingleGame(options) {
     const { topic, gradeLevel, gameType, learningObjectives } = options;
-    
+
     const prompt = `Create an interactive ${gameType} game for Grade ${gradeLevel} students learning about "${topic}".
 
 Learning Objectives: ${learningObjectives.join(', ')}
@@ -160,7 +172,7 @@ The game should reinforce the learning objectives through engaging gameplay.`;
 
     const response = await this.aiServer.generateText(prompt, 'games', {
       temperature: 0.8,
-      max_tokens: 2500
+      max_tokens: 2500,
     });
 
     return this.parseGameContent(response.text, gameType);
@@ -171,20 +183,24 @@ The game should reinforce the learning objectives through engaging gameplay.`;
    */
   async generateAssessment(options) {
     const { topic, gradeLevel, learningObjectives, lessonContent } = options;
-    
+
     const assessmentTypes = [
       'formative_quiz',
       'summative_test',
       'project_rubric',
       'performance_task',
-      'exit_ticket'
+      'exit_ticket',
     ];
 
     const assessments = {};
-    
+
     for (const type of assessmentTypes) {
       assessments[type] = await this.generateSingleAssessment({
-        type, topic, gradeLevel, learningObjectives, lessonContent
+        type,
+        topic,
+        gradeLevel,
+        learningObjectives,
+        lessonContent,
       });
     }
 
@@ -196,13 +212,13 @@ The game should reinforce the learning objectives through engaging gameplay.`;
    */
   async generateSingleAssessment(options) {
     const { type, topic, gradeLevel, learningObjectives } = options;
-    
+
     const assessmentPrompts = {
       formative_quiz: `Create a 5-question formative quiz to check understanding during the lesson.`,
       summative_test: `Create a comprehensive 10-question test covering all key concepts.`,
       project_rubric: `Create a detailed rubric for assessing a project on this topic.`,
       performance_task: `Design a hands-on performance task that demonstrates mastery.`,
-      exit_ticket: `Create 3 quick exit ticket questions to gauge lesson comprehension.`
+      exit_ticket: `Create 3 quick exit ticket questions to gauge lesson comprehension.`,
     };
 
     const prompt = `${assessmentPrompts[type]}
@@ -220,7 +236,7 @@ Include:
 
     const response = await this.aiServer.generateText(prompt, 'assessment', {
       temperature: 0.6,
-      max_tokens: 2000
+      max_tokens: 2000,
     });
 
     return this.parseAssessmentContent(response.text, type);
@@ -231,20 +247,23 @@ Include:
    */
   async generateWorksheets(options) {
     const { topic, gradeLevel, lessonContent } = options;
-    
+
     const worksheetTypes = [
       'practice_problems',
       'vocabulary_builder',
       'concept_map',
       'reflection_journal',
-      'extension_activities'
+      'extension_activities',
     ];
 
     const worksheets = {};
-    
+
     for (const type of worksheetTypes) {
       worksheets[type] = await this.generateSingleWorksheet({
-        type, topic, gradeLevel, lessonContent
+        type,
+        topic,
+        gradeLevel,
+        lessonContent,
       });
     }
 
@@ -256,13 +275,13 @@ Include:
    */
   async generateSingleWorksheet(options) {
     const { type, topic, gradeLevel } = options;
-    
+
     const worksheetPrompts = {
       practice_problems: `Create practice problems that reinforce key concepts.`,
       vocabulary_builder: `Create vocabulary exercises with definitions and context.`,
       concept_map: `Design a concept mapping activity to show relationships.`,
       reflection_journal: `Create reflection prompts for deeper thinking.`,
-      extension_activities: `Design enrichment activities for advanced learners.`
+      extension_activities: `Design enrichment activities for advanced learners.`,
     };
 
     const prompt = `${worksheetPrompts[type]}
@@ -280,7 +299,7 @@ Create a complete worksheet with:
 
     const response = await this.aiServer.generateText(prompt, 'curriculum', {
       temperature: 0.7,
-      max_tokens: 1500
+      max_tokens: 1500,
     });
 
     return this.parseWorksheetContent(response.text, type);
@@ -298,7 +317,7 @@ Create a complete worksheet with:
       - Including hands-on, interactive elements
       - Providing clear transitions between activities
       - Offering choices in how to demonstrate learning`,
-      
+
       dyslexia: `Adapt this lesson for students with dyslexia by:
       - Simplifying text structure with short sentences
       - Using bullet points, headers, and white space
@@ -306,14 +325,14 @@ Create a complete worksheet with:
       - Providing visual aids and graphic organizers
       - Using dyslexia-friendly fonts (OpenDyslexic, Comic Sans)
       - Avoiding text-heavy materials`,
-      
+
       autism: `Adapt this lesson for students with autism by:
       - Providing clear, predictable structure and routine
       - Including visual schedules and step-by-step instructions
       - Explaining social expectations explicitly
       - Offering quiet spaces and sensory breaks
       - Using concrete, literal language
-      - Preparing students for transitions with warnings`
+      - Preparing students for transitions with warnings`,
     };
 
     const prompt = `${adaptationPrompts[adaptation]}
@@ -327,7 +346,7 @@ Provide specific, actionable adaptations that maintain the learning objectives w
 
     const response = await this.aiServer.generateText(prompt, 'neuroadapt', {
       temperature: 0.6,
-      max_tokens: 2000
+      max_tokens: 2000,
     });
 
     return this.formatAdaptationContent(response.text, adaptation);
@@ -342,7 +361,9 @@ Provide specific, actionable adaptations that maintain the learning objectives w
     return {
       commonCore: this.findCommonCoreStandards(subject, gradeLevel, topic),
       stateStandards: this.findStateStandards(subject, gradeLevel, topic),
-      ngss: subject.toLowerCase().includes('science') ? this.findNGSSStandards(gradeLevel, topic) : []
+      ngss: subject.toLowerCase().includes('science')
+        ? this.findNGSSStandards(gradeLevel, topic)
+        : [],
     };
   }
 
@@ -352,8 +373,8 @@ Provide specific, actionable adaptations that maintain the learning objectives w
   calculateDifficulty(gradeLevel, topic) {
     const gradeNum = parseInt(gradeLevel.replace('Grade ', ''));
     const complexTopics = ['algebra', 'chemistry', 'physics', 'calculus', 'organic'];
-    const isComplex = complexTopics.some(t => topic.toLowerCase().includes(t));
-    
+    const isComplex = complexTopics.some((t) => topic.toLowerCase().includes(t));
+
     if (gradeNum <= 2) return 'beginner';
     if (gradeNum <= 5) return 'elementary';
     if (gradeNum <= 8) return 'intermediate';
@@ -375,7 +396,7 @@ Provide specific, actionable adaptations that maintain the learning objectives w
     return {
       commonCore: {}, // Would load from actual standards files
       ngss: {},
-      stateStandards: {}
+      stateStandards: {},
     };
   }
 
@@ -387,7 +408,7 @@ Provide specific, actionable adaptations that maintain the learning objectives w
       lessonPlan: {},
       worksheet: {},
       assessment: {},
-      game: {}
+      game: {},
     };
   }
 
@@ -402,7 +423,7 @@ Provide specific, actionable adaptations that maintain the learning objectives w
       procedures: this.extractProcedures(rawContent),
       assessment: this.extractAssessmentInfo(rawContent),
       extensions: this.extractExtensions(rawContent),
-      rawContent
+      rawContent,
     };
   }
 
@@ -417,7 +438,7 @@ Provide specific, actionable adaptations that maintain the learning objectives w
       rules: this.extractGameRules(rawContent),
       implementation: this.extractGameCode(rawContent),
       instructions: this.extractGameInstructions(rawContent),
-      rawContent
+      rawContent,
     };
   }
 
@@ -431,7 +452,7 @@ Provide specific, actionable adaptations that maintain the learning objectives w
       answerKey: this.extractAnswerKey(rawContent),
       rubric: this.extractRubric(rawContent),
       instructions: this.extractInstructions(rawContent),
-      rawContent
+      rawContent,
     };
   }
 
@@ -445,7 +466,7 @@ Provide specific, actionable adaptations that maintain the learning objectives w
       instructions: this.extractInstructions(rawContent),
       activities: this.extractActivities(rawContent),
       answerKey: this.extractAnswerKey(rawContent),
-      rawContent
+      rawContent,
     };
   }
 
@@ -458,7 +479,7 @@ Provide specific, actionable adaptations that maintain the learning objectives w
       modifications: this.extractModifications(rawContent),
       accommodations: this.extractAccommodations(rawContent),
       supports: this.extractSupports(rawContent),
-      rawContent
+      rawContent,
     };
   }
 

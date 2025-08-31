@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
         validFrom: new Date().toISOString(),
         validUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
         applicablePlans: ['starter', 'pro', 'elite'],
-        minimumAmount: '0'
+        minimumAmount: '0',
       },
       {
         id: '2',
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
         validFrom: new Date().toISOString(),
         validUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
         applicablePlans: ['starter', 'pro', 'elite'],
-        minimumAmount: '0'
+        minimumAmount: '0',
       },
       {
         id: '3',
@@ -47,24 +47,21 @@ export async function GET(req: NextRequest) {
         validFrom: new Date().toISOString(),
         validUntil: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
         applicablePlans: ['pro', 'elite'],
-        minimumAmount: '25'
-      }
+        minimumAmount: '25',
+      },
     ];
 
     return NextResponse.json({ success: true, coupons });
   } catch (error) {
     console.error('Failed to fetch coupons:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch coupons' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch coupons' }, { status: 500 });
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    
+
     // Validate coupon code
     if (body.code === 'FULLACCESS2025') {
       return NextResponse.json({
@@ -74,13 +71,13 @@ export async function POST(req: NextRequest) {
           name: 'Full Access Pass',
           discountType: 'free',
           discountValue: '100',
-          description: 'Complete access to all Go4It features'
+          description: 'Complete access to all Go4It features',
         },
         discount: 100,
-        message: 'Full access pass applied! Everything is free.'
+        message: 'Full access pass applied! Everything is free.',
       });
     }
-    
+
     if (body.code === 'FREEMONTH') {
       return NextResponse.json({
         success: true,
@@ -88,13 +85,13 @@ export async function POST(req: NextRequest) {
           code: 'FREEMONTH',
           name: 'Free Month Access',
           discountType: 'free',
-          discountValue: '100'
+          discountValue: '100',
         },
         discount: 100,
-        message: 'Free month applied!'
+        message: 'Free month applied!',
       });
     }
-    
+
     if (body.code === 'SUPERSTAR75') {
       return NextResponse.json({
         success: true,
@@ -102,22 +99,16 @@ export async function POST(req: NextRequest) {
           code: 'SUPERSTAR75',
           name: '75% Off Elite Deal',
           discountType: 'percentage',
-          discountValue: '75'
+          discountValue: '75',
         },
         discount: 75,
-        message: '75% discount applied!'
+        message: '75% discount applied!',
       });
     }
-    
-    return NextResponse.json(
-      { error: 'Invalid coupon code' },
-      { status: 400 }
-    );
+
+    return NextResponse.json({ error: 'Invalid coupon code' }, { status: 400 });
   } catch (error) {
     console.error('Failed to validate coupon:', error);
-    return NextResponse.json(
-      { error: 'Failed to validate coupon' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to validate coupon' }, { status: 500 });
   }
 }

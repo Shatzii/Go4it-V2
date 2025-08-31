@@ -16,7 +16,7 @@ export function MobileVideoRecorder({ onVideoRecorded, onCancel }: MobileVideoRe
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
   const [recordedVideo, setRecordedVideo] = useState<Blob | null>(null);
-  
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -31,14 +31,14 @@ export function MobileVideoRecorder({ onVideoRecorded, onCancel }: MobileVideoRe
   const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { 
+        video: {
           facingMode,
           width: { ideal: 1920 },
-          height: { ideal: 1080 }
+          height: { ideal: 1080 },
         },
-        audio: true
+        audio: true,
       });
-      
+
       setMediaStream(stream);
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -50,7 +50,7 @@ export function MobileVideoRecorder({ onVideoRecorded, onCancel }: MobileVideoRe
 
   const stopCamera = () => {
     if (mediaStream) {
-      mediaStream.getTracks().forEach(track => track.stop());
+      mediaStream.getTracks().forEach((track) => track.stop());
       setMediaStream(null);
     }
   };
@@ -59,29 +59,29 @@ export function MobileVideoRecorder({ onVideoRecorded, onCancel }: MobileVideoRe
     if (!mediaStream) return;
 
     const mediaRecorder = new MediaRecorder(mediaStream, {
-      mimeType: 'video/mp4; codecs=avc1.42E01E,mp4a.40.2'
+      mimeType: 'video/mp4; codecs=avc1.42E01E,mp4a.40.2',
     });
-    
+
     const chunks: Blob[] = [];
-    
+
     mediaRecorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
         chunks.push(event.data);
       }
     };
-    
+
     mediaRecorder.onstop = () => {
       const blob = new Blob(chunks, { type: 'video/mp4' });
       setRecordedVideo(blob);
     };
-    
+
     mediaRecorderRef.current = mediaRecorder;
     mediaRecorder.start();
     setIsRecording(true);
-    
+
     // Start timer
     intervalRef.current = setInterval(() => {
-      setRecordingTime(prev => prev + 1);
+      setRecordingTime((prev) => prev + 1);
     }, 1000);
   };
 
@@ -89,7 +89,7 @@ export function MobileVideoRecorder({ onVideoRecorded, onCancel }: MobileVideoRe
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
-      
+
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -98,7 +98,7 @@ export function MobileVideoRecorder({ onVideoRecorded, onCancel }: MobileVideoRe
   };
 
   const toggleCamera = () => {
-    setFacingMode(prev => prev === 'user' ? 'environment' : 'user');
+    setFacingMode((prev) => (prev === 'user' ? 'environment' : 'user'));
   };
 
   const formatTime = (seconds: number) => {
@@ -142,15 +142,9 @@ export function MobileVideoRecorder({ onVideoRecorded, onCancel }: MobileVideoRe
             playsInline
           />
         ) : (
-          <video
-            ref={videoRef}
-            className="w-full h-full object-cover"
-            autoPlay
-            playsInline
-            muted
-          />
+          <video ref={videoRef} className="w-full h-full object-cover" autoPlay playsInline muted />
         )}
-        
+
         {/* Recording indicator */}
         {isRecording && (
           <div className="absolute top-4 left-4 bg-red-600 px-3 py-1 rounded-full flex items-center gap-2">
@@ -173,11 +167,7 @@ export function MobileVideoRecorder({ onVideoRecorded, onCancel }: MobileVideoRe
               <RotateCw className="w-5 h-5 mr-2" />
               Retake
             </Button>
-            <Button
-              size="lg"
-              onClick={handleConfirm}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
+            <Button size="lg" onClick={handleConfirm} className="bg-blue-600 hover:bg-blue-700">
               <Check className="w-5 h-5 mr-2" />
               Use Video
             </Button>
@@ -192,14 +182,11 @@ export function MobileVideoRecorder({ onVideoRecorded, onCancel }: MobileVideoRe
             >
               <RotateCw className="w-6 h-6" />
             </Button>
-            
             <Button
               size="lg"
               onClick={isRecording ? stopRecording : startRecording}
               className={`w-20 h-20 rounded-full ${
-                isRecording 
-                  ? 'bg-red-600 hover:bg-red-700' 
-                  : 'bg-blue-600 hover:bg-blue-700'
+                isRecording ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'
               }`}
             >
               {isRecording ? (
@@ -208,7 +195,6 @@ export function MobileVideoRecorder({ onVideoRecorded, onCancel }: MobileVideoRe
                 <div className="w-8 h-8 bg-white rounded-full" />
               )}
             </Button>
-            
             <div className="w-16" /> {/* Spacer for symmetry */}
           </div>
         )}
@@ -235,7 +221,7 @@ export function MobileVideoUpload({ onVideoUploaded }: { onVideoUploaded: (file:
           <Upload className="w-12 h-12 mx-auto mb-2" />
           <p>Upload a video from your device</p>
         </div>
-        
+
         <input
           ref={fileInputRef}
           type="file"
@@ -244,7 +230,7 @@ export function MobileVideoUpload({ onVideoUploaded }: { onVideoUploaded: (file:
           onChange={handleFileSelect}
           className="hidden"
         />
-        
+
         <Button
           onClick={() => fileInputRef.current?.click()}
           className="w-full bg-blue-600 hover:bg-blue-700"
@@ -257,24 +243,30 @@ export function MobileVideoUpload({ onVideoUploaded }: { onVideoUploaded: (file:
 }
 
 // Mobile-friendly progress indicator
-export function MobileProgressIndicator({ steps, currentStep }: { steps: string[], currentStep: number }) {
+export function MobileProgressIndicator({
+  steps,
+  currentStep,
+}: {
+  steps: string[];
+  currentStep: number;
+}) {
   return (
     <div className="flex items-center justify-between p-4 bg-slate-900/50 backdrop-blur">
       {steps.map((step, index) => (
         <div key={index} className="flex items-center">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-            index < currentStep 
-              ? 'bg-green-500 text-white' 
-              : index === currentStep 
-                ? 'bg-blue-500 text-white' 
-                : 'bg-slate-600 text-slate-300'
-          }`}>
+          <div
+            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+              index < currentStep
+                ? 'bg-green-500 text-white'
+                : index === currentStep
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-slate-600 text-slate-300'
+            }`}
+          >
             {index < currentStep ? <Check className="w-4 h-4" /> : index + 1}
           </div>
           {index < steps.length - 1 && (
-            <div className={`w-8 h-0.5 ${
-              index < currentStep ? 'bg-green-500' : 'bg-slate-600'
-            }`} />
+            <div className={`w-8 h-0.5 ${index < currentStep ? 'bg-green-500' : 'bg-slate-600'}`} />
           )}
         </div>
       ))}

@@ -1,13 +1,13 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { BookOpen, Users, Clock, Star, Trophy, Target } from 'lucide-react'
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { BookOpen, Users, Clock, Star, Trophy, Target } from 'lucide-react';
 
 export default function SportsCoursesPage() {
-  const [selectedGrade, setSelectedGrade] = useState('all')
+  const [selectedGrade, setSelectedGrade] = useState('all');
 
   const courses = [
     {
@@ -21,7 +21,7 @@ export default function SportsCoursesPage() {
       difficulty: 'Intermediate',
       subjects: ['Strength Training', 'Cardio', 'Flexibility'],
       color: 'bg-red-500',
-      sport: '🏃‍♂️'
+      sport: '🏃‍♂️',
     },
     {
       id: 'team-sports',
@@ -34,7 +34,7 @@ export default function SportsCoursesPage() {
       difficulty: 'Intermediate',
       subjects: ['Basketball', 'Soccer', 'Leadership'],
       color: 'bg-blue-500',
-      sport: '🏀'
+      sport: '🏀',
     },
     {
       id: 'individual-sports',
@@ -47,7 +47,7 @@ export default function SportsCoursesPage() {
       difficulty: 'Advanced',
       subjects: ['Track', 'Tennis', 'Swimming'],
       color: 'bg-green-500',
-      sport: '🏊‍♂️'
+      sport: '🏊‍♂️',
     },
     {
       id: 'sports-science',
@@ -60,7 +60,7 @@ export default function SportsCoursesPage() {
       difficulty: 'Advanced',
       subjects: ['Physiology', 'Nutrition', 'Recovery'],
       color: 'bg-purple-500',
-      sport: '🧬'
+      sport: '🧬',
     },
     {
       id: 'coaching-leadership',
@@ -73,7 +73,7 @@ export default function SportsCoursesPage() {
       difficulty: 'Expert',
       subjects: ['Coaching', 'Leadership', 'Psychology'],
       color: 'bg-orange-500',
-      sport: '👨‍🏫'
+      sport: '👨‍🏫',
     },
     {
       id: 'competitive-athletics',
@@ -86,7 +86,7 @@ export default function SportsCoursesPage() {
       difficulty: 'Expert',
       subjects: ['Competition', 'Strategy', 'Mental Game'],
       color: 'bg-yellow-500',
-      sport: '🏆'
+      sport: '🏆',
     },
     {
       id: 'sports-medicine',
@@ -99,23 +99,24 @@ export default function SportsCoursesPage() {
       difficulty: 'Expert',
       subjects: ['Medicine', 'Prevention', 'Rehabilitation'],
       color: 'bg-pink-500',
-      sport: '🏥'
-    }
-  ]
+      sport: '🏥',
+    },
+  ];
 
-  const grades = ['all', '10', '11', '12', '10-12']
+  const grades = ['all', '10', '11', '12', '10-12'];
 
-  const filteredCourses = selectedGrade === 'all' 
-    ? courses 
-    : courses.filter(course => course.grade === selectedGrade || course.grade.includes(selectedGrade))
+  const filteredCourses =
+    selectedGrade === 'all'
+      ? courses
+      : courses.filter(
+          (course) => course.grade === selectedGrade || course.grade.includes(selectedGrade),
+        );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            🏆 Go4it Sports Academy
-          </h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">🏆 Go4it Sports Academy</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Elite athletic training and sports education for championship performance
           </p>
@@ -126,7 +127,7 @@ export default function SportsCoursesPage() {
           {grades.map((grade) => (
             <Button
               key={grade}
-              variant={selectedGrade === grade ? "default" : "outline"}
+              variant={selectedGrade === grade ? 'default' : 'outline'}
               onClick={() => setSelectedGrade(grade)}
               className="min-w-[80px]"
             >
@@ -155,7 +156,7 @@ export default function SportsCoursesPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 mb-4">{course.description}</p>
-                
+
                 <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
                   <div className="flex items-center gap-1">
                     <Users className="w-4 h-4" />
@@ -192,9 +193,7 @@ export default function SportsCoursesPage() {
           <Card className="text-center">
             <CardContent className="pt-6">
               <Trophy className="w-12 h-12 text-red-500 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                {courses.length}
-              </h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">{courses.length}</h3>
               <p className="text-gray-600">Sports Programs</p>
             </CardContent>
           </Card>
@@ -210,14 +209,12 @@ export default function SportsCoursesPage() {
           <Card className="text-center">
             <CardContent className="pt-6">
               <Star className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                4.9/5
-              </h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">4.9/5</h3>
               <p className="text-gray-600">Program Rating</p>
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -32,13 +32,15 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
       setIsConnected(true);
       reconnectAttempts.current = 0;
       console.log('WebSocket connected');
-      
+
       // Send authentication
-      ws.current?.send(JSON.stringify({
-        type: 'auth',
-        userId: user.id,
-        timestamp: Date.now()
-      }));
+      ws.current?.send(
+        JSON.stringify({
+          type: 'auth',
+          userId: user.id,
+          timestamp: Date.now(),
+        }),
+      );
     };
 
     ws.current.onmessage = (event) => {
@@ -56,13 +58,16 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     ws.current.onclose = () => {
       setIsConnected(false);
       console.log('WebSocket disconnected');
-      
+
       // Attempt to reconnect
       if (reconnectAttempts.current < maxReconnectAttempts) {
         reconnectAttempts.current++;
-        setTimeout(() => {
-          connect();
-        }, 1000 * Math.pow(2, reconnectAttempts.current));
+        setTimeout(
+          () => {
+            connect();
+          },
+          1000 * Math.pow(2, reconnectAttempts.current),
+        );
       }
     };
 
@@ -101,14 +106,10 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     isConnected,
     sendMessage,
     subscribe,
-    unsubscribe
+    unsubscribe,
   };
 
-  return (
-    <WebSocketContext.Provider value={value}>
-      {children}
-    </WebSocketContext.Provider>
-  );
+  return <WebSocketContext.Provider value={value}>{children}</WebSocketContext.Provider>;
 }
 
 export function useWebSocket() {

@@ -11,9 +11,9 @@ export async function GET(request: NextRequest) {
       lastName: 'Student',
       role: 'student',
       enrollmentType: 'premium',
-      neurotype: 'neurotypical'
+      neurotype: 'neurotypical',
     };
-    
+
     return NextResponse.json(user);
   } catch (error) {
     console.error('Error fetching user:', error);

@@ -2,7 +2,19 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Menu, X, GraduationCap, Users, BookOpen, BarChart3, Settings, User, CreditCard, MessageSquare, Calendar } from 'lucide-react';
+import {
+  Menu,
+  X,
+  GraduationCap,
+  Users,
+  BookOpen,
+  BarChart3,
+  Settings,
+  User,
+  CreditCard,
+  MessageSquare,
+  Calendar,
+} from 'lucide-react';
 
 const mainNavItems = [
   { href: '/', label: 'Home', icon: GraduationCap },
@@ -73,10 +85,14 @@ export function Navigation() {
               >
                 <span>Schools</span>
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </button>
-              
+
               {activeDropdown === 'schools' && (
                 <div
                   onMouseEnter={() => setActiveDropdown('schools')}
@@ -105,10 +121,14 @@ export function Navigation() {
               >
                 <span>Portals</span>
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </button>
-              
+
               {activeDropdown === 'portals' && (
                 <div
                   onMouseEnter={() => setActiveDropdown('portals')}
@@ -141,10 +161,14 @@ export function Navigation() {
               >
                 <span>AI Features</span>
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </button>
-              
+
               {activeDropdown === 'ai' && (
                 <div
                   onMouseEnter={() => setActiveDropdown('ai')}
@@ -201,7 +225,7 @@ export function Navigation() {
                   </Link>
                 );
               })}
-              
+
               <div className="border-t border-gray-200 pt-2 mt-2">
                 <div className="px-3 py-2 text-sm font-semibold text-gray-900">Schools</div>
                 {schoolLinks.map((link) => (

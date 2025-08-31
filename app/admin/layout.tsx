@@ -1,17 +1,13 @@
-import type { Metadata } from 'next'
-import Link from 'next/link'
-import { BarChart3, Users, FileText, Gift, Database, Shield } from 'lucide-react'
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { BarChart3, Users, FileText, Gift, Database, Shield } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Go4It Sports - Admin Dashboard',
   description: 'Administrative dashboard for Go4It Sports platform management',
-}
+};
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className="min-h-screen bg-slate-900">
@@ -25,7 +21,7 @@ export default function AdminLayout({
                 </div>
                 <span className="text-white font-bold text-lg">Go4It Admin</span>
               </div>
-              
+
               <nav className="space-y-2">
                 <Link
                   href="/admin"
@@ -65,13 +61,11 @@ export default function AdminLayout({
               </nav>
             </div>
           </div>
-          
+
           {/* Main Content */}
-          <div className="flex-1">
-            {children}
-          </div>
+          <div className="flex-1">{children}</div>
         </div>
       </body>
     </html>
-  )
+  );
 }

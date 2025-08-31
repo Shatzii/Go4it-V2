@@ -1,0 +1,22 @@
+// Client-side Sentry initialization
+import { init, captureRouterTransitionStart } from '@sentry/nextjs'
+
+export const onRouterTransitionStart = captureRouterTransitionStart;
+
+init({
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  tracesSampleRate: 0.1,
+  debug: false,
+  environment: process.env.NODE_ENV,
+  enabled: process.env.NODE_ENV === 'production',
+  integrations: [
+    // Add any client-specific integrations here
+  ],
+  beforeSend(event) {
+    // Filter out non-critical errors in development
+    if (process.env.NODE_ENV === 'development') {
+      return null
+    }
+    return event
+  },
+})

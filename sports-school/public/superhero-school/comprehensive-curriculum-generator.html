@@ -1,1234 +1,1279 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Comprehensive Curriculum Generator | Neurodivergent Superhero School</title>
-  
-  <!-- Accessibility Voice Guidance -->
-  <script src="/js/accessibility-voice.js"></script>
-  
-  <style>
-    /* Enhanced styles for neurodivergent-friendly design */
-    :root {
-      --bg-color: #000000; /* Pure black background */
-      --text-color: #ffffff; /* Pure white text for maximum contrast */
-      --accent-color: #1e90ff; /* Brighter blue for better visibility */
-      --accent-dark: #0066cc;
-      --accent-light: #50b3ff;
-      --accent-highlight: #32cd32; /* Bright green for hover highlights */
-      --card-bg: #121212; /* Very dark card backgrounds */
-      --card-bg-light: #1e1e1e; /* Slightly lighter card background */
-      --nav-bg: #0a0a0a; /* Nearly black navigation background */
-      --success-color: #27ae60;
-      --warning-color: #e67e22;
-      --danger-color: #e74c3c;
-      --purple-color: #9b59b6;
-      --purple-dark: #8e44ad;
-      --green-light: #2ecc71;
-      --inactive-color: #7f8c8d;
-      --border-radius: 8px;
-    }
-    
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    
-    body {
-      font-family: "Open Dyslexic", "Comic Sans MS", Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      line-height: 1.6;
-      letter-spacing: 0.025em;
-      word-spacing: 0.1em;
-      padding-bottom: 60px;
-    }
-    
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-    
-    /* Header styles */
-    header {
-      background-color: var(--nav-bg);
-      padding: 15px 0;
-      border-bottom: 2px solid var(--accent-color);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    
-    .header-content {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    
-    .logo {
-      display: flex;
-      align-items: center;
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: var(--accent-color);
-    }
-    
-    .logo img {
-      height: 40px;
-      margin-right: 10px;
-    }
-    
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: var(--accent-color);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    
-    /* Navigation */
-    nav {
-      background-color: var(--nav-bg);
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    
-    .nav-links {
-      display: flex;
-      gap: 20px;
-      list-style: none;
-      overflow-x: auto;
-      padding: 0 20px;
-    }
-    
-    .nav-links li a {
-      color: var(--text-color);
-      text-decoration: none;
-      padding: 5px 10px;
-      border-radius: var(--border-radius);
-      transition: all 0.3s ease;
-      white-space: nowrap;
-      font-weight: 500;
-    }
-    
-    .nav-links li a:hover,
-    .nav-links li a.active {
-      background-color: var(--accent-highlight);
-      color: white;
-    }
-    
-    /* Main content area */
-    main {
-      padding: 20px 0;
-    }
-    
-    h1, h2, h3, h4, h5, h6 {
-      color: var(--accent-color);
-      margin-bottom: 15px;
-      margin-top: 30px;
-      font-weight: 600;
-    }
-    
-    h1 {
-      font-size: 2rem;
-      border-bottom: 2px solid var(--accent-color);
-      padding-bottom: 10px;
-      margin-bottom: 20px;
-    }
-    
-    h2 {
-      font-size: 1.5rem;
-    }
-    
-    h3 {
-      font-size: 1.25rem;
-    }
-    
-    p {
-      margin-bottom: 15px;
-    }
-    
-    /* Curriculum Generator specific styles */
-    .generator-container {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 20px;
-    }
-    
-    @media (max-width: 1000px) {
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Comprehensive Curriculum Generator | Neurodivergent Superhero School</title>
+
+    <!-- Accessibility Voice Guidance -->
+    <script src="/js/accessibility-voice.js"></script>
+
+    <style>
+      /* Enhanced styles for neurodivergent-friendly design */
+      :root {
+        --bg-color: #000000; /* Pure black background */
+        --text-color: #ffffff; /* Pure white text for maximum contrast */
+        --accent-color: #1e90ff; /* Brighter blue for better visibility */
+        --accent-dark: #0066cc;
+        --accent-light: #50b3ff;
+        --accent-highlight: #32cd32; /* Bright green for hover highlights */
+        --card-bg: #121212; /* Very dark card backgrounds */
+        --card-bg-light: #1e1e1e; /* Slightly lighter card background */
+        --nav-bg: #0a0a0a; /* Nearly black navigation background */
+        --success-color: #27ae60;
+        --warning-color: #e67e22;
+        --danger-color: #e74c3c;
+        --purple-color: #9b59b6;
+        --purple-dark: #8e44ad;
+        --green-light: #2ecc71;
+        --inactive-color: #7f8c8d;
+        --border-radius: 8px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Open Dyslexic', 'Comic Sans MS', Arial, sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        line-height: 1.6;
+        letter-spacing: 0.025em;
+        word-spacing: 0.1em;
+        padding-bottom: 60px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Header styles */
+      header {
+        background-color: var(--nav-bg);
+        padding: 15px 0;
+        border-bottom: 2px solid var(--accent-color);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .header-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--accent-color);
+      }
+
+      .logo img {
+        height: 40px;
+        margin-right: 10px;
+      }
+
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--accent-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      /* Navigation */
+      nav {
+        background-color: var(--nav-bg);
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 20px;
+        list-style: none;
+        overflow-x: auto;
+        padding: 0 20px;
+      }
+
+      .nav-links li a {
+        color: var(--text-color);
+        text-decoration: none;
+        padding: 5px 10px;
+        border-radius: var(--border-radius);
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        font-weight: 500;
+      }
+
+      .nav-links li a:hover,
+      .nav-links li a.active {
+        background-color: var(--accent-highlight);
+        color: white;
+      }
+
+      /* Main content area */
+      main {
+        padding: 20px 0;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        color: var(--accent-color);
+        margin-bottom: 15px;
+        margin-top: 30px;
+        font-weight: 600;
+      }
+
+      h1 {
+        font-size: 2rem;
+        border-bottom: 2px solid var(--accent-color);
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      h3 {
+        font-size: 1.25rem;
+      }
+
+      p {
+        margin-bottom: 15px;
+      }
+
+      /* Curriculum Generator specific styles */
       .generator-container {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 20px;
       }
-    }
-    
-    .card {
-      background-color: var(--card-bg);
-      border-radius: var(--border-radius);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      overflow: hidden;
-      border-left: 3px solid var(--accent-color);
-    }
-    
-    .card-header {
-      padding: 15px 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      font-weight: bold;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: rgba(30, 144, 255, 0.1);
-    }
-    
-    .card-content {
-      padding: 20px;
-    }
-    
-    /* Form styles */
-    .form-group {
-      margin-bottom: 20px;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-    }
-    
-    input, select, textarea {
-      width: 100%;
-      padding: 12px;
-      border-radius: var(--border-radius);
-      background-color: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--text-color);
-      font-family: inherit;
-      font-size: 1rem;
-    }
-    
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--accent-color);
-    }
-    
-    /* Buttons */
-    .btn {
-      display: inline-block;
-      background-color: var(--accent-color);
-      color: white;
-      padding: 10px 15px;
-      border-radius: var(--border-radius);
-      text-decoration: none;
-      border: none;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-    }
-    
-    .btn:hover {
-      background-color: var(--accent-highlight);
-      transform: translateY(-2px);
-    }
-    
-    .btn:disabled {
-      background-color: var(--inactive-color);
-      cursor: not-allowed;
-      transform: none;
-    }
-    
-    .btn-success {
-      background-color: var(--success-color);
-    }
-    
-    .btn-warning {
-      background-color: var(--warning-color);
-    }
-    
-    .btn-danger {
-      background-color: var(--danger-color);
-    }
-    
-    .btn-purple {
-      background-color: var(--purple-color);
-    }
-    
-    .btn-purple:hover {
-      background-color: var(--purple-dark);
-    }
-    
-    /* Checkbox styles */
-    .checkbox-group {
-      margin-top: 10px;
-    }
-    
-    .checkbox-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    
-    .checkbox-item input[type="checkbox"] {
-      width: auto;
-      margin-right: 10px;
-    }
-    
-    /* Tabs */
-    .tabs {
-      display: flex;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      margin-bottom: 20px;
-    }
-    
-    .tab {
-      padding: 10px 20px;
-      cursor: pointer;
-      position: relative;
-      transition: all 0.3s ease;
-    }
-    
-    .tab:hover {
-      background-color: rgba(50, 205, 50, 0.1);
-    }
-    
-    .tab.active {
-      color: var(--accent-color);
-      font-weight: bold;
-    }
-    
-    .tab.active::after {
-      content: '';
-      position: absolute;
-      bottom: -1px;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background-color: var(--accent-color);
-    }
-    
-    .tab-content {
-      display: none;
-    }
-    
-    .tab-content.active {
-      display: block;
-    }
-    
-    /* Domain tabs */
-    .domain-tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    
-    .domain-tab {
-      flex: 1;
-      padding: 15px;
-      text-align: center;
-      border-radius: var(--border-radius);
-      background-color: var(--card-bg-light);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border: 2px solid transparent;
-    }
-    
-    .domain-tab:hover {
-      transform: translateY(-3px);
-    }
-    
-    .domain-tab.active {
-      border-color: var(--accent-color);
-      background-color: rgba(30, 144, 255, 0.1);
-    }
-    
-    .domain-tab h3 {
-      margin-top: 0;
-      margin-bottom: 10px;
-    }
-    
-    .domain-tab p {
-      font-size: 0.9rem;
-      color: rgba(255, 255, 255, 0.7);
-    }
-    
-    .domain-icon {
-      font-size: 2rem;
-      margin-bottom: 10px;
-    }
-    
-    /* Progress bar */
-    .progress-container {
-      width: 100%;
-      height: 20px;
-      background-color: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      margin-bottom: 15px;
-      overflow: hidden;
-    }
-    
-    .progress-bar {
-      height: 100%;
-      background-color: var(--accent-color);
-      width: 0%;
-      transition: width 0.3s ease;
-      position: relative;
-    }
-    
-    .progress-bar::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0.1) 25%,
-        rgba(255, 255, 255, 0.2) 50%,
-        rgba(255, 255, 255, 0.1) 75%
-      );
-      background-size: 200% 100%;
-      animation: shimmer 2s infinite;
-    }
-    
-    @keyframes shimmer {
-      0% {
-        background-position: 100% 0;
+
+      @media (max-width: 1000px) {
+        .generator-container {
+          grid-template-columns: 1fr;
+        }
       }
-      100% {
-        background-position: -100% 0;
+
+      .card {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        overflow: hidden;
+        border-left: 3px solid var(--accent-color);
       }
-    }
-    
-    /* Output styles */
-    .output-container {
-      position: relative;
-    }
-    
-    .output-loading {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.7);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-      border-radius: var(--border-radius);
-    }
-    
-    .output-loading h3 {
-      margin-bottom: 20px;
-    }
-    
-    .spinner {
-      width: 50px;
-      height: 50px;
-      border: 5px solid rgba(255, 255, 255, 0.1);
-      border-top-color: var(--accent-color);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
+
+      .card-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: rgba(30, 144, 255, 0.1);
       }
-    }
-    
-    .output-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-    
-    .curriculum-structure {
-      background-color: var(--card-bg-light);
-      border-radius: var(--border-radius);
-      padding: 15px;
-      max-height: 500px;
-      overflow-y: auto;
-    }
-    
-    .output-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    
-    /* Tree view for curriculum structure */
-    .tree-view ul {
-      list-style-type: none;
-      padding-left: 20px;
-    }
-    
-    .tree-view li {
-      margin-bottom: 5px;
-      position: relative;
-    }
-    
-    .tree-node {
-      display: flex;
-      align-items: center;
-    }
-    
-    .tree-toggle {
-      cursor: pointer;
-      margin-right: 5px;
-      width: 20px;
-      height: 20px;
-      text-align: center;
-      line-height: 20px;
-    }
-    
-    .tree-label {
-      cursor: pointer;
-      padding: 3px 6px;
-      border-radius: 3px;
-    }
-    
-    .tree-label:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-    
-    .tree-content {
-      display: none;
-      background-color: rgba(0, 0, 0, 0.2);
-      padding: 10px;
-      border-radius: 5px;
-      margin-top: 5px;
-      white-space: pre-wrap;
-      font-family: monospace;
-      font-size: 0.9rem;
-    }
-    
-    .tree-content.active {
-      display: block;
-    }
-    
-    /* Voice guidance button */
-    .voice-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--accent-color);
-      font-size: 1.2rem;
-      padding: 5px;
-      border-radius: 50%;
-      transition: all 0.2s ease;
-    }
-    
-    .voice-btn:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-      color: var(--accent-highlight);
-    }
-    
-    /* Notification */
-    .notification {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: var(--card-bg);
-      border-radius: var(--border-radius);
-      padding: 15px 20px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      transform: translateX(120%);
-      transition: transform 0.3s ease;
-      z-index: 1000;
-      border-left: 4px solid var(--accent-color);
-    }
-    
-    .notification.active {
-      transform: translateX(0);
-    }
-    
-    .notification.success {
-      border-left-color: var(--success-color);
-    }
-    
-    .notification.error {
-      border-left-color: var(--danger-color);
-    }
-    
-    .notification-content {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-    
-    .notification-message {
-      flex-grow: 1;
-    }
-    
-    .notification-close {
-      background: none;
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-      color: rgba(255, 255, 255, 0.7);
-      transition: color 0.3s ease;
-    }
-    
-    .notification-close:hover {
-      color: white;
-    }
-    
-    /* API Info Box */
-    .api-info {
-      background-color: rgba(30, 144, 255, 0.1);
-      border-radius: var(--border-radius);
-      padding: 15px;
-      margin-top: 20px;
-      border: 1px dashed var(--accent-color);
-    }
-    
-    .api-info h3 {
-      margin-top: 0;
-      color: var(--accent-color);
-    }
-    
-    /* Curriculum preview */
-    .curriculum-preview {
-      margin-top: 20px;
-    }
-    
-    .preview-nav {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-    
-    .preview-tab {
-      padding: 8px 12px;
-      background-color: var(--card-bg-light);
-      border-radius: var(--border-radius);
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    
-    .preview-tab.active {
-      background-color: var(--accent-color);
-    }
-    
-    .preview-content {
-      background-color: var(--card-bg-light);
-      border-radius: var(--border-radius);
-      padding: 15px;
-      max-height: 500px;
-      overflow-y: auto;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <div class="container">
-      <div class="header-content">
-        <div class="logo">
-          <img src="/logo.png" alt="ShotziOS Logo" />
-          <span>Neurodivergent Superhero School</span>
-        </div>
-        <div class="avatar">S</div>
-      </div>
-    </div>
-  </header>
-  
-  <nav>
-    <div class="container">
-      <ul class="nav-links">
-        <li><a href="/dashboard">Dashboard</a></li>
-        <li><a href="/superhero-school">Superhero School</a></li>
-        <li><a href="/superhero-school/student-dashboard.html">Student Dashboard</a></li>
-        <li><a href="/superhero-school/comprehensive-curriculum-generator.html" class="active">Curriculum Generator</a></li>
-        <li><a href="/superhero-school/block-schedule-builder.html">Block Schedule</a></li>
-        <li><a href="/superhero-school/gpa-calculator.html">GPA Calculator</a></li>
-      </ul>
-    </div>
-  </nav>
-  
-  <main class="container">
-    <h1>Comprehensive Curriculum Generator</h1>
-    
-    <p>Create complete, standards-aligned curriculum with study guides, tests, and quizzes for any educational domain. This tool generates comprehensive 1-4 year curriculum plans that can be used for neurodivergent education, law education, or language learning.</p>
-    
-    <div class="generator-container">
-      <div class="generator-form">
-        <div class="card">
-          <div class="card-header">
-            <span>Curriculum Parameters</span>
-            <button class="voice-btn" data-voice-text="Select curriculum parameters to generate a comprehensive curriculum plan" title="Read aloud">🔊</button>
+
+      .card-content {
+        padding: 20px;
+      }
+
+      /* Form styles */
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border-radius: var(--border-radius);
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-color);
+        font-family: inherit;
+        font-size: 1rem;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--accent-color);
+      }
+
+      /* Buttons */
+      .btn {
+        display: inline-block;
+        background-color: var(--accent-color);
+        color: white;
+        padding: 10px 15px;
+        border-radius: var(--border-radius);
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .btn:hover {
+        background-color: var(--accent-highlight);
+        transform: translateY(-2px);
+      }
+
+      .btn:disabled {
+        background-color: var(--inactive-color);
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn-success {
+        background-color: var(--success-color);
+      }
+
+      .btn-warning {
+        background-color: var(--warning-color);
+      }
+
+      .btn-danger {
+        background-color: var(--danger-color);
+      }
+
+      .btn-purple {
+        background-color: var(--purple-color);
+      }
+
+      .btn-purple:hover {
+        background-color: var(--purple-dark);
+      }
+
+      /* Checkbox styles */
+      .checkbox-group {
+        margin-top: 10px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .checkbox-item input[type='checkbox'] {
+        width: auto;
+        margin-right: 10px;
+      }
+
+      /* Tabs */
+      .tabs {
+        display: flex;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .tab {
+        padding: 10px 20px;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .tab:hover {
+        background-color: rgba(50, 205, 50, 0.1);
+      }
+
+      .tab.active {
+        color: var(--accent-color);
+        font-weight: bold;
+      }
+
+      .tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background-color: var(--accent-color);
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      /* Domain tabs */
+      .domain-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .domain-tab {
+        flex: 1;
+        padding: 15px;
+        text-align: center;
+        border-radius: var(--border-radius);
+        background-color: var(--card-bg-light);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+      }
+
+      .domain-tab:hover {
+        transform: translateY(-3px);
+      }
+
+      .domain-tab.active {
+        border-color: var(--accent-color);
+        background-color: rgba(30, 144, 255, 0.1);
+      }
+
+      .domain-tab h3 {
+        margin-top: 0;
+        margin-bottom: 10px;
+      }
+
+      .domain-tab p {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .domain-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+      }
+
+      /* Progress bar */
+      .progress-container {
+        width: 100%;
+        height: 20px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        margin-bottom: 15px;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        background-color: var(--accent-color);
+        width: 0%;
+        transition: width 0.3s ease;
+        position: relative;
+      }
+
+      .progress-bar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.1) 25%,
+          rgba(255, 255, 255, 0.2) 50%,
+          rgba(255, 255, 255, 0.1) 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 2s infinite;
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: 100% 0;
+        }
+        100% {
+          background-position: -100% 0;
+        }
+      }
+
+      /* Output styles */
+      .output-container {
+        position: relative;
+      }
+
+      .output-loading {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        border-radius: var(--border-radius);
+      }
+
+      .output-loading h3 {
+        margin-bottom: 20px;
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid rgba(255, 255, 255, 0.1);
+        border-top-color: var(--accent-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .output-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .curriculum-structure {
+        background-color: var(--card-bg-light);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        max-height: 500px;
+        overflow-y: auto;
+      }
+
+      .output-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      /* Tree view for curriculum structure */
+      .tree-view ul {
+        list-style-type: none;
+        padding-left: 20px;
+      }
+
+      .tree-view li {
+        margin-bottom: 5px;
+        position: relative;
+      }
+
+      .tree-node {
+        display: flex;
+        align-items: center;
+      }
+
+      .tree-toggle {
+        cursor: pointer;
+        margin-right: 5px;
+        width: 20px;
+        height: 20px;
+        text-align: center;
+        line-height: 20px;
+      }
+
+      .tree-label {
+        cursor: pointer;
+        padding: 3px 6px;
+        border-radius: 3px;
+      }
+
+      .tree-label:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .tree-content {
+        display: none;
+        background-color: rgba(0, 0, 0, 0.2);
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 5px;
+        white-space: pre-wrap;
+        font-family: monospace;
+        font-size: 0.9rem;
+      }
+
+      .tree-content.active {
+        display: block;
+      }
+
+      /* Voice guidance button */
+      .voice-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--accent-color);
+        font-size: 1.2rem;
+        padding: 5px;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+      }
+
+      .voice-btn:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--accent-highlight);
+      }
+
+      /* Notification */
+      .notification {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 15px 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        transform: translateX(120%);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+        border-left: 4px solid var(--accent-color);
+      }
+
+      .notification.active {
+        transform: translateX(0);
+      }
+
+      .notification.success {
+        border-left-color: var(--success-color);
+      }
+
+      .notification.error {
+        border-left-color: var(--danger-color);
+      }
+
+      .notification-content {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .notification-message {
+        flex-grow: 1;
+      }
+
+      .notification-close {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.7);
+        transition: color 0.3s ease;
+      }
+
+      .notification-close:hover {
+        color: white;
+      }
+
+      /* API Info Box */
+      .api-info {
+        background-color: rgba(30, 144, 255, 0.1);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        margin-top: 20px;
+        border: 1px dashed var(--accent-color);
+      }
+
+      .api-info h3 {
+        margin-top: 0;
+        color: var(--accent-color);
+      }
+
+      /* Curriculum preview */
+      .curriculum-preview {
+        margin-top: 20px;
+      }
+
+      .preview-nav {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      .preview-tab {
+        padding: 8px 12px;
+        background-color: var(--card-bg-light);
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .preview-tab.active {
+        background-color: var(--accent-color);
+      }
+
+      .preview-content {
+        background-color: var(--card-bg-light);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        max-height: 500px;
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <img src="/logo.png" alt="ShotziOS Logo" />
+            <span>Neurodivergent Superhero School</span>
           </div>
-          <div class="card-content">
-            <h3>Select Educational Domain</h3>
-            <div class="domain-tabs">
-              <div class="domain-tab active" data-domain="neurodivergent">
-                <div class="domain-icon">🧠</div>
-                <h3>Neurodivergent</h3>
-                <p>Specialized K-12 curriculum with adaptations for ADHD, dyslexia, and autism</p>
-              </div>
-              <div class="domain-tab" data-domain="law">
-                <div class="domain-icon">⚖️</div>
-                <h3>Law School</h3>
-                <p>UAE Bar Exam preparation and legal education curriculum</p>
-              </div>
-              <div class="domain-tab" data-domain="language">
-                <div class="domain-icon">🌍</div>
-                <h3>Language</h3>
-                <p>Proficiency-based language learning for multiple languages</p>
-              </div>
+          <div class="avatar">S</div>
+        </div>
+      </div>
+    </header>
+
+    <nav>
+      <div class="container">
+        <ul class="nav-links">
+          <li><a href="/dashboard">Dashboard</a></li>
+          <li><a href="/superhero-school">Superhero School</a></li>
+          <li><a href="/superhero-school/student-dashboard.html">Student Dashboard</a></li>
+          <li>
+            <a href="/superhero-school/comprehensive-curriculum-generator.html" class="active"
+              >Curriculum Generator</a
+            >
+          </li>
+          <li><a href="/superhero-school/block-schedule-builder.html">Block Schedule</a></li>
+          <li><a href="/superhero-school/gpa-calculator.html">GPA Calculator</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="container">
+      <h1>Comprehensive Curriculum Generator</h1>
+
+      <p>
+        Create complete, standards-aligned curriculum with study guides, tests, and quizzes for any
+        educational domain. This tool generates comprehensive 1-4 year curriculum plans that can be
+        used for neurodivergent education, law education, or language learning.
+      </p>
+
+      <div class="generator-container">
+        <div class="generator-form">
+          <div class="card">
+            <div class="card-header">
+              <span>Curriculum Parameters</span>
+              <button
+                class="voice-btn"
+                data-voice-text="Select curriculum parameters to generate a comprehensive curriculum plan"
+                title="Read aloud"
+              >
+                🔊
+              </button>
             </div>
-            
-            <form id="curriculum-form">
-              <input type="hidden" id="domain" name="domain" value="neurodivergent">
-              
-              <!-- Subject selection (changes based on domain) -->
-              <div class="form-group">
-                <label for="subject">Subject</label>
-                <select id="subject" name="subject" required>
-                  <option value="">Select a subject</option>
-                  <!-- Will be populated based on domain selection -->
-                </select>
-              </div>
-              
-              <!-- Grade/Level selection -->
-              <div class="form-group">
-                <label for="level">Grade/Level</label>
-                <select id="level" name="level" required>
-                  <option value="">Select a grade or level</option>
-                  <!-- Will be populated based on domain selection -->
-                </select>
-              </div>
-              
-              <!-- Number of years -->
-              <div class="form-group">
-                <label for="years">Number of Years</label>
-                <select id="years" name="years" required>
-                  <option value="1">1 Year</option>
-                  <option value="2">2 Years</option>
-                  <option value="3">3 Years</option>
-                  <option value="4">4 Years</option>
-                </select>
-              </div>
-              
-              <!-- Standards -->
-              <div class="form-group">
-                <label for="standards">Standards</label>
-                <select id="standards" name="standards">
-                  <option value="">Select standards</option>
-                  <!-- Will be populated based on domain selection -->
-                </select>
-              </div>
-              
-              <!-- Adaptation type (only for neurodivergent domain) -->
-              <div class="form-group" id="adaptation-group">
-                <label for="adaptation">Adaptation Type</label>
-                <select id="adaptation" name="adaptation">
-                  <option value="general">Universal Design for Learning</option>
-                  <option value="adhd">ADHD Adaptations</option>
-                  <option value="dyslexia">Dyslexia Adaptations</option>
-                  <option value="autism">Autism Spectrum Adaptations</option>
-                  <option value="dyscalculia">Dyscalculia Adaptations</option>
-                </select>
-              </div>
-              
-              <!-- Curriculum components -->
-              <div class="form-group">
-                <label>Curriculum Components</label>
-                <div class="checkbox-group" id="components-group">
-                  <!-- Will be populated on page load -->
+            <div class="card-content">
+              <h3>Select Educational Domain</h3>
+              <div class="domain-tabs">
+                <div class="domain-tab active" data-domain="neurodivergent">
+                  <div class="domain-icon">🧠</div>
+                  <h3>Neurodivergent</h3>
+                  <p>Specialized K-12 curriculum with adaptations for ADHD, dyslexia, and autism</p>
+                </div>
+                <div class="domain-tab" data-domain="law">
+                  <div class="domain-icon">⚖️</div>
+                  <h3>Law School</h3>
+                  <p>UAE Bar Exam preparation and legal education curriculum</p>
+                </div>
+                <div class="domain-tab" data-domain="language">
+                  <div class="domain-icon">🌍</div>
+                  <h3>Language</h3>
+                  <p>Proficiency-based language learning for multiple languages</p>
                 </div>
               </div>
-              
-              <!-- API selection -->
-              <div class="form-group">
-                <label for="api">AI Provider</label>
-                <select id="api" name="api" required>
-                  <option value="anthropic">Anthropic Claude</option>
-                  <option value="perplexity">Perplexity AI</option>
-                </select>
-              </div>
-              
-              <div class="api-info">
-                <h3>API Information</h3>
-                <p>This tool requires either an Anthropic Claude API key or a Perplexity API key to generate curriculum content. Your API key will be used to create standards-aligned educational materials.</p>
-                <p>Current API status: <span id="api-status">Checking...</span></p>
-              </div>
-              
-              <button type="submit" id="generate-btn" class="btn btn-success" style="width: 100%; margin-top: 20px;">Generate Curriculum</button>
-            </form>
-          </div>
-        </div>
-      </div>
-      
-      <div class="generator-output">
-        <div class="card">
-          <div class="card-header">
-            <span>Generated Curriculum</span>
-            <button class="voice-btn" data-voice-text="View your generated curriculum structure and content" title="Read aloud">🔊</button>
-          </div>
-          <div class="card-content">
-            <div class="output-container">
-              <!-- Loading overlay -->
-              <div class="output-loading" style="display: none;">
-                <h3>Generating Curriculum</h3>
-                <div class="progress-container">
-                  <div class="progress-bar" id="progress-bar"></div>
+
+              <form id="curriculum-form">
+                <input type="hidden" id="domain" name="domain" value="neurodivergent" />
+
+                <!-- Subject selection (changes based on domain) -->
+                <div class="form-group">
+                  <label for="subject">Subject</label>
+                  <select id="subject" name="subject" required>
+                    <option value="">Select a subject</option>
+                    <!-- Will be populated based on domain selection -->
+                  </select>
                 </div>
-                <p id="generation-status">Preparing curriculum parameters...</p>
-                <div class="spinner"></div>
-              </div>
-              
-              <!-- Output content -->
-              <div id="output-content">
-                <div class="empty-state">
-                  <p>No curriculum generated yet. Fill out the form and click "Generate Curriculum" to create a complete curriculum package.</p>
-                  <p>Your comprehensive curriculum will include:</p>
-                  <ul style="padding-left: 20px; margin-bottom: 20px;">
-                    <li>Full yearly plans aligned to educational standards</li>
-                    <li>Complete unit and lesson plans</li>
-                    <li>Study guides for students</li>
-                    <li>Assessments (tests and quizzes)</li>
-                    <li>Specialized adaptations for your chosen domain</li>
-                  </ul>
+
+                <!-- Grade/Level selection -->
+                <div class="form-group">
+                  <label for="level">Grade/Level</label>
+                  <select id="level" name="level" required>
+                    <option value="">Select a grade or level</option>
+                    <!-- Will be populated based on domain selection -->
+                  </select>
                 </div>
-              </div>
-              
-              <!-- Generated curriculum preview (initially hidden) -->
-              <div id="curriculum-preview" style="display: none;">
-                <div class="output-header">
-                  <h3 id="curriculum-title">Generated Curriculum</h3>
-                  <div class="preview-actions">
-                    <button id="download-json-btn" class="btn btn-primary">Download JSON</button>
-                    <button id="download-pdf-btn" class="btn btn-primary">Download PDF</button>
+
+                <!-- Number of years -->
+                <div class="form-group">
+                  <label for="years">Number of Years</label>
+                  <select id="years" name="years" required>
+                    <option value="1">1 Year</option>
+                    <option value="2">2 Years</option>
+                    <option value="3">3 Years</option>
+                    <option value="4">4 Years</option>
+                  </select>
+                </div>
+
+                <!-- Standards -->
+                <div class="form-group">
+                  <label for="standards">Standards</label>
+                  <select id="standards" name="standards">
+                    <option value="">Select standards</option>
+                    <!-- Will be populated based on domain selection -->
+                  </select>
+                </div>
+
+                <!-- Adaptation type (only for neurodivergent domain) -->
+                <div class="form-group" id="adaptation-group">
+                  <label for="adaptation">Adaptation Type</label>
+                  <select id="adaptation" name="adaptation">
+                    <option value="general">Universal Design for Learning</option>
+                    <option value="adhd">ADHD Adaptations</option>
+                    <option value="dyslexia">Dyslexia Adaptations</option>
+                    <option value="autism">Autism Spectrum Adaptations</option>
+                    <option value="dyscalculia">Dyscalculia Adaptations</option>
+                  </select>
+                </div>
+
+                <!-- Curriculum components -->
+                <div class="form-group">
+                  <label>Curriculum Components</label>
+                  <div class="checkbox-group" id="components-group">
+                    <!-- Will be populated on page load -->
                   </div>
                 </div>
-                
-                <div class="curriculum-structure">
-                  <div class="tree-view" id="curriculum-tree">
-                    <!-- Tree view will be populated here -->
-                  </div>
+
+                <!-- API selection -->
+                <div class="form-group">
+                  <label for="api">AI Provider</label>
+                  <select id="api" name="api" required>
+                    <option value="anthropic">Anthropic Claude</option>
+                    <option value="perplexity">Perplexity AI</option>
+                  </select>
                 </div>
-                
-                <div class="output-actions">
-                  <button id="regenerate-btn" class="btn btn-warning">Regenerate</button>
-                  <button id="clear-output-btn" class="btn btn-danger">Clear Output</button>
+
+                <div class="api-info">
+                  <h3>API Information</h3>
+                  <p>
+                    This tool requires either an Anthropic Claude API key or a Perplexity API key to
+                    generate curriculum content. Your API key will be used to create
+                    standards-aligned educational materials.
+                  </p>
+                  <p>Current API status: <span id="api-status">Checking...</span></p>
                 </div>
-              </div>
+
+                <button
+                  type="submit"
+                  id="generate-btn"
+                  class="btn btn-success"
+                  style="width: 100%; margin-top: 20px"
+                >
+                  Generate Curriculum
+                </button>
+              </form>
             </div>
           </div>
         </div>
+
+        <div class="generator-output">
+          <div class="card">
+            <div class="card-header">
+              <span>Generated Curriculum</span>
+              <button
+                class="voice-btn"
+                data-voice-text="View your generated curriculum structure and content"
+                title="Read aloud"
+              >
+                🔊
+              </button>
+            </div>
+            <div class="card-content">
+              <div class="output-container">
+                <!-- Loading overlay -->
+                <div class="output-loading" style="display: none">
+                  <h3>Generating Curriculum</h3>
+                  <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                  </div>
+                  <p id="generation-status">Preparing curriculum parameters...</p>
+                  <div class="spinner"></div>
+                </div>
+
+                <!-- Output content -->
+                <div id="output-content">
+                  <div class="empty-state">
+                    <p>
+                      No curriculum generated yet. Fill out the form and click "Generate Curriculum"
+                      to create a complete curriculum package.
+                    </p>
+                    <p>Your comprehensive curriculum will include:</p>
+                    <ul style="padding-left: 20px; margin-bottom: 20px">
+                      <li>Full yearly plans aligned to educational standards</li>
+                      <li>Complete unit and lesson plans</li>
+                      <li>Study guides for students</li>
+                      <li>Assessments (tests and quizzes)</li>
+                      <li>Specialized adaptations for your chosen domain</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- Generated curriculum preview (initially hidden) -->
+                <div id="curriculum-preview" style="display: none">
+                  <div class="output-header">
+                    <h3 id="curriculum-title">Generated Curriculum</h3>
+                    <div class="preview-actions">
+                      <button id="download-json-btn" class="btn btn-primary">Download JSON</button>
+                      <button id="download-pdf-btn" class="btn btn-primary">Download PDF</button>
+                    </div>
+                  </div>
+
+                  <div class="curriculum-structure">
+                    <div class="tree-view" id="curriculum-tree">
+                      <!-- Tree view will be populated here -->
+                    </div>
+                  </div>
+
+                  <div class="output-actions">
+                    <button id="regenerate-btn" class="btn btn-warning">Regenerate</button>
+                    <button id="clear-output-btn" class="btn btn-danger">Clear Output</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </main>
-  
-  <script>
-    /**
-     * Comprehensive Curriculum Generator
-     * 
-     * This script handles:
-     * 1. Dynamically updating form options based on selected domain
-     * 2. Sending requests to the curriculum generation API
-     * 3. Displaying and navigating curriculum structure
-     * 4. Downloading curriculum as JSON or PDF
-     */
-    
-    // Track current curriculum data
-    let currentCurriculum = null;
-    
-    // Store domain-specific option data
-    const domainOptions = {
-      neurodivergent: {
-        subjects: {
-          'english': 'English Language Arts',
-          'math': 'Mathematics',
-          'science': 'Science',
-          'social-studies': 'Social Studies',
-          'arts': 'Arts Education',
-          'pe': 'Physical Education',
-          'health': 'Health Education',
-          'technology': 'Technology',
-          'career': 'Career and Technical Education',
-          'foreign-language': 'World Languages'
-        },
-        levels: {
-          'k': 'Kindergarten',
-          '1': 'First Grade',
-          '2': 'Second Grade',
-          '3': 'Third Grade',
-          '4': 'Fourth Grade',
-          '5': 'Fifth Grade',
-          '6': 'Sixth Grade',
-          '7': 'Seventh Grade',
-          '8': 'Eighth Grade',
-          '9': 'Ninth Grade',
-          '10': 'Tenth Grade',
-          '11': 'Eleventh Grade',
-          '12': 'Twelfth Grade'
-        },
-        standards: {
-          'alabama': 'Alabama State Standards',
-          'common-core': 'Common Core Standards'
-        }
-      },
-      law: {
-        subjects: {
-          'constitutional': 'Constitutional Law',
-          'contracts': 'Contracts',
-          'torts': 'Torts',
-          'property': 'Property Law',
-          'civil-procedure': 'Civil Procedure',
-          'criminal-law': 'Criminal Law',
-          'uae-law': 'UAE Legal System',
-          'ethics': 'Legal Ethics',
-          'evidence': 'Evidence',
-          'business-law': 'Business Law',
-          'international': 'International Law',
-          'admin-law': 'Administrative Law'
-        },
-        levels: {
-          'law-1': 'First Year Law',
-          'law-2': 'Second Year Law',
-          'law-3': 'Third Year Law'
-        },
-        standards: {
-          'uae-bar': 'UAE Bar Exam Standards',
-          'international': 'International Legal Standards'
-        }
-      },
-      language: {
-        subjects: {
-          'spanish': 'Spanish',
-          'french': 'French',
-          'german': 'German',
-          'italian': 'Italian',
-          'japanese': 'Japanese',
-          'chinese': 'Chinese',
-          'russian': 'Russian',
-          'arabic': 'Arabic'
-        },
-        levels: {
-          'beginner': 'Beginner Level',
-          'intermediate': 'Intermediate Level',
-          'advanced': 'Advanced Level'
-        },
-        standards: {
-          'cefr': 'Common European Framework of Reference',
-          'actfl': 'American Council on Teaching of Foreign Languages'
-        }
-      }
-    };
-    
-    // Curriculum components
-    const componentOptions = {
-      'yearly-plan': 'Yearly Learning Plan',
-      'unit-plans': 'Unit Plans',
-      'lesson-plans': 'Lesson Plans',
-      'study-guides': 'Study Guides',
-      'worksheets': 'Worksheets and Activities',
-      'assessments': 'Tests and Quizzes',
-      'rubrics': 'Grading Rubrics',
-      'resources': 'Learning Resources'
-    };
-    
-    /**
-     * Initialize the curriculum generator
-     */
-    function initCurriculumGenerator() {
-      setupDomainTabs();
-      populateComponentCheckboxes();
-      updateFormForDomain('neurodivergent');
-      setupFormSubmission();
-      checkApiStatus();
-      setupEventListeners();
-    }
-    
-    /**
-     * Set up domain tab selection
-     */
-    function setupDomainTabs() {
-      const domainTabs = document.querySelectorAll('.domain-tab');
-      
-      domainTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-          // Update active tab
-          domainTabs.forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-          
-          // Update hidden input
-          const domain = tab.dataset.domain;
-          document.getElementById('domain').value = domain;
-          
-          // Update form based on domain
-          updateFormForDomain(domain);
-        });
-      });
-    }
-    
-    /**
-     * Populate component checkboxes
-     */
-    function populateComponentCheckboxes() {
-      const componentsGroup = document.getElementById('components-group');
-      
-      // Clear existing checkboxes
-      componentsGroup.innerHTML = '';
-      
-      // Add checkbox for each component
-      Object.entries(componentOptions).forEach(([value, label]) => {
-        const checkboxItem = document.createElement('div');
-        checkboxItem.className = 'checkbox-item';
-        
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.name = 'components';
-        checkbox.value = value;
-        checkbox.id = `component-${value}`;
-        checkbox.checked = true;
-        
-        const checkboxLabel = document.createElement('label');
-        checkboxLabel.htmlFor = `component-${value}`;
-        checkboxLabel.textContent = label;
-        
-        checkboxItem.appendChild(checkbox);
-        checkboxItem.appendChild(checkboxLabel);
-        componentsGroup.appendChild(checkboxItem);
-      });
-    }
-    
-    /**
-     * Update form options based on selected domain
-     * @param {string} domain - The selected domain
-     */
-    function updateFormForDomain(domain) {
-      const options = domainOptions[domain];
-      
-      // Update subject dropdown
-      const subjectSelect = document.getElementById('subject');
-      subjectSelect.innerHTML = '<option value="">Select a subject</option>';
-      
-      Object.entries(options.subjects).forEach(([value, label]) => {
-        const option = document.createElement('option');
-        option.value = value;
-        option.textContent = label;
-        subjectSelect.appendChild(option);
-      });
-      
-      // Update level dropdown
-      const levelSelect = document.getElementById('level');
-      levelSelect.innerHTML = '<option value="">Select a grade or level</option>';
-      
-      Object.entries(options.levels).forEach(([value, label]) => {
-        const option = document.createElement('option');
-        option.value = value;
-        option.textContent = label;
-        levelSelect.appendChild(option);
-      });
-      
-      // Update standards dropdown
-      const standardsSelect = document.getElementById('standards');
-      standardsSelect.innerHTML = '<option value="">Select standards</option>';
-      
-      Object.entries(options.standards).forEach(([value, label]) => {
-        const option = document.createElement('option');
-        option.value = value;
-        option.textContent = label;
-        standardsSelect.appendChild(option);
-      });
-      
-      // Show/hide adaptation field
-      const adaptationGroup = document.getElementById('adaptation-group');
-      adaptationGroup.style.display = domain === 'neurodivergent' ? 'block' : 'none';
-    }
-    
-    /**
-     * Setup form submission
-     */
-    function setupFormSubmission() {
-      const form = document.getElementById('curriculum-form');
-      
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        // Get form data
-        const formData = new FormData(form);
-        const params = Object.fromEntries(formData.entries());
-        
-        // Get selected components
-        params.components = Array.from(document.querySelectorAll('input[name="components"]:checked')).map(checkbox => checkbox.value);
-        
-        // If no components are selected, show error
-        if (params.components.length === 0) {
-          showNotification('Please select at least one curriculum component', 'error');
-          return;
-        }
-        
-        // Validate form
-        if (!validateForm(params)) {
-          return;
-        }
-        
-        // Generate curriculum
-        await generateCurriculum(params);
-      });
-    }
-    
-    /**
-     * Validate form
-     * @param {Object} params - Form parameters
-     * @returns {boolean} Whether form is valid
-     */
-    function validateForm(params) {
-      if (!params.domain) {
-        showNotification('Please select an educational domain', 'error');
-        return false;
-      }
-      
-      if (!params.subject) {
-        showNotification('Please select a subject', 'error');
-        return false;
-      }
-      
-      if (!params.level) {
-        showNotification('Please select a grade or level', 'error');
-        return false;
-      }
-      
-      if (!params.api) {
-        showNotification('Please select an AI provider', 'error');
-        return false;
-      }
-      
-      return true;
-    }
-    
-    /**
-     * Generate curriculum
-     * @param {Object} params - Curriculum parameters
-     */
-    async function generateCurriculum(params) {
-      try {
-        // Show loading overlay
-        const loadingOverlay = document.querySelector('.output-loading');
-        loadingOverlay.style.display = 'flex';
-        
-        // Update progress
-        const progressBar = document.getElementById('progress-bar');
-        const generationStatus = document.getElementById('generation-status');
-        progressBar.style.width = '10%';
-        generationStatus.textContent = 'Validating parameters...';
-        
-        // First validate parameters
-        const validateResponse = await fetch('/api/curriculum/validate', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
+    </main>
+
+    <script>
+      /**
+       * Comprehensive Curriculum Generator
+       *
+       * This script handles:
+       * 1. Dynamically updating form options based on selected domain
+       * 2. Sending requests to the curriculum generation API
+       * 3. Displaying and navigating curriculum structure
+       * 4. Downloading curriculum as JSON or PDF
+       */
+
+      // Track current curriculum data
+      let currentCurriculum = null;
+
+      // Store domain-specific option data
+      const domainOptions = {
+        neurodivergent: {
+          subjects: {
+            english: 'English Language Arts',
+            math: 'Mathematics',
+            science: 'Science',
+            'social-studies': 'Social Studies',
+            arts: 'Arts Education',
+            pe: 'Physical Education',
+            health: 'Health Education',
+            technology: 'Technology',
+            career: 'Career and Technical Education',
+            'foreign-language': 'World Languages',
           },
-          body: JSON.stringify(params)
-        });
-        
-        const validateResult = await validateResponse.json();
-        
-        if (!validateResult.valid) {
-          throw new Error(validateResult.errors.join('\n'));
-        }
-        
-        // Update progress
-        progressBar.style.width = '20%';
-        generationStatus.textContent = 'Parameters validated, generating curriculum...';
-        
-        // Generate curriculum
-        const generateResponse = await fetch('/api/curriculum/generate', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
+          levels: {
+            k: 'Kindergarten',
+            1: 'First Grade',
+            2: 'Second Grade',
+            3: 'Third Grade',
+            4: 'Fourth Grade',
+            5: 'Fifth Grade',
+            6: 'Sixth Grade',
+            7: 'Seventh Grade',
+            8: 'Eighth Grade',
+            9: 'Ninth Grade',
+            10: 'Tenth Grade',
+            11: 'Eleventh Grade',
+            12: 'Twelfth Grade',
           },
-          body: JSON.stringify(params)
+          standards: {
+            alabama: 'Alabama State Standards',
+            'common-core': 'Common Core Standards',
+          },
+        },
+        law: {
+          subjects: {
+            constitutional: 'Constitutional Law',
+            contracts: 'Contracts',
+            torts: 'Torts',
+            property: 'Property Law',
+            'civil-procedure': 'Civil Procedure',
+            'criminal-law': 'Criminal Law',
+            'uae-law': 'UAE Legal System',
+            ethics: 'Legal Ethics',
+            evidence: 'Evidence',
+            'business-law': 'Business Law',
+            international: 'International Law',
+            'admin-law': 'Administrative Law',
+          },
+          levels: {
+            'law-1': 'First Year Law',
+            'law-2': 'Second Year Law',
+            'law-3': 'Third Year Law',
+          },
+          standards: {
+            'uae-bar': 'UAE Bar Exam Standards',
+            international: 'International Legal Standards',
+          },
+        },
+        language: {
+          subjects: {
+            spanish: 'Spanish',
+            french: 'French',
+            german: 'German',
+            italian: 'Italian',
+            japanese: 'Japanese',
+            chinese: 'Chinese',
+            russian: 'Russian',
+            arabic: 'Arabic',
+          },
+          levels: {
+            beginner: 'Beginner Level',
+            intermediate: 'Intermediate Level',
+            advanced: 'Advanced Level',
+          },
+          standards: {
+            cefr: 'Common European Framework of Reference',
+            actfl: 'American Council on Teaching of Foreign Languages',
+          },
+        },
+      };
+
+      // Curriculum components
+      const componentOptions = {
+        'yearly-plan': 'Yearly Learning Plan',
+        'unit-plans': 'Unit Plans',
+        'lesson-plans': 'Lesson Plans',
+        'study-guides': 'Study Guides',
+        worksheets: 'Worksheets and Activities',
+        assessments: 'Tests and Quizzes',
+        rubrics: 'Grading Rubrics',
+        resources: 'Learning Resources',
+      };
+
+      /**
+       * Initialize the curriculum generator
+       */
+      function initCurriculumGenerator() {
+        setupDomainTabs();
+        populateComponentCheckboxes();
+        updateFormForDomain('neurodivergent');
+        setupFormSubmission();
+        checkApiStatus();
+        setupEventListeners();
+      }
+
+      /**
+       * Set up domain tab selection
+       */
+      function setupDomainTabs() {
+        const domainTabs = document.querySelectorAll('.domain-tab');
+
+        domainTabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            // Update active tab
+            domainTabs.forEach((t) => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            // Update hidden input
+            const domain = tab.dataset.domain;
+            document.getElementById('domain').value = domain;
+
+            // Update form based on domain
+            updateFormForDomain(domain);
+          });
         });
-        
-        // Update progress during generation
-        const progressInterval = setInterval(() => {
-          const currentWidth = parseInt(progressBar.style.width);
-          if (currentWidth < 90) {
-            progressBar.style.width = `${currentWidth + 1}%`;
+      }
+
+      /**
+       * Populate component checkboxes
+       */
+      function populateComponentCheckboxes() {
+        const componentsGroup = document.getElementById('components-group');
+
+        // Clear existing checkboxes
+        componentsGroup.innerHTML = '';
+
+        // Add checkbox for each component
+        Object.entries(componentOptions).forEach(([value, label]) => {
+          const checkboxItem = document.createElement('div');
+          checkboxItem.className = 'checkbox-item';
+
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.name = 'components';
+          checkbox.value = value;
+          checkbox.id = `component-${value}`;
+          checkbox.checked = true;
+
+          const checkboxLabel = document.createElement('label');
+          checkboxLabel.htmlFor = `component-${value}`;
+          checkboxLabel.textContent = label;
+
+          checkboxItem.appendChild(checkbox);
+          checkboxItem.appendChild(checkboxLabel);
+          componentsGroup.appendChild(checkboxItem);
+        });
+      }
+
+      /**
+       * Update form options based on selected domain
+       * @param {string} domain - The selected domain
+       */
+      function updateFormForDomain(domain) {
+        const options = domainOptions[domain];
+
+        // Update subject dropdown
+        const subjectSelect = document.getElementById('subject');
+        subjectSelect.innerHTML = '<option value="">Select a subject</option>';
+
+        Object.entries(options.subjects).forEach(([value, label]) => {
+          const option = document.createElement('option');
+          option.value = value;
+          option.textContent = label;
+          subjectSelect.appendChild(option);
+        });
+
+        // Update level dropdown
+        const levelSelect = document.getElementById('level');
+        levelSelect.innerHTML = '<option value="">Select a grade or level</option>';
+
+        Object.entries(options.levels).forEach(([value, label]) => {
+          const option = document.createElement('option');
+          option.value = value;
+          option.textContent = label;
+          levelSelect.appendChild(option);
+        });
+
+        // Update standards dropdown
+        const standardsSelect = document.getElementById('standards');
+        standardsSelect.innerHTML = '<option value="">Select standards</option>';
+
+        Object.entries(options.standards).forEach(([value, label]) => {
+          const option = document.createElement('option');
+          option.value = value;
+          option.textContent = label;
+          standardsSelect.appendChild(option);
+        });
+
+        // Show/hide adaptation field
+        const adaptationGroup = document.getElementById('adaptation-group');
+        adaptationGroup.style.display = domain === 'neurodivergent' ? 'block' : 'none';
+      }
+
+      /**
+       * Setup form submission
+       */
+      function setupFormSubmission() {
+        const form = document.getElementById('curriculum-form');
+
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          // Get form data
+          const formData = new FormData(form);
+          const params = Object.fromEntries(formData.entries());
+
+          // Get selected components
+          params.components = Array.from(
+            document.querySelectorAll('input[name="components"]:checked'),
+          ).map((checkbox) => checkbox.value);
+
+          // If no components are selected, show error
+          if (params.components.length === 0) {
+            showNotification('Please select at least one curriculum component', 'error');
+            return;
           }
-        }, 1000);
-        
-        // Get response
-        const generateResult = await generateResponse.json();
-        
-        // Clear progress interval
-        clearInterval(progressInterval);
-        
-        // Check for errors
-        if (!generateResult.success) {
-          throw new Error(generateResult.error || 'Failed to generate curriculum');
-        }
-        
-        // Update progress
-        progressBar.style.width = '100%';
-        generationStatus.textContent = 'Curriculum generated successfully!';
-        
-        // Store current curriculum data
-        currentCurriculum = generateResult.result;
-        
-        // Display curriculum
-        displayCurriculum(currentCurriculum);
-        
-        // Hide loading overlay after a brief delay
-        setTimeout(() => {
-          loadingOverlay.style.display = 'none';
-        }, 500);
-        
-        showNotification('Curriculum generated successfully', 'success');
-      } catch (error) {
-        console.error('Error generating curriculum:', error);
-        
-        // Hide loading overlay
-        document.querySelector('.output-loading').style.display = 'none';
-        
-        showNotification(`Error: ${error.message}`, 'error');
+
+          // Validate form
+          if (!validateForm(params)) {
+            return;
+          }
+
+          // Generate curriculum
+          await generateCurriculum(params);
+        });
       }
-    }
-    
-    /**
-     * Display generated curriculum
-     * @param {Object} data - Curriculum data
-     */
-    function displayCurriculum(data) {
-      // Show curriculum preview
-      const outputContent = document.getElementById('output-content');
-      const curriculumPreview = document.getElementById('curriculum-preview');
-      
-      outputContent.querySelector('.empty-state').style.display = 'none';
-      curriculumPreview.style.display = 'block';
-      
-      // Set curriculum title
-      const curriculumTitle = document.getElementById('curriculum-title');
-      const metadata = data.metadata;
-      curriculumTitle.textContent = `${metadata.subject} Curriculum for ${metadata.level}`;
-      
-      // Build tree view
-      const curriculumTree = document.getElementById('curriculum-tree');
-      curriculumTree.innerHTML = '';
-      
-      // Add metadata node
-      const metadataNode = createTreeNode('Metadata', null, true);
-      
-      // Add metadata content
-      const metadataContent = document.createElement('div');
-      metadataContent.className = 'tree-content';
-      metadataContent.innerHTML = `
+
+      /**
+       * Validate form
+       * @param {Object} params - Form parameters
+       * @returns {boolean} Whether form is valid
+       */
+      function validateForm(params) {
+        if (!params.domain) {
+          showNotification('Please select an educational domain', 'error');
+          return false;
+        }
+
+        if (!params.subject) {
+          showNotification('Please select a subject', 'error');
+          return false;
+        }
+
+        if (!params.level) {
+          showNotification('Please select a grade or level', 'error');
+          return false;
+        }
+
+        if (!params.api) {
+          showNotification('Please select an AI provider', 'error');
+          return false;
+        }
+
+        return true;
+      }
+
+      /**
+       * Generate curriculum
+       * @param {Object} params - Curriculum parameters
+       */
+      async function generateCurriculum(params) {
+        try {
+          // Show loading overlay
+          const loadingOverlay = document.querySelector('.output-loading');
+          loadingOverlay.style.display = 'flex';
+
+          // Update progress
+          const progressBar = document.getElementById('progress-bar');
+          const generationStatus = document.getElementById('generation-status');
+          progressBar.style.width = '10%';
+          generationStatus.textContent = 'Validating parameters...';
+
+          // First validate parameters
+          const validateResponse = await fetch('/api/curriculum/validate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(params),
+          });
+
+          const validateResult = await validateResponse.json();
+
+          if (!validateResult.valid) {
+            throw new Error(validateResult.errors.join('\n'));
+          }
+
+          // Update progress
+          progressBar.style.width = '20%';
+          generationStatus.textContent = 'Parameters validated, generating curriculum...';
+
+          // Generate curriculum
+          const generateResponse = await fetch('/api/curriculum/generate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(params),
+          });
+
+          // Update progress during generation
+          const progressInterval = setInterval(() => {
+            const currentWidth = parseInt(progressBar.style.width);
+            if (currentWidth < 90) {
+              progressBar.style.width = `${currentWidth + 1}%`;
+            }
+          }, 1000);
+
+          // Get response
+          const generateResult = await generateResponse.json();
+
+          // Clear progress interval
+          clearInterval(progressInterval);
+
+          // Check for errors
+          if (!generateResult.success) {
+            throw new Error(generateResult.error || 'Failed to generate curriculum');
+          }
+
+          // Update progress
+          progressBar.style.width = '100%';
+          generationStatus.textContent = 'Curriculum generated successfully!';
+
+          // Store current curriculum data
+          currentCurriculum = generateResult.result;
+
+          // Display curriculum
+          displayCurriculum(currentCurriculum);
+
+          // Hide loading overlay after a brief delay
+          setTimeout(() => {
+            loadingOverlay.style.display = 'none';
+          }, 500);
+
+          showNotification('Curriculum generated successfully', 'success');
+        } catch (error) {
+          console.error('Error generating curriculum:', error);
+
+          // Hide loading overlay
+          document.querySelector('.output-loading').style.display = 'none';
+
+          showNotification(`Error: ${error.message}`, 'error');
+        }
+      }
+
+      /**
+       * Display generated curriculum
+       * @param {Object} data - Curriculum data
+       */
+      function displayCurriculum(data) {
+        // Show curriculum preview
+        const outputContent = document.getElementById('output-content');
+        const curriculumPreview = document.getElementById('curriculum-preview');
+
+        outputContent.querySelector('.empty-state').style.display = 'none';
+        curriculumPreview.style.display = 'block';
+
+        // Set curriculum title
+        const curriculumTitle = document.getElementById('curriculum-title');
+        const metadata = data.metadata;
+        curriculumTitle.textContent = `${metadata.subject} Curriculum for ${metadata.level}`;
+
+        // Build tree view
+        const curriculumTree = document.getElementById('curriculum-tree');
+        curriculumTree.innerHTML = '';
+
+        // Add metadata node
+        const metadataNode = createTreeNode('Metadata', null, true);
+
+        // Add metadata content
+        const metadataContent = document.createElement('div');
+        metadataContent.className = 'tree-content';
+        metadataContent.innerHTML = `
         <p><strong>Domain:</strong> ${metadata.domain}</p>
         <p><strong>Subject:</strong> ${metadata.subject}</p>
         <p><strong>Level:</strong> ${metadata.level}</p>
@@ -1238,406 +1283,421 @@
         <p><strong>Generated:</strong> ${new Date(metadata.timestamp).toLocaleString()}</p>
         <p><strong>Source:</strong> ${data.source} (${data.model})</p>
       `;
-      
-      metadataNode.appendChild(metadataContent);
-      curriculumTree.appendChild(metadataNode);
-      
-      // Check if there's structured curriculum data or raw content
-      if (data.curriculum && data.curriculum.raw_content) {
-        // Handle unstructured/raw content
-        const contentNode = createTreeNode('Curriculum Content', null, true);
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'tree-content';
-        contentDiv.textContent = data.curriculum.raw_content;
-        contentNode.appendChild(contentDiv);
-        curriculumTree.appendChild(contentNode);
-      } else {
-        // Handle structured data
-        try {
-          // Add curriculum structure
-          buildCurriculumTree(data.curriculum, curriculumTree);
-        } catch (error) {
-          console.error('Error building curriculum tree:', error);
-          
-          // If we fail to build the tree, show raw data
-          const contentNode = createTreeNode('Curriculum Data', null, true);
+
+        metadataNode.appendChild(metadataContent);
+        curriculumTree.appendChild(metadataNode);
+
+        // Check if there's structured curriculum data or raw content
+        if (data.curriculum && data.curriculum.raw_content) {
+          // Handle unstructured/raw content
+          const contentNode = createTreeNode('Curriculum Content', null, true);
           const contentDiv = document.createElement('div');
           contentDiv.className = 'tree-content';
-          contentDiv.textContent = JSON.stringify(data.curriculum, null, 2);
+          contentDiv.textContent = data.curriculum.raw_content;
           contentNode.appendChild(contentDiv);
           curriculumTree.appendChild(contentNode);
+        } else {
+          // Handle structured data
+          try {
+            // Add curriculum structure
+            buildCurriculumTree(data.curriculum, curriculumTree);
+          } catch (error) {
+            console.error('Error building curriculum tree:', error);
+
+            // If we fail to build the tree, show raw data
+            const contentNode = createTreeNode('Curriculum Data', null, true);
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'tree-content';
+            contentDiv.textContent = JSON.stringify(data.curriculum, null, 2);
+            contentNode.appendChild(contentDiv);
+            curriculumTree.appendChild(contentNode);
+          }
         }
       }
-    }
-    
-    /**
-     * Build curriculum tree structure
-     * @param {Object} curriculum - Curriculum data
-     * @param {HTMLElement} parentElement - Parent tree element
-     */
-    function buildCurriculumTree(curriculum, parentElement) {
-      // Handle years array if present
-      if (curriculum.curriculum && Array.isArray(curriculum.curriculum)) {
-        const curriculumNode = createTreeNode('Curriculum Years', null, true);
-        parentElement.appendChild(curriculumNode);
-        
-        const yearsList = document.createElement('ul');
-        
-        curriculum.curriculum.forEach((year, index) => {
-          const yearNode = document.createElement('li');
-          const yearLabel = year.level || `Year ${index + 1}`;
-          const yearTree = createTreeNode(yearLabel, null, false);
-          yearNode.appendChild(yearTree);
-          
-          // Year overview
-          if (year.yearOverview) {
-            const overviewNode = createTreeNode('Year Overview', year.yearOverview, false);
-            const childList = document.createElement('ul');
-            const childItem = document.createElement('li');
-            childItem.appendChild(overviewNode);
-            childList.appendChild(childItem);
-            yearTree.appendChild(childList);
-          }
-          
-          // Standards alignment
-          if (year.standardsAlignment) {
-            const standardsNode = createTreeNode('Standards Alignment', year.standardsAlignment, false);
-            const childList = document.createElement('ul');
-            const childItem = document.createElement('li');
-            childItem.appendChild(standardsNode);
-            childList.appendChild(childItem);
-            yearTree.appendChild(childList);
-          }
-          
-          // Units
-          if (year.units && Array.isArray(year.units)) {
-            const unitsList = document.createElement('ul');
-            
-            year.units.forEach((unit, unitIndex) => {
-              const unitNode = document.createElement('li');
-              const unitLabel = unit.title || `Unit ${unitIndex + 1}`;
-              const unitTree = createTreeNode(unitLabel, null, false);
-              unitNode.appendChild(unitTree);
-              
-              // Unit details
-              const unitDetailsList = document.createElement('ul');
-              
-              // Unit objectives
-              if (unit.objectives) {
-                const objectivesNode = createTreeNode('Objectives', unit.objectives, false);
-                const objItem = document.createElement('li');
-                objItem.appendChild(objectivesNode);
-                unitDetailsList.appendChild(objItem);
-              }
-              
-              // Unit vocabulary
-              if (unit.keyVocabulary || unit.keyTerminology || unit.vocabulary) {
-                const vocabContent = unit.keyVocabulary || unit.keyTerminology || unit.vocabulary;
-                const vocabNode = createTreeNode('Vocabulary', vocabContent, false);
-                const vocabItem = document.createElement('li');
-                vocabItem.appendChild(vocabNode);
-                unitDetailsList.appendChild(vocabItem);
-              }
-              
-              // Lessons
-              if (unit.lessons && Array.isArray(unit.lessons)) {
-                const lessonsNode = createTreeNode('Lessons', null, false);
-                const lessonsItem = document.createElement('li');
-                lessonsItem.appendChild(lessonsNode);
-                
-                const lessonsList = document.createElement('ul');
-                unit.lessons.forEach((lesson, lessonIndex) => {
-                  const lessonContent = typeof lesson === 'string' 
-                    ? lesson 
-                    : JSON.stringify(lesson, null, 2);
-                  
-                  const lessonTitle = lesson.title || `Lesson ${lessonIndex + 1}`;
-                  const lessonNode = createTreeNode(lessonTitle, lessonContent, false);
-                  const lessonItem = document.createElement('li');
-                  lessonItem.appendChild(lessonNode);
-                  lessonsList.appendChild(lessonItem);
-                });
-                
-                lessonsNode.appendChild(lessonsList);
-                unitDetailsList.appendChild(lessonsItem);
-              }
-              
-              // Study guides
-              if (unit.studyGuides) {
-                const guidesNode = createTreeNode('Study Guides', unit.studyGuides, false);
-                const guidesItem = document.createElement('li');
-                guidesItem.appendChild(guidesNode);
-                unitDetailsList.appendChild(guidesItem);
-              }
-              
-              // Assessments
-              if (unit.assessments) {
-                const assessNode = createTreeNode('Assessments', unit.assessments, false);
-                const assessItem = document.createElement('li');
-                assessItem.appendChild(assessNode);
-                unitDetailsList.appendChild(assessItem);
-              }
-              
-              // Accommodations (for neurodivergent)
-              if (unit.accommodations) {
-                const accomNode = createTreeNode('Accommodations', unit.accommodations, false);
-                const accomItem = document.createElement('li');
-                accomItem.appendChild(accomNode);
-                unitDetailsList.appendChild(accomItem);
-              }
-              
-              // Add other unit-specific content
-              Object.entries(unit).forEach(([key, value]) => {
-                // Skip already processed keys
-                if (['title', 'objectives', 'keyVocabulary', 'keyTerminology', 'vocabulary', 
-                     'lessons', 'studyGuides', 'assessments', 'accommodations'].includes(key)) {
-                  return;
+
+      /**
+       * Build curriculum tree structure
+       * @param {Object} curriculum - Curriculum data
+       * @param {HTMLElement} parentElement - Parent tree element
+       */
+      function buildCurriculumTree(curriculum, parentElement) {
+        // Handle years array if present
+        if (curriculum.curriculum && Array.isArray(curriculum.curriculum)) {
+          const curriculumNode = createTreeNode('Curriculum Years', null, true);
+          parentElement.appendChild(curriculumNode);
+
+          const yearsList = document.createElement('ul');
+
+          curriculum.curriculum.forEach((year, index) => {
+            const yearNode = document.createElement('li');
+            const yearLabel = year.level || `Year ${index + 1}`;
+            const yearTree = createTreeNode(yearLabel, null, false);
+            yearNode.appendChild(yearTree);
+
+            // Year overview
+            if (year.yearOverview) {
+              const overviewNode = createTreeNode('Year Overview', year.yearOverview, false);
+              const childList = document.createElement('ul');
+              const childItem = document.createElement('li');
+              childItem.appendChild(overviewNode);
+              childList.appendChild(childItem);
+              yearTree.appendChild(childList);
+            }
+
+            // Standards alignment
+            if (year.standardsAlignment) {
+              const standardsNode = createTreeNode(
+                'Standards Alignment',
+                year.standardsAlignment,
+                false,
+              );
+              const childList = document.createElement('ul');
+              const childItem = document.createElement('li');
+              childItem.appendChild(standardsNode);
+              childList.appendChild(childItem);
+              yearTree.appendChild(childList);
+            }
+
+            // Units
+            if (year.units && Array.isArray(year.units)) {
+              const unitsList = document.createElement('ul');
+
+              year.units.forEach((unit, unitIndex) => {
+                const unitNode = document.createElement('li');
+                const unitLabel = unit.title || `Unit ${unitIndex + 1}`;
+                const unitTree = createTreeNode(unitLabel, null, false);
+                unitNode.appendChild(unitTree);
+
+                // Unit details
+                const unitDetailsList = document.createElement('ul');
+
+                // Unit objectives
+                if (unit.objectives) {
+                  const objectivesNode = createTreeNode('Objectives', unit.objectives, false);
+                  const objItem = document.createElement('li');
+                  objItem.appendChild(objectivesNode);
+                  unitDetailsList.appendChild(objItem);
                 }
-                
-                const formatted = key.replace(/([A-Z])/g, ' $1')
-                                    .replace(/^./, str => str.toUpperCase())
-                                    .replace(/([A-Z])/g, ' $1');
-                
-                const extraNode = createTreeNode(formatted, value, false);
-                const extraItem = document.createElement('li');
-                extraItem.appendChild(extraNode);
-                unitDetailsList.appendChild(extraItem);
+
+                // Unit vocabulary
+                if (unit.keyVocabulary || unit.keyTerminology || unit.vocabulary) {
+                  const vocabContent = unit.keyVocabulary || unit.keyTerminology || unit.vocabulary;
+                  const vocabNode = createTreeNode('Vocabulary', vocabContent, false);
+                  const vocabItem = document.createElement('li');
+                  vocabItem.appendChild(vocabNode);
+                  unitDetailsList.appendChild(vocabItem);
+                }
+
+                // Lessons
+                if (unit.lessons && Array.isArray(unit.lessons)) {
+                  const lessonsNode = createTreeNode('Lessons', null, false);
+                  const lessonsItem = document.createElement('li');
+                  lessonsItem.appendChild(lessonsNode);
+
+                  const lessonsList = document.createElement('ul');
+                  unit.lessons.forEach((lesson, lessonIndex) => {
+                    const lessonContent =
+                      typeof lesson === 'string' ? lesson : JSON.stringify(lesson, null, 2);
+
+                    const lessonTitle = lesson.title || `Lesson ${lessonIndex + 1}`;
+                    const lessonNode = createTreeNode(lessonTitle, lessonContent, false);
+                    const lessonItem = document.createElement('li');
+                    lessonItem.appendChild(lessonNode);
+                    lessonsList.appendChild(lessonItem);
+                  });
+
+                  lessonsNode.appendChild(lessonsList);
+                  unitDetailsList.appendChild(lessonsItem);
+                }
+
+                // Study guides
+                if (unit.studyGuides) {
+                  const guidesNode = createTreeNode('Study Guides', unit.studyGuides, false);
+                  const guidesItem = document.createElement('li');
+                  guidesItem.appendChild(guidesNode);
+                  unitDetailsList.appendChild(guidesItem);
+                }
+
+                // Assessments
+                if (unit.assessments) {
+                  const assessNode = createTreeNode('Assessments', unit.assessments, false);
+                  const assessItem = document.createElement('li');
+                  assessItem.appendChild(assessNode);
+                  unitDetailsList.appendChild(assessItem);
+                }
+
+                // Accommodations (for neurodivergent)
+                if (unit.accommodations) {
+                  const accomNode = createTreeNode('Accommodations', unit.accommodations, false);
+                  const accomItem = document.createElement('li');
+                  accomItem.appendChild(accomNode);
+                  unitDetailsList.appendChild(accomItem);
+                }
+
+                // Add other unit-specific content
+                Object.entries(unit).forEach(([key, value]) => {
+                  // Skip already processed keys
+                  if (
+                    [
+                      'title',
+                      'objectives',
+                      'keyVocabulary',
+                      'keyTerminology',
+                      'vocabulary',
+                      'lessons',
+                      'studyGuides',
+                      'assessments',
+                      'accommodations',
+                    ].includes(key)
+                  ) {
+                    return;
+                  }
+
+                  const formatted = key
+                    .replace(/([A-Z])/g, ' $1')
+                    .replace(/^./, (str) => str.toUpperCase())
+                    .replace(/([A-Z])/g, ' $1');
+
+                  const extraNode = createTreeNode(formatted, value, false);
+                  const extraItem = document.createElement('li');
+                  extraItem.appendChild(extraNode);
+                  unitDetailsList.appendChild(extraItem);
+                });
+
+                unitTree.appendChild(unitDetailsList);
+                unitsList.appendChild(unitNode);
               });
-              
-              unitTree.appendChild(unitDetailsList);
-              unitsList.appendChild(unitNode);
-            });
-            
-            yearTree.appendChild(unitsList);
+
+              yearTree.appendChild(unitsList);
+            }
+
+            yearsList.appendChild(yearNode);
+          });
+
+          curriculumNode.appendChild(yearsList);
+        } else {
+          // Direct structure - simply stringify and display as JSON
+          const contentNode = createTreeNode('Curriculum Structure', null, true);
+          const contentDiv = document.createElement('div');
+          contentDiv.className = 'tree-content';
+          contentDiv.textContent = JSON.stringify(curriculum, null, 2);
+          contentNode.appendChild(contentDiv);
+          parentElement.appendChild(contentNode);
+        }
+      }
+
+      /**
+       * Create a tree node
+       * @param {string} label - Node label
+       * @param {*} content - Node content
+       * @param {boolean} expanded - Whether node should be expanded by default
+       * @returns {HTMLElement} Tree node element
+       */
+      function createTreeNode(label, content, expanded) {
+        const nodeContainer = document.createElement('div');
+        nodeContainer.className = 'tree-node';
+
+        const toggle = document.createElement('span');
+        toggle.className = 'tree-toggle';
+        toggle.textContent = expanded ? '−' : '+';
+
+        const nodeLabel = document.createElement('span');
+        nodeLabel.className = 'tree-label';
+        nodeLabel.textContent = label;
+
+        nodeContainer.appendChild(toggle);
+        nodeContainer.appendChild(nodeLabel);
+
+        // If content is provided, create content div
+        if (content !== null) {
+          const contentDiv = document.createElement('div');
+          contentDiv.className = 'tree-content';
+          if (expanded) {
+            contentDiv.classList.add('active');
           }
-          
-          yearsList.appendChild(yearNode);
+
+          // Format content based on type
+          if (typeof content === 'string') {
+            contentDiv.textContent = content;
+          } else if (Array.isArray(content)) {
+            contentDiv.textContent = content.join('\n');
+          } else {
+            contentDiv.textContent = JSON.stringify(content, null, 2);
+          }
+
+          nodeContainer.appendChild(contentDiv);
+        }
+
+        // Add click handlers
+        toggle.addEventListener('click', () => {
+          const content = nodeContainer.querySelector('.tree-content');
+          if (content) {
+            content.classList.toggle('active');
+            toggle.textContent = content.classList.contains('active') ? '−' : '+';
+          }
         });
-        
-        curriculumNode.appendChild(yearsList);
-      } else {
-        // Direct structure - simply stringify and display as JSON
-        const contentNode = createTreeNode('Curriculum Structure', null, true);
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'tree-content';
-        contentDiv.textContent = JSON.stringify(curriculum, null, 2);
-        contentNode.appendChild(contentDiv);
-        parentElement.appendChild(contentNode);
+
+        nodeLabel.addEventListener('click', () => {
+          const content = nodeContainer.querySelector('.tree-content');
+          if (content) {
+            content.classList.toggle('active');
+            toggle.textContent = content.classList.contains('active') ? '−' : '+';
+          }
+        });
+
+        return nodeContainer;
       }
-    }
-    
-    /**
-     * Create a tree node
-     * @param {string} label - Node label
-     * @param {*} content - Node content
-     * @param {boolean} expanded - Whether node should be expanded by default
-     * @returns {HTMLElement} Tree node element
-     */
-    function createTreeNode(label, content, expanded) {
-      const nodeContainer = document.createElement('div');
-      nodeContainer.className = 'tree-node';
-      
-      const toggle = document.createElement('span');
-      toggle.className = 'tree-toggle';
-      toggle.textContent = expanded ? '−' : '+';
-      
-      const nodeLabel = document.createElement('span');
-      nodeLabel.className = 'tree-label';
-      nodeLabel.textContent = label;
-      
-      nodeContainer.appendChild(toggle);
-      nodeContainer.appendChild(nodeLabel);
-      
-      // If content is provided, create content div
-      if (content !== null) {
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'tree-content';
-        if (expanded) {
-          contentDiv.classList.add('active');
-        }
-        
-        // Format content based on type
-        if (typeof content === 'string') {
-          contentDiv.textContent = content;
-        } else if (Array.isArray(content)) {
-          contentDiv.textContent = content.join('\n');
-        } else {
-          contentDiv.textContent = JSON.stringify(content, null, 2);
-        }
-        
-        nodeContainer.appendChild(contentDiv);
-      }
-      
-      // Add click handlers
-      toggle.addEventListener('click', () => {
-        const content = nodeContainer.querySelector('.tree-content');
-        if (content) {
-          content.classList.toggle('active');
-          toggle.textContent = content.classList.contains('active') ? '−' : '+';
-        }
-      });
-      
-      nodeLabel.addEventListener('click', () => {
-        const content = nodeContainer.querySelector('.tree-content');
-        if (content) {
-          content.classList.toggle('active');
-          toggle.textContent = content.classList.contains('active') ? '−' : '+';
-        }
-      });
-      
-      return nodeContainer;
-    }
-    
-    /**
-     * Check API key status
-     */
-    async function checkApiStatus() {
-      const apiStatus = document.getElementById('api-status');
-      
-      try {
-        const response = await fetch('/api/curriculum/options');
-        const data = await response.json();
-        
-        if (data.success) {
-          apiStatus.textContent = 'API Ready';
-          apiStatus.style.color = 'var(--success-color)';
-        } else {
+
+      /**
+       * Check API key status
+       */
+      async function checkApiStatus() {
+        const apiStatus = document.getElementById('api-status');
+
+        try {
+          const response = await fetch('/api/curriculum/options');
+          const data = await response.json();
+
+          if (data.success) {
+            apiStatus.textContent = 'API Ready';
+            apiStatus.style.color = 'var(--success-color)';
+          } else {
+            apiStatus.textContent = 'API Error';
+            apiStatus.style.color = 'var(--danger-color)';
+          }
+        } catch (error) {
+          console.error('Error checking API status:', error);
           apiStatus.textContent = 'API Error';
           apiStatus.style.color = 'var(--danger-color)';
         }
-      } catch (error) {
-        console.error('Error checking API status:', error);
-        apiStatus.textContent = 'API Error';
-        apiStatus.style.color = 'var(--danger-color)';
       }
-    }
-    
-    /**
-     * Setup additional event listeners
-     */
-    function setupEventListeners() {
-      // Download JSON button
-      const downloadJsonBtn = document.getElementById('download-json-btn');
-      downloadJsonBtn.addEventListener('click', () => {
-        if (!currentCurriculum) return;
-        
-        const jsonData = JSON.stringify(currentCurriculum, null, 2);
-        const blob = new Blob([jsonData], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'curriculum.json';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        
-        showNotification('Curriculum JSON downloaded', 'success');
-      });
-      
-      // Download PDF button (placeholder)
-      const downloadPdfBtn = document.getElementById('download-pdf-btn');
-      downloadPdfBtn.addEventListener('click', () => {
-        showNotification('PDF download functionality coming soon!', 'info');
-      });
-      
-      // Regenerate button
-      const regenerateBtn = document.getElementById('regenerate-btn');
-      regenerateBtn.addEventListener('click', () => {
-        document.getElementById('curriculum-form').dispatchEvent(new Event('submit'));
-      });
-      
-      // Clear output button
-      const clearOutputBtn = document.getElementById('clear-output-btn');
-      clearOutputBtn.addEventListener('click', () => {
-        currentCurriculum = null;
-        
-        const outputContent = document.getElementById('output-content');
-        const curriculumPreview = document.getElementById('curriculum-preview');
-        
-        outputContent.querySelector('.empty-state').style.display = 'block';
-        curriculumPreview.style.display = 'none';
-        
-        showNotification('Output cleared', 'info');
-      });
-    }
-    
-    /**
-     * Show a notification to the user
-     * @param {string} message - The message to display
-     * @param {string} type - The type of notification ('success', 'error', 'info')
-     */
-    function showNotification(message, type = 'info') {
-      // Remove any existing notifications
-      const existingNotifications = document.querySelectorAll('.notification');
-      existingNotifications.forEach(notification => {
-        document.body.removeChild(notification);
-      });
-      
-      // Create new notification
-      const notification = document.createElement('div');
-      notification.className = `notification ${type}`;
-      notification.innerHTML = `
+
+      /**
+       * Setup additional event listeners
+       */
+      function setupEventListeners() {
+        // Download JSON button
+        const downloadJsonBtn = document.getElementById('download-json-btn');
+        downloadJsonBtn.addEventListener('click', () => {
+          if (!currentCurriculum) return;
+
+          const jsonData = JSON.stringify(currentCurriculum, null, 2);
+          const blob = new Blob([jsonData], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'curriculum.json';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+
+          showNotification('Curriculum JSON downloaded', 'success');
+        });
+
+        // Download PDF button (placeholder)
+        const downloadPdfBtn = document.getElementById('download-pdf-btn');
+        downloadPdfBtn.addEventListener('click', () => {
+          showNotification('PDF download functionality coming soon!', 'info');
+        });
+
+        // Regenerate button
+        const regenerateBtn = document.getElementById('regenerate-btn');
+        regenerateBtn.addEventListener('click', () => {
+          document.getElementById('curriculum-form').dispatchEvent(new Event('submit'));
+        });
+
+        // Clear output button
+        const clearOutputBtn = document.getElementById('clear-output-btn');
+        clearOutputBtn.addEventListener('click', () => {
+          currentCurriculum = null;
+
+          const outputContent = document.getElementById('output-content');
+          const curriculumPreview = document.getElementById('curriculum-preview');
+
+          outputContent.querySelector('.empty-state').style.display = 'block';
+          curriculumPreview.style.display = 'none';
+
+          showNotification('Output cleared', 'info');
+        });
+      }
+
+      /**
+       * Show a notification to the user
+       * @param {string} message - The message to display
+       * @param {string} type - The type of notification ('success', 'error', 'info')
+       */
+      function showNotification(message, type = 'info') {
+        // Remove any existing notifications
+        const existingNotifications = document.querySelectorAll('.notification');
+        existingNotifications.forEach((notification) => {
+          document.body.removeChild(notification);
+        });
+
+        // Create new notification
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
         <div class="notification-content">
           <span class="notification-message">${message}</span>
           <button class="notification-close">&times;</button>
         </div>
       `;
-      
-      document.body.appendChild(notification);
-      
-      // Show notification with animation
-      setTimeout(() => {
-        notification.classList.add('active');
-      }, 10);
-      
-      // Auto-close after 5 seconds
-      setTimeout(() => {
-        closeNotification(notification);
-      }, 5000);
-      
-      // Close button event
-      const closeBtn = notification.querySelector('.notification-close');
-      closeBtn.addEventListener('click', () => {
-        closeNotification(notification);
-      });
-      
-      // Announce for screen readers
-      if (window.accessibilityVoice) {
-        window.accessibilityVoice.announce(message);
-      }
-    }
-    
-    /**
-     * Close a notification
-     * @param {HTMLElement} notification - The notification element to close
-     */
-    function closeNotification(notification) {
-      notification.classList.remove('active');
-      
-      // Remove from DOM after animation
-      setTimeout(() => {
-        if (notification.parentNode) {
-          notification.parentNode.removeChild(notification);
-        }
-      }, 300);
-    }
-    
-    // Initialize when the page loads
-    document.addEventListener('DOMContentLoaded', function() {
-      initCurriculumGenerator();
-      
-      // Initialize curriculum assessment integration if script is available
-      if (typeof window.curriculumAssessmentIntegration !== 'undefined') {
-        window.curriculumAssessmentIntegration.initCurriculumAssessmentIntegration({
-          userId: '1', // Default user ID for testing, replace with actual user ID in production
-          curriculumType: 'comprehensive'
+
+        document.body.appendChild(notification);
+
+        // Show notification with animation
+        setTimeout(() => {
+          notification.classList.add('active');
+        }, 10);
+
+        // Auto-close after 5 seconds
+        setTimeout(() => {
+          closeNotification(notification);
+        }, 5000);
+
+        // Close button event
+        const closeBtn = notification.querySelector('.notification-close');
+        closeBtn.addEventListener('click', () => {
+          closeNotification(notification);
         });
+
+        // Announce for screen readers
+        if (window.accessibilityVoice) {
+          window.accessibilityVoice.announce(message);
+        }
       }
-    });
-  </script>
-  
-  <!-- Curriculum Assessment Integration Script -->
-  <script src="/js/curriculum-assessment-integration.js"></script>
-</body>
+
+      /**
+       * Close a notification
+       * @param {HTMLElement} notification - The notification element to close
+       */
+      function closeNotification(notification) {
+        notification.classList.remove('active');
+
+        // Remove from DOM after animation
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }
+
+      // Initialize when the page loads
+      document.addEventListener('DOMContentLoaded', function () {
+        initCurriculumGenerator();
+
+        // Initialize curriculum assessment integration if script is available
+        if (typeof window.curriculumAssessmentIntegration !== 'undefined') {
+          window.curriculumAssessmentIntegration.initCurriculumAssessmentIntegration({
+            userId: '1', // Default user ID for testing, replace with actual user ID in production
+            curriculumType: 'comprehensive',
+          });
+        }
+      });
+    </script>
+
+    <!-- Curriculum Assessment Integration Script -->
+    <script src="/js/curriculum-assessment-integration.js"></script>
+  </body>
 </html>

@@ -6,11 +6,29 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Eye, Play, Pause, RotateCcw, Award, Star,
-  Clock, Target, Gamepad2, Brain, Globe,
-  Sword, Crown, Book, Calculator, Microscope,
-  TreePine, Home, Users, Trophy, Zap, Heart
+import {
+  Eye,
+  Play,
+  Pause,
+  RotateCcw,
+  Award,
+  Star,
+  Clock,
+  Target,
+  Gamepad2,
+  Brain,
+  Globe,
+  Sword,
+  Crown,
+  Book,
+  Calculator,
+  Microscope,
+  TreePine,
+  Home,
+  Users,
+  Trophy,
+  Zap,
+  Heart,
 } from 'lucide-react';
 
 // VR Game Modes
@@ -27,15 +45,15 @@ const gameModes = [
       'Interactive battle simulations and strategy games',
       'Role-playing as historical figures',
       'Decision-making scenarios with real consequences',
-      'Collaborative multiplayer historical missions'
+      'Collaborative multiplayer historical missions',
     ],
     learningOutcomes: [
       'Complete understanding of cause-and-effect in history',
       'Critical thinking through historical problem-solving',
       'Cultural awareness and global perspectives',
-      'Leadership skills through historical role-play'
+      'Leadership skills through historical role-play',
     ],
-    color: 'blue'
+    color: 'blue',
   },
   {
     id: 'stem-exploration',
@@ -49,15 +67,15 @@ const gameModes = [
       'Conduct experiments alongside historical scientists',
       'Solve mathematical problems using historical methods',
       'Design and test inventions from different eras',
-      'Explore the natural world through historical expeditions'
+      'Explore the natural world through historical expeditions',
     ],
     learningOutcomes: [
       'Deep understanding of scientific principles',
       'Problem-solving and engineering design thinking',
       'Mathematical reasoning through practical application',
-      'Innovation and creativity development'
+      'Innovation and creativity development',
     ],
-    color: 'green'
+    color: 'green',
   },
   {
     id: 'language-culture',
@@ -71,15 +89,15 @@ const gameModes = [
       'Create art and literature inspired by different cultures',
       'Participate in historical cultural events and ceremonies',
       'Learn languages through immersive cultural contexts',
-      'Collaborate with virtual historical figures'
+      'Collaborate with virtual historical figures',
     ],
     learningOutcomes: [
       'Natural language acquisition and fluency',
       'Cultural sensitivity and global awareness',
       'Creative expression through multiple mediums',
-      'Communication skills across cultures'
+      'Communication skills across cultures',
     ],
-    color: 'purple'
+    color: 'purple',
   },
   {
     id: 'adventure-survival',
@@ -93,16 +111,16 @@ const gameModes = [
       'Navigate ancient trade routes and overcome challenges',
       'Build shelter and find resources in different historical periods',
       'Make survival decisions based on historical knowledge',
-      'Learn practical skills through historical contexts'
+      'Learn practical skills through historical contexts',
     ],
     learningOutcomes: [
       'Practical life skills and self-reliance',
       'Critical thinking under pressure',
       'Resource management and planning',
-      'Resilience and adaptability'
+      'Resilience and adaptability',
     ],
-    color: 'orange'
-  }
+    color: 'orange',
+  },
 ];
 
 // 90-Minute Curriculum Structure
@@ -110,7 +128,7 @@ const ninetyMinuteCurriculum = {
   totalTime: 90,
   warmUp: {
     duration: 10,
-    activities: ['VR calibration', 'Historical context setting', 'Learning objectives overview']
+    activities: ['VR calibration', 'Historical context setting', 'Learning objectives overview'],
   },
   coreExperience: {
     duration: 60,
@@ -118,67 +136,83 @@ const ninetyMinuteCurriculum = {
       {
         time: 15,
         activity: 'Historical Immersion',
-        description: 'Students enter historical period and assume roles'
+        description: 'Students enter historical period and assume roles',
       },
       {
         time: 20,
         activity: 'Interactive Learning',
-        description: 'Hands-on activities covering all required subjects'
+        description: 'Hands-on activities covering all required subjects',
       },
       {
         time: 15,
         activity: 'Problem Solving',
-        description: 'Apply learning to overcome historical challenges'
+        description: 'Apply learning to overcome historical challenges',
       },
       {
         time: 10,
         activity: 'Collaboration',
-        description: 'Work with peers on group missions'
-      }
-    ]
+        description: 'Work with peers on group missions',
+      },
+    ],
   },
   reflection: {
     duration: 15,
-    activities: ['Experience review', 'Knowledge assessment', 'Real-world connections']
+    activities: ['Experience review', 'Knowledge assessment', 'Real-world connections'],
   },
   outdoorTransition: {
     duration: 5,
-    activities: ['VR removal', 'Physical movement', 'Outdoor activity preparation']
-  }
+    activities: ['VR removal', 'Physical movement', 'Outdoor activity preparation'],
+  },
 };
 
 // State Standards Coverage
 const stateStandardsCoverage = {
   mathematics: {
-    k2: ['Number recognition', 'Basic counting', 'Simple addition through historical counting systems'],
-    '3-5': ['Multiplication through ancient trade', 'Fractions via historical measurements', 'Geometry through architecture'],
-    '6-8': ['Algebra through historical problems', 'Statistics via population studies', 'Advanced geometry'],
-    '9-12': ['Calculus applications', 'Statistical analysis', 'Mathematical modeling']
+    k2: [
+      'Number recognition',
+      'Basic counting',
+      'Simple addition through historical counting systems',
+    ],
+    '3-5': [
+      'Multiplication through ancient trade',
+      'Fractions via historical measurements',
+      'Geometry through architecture',
+    ],
+    '6-8': [
+      'Algebra through historical problems',
+      'Statistics via population studies',
+      'Advanced geometry',
+    ],
+    '9-12': ['Calculus applications', 'Statistical analysis', 'Mathematical modeling'],
   },
   languageArts: {
-    k2: ['Phonics through historical names', 'Basic reading via period stories', 'Oral communication'],
+    k2: [
+      'Phonics through historical names',
+      'Basic reading via period stories',
+      'Oral communication',
+    ],
     '3-5': ['Reading comprehension', 'Writing historical narratives', 'Vocabulary expansion'],
     '6-8': ['Critical analysis', 'Research writing', 'Public speaking'],
-    '9-12': ['Advanced composition', 'Literary analysis', 'Rhetoric and debate']
+    '9-12': ['Advanced composition', 'Literary analysis', 'Rhetoric and debate'],
   },
   science: {
     k2: ['Basic observation', 'Simple experiments', 'Nature awareness'],
     '3-5': ['Scientific method', 'Life cycles', 'Matter and energy'],
     '6-8': ['Physics principles', 'Chemistry basics', 'Biology systems'],
-    '9-12': ['Advanced physics', 'Organic chemistry', 'Advanced biology']
+    '9-12': ['Advanced physics', 'Organic chemistry', 'Advanced biology'],
   },
   socialStudies: {
     k2: ['Community helpers', 'Basic geography', 'Cultural awareness'],
     '3-5': ['Government basics', 'World geography', 'Cultural studies'],
     '6-8': ['World history', 'Civics and government', 'Economic principles'],
-    '9-12': ['Advanced history', 'Political science', 'Economics']
-  }
+    '9-12': ['Advanced history', 'Political science', 'Economics'],
+  },
 };
 
 // VR Experience Timer Component
 function VRExperienceTimer({ isActive, timeRemaining, totalTime }) {
   const progress = ((totalTime - timeRemaining) / totalTime) * 100;
-  
+
   return (
     <Card className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-500">
       <CardHeader>
@@ -197,9 +231,9 @@ function VRExperienceTimer({ isActive, timeRemaining, totalTime }) {
               {isActive ? 'Active' : 'Paused'}
             </Badge>
           </div>
-          
+
           <Progress value={progress} className="h-3" />
-          
+
           <div className="grid grid-cols-4 gap-2 text-xs">
             <div className="text-center">
               <div className="font-semibold text-green-400">Warm-up</div>
@@ -239,11 +273,11 @@ function GameModeSelection() {
       <CardContent>
         <div className="grid md:grid-cols-2 gap-6">
           {gameModes.map((mode) => (
-            <div 
+            <div
               key={mode.id}
               className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                selectedMode === mode.id 
-                  ? 'bg-blue-500/20 border-blue-400' 
+                selectedMode === mode.id
+                  ? 'bg-blue-500/20 border-blue-400'
                   : 'bg-black/30 border-gray-600 hover:border-purple-400'
               }`}
               onClick={() => setSelectedMode(selectedMode === mode.id ? null : mode.id)}
@@ -253,34 +287,42 @@ function GameModeSelection() {
                   <h4 className="font-bold text-white">{mode.title}</h4>
                   <p className="text-sm text-gray-300 mt-1">{mode.description}</p>
                 </div>
-                <Badge className="bg-blue-500">
-                  {mode.duration}
-                </Badge>
+                <Badge className="bg-blue-500">{mode.duration}</Badge>
               </div>
-              
+
               <div className="space-y-3">
                 <div>
-                  <div className="text-sm font-semibold text-purple-400 mb-1">Subjects Covered:</div>
+                  <div className="text-sm font-semibold text-purple-400 mb-1">
+                    Subjects Covered:
+                  </div>
                   <div className="flex flex-wrap gap-1">
                     {mode.subjects.map((subject, i) => (
-                      <Badge key={i} variant="outline" className="text-xs border-purple-500 text-purple-300">
+                      <Badge
+                        key={i}
+                        variant="outline"
+                        className="text-xs border-purple-500 text-purple-300"
+                      >
                         {subject}
                       </Badge>
                     ))}
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="text-sm font-semibold text-blue-400 mb-1">Age Groups:</div>
                   <div className="flex gap-1">
                     {mode.ageGroups.map((age, i) => (
-                      <Badge key={i} variant="outline" className="text-xs border-blue-500 text-blue-300">
+                      <Badge
+                        key={i}
+                        variant="outline"
+                        className="text-xs border-blue-500 text-blue-300"
+                      >
                         {age}
                       </Badge>
                     ))}
                   </div>
                 </div>
-                
+
                 {selectedMode === mode.id && (
                   <div className="mt-4 space-y-3 border-t border-gray-600 pt-3">
                     <div>
@@ -294,7 +336,7 @@ function GameModeSelection() {
                         ))}
                       </ul>
                     </div>
-                    
+
                     <div>
                       <h6 className="font-semibold text-yellow-400 mb-2">Learning Outcomes:</h6>
                       <ul className="space-y-1">
@@ -306,7 +348,7 @@ function GameModeSelection() {
                         ))}
                       </ul>
                     </div>
-                    
+
                     <Button className="w-full bg-blue-600 hover:bg-blue-700">
                       <Eye className="w-4 h-4 mr-2" />
                       Start VR Experience
@@ -344,9 +386,17 @@ function StandardsCoverageDisplay() {
                 size="sm"
                 variant={selectedGrade === grade ? 'default' : 'outline'}
                 onClick={() => setSelectedGrade(grade)}
-                className={selectedGrade === grade ? 'bg-green-600' : 'border-green-500 text-green-400'}
+                className={
+                  selectedGrade === grade ? 'bg-green-600' : 'border-green-500 text-green-400'
+                }
               >
-                {grade === 'k2' ? 'K-2' : grade === '3-5' ? '3-5' : grade === '6-8' ? '6-8' : '9-12'}
+                {grade === 'k2'
+                  ? 'K-2'
+                  : grade === '3-5'
+                    ? '3-5'
+                    : grade === '6-8'
+                      ? '6-8'
+                      : '9-12'}
               </Button>
             ))}
           </div>
@@ -388,26 +438,26 @@ function OutdoorIntegrationBenefits() {
       title: 'Physical Health',
       description: 'VR learning followed by outdoor activities ensures balanced development',
       icon: Heart,
-      stats: '78% improvement in physical fitness'
+      stats: '78% improvement in physical fitness',
     },
     {
       title: 'Mental Wellness',
       description: 'Nature exposure after intensive learning reduces stress and improves focus',
       icon: Brain,
-      stats: '65% reduction in learning anxiety'
+      stats: '65% reduction in learning anxiety',
     },
     {
       title: 'Social Development',
       description: 'Outdoor group activities reinforce collaborative skills learned in VR',
       icon: Users,
-      stats: '89% improvement in teamwork'
+      stats: '89% improvement in teamwork',
     },
     {
       title: 'Environmental Connection',
       description: 'Historical learning connects to real-world environmental understanding',
       icon: TreePine,
-      stats: '92% increase in environmental awareness'
-    }
+      stats: '92% increase in environmental awareness',
+    },
   ];
 
   return (
@@ -421,11 +471,14 @@ function OutdoorIntegrationBenefits() {
       <CardContent>
         <div className="grid md:grid-cols-2 gap-6">
           {benefits.map((benefit, i) => (
-            <div key={i} className="flex items-start gap-4 p-4 bg-black/30 rounded-lg border border-gray-600">
+            <div
+              key={i}
+              className="flex items-start gap-4 p-4 bg-black/30 rounded-lg border border-gray-600"
+            >
               <div className="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center flex-shrink-0">
                 <benefit.icon className="w-6 h-6 text-orange-400" />
               </div>
-              
+
               <div className="flex-1">
                 <h5 className="font-semibold text-white mb-1">{benefit.title}</h5>
                 <p className="text-sm text-gray-300 mb-2">{benefit.description}</p>
@@ -447,7 +500,7 @@ export default function VREducationExperiencePage() {
   useEffect(() => {
     if (sessionActive && timeRemaining > 0) {
       const timer = setInterval(() => {
-        setTimeRemaining(prev => prev - 1);
+        setTimeRemaining((prev) => prev - 1);
       }, 1000);
       return () => clearInterval(timer);
     }
@@ -462,9 +515,10 @@ export default function VREducationExperiencePage() {
             VR Educational Gaming Experience
           </h1>
           <p className="text-xl text-gray-300 mb-6">
-            Complete state-compliant curriculum in 90 minutes of immersive VR gameplay, leaving the rest of the day for outdoor exploration
+            Complete state-compliant curriculum in 90 minutes of immersive VR gameplay, leaving the
+            rest of the day for outdoor exploration
           </p>
-          
+
           <div className="flex justify-center gap-4 mb-6">
             <Badge variant="outline" className="border-purple-500 text-purple-400">
               <Eye className="w-4 h-4 mr-2" />
@@ -483,7 +537,7 @@ export default function VREducationExperiencePage() {
 
         {/* VR Session Timer */}
         <div className="mb-8">
-          <VRExperienceTimer 
+          <VRExperienceTimer
             isActive={sessionActive}
             timeRemaining={timeRemaining}
             totalTime={5400}
@@ -533,7 +587,9 @@ export default function VREducationExperiencePage() {
 
                   {/* Core Experience */}
                   <div className="p-4 bg-blue-500/20 rounded-lg border border-blue-500">
-                    <h5 className="font-semibold text-blue-400 mb-4">Core VR Learning Experience (60 minutes)</h5>
+                    <h5 className="font-semibold text-blue-400 mb-4">
+                      Core VR Learning Experience (60 minutes)
+                    </h5>
                     <div className="grid md:grid-cols-2 gap-4">
                       {ninetyMinuteCurriculum.coreExperience.segments.map((segment, i) => (
                         <div key={i} className="bg-black/30 p-3 rounded border border-gray-600">
@@ -554,7 +610,9 @@ export default function VREducationExperiencePage() {
                         15m
                       </div>
                       <div>
-                        <h5 className="font-semibold text-purple-400 mb-2">Reflection & Assessment</h5>
+                        <h5 className="font-semibold text-purple-400 mb-2">
+                          Reflection & Assessment
+                        </h5>
                         <ul className="text-sm text-gray-300 space-y-1">
                           {ninetyMinuteCurriculum.reflection.activities.map((activity, i) => (
                             <li key={i} className="flex items-center gap-2">
@@ -573,12 +631,14 @@ export default function VREducationExperiencePage() {
                       <div>
                         <h5 className="font-semibold text-orange-400 mb-2">Outdoor Transition</h5>
                         <ul className="text-sm text-gray-300 space-y-1">
-                          {ninetyMinuteCurriculum.outdoorTransition.activities.map((activity, i) => (
-                            <li key={i} className="flex items-center gap-2">
-                              <Star className="w-3 h-3 text-orange-400" />
-                              {activity}
-                            </li>
-                          ))}
+                          {ninetyMinuteCurriculum.outdoorTransition.activities.map(
+                            (activity, i) => (
+                              <li key={i} className="flex items-center gap-2">
+                                <Star className="w-3 h-3 text-orange-400" />
+                                {activity}
+                              </li>
+                            ),
+                          )}
                         </ul>
                       </div>
                     </div>
@@ -626,15 +686,16 @@ export default function VREducationExperiencePage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="mt-6 bg-black/30 p-4 rounded-lg border border-yellow-500/50">
               <h5 className="font-semibold text-yellow-400 mb-2">Revolutionary Education Model:</h5>
               <p className="text-gray-300 text-sm">
-                This VR gaming approach compresses traditional 6-8 hour school days into 90 minutes of highly 
-                effective, immersive learning. Students complete all required curriculum while gaining practical 
-                skills, critical thinking abilities, and global perspectives. The remaining 6+ hours are available 
-                for outdoor exploration, physical activities, family time, and passion pursuits - creating a 
-                balanced, healthy approach to childhood development.
+                This VR gaming approach compresses traditional 6-8 hour school days into 90 minutes
+                of highly effective, immersive learning. Students complete all required curriculum
+                while gaining practical skills, critical thinking abilities, and global
+                perspectives. The remaining 6+ hours are available for outdoor exploration, physical
+                activities, family time, and passion pursuits - creating a balanced, healthy
+                approach to childhood development.
               </p>
             </div>
           </CardContent>
@@ -642,19 +703,19 @@ export default function VREducationExperiencePage() {
 
         {/* Call to Action */}
         <div className="text-center mt-8">
-          <Button 
-            size="lg" 
+          <Button
+            size="lg"
             className="bg-purple-600 hover:bg-purple-700 mr-4"
             onClick={() => setSessionActive(!sessionActive)}
           >
             <Eye className="w-5 h-5 mr-2" />
             {sessionActive ? 'Pause VR Session' : 'Start VR Learning Session'}
           </Button>
-          <Button 
-            size="lg" 
-            variant="outline" 
+          <Button
+            size="lg"
+            variant="outline"
             className="border-green-500 text-green-400"
-            onClick={() => window.location.href = '/interactive-history-map'}
+            onClick={() => (window.location.href = '/interactive-history-map')}
           >
             <Globe className="w-5 h-5 mr-2" />
             Preview Historical Adventures

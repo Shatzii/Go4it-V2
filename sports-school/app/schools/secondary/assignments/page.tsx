@@ -1,22 +1,22 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { 
-  BookOpen, 
-  Clock, 
-  Star, 
-  Trophy, 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  BookOpen,
+  Clock,
+  Star,
+  Trophy,
   CheckCircle,
   AlertCircle,
   Calendar,
   FileText,
   Theater,
   Drama,
-  Music
-} from 'lucide-react'
-import Link from 'next/link'
+  Music,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function SecondaryAssignments() {
   const assignments = [
@@ -29,7 +29,7 @@ export default function SecondaryAssignments() {
       status: 'pending',
       difficulty: 'medium',
       points: 45,
-      description: 'Analyze the character development of Romeo throughout Acts 1-3'
+      description: 'Analyze the character development of Romeo throughout Acts 1-3',
     },
     {
       id: 2,
@@ -40,7 +40,7 @@ export default function SecondaryAssignments() {
       status: 'in_progress',
       difficulty: 'hard',
       points: 60,
-      description: 'Prepare and perform a 3-minute monologue from any classical play'
+      description: 'Prepare and perform a 3-minute monologue from any classical play',
     },
     {
       id: 3,
@@ -51,9 +51,9 @@ export default function SecondaryAssignments() {
       status: 'completed',
       difficulty: 'medium',
       points: 40,
-      description: 'Compose a 16-bar piece demonstrating proper harmonic progression'
-    }
-  ]
+      description: 'Compose a 16-bar piece demonstrating proper harmonic progression',
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-red-50">
@@ -104,22 +104,36 @@ export default function SecondaryAssignments() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="text-4xl">
-                      {assignment.subject === 'English Literature' ? '📚' :
-                       assignment.subject === 'Drama' ? '🎭' :
-                       assignment.subject === 'Music' ? '🎵' : '🎨'}
+                      {assignment.subject === 'English Literature'
+                        ? '📚'
+                        : assignment.subject === 'Drama'
+                          ? '🎭'
+                          : assignment.subject === 'Music'
+                            ? '🎵'
+                            : '🎨'}
                     </div>
                     <div>
                       <CardTitle className="text-lg">{assignment.title}</CardTitle>
-                      <p className="text-sm text-gray-600">{assignment.subject} • {assignment.teacher}</p>
+                      <p className="text-sm text-gray-600">
+                        {assignment.subject} • {assignment.teacher}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant={
-                      assignment.status === 'completed' ? 'default' :
-                      assignment.status === 'in_progress' ? 'secondary' : 'outline'
-                    }>
-                      {assignment.status === 'completed' ? 'Completed' :
-                       assignment.status === 'in_progress' ? 'In Progress' : 'Pending'}
+                    <Badge
+                      variant={
+                        assignment.status === 'completed'
+                          ? 'default'
+                          : assignment.status === 'in_progress'
+                            ? 'secondary'
+                            : 'outline'
+                      }
+                    >
+                      {assignment.status === 'completed'
+                        ? 'Completed'
+                        : assignment.status === 'in_progress'
+                          ? 'In Progress'
+                          : 'Pending'}
                     </Badge>
                     <Badge className="bg-yellow-100 text-yellow-800">
                       {assignment.points} points
@@ -136,8 +150,11 @@ export default function SecondaryAssignments() {
                       <span>Due: {assignment.dueDate}</span>
                     </div>
                     <Badge variant="outline" className="text-xs">
-                      {assignment.difficulty === 'easy' ? 'Easy' :
-                       assignment.difficulty === 'medium' ? 'Medium' : 'Hard'}
+                      {assignment.difficulty === 'easy'
+                        ? 'Easy'
+                        : assignment.difficulty === 'medium'
+                          ? 'Medium'
+                          : 'Hard'}
                     </Badge>
                   </div>
                   <div className="flex gap-2">
@@ -146,8 +163,11 @@ export default function SecondaryAssignments() {
                       View Details
                     </Button>
                     <Button size="sm" disabled={assignment.status === 'completed'}>
-                      {assignment.status === 'completed' ? 'Completed' :
-                       assignment.status === 'in_progress' ? 'Continue' : 'Start'}
+                      {assignment.status === 'completed'
+                        ? 'Completed'
+                        : assignment.status === 'in_progress'
+                          ? 'Continue'
+                          : 'Start'}
                     </Button>
                   </div>
                 </div>
@@ -163,19 +183,13 @@ export default function SecondaryAssignments() {
               <h3 className="font-medium text-purple-800 mb-4">Need Assignment Help?</h3>
               <div className="flex justify-center gap-4">
                 <Link href="/ai-teachers">
-                  <Button className="bg-purple-600 hover:bg-purple-700">
-                    Ask AI Teacher
-                  </Button>
+                  <Button className="bg-purple-600 hover:bg-purple-700">Ask AI Teacher</Button>
                 </Link>
                 <Link href="/schools/secondary/virtual-classroom">
-                  <Button variant="outline">
-                    Join Virtual Class
-                  </Button>
+                  <Button variant="outline">Join Virtual Class</Button>
                 </Link>
                 <Link href="/schools/secondary/student-dashboard">
-                  <Button variant="outline">
-                    Back to Dashboard
-                  </Button>
+                  <Button variant="outline">Back to Dashboard</Button>
                 </Link>
               </div>
             </div>
@@ -183,5 +197,5 @@ export default function SecondaryAssignments() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

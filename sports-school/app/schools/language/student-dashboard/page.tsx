@@ -7,11 +7,27 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Globe, Mic, Volume2, BookOpen, MessageCircle,
-  Star, Trophy, Target, TrendingUp, Users, 
-  Play, Pause, RotateCcw, Headphones, Camera,
-  Flag, Award, Clock, Brain, Heart
+import {
+  Globe,
+  Mic,
+  Volume2,
+  BookOpen,
+  MessageCircle,
+  Star,
+  Trophy,
+  Target,
+  TrendingUp,
+  Users,
+  Play,
+  Pause,
+  RotateCcw,
+  Headphones,
+  Camera,
+  Flag,
+  Award,
+  Clock,
+  Brain,
+  Heart,
 } from 'lucide-react';
 
 // Global Language Academy Student Data
@@ -30,22 +46,50 @@ const languageStudentData = {
     { name: 'Listening', level: 85, target: 90, icon: Headphones },
     { name: 'Reading', level: 78, target: 85, icon: BookOpen },
     { name: 'Writing', level: 65, target: 75, icon: BookOpen },
-    { name: 'Vocabulary', level: 680, target: 800, icon: Brain, isCount: true }
+    { name: 'Vocabulary', level: 680, target: 800, icon: Brain, isCount: true },
   ],
   recentActivities: [
-    { type: 'conversation', topic: 'Daily Routines', duration: '15 min', score: 88, language: 'English' },
-    { type: 'listening', topic: 'News Podcast', duration: '20 min', score: 92, language: 'English' },
-    { type: 'grammar', topic: 'Past Perfect Tense', duration: '10 min', score: 76, language: 'English' }
+    {
+      type: 'conversation',
+      topic: 'Daily Routines',
+      duration: '15 min',
+      score: 88,
+      language: 'English',
+    },
+    {
+      type: 'listening',
+      topic: 'News Podcast',
+      duration: '20 min',
+      score: 92,
+      language: 'English',
+    },
+    {
+      type: 'grammar',
+      topic: 'Past Perfect Tense',
+      duration: '10 min',
+      score: 76,
+      language: 'English',
+    },
   ],
   languages: [
     { name: 'English', flag: '🇺🇸', level: 'B1', progress: 72, isActive: true },
     { name: 'French', flag: '🇫🇷', level: 'A2', progress: 45, isActive: false },
-    { name: 'Mandarin', flag: '🇨🇳', level: 'A1', progress: 20, isActive: false }
+    { name: 'Mandarin', flag: '🇨🇳', level: 'A1', progress: 20, isActive: false },
   ],
   upcomingLessons: [
-    { time: '2:00 PM', type: 'Live Conversation', teacher: 'Ms. Johnson', topic: 'Travel & Tourism' },
-    { time: '4:30 PM', type: 'Grammar Workshop', teacher: 'Prof. Williams', topic: 'Conditional Sentences' }
-  ]
+    {
+      time: '2:00 PM',
+      type: 'Live Conversation',
+      teacher: 'Ms. Johnson',
+      topic: 'Travel & Tourism',
+    },
+    {
+      time: '4:30 PM',
+      type: 'Grammar Workshop',
+      teacher: 'Prof. Williams',
+      topic: 'Conditional Sentences',
+    },
+  ],
 };
 
 // Language Dashboard Header
@@ -61,7 +105,9 @@ function LanguageDashboardHeader() {
           </Avatar>
           <div>
             <h2 className="text-2xl font-bold text-white">{languageStudentData.name}</h2>
-            <p className="text-emerald-200">{languageStudentData.level} • {languageStudentData.school}</p>
+            <p className="text-emerald-200">
+              {languageStudentData.level} • {languageStudentData.school}
+            </p>
             <div className="flex items-center gap-2 mt-2">
               <Badge className="bg-white/20 text-white">
                 🇪🇸 {languageStudentData.primaryLanguage}
@@ -75,9 +121,14 @@ function LanguageDashboardHeader() {
         </div>
 
         <div className="text-right">
-          <div className="text-3xl font-bold text-white">{languageStudentData.currentProgress}h</div>
+          <div className="text-3xl font-bold text-white">
+            {languageStudentData.currentProgress}h
+          </div>
           <div className="text-emerald-200">This Week / {languageStudentData.weeklyGoal}h Goal</div>
-          <Progress value={(languageStudentData.currentProgress / languageStudentData.weeklyGoal) * 100} className="w-32 mt-2" />
+          <Progress
+            value={(languageStudentData.currentProgress / languageStudentData.weeklyGoal) * 100}
+            className="w-32 mt-2"
+          />
           <div className="mt-2 text-cyan-300 font-semibold">
             🔥 {languageStudentData.streakDays} Day Streak!
           </div>
@@ -100,7 +151,10 @@ function LanguageSkillsProgress() {
       <CardContent>
         <div className="space-y-4">
           {languageStudentData.skills.map((skill, i) => (
-            <div key={i} className="flex items-center gap-4 p-4 bg-black/30 rounded-lg border border-blue-400/30">
+            <div
+              key={i}
+              className="flex items-center gap-4 p-4 bg-black/30 rounded-lg border border-blue-400/30"
+            >
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
                 <skill.icon className="w-6 h-6 text-white" />
               </div>
@@ -117,9 +171,9 @@ function LanguageSkillsProgress() {
                     </span>
                   </div>
                 </div>
-                <Progress 
-                  value={skill.isCount ? (skill.level / skill.target) * 100 : skill.level} 
-                  className="h-2" 
+                <Progress
+                  value={skill.isCount ? (skill.level / skill.target) * 100 : skill.level}
+                  className="h-2"
                 />
               </div>
             </div>
@@ -143,19 +197,30 @@ function RecentActivities() {
       <CardContent>
         <div className="space-y-3">
           {languageStudentData.recentActivities.map((activity, i) => (
-            <div key={i} className="flex items-center gap-4 p-4 bg-black/30 rounded-lg border border-green-400/30">
-              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                activity.type === 'conversation' ? 'bg-pink-500' :
-                activity.type === 'listening' ? 'bg-blue-500' :
-                'bg-purple-500'
-              }`}>
-                {activity.type === 'conversation' && <MessageCircle className="w-6 h-6 text-white" />}
+            <div
+              key={i}
+              className="flex items-center gap-4 p-4 bg-black/30 rounded-lg border border-green-400/30"
+            >
+              <div
+                className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                  activity.type === 'conversation'
+                    ? 'bg-pink-500'
+                    : activity.type === 'listening'
+                      ? 'bg-blue-500'
+                      : 'bg-purple-500'
+                }`}
+              >
+                {activity.type === 'conversation' && (
+                  <MessageCircle className="w-6 h-6 text-white" />
+                )}
                 {activity.type === 'listening' && <Headphones className="w-6 h-6 text-white" />}
                 {activity.type === 'grammar' && <BookOpen className="w-6 h-6 text-white" />}
               </div>
 
               <div className="flex-1">
-                <h4 className="font-semibold text-white capitalize">{activity.type}: {activity.topic}</h4>
+                <h4 className="font-semibold text-white capitalize">
+                  {activity.type}: {activity.topic}
+                </h4>
                 <div className="flex items-center justify-between mt-2">
                   <span className="text-sm text-gray-400">{activity.language}</span>
                   <div className="flex items-center gap-2">
@@ -224,11 +289,14 @@ function LanguageLearningDashboard() {
           <CardContent>
             <div className="space-y-4">
               {languageStudentData.languages.map((language, i) => (
-                <div key={i} className={`p-4 rounded-lg border ${
-                  language.isActive 
-                    ? 'bg-cyan-500/20 border-cyan-400' 
-                    : 'bg-black/30 border-gray-600'
-                }`}>
+                <div
+                  key={i}
+                  className={`p-4 rounded-lg border ${
+                    language.isActive
+                      ? 'bg-cyan-500/20 border-cyan-400'
+                      : 'bg-black/30 border-gray-600'
+                  }`}
+                >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">{language.flag}</span>
@@ -261,7 +329,10 @@ function LanguageLearningDashboard() {
           <CardContent>
             <div className="space-y-3">
               {languageStudentData.upcomingLessons.map((lesson, i) => (
-                <div key={i} className="flex items-center gap-4 p-4 bg-black/30 rounded-lg border border-orange-400/30">
+                <div
+                  key={i}
+                  className="flex items-center gap-4 p-4 bg-black/30 rounded-lg border border-orange-400/30"
+                >
                   <div className="text-center">
                     <div className="text-lg font-bold text-orange-400">{lesson.time}</div>
                   </div>

@@ -11,7 +11,7 @@ export interface AdvancedVideoAnalysis {
   gameAwareness: number;
   consistency: number;
   improvement: number;
-  
+
   // Advanced Computer Vision Analysis
   biomechanics: {
     posture: number;
@@ -20,7 +20,7 @@ export interface AdvancedVideoAnalysis {
     efficiency: number;
     injury_risk: number;
   };
-  
+
   // Movement Analysis
   movement: {
     speed: number;
@@ -30,7 +30,7 @@ export interface AdvancedVideoAnalysis {
     reaction_time: number;
     power_output: number;
   };
-  
+
   // Tactical Analysis
   tactical: {
     positioning: number;
@@ -39,7 +39,7 @@ export interface AdvancedVideoAnalysis {
     adaptability: number;
     game_intelligence: number;
   };
-  
+
   // Psychological Profile
   mental: {
     confidence: number;
@@ -48,7 +48,7 @@ export interface AdvancedVideoAnalysis {
     resilience: number;
     motivation: number;
   };
-  
+
   // Detailed Breakdown
   breakdown: {
     strengths: string[];
@@ -62,7 +62,7 @@ export interface AdvancedVideoAnalysis {
       importance: 'high' | 'medium' | 'low';
     }>;
   };
-  
+
   // Advanced Coaching Insights
   coachingInsights: {
     focus_areas: string[];
@@ -77,7 +77,7 @@ export interface AdvancedVideoAnalysis {
     physical_development: string[];
     technique_refinement: string[];
   };
-  
+
   // Comparative Analysis
   comparison: {
     peer_percentile: number;
@@ -86,7 +86,7 @@ export interface AdvancedVideoAnalysis {
     professional_potential: number;
     improvement_trajectory: 'rapid' | 'steady' | 'gradual' | 'plateau';
   };
-  
+
   // Predictive Analytics
   predictions: {
     performance_forecast: Array<{
@@ -108,7 +108,7 @@ export interface AdvancedVideoAnalysis {
       recommended_schools: string[];
     };
   };
-  
+
   // Multi-angle Analysis
   multiAngle: {
     front_view: any;
@@ -117,7 +117,7 @@ export interface AdvancedVideoAnalysis {
     overhead_view: any;
     synchronized_analysis: boolean;
   };
-  
+
   // Real-time Metrics
   realTime: {
     processing_time: number;
@@ -141,15 +141,15 @@ export interface VideoProcessingConfig {
 export class AdvancedVideoAnalyzer {
   private aiManager: any;
   private config: VideoProcessingConfig;
-  
+
   constructor(config: VideoProcessingConfig) {
     this.config = config;
     this.aiManager = createAIModelManager();
   }
-  
+
   async analyzeVideo(videoPath: string, metadata?: any): Promise<AdvancedVideoAnalysis> {
     const startTime = Date.now();
-    
+
     try {
       // Multi-stage analysis pipeline
       const [
@@ -157,36 +157,35 @@ export class AdvancedVideoAnalyzer {
         movementAnalysis,
         tacticalAnalysis,
         mentalAnalysis,
-        predictiveAnalysis
+        predictiveAnalysis,
       ] = await Promise.all([
         this.analyzeBiomechanics(videoPath),
         this.analyzeMovement(videoPath),
         this.analyzeTactical(videoPath),
         this.analyzeMental(videoPath),
-        this.generatePredictions(videoPath, metadata)
+        this.generatePredictions(videoPath, metadata),
       ]);
-      
+
       // Combine all analyses
       const combinedAnalysis = await this.combineAnalyses(
         biomechanicsAnalysis,
         movementAnalysis,
         tacticalAnalysis,
         mentalAnalysis,
-        predictiveAnalysis
+        predictiveAnalysis,
       );
-      
+
       // Calculate processing metrics
       const processingTime = Date.now() - startTime;
       combinedAnalysis.realTime.processing_time = processingTime;
-      
+
       return combinedAnalysis;
-      
     } catch (error) {
       console.error('Advanced video analysis failed:', error);
       throw new Error(`Analysis failed: ${error.message}`);
     }
   }
-  
+
   private async analyzeBiomechanics(videoPath: string): Promise<any> {
     const prompt = `
       Analyze the biomechanics of this ${this.config.sport} performance video.
@@ -200,18 +199,18 @@ export class AdvancedVideoAnalyzer {
       Provide detailed biomechanical assessment with specific timestamps.
       Consider neurodivergent athlete needs: ${this.config.neurodivergent_optimizations}
     `;
-    
+
     const response = await this.aiManager.generateResponse(prompt);
-    
+
     return {
       posture: this.extractScore(response, 'posture') || 85,
       balance: this.extractScore(response, 'balance') || 82,
       coordination: this.extractScore(response, 'coordination') || 78,
       efficiency: this.extractScore(response, 'efficiency') || 80,
-      injury_risk: this.extractScore(response, 'injury_risk') || 25
+      injury_risk: this.extractScore(response, 'injury_risk') || 25,
     };
   }
-  
+
   private async analyzeMovement(videoPath: string): Promise<any> {
     const prompt = `
       Analyze the movement patterns in this ${this.config.sport} video.
@@ -225,19 +224,19 @@ export class AdvancedVideoAnalyzer {
       Focus on ${this.config.focus_areas.join(', ')} specifically.
       Skill level: ${this.config.skill_level}
     `;
-    
+
     const response = await this.aiManager.generateResponse(prompt);
-    
+
     return {
       speed: this.extractScore(response, 'speed') || 83,
       acceleration: this.extractScore(response, 'acceleration') || 79,
       deceleration: this.extractScore(response, 'deceleration') || 77,
       agility: this.extractScore(response, 'agility') || 81,
       reaction_time: this.extractScore(response, 'reaction_time') || 84,
-      power_output: this.extractScore(response, 'power_output') || 76
+      power_output: this.extractScore(response, 'power_output') || 76,
     };
   }
-  
+
   private async analyzeTactical(videoPath: string): Promise<any> {
     const prompt = `
       Analyze the tactical and strategic aspects of this ${this.config.sport} performance.
@@ -250,18 +249,18 @@ export class AdvancedVideoAnalyzer {
       
       Consider the athlete's ${this.config.skill_level} level.
     `;
-    
+
     const response = await this.aiManager.generateResponse(prompt);
-    
+
     return {
       positioning: this.extractScore(response, 'positioning') || 78,
       decision_making: this.extractScore(response, 'decision_making') || 75,
       anticipation: this.extractScore(response, 'anticipation') || 80,
       adaptability: this.extractScore(response, 'adaptability') || 82,
-      game_intelligence: this.extractScore(response, 'game_intelligence') || 77
+      game_intelligence: this.extractScore(response, 'game_intelligence') || 77,
     };
   }
-  
+
   private async analyzeMental(videoPath: string): Promise<any> {
     const prompt = `
       Analyze the mental and psychological aspects of this performance.
@@ -274,18 +273,18 @@ export class AdvancedVideoAnalyzer {
       
       Special consideration for neurodivergent athletes and ADHD-friendly coaching.
     `;
-    
+
     const response = await this.aiManager.generateResponse(prompt);
-    
+
     return {
       confidence: this.extractScore(response, 'confidence') || 79,
       focus: this.extractScore(response, 'focus') || 73,
       pressure_response: this.extractScore(response, 'pressure_response') || 76,
       resilience: this.extractScore(response, 'resilience') || 81,
-      motivation: this.extractScore(response, 'motivation') || 85
+      motivation: this.extractScore(response, 'motivation') || 85,
     };
   }
-  
+
   private async generatePredictions(videoPath: string, metadata?: any): Promise<any> {
     const prompt = `
       Generate predictive analytics for this ${this.config.sport} athlete.
@@ -298,14 +297,14 @@ export class AdvancedVideoAnalyzer {
       Base predictions on current skill level: ${this.config.skill_level}
       Comparison group: ${this.config.comparison_group}
     `;
-    
+
     const response = await this.aiManager.generateResponse(prompt);
-    
+
     return {
       performance_forecast: [
         { timeframe: '6 months', predicted_score: 82, confidence: 85 },
         { timeframe: '1 year', predicted_score: 87, confidence: 75 },
-        { timeframe: '2 years', predicted_score: 91, confidence: 65 }
+        { timeframe: '2 years', predicted_score: 91, confidence: 65 },
       ],
       injury_risk_assessment: {
         overall_risk: 'low' as const,
@@ -313,35 +312,42 @@ export class AdvancedVideoAnalyzer {
           {
             type: 'Overuse injury',
             probability: 15,
-            prevention_tips: ['Proper warm-up', 'Recovery time', 'Strength training']
-          }
-        ]
+            prevention_tips: ['Proper warm-up', 'Recovery time', 'Strength training'],
+          },
+        ],
       },
       college_prospects: {
         division_level: 'Division II',
         scholarship_probability: 65,
-        recommended_schools: ['Regional State University', 'Athletic College']
-      }
+        recommended_schools: ['Regional State University', 'Athletic College'],
+      },
     };
   }
-  
+
   private async combineAnalyses(
     biomechanics: any,
     movement: any,
     tactical: any,
     mental: any,
-    predictions: any
+    predictions: any,
   ): Promise<AdvancedVideoAnalysis> {
-    
     // Calculate overall scores
-    const technicalSkills = Math.round((biomechanics.posture + biomechanics.coordination + biomechanics.efficiency) / 3);
+    const technicalSkills = Math.round(
+      (biomechanics.posture + biomechanics.coordination + biomechanics.efficiency) / 3,
+    );
     const athleticism = Math.round((movement.speed + movement.agility + movement.power_output) / 3);
-    const gameAwareness = Math.round((tactical.positioning + tactical.decision_making + tactical.anticipation) / 3);
-    const consistency = Math.round((movement.reaction_time + tactical.adaptability + mental.focus) / 3);
-    const improvement = Math.round((predictions.performance_forecast[0].predicted_score - 75) + 75);
-    
-    const overallScore = Math.round((technicalSkills + athleticism + gameAwareness + consistency + improvement) / 5);
-    
+    const gameAwareness = Math.round(
+      (tactical.positioning + tactical.decision_making + tactical.anticipation) / 3,
+    );
+    const consistency = Math.round(
+      (movement.reaction_time + tactical.adaptability + mental.focus) / 3,
+    );
+    const improvement = Math.round(predictions.performance_forecast[0].predicted_score - 75 + 75);
+
+    const overallScore = Math.round(
+      (technicalSkills + athleticism + gameAwareness + consistency + improvement) / 5,
+    );
+
     return {
       overallScore,
       technicalSkills,
@@ -357,21 +363,21 @@ export class AdvancedVideoAnalyzer {
         strengths: this.generateStrengths(biomechanics, movement, tactical, mental),
         weaknesses: this.generateWeaknesses(biomechanics, movement, tactical, mental),
         recommendations: this.generateRecommendations(biomechanics, movement, tactical, mental),
-        keyMoments: this.generateKeyMoments()
+        keyMoments: this.generateKeyMoments(),
       },
       coachingInsights: {
         focus_areas: this.generateFocusAreas(biomechanics, movement, tactical, mental),
         drill_recommendations: this.generateDrillRecommendations(),
         mental_game: this.generateMentalGameTips(mental),
         physical_development: this.generatePhysicalDevelopment(biomechanics, movement),
-        technique_refinement: this.generateTechniqueRefinement(biomechanics)
+        technique_refinement: this.generateTechniqueRefinement(biomechanics),
       },
       comparison: {
         peer_percentile: Math.round(overallScore * 0.9),
         grade_level_ranking: this.getGradeLevelRanking(overallScore),
         college_readiness: Math.round(overallScore * 0.85),
         professional_potential: Math.round(overallScore * 0.7),
-        improvement_trajectory: this.getImprovementTrajectory(improvement)
+        improvement_trajectory: this.getImprovementTrajectory(improvement),
       },
       predictions,
       multiAngle: {
@@ -379,56 +385,75 @@ export class AdvancedVideoAnalyzer {
         side_view: null,
         rear_view: null,
         overhead_view: null,
-        synchronized_analysis: false
+        synchronized_analysis: false,
       },
       realTime: {
         processing_time: 0,
         analysis_quality: 95,
         data_completeness: 90,
-        confidence_score: 88
-      }
+        confidence_score: 88,
+      },
     };
   }
-  
+
   private extractScore(response: string, metric: string): number | null {
     // Extract numerical scores from AI response
     const regex = new RegExp(`${metric}[:\\s]*([0-9]{1,3})`, 'i');
     const match = response.match(regex);
     return match ? parseInt(match[1]) : null;
   }
-  
-  private generateStrengths(biomechanics: any, movement: any, tactical: any, mental: any): string[] {
+
+  private generateStrengths(
+    biomechanics: any,
+    movement: any,
+    tactical: any,
+    mental: any,
+  ): string[] {
     const strengths = [];
-    
+
     if (biomechanics.posture > 80) strengths.push('Excellent posture and body alignment');
     if (movement.speed > 80) strengths.push('Superior speed and velocity');
     if (tactical.positioning > 80) strengths.push('Strong positional awareness');
     if (mental.confidence > 80) strengths.push('High confidence and self-assurance');
-    
-    return strengths.length > 0 ? strengths : ['Good fundamental technique', 'Consistent effort', 'Positive attitude'];
+
+    return strengths.length > 0
+      ? strengths
+      : ['Good fundamental technique', 'Consistent effort', 'Positive attitude'];
   }
-  
-  private generateWeaknesses(biomechanics: any, movement: any, tactical: any, mental: any): string[] {
+
+  private generateWeaknesses(
+    biomechanics: any,
+    movement: any,
+    tactical: any,
+    mental: any,
+  ): string[] {
     const weaknesses = [];
-    
+
     if (biomechanics.balance < 70) weaknesses.push('Balance and stability need improvement');
     if (movement.agility < 70) weaknesses.push('Agility and change of direction could be enhanced');
     if (tactical.decision_making < 70) weaknesses.push('Decision-making under pressure needs work');
     if (mental.focus < 70) weaknesses.push('Focus and concentration could be strengthened');
-    
-    return weaknesses.length > 0 ? weaknesses : ['Minor technique adjustments needed', 'Consistency in execution'];
+
+    return weaknesses.length > 0
+      ? weaknesses
+      : ['Minor technique adjustments needed', 'Consistency in execution'];
   }
-  
-  private generateRecommendations(biomechanics: any, movement: any, tactical: any, mental: any): string[] {
+
+  private generateRecommendations(
+    biomechanics: any,
+    movement: any,
+    tactical: any,
+    mental: any,
+  ): string[] {
     return [
       'Focus on core strength and stability exercises',
       'Practice sport-specific agility drills',
       'Develop decision-making through situational training',
       'Implement mindfulness and focus techniques',
-      'Work on movement efficiency and biomechanics'
+      'Work on movement efficiency and biomechanics',
     ];
   }
-  
+
   private generateKeyMoments(): Array<{
     timestamp: string;
     description: string;
@@ -442,34 +467,39 @@ export class AdvancedVideoAnalyzer {
         description: 'Excellent technical execution with perfect form',
         score: 92,
         category: 'technical',
-        importance: 'high'
+        importance: 'high',
       },
       {
         timestamp: '1:23',
         description: 'Quick decision-making under pressure',
         score: 88,
         category: 'tactical',
-        importance: 'high'
+        importance: 'high',
       },
       {
         timestamp: '2:10',
         description: 'Strong recovery after minor mistake',
         score: 85,
         category: 'mental',
-        importance: 'medium'
-      }
+        importance: 'medium',
+      },
     ];
   }
-  
-  private generateFocusAreas(biomechanics: any, movement: any, tactical: any, mental: any): string[] {
+
+  private generateFocusAreas(
+    biomechanics: any,
+    movement: any,
+    tactical: any,
+    mental: any,
+  ): string[] {
     return [
       'Technical skill refinement',
       'Athletic performance enhancement',
       'Tactical awareness development',
-      'Mental resilience building'
+      'Mental resilience building',
     ];
   }
-  
+
   private generateDrillRecommendations(): Array<{
     drill: string;
     purpose: string;
@@ -483,52 +513,52 @@ export class AdvancedVideoAnalyzer {
         purpose: 'Improve footwork and coordination',
         difficulty: 'intermediate',
         duration: '15 minutes',
-        repetitions: 3
+        repetitions: 3,
       },
       {
         drill: 'Reaction ball training',
         purpose: 'Enhance reaction time and hand-eye coordination',
         difficulty: 'beginner',
         duration: '10 minutes',
-        repetitions: 5
+        repetitions: 5,
       },
       {
         drill: 'Situational decision-making',
         purpose: 'Develop tactical awareness under pressure',
         difficulty: 'advanced',
         duration: '20 minutes',
-        repetitions: 2
-      }
+        repetitions: 2,
+      },
     ];
   }
-  
+
   private generateMentalGameTips(mental: any): string[] {
     return [
       'Practice visualization techniques before performance',
       'Develop pre-performance routines for consistency',
       'Use positive self-talk and affirmations',
-      'Learn stress management and breathing techniques'
+      'Learn stress management and breathing techniques',
     ];
   }
-  
+
   private generatePhysicalDevelopment(biomechanics: any, movement: any): string[] {
     return [
       'Core strength and stability training',
       'Plyometric exercises for power development',
       'Flexibility and mobility work',
-      'Sport-specific conditioning'
+      'Sport-specific conditioning',
     ];
   }
-  
+
   private generateTechniqueRefinement(biomechanics: any): string[] {
     return [
       'Focus on proper body mechanics',
       'Refine movement patterns for efficiency',
       'Work on timing and rhythm',
-      'Practice fundamental skills repetitively'
+      'Practice fundamental skills repetitively',
     ];
   }
-  
+
   private getGradeLevelRanking(score: number): string {
     if (score >= 90) return 'Elite';
     if (score >= 80) return 'Above Average';
@@ -536,8 +566,10 @@ export class AdvancedVideoAnalyzer {
     if (score >= 60) return 'Below Average';
     return 'Needs Improvement';
   }
-  
-  private getImprovementTrajectory(improvement: number): 'rapid' | 'steady' | 'gradual' | 'plateau' {
+
+  private getImprovementTrajectory(
+    improvement: number,
+  ): 'rapid' | 'steady' | 'gradual' | 'plateau' {
     if (improvement >= 85) return 'rapid';
     if (improvement >= 75) return 'steady';
     if (improvement >= 65) return 'gradual';
@@ -549,7 +581,7 @@ export class AdvancedVideoAnalyzer {
 export function createAdvancedVideoAnalyzer(
   sport: string,
   skillLevel: 'beginner' | 'intermediate' | 'advanced' | 'elite' = 'intermediate',
-  neurodivergentOptimizations: boolean = true
+  neurodivergentOptimizations: boolean = true,
 ): AdvancedVideoAnalyzer {
   const config: VideoProcessingConfig = {
     sport,
@@ -559,8 +591,8 @@ export function createAdvancedVideoAnalyzer(
     comparison_group: 'grade_level_peers',
     neurodivergent_optimizations: neurodivergentOptimizations,
     real_time_processing: true,
-    multi_angle_sync: true
+    multi_angle_sync: true,
   };
-  
+
   return new AdvancedVideoAnalyzer(config);
 }

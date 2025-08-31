@@ -14,7 +14,7 @@ async function testMediaServing() {
     const testImages = [
       'Go4it Logo_1752616197577.jpeg',
       'EWS 2025 - 1_1754352865747.jpeg',
-      'TeamCamp2025_1754351477369.jpg'
+      'TeamCamp2025_1754351477369.jpg',
     ];
 
     for (const image of testImages) {
@@ -29,19 +29,21 @@ async function testMediaServing() {
     // Test 2: Check media library API
     console.log('\n2. Testing media library API...');
     const mediaResponse = await axios.post(`${BASE_URL}/api/admin/media`, {
-      action: 'getLibrary'
+      action: 'getLibrary',
     });
-    
+
     if (mediaResponse.data.success) {
       console.log(`✅ Media library loaded: ${mediaResponse.data.media.assets.length} assets`);
-      
+
       // Test a few URLs from the library
       const firstAsset = mediaResponse.data.media.assets[0];
       console.log(`   Testing URL: ${firstAsset.url}`);
-      
+
       try {
         const assetResponse = await axios.head(`${BASE_URL}${firstAsset.url}`);
-        console.log(`✅ Asset serving: ${assetResponse.status} - ${assetResponse.headers['content-type']}`);
+        console.log(
+          `✅ Asset serving: ${assetResponse.status} - ${assetResponse.headers['content-type']}`,
+        );
       } catch (error) {
         console.log(`❌ Asset serving failed: ${error.message}`);
       }
@@ -62,11 +64,10 @@ async function testMediaServing() {
     console.log('✅ Dynamic file serving implemented');
     console.log('✅ Content-type detection working');
     console.log('✅ URL structure updated in media library');
-    
+
     console.log('\n💡 The media serving issues should now be resolved!');
     console.log('   Images are now served through: /api/media/[filename]');
     console.log('   This endpoint searches multiple directories automatically');
-
   } catch (error) {
     console.error('❌ Test failed:', error.message);
   }

@@ -161,7 +161,9 @@ export const complianceReportTemplates = pgTable('compliance_report_templates', 
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
-export const insertComplianceReportTemplateSchema = createInsertSchema(complianceReportTemplates).pick({
+export const insertComplianceReportTemplateSchema = createInsertSchema(
+  complianceReportTemplates,
+).pick({
   templateName: true,
   description: true,
   reportType: true,

@@ -3,7 +3,7 @@ import axios from 'axios';
 
 /**
  * Curriculum Transformer Interface
- * 
+ *
  * A React component that provides a user-friendly interface for the curriculum
  * transformer API, allowing users to upload content and apply transformations.
  */
@@ -12,31 +12,31 @@ const TransformerInterface = () => {
   const [file, setFile] = useState(null);
   const [textContent, setTextContent] = useState('');
   const [inputType, setInputType] = useState('file'); // 'file' or 'text'
-  
+
   // Transformation options state
   const [inputFormat, setInputFormat] = useState('docx');
   const [outputFormat, setOutputFormat] = useState('html');
   const [transformationTypes, setTransformationTypes] = useState(['visual']);
   const [neurodivergentProfile, setNeurodivergentProfile] = useState('general');
-  
+
   // Advanced options
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [customOptions, setCustomOptions] = useState('{}');
-  
+
   // Results state
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [jobId, setJobId] = useState('');
   const [jobStatus, setJobStatus] = useState({});
   const [transformedContent, setTransformedContent] = useState('');
-  
+
   // References
   const fileInputRef = useRef(null);
   const resultFrameRef = useRef(null);
-  
+
   // Status polling interval
   const [statusInterval, setStatusInterval] = useState(null);
-  
+
   /**
    * Handle file input change
    */
@@ -44,30 +44,30 @@ const TransformerInterface = () => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
-      
+
       // Auto-detect input format from file extension
       const fileName = selectedFile.name;
       const extension = fileName.split('.').pop().toLowerCase();
-      
+
       if (['pdf', 'docx', 'pptx', 'html', 'txt', 'md'].includes(extension)) {
         setInputFormat(extension);
       }
     }
   };
-  
+
   /**
    * Handle transformation type selection
    */
   const handleTransformationTypeChange = (type) => {
-    setTransformationTypes(prev => {
+    setTransformationTypes((prev) => {
       if (prev.includes(type)) {
-        return prev.filter(item => item !== type);
+        return prev.filter((item) => item !== type);
       } else {
         return [...prev, type];
       }
     });
   };
-  
+
   /**
    * Reset the form
    */
@@ -78,18 +78,18 @@ const TransformerInterface = () => {
     setJobId('');
     setJobStatus({});
     setTransformedContent('');
-    
+
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-    
+
     // Clear status polling interval
     if (statusInterval) {
       clearInterval(statusInterval);
       setStatusInterval(null);
     }
   };
-  
+
   /**
    * Start transformation with file upload
    */
@@ -98,27 +98,27 @@ const TransformerInterface = () => {
       setError('Please select a file to transform');
       return;
     }
-    
+
     setIsLoading(true);
     setError('');
-    
+
     try {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('outputFormat', outputFormat);
       formData.append('transformationTypes', JSON.stringify(transformationTypes));
       formData.append('neurodivergentProfile', neurodivergentProfile);
-      
+
       if (showAdvancedOptions) {
         formData.append('customOptions', customOptions);
       }
-      
+
       const response = await axios.post('/api/transformer/transform', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          'Content-Type': 'multipart/form-data',
+        },
       });
-      
+
       if (response.data.jobId) {
         setJobId(response.data.jobId);
         startStatusPolling(response.data.jobId);
@@ -136,7 +136,7 @@ const TransformerInterface = () => {
       setIsLoading(false);
     }
   };
-  
+
   /**
    * Start transformation with text input
    */
@@ -145,19 +145,19 @@ const TransformerInterface = () => {
       setError('Please enter some content to transform');
       return;
     }
-    
+
     setIsLoading(true);
     setError('');
-    
+
     try {
       const requestData = {
         content: textContent,
         inputFormat: inputFormat,
         outputFormat,
         transformationTypes,
-        neurodivergentProfile
+        neurodivergentProfile,
       };
-      
+
       if (showAdvancedOptions) {
         try {
           requestData.customOptions = JSON.parse(customOptions);
@@ -167,9 +167,9 @@ const TransformerInterface = () => {
           return;
         }
       }
-      
+
       const response = await axios.post('/api/transformer/transform-text', requestData);
-      
+
       if (response.headers['content-type'].includes('text/html')) {
         // Direct HTML response
         setTransformedContent(response.data);
@@ -188,20 +188,20 @@ const TransformerInterface = () => {
       setIsLoading(false);
     }
   };
-  
+
   /**
    * Start transformation process
    */
   const startTransformation = (e) => {
     e.preventDefault();
-    
+
     if (inputType === 'file') {
       startFileTransformation();
     } else {
       startTextTransformation();
     }
   };
-  
+
   /**
    * Poll for job status
    */
@@ -210,13 +210,13 @@ const TransformerInterface = () => {
     if (statusInterval) {
       clearInterval(statusInterval);
     }
-    
+
     // Set up polling interval
     const interval = setInterval(async () => {
       try {
         const response = await axios.get(`/api/transformer/status/${jobId}`);
         setJobStatus(response.data);
-        
+
         if (response.data.status === 'completed') {
           // Job completed, fetch result
           clearInterval(interval);
@@ -232,22 +232,22 @@ const TransformerInterface = () => {
         setError('Error checking transformation status');
       }
     }, 2000); // Poll every 2 seconds
-    
+
     setStatusInterval(interval);
   };
-  
+
   /**
    * Fetch transformation result
    */
   const fetchTransformationResult = async (jobId) => {
     try {
       const response = await axios.get(`/api/transformer/result/${jobId}`, {
-        responseType: 'blob'
+        responseType: 'blob',
       });
-      
+
       // Handle different content types
       const contentType = response.headers['content-type'];
-      
+
       if (contentType.includes('text/html')) {
         // HTML response
         const reader = new FileReader();
@@ -262,7 +262,7 @@ const TransformerInterface = () => {
         // PDF response - create object URL for viewing/download
         const url = URL.createObjectURL(response.data);
         setTransformedContent(url);
-        
+
         // Open PDF in new window for viewing
         window.open(url, '_blank');
       }
@@ -271,18 +271,18 @@ const TransformerInterface = () => {
       setError('Error retrieving transformation result');
     }
   };
-  
+
   /**
    * Cancel transformation job
    */
   const cancelTransformation = async () => {
     if (!jobId) return;
-    
+
     try {
       await axios.post(`/api/transformer/cancel/${jobId}`);
-      
+
       setError('Transformation canceled');
-      
+
       // Clear status polling interval
       if (statusInterval) {
         clearInterval(statusInterval);
@@ -293,15 +293,15 @@ const TransformerInterface = () => {
       setError('Error canceling transformation');
     }
   };
-  
+
   return (
     <div className="curriculum-transformer">
       <h2 className="transformer-title">Curriculum Transformer</h2>
       <p className="transformer-description">
-        Transform educational content into neurodivergent-friendly formats. 
-        Upload a document or enter text to adapt it for different learning profiles.
+        Transform educational content into neurodivergent-friendly formats. Upload a document or
+        enter text to adapt it for different learning profiles.
       </p>
-      
+
       <div className="transformer-content">
         <div className="transformer-form-container">
           <form className="transformer-form" onSubmit={startTransformation}>
@@ -322,7 +322,7 @@ const TransformerInterface = () => {
                 Enter Text
               </button>
             </div>
-            
+
             {/* File input section */}
             {inputType === 'file' && (
               <div className="form-section">
@@ -337,18 +337,18 @@ const TransformerInterface = () => {
                   />
                   <div className="file-info">
                     {file ? (
-                      <span>{file.name} ({Math.round(file.size / 1024)} KB)</span>
+                      <span>
+                        {file.name} ({Math.round(file.size / 1024)} KB)
+                      </span>
                     ) : (
                       <span>No file selected</span>
                     )}
                   </div>
                 </div>
-                <div className="form-help">
-                  Supported formats: PDF, DOCX, PPTX, HTML, TXT, MD
-                </div>
+                <div className="form-help">Supported formats: PDF, DOCX, PPTX, HTML, TXT, MD</div>
               </div>
             )}
-            
+
             {/* Text input section */}
             {inputType === 'text' && (
               <div className="form-section">
@@ -360,7 +360,7 @@ const TransformerInterface = () => {
                   placeholder="Enter the content you would like to transform..."
                   rows={8}
                 ></textarea>
-                
+
                 <div className="format-selector">
                   <label className="form-label">Input Format</label>
                   <select
@@ -375,7 +375,7 @@ const TransformerInterface = () => {
                 </div>
               </div>
             )}
-            
+
             {/* Output format selector */}
             <div className="form-section">
               <label className="form-label">Output Format</label>
@@ -389,7 +389,7 @@ const TransformerInterface = () => {
                 <option value="pdf">PDF</option>
               </select>
             </div>
-            
+
             {/* Neurodivergent profile selector */}
             <div className="form-section">
               <label className="form-label">Learning Profile</label>
@@ -405,7 +405,7 @@ const TransformerInterface = () => {
                 <option value="mixed">Mixed Profile</option>
               </select>
             </div>
-            
+
             {/* Transformation types selector */}
             <div className="form-section">
               <label className="form-label">Transformation Types</label>
@@ -452,7 +452,7 @@ const TransformerInterface = () => {
                 </label>
               </div>
             </div>
-            
+
             {/* Advanced options */}
             <div className="form-section">
               <button
@@ -462,7 +462,7 @@ const TransformerInterface = () => {
               >
                 {showAdvancedOptions ? 'Hide Advanced Options' : 'Show Advanced Options'}
               </button>
-              
+
               {showAdvancedOptions && (
                 <div className="advanced-options">
                   <label className="form-label">Custom Options (JSON)</label>
@@ -473,13 +473,11 @@ const TransformerInterface = () => {
                     rows={5}
                     placeholder='{"option1": "value1", "option2": "value2"}'
                   ></textarea>
-                  <div className="form-help">
-                    Enter custom options in JSON format
-                  </div>
+                  <div className="form-help">Enter custom options in JSON format</div>
                 </div>
               )}
             </div>
-            
+
             {/* Form buttons */}
             <div className="form-buttons">
               <button
@@ -498,23 +496,15 @@ const TransformerInterface = () => {
                 Reset
               </button>
               {jobId && jobStatus.status === 'processing' && (
-                <button
-                  type="button"
-                  className="cancel-button"
-                  onClick={cancelTransformation}
-                >
+                <button type="button" className="cancel-button" onClick={cancelTransformation}>
                   Cancel
                 </button>
               )}
             </div>
-            
+
             {/* Error message */}
-            {error && (
-              <div className="error-message">
-                {error}
-              </div>
-            )}
-            
+            {error && <div className="error-message">{error}</div>}
+
             {/* Job status */}
             {jobId && jobStatus.status && jobStatus.status !== 'completed' && (
               <div className="job-status">
@@ -530,9 +520,9 @@ const TransformerInterface = () => {
                     <div className="status-item">
                       <span className="status-label">Progress:</span>
                       <div className="progress-bar-container">
-                        <div 
-                          className="progress-bar" 
-                          style={{width: `${jobStatus.progress}%`}}
+                        <div
+                          className="progress-bar"
+                          style={{ width: `${jobStatus.progress}%` }}
                         ></div>
                         <span className="progress-text">{jobStatus.progress}%</span>
                       </div>
@@ -543,7 +533,7 @@ const TransformerInterface = () => {
             )}
           </form>
         </div>
-        
+
         {/* Result preview */}
         {transformedContent && (
           <div className="transformation-result">
@@ -551,9 +541,9 @@ const TransformerInterface = () => {
             {outputFormat === 'pdf' ? (
               <div className="pdf-result">
                 <p>PDF generated successfully. It has been opened in a new tab.</p>
-                <a 
-                  href={transformedContent} 
-                  target="_blank" 
+                <a
+                  href={transformedContent}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="pdf-link"
                 >
@@ -568,7 +558,7 @@ const TransformerInterface = () => {
                   title="Transformed Content Preview"
                   sandbox="allow-same-origin allow-scripts"
                 ></iframe>
-                
+
                 <div className="result-actions">
                   <button
                     className="download-button"
@@ -592,7 +582,7 @@ const TransformerInterface = () => {
           </div>
         )}
       </div>
-      
+
       <style jsx>{`
         .curriculum-transformer {
           width: 100%;
@@ -600,40 +590,40 @@ const TransformerInterface = () => {
           margin: 0 auto;
           padding: 20px;
         }
-        
+
         .transformer-title {
           font-size: 24px;
           margin-bottom: 10px;
           color: #2c3e50;
         }
-        
+
         .transformer-description {
           margin-bottom: 30px;
           color: #666;
         }
-        
+
         .transformer-content {
           display: flex;
           flex-direction: column;
         }
-        
+
         @media (min-width: 992px) {
           .transformer-content {
             flex-direction: row;
             gap: 30px;
           }
-          
+
           .transformer-form-container {
             flex: 1;
             max-width: 500px;
           }
-          
+
           .transformation-result {
             flex: 1;
             min-width: 400px;
           }
         }
-        
+
         .transformer-form {
           background-color: white;
           border-radius: 8px;
@@ -641,14 +631,14 @@ const TransformerInterface = () => {
           padding: 20px;
           margin-bottom: 30px;
         }
-        
+
         .input-type-selector {
           display: flex;
           margin-bottom: 20px;
           border-radius: 4px;
           overflow: hidden;
         }
-        
+
         .input-type-button {
           flex: 1;
           padding: 10px;
@@ -658,43 +648,43 @@ const TransformerInterface = () => {
           transition: background-color 0.2s ease;
           font-weight: 500;
         }
-        
+
         .input-type-button.active {
           background-color: #27ae60;
           color: white;
         }
-        
+
         .form-section {
           margin-bottom: 20px;
         }
-        
+
         .form-label {
           display: block;
           margin-bottom: 8px;
           font-weight: 500;
         }
-        
+
         .file-upload-container {
           display: flex;
           flex-direction: column;
           margin-bottom: 8px;
         }
-        
+
         .file-input {
           margin-bottom: 8px;
         }
-        
+
         .file-info {
           font-size: 14px;
           color: #666;
         }
-        
+
         .form-help {
           font-size: 12px;
           color: #666;
           margin-top: 5px;
         }
-        
+
         .text-input,
         .custom-options-input {
           width: 100%;
@@ -704,7 +694,7 @@ const TransformerInterface = () => {
           resize: vertical;
           font-family: inherit;
         }
-        
+
         .format-select,
         .profile-select {
           width: 100%;
@@ -713,20 +703,20 @@ const TransformerInterface = () => {
           border-radius: 4px;
           background-color: white;
         }
-        
+
         .transformation-types {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
           gap: 10px;
         }
-        
+
         .checkbox-label {
           display: flex;
           align-items: center;
           gap: 8px;
           cursor: pointer;
         }
-        
+
         .advanced-options-toggle {
           background: none;
           border: none;
@@ -737,13 +727,13 @@ const TransformerInterface = () => {
           margin-bottom: 10px;
           text-decoration: underline;
         }
-        
+
         .form-buttons {
           display: flex;
           gap: 10px;
           margin-top: 20px;
         }
-        
+
         .transform-button,
         .reset-button,
         .cancel-button {
@@ -754,40 +744,40 @@ const TransformerInterface = () => {
           font-weight: 500;
           transition: background-color 0.2s ease;
         }
-        
+
         .transform-button {
           background-color: #27ae60;
           color: white;
           flex: 1;
         }
-        
+
         .transform-button:hover {
           background-color: #219653;
         }
-        
+
         .transform-button:disabled {
           background-color: #a5d6a7;
           cursor: not-allowed;
         }
-        
+
         .reset-button {
           background-color: #f0f0f0;
           color: #333;
         }
-        
+
         .reset-button:hover {
           background-color: #e0e0e0;
         }
-        
+
         .cancel-button {
           background-color: #e74c3c;
           color: white;
         }
-        
+
         .cancel-button:hover {
           background-color: #c0392b;
         }
-        
+
         .error-message {
           margin-top: 20px;
           padding: 10px;
@@ -796,57 +786,57 @@ const TransformerInterface = () => {
           border-radius: 4px;
           font-size: 14px;
         }
-        
+
         .job-status {
           margin-top: 20px;
           padding: 15px;
           background-color: #f9f9f9;
           border-radius: 4px;
         }
-        
+
         .job-status h3 {
           margin-top: 0;
           margin-bottom: 10px;
           font-size: 16px;
         }
-        
+
         .status-details {
           display: flex;
           flex-direction: column;
           gap: 10px;
         }
-        
+
         .status-item {
           display: flex;
           align-items: center;
           gap: 10px;
         }
-        
+
         .status-label {
           font-weight: 500;
           min-width: 80px;
         }
-        
+
         .status-value {
           font-weight: 500;
         }
-        
+
         .status-pending {
           color: #f39c12;
         }
-        
+
         .status-processing {
           color: #3498db;
         }
-        
+
         .status-completed {
           color: #27ae60;
         }
-        
+
         .status-failed {
           color: #e74c3c;
         }
-        
+
         .progress-bar-container {
           flex: 1;
           height: 10px;
@@ -855,14 +845,14 @@ const TransformerInterface = () => {
           overflow: hidden;
           position: relative;
         }
-        
+
         .progress-bar {
           height: 100%;
           background-color: #3498db;
           border-radius: 5px;
           transition: width 0.3s ease;
         }
-        
+
         .progress-text {
           position: absolute;
           top: -4px;
@@ -870,7 +860,7 @@ const TransformerInterface = () => {
           font-size: 12px;
           color: #333;
         }
-        
+
         .transformation-result {
           background-color: white;
           border-radius: 8px;
@@ -880,20 +870,20 @@ const TransformerInterface = () => {
           flex-direction: column;
           max-width: 100%;
         }
-        
+
         .transformation-result h3 {
           margin-top: 0;
           margin-bottom: 15px;
           font-size: 18px;
         }
-        
+
         .result-preview {
           display: flex;
           flex-direction: column;
           height: 100%;
           min-height: 400px;
         }
-        
+
         .result-frame {
           flex: 1;
           min-height: 400px;
@@ -903,13 +893,13 @@ const TransformerInterface = () => {
           background-color: white;
           box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
         }
-        
+
         .result-actions {
           display: flex;
           justify-content: flex-end;
           gap: 10px;
         }
-        
+
         .download-button {
           padding: 8px 15px;
           background-color: #3498db;
@@ -920,18 +910,18 @@ const TransformerInterface = () => {
           font-weight: 500;
           transition: background-color 0.2s ease;
         }
-        
+
         .download-button:hover {
           background-color: #2980b9;
         }
-        
+
         .pdf-result {
           padding: 15px;
           background-color: #f0f8ff;
           border-radius: 4px;
           text-align: center;
         }
-        
+
         .pdf-link {
           display: inline-block;
           margin-top: 10px;
@@ -943,7 +933,7 @@ const TransformerInterface = () => {
           font-weight: 500;
           transition: background-color 0.2s ease;
         }
-        
+
         .pdf-link:hover {
           background-color: #2980b9;
         }

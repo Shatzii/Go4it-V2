@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 // Avatar Schema
 export const avatarSchema = z.object({
@@ -15,13 +15,13 @@ export const avatarSchema = z.object({
   costume: z.any(),
   neurotypeStrengths: z.any(),
   savedAt: z.date().nullable(),
-  sharedPublic: z.boolean().nullable()
+  sharedPublic: z.boolean().nullable(),
 });
 
-export const insertAvatarSchema = avatarSchema.omit({ 
-  id: true, 
-  createdAt: true, 
-  updatedAt: true 
+export const insertAvatarSchema = avatarSchema.omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
 export type Avatar = z.infer<typeof avatarSchema>;
@@ -44,13 +44,13 @@ export const worldSchema = z.object({
   interactiveElements: z.any(),
   educationalContent: z.any(),
   parentalRating: z.string().nullable(),
-  contentRestrictions: z.any()
+  contentRestrictions: z.any(),
 });
 
-export const insertWorldSchema = worldSchema.omit({ 
-  id: true, 
-  createdAt: true, 
-  updatedAt: true 
+export const insertWorldSchema = worldSchema.omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
 export type World = z.infer<typeof worldSchema>;
@@ -68,12 +68,12 @@ export const motionTrackingSessionSchema = z.object({
   performanceData: z.any(),
   keypoints: z.any(),
   avatarId: z.number().nullable(),
-  worldId: z.number().nullable()
+  worldId: z.number().nullable(),
 });
 
-export const insertMotionTrackingSessionSchema = motionTrackingSessionSchema.omit({ 
-  id: true, 
-  createdAt: true 
+export const insertMotionTrackingSessionSchema = motionTrackingSessionSchema.omit({
+  id: true,
+  createdAt: true,
 });
 
 export type MotionTrackingSession = z.infer<typeof motionTrackingSessionSchema>;
@@ -93,13 +93,13 @@ export const parentalControlSchema = z.object({
   requireApproval: z.boolean().nullable(),
   approvalCategories: z.any(),
   notifyOnLogin: z.boolean().nullable(),
-  notifyOnCreation: z.boolean().nullable()
+  notifyOnCreation: z.boolean().nullable(),
 });
 
-export const insertParentalControlSchema = parentalControlSchema.omit({ 
-  id: true, 
-  createdAt: true, 
-  updatedAt: true 
+export const insertParentalControlSchema = parentalControlSchema.omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
 export type ParentalControl = z.infer<typeof parentalControlSchema>;
@@ -116,12 +116,12 @@ export const starworldMetricSchema = z.object({
   sessionId: z.string(),
   metricType: z.string(),
   metricData: z.any(),
-  interactionCount: z.number().nullable()
+  interactionCount: z.number().nullable(),
 });
 
-export const insertStarworldMetricSchema = starworldMetricSchema.omit({ 
-  id: true, 
-  createdAt: true 
+export const insertStarworldMetricSchema = starworldMetricSchema.omit({
+  id: true,
+  createdAt: true,
 });
 
 export type StarworldMetric = z.infer<typeof starworldMetricSchema>;

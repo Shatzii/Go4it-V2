@@ -12,11 +12,14 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      users: users_result.map(user => ({
+      users: users_result.map((user) => ({
         id: user.id,
         username: user.username || user.email?.split('@')[0] || 'User',
         email: user.email,
-        name: (user.firstName && user.lastName) ? `${user.firstName} ${user.lastName}` : user.username || user.email?.split('@')[0] || 'User',
+        name:
+          user.firstName && user.lastName
+            ? `${user.firstName} ${user.lastName}`
+            : user.username || user.email?.split('@')[0] || 'User',
         sport: user.sport || 'Multi-Sport',
         position: user.position || 'Athlete',
         role: user.role || 'athlete',
@@ -25,15 +28,11 @@ export async function GET(req: NextRequest) {
         createdAt: user.createdAt,
         lastLogin: user.lastLoginAt,
         verifiedAt: user.verifiedAt,
-        verifiedBy: user.verifiedBy
-      }))
+        verifiedBy: user.verifiedBy,
+      })),
     });
-
   } catch (error) {
     console.error('Failed to fetch users:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch users' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 });
   }
 }

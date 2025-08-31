@@ -41,13 +41,15 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      highlightReels: reels
+      highlightReels: reels,
     });
-
   } catch (error) {
     console.error('Error fetching highlight reels:', error);
-    return NextResponse.json({ 
-      error: 'Failed to fetch highlight reels' 
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Failed to fetch highlight reels',
+      },
+      { status: 500 },
+    );
   }
 }

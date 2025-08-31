@@ -1,6 +1,6 @@
 /**
  * Easter Egg Types
- * 
+ *
  * This file defines TypeScript types used across the Easter egg hunt feature.
  */
 
@@ -8,7 +8,13 @@
 export type EasterEggDifficulty = 'easy' | 'medium' | 'hard';
 
 // Easter egg content types
-export type EasterEggType = 'quiz' | 'fact' | 'challenge' | 'mini_game' | 'hidden_message' | 'achievement';
+export type EasterEggType =
+  | 'quiz'
+  | 'fact'
+  | 'challenge'
+  | 'mini_game'
+  | 'hidden_message'
+  | 'achievement';
 
 // Base content interface
 interface BaseEasterEggContent {
@@ -171,9 +177,12 @@ export interface EasterEggStorage {
   createEasterEgg(easterEgg: EasterEgg): Promise<EasterEgg>;
   updateEasterEgg(id: string, easterEgg: Partial<EasterEgg>): Promise<EasterEgg | null>;
   deleteEasterEgg(id: string): Promise<boolean>;
-  
+
   getUserDiscoveries(userId: string): Promise<EasterEggDiscovery[]>;
   addUserDiscovery(discovery: Omit<EasterEggDiscovery, 'id'>): Promise<EasterEggDiscovery>;
-  updateUserDiscovery(id: string, discovery: Partial<EasterEggDiscovery>): Promise<EasterEggDiscovery | null>;
+  updateUserDiscovery(
+    id: string,
+    discovery: Partial<EasterEggDiscovery>,
+  ): Promise<EasterEggDiscovery | null>;
   getUserStats(userId: string): Promise<EasterEggStats>;
 }

@@ -54,7 +54,7 @@ export default function SuccessPage() {
                 <p className="text-slate-300 text-sm mb-4">
                   Click below to begin your first conversation with the AI Football Coach
                 </p>
-                <Button 
+                <Button
                   onClick={startVoiceCoaching}
                   className="bg-green-600 hover:bg-green-700 w-full"
                 >
@@ -72,8 +72,8 @@ export default function SuccessPage() {
                 <p className="text-slate-300 text-sm mb-4">
                   Get your GAR score and receive personalized coaching feedback
                 </p>
-                <Button 
-                  onClick={() => window.location.href = '/gar-upload'}
+                <Button
+                  onClick={() => (window.location.href = '/gar-upload')}
                   className="bg-blue-600 hover:bg-blue-700 w-full"
                 >
                   <Video className="w-4 h-4 mr-2" />
@@ -90,8 +90,8 @@ export default function SuccessPage() {
                 <p className="text-slate-300 text-sm mb-4">
                   Monitor your development through the StarPath progression system
                 </p>
-                <Button 
-                  onClick={() => window.location.href = '/enhanced-starpath'}
+                <Button
+                  onClick={() => (window.location.href = '/enhanced-starpath')}
                   className="bg-purple-600 hover:bg-purple-700 w-full"
                 >
                   <Crown className="w-4 h-4 mr-2" />
@@ -142,18 +142,19 @@ export default function SuccessPage() {
           <CardContent className="p-8 text-center">
             <h3 className="text-2xl font-bold text-white mb-4">Need Help Getting Started?</h3>
             <p className="text-slate-300 mb-6">
-              Our support team is here to help you make the most of your AI Football Coach subscription.
+              Our support team is here to help you make the most of your AI Football Coach
+              subscription.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                onClick={() => window.location.href = '/support'}
+              <Button
+                onClick={() => (window.location.href = '/support')}
                 variant="outline"
                 className="border-slate-600 text-slate-300"
               >
                 Contact Support
               </Button>
-              <Button 
-                onClick={() => window.location.href = '/ai-football-coach'}
+              <Button
+                onClick={() => (window.location.href = '/ai-football-coach')}
                 className="bg-blue-600 hover:bg-blue-700"
               >
                 Back to Coach Dashboard
@@ -165,9 +166,7 @@ export default function SuccessPage() {
         {/* Session Info */}
         {sessionId && (
           <div className="text-center mt-8">
-            <p className="text-slate-500 text-sm">
-              Session ID: {sessionId}
-            </p>
+            <p className="text-slate-500 text-sm">Session ID: {sessionId}</p>
           </div>
         )}
       </div>

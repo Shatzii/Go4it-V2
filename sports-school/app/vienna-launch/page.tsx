@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,14 +9,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  MapPin, 
-  Globe, 
-  Users, 
-  Building, 
-  Heart, 
-  Trophy, 
-  GraduationCap, 
+import {
+  MapPin,
+  Globe,
+  Users,
+  Building,
+  Heart,
+  Trophy,
+  GraduationCap,
   Dumbbell,
   Star,
   Target,
@@ -27,7 +27,7 @@ import {
   Play,
   Gift,
   Crown,
-  Zap
+  Zap,
 } from 'lucide-react';
 
 export default function ViennaLaunchPage() {
@@ -36,7 +36,7 @@ export default function ViennaLaunchPage() {
   const [donorInfo, setDonorInfo] = useState({
     name: '',
     email: '',
-    message: ''
+    message: '',
   });
 
   const fundingTiers = [
@@ -49,10 +49,10 @@ export default function ViennaLaunchPage() {
         'Vienna Academy digital newsletter',
         'Exclusive construction updates',
         'Community supporter certificate',
-        'Early access to facility tours'
+        'Early access to facility tours',
       ],
       icon: <Heart className="h-6 w-6" />,
-      color: 'from-blue-500 to-cyan-500'
+      color: 'from-blue-500 to-cyan-500',
     },
     {
       id: 'champion',
@@ -64,10 +64,10 @@ export default function ViennaLaunchPage() {
         'VIP opening ceremony invitation',
         'Go4it Academy branded merchandise',
         'Quarterly impact reports',
-        'Behind-the-scenes facility videos'
+        'Behind-the-scenes facility videos',
       ],
       icon: <Trophy className="h-6 w-6" />,
-      color: 'from-green-500 to-emerald-500'
+      color: 'from-green-500 to-emerald-500',
     },
     {
       id: 'founder',
@@ -79,10 +79,10 @@ export default function ViennaLaunchPage() {
         'Permanent recognition plaque at Vienna location',
         'Annual VIP family experience day',
         'Direct line to facility leadership',
-        'First access to franchise opportunities'
+        'First access to franchise opportunities',
       ],
       icon: <Crown className="h-6 w-6" />,
-      color: 'from-purple-500 to-pink-500'
+      color: 'from-purple-500 to-pink-500',
     },
     {
       id: 'visionary',
@@ -95,11 +95,11 @@ export default function ViennaLaunchPage() {
         'Naming rights to facility spaces',
         'Lifetime family membership benefits',
         'Global franchise investment opportunities',
-        'Annual Vienna Academy retreat invitation'
+        'Annual Vienna Academy retreat invitation',
       ],
       icon: <Star className="h-6 w-6" />,
-      color: 'from-yellow-500 to-orange-500'
-    }
+      color: 'from-yellow-500 to-orange-500',
+    },
   ];
 
   const currentFunding = 847520; // Current funding amount in EUR
@@ -124,23 +124,26 @@ export default function ViennaLaunchPage() {
                 Go4it Global Academy
               </h1>
               <p className="text-2xl text-gray-300 max-w-4xl mx-auto">
-                The world's first IMG Academy + McDonald's + Community Recreation Center hybrid. 
-                Elite sports training meets community enrichment in a revolutionary global franchise model.
+                The world's first IMG Academy + McDonald's + Community Recreation Center hybrid.
+                Elite sports training meets community enrichment in a revolutionary global franchise
+                model.
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-4 text-lg"
-                onClick={() => document.getElementById('funding-tiers')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() =>
+                  document.getElementById('funding-tiers')?.scrollIntoView({ behavior: 'smooth' })
+                }
               >
                 <Gift className="h-5 w-5 mr-2" />
                 Fund Vienna Academy
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
+              <Button
+                size="lg"
+                variant="outline"
                 className="border-blue-400 text-blue-300 hover:bg-blue-400/10 px-8 py-4 text-lg"
               >
                 <Play className="h-5 w-5 mr-2" />
@@ -157,14 +160,22 @@ export default function ViennaLaunchPage() {
           <CardContent className="p-8">
             <div className="space-y-6">
               <div className="text-center space-y-2">
-                <h2 className="text-3xl font-bold text-white">Vienna Academy Fundraising Campaign</h2>
-                <p className="text-gray-400">Help us build the first global location in the heart of Europe</p>
+                <h2 className="text-3xl font-bold text-white">
+                  Vienna Academy Fundraising Campaign
+                </h2>
+                <p className="text-gray-400">
+                  Help us build the first global location in the heart of Europe
+                </p>
               </div>
 
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-2xl font-bold text-green-400">€{currentFunding.toLocaleString()}</span>
-                  <span className="text-lg text-gray-400">raised of €{fundingGoal.toLocaleString()} goal</span>
+                  <span className="text-2xl font-bold text-green-400">
+                    €{currentFunding.toLocaleString()}
+                  </span>
+                  <span className="text-lg text-gray-400">
+                    raised of €{fundingGoal.toLocaleString()} goal
+                  </span>
                 </div>
                 <Progress value={fundingProgress} className="h-4" />
                 <div className="flex justify-between text-sm text-gray-400">
@@ -199,10 +210,12 @@ export default function ViennaLaunchPage() {
             <Badge className="bg-purple-500/20 text-purple-300 border-purple-400/30 px-4 py-2">
               Revolutionary Franchise Model
             </Badge>
-            <h2 className="text-4xl font-bold text-white">IMG Academy × McDonald's × Community Center</h2>
+            <h2 className="text-4xl font-bold text-white">
+              IMG Academy × McDonald's × Community Center
+            </h2>
             <p className="text-xl text-gray-400 max-w-4xl mx-auto">
-              Combining elite sports training, standardized excellence, and community enrichment 
-              in a scalable global franchise that transforms communities worldwide.
+              Combining elite sports training, standardized excellence, and community enrichment in
+              a scalable global franchise that transforms communities worldwide.
             </p>
           </div>
 
@@ -212,10 +225,14 @@ export default function ViennaLaunchPage() {
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
                   <Dumbbell className="h-8 w-8 text-red-400" />
-                  <Badge className="bg-red-500/20 text-red-300 border-red-400/30">Elite Training</Badge>
+                  <Badge className="bg-red-500/20 text-red-300 border-red-400/30">
+                    Elite Training
+                  </Badge>
                 </div>
                 <CardTitle className="text-xl text-white">IMG Academy Excellence</CardTitle>
-                <CardDescription>World-class sports training and academic integration</CardDescription>
+                <CardDescription>
+                  World-class sports training and academic integration
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3 text-sm text-gray-300">
@@ -244,10 +261,14 @@ export default function ViennaLaunchPage() {
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
                   <Globe className="h-8 w-8 text-yellow-400" />
-                  <Badge className="bg-yellow-500/20 text-yellow-300 border-yellow-400/30">Global Standardization</Badge>
+                  <Badge className="bg-yellow-500/20 text-yellow-300 border-yellow-400/30">
+                    Global Standardization
+                  </Badge>
                 </div>
                 <CardTitle className="text-xl text-white">McDonald's Scalability</CardTitle>
-                <CardDescription>Proven franchise model with consistent global quality</CardDescription>
+                <CardDescription>
+                  Proven franchise model with consistent global quality
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3 text-sm text-gray-300">
@@ -276,10 +297,14 @@ export default function ViennaLaunchPage() {
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
                   <Users className="h-8 w-8 text-green-400" />
-                  <Badge className="bg-green-500/20 text-green-300 border-green-400/30">Community Impact</Badge>
+                  <Badge className="bg-green-500/20 text-green-300 border-green-400/30">
+                    Community Impact
+                  </Badge>
                 </div>
                 <CardTitle className="text-xl text-white">Recreation Center Heart</CardTitle>
-                <CardDescription>Community enrichment and family-centered programming</CardDescription>
+                <CardDescription>
+                  Community enrichment and family-centered programming
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3 text-sm text-gray-300">
@@ -313,10 +338,12 @@ export default function ViennaLaunchPage() {
             <div className="grid lg:grid-cols-2 gap-12">
               <div className="space-y-6">
                 <div className="space-y-4">
-                  <h3 className="text-3xl font-bold text-white">Vienna: Our First Global Location</h3>
+                  <h3 className="text-3xl font-bold text-white">
+                    Vienna: Our First Global Location
+                  </h3>
                   <p className="text-gray-400 text-lg">
-                    Vienna, Austria represents the perfect launch location for our global expansion. 
-                    Located in the heart of Europe with world-class infrastructure and a growing 
+                    Vienna, Austria represents the perfect launch location for our global expansion.
+                    Located in the heart of Europe with world-class infrastructure and a growing
                     international community seeking innovative educational solutions.
                   </p>
                 </div>
@@ -326,23 +353,33 @@ export default function ViennaLaunchPage() {
                   <div className="grid gap-3">
                     <div className="flex items-center gap-3">
                       <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                      <span className="text-gray-300">Central European gateway with 1.9M metro population</span>
+                      <span className="text-gray-300">
+                        Central European gateway with 1.9M metro population
+                      </span>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                      <span className="text-gray-300">High demand for international education and sports programs</span>
+                      <span className="text-gray-300">
+                        High demand for international education and sports programs
+                      </span>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                      <span className="text-gray-300">Strong economy with €48,000 average household income</span>
+                      <span className="text-gray-300">
+                        Strong economy with €48,000 average household income
+                      </span>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                      <span className="text-gray-300">Limited premium youth sports and community facilities</span>
+                      <span className="text-gray-300">
+                        Limited premium youth sports and community facilities
+                      </span>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                      <span className="text-gray-300">Strategic location for European expansion</span>
+                      <span className="text-gray-300">
+                        Strategic location for European expansion
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -358,7 +395,9 @@ export default function ViennaLaunchPage() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Sports Fields & Courts:</span>
-                      <span className="text-white font-semibold">8 professional-grade facilities</span>
+                      <span className="text-white font-semibold">
+                        8 professional-grade facilities
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Academic Classrooms:</span>
@@ -413,23 +452,25 @@ export default function ViennaLaunchPage() {
           <div className="space-y-4">
             <h2 className="text-4xl font-bold text-white">Support the Vienna Launch</h2>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-              Choose your investment level and be part of the global education revolution. 
-              Every contribution brings us closer to opening our first international location.
+              Choose your investment level and be part of the global education revolution. Every
+              contribution brings us closer to opening our first international location.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {fundingTiers.map((tier) => (
-              <Card 
+              <Card
                 key={tier.id}
                 className={`relative overflow-hidden border-2 transition-all duration-300 cursor-pointer ${
-                  selectedTier === tier.id 
-                    ? 'border-green-400 bg-gradient-to-br from-green-900/20 to-emerald-900/20' 
+                  selectedTier === tier.id
+                    ? 'border-green-400 bg-gradient-to-br from-green-900/20 to-emerald-900/20'
                     : 'border-slate-600 bg-slate-800/50 hover:border-slate-500'
                 }`}
                 onClick={() => setSelectedTier(tier.id)}
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${tier.color} opacity-10`}></div>
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${tier.color} opacity-10`}
+                ></div>
                 <CardHeader className="relative">
                   <div className="flex items-center justify-between mb-4">
                     <div className={`p-3 rounded-lg bg-gradient-to-r ${tier.color}`}>
@@ -463,7 +504,9 @@ export default function ViennaLaunchPage() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <Card className="bg-gradient-to-r from-slate-800/50 to-slate-700/50 border-slate-600">
           <CardHeader>
-            <CardTitle className="text-2xl text-white text-center">Complete Your Investment</CardTitle>
+            <CardTitle className="text-2xl text-white text-center">
+              Complete Your Investment
+            </CardTitle>
             <CardDescription className="text-center">
               Join thousands of supporters building the future of global education
             </CardDescription>
@@ -474,19 +517,19 @@ export default function ViennaLaunchPage() {
                 <TabsTrigger value="preset">Preset Amount</TabsTrigger>
                 <TabsTrigger value="custom">Custom Amount</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="preset" className="space-y-4">
                 <div className="text-center">
                   <div className="text-sm text-gray-400 mb-2">Selected Tier:</div>
                   <div className="text-2xl font-bold text-white">
-                    €{fundingTiers.find(t => t.id === selectedTier)?.amount}
+                    €{fundingTiers.find((t) => t.id === selectedTier)?.amount}
                   </div>
                   <div className="text-gray-400">
-                    {fundingTiers.find(t => t.id === selectedTier)?.name}
+                    {fundingTiers.find((t) => t.id === selectedTier)?.name}
                   </div>
                 </div>
               </TabsContent>
-              
+
               <TabsContent value="custom" className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="custom-amount">Custom Amount (EUR)</Label>
@@ -509,10 +552,10 @@ export default function ViennaLaunchPage() {
                   id="donor-name"
                   placeholder="Your full name"
                   value={donorInfo.name}
-                  onChange={(e) => setDonorInfo({...donorInfo, name: e.target.value})}
+                  onChange={(e) => setDonorInfo({ ...donorInfo, name: e.target.value })}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="donor-email">Email Address</Label>
                 <Input
@@ -520,28 +563,29 @@ export default function ViennaLaunchPage() {
                   type="email"
                   placeholder="your.email@example.com"
                   value={donorInfo.email}
-                  onChange={(e) => setDonorInfo({...donorInfo, email: e.target.value})}
+                  onChange={(e) => setDonorInfo({ ...donorInfo, email: e.target.value })}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="donor-message">Message (Optional)</Label>
                 <Textarea
                   id="donor-message"
                   placeholder="Share your vision for global education..."
                   value={donorInfo.message}
-                  onChange={(e) => setDonorInfo({...donorInfo, message: e.target.value})}
+                  onChange={(e) => setDonorInfo({ ...donorInfo, message: e.target.value })}
                   rows={3}
                 />
               </div>
             </div>
 
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-4 text-lg"
             >
               <Zap className="h-5 w-5 mr-2" />
-              Complete Investment - €{fundingTiers.find(t => t.id === selectedTier)?.amount || customAmount}
+              Complete Investment - €
+              {fundingTiers.find((t) => t.id === selectedTier)?.amount || customAmount}
             </Button>
 
             <div className="text-xs text-gray-400 text-center">
@@ -556,12 +600,11 @@ export default function ViennaLaunchPage() {
         <Card className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 border-purple-500/30">
           <CardContent className="p-8 text-center space-y-6">
             <div className="space-y-4">
-              <h2 className="text-3xl font-bold text-white">
-                After Vienna: Global Expansion Plan
-              </h2>
+              <h2 className="text-3xl font-bold text-white">After Vienna: Global Expansion Plan</h2>
               <p className="text-xl text-gray-300 max-w-4xl mx-auto">
-                Vienna is just the beginning. Our proven franchise model will expand to 50+ locations 
-                worldwide by 2030, creating a global network of elite sports academies and community centers.
+                Vienna is just the beginning. Our proven franchise model will expand to 50+
+                locations worldwide by 2030, creating a global network of elite sports academies and
+                community centers.
               </p>
             </div>
 
@@ -579,13 +622,15 @@ export default function ViennaLaunchPage() {
               <div className="space-y-2">
                 <div className="text-4xl font-bold text-purple-400">2028-2030</div>
                 <div className="text-lg text-white">Global Network</div>
-                <div className="text-sm text-gray-400">Asia-Pacific, Latin America, Middle East</div>
+                <div className="text-sm text-gray-400">
+                  Asia-Pacific, Latin America, Middle East
+                </div>
               </div>
             </div>
 
-            <Button 
-              size="lg" 
-              variant="outline" 
+            <Button
+              size="lg"
+              variant="outline"
               className="border-purple-400 text-purple-300 hover:bg-purple-400/10 px-8 py-3"
             >
               <ArrowRight className="h-5 w-5 mr-2" />

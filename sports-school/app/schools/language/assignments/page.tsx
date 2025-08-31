@@ -1,13 +1,13 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { 
-  BookOpen, 
-  Clock, 
-  Star, 
-  Trophy, 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  BookOpen,
+  Clock,
+  Star,
+  Trophy,
   CheckCircle,
   AlertCircle,
   Calendar,
@@ -15,9 +15,9 @@ import {
   Globe,
   Languages,
   Headphones,
-  Mic
-} from 'lucide-react'
-import Link from 'next/link'
+  Mic,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function LanguageAssignments() {
   const assignments = [
@@ -31,7 +31,7 @@ export default function LanguageAssignments() {
       difficulty: 'medium',
       points: 40,
       description: 'Create and record a 5-minute restaurant conversation',
-      flag: '🇪🇸'
+      flag: '🇪🇸',
     },
     {
       id: 2,
@@ -43,7 +43,7 @@ export default function LanguageAssignments() {
       difficulty: 'hard',
       points: 50,
       description: 'Write a 1000-word essay about the French Revolution impact',
-      flag: '🇫🇷'
+      flag: '🇫🇷',
     },
     {
       id: 3,
@@ -55,9 +55,9 @@ export default function LanguageAssignments() {
       difficulty: 'medium',
       points: 45,
       description: 'Practice writing 50 new characters with proper stroke order',
-      flag: '🇨🇳'
-    }
-  ]
+      flag: '🇨🇳',
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-teal-50 to-blue-50">
@@ -110,16 +110,26 @@ export default function LanguageAssignments() {
                     <div className="text-4xl">{assignment.flag}</div>
                     <div>
                       <CardTitle className="text-lg">{assignment.title}</CardTitle>
-                      <p className="text-sm text-gray-600">{assignment.subject} • {assignment.teacher}</p>
+                      <p className="text-sm text-gray-600">
+                        {assignment.subject} • {assignment.teacher}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant={
-                      assignment.status === 'completed' ? 'default' :
-                      assignment.status === 'in_progress' ? 'secondary' : 'outline'
-                    }>
-                      {assignment.status === 'completed' ? 'Completed' :
-                       assignment.status === 'in_progress' ? 'In Progress' : 'Pending'}
+                    <Badge
+                      variant={
+                        assignment.status === 'completed'
+                          ? 'default'
+                          : assignment.status === 'in_progress'
+                            ? 'secondary'
+                            : 'outline'
+                      }
+                    >
+                      {assignment.status === 'completed'
+                        ? 'Completed'
+                        : assignment.status === 'in_progress'
+                          ? 'In Progress'
+                          : 'Pending'}
                     </Badge>
                     <Badge className="bg-yellow-100 text-yellow-800">
                       {assignment.points} points
@@ -136,8 +146,11 @@ export default function LanguageAssignments() {
                       <span>Due: {assignment.dueDate}</span>
                     </div>
                     <Badge variant="outline" className="text-xs">
-                      {assignment.difficulty === 'easy' ? 'Easy' :
-                       assignment.difficulty === 'medium' ? 'Medium' : 'Hard'}
+                      {assignment.difficulty === 'easy'
+                        ? 'Easy'
+                        : assignment.difficulty === 'medium'
+                          ? 'Medium'
+                          : 'Hard'}
                     </Badge>
                   </div>
                   <div className="flex gap-2">
@@ -146,8 +159,11 @@ export default function LanguageAssignments() {
                       Audio Guide
                     </Button>
                     <Button size="sm" disabled={assignment.status === 'completed'}>
-                      {assignment.status === 'completed' ? 'Completed' :
-                       assignment.status === 'in_progress' ? 'Continue' : 'Start Practice'}
+                      {assignment.status === 'completed'
+                        ? 'Completed'
+                        : assignment.status === 'in_progress'
+                          ? 'Continue'
+                          : 'Start Practice'}
                     </Button>
                   </div>
                 </div>
@@ -171,7 +187,7 @@ export default function LanguageAssignments() {
                 <p className="font-medium">Spanish</p>
                 <p className="text-sm text-gray-600">Intermediate</p>
                 <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                  <div className="bg-green-600 h-2 rounded-full" style={{width: '75%'}}></div>
+                  <div className="bg-green-600 h-2 rounded-full" style={{ width: '75%' }}></div>
                 </div>
               </div>
               <div className="text-center">
@@ -179,7 +195,7 @@ export default function LanguageAssignments() {
                 <p className="font-medium">French</p>
                 <p className="text-sm text-gray-600">Beginner</p>
                 <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                  <div className="bg-yellow-600 h-2 rounded-full" style={{width: '40%'}}></div>
+                  <div className="bg-yellow-600 h-2 rounded-full" style={{ width: '40%' }}></div>
                 </div>
               </div>
               <div className="text-center">
@@ -187,7 +203,7 @@ export default function LanguageAssignments() {
                 <p className="font-medium">Mandarin</p>
                 <p className="text-sm text-gray-600">Beginner</p>
                 <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                  <div className="bg-blue-600 h-2 rounded-full" style={{width: '30%'}}></div>
+                  <div className="bg-blue-600 h-2 rounded-full" style={{ width: '30%' }}></div>
                 </div>
               </div>
             </div>
@@ -206,14 +222,10 @@ export default function LanguageAssignments() {
                   </Button>
                 </Link>
                 <Link href="/schools/language/virtual-classroom">
-                  <Button variant="outline">
-                    Join Virtual Class
-                  </Button>
+                  <Button variant="outline">Join Virtual Class</Button>
                 </Link>
                 <Link href="/schools/language/student-dashboard">
-                  <Button variant="outline">
-                    Back to Language Dashboard
-                  </Button>
+                  <Button variant="outline">Back to Language Dashboard</Button>
                 </Link>
               </div>
             </div>
@@ -221,5 +233,5 @@ export default function LanguageAssignments() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

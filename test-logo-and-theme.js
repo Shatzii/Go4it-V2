@@ -20,7 +20,7 @@ try {
 console.log('\n2. Testing landing page with new logo...');
 try {
   const landingPageResult = execSync('curl -s http://localhost:5000/', { encoding: 'utf8' });
-  
+
   if (landingPageResult.includes('go4it-logo-new.jpg')) {
     console.log('✅ Landing page references new logo');
   } else if (landingPageResult.includes('TFSD3208')) {
@@ -28,7 +28,7 @@ try {
   } else {
     console.log('❌ Logo not found in landing page');
   }
-  
+
   // Check for white backgrounds
   if (landingPageResult.includes('bg-white')) {
     console.log('⚠️  Some white backgrounds still present in landing page');
@@ -43,7 +43,7 @@ try {
 console.log('\n3. Testing admin page with new logo...');
 try {
   const adminPageResult = execSync('curl -s http://localhost:5000/admin', { encoding: 'utf8' });
-  
+
   if (adminPageResult.includes('go4it-logo-new.jpg')) {
     console.log('✅ Admin page references new logo');
   } else {
@@ -58,7 +58,7 @@ console.log('\n4. Testing system health...');
 try {
   const healthResult = execSync('curl -s http://localhost:5000/api/health', { encoding: 'utf8' });
   const healthData = JSON.parse(healthResult);
-  
+
   if (healthData.status === 'healthy') {
     console.log('✅ System is healthy');
   } else {

@@ -1,12 +1,12 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
-import { 
+import {
   insertComplianceStandardSchema,
   insertAccommodationSchema,
   insertAssessmentRequirementSchema,
   insertComplianceAuditSchema,
   insertStudentCompliancePlanSchema,
-  insertComplianceReportTemplateSchema
+  insertComplianceReportTemplateSchema,
 } from '../../shared/compliance-types';
 import { ComplianceMemStorage } from '../storage/compliance-storage';
 
@@ -65,12 +65,12 @@ router.get('/standards/:id', async (req: Request, res: Response) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-    
+
     const standard = await complianceStorage.getComplianceStandard(id);
     if (!standard) {
       return res.status(404).json({ error: 'Standard not found' });
     }
-    
+
     res.status(200).json(standard);
   } catch (error) {
     console.error('Error fetching compliance standard:', error);
@@ -98,14 +98,14 @@ router.patch('/standards/:id', async (req: Request, res: Response) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-    
+
     const validatedData = insertComplianceStandardSchema.partial().parse(req.body);
     const standard = await complianceStorage.updateComplianceStandard(id, validatedData);
-    
+
     if (!standard) {
       return res.status(404).json({ error: 'Standard not found' });
     }
-    
+
     res.status(200).json(standard);
   } catch (error) {
     console.error('Error updating compliance standard:', error);
@@ -122,12 +122,12 @@ router.delete('/standards/:id', async (req: Request, res: Response) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-    
+
     const deleted = await complianceStorage.deleteComplianceStandard(id);
     if (!deleted) {
       return res.status(404).json({ error: 'Standard not found' });
     }
-    
+
     res.status(204).send();
   } catch (error) {
     console.error('Error deleting compliance standard:', error);
@@ -174,12 +174,12 @@ router.get('/accommodations/:id', async (req: Request, res: Response) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-    
+
     const accommodation = await complianceStorage.getAccommodation(id);
     if (!accommodation) {
       return res.status(404).json({ error: 'Accommodation not found' });
     }
-    
+
     res.status(200).json(accommodation);
   } catch (error) {
     console.error('Error fetching accommodation:', error);
@@ -207,14 +207,14 @@ router.patch('/accommodations/:id', async (req: Request, res: Response) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-    
+
     const validatedData = insertAccommodationSchema.partial().parse(req.body);
     const accommodation = await complianceStorage.updateAccommodation(id, validatedData);
-    
+
     if (!accommodation) {
       return res.status(404).json({ error: 'Accommodation not found' });
     }
-    
+
     res.status(200).json(accommodation);
   } catch (error) {
     console.error('Error updating accommodation:', error);
@@ -231,12 +231,12 @@ router.delete('/accommodations/:id', async (req: Request, res: Response) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-    
+
     const deleted = await complianceStorage.deleteAccommodation(id);
     if (!deleted) {
       return res.status(404).json({ error: 'Accommodation not found' });
     }
-    
+
     res.status(204).send();
   } catch (error) {
     console.error('Error deleting accommodation:', error);
@@ -283,12 +283,12 @@ router.get('/assessments/:id', async (req: Request, res: Response) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-    
+
     const assessment = await complianceStorage.getAssessmentRequirement(id);
     if (!assessment) {
       return res.status(404).json({ error: 'Assessment requirement not found' });
     }
-    
+
     res.status(200).json(assessment);
   } catch (error) {
     console.error('Error fetching assessment requirement:', error);
@@ -316,14 +316,14 @@ router.patch('/assessments/:id', async (req: Request, res: Response) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-    
+
     const validatedData = insertAssessmentRequirementSchema.partial().parse(req.body);
     const assessment = await complianceStorage.updateAssessmentRequirement(id, validatedData);
-    
+
     if (!assessment) {
       return res.status(404).json({ error: 'Assessment requirement not found' });
     }
-    
+
     res.status(200).json(assessment);
   } catch (error) {
     console.error('Error updating assessment requirement:', error);
@@ -340,12 +340,12 @@ router.delete('/assessments/:id', async (req: Request, res: Response) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-    
+
     const deleted = await complianceStorage.deleteAssessmentRequirement(id);
     if (!deleted) {
       return res.status(404).json({ error: 'Assessment requirement not found' });
     }
-    
+
     res.status(204).send();
   } catch (error) {
     console.error('Error deleting assessment requirement:', error);
@@ -370,7 +370,7 @@ router.get('/student-plans/student/:studentId', async (req: Request, res: Respon
     if (isNaN(studentId)) {
       return res.status(400).json({ error: 'Invalid student ID' });
     }
-    
+
     const plans = await complianceStorage.getStudentCompliancePlansByStudent(studentId);
     res.status(200).json(plans);
   } catch (error) {
@@ -396,12 +396,12 @@ router.get('/student-plans/:id', async (req: Request, res: Response) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-    
+
     const plan = await complianceStorage.getStudentCompliancePlan(id);
     if (!plan) {
       return res.status(404).json({ error: 'Student compliance plan not found' });
     }
-    
+
     res.status(200).json(plan);
   } catch (error) {
     console.error('Error fetching student compliance plan:', error);
@@ -429,14 +429,14 @@ router.patch('/student-plans/:id', async (req: Request, res: Response) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-    
+
     const validatedData = insertStudentCompliancePlanSchema.partial().parse(req.body);
     const plan = await complianceStorage.updateStudentCompliancePlan(id, validatedData);
-    
+
     if (!plan) {
       return res.status(404).json({ error: 'Student compliance plan not found' });
     }
-    
+
     res.status(200).json(plan);
   } catch (error) {
     console.error('Error updating student compliance plan:', error);
@@ -453,12 +453,12 @@ router.delete('/student-plans/:id', async (req: Request, res: Response) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-    
+
     const deleted = await complianceStorage.deleteStudentCompliancePlan(id);
     if (!deleted) {
       return res.status(404).json({ error: 'Student compliance plan not found' });
     }
-    
+
     res.status(204).send();
   } catch (error) {
     console.error('Error deleting student compliance plan:', error);
@@ -473,7 +473,7 @@ router.get('/analyze/curriculum/:curriculumId', async (req: Request, res: Respon
     if (isNaN(curriculumId)) {
       return res.status(400).json({ error: 'Invalid curriculum ID' });
     }
-    
+
     const analysis = await complianceStorage.analyzeCurriculumCompliance(curriculumId);
     res.status(200).json(analysis);
   } catch (error) {
@@ -482,22 +482,28 @@ router.get('/analyze/curriculum/:curriculumId', async (req: Request, res: Respon
   }
 });
 
-router.get('/analyze/student/:studentId/curriculum/:curriculumId', async (req: Request, res: Response) => {
-  try {
-    const studentId = parseInt(req.params.studentId);
-    const curriculumId = parseInt(req.params.curriculumId);
-    
-    if (isNaN(studentId) || isNaN(curriculumId)) {
-      return res.status(400).json({ error: 'Invalid student or curriculum ID' });
+router.get(
+  '/analyze/student/:studentId/curriculum/:curriculumId',
+  async (req: Request, res: Response) => {
+    try {
+      const studentId = parseInt(req.params.studentId);
+      const curriculumId = parseInt(req.params.curriculumId);
+
+      if (isNaN(studentId) || isNaN(curriculumId)) {
+        return res.status(400).json({ error: 'Invalid student or curriculum ID' });
+      }
+
+      const analysis = await complianceStorage.analyzeStudentPlanCompliance(
+        studentId,
+        curriculumId,
+      );
+      res.status(200).json(analysis);
+    } catch (error) {
+      console.error('Error analyzing student plan compliance:', error);
+      res.status(500).json({ error: 'Failed to analyze student plan compliance' });
     }
-    
-    const analysis = await complianceStorage.analyzeStudentPlanCompliance(studentId, curriculumId);
-    res.status(200).json(analysis);
-  } catch (error) {
-    console.error('Error analyzing student plan compliance:', error);
-    res.status(500).json({ error: 'Failed to analyze student plan compliance' });
-  }
-});
+  },
+);
 
 router.get('/analyze/assessment/:assessmentId', async (req: Request, res: Response) => {
   try {
@@ -505,12 +511,12 @@ router.get('/analyze/assessment/:assessmentId', async (req: Request, res: Respon
     if (isNaN(assessmentId)) {
       return res.status(400).json({ error: 'Invalid assessment ID' });
     }
-    
+
     const studentId = req.query.studentId ? parseInt(req.query.studentId as string) : undefined;
     if (req.query.studentId && isNaN(studentId!)) {
       return res.status(400).json({ error: 'Invalid student ID' });
     }
-    
+
     const analysis = await complianceStorage.analyzeAssessmentCompliance(assessmentId, studentId);
     res.status(200).json(analysis);
   } catch (error) {
@@ -525,16 +531,16 @@ router.post('/reports/generate', async (req: Request, res: Response) => {
     const schema = z.object({
       templateId: z.number(),
       entityId: z.number(),
-      entityType: z.string()
+      entityType: z.string(),
     });
-    
+
     const validatedData = schema.parse(req.body);
     const report = await complianceStorage.generateComplianceReport(
       validatedData.templateId,
       validatedData.entityId,
-      validatedData.entityType
+      validatedData.entityType,
     );
-    
+
     res.status(200).json(report);
   } catch (error) {
     console.error('Error generating compliance report:', error);
@@ -573,12 +579,12 @@ router.get('/report-templates/:id', async (req: Request, res: Response) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-    
+
     const template = await complianceStorage.getComplianceReportTemplate(id);
     if (!template) {
       return res.status(404).json({ error: 'Report template not found' });
     }
-    
+
     res.status(200).json(template);
   } catch (error) {
     console.error('Error fetching report template:', error);
@@ -606,14 +612,14 @@ router.patch('/report-templates/:id', async (req: Request, res: Response) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-    
+
     const validatedData = insertComplianceReportTemplateSchema.partial().parse(req.body);
     const template = await complianceStorage.updateComplianceReportTemplate(id, validatedData);
-    
+
     if (!template) {
       return res.status(404).json({ error: 'Report template not found' });
     }
-    
+
     res.status(200).json(template);
   } catch (error) {
     console.error('Error updating report template:', error);
@@ -630,12 +636,12 @@ router.delete('/report-templates/:id', async (req: Request, res: Response) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-    
+
     const deleted = await complianceStorage.deleteComplianceReportTemplate(id);
     if (!deleted) {
       return res.status(404).json({ error: 'Report template not found' });
     }
-    
+
     res.status(204).send();
   } catch (error) {
     console.error('Error deleting report template:', error);
@@ -660,7 +666,7 @@ router.get('/audits/curriculum/:curriculumId', async (req: Request, res: Respons
     if (isNaN(curriculumId)) {
       return res.status(400).json({ error: 'Invalid curriculum ID' });
     }
-    
+
     const audits = await complianceStorage.getComplianceAuditsByCurriculum(curriculumId);
     res.status(200).json(audits);
   } catch (error) {
@@ -675,12 +681,12 @@ router.get('/audits/:id', async (req: Request, res: Response) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-    
+
     const audit = await complianceStorage.getComplianceAudit(id);
     if (!audit) {
       return res.status(404).json({ error: 'Compliance audit not found' });
     }
-    
+
     res.status(200).json(audit);
   } catch (error) {
     console.error('Error fetching compliance audit:', error);
@@ -708,14 +714,14 @@ router.patch('/audits/:id', async (req: Request, res: Response) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-    
+
     const validatedData = insertComplianceAuditSchema.partial().parse(req.body);
     const audit = await complianceStorage.updateComplianceAudit(id, validatedData);
-    
+
     if (!audit) {
       return res.status(404).json({ error: 'Compliance audit not found' });
     }
-    
+
     res.status(200).json(audit);
   } catch (error) {
     console.error('Error updating compliance audit:', error);
@@ -732,12 +738,12 @@ router.delete('/audits/:id', async (req: Request, res: Response) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-    
+
     const deleted = await complianceStorage.deleteComplianceAudit(id);
     if (!deleted) {
       return res.status(404).json({ error: 'Compliance audit not found' });
     }
-    
+
     res.status(204).send();
   } catch (error) {
     console.error('Error deleting compliance audit:', error);

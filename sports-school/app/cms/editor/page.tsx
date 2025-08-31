@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useState, useRef, useCallback } from 'react';
-import { 
-  Save, 
-  Eye, 
-  Undo, 
-  Redo, 
-  Plus, 
-  Trash2, 
-  Move, 
+import {
+  Save,
+  Eye,
+  Undo,
+  Redo,
+  Plus,
+  Trash2,
+  Move,
   Settings,
   Type,
   Image,
@@ -19,7 +19,7 @@ import {
   Palette,
   Monitor,
   Tablet,
-  Smartphone
+  Smartphone,
 } from 'lucide-react';
 
 interface PageElement {
@@ -66,20 +66,20 @@ const CMSPageEditor: React.FC = () => {
         content: {
           title: 'Welcome to Universal One School',
           subtitle: 'Empowering neurodivergent learners through innovative education',
-          backgroundImage: '/api/placeholder/1200/400'
+          backgroundImage: '/api/placeholder/1200/400',
         },
         styles: {
           backgroundColor: '#1e40af',
           textColor: '#ffffff',
-          padding: '4rem 2rem'
-        }
+          padding: '4rem 2rem',
+        },
       },
       {
         id: 'grid-1',
         type: 'grid',
         content: {},
         styles: {
-          padding: '3rem 2rem'
+          padding: '3rem 2rem',
         },
         children: [
           {
@@ -88,14 +88,14 @@ const CMSPageEditor: React.FC = () => {
             content: {
               title: 'SuperHero School',
               description: 'Primary education with superhero themes and gamified learning',
-              icon: '🦸‍♂️'
+              icon: '🦸‍♂️',
             },
             styles: {
               backgroundColor: '#ffffff',
               border: '1px solid #e5e7eb',
               borderRadius: '0.5rem',
-              padding: '1.5rem'
-            }
+              padding: '1.5rem',
+            },
           },
           {
             id: 'card-2',
@@ -103,23 +103,23 @@ const CMSPageEditor: React.FC = () => {
             content: {
               title: 'Stage Prep School',
               description: 'Secondary education focused on theater and performance arts',
-              icon: '🎭'
+              icon: '🎭',
             },
             styles: {
               backgroundColor: '#ffffff',
               border: '1px solid #e5e7eb',
               borderRadius: '0.5rem',
-              padding: '1.5rem'
-            }
-          }
-        ]
-      }
+              padding: '1.5rem',
+            },
+          },
+        ],
+      },
     ],
     settings: {
       layout: 'fluid',
       maxWidth: '1200px',
-      backgroundColor: '#f9fafb'
-    }
+      backgroundColor: '#f9fafb',
+    },
   });
 
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
@@ -143,26 +143,26 @@ const CMSPageEditor: React.FC = () => {
       id: `${type}-${Date.now()}`,
       type: type as any,
       content: getDefaultContent(type),
-      styles: getDefaultStyles(type)
+      styles: getDefaultStyles(type),
     };
 
-    setPageData(prev => ({
+    setPageData((prev) => ({
       ...prev,
-      elements: [...prev.elements, newElement]
+      elements: [...prev.elements, newElement],
     }));
   }, []);
 
   const updateElement = useCallback((elementId: string, updates: Partial<PageElement>) => {
-    setPageData(prev => ({
+    setPageData((prev) => ({
       ...prev,
-      elements: updateElementInTree(prev.elements, elementId, updates)
+      elements: updateElementInTree(prev.elements, elementId, updates),
     }));
   }, []);
 
   const deleteElement = useCallback((elementId: string) => {
-    setPageData(prev => ({
+    setPageData((prev) => ({
       ...prev,
-      elements: removeElementFromTree(prev.elements, elementId)
+      elements: removeElementFromTree(prev.elements, elementId),
     }));
     setSelectedElement(null);
   }, []);
@@ -191,7 +191,7 @@ const CMSPageEditor: React.FC = () => {
       margin: '0',
       padding: '1rem',
       backgroundColor: 'transparent',
-      textColor: '#374151'
+      textColor: '#374151',
     };
 
     switch (type) {
@@ -200,7 +200,7 @@ const CMSPageEditor: React.FC = () => {
           ...base,
           backgroundColor: '#1e40af',
           textColor: '#ffffff',
-          padding: '4rem 2rem'
+          padding: '4rem 2rem',
         };
       case 'card':
         return {
@@ -208,22 +208,26 @@ const CMSPageEditor: React.FC = () => {
           backgroundColor: '#ffffff',
           border: '1px solid #e5e7eb',
           borderRadius: '0.5rem',
-          padding: '1.5rem'
+          padding: '1.5rem',
         };
       default:
         return base;
     }
   }
 
-  function updateElementInTree(elements: PageElement[], elementId: string, updates: Partial<PageElement>): PageElement[] {
-    return elements.map(element => {
+  function updateElementInTree(
+    elements: PageElement[],
+    elementId: string,
+    updates: Partial<PageElement>,
+  ): PageElement[] {
+    return elements.map((element) => {
       if (element.id === elementId) {
         return { ...element, ...updates };
       }
       if (element.children) {
         return {
           ...element,
-          children: updateElementInTree(element.children, elementId, updates)
+          children: updateElementInTree(element.children, elementId, updates),
         };
       }
       return element;
@@ -231,7 +235,7 @@ const CMSPageEditor: React.FC = () => {
   }
 
   function removeElementFromTree(elements: PageElement[], elementId: string): PageElement[] {
-    return elements.filter(element => {
+    return elements.filter((element) => {
       if (element.id === elementId) {
         return false;
       }
@@ -262,18 +266,14 @@ const CMSPageEditor: React.FC = () => {
       fontWeight: element.styles.fontWeight,
       borderRadius: element.styles.borderRadius,
       border: element.styles.border,
-      ...element.styles.size
+      ...element.styles.size,
     };
 
     const content = (() => {
       switch (element.type) {
         case 'text':
           return (
-            <div
-              className={className}
-              style={style}
-              onClick={() => handleElementClick(element.id)}
-            >
+            <div className={className} style={style} onClick={() => handleElementClick(element.id)}>
               <p>{element.content.text}</p>
             </div>
           );
@@ -292,14 +292,8 @@ const CMSPageEditor: React.FC = () => {
 
         case 'card':
           return (
-            <div
-              className={className}
-              style={style}
-              onClick={() => handleElementClick(element.id)}
-            >
-              {element.content.icon && (
-                <div className="text-2xl mb-2">{element.content.icon}</div>
-              )}
+            <div className={className} style={style} onClick={() => handleElementClick(element.id)}>
+              {element.content.icon && <div className="text-2xl mb-2">{element.content.icon}</div>}
               <h3 className="font-semibold mb-2">{element.content.title}</h3>
               <p className="text-sm opacity-80">{element.content.description}</p>
             </div>
@@ -307,16 +301,10 @@ const CMSPageEditor: React.FC = () => {
 
         case 'grid':
           return (
-            <div
-              className={className}
-              style={style}
-              onClick={() => handleElementClick(element.id)}
-            >
+            <div className={className} style={style} onClick={() => handleElementClick(element.id)}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {element.children?.map(child => (
-                  <div key={child.id}>
-                    {renderElement(child)}
-                  </div>
+                {element.children?.map((child) => (
+                  <div key={child.id}>{renderElement(child)}</div>
                 ))}
               </div>
             </div>
@@ -324,11 +312,7 @@ const CMSPageEditor: React.FC = () => {
 
         case 'image':
           return (
-            <div
-              className={className}
-              style={style}
-              onClick={() => handleElementClick(element.id)}
-            >
+            <div className={className} style={style} onClick={() => handleElementClick(element.id)}>
               <img
                 src={element.content.src}
                 alt={element.content.alt}
@@ -339,11 +323,7 @@ const CMSPageEditor: React.FC = () => {
 
         default:
           return (
-            <div
-              className={className}
-              style={style}
-              onClick={() => handleElementClick(element.id)}
-            >
+            <div className={className} style={style} onClick={() => handleElementClick(element.id)}>
               <div className="p-4 bg-gray-100 rounded text-center">
                 <p className="text-gray-600">Element: {element.type}</p>
               </div>
@@ -357,10 +337,14 @@ const CMSPageEditor: React.FC = () => {
 
   const renderCanvas = () => {
     const canvasStyle = {
-      maxWidth: viewMode === 'desktop' ? pageData.settings.maxWidth : 
-                viewMode === 'tablet' ? '768px' : '375px',
+      maxWidth:
+        viewMode === 'desktop'
+          ? pageData.settings.maxWidth
+          : viewMode === 'tablet'
+            ? '768px'
+            : '375px',
       backgroundColor: pageData.settings.backgroundColor,
-      transition: 'all 0.3s ease'
+      transition: 'all 0.3s ease',
     };
 
     return (
@@ -371,8 +355,8 @@ const CMSPageEditor: React.FC = () => {
             className="bg-white min-h-screen shadow-lg"
             style={{ backgroundColor: pageData.settings.backgroundColor }}
           >
-            {pageData.elements.map(element => renderElement(element))}
-            
+            {pageData.elements.map((element) => renderElement(element))}
+
             {pageData.elements.length === 0 && (
               <div className="flex items-center justify-center h-64">
                 <div className="text-center text-gray-400">
@@ -418,9 +402,11 @@ const CMSPageEditor: React.FC = () => {
               <label className="block text-sm font-medium mb-1">Text Content</label>
               <textarea
                 value={element.content.text}
-                onChange={(e) => updateElement(selectedElement, {
-                  content: { ...element.content, text: e.target.value }
-                })}
+                onChange={(e) =>
+                  updateElement(selectedElement, {
+                    content: { ...element.content, text: e.target.value },
+                  })
+                }
                 className="w-full p-2 border border-gray-300 rounded text-sm"
                 rows={3}
               />
@@ -434,9 +420,11 @@ const CMSPageEditor: React.FC = () => {
                 <input
                   type="text"
                   value={element.content.title}
-                  onChange={(e) => updateElement(selectedElement, {
-                    content: { ...element.content, title: e.target.value }
-                  })}
+                  onChange={(e) =>
+                    updateElement(selectedElement, {
+                      content: { ...element.content, title: e.target.value },
+                    })
+                  }
                   className="w-full p-2 border border-gray-300 rounded text-sm"
                 />
               </div>
@@ -446,9 +434,11 @@ const CMSPageEditor: React.FC = () => {
                   <input
                     type="text"
                     value={element.content.subtitle}
-                    onChange={(e) => updateElement(selectedElement, {
-                      content: { ...element.content, subtitle: e.target.value }
-                    })}
+                    onChange={(e) =>
+                      updateElement(selectedElement, {
+                        content: { ...element.content, subtitle: e.target.value },
+                      })
+                    }
                     className="w-full p-2 border border-gray-300 rounded text-sm"
                   />
                 </div>
@@ -461,9 +451,11 @@ const CMSPageEditor: React.FC = () => {
             <input
               type="color"
               value={element.styles.backgroundColor || '#ffffff'}
-              onChange={(e) => updateElement(selectedElement, {
-                styles: { ...element.styles, backgroundColor: e.target.value }
-              })}
+              onChange={(e) =>
+                updateElement(selectedElement, {
+                  styles: { ...element.styles, backgroundColor: e.target.value },
+                })
+              }
               className="w-full h-8 border border-gray-300 rounded"
             />
           </div>
@@ -473,9 +465,11 @@ const CMSPageEditor: React.FC = () => {
             <input
               type="color"
               value={element.styles.textColor || '#000000'}
-              onChange={(e) => updateElement(selectedElement, {
-                styles: { ...element.styles, textColor: e.target.value }
-              })}
+              onChange={(e) =>
+                updateElement(selectedElement, {
+                  styles: { ...element.styles, textColor: e.target.value },
+                })
+              }
               className="w-full h-8 border border-gray-300 rounded"
             />
           </div>
@@ -485,9 +479,11 @@ const CMSPageEditor: React.FC = () => {
             <input
               type="text"
               value={element.styles.padding || '1rem'}
-              onChange={(e) => updateElement(selectedElement, {
-                styles: { ...element.styles, padding: e.target.value }
-              })}
+              onChange={(e) =>
+                updateElement(selectedElement, {
+                  styles: { ...element.styles, padding: e.target.value },
+                })
+              }
               placeholder="e.g., 1rem, 10px 20px"
               className="w-full p-2 border border-gray-300 rounded text-sm"
             />
@@ -498,9 +494,11 @@ const CMSPageEditor: React.FC = () => {
             <input
               type="text"
               value={element.styles.borderRadius || '0'}
-              onChange={(e) => updateElement(selectedElement, {
-                styles: { ...element.styles, borderRadius: e.target.value }
-              })}
+              onChange={(e) =>
+                updateElement(selectedElement, {
+                  styles: { ...element.styles, borderRadius: e.target.value },
+                })
+              }
               placeholder="e.g., 0.5rem, 8px"
               className="w-full p-2 border border-gray-300 rounded text-sm"
             />
@@ -532,7 +530,7 @@ const CMSPageEditor: React.FC = () => {
           <input
             type="text"
             value={pageData.title}
-            onChange={(e) => setPageData(prev => ({ ...prev, title: e.target.value }))}
+            onChange={(e) => setPageData((prev) => ({ ...prev, title: e.target.value }))}
             className="px-3 py-1 border border-gray-300 rounded text-sm"
           />
         </div>
@@ -543,7 +541,7 @@ const CMSPageEditor: React.FC = () => {
             {[
               { mode: 'desktop', icon: Monitor },
               { mode: 'tablet', icon: Tablet },
-              { mode: 'mobile', icon: Smartphone }
+              { mode: 'mobile', icon: Smartphone },
             ].map(({ mode, icon: Icon }) => (
               <button
                 key={mode}

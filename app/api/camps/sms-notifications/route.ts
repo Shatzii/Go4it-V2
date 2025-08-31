@@ -4,7 +4,7 @@ import { smsService } from '@/lib/twilio-client';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { 
+    const {
       parentPhone,
       childName,
       campName,
@@ -12,14 +12,17 @@ export async function POST(request: NextRequest) {
       notificationType, // 'registration', 'reminder', 'checkin', 'pickup', 'update'
       location,
       time,
-      additionalInfo 
+      additionalInfo,
     } = body;
 
     if (!parentPhone || !childName || !campName) {
-      return NextResponse.json({
-        success: false,
-        error: 'Missing required camp information'
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Missing required camp information',
+        },
+        { status: 400 },
+      );
     }
 
     let messageTemplate = '';
@@ -46,15 +49,18 @@ export async function POST(request: NextRequest) {
         break;
 
       default:
-        return NextResponse.json({
-          success: false,
-          error: 'Invalid notification type'
-        }, { status: 400 });
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Invalid notification type',
+          },
+          { status: 400 },
+        );
     }
 
     const smsResult = await smsService.sendSMS({
       to: parentPhone,
-      message: messageTemplate
+      message: messageTemplate,
     });
 
     return NextResponse.json({
@@ -64,14 +70,16 @@ export async function POST(request: NextRequest) {
       notificationType,
       childName,
       campName,
-      message: `Camp ${notificationType} SMS sent successfully`
+      message: `Camp ${notificationType} SMS sent successfully`,
     });
-
   } catch (error: any) {
     console.error('Camp SMS notification error:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to send camp SMS notification'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to send camp SMS notification',
+      },
+      { status: 500 },
+    );
   }
 }

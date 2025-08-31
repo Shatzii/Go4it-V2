@@ -11,15 +11,12 @@ export async function GET(request: NextRequest) {
         'International Student Support',
         'Core Course Validation',
         'GPA Calculations',
-        'Eligibility Status Tracking'
-      ]
+        'Eligibility Status Tracking',
+      ],
     });
   } catch (error) {
     console.error('NCAA Eligibility API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch NCAA eligibility data' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch NCAA eligibility data' }, { status: 500 });
   }
 }
 
@@ -56,13 +53,10 @@ export async function POST(request: NextRequest) {
       gpa,
       satScore,
       actScore,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error('NCAA Eligibility calculation error:', error);
-    return NextResponse.json(
-      { error: 'Failed to calculate NCAA eligibility' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to calculate NCAA eligibility' }, { status: 500 });
   }
 }

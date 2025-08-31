@@ -1,6 +1,6 @@
 /**
  * Security Dashboard API Routes for ShotziOS
- * 
+ *
  * This module provides API endpoints for the security dashboard,
  * including security alerts, audit logs, and compliance checks.
  */
@@ -21,14 +21,14 @@ router.get('/overview', (req, res) => {
       lastAssessment: '2023-04-01T14:30:00Z',
       systemUpdates: {
         status: 'up-to-date',
-        lastUpdate: '2023-03-28T09:15:00Z'
+        lastUpdate: '2023-03-28T09:15:00Z',
       },
       complianceStatus: {
         gdpr: 'compliant',
         hipaa: 'compliant',
-        ferpa: 'compliant'
-      }
-    }
+        ferpa: 'compliant',
+      },
+    },
   });
 });
 
@@ -49,8 +49,8 @@ router.get('/alerts', (req, res) => {
         details: {
           attempts: 12,
           ipAddress: '198.51.100.123',
-          timespan: '15 minutes'
-        }
+          timespan: '15 minutes',
+        },
       },
       {
         id: 'alert2',
@@ -64,8 +64,8 @@ router.get('/alerts', (req, res) => {
           endpoint: '/api/anthropic/chat',
           requestCount: 187,
           timespan: '5 minutes',
-          ipAddress: '203.0.113.45'
-        }
+          ipAddress: '203.0.113.45',
+        },
       },
       {
         id: 'alert3',
@@ -81,8 +81,8 @@ router.get('/alerts', (req, res) => {
           fileName: 'project.zip',
           fileSize: '8.5MB',
           contentType: 'application/zip',
-          scanResult: 'suspicious macro detected'
-        }
+          scanResult: 'suspicious macro detected',
+        },
       },
       {
         id: 'alert4',
@@ -96,8 +96,8 @@ router.get('/alerts', (req, res) => {
         details: {
           backupSize: '1.2GB',
           duration: '45 seconds',
-          location: 'secure-storage-east'
-        }
+          location: 'secure-storage-east',
+        },
       },
       {
         id: 'alert5',
@@ -111,9 +111,9 @@ router.get('/alerts', (req, res) => {
           trapType: 'fake-admin-api',
           ipAddress: '192.0.2.178',
           attemptedEndpoint: '/api/admin/backdoor',
-          userAgent: 'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1)'
-        }
-      }
+          userAgent: 'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1)',
+        },
+      },
     ],
     alertStats: {
       total: 99,
@@ -123,7 +123,7 @@ router.get('/alerts', (req, res) => {
         high: 14,
         medium: 28,
         low: 42,
-        info: 15
+        info: 15,
       },
       byType: {
         authentication: 23,
@@ -131,9 +131,9 @@ router.get('/alerts', (req, res) => {
         'rate-limit': 18,
         'file-upload': 12,
         honeypot: 7,
-        system: 24
-      }
-    }
+        system: 24,
+      },
+    },
   });
 });
 
@@ -153,8 +153,8 @@ router.get('/audit-logs', (req, res) => {
         details: {
           browser: 'Chrome',
           os: 'Windows',
-          location: 'Dubai, UAE'
-        }
+          location: 'Dubai, UAE',
+        },
       },
       {
         id: 'log2',
@@ -166,8 +166,8 @@ router.get('/audit-logs', (req, res) => {
         details: {
           browser: 'Safari',
           os: 'macOS',
-          location: 'Abu Dhabi, UAE'
-        }
+          location: 'Abu Dhabi, UAE',
+        },
       },
       {
         id: 'log3',
@@ -179,8 +179,8 @@ router.get('/audit-logs', (req, res) => {
         details: {
           contentType: 'course',
           contentId: 'course123',
-          contentName: 'Introduction to UAE Contract Law'
-        }
+          contentName: 'Introduction to UAE Contract Law',
+        },
       },
       {
         id: 'log4',
@@ -193,8 +193,8 @@ router.get('/audit-logs', (req, res) => {
           targetUser: 'user123',
           oldRole: 'student',
           newRole: 'teacher',
-          reason: 'Position change'
-        }
+          reason: 'Position change',
+        },
       },
       {
         id: 'log5',
@@ -206,8 +206,8 @@ router.get('/audit-logs', (req, res) => {
         details: {
           configName: 'security.password_policy',
           oldValue: '{"minLength": 8}',
-          newValue: '{"minLength": 10, "requireSpecialChar": true}'
-        }
+          newValue: '{"minLength": 10, "requireSpecialChar": true}',
+        },
       },
       {
         id: 'log6',
@@ -221,13 +221,13 @@ router.get('/audit-logs', (req, res) => {
           attemptCount: 3,
           browser: 'Firefox',
           os: 'Linux',
-          location: 'Unknown'
-        }
-      }
+          location: 'Unknown',
+        },
+      },
     ],
     totalLogs: 872,
     page: 1,
-    totalPages: 146
+    totalPages: 146,
   });
 });
 
@@ -249,8 +249,8 @@ router.get('/compliance', (req, res) => {
             consentManagement: 'implemented',
             dataSubjectRights: 'implemented',
             breachNotification: 'implemented',
-            dataRetention: 'implemented'
-          }
+            dataRetention: 'implemented',
+          },
         },
         {
           name: 'FERPA',
@@ -260,8 +260,8 @@ router.get('/compliance', (req, res) => {
             studentRecords: 'implemented',
             parentalAccess: 'implemented',
             directoryInformation: 'implemented',
-            consentRequirements: 'implemented'
-          }
+            consentRequirements: 'implemented',
+          },
         },
         {
           name: 'CCPA',
@@ -271,25 +271,25 @@ router.get('/compliance', (req, res) => {
             disclosureNotice: 'implemented',
             optOutMechanism: 'implemented',
             dataInventory: 'in progress',
-            deletionRequest: 'implemented'
-          }
-        }
+            deletionRequest: 'implemented',
+          },
+        },
       ],
       recommendations: [
         {
           framework: 'CCPA',
           component: 'dataInventory',
           recommendation: 'Complete data inventory documentation',
-          priority: 'medium'
+          priority: 'medium',
         },
         {
           framework: 'GDPR',
           component: 'dataRetention',
           recommendation: 'Update data retention schedule for new content types',
-          priority: 'low'
-        }
-      ]
-    }
+          priority: 'low',
+        },
+      ],
+    },
   });
 });
 
@@ -302,7 +302,7 @@ router.get('/access-control', (req, res) => {
         {
           name: 'administrator',
           userCount: 8,
-          permissions: ['all']
+          permissions: ['all'],
         },
         {
           name: 'teacher',
@@ -313,18 +313,13 @@ router.get('/access-control', (req, res) => {
             'content.edit',
             'student.view',
             'student.grade',
-            'student.message'
-          ]
+            'student.message',
+          ],
         },
         {
           name: 'student',
           userCount: 1187,
-          permissions: [
-            'content.view',
-            'assignment.submit',
-            'profile.edit',
-            'message.send'
-          ]
+          permissions: ['content.view', 'assignment.submit', 'profile.edit', 'message.send'],
         },
         {
           name: 'parent',
@@ -333,9 +328,9 @@ router.get('/access-control', (req, res) => {
             'student.view.linked',
             'teacher.message',
             'report.view.linked',
-            'profile.edit.own'
-          ]
-        }
+            'profile.edit.own',
+          ],
+        },
       ],
       activeSessionsCount: 378,
       unusualActivities: [
@@ -344,17 +339,17 @@ router.get('/access-control', (req, res) => {
           user: 'user123',
           previousLocation: 'Dubai, UAE',
           currentLocation: 'London, UK',
-          timestamp: '2023-04-05T12:17:32Z'
+          timestamp: '2023-04-05T12:17:32Z',
         },
         {
           type: 'multiple_sessions',
           user: 'user456',
           sessionCount: 3,
           locations: ['Dubai, UAE', 'Abu Dhabi, UAE', 'Sharjah, UAE'],
-          timestamp: '2023-04-06T08:42:15Z'
-        }
-      ]
-    }
+          timestamp: '2023-04-06T08:42:15Z',
+        },
+      ],
+    },
   });
 });
 
@@ -372,7 +367,7 @@ router.get('/vulnerability-scan', (req, res) => {
         high: 1,
         medium: 4,
         low: 12,
-        info: 23
+        info: 23,
       },
       issues: [
         {
@@ -382,7 +377,7 @@ router.get('/vulnerability-scan', (req, res) => {
           description: 'Library X is using version 1.2.3 which has a known vulnerability',
           affected: 'api-server',
           recommendation: 'Update to version 1.2.5 or later',
-          status: 'in progress'
+          status: 'in progress',
         },
         {
           id: 'vuln2',
@@ -391,7 +386,7 @@ router.get('/vulnerability-scan', (req, res) => {
           description: 'Content-Security-Policy header is not set on some endpoints',
           affected: 'web-server',
           recommendation: 'Implement CSP headers for all routes',
-          status: 'open'
+          status: 'open',
         },
         {
           id: 'vuln3',
@@ -400,10 +395,10 @@ router.get('/vulnerability-scan', (req, res) => {
           description: 'Session cookies not using Secure and HttpOnly flags',
           affected: 'authentication-service',
           recommendation: 'Add Secure and HttpOnly flags to all cookies',
-          status: 'open'
-        }
-      ]
-    }
+          status: 'open',
+        },
+      ],
+    },
   });
 });
 

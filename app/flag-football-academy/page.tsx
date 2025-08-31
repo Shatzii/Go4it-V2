@@ -5,12 +5,33 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { AICoachWidget } from '@/components/ai-coach/AICoachWidget';
-import { 
-  Zap, Trophy, Users, Target, PlayCircle, BookOpen, 
-  Calendar, Star, Crown, Flag, Timer, MapPin, Mic,
-  TrendingUp, Award, Shield, Compass, Lightbulb
+import {
+  Zap,
+  Trophy,
+  Users,
+  Target,
+  PlayCircle,
+  BookOpen,
+  Calendar,
+  Star,
+  Crown,
+  Flag,
+  Timer,
+  MapPin,
+  Mic,
+  TrendingUp,
+  Award,
+  Shield,
+  Compass,
+  Lightbulb,
 } from 'lucide-react';
 
 export default function FlagFootballAcademyPage() {
@@ -24,7 +45,7 @@ export default function FlagFootballAcademyPage() {
     { value: '9-11', label: '9-11 Years (Junior)' },
     { value: '12-14', label: '12-14 Years (Varsity)' },
     { value: '15-17', label: '15-17 Years (Elite)' },
-    { value: 'adult', label: 'Adult League' }
+    { value: 'adult', label: 'Adult League' },
   ];
 
   const positions = [
@@ -32,13 +53,13 @@ export default function FlagFootballAcademyPage() {
     { value: 'receiver', label: 'Wide Receiver', icon: Zap },
     { value: 'rusher', label: 'Pass Rusher', icon: Shield },
     { value: 'defender', label: 'Defender', icon: Users },
-    { value: 'center', label: 'Center', icon: Flag }
+    { value: 'center', label: 'Center', icon: Flag },
   ];
 
   const gameTypes = [
     { value: '5v5', label: '5v5 (Small Field)' },
     { value: '7v7', label: '7v7 (Standard)' },
-    { value: '9v9', label: '9v9 (Large Field)' }
+    { value: '9v9', label: '9v9 (Large Field)' },
   ];
 
   const drillsByPosition = {
@@ -48,22 +69,22 @@ export default function FlagFootballAcademyPage() {
         description: 'Maintain calm in the pocket while scanning the field',
         difficulty: 'Intermediate',
         duration: '10 minutes',
-        equipment: ['Cones', 'Flags', 'Football']
+        equipment: ['Cones', 'Flags', 'Football'],
       },
       {
         name: '3-Step Drop',
         description: 'Perfect the quick 3-step drop for timing routes',
         difficulty: 'Beginner',
         duration: '15 minutes',
-        equipment: ['Football', 'Markers']
+        equipment: ['Football', 'Markers'],
       },
       {
         name: 'Accuracy Challenge',
         description: 'Target practice for precision passing',
         difficulty: 'All Levels',
         duration: '20 minutes',
-        equipment: ['Targets', 'Football', 'Cones']
-      }
+        equipment: ['Targets', 'Football', 'Cones'],
+      },
     ],
     receiver: [
       {
@@ -71,22 +92,22 @@ export default function FlagFootballAcademyPage() {
         description: 'Sharp cuts and precise route execution',
         difficulty: 'Intermediate',
         duration: '15 minutes',
-        equipment: ['Cones', 'Flags']
+        equipment: ['Cones', 'Flags'],
       },
       {
         name: 'Catching Drills',
         description: 'Secure catches in various situations',
         difficulty: 'Beginner',
         duration: '12 minutes',
-        equipment: ['Football', 'Gloves']
+        equipment: ['Football', 'Gloves'],
       },
       {
         name: 'Release Techniques',
         description: 'Beat press coverage at the line',
         difficulty: 'Advanced',
         duration: '10 minutes',
-        equipment: ['Cones', 'Partner']
-      }
+        equipment: ['Cones', 'Partner'],
+      },
     ],
     rusher: [
       {
@@ -94,23 +115,23 @@ export default function FlagFootballAcademyPage() {
         description: 'Stay in designated rush lanes',
         difficulty: 'Beginner',
         duration: '8 minutes',
-        equipment: ['Cones', 'Markers']
+        equipment: ['Cones', 'Markers'],
       },
       {
         name: 'Flag Pulling',
         description: 'Clean flag pulling technique',
         difficulty: 'All Levels',
         duration: '12 minutes',
-        equipment: ['Flags', 'Belts']
+        equipment: ['Flags', 'Belts'],
       },
       {
         name: 'Speed Rush',
         description: 'Beat blockers with speed moves',
         difficulty: 'Advanced',
         duration: '15 minutes',
-        equipment: ['Cones', 'Timer']
-      }
-    ]
+        equipment: ['Cones', 'Timer'],
+      },
+    ],
   };
 
   const playbook = {
@@ -121,7 +142,7 @@ export default function FlagFootballAcademyPage() {
         description: 'Fast-developing slant route for quick completions',
         personnel: '1 QB, 3 WR, 1 RB',
         success_rate: '85%',
-        best_situations: ['3rd and short', '2-minute drill']
+        best_situations: ['3rd and short', '2-minute drill'],
       },
       {
         name: 'Fade Route',
@@ -129,7 +150,7 @@ export default function FlagFootballAcademyPage() {
         description: 'Back-shoulder fade for red zone scoring',
         personnel: '1 QB, 3 WR, 1 RB',
         success_rate: '65%',
-        best_situations: ['Red zone', 'Single coverage']
+        best_situations: ['Red zone', 'Single coverage'],
       },
       {
         name: 'Screen Pass',
@@ -137,7 +158,7 @@ export default function FlagFootballAcademyPage() {
         description: 'Running back screen with blockers',
         personnel: '1 QB, 2 WR, 1 RB, 1 C',
         success_rate: '70%',
-        best_situations: ['Long yardage', 'Blitz defense']
+        best_situations: ['Long yardage', 'Blitz defense'],
       },
       {
         name: 'Crossing Routes',
@@ -145,8 +166,8 @@ export default function FlagFootballAcademyPage() {
         description: 'Pick plays and crossing patterns',
         personnel: '1 QB, 3 WR, 1 RB',
         success_rate: '75%',
-        best_situations: ['Short yardage', 'Zone defense']
-      }
+        best_situations: ['Short yardage', 'Zone defense'],
+      },
     ],
     defensive: [
       {
@@ -154,23 +175,23 @@ export default function FlagFootballAcademyPage() {
         description: 'Two deep safeties cover the deep zones',
         personnel: '7 defensive players',
         strengths: ['Deep pass protection', 'Run support'],
-        weaknesses: ['Middle zones vulnerable']
+        weaknesses: ['Middle zones vulnerable'],
       },
       {
         name: 'Man Coverage',
         description: 'Each defender covers a specific receiver',
         personnel: '7 defensive players',
         strengths: ['Tight coverage', 'Blitz opportunities'],
-        weaknesses: ['Requires athletic defenders']
+        weaknesses: ['Requires athletic defenders'],
       },
       {
         name: 'Zone Blitz',
         description: 'Send extra rushers while dropping coverage',
         personnel: '7 defensive players',
         strengths: ['Pressure on QB', 'Confusion'],
-        weaknesses: ['Coverage gaps']
-      }
-    ]
+        weaknesses: ['Coverage gaps'],
+      },
+    ],
   };
 
   const coachingProgram = {
@@ -178,25 +199,69 @@ export default function FlagFootballAcademyPage() {
       focus: 'Fundamentals and Fun',
       duration: '8 weeks',
       sessions: [
-        { week: 1, topic: 'Basic Rules and Safety', drills: ['Flag pulling basics', 'Catching', 'Throwing form'] },
-        { week: 2, topic: 'Positions and Roles', drills: ['Position alignment', 'Basic routes', 'Defensive stance'] },
-        { week: 3, topic: 'Simple Plays', drills: ['Quick passes', 'Basic defense', 'Team communication'] },
-        { week: 4, topic: 'Game Situations', drills: ['Red zone plays', 'Two-minute drill', 'Special situations'] },
-        { week: 5, topic: 'Advanced Skills', drills: ['Route combinations', 'Coverage concepts', 'Blitz packages'] },
-        { week: 6, topic: 'Strategy and Tactics', drills: ['Game planning', 'Adjustments', 'Leadership'] },
-        { week: 7, topic: 'Competition Prep', drills: ['Scrimmages', 'Pressure situations', 'Mental toughness'] },
-        { week: 8, topic: 'Tournament Play', drills: ['Championship mindset', 'Team chemistry', 'Celebration'] }
-      ]
+        {
+          week: 1,
+          topic: 'Basic Rules and Safety',
+          drills: ['Flag pulling basics', 'Catching', 'Throwing form'],
+        },
+        {
+          week: 2,
+          topic: 'Positions and Roles',
+          drills: ['Position alignment', 'Basic routes', 'Defensive stance'],
+        },
+        {
+          week: 3,
+          topic: 'Simple Plays',
+          drills: ['Quick passes', 'Basic defense', 'Team communication'],
+        },
+        {
+          week: 4,
+          topic: 'Game Situations',
+          drills: ['Red zone plays', 'Two-minute drill', 'Special situations'],
+        },
+        {
+          week: 5,
+          topic: 'Advanced Skills',
+          drills: ['Route combinations', 'Coverage concepts', 'Blitz packages'],
+        },
+        {
+          week: 6,
+          topic: 'Strategy and Tactics',
+          drills: ['Game planning', 'Adjustments', 'Leadership'],
+        },
+        {
+          week: 7,
+          topic: 'Competition Prep',
+          drills: ['Scrimmages', 'Pressure situations', 'Mental toughness'],
+        },
+        {
+          week: 8,
+          topic: 'Tournament Play',
+          drills: ['Championship mindset', 'Team chemistry', 'Celebration'],
+        },
+      ],
     },
     intermediate: {
       focus: 'Skill Development and Strategy',
       duration: '10 weeks',
       sessions: [
-        { week: 1, topic: 'Advanced Techniques', drills: ['Complex routes', 'Coverage reads', 'Rush techniques'] },
-        { week: 2, topic: 'Formation Mastery', drills: ['Multiple formations', 'Motion plays', 'Shifts'] },
-        { week: 3, topic: 'Situational Football', drills: ['Down and distance', 'Field position', 'Clock management'] }
-      ]
-    }
+        {
+          week: 1,
+          topic: 'Advanced Techniques',
+          drills: ['Complex routes', 'Coverage reads', 'Rush techniques'],
+        },
+        {
+          week: 2,
+          topic: 'Formation Mastery',
+          drills: ['Multiple formations', 'Motion plays', 'Shifts'],
+        },
+        {
+          week: 3,
+          topic: 'Situational Football',
+          drills: ['Down and distance', 'Field position', 'Clock management'],
+        },
+      ],
+    },
   };
 
   return (
@@ -313,13 +378,13 @@ export default function FlagFootballAcademyPage() {
           <TabsContent value="coaching" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Flag Football AI Coach */}
-              <AICoachWidget 
+              <AICoachWidget
                 feature="flag_football"
                 context={{
                   position: selectedPosition,
                   ageGroup: selectedAgeGroup,
                   skillLevel: skillLevel,
-                  gameType: gameType
+                  gameType: gameType,
                 }}
                 className="h-full"
               />
@@ -372,45 +437,52 @@ export default function FlagFootballAcademyPage() {
 
           <TabsContent value="drills" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {(drillsByPosition[selectedPosition] || drillsByPosition.quarterback).map((drill, index) => (
-                <Card key={index} className="bg-slate-800 border-slate-700">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-white text-lg">{drill.name}</CardTitle>
-                      <Badge 
-                        variant={drill.difficulty === 'Beginner' ? 'secondary' : 
-                               drill.difficulty === 'Intermediate' ? 'default' : 'destructive'}
-                      >
-                        {drill.difficulty}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <p className="text-slate-300 text-sm">{drill.description}</p>
-                    
-                    <div className="flex items-center gap-2 text-sm text-slate-400">
-                      <Timer className="w-4 h-4" />
-                      <span>{drill.duration}</span>
-                    </div>
-
-                    <div>
-                      <h5 className="font-medium text-white text-sm mb-2">Equipment:</h5>
-                      <div className="flex flex-wrap gap-1">
-                        {drill.equipment.map((item, idx) => (
-                          <Badge key={idx} variant="outline" className="text-xs">
-                            {item}
-                          </Badge>
-                        ))}
+              {(drillsByPosition[selectedPosition] || drillsByPosition.quarterback).map(
+                (drill, index) => (
+                  <Card key={index} className="bg-slate-800 border-slate-700">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-white text-lg">{drill.name}</CardTitle>
+                        <Badge
+                          variant={
+                            drill.difficulty === 'Beginner'
+                              ? 'secondary'
+                              : drill.difficulty === 'Intermediate'
+                                ? 'default'
+                                : 'destructive'
+                          }
+                        >
+                          {drill.difficulty}
+                        </Badge>
                       </div>
-                    </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <p className="text-slate-300 text-sm">{drill.description}</p>
 
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                      <PlayCircle className="w-4 h-4 mr-2" />
-                      Start Drill
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+                      <div className="flex items-center gap-2 text-sm text-slate-400">
+                        <Timer className="w-4 h-4" />
+                        <span>{drill.duration}</span>
+                      </div>
+
+                      <div>
+                        <h5 className="font-medium text-white text-sm mb-2">Equipment:</h5>
+                        <div className="flex flex-wrap gap-1">
+                          {drill.equipment.map((item, idx) => (
+                            <Badge key={idx} variant="outline" className="text-xs">
+                              {item}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+
+                      <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                        <PlayCircle className="w-4 h-4 mr-2" />
+                        Start Drill
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ),
+              )}
             </div>
           </TabsContent>
 
@@ -435,9 +507,15 @@ export default function FlagFootballAcademyPage() {
                       </div>
                       <p className="text-slate-300 text-sm mb-2">{play.description}</p>
                       <div className="text-xs text-slate-400 space-y-1">
-                        <p><strong>Formation:</strong> {play.formation}</p>
-                        <p><strong>Personnel:</strong> {play.personnel}</p>
-                        <p><strong>Best for:</strong> {play.best_situations.join(', ')}</p>
+                        <p>
+                          <strong>Formation:</strong> {play.formation}
+                        </p>
+                        <p>
+                          <strong>Personnel:</strong> {play.personnel}
+                        </p>
+                        <p>
+                          <strong>Best for:</strong> {play.best_situations.join(', ')}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -458,9 +536,15 @@ export default function FlagFootballAcademyPage() {
                       <h4 className="font-semibold text-white mb-2">{scheme.name}</h4>
                       <p className="text-slate-300 text-sm mb-3">{scheme.description}</p>
                       <div className="text-xs text-slate-400 space-y-1">
-                        <p><strong>Personnel:</strong> {scheme.personnel}</p>
-                        <p><strong>Strengths:</strong> {scheme.strengths.join(', ')}</p>
-                        <p><strong>Weaknesses:</strong> {scheme.weaknesses.join(', ')}</p>
+                        <p>
+                          <strong>Personnel:</strong> {scheme.personnel}
+                        </p>
+                        <p>
+                          <strong>Strengths:</strong> {scheme.strengths.join(', ')}
+                        </p>
+                        <p>
+                          <strong>Weaknesses:</strong> {scheme.weaknesses.join(', ')}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -475,8 +559,8 @@ export default function FlagFootballAcademyPage() {
                 <p className="text-slate-300 text-lg mb-6">
                   Use AI to generate personalized plays for your team
                 </p>
-                <Button 
-                  onClick={() => window.location.href = '/ai-coach-dashboard'}
+                <Button
+                  onClick={() => (window.location.href = '/ai-coach-dashboard')}
                   className="bg-blue-600 hover:bg-blue-700 px-8 py-3"
                 >
                   <BookOpen className="w-5 h-5 mr-2" />
@@ -560,8 +644,8 @@ export default function FlagFootballAcademyPage() {
                       </div>
                     </div>
                   </div>
-                  <Button 
-                    onClick={() => window.location.href = '/ai-coach-dashboard'}
+                  <Button
+                    onClick={() => (window.location.href = '/ai-coach-dashboard')}
                     className="w-full bg-yellow-600 hover:bg-yellow-700"
                   >
                     <Calendar className="w-4 h-4 mr-2" />

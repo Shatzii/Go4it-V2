@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
           gpa: users.gpa,
           isActive: users.isActive,
           createdAt: users.createdAt,
-          lastLoginAt: users.lastLoginAt
+          lastLoginAt: users.lastLoginAt,
         })
         .from(users)
         .where(eq(users.role, 'athlete'));
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
           sport: users.sport,
           position: users.position,
           graduationYear: users.graduationYear,
-          isActive: users.isActive
+          isActive: users.isActive,
         })
         .from(users)
         .where(eq(users.role, 'athlete'));
@@ -58,15 +58,11 @@ export async function GET(request: NextRequest) {
       success: true,
       students,
       total: students.length,
-      user_role: user.role
+      user_role: user.role,
     });
-
   } catch (error) {
     console.error('Error fetching students:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch students' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch students' }, { status: 500 });
   }
 }
 
@@ -83,13 +79,10 @@ export async function POST(request: NextRequest) {
     }
 
     const studentData = await request.json();
-    
+
     // Validate required fields
     if (!studentData.username || !studentData.email) {
-      return NextResponse.json(
-        { error: 'Username and email are required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Username and email are required' }, { status: 400 });
     }
 
     // Create new student
@@ -106,7 +99,7 @@ export async function POST(request: NextRequest) {
         gpa: studentData.gpa,
         role: 'athlete',
         password: 'temporary_password', // Should be hashed and user should reset
-        isActive: true
+        isActive: true,
       })
       .returning();
 
@@ -121,15 +114,11 @@ export async function POST(request: NextRequest) {
         sport: newStudent.sport,
         position: newStudent.position,
         graduationYear: newStudent.graduationYear,
-        gpa: newStudent.gpa
-      }
+        gpa: newStudent.gpa,
+      },
     });
-
   } catch (error) {
     console.error('Error creating student:', error);
-    return NextResponse.json(
-      { error: 'Failed to create student' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create student' }, { status: 500 });
   }
 }

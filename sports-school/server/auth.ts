@@ -1,9 +1,9 @@
-import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local";
-import { Express } from "express";
-import session from "express-session";
-import { storage } from "./storage";
-import { User } from "../shared/schema";
+import passport from 'passport';
+import { Strategy as LocalStrategy } from 'passport-local';
+import { Express } from 'express';
+import session from 'express-session';
+import { storage } from './storage';
+import { User } from '../shared/schema';
 
 declare global {
   namespace Express {
@@ -24,7 +24,7 @@ export function setupAuth(app: Express) {
     },
   };
 
-  app.set("trust proxy", 1);
+  app.set('trust proxy', 1);
   app.use(session(sessionSettings));
   app.use(passport.initialize());
   app.use(passport.session());
@@ -50,7 +50,7 @@ export function setupAuth(app: Express) {
   );
 
   passport.serializeUser((user, done) => done(null, user.id));
-  
+
   passport.deserializeUser(async (id: string, done) => {
     try {
       const user = await storage.getUser(id);
@@ -61,20 +61,20 @@ export function setupAuth(app: Express) {
   });
 
   // Registration endpoint
-  app.post("/api/register", async (req, res, next) => {
+  app.post('/api/register', async (req, res, next) => {
     try {
       const { username, password, email, firstName, lastName, role, neurotype } = req.body;
 
       // Check if user already exists
       const existingUser = await storage.getUserByUsername(username);
       if (existingUser) {
-        return res.status(400).json({ error: "Username already exists" });
+        return res.status(400).json({ error: 'Username already exists' });
       }
 
       if (email) {
         const existingEmail = await storage.getUserByEmail(email);
         if (existingEmail) {
-          return res.status(400).json({ error: "Email already exists" });
+          return res.status(400).json({ error: 'Email already exists' });
         }
       }
 
@@ -105,23 +105,23 @@ export function setupAuth(app: Express) {
       });
     } catch (error) {
       console.error('Registration error:', error);
-      res.status(500).json({ error: "Registration failed" });
+      res.status(500).json({ error: 'Registration failed' });
     }
   });
 
   // Login endpoint
-  app.post("/api/login", (req, res, next) => {
-    passport.authenticate("local", (err: any, user: User | false, info: any) => {
+  app.post('/api/login', (req, res, next) => {
+    passport.authenticate('local', (err: any, user: User | false, info: any) => {
       if (err) {
-        return res.status(500).json({ error: "Authentication error" });
+        return res.status(500).json({ error: 'Authentication error' });
       }
       if (!user) {
-        return res.status(401).json({ error: info?.message || "Invalid credentials" });
+        return res.status(401).json({ error: info?.message || 'Invalid credentials' });
       }
-      
+
       req.login(user, (loginErr) => {
         if (loginErr) {
-          return res.status(500).json({ error: "Login failed" });
+          return res.status(500).json({ error: 'Login failed' });
         }
         res.json({
           id: user.id,
@@ -137,7 +137,7 @@ export function setupAuth(app: Express) {
   });
 
   // Logout endpoint
-  app.post("/api/logout", (req, res, next) => {
+  app.post('/api/logout', (req, res, next) => {
     req.logout((err) => {
       if (err) return next(err);
       res.json({ success: true });
@@ -145,11 +145,11 @@ export function setupAuth(app: Express) {
   });
 
   // Get current user
-  app.get("/api/user", (req, res) => {
+  app.get('/api/user', (req, res) => {
     if (!req.isAuthenticated() || !req.user) {
-      return res.status(401).json({ error: "Not authenticated" });
+      return res.status(401).json({ error: 'Not authenticated' });
     }
-    
+
     const user = req.user as User;
     res.json({
       id: user.id,
@@ -167,7 +167,7 @@ export function setupAuth(app: Express) {
 // Middleware to require authentication
 export function requireAuth(req: any, res: any, next: any) {
   if (!req.isAuthenticated()) {
-    return res.status(401).json({ error: "Authentication required" });
+    return res.status(401).json({ error: 'Authentication required' });
   }
   next();
 }
@@ -176,14 +176,14 @@ export function requireAuth(req: any, res: any, next: any) {
 export function requireRole(roles: string[]) {
   return (req: any, res: any, next: any) => {
     if (!req.isAuthenticated()) {
-      return res.status(401).json({ error: "Authentication required" });
+      return res.status(401).json({ error: 'Authentication required' });
     }
-    
+
     const user = req.user as User;
     if (!roles.includes(user.role || '')) {
-      return res.status(403).json({ error: "Insufficient permissions" });
+      return res.status(403).json({ error: 'Insufficient permissions' });
     }
-    
+
     next();
   };
 }

@@ -5,7 +5,7 @@ export class AdvancedAIAnalysis {
   private aiManager: any;
   private sport: string;
   private analysisType: string;
-  
+
   constructor(sport: string, analysisType: 'basic' | 'advanced' | 'professional' = 'advanced') {
     this.sport = sport;
     this.analysisType = analysisType;
@@ -46,7 +46,7 @@ export class AdvancedAIAnalysis {
     `;
 
     const analysis = await this.aiManager.generateResponse(prompt);
-    
+
     return this.parseComputerVisionAnalysis(analysis);
   }
 
@@ -122,11 +122,11 @@ export class AdvancedAIAnalysis {
         - Defensive positioning: stance, hand fighting, sprawl
         - Mat wrestling: transitions, control, escapes
         - Conditioning: endurance, strength, flexibility
-      `
+      `,
     };
 
     const sportPrompt = sportSpecificPrompts[this.sport] || sportSpecificPrompts.basketball;
-    
+
     const fullPrompt = `
       ${sportPrompt}
       
@@ -257,18 +257,12 @@ export class AdvancedAIAnalysis {
 
   // Comprehensive GAR Analysis Integration
   async performComprehensiveGAR(videoPath: string): Promise<any> {
-    const [
-      computerVision,
-      sportSpecific,
-      benchmarking,
-      injuryRisk,
-      coaching
-    ] = await Promise.all([
+    const [computerVision, sportSpecific, benchmarking, injuryRisk, coaching] = await Promise.all([
       this.analyzeWithComputerVision(videoPath),
       this.analyzeSportSpecificMovement(videoPath),
       this.benchmarkPerformance(videoPath, 'high school'),
       this.assessInjuryRisk(videoPath),
-      this.generateRealTimeCoaching(videoPath)
+      this.generateRealTimeCoaching(videoPath),
     ]);
 
     // Calculate overall GAR score
@@ -277,7 +271,7 @@ export class AdvancedAIAnalysis {
       sportSpecific,
       benchmarking,
       injuryRisk,
-      coaching
+      coaching,
     });
 
     return {
@@ -289,7 +283,7 @@ export class AdvancedAIAnalysis {
       coachingFeedback: coaching,
       timestamp: new Date().toISOString(),
       sport: this.sport,
-      analysisType: this.analysisType
+      analysisType: this.analysisType,
     };
   }
 
@@ -302,7 +296,7 @@ export class AdvancedAIAnalysis {
       technicalExecution: this.extractScore(analysis, 'technical') || 78,
       performanceIndicators: this.extractScore(analysis, 'performance') || 80,
       insights: this.extractInsights(analysis),
-      timestamps: this.extractTimestamps(analysis)
+      timestamps: this.extractTimestamps(analysis),
     };
   }
 
@@ -313,7 +307,7 @@ export class AdvancedAIAnalysis {
       physicalScore: this.extractScore(analysis, 'physical') || 85,
       mentalScore: this.extractScore(analysis, 'mental') || 77,
       recommendations: this.extractRecommendations(analysis),
-      progressionPath: this.extractProgression(analysis)
+      progressionPath: this.extractProgression(analysis),
     };
   }
 
@@ -323,7 +317,7 @@ export class AdvancedAIAnalysis {
       collegeReadiness: this.extractScore(analysis, 'college') || 65,
       professionalComparison: this.extractScore(analysis, 'professional') || 45,
       recruitmentPotential: this.extractScore(analysis, 'recruitment') || 70,
-      developmentTimeline: this.extractTimeline(analysis)
+      developmentTimeline: this.extractTimeline(analysis),
     };
   }
 
@@ -332,7 +326,7 @@ export class AdvancedAIAnalysis {
       overallRiskScore: this.extractScore(analysis, 'risk') || 25,
       biomechanicalRisks: this.extractRiskFactors(analysis),
       preventionStrategies: this.extractPreventionStrategies(analysis),
-      recoveryRecommendations: this.extractRecoveryRecs(analysis)
+      recoveryRecommendations: this.extractRecoveryRecs(analysis),
     };
   }
 
@@ -341,41 +335,47 @@ export class AdvancedAIAnalysis {
       immediateFeedback: this.extractImmediateFeedback(analysis),
       progressiveGoals: this.extractProgressiveGoals(analysis),
       neurodivergentAdaptations: this.extractNeurodivergentAdaptations(analysis),
-      competitivePreparation: this.extractCompetitivePrep(analysis)
+      competitivePreparation: this.extractCompetitivePrep(analysis),
     };
   }
 
   private calculateGARScore(analyses: any): number {
     const weights = {
       computerVision: 0.25,
-      sportSpecific: 0.30,
-      benchmarking: 0.20,
-      injuryRisk: 0.10, // Lower injury risk = higher score
-      coaching: 0.15
+      sportSpecific: 0.3,
+      benchmarking: 0.2,
+      injuryRisk: 0.1, // Lower injury risk = higher score
+      coaching: 0.15,
     };
 
     const scores = {
-      computerVision: (analyses.computerVision.poseEstimation + 
-                      analyses.computerVision.movementTracking + 
-                      analyses.computerVision.technicalExecution + 
-                      analyses.computerVision.performanceIndicators) / 4,
-      sportSpecific: (analyses.sportSpecific.technicalScore + 
-                     analyses.sportSpecific.tacticalScore + 
-                     analyses.sportSpecific.physicalScore + 
-                     analyses.sportSpecific.mentalScore) / 4,
-      benchmarking: (analyses.benchmarking.highSchoolPercentile + 
-                    analyses.benchmarking.collegeReadiness + 
-                    analyses.benchmarking.recruitmentPotential) / 3,
+      computerVision:
+        (analyses.computerVision.poseEstimation +
+          analyses.computerVision.movementTracking +
+          analyses.computerVision.technicalExecution +
+          analyses.computerVision.performanceIndicators) /
+        4,
+      sportSpecific:
+        (analyses.sportSpecific.technicalScore +
+          analyses.sportSpecific.tacticalScore +
+          analyses.sportSpecific.physicalScore +
+          analyses.sportSpecific.mentalScore) /
+        4,
+      benchmarking:
+        (analyses.benchmarking.highSchoolPercentile +
+          analyses.benchmarking.collegeReadiness +
+          analyses.benchmarking.recruitmentPotential) /
+        3,
       injuryRisk: 100 - analyses.injuryRisk.overallRiskScore, // Invert risk score
-      coaching: 85 // Base coaching effectiveness score
+      coaching: 85, // Base coaching effectiveness score
     };
 
     return Math.round(
       scores.computerVision * weights.computerVision +
-      scores.sportSpecific * weights.sportSpecific +
-      scores.benchmarking * weights.benchmarking +
-      scores.injuryRisk * weights.injuryRisk +
-      scores.coaching * weights.coaching
+        scores.sportSpecific * weights.sportSpecific +
+        scores.benchmarking * weights.benchmarking +
+        scores.injuryRisk * weights.injuryRisk +
+        scores.coaching * weights.coaching,
     );
   }
 
@@ -406,7 +406,7 @@ export class AdvancedAIAnalysis {
     while ((match = timestampRegex.exec(text)) !== null) {
       timestamps.push({
         time: match[1],
-        context: text.substring(match.index - 50, match.index + 50)
+        context: text.substring(match.index - 50, match.index + 50),
       });
     }
     return timestamps;
@@ -439,7 +439,7 @@ export class AdvancedAIAnalysis {
       shortTerm: '3-6 months',
       mediumTerm: '6-12 months',
       longTerm: '1-2 years',
-      milestones: this.extractMilestones(text)
+      milestones: this.extractMilestones(text),
     };
   }
 
@@ -533,6 +533,9 @@ export class AdvancedAIAnalysis {
 }
 
 // Factory function to create advanced AI analysis
-export function createAdvancedAIAnalysis(sport: string, type: 'basic' | 'advanced' | 'professional' = 'advanced') {
+export function createAdvancedAIAnalysis(
+  sport: string,
+  type: 'basic' | 'advanced' | 'professional' = 'advanced',
+) {
   return new AdvancedAIAnalysis(sport, type);
 }

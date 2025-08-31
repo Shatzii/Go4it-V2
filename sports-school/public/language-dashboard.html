@@ -1,1050 +1,1241 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ShatziiOS - Language Learning Academy Dashboard</title>
     <style>
-        :root {
-            --primary: #2E8B57; /* SeaGreen for Language School */
-            --primary-light: #66C2A5;
-            --secondary: #FF6F61; /* Coral */
-            --background: #0F1A1F;
-            --card-bg: #1A2930;
-            --sidebar-bg: #0A1419;
-            --text: #FFFFFF;
-            --text-muted: #B0B0B0;
-            --danger: #FF4444;
-            --success: #00CC88;
-            --warning: #FFBB33;
-            --border: rgba(255, 255, 255, 0.1);
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--background);
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-        }
-        
+      :root {
+        --primary: #2e8b57; /* SeaGreen for Language School */
+        --primary-light: #66c2a5;
+        --secondary: #ff6f61; /* Coral */
+        --background: #0f1a1f;
+        --card-bg: #1a2930;
+        --sidebar-bg: #0a1419;
+        --text: #ffffff;
+        --text-muted: #b0b0b0;
+        --danger: #ff4444;
+        --success: #00cc88;
+        --warning: #ffbb33;
+        --border: rgba(255, 255, 255, 0.1);
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--background);
+        color: var(--text);
+        margin: 0;
+        padding: 0;
+        line-height: 1.6;
+      }
+
+      .dashboard-container {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        background-color: var(--sidebar-bg);
+        padding: 2rem 1.5rem;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        border-right: 1px solid var(--border);
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 2.5rem;
+      }
+
+      .logo-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        background-color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: var(--text);
+        font-size: 1.5rem;
+      }
+
+      .logo-text {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: var(--text);
+        line-height: 1.2;
+      }
+
+      .logo-subtext {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      .nav-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 2rem 0;
+      }
+
+      .nav-section {
+        margin-bottom: 1.5rem;
+      }
+
+      .nav-section-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 0.75rem;
+        padding-left: 0.5rem;
+        letter-spacing: 0.05em;
+      }
+
+      .nav-item {
+        margin-bottom: 0.25rem;
+      }
+
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
+
+      .nav-link:hover,
+      .nav-link.active {
+        background-color: rgba(46, 139, 87, 0.1);
+        color: var(--primary-light);
+      }
+
+      .nav-link.active {
+        background-color: rgba(46, 139, 87, 0.2);
+        color: var(--primary-light);
+        font-weight: 500;
+      }
+
+      .nav-icon {
+        font-size: 1.25rem;
+        width: 20px;
+        text-align: center;
+      }
+
+      .main-content {
+        padding: 2rem;
+        overflow-y: auto;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .page-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--primary-light);
+        margin: 0;
+      }
+
+      .user-menu {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      .language-selector {
+        position: relative;
+      }
+
+      .current-language {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background-color: rgba(46, 139, 87, 0.1);
+        border: 1px solid rgba(46, 139, 87, 0.3);
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      .flag-icon {
+        font-size: 1.2rem;
+      }
+
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        cursor: pointer;
+      }
+
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: var(--text);
+      }
+
+      .user-info {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .user-name {
+        font-weight: 500;
+      }
+
+      .user-role {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      .button,
+      button {
+        background-color: var(--primary);
+        color: var(--text);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .button:hover,
+      button:hover {
+        background-color: var(--primary-light);
+        transform: translateY(-2px);
+      }
+
+      .button.secondary {
+        background-color: transparent;
+        border: 1px solid var(--primary);
+        color: var(--primary);
+      }
+
+      .button.secondary:hover {
+        background-color: rgba(46, 139, 87, 0.1);
+      }
+
+      .button.accent {
+        background-color: var(--secondary);
+        color: var(--text);
+      }
+
+      .button.accent:hover {
+        background-color: #ff8a7f;
+      }
+
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1.5rem;
+      }
+
+      .card {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--border);
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+      }
+
+      .card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary-light);
+        margin: 0;
+      }
+
+      .language-progress {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .language-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: rgba(46, 139, 87, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+      }
+
+      .language-details {
+        flex: 1;
+      }
+
+      .language-name {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .language-level {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+      }
+
+      .progress-bar {
+        height: 8px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 0.25rem;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background-color: var(--primary);
+        border-radius: 4px;
+      }
+
+      .progress-stats {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      .skill-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .skill-card {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 6px;
+        padding: 1rem;
+        text-align: center;
+        transition:
+          transform 0.2s ease,
+          background-color 0.2s ease;
+      }
+
+      .skill-card:hover {
+        transform: translateY(-4px);
+        background-color: rgba(46, 139, 87, 0.1);
+      }
+
+      .skill-icon {
+        font-size: 1.75rem;
+        margin-bottom: 0.5rem;
+        color: var(--primary-light);
+      }
+
+      .skill-title {
+        font-weight: 500;
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .skill-level {
+        width: 100%;
+        height: 4px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+        margin: 0.5rem 0;
+        overflow: hidden;
+      }
+
+      .skill-level-fill {
+        height: 100%;
+        background-color: var(--primary);
+        border-radius: 2px;
+      }
+
+      .lesson-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .lesson-item {
+        display: flex;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border);
+        align-items: center;
+      }
+
+      .lesson-item:last-child {
+        border-bottom: none;
+      }
+
+      .lesson-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 6px;
+        background-color: rgba(46, 139, 87, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        margin-right: 1rem;
+      }
+
+      .lesson-details {
+        flex: 1;
+      }
+
+      .lesson-title {
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+      }
+
+      .lesson-meta {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        display: flex;
+        gap: 1rem;
+      }
+
+      .lesson-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .vocabulary-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .vocabulary-item {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .vocabulary-item:last-child {
+        border-bottom: none;
+      }
+
+      .vocabulary-term {
+        font-weight: 500;
+        color: var(--primary-light);
+        margin-bottom: 0.25rem;
+      }
+
+      .vocabulary-details {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+      }
+
+      .vocabulary-translation {
+        color: var(--text-muted);
+      }
+
+      .vocabulary-category {
+        color: var(--secondary);
+      }
+
+      .streak-section {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .streak-icon {
+        font-size: 2.5rem;
+        color: var(--secondary);
+      }
+
+      .streak-details {
+        flex: 1;
+      }
+
+      .streak-value {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      .streak-description {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+
+      .activity-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .activity-item {
+        display: flex;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .activity-item:last-child {
+        border-bottom: none;
+      }
+
+      .activity-date {
+        min-width: 80px;
+        font-size: 0.85rem;
+        color: var(--primary-light);
+      }
+
+      .activity-description {
+        flex: 1;
+      }
+
+      .activity-title {
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+      }
+
+      .activity-meta {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+
+      .footer {
+        margin-top: 1.5rem;
+        padding: 1.5rem 0 1rem;
+        border-top: 1px solid var(--border);
+        color: var(--text-muted);
+        text-align: center;
+        font-size: 0.85rem;
+      }
+
+      @media (max-width: 768px) {
         .dashboard-container {
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            min-height: 100vh;
+          grid-template-columns: 1fr;
         }
-        
+
         .sidebar {
-            background-color: var(--sidebar-bg);
-            padding: 2rem 1.5rem;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            overflow-y: auto;
-            border-right: 1px solid var(--border);
+          display: none;
         }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 2.5rem;
-        }
-        
-        .logo-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
-            background-color: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: var(--text);
-            font-size: 1.5rem;
-        }
-        
-        .logo-text {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--text);
-            line-height: 1.2;
-        }
-        
-        .logo-subtext {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-        
-        .nav-list {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 2rem 0;
-        }
-        
-        .nav-section {
-            margin-bottom: 1.5rem;
-        }
-        
-        .nav-section-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 0.75rem;
-            padding-left: 0.5rem;
-            letter-spacing: 0.05em;
-        }
-        
-        .nav-item {
-            margin-bottom: 0.25rem;
-        }
-        
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            border-radius: 6px;
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: all 0.2s ease;
-        }
-        
-        .nav-link:hover, .nav-link.active {
-            background-color: rgba(46, 139, 87, 0.1);
-            color: var(--primary-light);
-        }
-        
-        .nav-link.active {
-            background-color: rgba(46, 139, 87, 0.2);
-            color: var(--primary-light);
-            font-weight: 500;
-        }
-        
-        .nav-icon {
-            font-size: 1.25rem;
-            width: 20px;
-            text-align: center;
-        }
-        
-        .main-content {
-            padding: 2rem;
-            overflow-y: auto;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-        
-        .page-title {
-            font-size: 1.75rem;
-            font-weight: 600;
-            color: var(--primary-light);
-            margin: 0;
-        }
-        
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-        
-        .language-selector {
-            position: relative;
-        }
-        
-        .current-language {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background-color: rgba(46, 139, 87, 0.1);
-            border: 1px solid rgba(46, 139, 87, 0.3);
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        
-        .flag-icon {
-            font-size: 1.2rem;
-        }
-        
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            cursor: pointer;
-        }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--text);
-        }
-        
-        .user-info {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .user-name {
-            font-weight: 500;
-        }
-        
-        .user-role {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-        
-        .button, button {
-            background-color: var(--primary);
-            color: var(--text);
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .button:hover, button:hover {
-            background-color: var(--primary-light);
-            transform: translateY(-2px);
-        }
-        
-        .button.secondary {
-            background-color: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-        }
-        
-        .button.secondary:hover {
-            background-color: rgba(46, 139, 87, 0.1);
-        }
-        
-        .button.accent {
-            background-color: var(--secondary);
-            color: var(--text);
-        }
-        
-        .button.accent:hover {
-            background-color: #FF8A7F;
-        }
-        
+
         .dashboard-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 1.5rem;
+          grid-template-columns: 1fr;
         }
-        
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border);
-        }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.25rem;
-        }
-        
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--primary-light);
-            margin: 0;
-        }
-        
-        .language-progress {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .language-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: rgba(46, 139, 87, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-        }
-        
-        .language-details {
-            flex: 1;
-        }
-        
-        .language-name {
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 0.25rem;
-        }
-        
-        .language-level {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 0.5rem;
-        }
-        
-        .progress-bar {
-            height: 8px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 0.25rem;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background-color: var(--primary);
-            border-radius: 4px;
-        }
-        
-        .progress-stats {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-        
-        .skill-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .skill-card {
-            background-color: rgba(255, 255, 255, 0.05);
-            border-radius: 6px;
-            padding: 1rem;
-            text-align: center;
-            transition: transform 0.2s ease, background-color 0.2s ease;
-        }
-        
-        .skill-card:hover {
-            transform: translateY(-4px);
-            background-color: rgba(46, 139, 87, 0.1);
-        }
-        
-        .skill-icon {
-            font-size: 1.75rem;
-            margin-bottom: 0.5rem;
-            color: var(--primary-light);
-        }
-        
-        .skill-title {
-            font-weight: 500;
-            font-size: 0.9rem;
-            margin-bottom: 0.25rem;
-        }
-        
-        .skill-level {
-            width: 100%;
-            height: 4px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            margin: 0.5rem 0;
-            overflow: hidden;
-        }
-        
-        .skill-level-fill {
-            height: 100%;
-            background-color: var(--primary);
-            border-radius: 2px;
-        }
-        
-        .lesson-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .lesson-item {
-            display: flex;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--border);
-            align-items: center;
-        }
-        
-        .lesson-item:last-child {
-            border-bottom: none;
-        }
-        
-        .lesson-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 6px;
-            background-color: rgba(46, 139, 87, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            margin-right: 1rem;
-        }
-        
-        .lesson-details {
-            flex: 1;
-        }
-        
-        .lesson-title {
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-        }
-        
-        .lesson-meta {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            display: flex;
-            gap: 1rem;
-        }
-        
-        .lesson-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .vocabulary-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .vocabulary-item {
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .vocabulary-item:last-child {
-            border-bottom: none;
-        }
-        
-        .vocabulary-term {
-            font-weight: 500;
-            color: var(--primary-light);
-            margin-bottom: 0.25rem;
-        }
-        
-        .vocabulary-details {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-        }
-        
-        .vocabulary-translation {
-            color: var(--text-muted);
-        }
-        
-        .vocabulary-category {
-            color: var(--secondary);
-        }
-        
-        .streak-section {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .streak-icon {
-            font-size: 2.5rem;
-            color: var(--secondary);
-        }
-        
-        .streak-details {
-            flex: 1;
-        }
-        
-        .streak-value {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-        
-        .streak-description {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-        
-        .activity-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .activity-item {
-            display: flex;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .activity-item:last-child {
-            border-bottom: none;
-        }
-        
-        .activity-date {
-            min-width: 80px;
-            font-size: 0.85rem;
-            color: var(--primary-light);
-        }
-        
-        .activity-description {
-            flex: 1;
-        }
-        
-        .activity-title {
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-        }
-        
-        .activity-meta {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-        
-        .footer {
-            margin-top: 1.5rem;
-            padding: 1.5rem 0 1rem;
-            border-top: 1px solid var(--border);
-            color: var(--text-muted);
-            text-align: center;
-            font-size: 0.85rem;
-        }
-        
-        @media (max-width: 768px) {
-            .dashboard-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .sidebar {
-                display: none;
-            }
-            
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="dashboard-container">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar">
-            <div class="logo">
-                <div class="logo-icon">🌍</div>
-                <div>
-                    <div class="logo-text">AI Language Academy</div>
-                    <div class="logo-subtext">Multilingual Learning</div>
-                </div>
-            </div>
-            
-            <nav>
-                <div class="nav-section">
-                    <div class="nav-section-title">Main</div>
-                    <ul class="nav-list">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link active">
-                                <span class="nav-icon">📊</span>
-                                Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <span class="nav-icon">📚</span>
-                                My Courses
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <span class="nav-icon">🎯</span>
-                                Goals
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <span class="nav-icon">📝</span>
-                                Practice
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                
-                <div class="nav-section">
-                    <div class="nav-section-title">Learning</div>
-                    <ul class="nav-list">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <span class="nav-icon">🗣️</span>
-                                Speaking
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <span class="nav-icon">👂</span>
-                                Listening
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <span class="nav-icon">✍️</span>
-                                Writing
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <span class="nav-icon">📖</span>
-                                Reading
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <span class="nav-icon">🔤</span>
-                                Vocabulary
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                
-                <div class="nav-section">
-                    <div class="nav-section-title">Resources</div>
-                    <ul class="nav-list">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <span class="nav-icon">🤖</span>
-                                AI Conversation Partner
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <span class="nav-icon">🎮</span>
-                                Language Games
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <span class="nav-icon">📱</span>
-                                Mobile Practice
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-            
-            <div class="nav-section" style="margin-top: 2rem;">
-                <a href="/" class="button secondary" style="width: 100%; justify-content: center;">
-                    <span>Exit to Home</span>
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <div class="logo">
+          <div class="logo-icon">🌍</div>
+          <div>
+            <div class="logo-text">AI Language Academy</div>
+            <div class="logo-subtext">Multilingual Learning</div>
+          </div>
+        </div>
+
+        <nav>
+          <div class="nav-section">
+            <div class="nav-section-title">Main</div>
+            <ul class="nav-list">
+              <li class="nav-item">
+                <a href="#" class="nav-link active">
+                  <span class="nav-icon">📊</span>
+                  Dashboard
                 </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <span class="nav-icon">📚</span>
+                  My Courses
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <span class="nav-icon">🎯</span>
+                  Goals
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <span class="nav-icon">📝</span>
+                  Practice
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="nav-section">
+            <div class="nav-section-title">Learning</div>
+            <ul class="nav-list">
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <span class="nav-icon">🗣️</span>
+                  Speaking
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <span class="nav-icon">👂</span>
+                  Listening
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <span class="nav-icon">✍️</span>
+                  Writing
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <span class="nav-icon">📖</span>
+                  Reading
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <span class="nav-icon">🔤</span>
+                  Vocabulary
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="nav-section">
+            <div class="nav-section-title">Resources</div>
+            <ul class="nav-list">
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <span class="nav-icon">🤖</span>
+                  AI Conversation Partner
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <span class="nav-icon">🎮</span>
+                  Language Games
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <span class="nav-icon">📱</span>
+                  Mobile Practice
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <div class="nav-section" style="margin-top: 2rem">
+          <a href="/" class="button secondary" style="width: 100%; justify-content: center">
+            <span>Exit to Home</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="main-content">
+        <header class="header">
+          <h1 class="page-title">Language Learning Dashboard</h1>
+
+          <div class="user-menu">
+            <div class="login-section" style="margin-right: 1rem">
+              <div style="display: flex; gap: 0.75rem">
+                <a href="#" class="button">Student</a>
+                <a href="#" class="button secondary">Teacher</a>
+                <a href="#" class="button secondary">Admin</a>
+              </div>
             </div>
-        </aside>
-        
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <header class="header">
-                <h1 class="page-title">Language Learning Dashboard</h1>
-                
-                <div class="user-menu">
-                    <div class="login-section" style="margin-right: 1rem;">
-                        <div style="display: flex; gap: 0.75rem;">
-                            <a href="#" class="button">Student</a>
-                            <a href="#" class="button secondary">Teacher</a>
-                            <a href="#" class="button secondary">Admin</a>
-                        </div>
+
+            <div class="language-selector">
+              <div class="current-language">
+                <span class="flag-icon">🇪🇸</span>
+                <span>Spanish</span>
+              </div>
+            </div>
+
+            <button class="button accent">
+              <span>🗣️</span>
+              Start Speaking Practice
+            </button>
+
+            <div class="user-profile">
+              <div class="user-avatar">RL</div>
+              <div class="user-info">
+                <div class="user-name">Ryan Lee</div>
+                <div class="user-role">Language Learner</div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-grid">
+          <div class="main-column">
+            <!-- Language Progress Card -->
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Spanish Progress</h2>
+                <button class="button secondary" style="padding: 0.5rem 0.75rem; font-size: 0.8rem">
+                  View Details
+                </button>
+              </div>
+
+              <div class="language-progress">
+                <div class="language-icon">🇪🇸</div>
+                <div class="language-details">
+                  <div class="language-name">Spanish</div>
+                  <div class="language-level">Intermediate (B1)</div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 68%"></div>
+                  </div>
+                  <div class="progress-stats">
+                    <div>68% to B2 Level</div>
+                    <div>247 days learning</div>
+                  </div>
+                </div>
+              </div>
+
+              <h3 style="font-size: 1rem; margin: 1.5rem 0 1rem; color: var(--primary-light)">
+                Language Skills
+              </h3>
+
+              <div class="skill-grid">
+                <div class="skill-card">
+                  <div class="skill-icon">🗣️</div>
+                  <div class="skill-title">Speaking</div>
+                  <div class="skill-level">
+                    <div class="skill-level-fill" style="width: 65%"></div>
+                  </div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted)">65%</div>
+                </div>
+
+                <div class="skill-card">
+                  <div class="skill-icon">👂</div>
+                  <div class="skill-title">Listening</div>
+                  <div class="skill-level">
+                    <div class="skill-level-fill" style="width: 78%"></div>
+                  </div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted)">78%</div>
+                </div>
+
+                <div class="skill-card">
+                  <div class="skill-icon">✍️</div>
+                  <div class="skill-title">Writing</div>
+                  <div class="skill-level">
+                    <div class="skill-level-fill" style="width: 62%"></div>
+                  </div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted)">62%</div>
+                </div>
+
+                <div class="skill-card">
+                  <div class="skill-icon">📖</div>
+                  <div class="skill-title">Reading</div>
+                  <div class="skill-level">
+                    <div class="skill-level-fill" style="width: 75%"></div>
+                  </div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted)">75%</div>
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: flex-end; margin-top: 1rem">
+                <button class="button">Take Assessment Test</button>
+              </div>
+            </div>
+
+            <!-- Recommended Lessons Card -->
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Recommended Lessons</h2>
+                <button class="button secondary" style="padding: 0.5rem 0.75rem; font-size: 0.8rem">
+                  View All
+                </button>
+              </div>
+
+              <ul class="lesson-list">
+                <li class="lesson-item">
+                  <div class="lesson-icon">🍽️</div>
+                  <div class="lesson-details">
+                    <div class="lesson-title">Ordering at a Restaurant</div>
+                    <div class="lesson-meta">
+                      <span>Conversational • 20 min</span>
+                      <span>Recommended for your level</span>
                     </div>
-                    
-                    <div class="language-selector">
-                        <div class="current-language">
-                            <span class="flag-icon">🇪🇸</span>
-                            <span>Spanish</span>
-                        </div>
-                    </div>
-                    
-                    <button class="button accent">
-                        <span>🗣️</span>
-                        Start Speaking Practice
+                  </div>
+                  <div class="lesson-actions">
+                    <button
+                      class="button accent"
+                      style="padding: 0.5rem 0.75rem; font-size: 0.8rem"
+                    >
+                      Start
                     </button>
-                    
-                    <div class="user-profile">
-                        <div class="user-avatar">RL</div>
-                        <div class="user-info">
-                            <div class="user-name">Ryan Lee</div>
-                            <div class="user-role">Language Learner</div>
-                        </div>
+                  </div>
+                </li>
+
+                <li class="lesson-item">
+                  <div class="lesson-icon">📅</div>
+                  <div class="lesson-details">
+                    <div class="lesson-title">Future Tense Practice</div>
+                    <div class="lesson-meta">
+                      <span>Grammar • 15 min</span>
+                      <span>Builds on previous lesson</span>
                     </div>
-                </div>
-            </header>
-            
-            <!-- Dashboard Content -->
-            <div class="dashboard-grid">
-                <div class="main-column">
-                    <!-- Language Progress Card -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h2 class="card-title">Spanish Progress</h2>
-                            <button class="button secondary" style="padding: 0.5rem 0.75rem; font-size: 0.8rem;">View Details</button>
-                        </div>
-                        
-                        <div class="language-progress">
-                            <div class="language-icon">🇪🇸</div>
-                            <div class="language-details">
-                                <div class="language-name">Spanish</div>
-                                <div class="language-level">Intermediate (B1)</div>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 68%"></div>
-                                </div>
-                                <div class="progress-stats">
-                                    <div>68% to B2 Level</div>
-                                    <div>247 days learning</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <h3 style="font-size: 1rem; margin: 1.5rem 0 1rem; color: var(--primary-light);">Language Skills</h3>
-                        
-                        <div class="skill-grid">
-                            <div class="skill-card">
-                                <div class="skill-icon">🗣️</div>
-                                <div class="skill-title">Speaking</div>
-                                <div class="skill-level">
-                                    <div class="skill-level-fill" style="width: 65%"></div>
-                                </div>
-                                <div style="font-size: 0.8rem; color: var(--text-muted);">65%</div>
-                            </div>
-                            
-                            <div class="skill-card">
-                                <div class="skill-icon">👂</div>
-                                <div class="skill-title">Listening</div>
-                                <div class="skill-level">
-                                    <div class="skill-level-fill" style="width: 78%"></div>
-                                </div>
-                                <div style="font-size: 0.8rem; color: var(--text-muted);">78%</div>
-                            </div>
-                            
-                            <div class="skill-card">
-                                <div class="skill-icon">✍️</div>
-                                <div class="skill-title">Writing</div>
-                                <div class="skill-level">
-                                    <div class="skill-level-fill" style="width: 62%"></div>
-                                </div>
-                                <div style="font-size: 0.8rem; color: var(--text-muted);">62%</div>
-                            </div>
-                            
-                            <div class="skill-card">
-                                <div class="skill-icon">📖</div>
-                                <div class="skill-title">Reading</div>
-                                <div class="skill-level">
-                                    <div class="skill-level-fill" style="width: 75%"></div>
-                                </div>
-                                <div style="font-size: 0.8rem; color: var(--text-muted);">75%</div>
-                            </div>
-                        </div>
-                        
-                        <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
-                            <button class="button">Take Assessment Test</button>
-                        </div>
+                  </div>
+                  <div class="lesson-actions">
+                    <button
+                      class="button accent"
+                      style="padding: 0.5rem 0.75rem; font-size: 0.8rem"
+                    >
+                      Start
+                    </button>
+                  </div>
+                </li>
+
+                <li class="lesson-item">
+                  <div class="lesson-icon">🏙️</div>
+                  <div class="lesson-details">
+                    <div class="lesson-title">Describing a City</div>
+                    <div class="lesson-meta">
+                      <span>Vocabulary • 25 min</span>
+                      <span>New vocabulary for B1 level</span>
                     </div>
-                    
-                    <!-- Recommended Lessons Card -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h2 class="card-title">Recommended Lessons</h2>
-                            <button class="button secondary" style="padding: 0.5rem 0.75rem; font-size: 0.8rem;">View All</button>
-                        </div>
-                        
-                        <ul class="lesson-list">
-                            <li class="lesson-item">
-                                <div class="lesson-icon">🍽️</div>
-                                <div class="lesson-details">
-                                    <div class="lesson-title">Ordering at a Restaurant</div>
-                                    <div class="lesson-meta">
-                                        <span>Conversational • 20 min</span>
-                                        <span>Recommended for your level</span>
-                                    </div>
-                                </div>
-                                <div class="lesson-actions">
-                                    <button class="button accent" style="padding: 0.5rem 0.75rem; font-size: 0.8rem;">Start</button>
-                                </div>
-                            </li>
-                            
-                            <li class="lesson-item">
-                                <div class="lesson-icon">📅</div>
-                                <div class="lesson-details">
-                                    <div class="lesson-title">Future Tense Practice</div>
-                                    <div class="lesson-meta">
-                                        <span>Grammar • 15 min</span>
-                                        <span>Builds on previous lesson</span>
-                                    </div>
-                                </div>
-                                <div class="lesson-actions">
-                                    <button class="button accent" style="padding: 0.5rem 0.75rem; font-size: 0.8rem;">Start</button>
-                                </div>
-                            </li>
-                            
-                            <li class="lesson-item">
-                                <div class="lesson-icon">🏙️</div>
-                                <div class="lesson-details">
-                                    <div class="lesson-title">Describing a City</div>
-                                    <div class="lesson-meta">
-                                        <span>Vocabulary • 25 min</span>
-                                        <span>New vocabulary for B1 level</span>
-                                    </div>
-                                </div>
-                                <div class="lesson-actions">
-                                    <button class="button accent" style="padding: 0.5rem 0.75rem; font-size: 0.8rem;">Start</button>
-                                </div>
-                            </li>
-                            
-                            <li class="lesson-item">
-                                <div class="lesson-icon">💬</div>
-                                <div class="lesson-details">
-                                    <div class="lesson-title">Conversation Practice: Travel</div>
-                                    <div class="lesson-meta">
-                                        <span>Speaking • 30 min</span>
-                                        <span>With AI conversation partner</span>
-                                    </div>
-                                </div>
-                                <div class="lesson-actions">
-                                    <button class="button accent" style="padding: 0.5rem 0.75rem; font-size: 0.8rem;">Start</button>
-                                </div>
-                            </li>
-                        </ul>
+                  </div>
+                  <div class="lesson-actions">
+                    <button
+                      class="button accent"
+                      style="padding: 0.5rem 0.75rem; font-size: 0.8rem"
+                    >
+                      Start
+                    </button>
+                  </div>
+                </li>
+
+                <li class="lesson-item">
+                  <div class="lesson-icon">💬</div>
+                  <div class="lesson-details">
+                    <div class="lesson-title">Conversation Practice: Travel</div>
+                    <div class="lesson-meta">
+                      <span>Speaking • 30 min</span>
+                      <span>With AI conversation partner</span>
                     </div>
-                    
-                    <!-- Vocabulary Practice Card -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h2 class="card-title">Recent Vocabulary</h2>
-                            <button class="button secondary" style="padding: 0.5rem 0.75rem; font-size: 0.8rem;">Practice All</button>
-                        </div>
-                        
-                        <p style="color: var(--text-muted); margin-bottom: 1.25rem;">Words you've recently learned. Practice them to improve retention.</p>
-                        
-                        <ul class="vocabulary-list">
-                            <li class="vocabulary-item">
-                                <div class="vocabulary-term">el restaurante</div>
-                                <div class="vocabulary-details">
-                                    <div class="vocabulary-translation">restaurant</div>
-                                    <div class="vocabulary-category">Food & Dining</div>
-                                </div>
-                            </li>
-                            
-                            <li class="vocabulary-item">
-                                <div class="vocabulary-term">la cuenta</div>
-                                <div class="vocabulary-details">
-                                    <div class="vocabulary-translation">the bill</div>
-                                    <div class="vocabulary-category">Food & Dining</div>
-                                </div>
-                            </li>
-                            
-                            <li class="vocabulary-item">
-                                <div class="vocabulary-term">pedir</div>
-                                <div class="vocabulary-details">
-                                    <div class="vocabulary-translation">to order</div>
-                                    <div class="vocabulary-category">Verbs</div>
-                                </div>
-                            </li>
-                            
-                            <li class="vocabulary-item">
-                                <div class="vocabulary-term">delicioso</div>
-                                <div class="vocabulary-details">
-                                    <div class="vocabulary-translation">delicious</div>
-                                    <div class="vocabulary-category">Adjectives</div>
-                                </div>
-                            </li>
-                            
-                            <li class="vocabulary-item">
-                                <div class="vocabulary-term">la propina</div>
-                                <div class="vocabulary-details">
-                                    <div class="vocabulary-translation">tip (money)</div>
-                                    <div class="vocabulary-category">Food & Dining</div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="side-column">
-                    <!-- Learning Streak Card -->
-                    <div class="card">
-                        <div class="streak-section">
-                            <div class="streak-icon">🔥</div>
-                            <div class="streak-details">
-                                <div class="streak-value">38 Day Streak!</div>
-                                <div class="streak-description">You're on a roll! Keep it up to maintain your streak.</div>
-                            </div>
-                        </div>
-                        
-                        <div style="display: flex; justify-content: space-between; margin-top: 1rem;">
-                            <div style="text-align: center; flex: 1;">
-                                <div style="font-size: 1.75rem; font-weight: 600; color: var(--primary-light);">247</div>
-                                <div style="font-size: 0.8rem; color: var(--text-muted);">Total Days</div>
-                            </div>
-                            
-                            <div style="text-align: center; flex: 1;">
-                                <div style="font-size: 1.75rem; font-weight: 600; color: var(--primary-light);">568</div>
-                                <div style="font-size: 0.8rem; color: var(--text-muted);">Words Learned</div>
-                            </div>
-                            
-                            <div style="text-align: center; flex: 1;">
-                                <div style="font-size: 1.75rem; font-weight: 600; color: var(--primary-light);">32</div>
-                                <div style="font-size: 0.8rem; color: var(--text-muted);">Hours Practiced</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Daily Goals Card -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h2 class="card-title">Today's Goals</h2>
-                            <span style="font-size: 0.85rem; color: var(--text-muted);">April 13</span>
-                        </div>
-                        
-                        <ul style="list-style: none; padding: 0; margin: 0;">
-                            <li style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border);">
-                                <div style="width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--primary); position: relative;">
-                                    <div style="position: absolute; top: 1px; left: 5px; font-size: 0.9rem; color: var(--primary);">✓</div>
-                                </div>
-                                <div style="flex: 1;">
-                                    <div style="font-weight: 500;">Complete daily vocabulary review</div>
-                                    <div style="font-size: 0.85rem; color: var(--text-muted);">5 minutes • Completed</div>
-                                </div>
-                            </li>
-                            
-                            <li style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border);">
-                                <div style="width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--primary); position: relative;">
-                                    <div style="position: absolute; top: 1px; left: 5px; font-size: 0.9rem; color: var(--primary);">✓</div>
-                                </div>
-                                <div style="flex: 1;">
-                                    <div style="font-weight: 500;">Practice listening comprehension</div>
-                                    <div style="font-size: 0.85rem; color: var(--text-muted);">10 minutes • Completed</div>
-                                </div>
-                            </li>
-                            
-                            <li style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border);">
-                                <div style="width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--primary);"></div>
-                                <div style="flex: 1;">
-                                    <div style="font-weight: 500;">Complete one speaking lesson</div>
-                                    <div style="font-size: 0.85rem; color: var(--text-muted);">15 minutes • Not started</div>
-                                </div>
-                            </li>
-                            
-                            <li style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0;">
-                                <div style="width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--primary);"></div>
-                                <div style="flex: 1;">
-                                    <div style="font-weight: 500;">Learn 5 new words</div>
-                                    <div style="font-size: 0.85rem; color: var(--text-muted);">10 minutes • 0/5 completed</div>
-                                </div>
-                            </li>
-                        </ul>
-                        
-                        <div style="text-align: center; margin-top: 1.25rem;">
-                            <button class="button" style="width: 100%;">View Week's Progress</button>
-                        </div>
-                    </div>
-                    
-                    <!-- Recent Activity Card -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h2 class="card-title">Recent Activity</h2>
-                        </div>
-                        
-                        <ul class="activity-list">
-                            <li class="activity-item">
-                                <div class="activity-date">Today</div>
-                                <div class="activity-description">
-                                    <div class="activity-title">Vocabulary Review</div>
-                                    <div class="activity-meta">15 words • 90% accuracy</div>
-                                </div>
-                            </li>
-                            
-                            <li class="activity-item">
-                                <div class="activity-date">Today</div>
-                                <div class="activity-description">
-                                    <div class="activity-title">Listening Practice: Podcast</div>
-                                    <div class="activity-meta">10 minutes • Intermediate</div>
-                                </div>
-                            </li>
-                            
-                            <li class="activity-item">
-                                <div class="activity-date">Yesterday</div>
-                                <div class="activity-description">
-                                    <div class="activity-title">Grammar Lesson: Future Tense</div>
-                                    <div class="activity-meta">20 minutes • Completed</div>
-                                </div>
-                            </li>
-                            
-                            <li class="activity-item">
-                                <div class="activity-date">Yesterday</div>
-                                <div class="activity-description">
-                                    <div class="activity-title">Conversation Practice</div>
-                                    <div class="activity-meta">15 minutes • With AI Tutor</div>
-                                </div>
-                            </li>
-                            
-                            <li class="activity-item">
-                                <div class="activity-date">Apr 11</div>
-                                <div class="activity-description">
-                                    <div class="activity-title">Reading Comprehension</div>
-                                    <div class="activity-meta">Short story • B1 level</div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                    
-                    <!-- AI Tutor Card -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h2 class="card-title">Your AI Language Tutor</h2>
-                        </div>
-                        
-                        <div style="display: flex; flex-direction: column; align-items: center; text-align: center; margin: 1rem 0;">
-                            <div style="width: 80px; height: 80px; border-radius: 50%; background-color: rgba(46, 139, 87, 0.2); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin-bottom: 1rem;">🤖</div>
-                            <h3 style="margin: 0 0 0.5rem; font-size: 1.2rem;">Professor Carlos</h3>
-                            <p style="margin: 0 0 1.25rem; color: var(--text-muted); font-size: 0.9rem;">Your personalized Spanish tutor</p>
-                            <button class="button accent" style="width: 100%;">Start Conversation</button>
-                        </div>
-                        
-                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 1.25rem; text-align: center;">Practice speaking Spanish naturally with your AI conversation partner</p>
-                        
-                        <hr style="border: 0; height: 1px; background-color: var(--border-color); margin: 1.5rem 0;">
-                        
-                        <div style="display: flex; flex-direction: column; align-items: center; text-align: center; margin: 1rem 0;">
-                            <div style="width: 80px; height: 80px; border-radius: 50%; background-color: rgba(96, 125, 139, 0.2); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin-bottom: 1rem;">👨‍💻</div>
-                            <h3 style="margin: 0 0 0.5rem; font-size: 1.2rem;">Professor Brown</h3>
-                            <p style="margin: 0 0 1.25rem; color: var(--text-muted); font-size: 0.9rem;">Dean of IT (Tech Support)</p>
-                            <button class="button accent" style="width: 100%;">Get Technical Help</button>
-                        </div>
-                    </div>
-                </div>
+                  </div>
+                  <div class="lesson-actions">
+                    <button
+                      class="button accent"
+                      style="padding: 0.5rem 0.75rem; font-size: 0.8rem"
+                    >
+                      Start
+                    </button>
+                  </div>
+                </li>
+              </ul>
             </div>
-            
-            <div class="footer">
-                <p>AI Language Learning Academy • ShatziiOS Education Platform • &copy; 2025</p>
-                <p style="margin-top: 0.25rem;">Supported languages: Spanish, French, German, Arabic, Chinese, Japanese, and more</p>
+
+            <!-- Vocabulary Practice Card -->
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Recent Vocabulary</h2>
+                <button class="button secondary" style="padding: 0.5rem 0.75rem; font-size: 0.8rem">
+                  Practice All
+                </button>
+              </div>
+
+              <p style="color: var(--text-muted); margin-bottom: 1.25rem">
+                Words you've recently learned. Practice them to improve retention.
+              </p>
+
+              <ul class="vocabulary-list">
+                <li class="vocabulary-item">
+                  <div class="vocabulary-term">el restaurante</div>
+                  <div class="vocabulary-details">
+                    <div class="vocabulary-translation">restaurant</div>
+                    <div class="vocabulary-category">Food & Dining</div>
+                  </div>
+                </li>
+
+                <li class="vocabulary-item">
+                  <div class="vocabulary-term">la cuenta</div>
+                  <div class="vocabulary-details">
+                    <div class="vocabulary-translation">the bill</div>
+                    <div class="vocabulary-category">Food & Dining</div>
+                  </div>
+                </li>
+
+                <li class="vocabulary-item">
+                  <div class="vocabulary-term">pedir</div>
+                  <div class="vocabulary-details">
+                    <div class="vocabulary-translation">to order</div>
+                    <div class="vocabulary-category">Verbs</div>
+                  </div>
+                </li>
+
+                <li class="vocabulary-item">
+                  <div class="vocabulary-term">delicioso</div>
+                  <div class="vocabulary-details">
+                    <div class="vocabulary-translation">delicious</div>
+                    <div class="vocabulary-category">Adjectives</div>
+                  </div>
+                </li>
+
+                <li class="vocabulary-item">
+                  <div class="vocabulary-term">la propina</div>
+                  <div class="vocabulary-details">
+                    <div class="vocabulary-translation">tip (money)</div>
+                    <div class="vocabulary-category">Food & Dining</div>
+                  </div>
+                </li>
+              </ul>
             </div>
-        </main>
+          </div>
+
+          <div class="side-column">
+            <!-- Learning Streak Card -->
+            <div class="card">
+              <div class="streak-section">
+                <div class="streak-icon">🔥</div>
+                <div class="streak-details">
+                  <div class="streak-value">38 Day Streak!</div>
+                  <div class="streak-description">
+                    You're on a roll! Keep it up to maintain your streak.
+                  </div>
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; margin-top: 1rem">
+                <div style="text-align: center; flex: 1">
+                  <div style="font-size: 1.75rem; font-weight: 600; color: var(--primary-light)">
+                    247
+                  </div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted)">Total Days</div>
+                </div>
+
+                <div style="text-align: center; flex: 1">
+                  <div style="font-size: 1.75rem; font-weight: 600; color: var(--primary-light)">
+                    568
+                  </div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted)">Words Learned</div>
+                </div>
+
+                <div style="text-align: center; flex: 1">
+                  <div style="font-size: 1.75rem; font-weight: 600; color: var(--primary-light)">
+                    32
+                  </div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted)">Hours Practiced</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Daily Goals Card -->
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Today's Goals</h2>
+                <span style="font-size: 0.85rem; color: var(--text-muted)">April 13</span>
+              </div>
+
+              <ul style="list-style: none; padding: 0; margin: 0">
+                <li
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                    padding: 0.75rem 0;
+                    border-bottom: 1px solid var(--border);
+                  "
+                >
+                  <div
+                    style="
+                      width: 20px;
+                      height: 20px;
+                      border-radius: 4px;
+                      border: 2px solid var(--primary);
+                      position: relative;
+                    "
+                  >
+                    <div
+                      style="
+                        position: absolute;
+                        top: 1px;
+                        left: 5px;
+                        font-size: 0.9rem;
+                        color: var(--primary);
+                      "
+                    >
+                      ✓
+                    </div>
+                  </div>
+                  <div style="flex: 1">
+                    <div style="font-weight: 500">Complete daily vocabulary review</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted)">
+                      5 minutes • Completed
+                    </div>
+                  </div>
+                </li>
+
+                <li
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                    padding: 0.75rem 0;
+                    border-bottom: 1px solid var(--border);
+                  "
+                >
+                  <div
+                    style="
+                      width: 20px;
+                      height: 20px;
+                      border-radius: 4px;
+                      border: 2px solid var(--primary);
+                      position: relative;
+                    "
+                  >
+                    <div
+                      style="
+                        position: absolute;
+                        top: 1px;
+                        left: 5px;
+                        font-size: 0.9rem;
+                        color: var(--primary);
+                      "
+                    >
+                      ✓
+                    </div>
+                  </div>
+                  <div style="flex: 1">
+                    <div style="font-weight: 500">Practice listening comprehension</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted)">
+                      10 minutes • Completed
+                    </div>
+                  </div>
+                </li>
+
+                <li
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                    padding: 0.75rem 0;
+                    border-bottom: 1px solid var(--border);
+                  "
+                >
+                  <div
+                    style="
+                      width: 20px;
+                      height: 20px;
+                      border-radius: 4px;
+                      border: 2px solid var(--primary);
+                    "
+                  ></div>
+                  <div style="flex: 1">
+                    <div style="font-weight: 500">Complete one speaking lesson</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted)">
+                      15 minutes • Not started
+                    </div>
+                  </div>
+                </li>
+
+                <li style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0">
+                  <div
+                    style="
+                      width: 20px;
+                      height: 20px;
+                      border-radius: 4px;
+                      border: 2px solid var(--primary);
+                    "
+                  ></div>
+                  <div style="flex: 1">
+                    <div style="font-weight: 500">Learn 5 new words</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted)">
+                      10 minutes • 0/5 completed
+                    </div>
+                  </div>
+                </li>
+              </ul>
+
+              <div style="text-align: center; margin-top: 1.25rem">
+                <button class="button" style="width: 100%">View Week's Progress</button>
+              </div>
+            </div>
+
+            <!-- Recent Activity Card -->
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Recent Activity</h2>
+              </div>
+
+              <ul class="activity-list">
+                <li class="activity-item">
+                  <div class="activity-date">Today</div>
+                  <div class="activity-description">
+                    <div class="activity-title">Vocabulary Review</div>
+                    <div class="activity-meta">15 words • 90% accuracy</div>
+                  </div>
+                </li>
+
+                <li class="activity-item">
+                  <div class="activity-date">Today</div>
+                  <div class="activity-description">
+                    <div class="activity-title">Listening Practice: Podcast</div>
+                    <div class="activity-meta">10 minutes • Intermediate</div>
+                  </div>
+                </li>
+
+                <li class="activity-item">
+                  <div class="activity-date">Yesterday</div>
+                  <div class="activity-description">
+                    <div class="activity-title">Grammar Lesson: Future Tense</div>
+                    <div class="activity-meta">20 minutes • Completed</div>
+                  </div>
+                </li>
+
+                <li class="activity-item">
+                  <div class="activity-date">Yesterday</div>
+                  <div class="activity-description">
+                    <div class="activity-title">Conversation Practice</div>
+                    <div class="activity-meta">15 minutes • With AI Tutor</div>
+                  </div>
+                </li>
+
+                <li class="activity-item">
+                  <div class="activity-date">Apr 11</div>
+                  <div class="activity-description">
+                    <div class="activity-title">Reading Comprehension</div>
+                    <div class="activity-meta">Short story • B1 level</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <!-- AI Tutor Card -->
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Your AI Language Tutor</h2>
+              </div>
+
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  text-align: center;
+                  margin: 1rem 0;
+                "
+              >
+                <div
+                  style="
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 50%;
+                    background-color: rgba(46, 139, 87, 0.2);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 2.5rem;
+                    margin-bottom: 1rem;
+                  "
+                >
+                  🤖
+                </div>
+                <h3 style="margin: 0 0 0.5rem; font-size: 1.2rem">Professor Carlos</h3>
+                <p style="margin: 0 0 1.25rem; color: var(--text-muted); font-size: 0.9rem">
+                  Your personalized Spanish tutor
+                </p>
+                <button class="button accent" style="width: 100%">Start Conversation</button>
+              </div>
+
+              <p
+                style="
+                  font-size: 0.9rem;
+                  color: var(--text-muted);
+                  margin-top: 1.25rem;
+                  text-align: center;
+                "
+              >
+                Practice speaking Spanish naturally with your AI conversation partner
+              </p>
+
+              <hr
+                style="
+                  border: 0;
+                  height: 1px;
+                  background-color: var(--border-color);
+                  margin: 1.5rem 0;
+                "
+              />
+
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  text-align: center;
+                  margin: 1rem 0;
+                "
+              >
+                <div
+                  style="
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 50%;
+                    background-color: rgba(96, 125, 139, 0.2);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 2.5rem;
+                    margin-bottom: 1rem;
+                  "
+                >
+                  👨‍💻
+                </div>
+                <h3 style="margin: 0 0 0.5rem; font-size: 1.2rem">Professor Brown</h3>
+                <p style="margin: 0 0 1.25rem; color: var(--text-muted); font-size: 0.9rem">
+                  Dean of IT (Tech Support)
+                </p>
+                <button class="button accent" style="width: 100%">Get Technical Help</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <p>AI Language Learning Academy • ShatziiOS Education Platform • &copy; 2025</p>
+          <p style="margin-top: 0.25rem">
+            Supported languages: Spanish, French, German, Arabic, Chinese, Japanese, and more
+          </p>
+        </div>
+      </main>
     </div>
-</body>
+  </body>
 </html>

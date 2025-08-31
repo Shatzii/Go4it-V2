@@ -1,732 +1,766 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ShatziiOS Educational Platform</title>
-  <style>
-    /* Base Styles */
-    :root {
-      --blue-accent: #04FFFF;
-      --blue-accent-darker: #00D6D6;
-      --blue-accent-light: rgba(4, 255, 255, 0.15);
-      --blue-glow: 0 0 10px #04FFFF, 0 0 20px rgba(4, 255, 255, 0.5);
-      --dark-bg: #000000;
-      --dark-card: #121212;
-      --text-color: #FFFFFF;
-      --text-muted: #AAAAAA;
-    }
-    
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--dark-bg);
-      color: var(--text-color);
-      line-height: 1.6;
-      overflow-x: hidden;
-      min-height: 100vh;
-    }
-
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-      background: #0a0a0a;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-      background: var(--blue-accent-darker);
-      border-radius: 4px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--blue-accent);
-    }
-
-    /* Typography */
-    h1, h2, h3, h4, h5, h6 {
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-
-    h1 {
-      font-size: 3rem;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-
-    h2 {
-      font-size: 2rem;
-      letter-spacing: 0.03em;
-    }
-
-    h3 {
-      font-size: 1.5rem;
-    }
-
-    p {
-      margin-bottom: 1rem;
-    }
-
-    /* Header */
-    header {
-      background: linear-gradient(135deg, rgba(4, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
-      padding: 2rem 0;
-      position: relative;
-      border-bottom: 1px solid var(--blue-accent);
-    }
-
-    .header-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      z-index: 5;
-    }
-
-    .logo {
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: var(--blue-accent);
-      text-shadow: var(--blue-glow);
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-    }
-
-    .logo span {
-      color: white;
-    }
-
-    .header-subtitle {
-      font-size: 1.25rem;
-      color: var(--text-muted);
-      max-width: 800px;
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    /* Main Content */
-    .main-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 3rem 2rem;
-      position: relative;
-    }
-
-    /* School Cards Grid */
-    .schools-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
-      margin-top: 2rem;
-    }
-
-    .school-card {
-      background-color: var(--dark-card);
-      border-radius: 10px;
-      overflow: hidden;
-      transition: all 0.3s ease;
-      border: 1px solid transparent;
-      position: relative;
-    }
-
-    .school-card:hover {
-      transform: translateY(-10px);
-      border-color: var(--blue-accent);
-      box-shadow: var(--blue-glow);
-    }
-
-    .card-header {
-      height: 8px;
-      background: var(--blue-accent);
-    }
-
-    .elementary-card .card-header {
-      background: linear-gradient(to right, #4b6cb7, #182848);
-    }
-
-    .middle-high-card .card-header {
-      background: linear-gradient(to right, #3a7bd5, #00d2ff);
-    }
-
-    .college-card .card-header {
-      background: linear-gradient(to right, #5e35b1, #3949ab);
-    }
-
-    .law-card .card-header {
-      background: linear-gradient(to right, #c0392b, #8e44ad);
-    }
-
-    .card-content {
-      padding: 1.5rem;
-    }
-
-    .school-icon {
-      width: 60px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1rem;
-      background: var(--blue-accent-light);
-      border-radius: 50%;
-    }
-
-    .school-icon svg {
-      width: 30px;
-      height: 30px;
-      fill: var(--blue-accent);
-    }
-
-    .elementary-card .school-icon {
-      background: rgba(75, 108, 183, 0.15);
-    }
-
-    .elementary-card .school-icon svg {
-      fill: #4b6cb7;
-    }
-
-    .middle-high-card .school-icon {
-      background: rgba(58, 123, 213, 0.15);
-    }
-
-    .middle-high-card .school-icon svg {
-      fill: #3a7bd5;
-    }
-
-    .college-card .school-icon {
-      background: rgba(94, 53, 177, 0.15);
-    }
-
-    .college-card .school-icon svg {
-      fill: #5e35b1;
-    }
-
-    .law-card .school-icon {
-      background: rgba(192, 57, 43, 0.15);
-    }
-
-    .law-card .school-icon svg {
-      fill: #c0392b;
-    }
-
-    .school-title {
-      font-size: 1.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .school-description {
-      color: var(--text-muted);
-      margin-bottom: 1.5rem;
-      font-size: 0.95rem;
-    }
-
-    .grade-range {
-      display: inline-block;
-      background-color: rgba(4, 255, 255, 0.15);
-      color: var(--blue-accent);
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      margin-bottom: 1rem;
-    }
-
-    .elementary-card .grade-range {
-      background-color: rgba(75, 108, 183, 0.15);
-      color: #4b6cb7;
-    }
-
-    .middle-high-card .grade-range {
-      background-color: rgba(58, 123, 213, 0.15);
-      color: #3a7bd5;
-    }
-
-    .college-card .grade-range {
-      background-color: rgba(94, 53, 177, 0.15);
-      color: #5e35b1;
-    }
-
-    .law-card .grade-range {
-      background-color: rgba(192, 57, 43, 0.15);
-      color: #c0392b;
-    }
-
-    .features-list {
-      list-style: none;
-      margin-bottom: 1.5rem;
-    }
-
-    .features-list li {
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: flex-start;
-      font-size: 0.9rem;
-    }
-
-    .features-list li svg {
-      min-width: 18px;
-      height: 18px;
-      margin-right: 8px;
-      margin-top: 3px;
-      fill: var(--blue-accent);
-    }
-
-    .enter-btn {
-      display: block;
-      width: 100%;
-      padding: 0.75rem;
-      background-color: transparent;
-      color: var(--blue-accent);
-      border: 1px solid var(--blue-accent);
-      border-radius: 5px;
-      text-align: center;
-      text-decoration: none;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      margin-top: 1rem;
-    }
-
-    .enter-btn:hover {
-      background-color: var(--blue-accent);
-      color: var(--dark-bg);
-    }
-
-    .elementary-card .enter-btn {
-      color: #4b6cb7;
-      border-color: #4b6cb7;
-    }
-
-    .elementary-card .enter-btn:hover {
-      background-color: #4b6cb7;
-      color: white;
-    }
-
-    .middle-high-card .enter-btn {
-      color: #3a7bd5;
-      border-color: #3a7bd5;
-    }
-
-    .middle-high-card .enter-btn:hover {
-      background-color: #3a7bd5;
-      color: white;
-    }
-
-    .college-card .enter-btn {
-      color: #5e35b1;
-      border-color: #5e35b1;
-    }
-
-    .college-card .enter-btn:hover {
-      background-color: #5e35b1;
-      color: white;
-    }
-
-    .law-card .enter-btn {
-      color: #c0392b;
-      border-color: #c0392b;
-    }
-
-    .law-card .enter-btn:hover {
-      background-color: #c0392b;
-      color: white;
-    }
-
-    /* Neurotype Section */
-    .neurotype-section {
-      margin-top: 4rem;
-      padding: 2rem;
-      background-color: var(--dark-card);
-      border-radius: 10px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .neurotype-section::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, rgba(4, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0) 100%);
-      pointer-events: none;
-    }
-
-    .neurotype-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
-      margin-top: 1.5rem;
-    }
-
-    .neurotype-card {
-      background-color: rgba(4, 255, 255, 0.05);
-      border-radius: 8px;
-      padding: 1.5rem;
-      transition: all 0.3s ease;
-    }
-
-    .neurotype-card:hover {
-      background-color: rgba(4, 255, 255, 0.1);
-    }
-
-    .neurotype-icon {
-      width: 40px;
-      height: 40px;
-      margin-bottom: 1rem;
-      fill: var(--blue-accent);
-    }
-
-    /* Admin Section */
-    .admin-section {
-      margin-top: 4rem;
-      text-align: center;
-    }
-
-    .admin-btn {
-      display: inline-block;
-      padding: 0.75rem 2rem;
-      background-color: var(--blue-accent);
-      color: var(--dark-bg);
-      border: none;
-      border-radius: 5px;
-      text-decoration: none;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      margin: 0 1rem;
-    }
-
-    .admin-btn:hover {
-      background-color: var(--blue-accent-darker);
-      transform: translateY(-3px);
-    }
-
-    /* Footer */
-    footer {
-      margin-top: 4rem;
-      padding: 2rem 0;
-      background-color: var(--dark-card);
-      border-top: 1px solid var(--blue-accent);
-      text-align: center;
-    }
-
-    .footer-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 2rem;
-    }
-
-    .copyright {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-top: 1rem;
-    }
-
-    /* Glowing Background Elements */
-    .glow-element {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(60px);
-      opacity: 0.3;
-      z-index: 1;
-    }
-
-    .glow-1 {
-      width: 300px;
-      height: 300px;
-      background-color: var(--blue-accent);
-      top: -100px;
-      left: -100px;
-    }
-
-    .glow-2 {
-      width: 400px;
-      height: 400px;
-      background-color: #3a7bd5;
-      bottom: 10%;
-      right: -200px;
-    }
-
-    /* Responsive Styles */
-    @media (max-width: 768px) {
-      .header-container {
-        padding: 0 1rem;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShatziiOS Educational Platform</title>
+    <style>
+      /* Base Styles */
+      :root {
+        --blue-accent: #04ffff;
+        --blue-accent-darker: #00d6d6;
+        --blue-accent-light: rgba(4, 255, 255, 0.15);
+        --blue-glow: 0 0 10px #04ffff, 0 0 20px rgba(4, 255, 255, 0.5);
+        --dark-bg: #000000;
+        --dark-card: #121212;
+        --text-color: #ffffff;
+        --text-muted: #aaaaaa;
       }
-      
-      .main-content {
-        padding: 2rem 1rem;
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
-      
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--dark-bg);
+        color: var(--text-color);
+        line-height: 1.6;
+        overflow-x: hidden;
+        min-height: 100vh;
+      }
+
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #0a0a0a;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: var(--blue-accent-darker);
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--blue-accent);
+      }
+
+      /* Typography */
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
       h1 {
-        font-size: 2.2rem;
+        font-size: 3rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
       }
-      
+
       h2 {
-        font-size: 1.8rem;
+        font-size: 2rem;
+        letter-spacing: 0.03em;
       }
-      
+
+      h3 {
+        font-size: 1.5rem;
+      }
+
+      p {
+        margin-bottom: 1rem;
+      }
+
+      /* Header */
+      header {
+        background: linear-gradient(135deg, rgba(4, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+        padding: 2rem 0;
+        position: relative;
+        border-bottom: 1px solid var(--blue-accent);
+      }
+
+      .header-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 5;
+      }
+
+      .logo {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--blue-accent);
+        text-shadow: var(--blue-glow);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+      }
+
+      .logo span {
+        color: white;
+      }
+
+      .header-subtitle {
+        font-size: 1.25rem;
+        color: var(--text-muted);
+        max-width: 800px;
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      /* Main Content */
+      .main-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 3rem 2rem;
+        position: relative;
+      }
+
+      /* School Cards Grid */
       .schools-grid {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
       }
-      
-      .admin-btn {
+
+      .school-card {
+        background-color: var(--dark-card);
+        border-radius: 10px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+        position: relative;
+      }
+
+      .school-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--blue-accent);
+        box-shadow: var(--blue-glow);
+      }
+
+      .card-header {
+        height: 8px;
+        background: var(--blue-accent);
+      }
+
+      .elementary-card .card-header {
+        background: linear-gradient(to right, #4b6cb7, #182848);
+      }
+
+      .middle-high-card .card-header {
+        background: linear-gradient(to right, #3a7bd5, #00d2ff);
+      }
+
+      .college-card .card-header {
+        background: linear-gradient(to right, #5e35b1, #3949ab);
+      }
+
+      .law-card .card-header {
+        background: linear-gradient(to right, #c0392b, #8e44ad);
+      }
+
+      .card-content {
+        padding: 1.5rem;
+      }
+
+      .school-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        background: var(--blue-accent-light);
+        border-radius: 50%;
+      }
+
+      .school-icon svg {
+        width: 30px;
+        height: 30px;
+        fill: var(--blue-accent);
+      }
+
+      .elementary-card .school-icon {
+        background: rgba(75, 108, 183, 0.15);
+      }
+
+      .elementary-card .school-icon svg {
+        fill: #4b6cb7;
+      }
+
+      .middle-high-card .school-icon {
+        background: rgba(58, 123, 213, 0.15);
+      }
+
+      .middle-high-card .school-icon svg {
+        fill: #3a7bd5;
+      }
+
+      .college-card .school-icon {
+        background: rgba(94, 53, 177, 0.15);
+      }
+
+      .college-card .school-icon svg {
+        fill: #5e35b1;
+      }
+
+      .law-card .school-icon {
+        background: rgba(192, 57, 43, 0.15);
+      }
+
+      .law-card .school-icon svg {
+        fill: #c0392b;
+      }
+
+      .school-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .school-description {
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+      }
+
+      .grade-range {
+        display: inline-block;
+        background-color: rgba(4, 255, 255, 0.15);
+        color: var(--blue-accent);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
+      }
+
+      .elementary-card .grade-range {
+        background-color: rgba(75, 108, 183, 0.15);
+        color: #4b6cb7;
+      }
+
+      .middle-high-card .grade-range {
+        background-color: rgba(58, 123, 213, 0.15);
+        color: #3a7bd5;
+      }
+
+      .college-card .grade-range {
+        background-color: rgba(94, 53, 177, 0.15);
+        color: #5e35b1;
+      }
+
+      .law-card .grade-range {
+        background-color: rgba(192, 57, 43, 0.15);
+        color: #c0392b;
+      }
+
+      .features-list {
+        list-style: none;
+        margin-bottom: 1.5rem;
+      }
+
+      .features-list li {
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: flex-start;
+        font-size: 0.9rem;
+      }
+
+      .features-list li svg {
+        min-width: 18px;
+        height: 18px;
+        margin-right: 8px;
+        margin-top: 3px;
+        fill: var(--blue-accent);
+      }
+
+      .enter-btn {
         display: block;
-        margin: 1rem auto;
+        width: 100%;
+        padding: 0.75rem;
+        background-color: transparent;
+        color: var(--blue-accent);
+        border: 1px solid var(--blue-accent);
+        border-radius: 5px;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        margin-top: 1rem;
       }
-    }
-  </style>
-</head>
-<body>
-  <!-- Glowing Background Elements -->
-  <div class="glow-element glow-1"></div>
-  <div class="glow-element glow-2"></div>
 
-  <!-- Header -->
-  <header>
-    <div class="header-container">
-      <div class="logo">Shatzii<span>OS</span></div>
-      <h1>Educational Platform</h1>
-      <p class="header-subtitle">
-        An advanced AI-enhanced educational platform specializing in personalized, adaptive learning experiences for neurodivergent learners across multiple educational domains.
-      </p>
-    </div>
-  </header>
+      .enter-btn:hover {
+        background-color: var(--blue-accent);
+        color: var(--dark-bg);
+      }
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <h2>Select Your School</h2>
-    <p>Access specialized learning environments tailored to your educational needs.</p>
-    
-    <div class="schools-grid">
-      <!-- Elementary School Card -->
-      <div class="school-card elementary-card">
-        <div class="card-header"></div>
-        <div class="card-content">
-          <div class="school-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M12 3L1 9l11 6l11-6l-11-6zm0 12.5L4 12v6l8 4.5l8-4.5v-6l-8 3.5z"/>
-            </svg>
+      .elementary-card .enter-btn {
+        color: #4b6cb7;
+        border-color: #4b6cb7;
+      }
+
+      .elementary-card .enter-btn:hover {
+        background-color: #4b6cb7;
+        color: white;
+      }
+
+      .middle-high-card .enter-btn {
+        color: #3a7bd5;
+        border-color: #3a7bd5;
+      }
+
+      .middle-high-card .enter-btn:hover {
+        background-color: #3a7bd5;
+        color: white;
+      }
+
+      .college-card .enter-btn {
+        color: #5e35b1;
+        border-color: #5e35b1;
+      }
+
+      .college-card .enter-btn:hover {
+        background-color: #5e35b1;
+        color: white;
+      }
+
+      .law-card .enter-btn {
+        color: #c0392b;
+        border-color: #c0392b;
+      }
+
+      .law-card .enter-btn:hover {
+        background-color: #c0392b;
+        color: white;
+      }
+
+      /* Neurotype Section */
+      .neurotype-section {
+        margin-top: 4rem;
+        padding: 2rem;
+        background-color: var(--dark-card);
+        border-radius: 10px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .neurotype-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(4, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0) 100%);
+        pointer-events: none;
+      }
+
+      .neurotype-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+
+      .neurotype-card {
+        background-color: rgba(4, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .neurotype-card:hover {
+        background-color: rgba(4, 255, 255, 0.1);
+      }
+
+      .neurotype-icon {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 1rem;
+        fill: var(--blue-accent);
+      }
+
+      /* Admin Section */
+      .admin-section {
+        margin-top: 4rem;
+        text-align: center;
+      }
+
+      .admin-btn {
+        display: inline-block;
+        padding: 0.75rem 2rem;
+        background-color: var(--blue-accent);
+        color: var(--dark-bg);
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        margin: 0 1rem;
+      }
+
+      .admin-btn:hover {
+        background-color: var(--blue-accent-darker);
+        transform: translateY(-3px);
+      }
+
+      /* Footer */
+      footer {
+        margin-top: 4rem;
+        padding: 2rem 0;
+        background-color: var(--dark-card);
+        border-top: 1px solid var(--blue-accent);
+        text-align: center;
+      }
+
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+      }
+
+      .copyright {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-top: 1rem;
+      }
+
+      /* Glowing Background Elements */
+      .glow-element {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(60px);
+        opacity: 0.3;
+        z-index: 1;
+      }
+
+      .glow-1 {
+        width: 300px;
+        height: 300px;
+        background-color: var(--blue-accent);
+        top: -100px;
+        left: -100px;
+      }
+
+      .glow-2 {
+        width: 400px;
+        height: 400px;
+        background-color: #3a7bd5;
+        bottom: 10%;
+        right: -200px;
+      }
+
+      /* Responsive Styles */
+      @media (max-width: 768px) {
+        .header-container {
+          padding: 0 1rem;
+        }
+
+        .main-content {
+          padding: 2rem 1rem;
+        }
+
+        h1 {
+          font-size: 2.2rem;
+        }
+
+        h2 {
+          font-size: 1.8rem;
+        }
+
+        .schools-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .admin-btn {
+          display: block;
+          margin: 1rem auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Glowing Background Elements -->
+    <div class="glow-element glow-1"></div>
+    <div class="glow-element glow-2"></div>
+
+    <!-- Header -->
+    <header>
+      <div class="header-container">
+        <div class="logo">Shatzii<span>OS</span></div>
+        <h1>Educational Platform</h1>
+        <p class="header-subtitle">
+          An advanced AI-enhanced educational platform specializing in personalized, adaptive
+          learning experiences for neurodivergent learners across multiple educational domains.
+        </p>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <h2>Select Your School</h2>
+      <p>Access specialized learning environments tailored to your educational needs.</p>
+
+      <div class="schools-grid">
+        <!-- Elementary School Card -->
+        <div class="school-card elementary-card">
+          <div class="card-header"></div>
+          <div class="card-content">
+            <div class="school-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 3L1 9l11 6l11-6l-11-6zm0 12.5L4 12v6l8 4.5l8-4.5v-6l-8 3.5z" />
+              </svg>
+            </div>
+            <h3 class="school-title">Neurodivergent Elementary School</h3>
+            <span class="grade-range">Preschool - 6th Grade</span>
+            <p class="school-description">
+              A supportive superhero-themed environment for our youngest learners with adaptive
+              content and engaging activities.
+            </p>
+            <ul class="features-list">
+              <li>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                </svg>
+                Superhero-themed learning environment
+              </li>
+              <li>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                </svg>
+                Visual learning supports
+              </li>
+              <li>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                </svg>
+                Personalized AI teaching assistants
+              </li>
+            </ul>
+            <a href="neurodivergent-elementary-dashboard.html" class="enter-btn"
+              >Enter Elementary School</a
+            >
           </div>
-          <h3 class="school-title">Neurodivergent Elementary School</h3>
-          <span class="grade-range">Preschool - 6th Grade</span>
-          <p class="school-description">A supportive superhero-themed environment for our youngest learners with adaptive content and engaging activities.</p>
-          <ul class="features-list">
-            <li>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-              </svg>
-              Superhero-themed learning environment
-            </li>
-            <li>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-              </svg>
-              Visual learning supports
-            </li>
-            <li>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-              </svg>
-              Personalized AI teaching assistants
-            </li>
-          </ul>
-          <a href="neurodivergent-elementary-dashboard.html" class="enter-btn">Enter Elementary School</a>
         </div>
-      </div>
 
-      <!-- Middle/High School Card -->
-      <div class="school-card middle-high-card">
-        <div class="card-header"></div>
-        <div class="card-content">
-          <div class="school-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M12 3L1 9l11 6l11-6l-11-6zm0 12.5L4 12v6l8 4.5l8-4.5v-6l-8 3.5z"/>
-            </svg>
+        <!-- Middle/High School Card -->
+        <div class="school-card middle-high-card">
+          <div class="card-header"></div>
+          <div class="card-content">
+            <div class="school-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 3L1 9l11 6l11-6l-11-6zm0 12.5L4 12v6l8 4.5l8-4.5v-6l-8 3.5z" />
+              </svg>
+            </div>
+            <h3 class="school-title">Middle & High School</h3>
+            <span class="grade-range">7th - 12th Grade</span>
+            <p class="school-description">
+              A mature learning experience that helps neurodivergent students prepare for academic
+              challenges and life skills.
+            </p>
+            <ul class="features-list">
+              <li>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                </svg>
+                Subject-specific AI tutors
+              </li>
+              <li>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                </svg>
+                Executive functioning tools
+              </li>
+              <li>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                </svg>
+                Interactive project-based learning
+              </li>
+            </ul>
+            <a href="neurodivergent-middle-dashboard.html" class="enter-btn">Enter Middle School</a>
           </div>
-          <h3 class="school-title">Middle & High School</h3>
-          <span class="grade-range">7th - 12th Grade</span>
-          <p class="school-description">A mature learning experience that helps neurodivergent students prepare for academic challenges and life skills.</p>
-          <ul class="features-list">
-            <li>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-              </svg>
-              Subject-specific AI tutors
-            </li>
-            <li>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-              </svg>
-              Executive functioning tools
-            </li>
-            <li>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-              </svg>
-              Interactive project-based learning
-            </li>
-          </ul>
-          <a href="neurodivergent-middle-dashboard.html" class="enter-btn">Enter Middle School</a>
         </div>
-      </div>
 
-      <!-- College Card -->
-      <div class="school-card college-card">
-        <div class="card-header"></div>
-        <div class="card-content">
-          <div class="school-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M12 3L1 9l11 6l11-6l-11-6zm0 12.5L4 12v6l8 4.5l8-4.5v-6l-8 3.5z"/>
-            </svg>
+        <!-- College Card -->
+        <div class="school-card college-card">
+          <div class="card-header"></div>
+          <div class="card-content">
+            <div class="school-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 3L1 9l11 6l11-6l-11-6zm0 12.5L4 12v6l8 4.5l8-4.5v-6l-8 3.5z" />
+              </svg>
+            </div>
+            <h3 class="school-title">College Program</h3>
+            <span class="grade-range">Higher Education</span>
+            <p class="school-description">
+              Advanced education for neurodivergent students pursuing higher education with
+              specialized support systems.
+            </p>
+            <ul class="features-list">
+              <li>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                </svg>
+                Specialized degree pathways
+              </li>
+              <li>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                </svg>
+                Career development tools
+              </li>
+              <li>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                </svg>
+                Academic accommodations support
+              </li>
+            </ul>
+            <a href="neurodivergent-college-dashboard.html" class="enter-btn">Enter College</a>
           </div>
-          <h3 class="school-title">College Program</h3>
-          <span class="grade-range">Higher Education</span>
-          <p class="school-description">Advanced education for neurodivergent students pursuing higher education with specialized support systems.</p>
-          <ul class="features-list">
-            <li>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-              </svg>
-              Specialized degree pathways
-            </li>
-            <li>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-              </svg>
-              Career development tools
-            </li>
-            <li>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-              </svg>
-              Academic accommodations support
-            </li>
-          </ul>
-          <a href="neurodivergent-college-dashboard.html" class="enter-btn">Enter College</a>
         </div>
-      </div>
 
-      <!-- Law School Card -->
-      <div class="school-card law-card">
-        <div class="card-header"></div>
-        <div class="card-content">
-          <div class="school-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M12 3L1 9l11 6l11-6l-11-6zm0 12.5L4 12v6l8 4.5l8-4.5v-6l-8 3.5z"/>
-            </svg>
+        <!-- Law School Card -->
+        <div class="school-card law-card">
+          <div class="card-header"></div>
+          <div class="card-content">
+            <div class="school-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 3L1 9l11 6l11-6l-11-6zm0 12.5L4 12v6l8 4.5l8-4.5v-6l-8 3.5z" />
+              </svg>
+            </div>
+            <h3 class="school-title">Shatzii School of Law</h3>
+            <span class="grade-range">Professional Education</span>
+            <p class="school-description">
+              Specialized legal education with UAE Bar Exam preparation and adaptive learning for
+              neurodivergent law students.
+            </p>
+            <ul class="features-list">
+              <li>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                </svg>
+                Bar exam preparation
+              </li>
+              <li>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                </svg>
+                Legal research assistance
+              </li>
+              <li>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                </svg>
+                Case analysis tools
+              </li>
+            </ul>
+            <a href="law-school-dashboard.html" class="enter-btn">Enter Law School</a>
           </div>
-          <h3 class="school-title">Shatzii School of Law</h3>
-          <span class="grade-range">Professional Education</span>
-          <p class="school-description">Specialized legal education with UAE Bar Exam preparation and adaptive learning for neurodivergent law students.</p>
-          <ul class="features-list">
-            <li>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-              </svg>
-              Bar exam preparation
-            </li>
-            <li>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-              </svg>
-              Legal research assistance
-            </li>
-            <li>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-              </svg>
-              Case analysis tools
-            </li>
-          </ul>
-          <a href="law-school-dashboard.html" class="enter-btn">Enter Law School</a>
         </div>
       </div>
-    </div>
 
-    <!-- Neurotype Support Section -->
-    <div class="neurotype-section">
-      <h2>Specialized Support for All Neurotypes</h2>
-      <p>Our platform provides tailored learning experiences for students with diverse neurological profiles.</p>
-      
-      <div class="neurotype-grid">
-        <div class="neurotype-card">
-          <svg class="neurotype-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M21 11.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 6.75 3 8.765 3 11.25c0 .517.086 1.012.242 1.468.893 3.248 3.805 5.957 8.758 10.282 4.953-4.325 7.865-7.034 8.758-10.282.156-.456.242-.951.242-1.468z"/>
-          </svg>
-          <h3>ADHD</h3>
-          <p>Tools for focus, organization, and managing executive functioning challenges.</p>
-        </div>
-        
-        <div class="neurotype-card">
-          <svg class="neurotype-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M21 11.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 6.75 3 8.765 3 11.25c0 .517.086 1.012.242 1.468.893 3.248 3.805 5.957 8.758 10.282 4.953-4.325 7.865-7.034 8.758-10.282.156-.456.242-.951.242-1.468z"/>
-          </svg>
-          <h3>Autism Spectrum</h3>
-          <p>Content designed with sensory sensitivities and social learning in mind.</p>
-        </div>
-        
-        <div class="neurotype-card">
-          <svg class="neurotype-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M21 11.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 6.75 3 8.765 3 11.25c0 .517.086 1.012.242 1.468.893 3.248 3.805 5.957 8.758 10.282 4.953-4.325 7.865-7.034 8.758-10.282.156-.456.242-.951.242-1.468z"/>
-          </svg>
-          <h3>Dyslexia</h3>
-          <p>Specialized reading tools and alternative learning approaches.</p>
-        </div>
-        
-        <div class="neurotype-card">
-          <svg class="neurotype-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M21 11.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 6.75 3 8.765 3 11.25c0 .517.086 1.012.242 1.468.893 3.248 3.805 5.957 8.758 10.282 4.953-4.325 7.865-7.034 8.758-10.282.156-.456.242-.951.242-1.468z"/>
-          </svg>
-          <h3>Customized Learning</h3>
-          <p>Personalized approaches based on individual learning style assessment.</p>
+      <!-- Neurotype Support Section -->
+      <div class="neurotype-section">
+        <h2>Specialized Support for All Neurotypes</h2>
+        <p>
+          Our platform provides tailored learning experiences for students with diverse neurological
+          profiles.
+        </p>
+
+        <div class="neurotype-grid">
+          <div class="neurotype-card">
+            <svg class="neurotype-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path
+                d="M21 11.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 6.75 3 8.765 3 11.25c0 .517.086 1.012.242 1.468.893 3.248 3.805 5.957 8.758 10.282 4.953-4.325 7.865-7.034 8.758-10.282.156-.456.242-.951.242-1.468z"
+              />
+            </svg>
+            <h3>ADHD</h3>
+            <p>Tools for focus, organization, and managing executive functioning challenges.</p>
+          </div>
+
+          <div class="neurotype-card">
+            <svg class="neurotype-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path
+                d="M21 11.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 6.75 3 8.765 3 11.25c0 .517.086 1.012.242 1.468.893 3.248 3.805 5.957 8.758 10.282 4.953-4.325 7.865-7.034 8.758-10.282.156-.456.242-.951.242-1.468z"
+              />
+            </svg>
+            <h3>Autism Spectrum</h3>
+            <p>Content designed with sensory sensitivities and social learning in mind.</p>
+          </div>
+
+          <div class="neurotype-card">
+            <svg class="neurotype-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path
+                d="M21 11.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 6.75 3 8.765 3 11.25c0 .517.086 1.012.242 1.468.893 3.248 3.805 5.957 8.758 10.282 4.953-4.325 7.865-7.034 8.758-10.282.156-.456.242-.951.242-1.468z"
+              />
+            </svg>
+            <h3>Dyslexia</h3>
+            <p>Specialized reading tools and alternative learning approaches.</p>
+          </div>
+
+          <div class="neurotype-card">
+            <svg class="neurotype-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path
+                d="M21 11.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 6.75 3 8.765 3 11.25c0 .517.086 1.012.242 1.468.893 3.248 3.805 5.957 8.758 10.282 4.953-4.325 7.865-7.034 8.758-10.282.156-.456.242-.951.242-1.468z"
+              />
+            </svg>
+            <h3>Customized Learning</h3>
+            <p>Personalized approaches based on individual learning style assessment.</p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Admin Section -->
-    <div class="admin-section">
-      <h2>Administration</h2>
-      <p>Access administrative dashboards and management tools.</p>
-      <div class="admin-buttons">
-        <a href="ceo-dashboard.html" class="admin-btn">CEO Dashboard</a>
+      <!-- Admin Section -->
+      <div class="admin-section">
+        <h2>Administration</h2>
+        <p>Access administrative dashboards and management tools.</p>
+        <div class="admin-buttons">
+          <a href="ceo-dashboard.html" class="admin-btn">CEO Dashboard</a>
+        </div>
       </div>
-    </div>
-  </main>
+    </main>
 
-  <!-- Footer -->
-  <footer>
-    <div class="footer-content">
-      <div class="logo">Shatzii<span>OS</span></div>
-      <p class="copyright">© 2025 ShatziiOS Educational Platform. All rights reserved.</p>
-    </div>
-  </footer>
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="logo">Shatzii<span>OS</span></div>
+        <p class="copyright">© 2025 ShatziiOS Educational Platform. All rights reserved.</p>
+      </div>
+    </footer>
 
-  <script>
-    // Simple animation for the glowing elements
-    document.addEventListener('DOMContentLoaded', function() {
-      const glowElements = document.querySelectorAll('.glow-element');
-      
-      glowElements.forEach((element, index) => {
-        setInterval(() => {
-          const randomX = Math.random() * 20 - 10;
-          const randomY = Math.random() * 20 - 10;
-          element.style.transform = `translate(${randomX}px, ${randomY}px)`;
-        }, 3000 + (index * 500));
+    <script>
+      // Simple animation for the glowing elements
+      document.addEventListener('DOMContentLoaded', function () {
+        const glowElements = document.querySelectorAll('.glow-element');
+
+        glowElements.forEach((element, index) => {
+          setInterval(
+            () => {
+              const randomX = Math.random() * 20 - 10;
+              const randomY = Math.random() * 20 - 10;
+              element.style.transform = `translate(${randomX}px, ${randomY}px)`;
+            },
+            3000 + index * 500,
+          );
+        });
       });
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>

@@ -1,97 +1,96 @@
-'use client'
+'use client';
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { 
-  Brain, 
-  BookOpen, 
-  Calendar, 
-  Users, 
-  Target, 
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  Brain,
+  BookOpen,
+  Calendar,
+  Users,
+  Target,
   Play,
   MessageSquare,
   Settings,
   Home,
-  School
-} from 'lucide-react'
-import Link from 'next/link'
+  School,
+} from 'lucide-react';
+import Link from 'next/link';
 
 interface StandaloneNavigationProps {
-  schoolPath: string
-  schoolName: string
-  schoolTheme: string
-  gradeLevel: string
-  themeColor: string
+  schoolPath: string;
+  schoolName: string;
+  schoolTheme: string;
+  gradeLevel: string;
+  themeColor: string;
 }
 
-export default function StandaloneNavigation({ 
-  schoolPath, 
-  schoolName, 
-  schoolTheme, 
-  gradeLevel, 
-  themeColor 
+export default function StandaloneNavigation({
+  schoolPath,
+  schoolName,
+  schoolTheme,
+  gradeLevel,
+  themeColor,
 }: StandaloneNavigationProps) {
-  
   const navigationItems = [
     {
       title: 'AI Teachers',
       href: `${schoolPath}/ai-teachers`,
       icon: Brain,
-      description: 'Chat with specialized AI teachers'
+      description: 'Chat with specialized AI teachers',
     },
     {
       title: 'My Assignments',
       href: `${schoolPath}/assignments`,
       icon: BookOpen,
-      description: 'View and submit assignments'
+      description: 'View and submit assignments',
     },
     {
       title: 'My Schedule',
       href: `${schoolPath}/schedule`,
       icon: Calendar,
-      description: 'Check class schedule'
+      description: 'Check class schedule',
     },
     {
       title: 'Virtual Classroom',
       href: `${schoolPath}/virtual-classroom`,
       icon: Play,
-      description: 'Join live classes'
+      description: 'Join live classes',
     },
     {
       title: 'Study Groups',
       href: `${schoolPath}/study-groups`,
       icon: Users,
-      description: 'Find study partners'
+      description: 'Find study partners',
     },
     {
       title: 'Progress Tracking',
       href: `${schoolPath}/progress`,
       icon: Target,
-      description: 'Track learning progress'
-    }
-  ]
+      description: 'Track learning progress',
+    },
+  ];
 
   const quickLinks = [
     {
       title: 'Student Dashboard',
       href: `${schoolPath}/student-dashboard`,
       icon: Home,
-      color: 'bg-blue-500'
+      color: 'bg-blue-500',
     },
     {
       title: 'Teacher Portal',
       href: `${schoolPath}/teacher-portal`,
       icon: School,
-      color: 'bg-green-500'
+      color: 'bg-green-500',
     },
     {
       title: 'Parent Portal',
       href: `${schoolPath}/parent-portal`,
       icon: Users,
-      color: 'bg-purple-500'
-    }
-  ]
+      color: 'bg-purple-500',
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -108,7 +107,7 @@ export default function StandaloneNavigation({
         {/* Quick Access Portals */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {quickLinks.map((link) => {
-            const Icon = link.icon
+            const Icon = link.icon;
             return (
               <Link key={link.href} href={link.href}>
                 <Card className="hover:shadow-lg transition-shadow cursor-pointer">
@@ -125,7 +124,7 @@ export default function StandaloneNavigation({
                   </CardContent>
                 </Card>
               </Link>
-            )
+            );
           })}
         </div>
 
@@ -140,7 +139,7 @@ export default function StandaloneNavigation({
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {navigationItems.map((item) => {
-                const Icon = item.icon
+                const Icon = item.icon;
                 return (
                   <Link key={item.href} href={item.href}>
                     <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
@@ -155,7 +154,7 @@ export default function StandaloneNavigation({
                       </CardContent>
                     </Card>
                   </Link>
-                )
+                );
               })}
             </div>
           </CardContent>
@@ -169,12 +168,12 @@ export default function StandaloneNavigation({
               <h3 className="font-medium text-blue-800">Shared AI Engine</h3>
             </div>
             <p className="text-sm text-blue-700">
-              All schools share the same advanced AI teachers and learning engine, 
-              customized for your specific school environment and grade level.
+              All schools share the same advanced AI teachers and learning engine, customized for
+              your specific school environment and grade level.
             </p>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }

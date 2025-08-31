@@ -1,16 +1,16 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  MessageCircle, 
-  Calendar, 
-  TrendingUp, 
-  Home, 
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  MessageCircle,
+  Calendar,
+  TrendingUp,
+  Home,
   Bell,
   Video,
   BookOpen,
@@ -30,36 +30,36 @@ import {
   Download,
   Share2,
   Settings,
-  HelpCircle
-} from 'lucide-react'
+  HelpCircle,
+} from 'lucide-react';
 
 interface ChildProgress {
-  id: string
-  name: string
-  grade: string
-  avatar: string
-  currentStreak: number
-  weeklyGoals: number
-  completedGoals: number
-  neurodivergentSupport: string
-  recentAchievements: string[]
-  upcomingMilestones: string[]
+  id: string;
+  name: string;
+  grade: string;
+  avatar: string;
+  currentStreak: number;
+  weeklyGoals: number;
+  completedGoals: number;
+  neurodivergentSupport: string;
+  recentAchievements: string[];
+  upcomingMilestones: string[];
 }
 
 interface Message {
-  id: string
-  from: string
-  type: 'teacher' | 'ai' | 'system'
-  message: string
-  timestamp: Date
-  priority: 'low' | 'medium' | 'high'
-  read: boolean
+  id: string;
+  from: string;
+  type: 'teacher' | 'ai' | 'system';
+  message: string;
+  timestamp: Date;
+  priority: 'low' | 'medium' | 'high';
+  read: boolean;
 }
 
 export default function ParentEngagementPlatform() {
-  const [selectedChild, setSelectedChild] = useState('1')
-  const [newMessage, setNewMessage] = useState('')
-  const [selectedLanguage, setSelectedLanguage] = useState('en')
+  const [selectedChild, setSelectedChild] = useState('1');
+  const [newMessage, setNewMessage] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
 
   const children: ChildProgress[] = [
     {
@@ -71,8 +71,12 @@ export default function ParentEngagementPlatform() {
       weeklyGoals: 5,
       completedGoals: 4,
       neurodivergentSupport: 'ADHD Support',
-      recentAchievements: ['Completed 20-minute focus session', 'Mastered multiplication tables', 'Helped classmate with reading'],
-      upcomingMilestones: ['Math assessment next week', 'Science fair project due']
+      recentAchievements: [
+        'Completed 20-minute focus session',
+        'Mastered multiplication tables',
+        'Helped classmate with reading',
+      ],
+      upcomingMilestones: ['Math assessment next week', 'Science fair project due'],
     },
     {
       id: '2',
@@ -83,29 +87,35 @@ export default function ParentEngagementPlatform() {
       weeklyGoals: 4,
       completedGoals: 4,
       neurodivergentSupport: 'Autism Accommodations',
-      recentAchievements: ['Completed daily routine independently', 'Shared favorite book with class', 'Used communication board successfully'],
-      upcomingMilestones: ['Parent-teacher conference', 'IEP review meeting']
-    }
-  ]
+      recentAchievements: [
+        'Completed daily routine independently',
+        'Shared favorite book with class',
+        'Used communication board successfully',
+      ],
+      upcomingMilestones: ['Parent-teacher conference', 'IEP review meeting'],
+    },
+  ];
 
   const messages: Message[] = [
     {
       id: '1',
       from: 'Mrs. Johnson - Math Teacher',
       type: 'teacher',
-      message: 'Emma showed excellent progress in fractions today! She helped another student understand the concept.',
+      message:
+        'Emma showed excellent progress in fractions today! She helped another student understand the concept.',
       timestamp: new Date(),
       priority: 'medium',
-      read: false
+      read: false,
     },
     {
       id: '2',
       from: 'AI Learning Assistant',
       type: 'ai',
-      message: 'Emma has been maintaining focus for longer periods. Consider gradually increasing lesson duration.',
+      message:
+        'Emma has been maintaining focus for longer periods. Consider gradually increasing lesson duration.',
       timestamp: new Date(),
       priority: 'low',
-      read: true
+      read: true,
     },
     {
       id: '3',
@@ -114,9 +124,9 @@ export default function ParentEngagementPlatform() {
       message: 'Parent-teacher conference scheduled for next Tuesday at 3:00 PM.',
       timestamp: new Date(),
       priority: 'high',
-      read: false
-    }
-  ]
+      read: false,
+    },
+  ];
 
   const homeActivities = [
     {
@@ -125,7 +135,7 @@ export default function ParentEngagementPlatform() {
       icon: BookOpen,
       difficulty: 'Easy',
       time: '20 min',
-      neurodivergentTip: 'Use shorter books and take breaks if needed'
+      neurodivergentTip: 'Use shorter books and take breaks if needed',
     },
     {
       title: 'Math in Cooking',
@@ -133,7 +143,7 @@ export default function ParentEngagementPlatform() {
       icon: Heart,
       difficulty: 'Medium',
       time: '30 min',
-      neurodivergentTip: 'Visual measuring cups help with fraction concepts'
+      neurodivergentTip: 'Visual measuring cups help with fraction concepts',
     },
     {
       title: 'Science Exploration',
@@ -141,17 +151,17 @@ export default function ParentEngagementPlatform() {
       icon: Brain,
       difficulty: 'Medium',
       time: '45 min',
-      neurodivergentTip: 'Hands-on learning reinforces concepts'
-    }
-  ]
+      neurodivergentTip: 'Hands-on learning reinforces concepts',
+    },
+  ];
 
-  const currentChild = children.find(c => c.id === selectedChild) || children[0]
+  const currentChild = children.find((c) => c.id === selectedChild) || children[0];
 
   const translations = {
     en: { welcome: 'Welcome to Your Parent Portal', progress: 'Progress Overview' },
     es: { welcome: 'Bienvenido a su Portal de Padres', progress: 'Resumen del Progreso' },
-    de: { welcome: 'Willkommen in Ihrem Elternportal', progress: 'Fortschrittsübersicht' }
-  }
+    de: { welcome: 'Willkommen in Ihrem Elternportal', progress: 'Fortschrittsübersicht' },
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 p-4">
@@ -191,10 +201,10 @@ export default function ParentEngagementPlatform() {
 
         {/* Child Selector */}
         <div className="flex space-x-4">
-          {children.map(child => (
+          {children.map((child) => (
             <Button
               key={child.id}
-              variant={selectedChild === child.id ? "default" : "outline"}
+              variant={selectedChild === child.id ? 'default' : 'outline'}
               className="h-16 flex items-center space-x-3 px-4"
               onClick={() => setSelectedChild(child.id)}
             >
@@ -221,7 +231,9 @@ export default function ParentEngagementPlatform() {
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <div className="text-3xl font-bold text-green-600">{currentChild.currentStreak}</div>
+                    <div className="text-3xl font-bold text-green-600">
+                      {currentChild.currentStreak}
+                    </div>
                     <div className="text-sm text-gray-600">Day Learning Streak</div>
                   </div>
                   <div className="text-center p-4 bg-blue-50 rounded-lg">
@@ -245,7 +257,8 @@ export default function ParentEngagementPlatform() {
                     {currentChild.neurodivergentSupport}
                   </Badge>
                   <p className="text-sm text-gray-600 mt-2">
-                    Specialized accommodations and support strategies are being used to optimize learning.
+                    Specialized accommodations and support strategies are being used to optimize
+                    learning.
                   </p>
                 </div>
               </CardContent>
@@ -262,10 +275,15 @@ export default function ParentEngagementPlatform() {
               <CardContent>
                 <div className="space-y-3">
                   {currentChild.recentAchievements.map((achievement, index) => (
-                    <div key={index} className="flex items-center space-x-3 p-3 bg-yellow-50 rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center space-x-3 p-3 bg-yellow-50 rounded-lg"
+                    >
                       <CheckCircle className="w-5 h-5 text-green-600" />
                       <span className="text-sm">{achievement}</span>
-                      <Badge variant="outline" className="ml-auto text-xs">Today</Badge>
+                      <Badge variant="outline" className="ml-auto text-xs">
+                        Today
+                      </Badge>
                     </div>
                   ))}
                 </div>
@@ -286,7 +304,10 @@ export default function ParentEngagementPlatform() {
               <CardContent>
                 <div className="space-y-4">
                   {homeActivities.map((activity, index) => (
-                    <div key={index} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                    <div
+                      key={index}
+                      className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                    >
                       <div className="flex items-start justify-between">
                         <div className="flex items-start space-x-3">
                           <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -296,7 +317,9 @@ export default function ParentEngagementPlatform() {
                             <h4 className="font-semibold">{activity.title}</h4>
                             <p className="text-sm text-gray-600 mt-1">{activity.description}</p>
                             <div className="flex items-center space-x-4 mt-2">
-                              <Badge variant="outline" className="text-xs">{activity.difficulty}</Badge>
+                              <Badge variant="outline" className="text-xs">
+                                {activity.difficulty}
+                              </Badge>
                               <span className="text-xs text-gray-500 flex items-center">
                                 <Clock className="w-3 h-3 mr-1" />
                                 {activity.time}
@@ -331,7 +354,10 @@ export default function ParentEngagementPlatform() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {currentChild.upcomingMilestones.map((milestone, index) => (
-                  <div key={index} className="flex items-center space-x-3 p-3 bg-orange-50 rounded-lg">
+                  <div
+                    key={index}
+                    className="flex items-center space-x-3 p-3 bg-orange-50 rounded-lg"
+                  >
                     <AlertCircle className="w-4 h-4 text-orange-600" />
                     <span className="text-sm">{milestone}</span>
                   </div>
@@ -349,13 +375,15 @@ export default function ParentEngagementPlatform() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="max-h-64 overflow-y-auto space-y-3">
-                  {messages.map(message => (
+                  {messages.map((message) => (
                     <div
                       key={message.id}
                       className={`p-3 rounded-lg border-l-4 ${
-                        message.priority === 'high' ? 'border-red-500 bg-red-50' :
-                        message.priority === 'medium' ? 'border-yellow-500 bg-yellow-50' :
-                        'border-blue-500 bg-blue-50'
+                        message.priority === 'high'
+                          ? 'border-red-500 bg-red-50'
+                          : message.priority === 'medium'
+                            ? 'border-yellow-500 bg-yellow-50'
+                            : 'border-blue-500 bg-blue-50'
                       } ${!message.read ? 'font-semibold' : ''}`}
                     >
                       <div className="flex items-center justify-between mb-1">
@@ -371,7 +399,7 @@ export default function ParentEngagementPlatform() {
                     </div>
                   ))}
                 </div>
-                
+
                 <div className="flex space-x-2">
                   <Input
                     value={newMessage}
@@ -417,5 +445,5 @@ export default function ParentEngagementPlatform() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +12,7 @@ export function StaticSafetyDashboard() {
     totalPlatforms: 5,
     activePlatforms: 3,
     recentAlerts: 2,
-    resolvedIssues: 8
+    resolvedIssues: 8,
   };
 
   const staticRecentActivity = [
@@ -22,7 +22,7 @@ export function StaticSafetyDashboard() {
       activity: 'Posted a photo with friends',
       timestamp: '2024-01-15T14:30:00Z',
       riskLevel: 'low',
-      status: 'approved'
+      status: 'approved',
     },
     {
       id: '2',
@@ -30,7 +30,7 @@ export function StaticSafetyDashboard() {
       activity: 'Watched educational videos',
       timestamp: '2024-01-15T12:45:00Z',
       riskLevel: 'low',
-      status: 'approved'
+      status: 'approved',
     },
     {
       id: '3',
@@ -38,24 +38,31 @@ export function StaticSafetyDashboard() {
       activity: 'Joined a gaming server',
       timestamp: '2024-01-15T09:15:00Z',
       riskLevel: 'medium',
-      status: 'flagged'
-    }
+      status: 'flagged',
+    },
   ];
 
   const getRiskColor = (level: string) => {
     switch (level) {
-      case 'low': return 'text-green-500';
-      case 'medium': return 'text-yellow-500';
-      case 'high': return 'text-red-500';
-      default: return 'text-gray-500';
+      case 'low':
+        return 'text-green-500';
+      case 'medium':
+        return 'text-yellow-500';
+      case 'high':
+        return 'text-red-500';
+      default:
+        return 'text-gray-500';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'approved': return CheckCircle;
-      case 'flagged': return AlertTriangle;
-      default: return Clock;
+      case 'approved':
+        return CheckCircle;
+      case 'flagged':
+        return AlertTriangle;
+      default:
+        return Clock;
     }
   };
 
@@ -95,9 +102,7 @@ export function StaticSafetyDashboard() {
             <CardTitle className="text-sm font-medium text-gray-600">Recent Alerts</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">
-              {staticStats.recentAlerts}
-            </div>
+            <div className="text-2xl font-bold text-orange-600">{staticStats.recentAlerts}</div>
             <p className="text-sm text-gray-600 mt-1">This week</p>
           </CardContent>
         </Card>
@@ -107,9 +112,7 @@ export function StaticSafetyDashboard() {
             <CardTitle className="text-sm font-medium text-gray-600">Resolved Issues</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              {staticStats.resolvedIssues}
-            </div>
+            <div className="text-2xl font-bold text-green-600">{staticStats.resolvedIssues}</div>
             <p className="text-sm text-gray-600 mt-1">This month</p>
           </CardContent>
         </Card>
@@ -127,15 +130,19 @@ export function StaticSafetyDashboard() {
           <div className="space-y-3">
             {staticRecentActivity.map((activity) => {
               const StatusIcon = getStatusIcon(activity.status);
-              
+
               return (
                 <div key={activity.id} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
                   <div className="flex-shrink-0">
-                    <StatusIcon className={`w-5 h-5 ${
-                      activity.status === 'approved' ? 'text-green-500' :
-                      activity.status === 'flagged' ? 'text-orange-500' :
-                      'text-gray-500'
-                    }`} />
+                    <StatusIcon
+                      className={`w-5 h-5 ${
+                        activity.status === 'approved'
+                          ? 'text-green-500'
+                          : activity.status === 'flagged'
+                            ? 'text-orange-500'
+                            : 'text-gray-500'
+                      }`}
+                    />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">

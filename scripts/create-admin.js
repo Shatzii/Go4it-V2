@@ -9,7 +9,7 @@ async function createAdmin() {
   try {
     // Hash the password
     const hashedPassword = await bcrypt.hash('password123', 12);
-    
+
     // Insert or update admin user
     const result = await sql`
       INSERT INTO users (username, email, password, role, first_name, last_name, is_active)
@@ -21,9 +21,8 @@ async function createAdmin() {
         is_active = true
       RETURNING id, username, email, role;
     `;
-    
+
     console.log('Admin user created/updated successfully:', result);
-    
   } catch (error) {
     console.error('Error creating admin user:', error);
   } finally {

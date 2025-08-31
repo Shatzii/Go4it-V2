@@ -1,670 +1,709 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Law School Student Dashboard - ShotziOS</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="assets/js/helpBubble.js"></script>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #000000;
-      color: #ffffff;
-      line-height: 1.6;
-    }
-    h1, h2, h3, h4, h5, h6 {
-      color: #ffffff !important;
-      letter-spacing: 0.5px;
-    }
-    p {
-      color: #e0e0e0 !important;
-      margin-bottom: 1rem;
-    }
-    a {
-      color: #0070f3;
-    }
-    .text-gray-600, .text-gray-800, .text-gray-500, .text-gray-700 {
-      color: #e0e0e0 !important;
-    }
-    .bg-white {
-      background-color: #121212 !important;
-    }
-    .bg-gray-50, .bg-gray-100 {
-      background-color: #181818 !important;
-    }
-    .border-gray-300 {
-      border-color: #333333 !important;
-    }
-    .card {
-      background-color: #121212 !important;
-      border: 1px solid #0070f3 !important;
-      border-radius: 10px;
-      overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px -5px rgba(0, 112, 243, 0.4), 0 10px 10px -5px rgba(0, 112, 243, 0.3);
-    }
-    .header-gradient {
-      background: linear-gradient(135deg, #0070f3 0%, #003580 100%);
-    }
-    button, .button {
-      background-color: #0070f3 !important;
-      color: white !important;
-      border: none !important;
-      border-radius: 6px;
-      padding: 0.5rem 1rem;
-      font-weight: 600;
-      transition: background-color 0.2s ease;
-    }
-    button:hover, .button:hover {
-      background-color: #0060d0 !important;
-    }
-    footer {
-      background-color: #121212 !important;
-      border-top: 1px solid #333333;
-    }
-    /* Progress bars */
-    .progress-container {
-      width: 100%;
-      height: 10px;
-      background-color: #333333;
-      border-radius: 5px;
-      overflow: hidden;
-      margin-top: 0.5rem;
-      margin-bottom: 1rem;
-    }
-    .progress-bar {
-      height: 100%;
-      background-color: #0070f3;
-      border-radius: 5px;
-    }
-    /* Course card styles */
-    .course-card {
-      border: 2px solid #0070f3;
-      background-color: #121212;
-      border-radius: 10px;
-      overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .course-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px -5px rgba(0, 112, 243, 0.4), 0 10px 10px -5px rgba(0, 112, 243, 0.3);
-    }
-    /* Assignment status indicators */
-    .status-indicator {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      display: inline-block;
-      margin-right: 6px;
-    }
-    .status-completed {
-      background-color: #0EB100;
-    }
-    .status-pending {
-      background-color: #FFC107;
-    }
-    .status-overdue {
-      background-color: #FF3D3D;
-    }
-    /* Accessibility features */
-    .text-size-control {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .text-size-btn {
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 4px;
-    }
-    /* Superhero-themed elements */
-    .super-badge {
-      background-color: #162038;
-      border: 2px solid #0070f3;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      margin-right: 15px;
-    }
-    .achievement-badge {
-      background-color: #162038;
-      border: 2px solid #0070f3;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      margin-right: 10px;
-    }
-    /* Learning mood tracking */
-    .mood-selector {
-      display: flex;
-      gap: 10px;
-      margin: 10px 0;
-    }
-    .mood-option {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: #162038;
-      border: 2px solid transparent;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .mood-option:hover, .mood-option.selected {
-      border-color: #0070f3;
-      transform: scale(1.1);
-    }
-    /* Wide spacing for neurodivergent-friendly design */
-    .neurodivergent-spacing {
-      letter-spacing: 0.03em;
-      line-height: 1.7;
-    }
-    /* High contrast elements */
-    .high-contrast-text {
-      color: #ffffff !important;
-      font-weight: 600;
-    }
-  </style>
-</head>
-<body>
-  <!-- Header -->
-  <header class="header-gradient text-white shadow-lg">
-    <div class="container mx-auto px-6 py-4">
-      <div class="flex justify-between items-center">
-        <div class="flex items-center space-x-4">
-          <a href="index.html" class="text-white hover:bg-blue-600 px-3 py-1 rounded-lg">
-            🏠 Home
-          </a>
-          <h1 class="text-2xl font-bold flex items-center">
-            <span class="mr-2">⚖️</span> Law School Student Dashboard
-          </h1>
-        </div>
-        <div class="flex items-center space-x-3">
-          <div class="text-size-control hidden md:flex">
-            <button class="text-size-btn bg-blue-900">A-</button>
-            <button class="text-size-btn bg-blue-800">A</button>
-            <button class="text-size-btn bg-blue-700">A+</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Law School Student Dashboard - ShotziOS</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <script src="assets/js/helpBubble.js"></script>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #000000;
+        color: #ffffff;
+        line-height: 1.6;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        color: #ffffff !important;
+        letter-spacing: 0.5px;
+      }
+      p {
+        color: #e0e0e0 !important;
+        margin-bottom: 1rem;
+      }
+      a {
+        color: #0070f3;
+      }
+      .text-gray-600,
+      .text-gray-800,
+      .text-gray-500,
+      .text-gray-700 {
+        color: #e0e0e0 !important;
+      }
+      .bg-white {
+        background-color: #121212 !important;
+      }
+      .bg-gray-50,
+      .bg-gray-100 {
+        background-color: #181818 !important;
+      }
+      .border-gray-300 {
+        border-color: #333333 !important;
+      }
+      .card {
+        background-color: #121212 !important;
+        border: 1px solid #0070f3 !important;
+        border-radius: 10px;
+        overflow: hidden;
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow:
+          0 10px 25px -5px rgba(0, 112, 243, 0.4),
+          0 10px 10px -5px rgba(0, 112, 243, 0.3);
+      }
+      .header-gradient {
+        background: linear-gradient(135deg, #0070f3 0%, #003580 100%);
+      }
+      button,
+      .button {
+        background-color: #0070f3 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        transition: background-color 0.2s ease;
+      }
+      button:hover,
+      .button:hover {
+        background-color: #0060d0 !important;
+      }
+      footer {
+        background-color: #121212 !important;
+        border-top: 1px solid #333333;
+      }
+      /* Progress bars */
+      .progress-container {
+        width: 100%;
+        height: 10px;
+        background-color: #333333;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-top: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .progress-bar {
+        height: 100%;
+        background-color: #0070f3;
+        border-radius: 5px;
+      }
+      /* Course card styles */
+      .course-card {
+        border: 2px solid #0070f3;
+        background-color: #121212;
+        border-radius: 10px;
+        overflow: hidden;
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+      .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow:
+          0 10px 25px -5px rgba(0, 112, 243, 0.4),
+          0 10px 10px -5px rgba(0, 112, 243, 0.3);
+      }
+      /* Assignment status indicators */
+      .status-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 6px;
+      }
+      .status-completed {
+        background-color: #0eb100;
+      }
+      .status-pending {
+        background-color: #ffc107;
+      }
+      .status-overdue {
+        background-color: #ff3d3d;
+      }
+      /* Accessibility features */
+      .text-size-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .text-size-btn {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+      }
+      /* Superhero-themed elements */
+      .super-badge {
+        background-color: #162038;
+        border: 2px solid #0070f3;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-right: 15px;
+      }
+      .achievement-badge {
+        background-color: #162038;
+        border: 2px solid #0070f3;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        margin-right: 10px;
+      }
+      /* Learning mood tracking */
+      .mood-selector {
+        display: flex;
+        gap: 10px;
+        margin: 10px 0;
+      }
+      .mood-option {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #162038;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .mood-option:hover,
+      .mood-option.selected {
+        border-color: #0070f3;
+        transform: scale(1.1);
+      }
+      /* Wide spacing for neurodivergent-friendly design */
+      .neurodivergent-spacing {
+        letter-spacing: 0.03em;
+        line-height: 1.7;
+      }
+      /* High contrast elements */
+      .high-contrast-text {
+        color: #ffffff !important;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header-gradient text-white shadow-lg">
+      <div class="container mx-auto px-6 py-4">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center space-x-4">
+            <a href="index.html" class="text-white hover:bg-blue-600 px-3 py-1 rounded-lg">
+              🏠 Home
+            </a>
+            <h1 class="text-2xl font-bold flex items-center">
+              <span class="mr-2">⚖️</span> Law School Student Dashboard
+            </h1>
           </div>
-          <button class="flex items-center space-x-1 bg-blue-700 px-3 py-1 rounded-lg">
-            <span>👤</span>
-            <span>Profile</span>
-          </button>
-          <button class="bg-blue-800 px-3 py-1 rounded-lg">Logout</button>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- Dashboard Content -->
-  <main class="container mx-auto py-8 px-6">
-    <!-- Welcome Section with Learning Mood Tracking -->
-    <section class="mb-8">
-      <div class="bg-white rounded-xl p-6 border-2 border-blue-600">
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
-          <div class="flex items-center mb-4 md:mb-0">
-            <div class="super-badge">🦸</div>
-            <div>
-              <h2 class="text-2xl font-bold high-contrast-text">Hello, Legal Eagle!</h2>
-              <p class="neurodivergent-spacing">Ready to continue your journey to legal greatness?</p>
+          <div class="flex items-center space-x-3">
+            <div class="text-size-control hidden md:flex">
+              <button class="text-size-btn bg-blue-900">A-</button>
+              <button class="text-size-btn bg-blue-800">A</button>
+              <button class="text-size-btn bg-blue-700">A+</button>
             </div>
-          </div>
-          <div class="w-full md:w-auto">
-            <p class="font-medium mb-1 high-contrast-text">How are you feeling today?</p>
-            <div class="mood-selector">
-              <div class="mood-option" title="Energized">😃</div>
-              <div class="mood-option" title="Focused">🧐</div>
-              <div class="mood-option selected" title="Calm">😌</div>
-              <div class="mood-option" title="Tired">😴</div>
-              <div class="mood-option" title="Overwhelmed">😓</div>
-            </div>
+            <button class="flex items-center space-x-1 bg-blue-700 px-3 py-1 rounded-lg">
+              <span>👤</span>
+              <span>Profile</span>
+            </button>
+            <button class="bg-blue-800 px-3 py-1 rounded-lg">Logout</button>
           </div>
         </div>
       </div>
-    </section>
+    </header>
 
-    <!-- Learning Progress and Study Dashboard -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-      <!-- Learning Progress -->
-      <div class="lg:col-span-2">
-        <div class="bg-white rounded-xl p-6 h-full">
-          <h2 class="text-xl font-bold mb-4 high-contrast-text">My Learning Progress</h2>
-          
-          <div class="space-y-6">
-            <div>
-              <div class="flex justify-between mb-1">
-                <span class="font-medium">Overall Progress</span>
-                <span>57%</span>
-              </div>
-              <div class="progress-container">
-                <div class="progress-bar" style="width: 57%"></div>
+    <!-- Dashboard Content -->
+    <main class="container mx-auto py-8 px-6">
+      <!-- Welcome Section with Learning Mood Tracking -->
+      <section class="mb-8">
+        <div class="bg-white rounded-xl p-6 border-2 border-blue-600">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
+            <div class="flex items-center mb-4 md:mb-0">
+              <div class="super-badge">🦸</div>
+              <div>
+                <h2 class="text-2xl font-bold high-contrast-text">Hello, Legal Eagle!</h2>
+                <p class="neurodivergent-spacing">
+                  Ready to continue your journey to legal greatness?
+                </p>
               </div>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="w-full md:w-auto">
+              <p class="font-medium mb-1 high-contrast-text">How are you feeling today?</p>
+              <div class="mood-selector">
+                <div class="mood-option" title="Energized">😃</div>
+                <div class="mood-option" title="Focused">🧐</div>
+                <div class="mood-option selected" title="Calm">😌</div>
+                <div class="mood-option" title="Tired">😴</div>
+                <div class="mood-option" title="Overwhelmed">😓</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Learning Progress and Study Dashboard -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <!-- Learning Progress -->
+        <div class="lg:col-span-2">
+          <div class="bg-white rounded-xl p-6 h-full">
+            <h2 class="text-xl font-bold mb-4 high-contrast-text">My Learning Progress</h2>
+
+            <div class="space-y-6">
               <div>
                 <div class="flex justify-between mb-1">
-                  <span class="font-medium">Contract Law</span>
-                  <span>65%</span>
+                  <span class="font-medium">Overall Progress</span>
+                  <span>57%</span>
                 </div>
                 <div class="progress-container">
-                  <div class="progress-bar" style="width: 65%"></div>
+                  <div class="progress-bar" style="width: 57%"></div>
                 </div>
               </div>
-              
-              <div>
-                <div class="flex justify-between mb-1">
-                  <span class="font-medium">UAE Commercial Law</span>
-                  <span>32%</span>
-                </div>
-                <div class="progress-container">
-                  <div class="progress-bar" style="width: 32%"></div>
-                </div>
-              </div>
-              
-              <div>
-                <div class="flex justify-between mb-1">
-                  <span class="font-medium">Legal Ethics</span>
-                  <span>78%</span>
-                </div>
-                <div class="progress-container">
-                  <div class="progress-bar" style="width: 78%"></div>
-                </div>
-              </div>
-              
-              <div>
-                <div class="flex justify-between mb-1">
-                  <span class="font-medium">Bar Exam Prep</span>
-                  <span>45%</span>
-                </div>
-                <div class="progress-container">
-                  <div class="progress-bar" style="width: 45%"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Study Dashboard -->
-      <div class="bg-white rounded-xl p-6">
-        <h2 class="text-xl font-bold mb-4 high-contrast-text">Study Dashboard</h2>
-        
-        <div class="space-y-4">
-          <div class="flex items-center justify-between p-3 bg-blue-900 bg-opacity-30 rounded-lg">
-            <div class="flex items-center">
-              <div class="achievement-badge">📚</div>
-              <div>
-                <p class="font-medium">Study Streak</p>
-                <p class="text-sm">7 days</p>
-              </div>
-            </div>
-            <div>
-              <span class="text-sm px-2 py-1 bg-blue-800 rounded-full">🔥 +2</span>
-            </div>
-          </div>
-          
-          <div class="flex items-center justify-between p-3 bg-blue-900 bg-opacity-30 rounded-lg">
-            <div class="flex items-center">
-              <div class="achievement-badge">⏱️</div>
-              <div>
-                <p class="font-medium">Study Time</p>
-                <p class="text-sm">Today: 2h 15m</p>
-              </div>
-            </div>
-            <div>
-              <span class="text-sm px-2 py-1 bg-blue-800 rounded-full">+45m</span>
-            </div>
-          </div>
-          
-          <div class="flex items-center justify-between p-3 bg-blue-900 bg-opacity-30 rounded-lg">
-            <div class="flex items-center">
-              <div class="achievement-badge">🎯</div>
-              <div>
-                <p class="font-medium">Focus Score</p>
-                <p class="text-sm">86/100</p>
-              </div>
-            </div>
-            <div>
-              <span class="text-sm px-2 py-1 bg-blue-800 rounded-full">↑ 5</span>
-            </div>
-          </div>
-          
-          <button class="w-full mt-4 py-3">Start Focused Study Session</button>
-        </div>
-      </div>
-    </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="font-medium">Contract Law</span>
+                    <span>65%</span>
+                  </div>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width: 65%"></div>
+                  </div>
+                </div>
 
-    <!-- Upcoming Assignments -->
-    <section class="mb-8">
-      <div class="bg-white rounded-xl p-6">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold high-contrast-text">Upcoming Assignments</h2>
-          <button class="text-sm px-3 py-1 rounded-lg">View All</button>
-        </div>
-        
-        <div class="space-y-4">
-          <div class="flex items-center p-3 bg-blue-900 bg-opacity-20 rounded-lg">
-            <div class="mr-4">
-              <span class="status-indicator status-pending"></span>
-            </div>
-            <div class="flex-1">
-              <h3 class="font-medium">Case Brief Analysis: Smith v. Johnson</h3>
-              <p class="text-sm">Contract Law • Due Apr 15, 2025</p>
-            </div>
-            <div>
-              <button class="px-3 py-1 text-sm">Start</button>
-            </div>
-          </div>
-          
-          <div class="flex items-center p-3 bg-blue-900 bg-opacity-20 rounded-lg">
-            <div class="mr-4">
-              <span class="status-indicator status-pending"></span>
-            </div>
-            <div class="flex-1">
-              <h3 class="font-medium">UAE Commercial Code Quiz</h3>
-              <p class="text-sm">UAE Commercial Law • Due Apr 18, 2025</p>
-            </div>
-            <div>
-              <button class="px-3 py-1 text-sm">Start</button>
-            </div>
-          </div>
-          
-          <div class="flex items-center p-3 bg-blue-900 bg-opacity-20 rounded-lg">
-            <div class="mr-4">
-              <span class="status-indicator status-completed"></span>
-            </div>
-            <div class="flex-1">
-              <h3 class="font-medium">Legal Ethics Reflection Paper</h3>
-              <p class="text-sm">Legal Ethics • Completed Apr 8, 2025</p>
-            </div>
-            <div>
-              <button class="px-3 py-1 text-sm bg-green-700">View</button>
-            </div>
-          </div>
-          
-          <div class="flex items-center p-3 bg-blue-900 bg-opacity-20 rounded-lg">
-            <div class="mr-4">
-              <span class="status-indicator status-overdue"></span>
-            </div>
-            <div class="flex-1">
-              <h3 class="font-medium">Practice Bar Exam Questions Set 3</h3>
-              <p class="text-sm">Bar Exam Prep • Overdue: Apr 5, 2025</p>
-            </div>
-            <div>
-              <button class="px-3 py-1 text-sm bg-red-700">Submit</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="font-medium">UAE Commercial Law</span>
+                    <span>32%</span>
+                  </div>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width: 32%"></div>
+                  </div>
+                </div>
 
-    <!-- My Courses and Next Learning Steps -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-      <!-- My Courses -->
-      <div class="lg:col-span-2">
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="font-medium">Legal Ethics</span>
+                    <span>78%</span>
+                  </div>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width: 78%"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="font-medium">Bar Exam Prep</span>
+                    <span>45%</span>
+                  </div>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width: 45%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Study Dashboard -->
         <div class="bg-white rounded-xl p-6">
-          <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold high-contrast-text">My Courses</h2>
+          <h2 class="text-xl font-bold mb-4 high-contrast-text">Study Dashboard</h2>
+
+          <div class="space-y-4">
+            <div class="flex items-center justify-between p-3 bg-blue-900 bg-opacity-30 rounded-lg">
+              <div class="flex items-center">
+                <div class="achievement-badge">📚</div>
+                <div>
+                  <p class="font-medium">Study Streak</p>
+                  <p class="text-sm">7 days</p>
+                </div>
+              </div>
+              <div>
+                <span class="text-sm px-2 py-1 bg-blue-800 rounded-full">🔥 +2</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between p-3 bg-blue-900 bg-opacity-30 rounded-lg">
+              <div class="flex items-center">
+                <div class="achievement-badge">⏱️</div>
+                <div>
+                  <p class="font-medium">Study Time</p>
+                  <p class="text-sm">Today: 2h 15m</p>
+                </div>
+              </div>
+              <div>
+                <span class="text-sm px-2 py-1 bg-blue-800 rounded-full">+45m</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between p-3 bg-blue-900 bg-opacity-30 rounded-lg">
+              <div class="flex items-center">
+                <div class="achievement-badge">🎯</div>
+                <div>
+                  <p class="font-medium">Focus Score</p>
+                  <p class="text-sm">86/100</p>
+                </div>
+              </div>
+              <div>
+                <span class="text-sm px-2 py-1 bg-blue-800 rounded-full">↑ 5</span>
+              </div>
+            </div>
+
+            <button class="w-full mt-4 py-3">Start Focused Study Session</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming Assignments -->
+      <section class="mb-8">
+        <div class="bg-white rounded-xl p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold high-contrast-text">Upcoming Assignments</h2>
             <button class="text-sm px-3 py-1 rounded-lg">View All</button>
           </div>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Course 1 -->
-            <div class="course-card">
-              <div class="p-4 bg-blue-900 bg-opacity-30">
-                <div class="flex items-center justify-between">
-                  <h3 class="font-bold">Contract Law Fundamentals</h3>
-                  <span class="text-sm font-medium">65%</span>
-                </div>
-              </div>
-              <div class="p-4">
-                <p class="text-sm mb-4 neurodivergent-spacing">
-                  Essential principles and practices of contract law with UAE-specific applications.
-                </p>
-                <div class="progress-container">
-                  <div class="progress-bar" style="width: 65%"></div>
-                </div>
-                <button class="w-full mt-2">Continue Learning</button>
-              </div>
-            </div>
-            
-            <!-- Course 2 -->
-            <div class="course-card">
-              <div class="p-4 bg-blue-900 bg-opacity-30">
-                <div class="flex items-center justify-between">
-                  <h3 class="font-bold">UAE Commercial Law</h3>
-                  <span class="text-sm font-medium">32%</span>
-                </div>
-              </div>
-              <div class="p-4">
-                <p class="text-sm mb-4 neurodivergent-spacing">
-                  Comprehensive exploration of UAE's commercial legal framework and business regulations.
-                </p>
-                <div class="progress-container">
-                  <div class="progress-bar" style="width: 32%"></div>
-                </div>
-                <button class="w-full mt-2">Continue Learning</button>
-              </div>
-            </div>
-            
-            <!-- Course 3 -->
-            <div class="course-card">
-              <div class="p-4 bg-blue-900 bg-opacity-30">
-                <div class="flex items-center justify-between">
-                  <h3 class="font-bold">Legal Ethics & Professional Responsibility</h3>
-                  <span class="text-sm font-medium">78%</span>
-                </div>
-              </div>
-              <div class="p-4">
-                <p class="text-sm mb-4 neurodivergent-spacing">
-                  Ethical standards and professional conduct in legal practice within the UAE context.
-                </p>
-                <div class="progress-container">
-                  <div class="progress-bar" style="width: 78%"></div>
-                </div>
-                <button class="w-full mt-2">Continue Learning</button>
-              </div>
-            </div>
-            
-            <!-- Course 4 -->
-            <div class="course-card">
-              <div class="p-4 bg-blue-900 bg-opacity-30">
-                <div class="flex items-center justify-between">
-                  <h3 class="font-bold">UAE Bar Exam Preparation</h3>
-                  <span class="text-sm font-medium">45%</span>
-                </div>
-              </div>
-              <div class="p-4">
-                <p class="text-sm mb-4 neurodivergent-spacing">
-                  Comprehensive preparation and practice for the UAE Bar Examination.
-                </p>
-                <div class="progress-container">
-                  <div class="progress-bar" style="width: 45%"></div>
-                </div>
-                <button class="w-full mt-2">Continue Learning</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Next Learning Steps and Resources -->
-      <div class="space-y-6">
-        <div class="bg-white rounded-xl p-6">
-          <h2 class="text-xl font-bold mb-4 high-contrast-text">Next Learning Steps</h2>
-          
           <div class="space-y-4">
-            <div class="p-3 bg-blue-900 bg-opacity-30 rounded-lg">
-              <h3 class="font-medium flex items-center">
-                <span class="text-lg mr-2">📝</span>
-                Complete Case Brief Exercise
-              </h3>
-              <p class="text-sm mt-1 neurodivergent-spacing">
-                Practice analyzing legal cases with proper structure and reasoning.
-              </p>
-              <button class="mt-2 w-full">Start Exercise</button>
+            <div class="flex items-center p-3 bg-blue-900 bg-opacity-20 rounded-lg">
+              <div class="mr-4">
+                <span class="status-indicator status-pending"></span>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-medium">Case Brief Analysis: Smith v. Johnson</h3>
+                <p class="text-sm">Contract Law • Due Apr 15, 2025</p>
+              </div>
+              <div>
+                <button class="px-3 py-1 text-sm">Start</button>
+              </div>
             </div>
-            
-            <div class="p-3 bg-blue-900 bg-opacity-30 rounded-lg">
-              <h3 class="font-medium flex items-center">
-                <span class="text-lg mr-2">🎥</span>
-                Watch Video Lecture
-              </h3>
-              <p class="text-sm mt-1 neurodivergent-spacing">
-                "Elements of Valid Contracts in UAE Law" (25 min)
-              </p>
-              <button class="mt-2 w-full">Watch Now</button>
+
+            <div class="flex items-center p-3 bg-blue-900 bg-opacity-20 rounded-lg">
+              <div class="mr-4">
+                <span class="status-indicator status-pending"></span>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-medium">UAE Commercial Code Quiz</h3>
+                <p class="text-sm">UAE Commercial Law • Due Apr 18, 2025</p>
+              </div>
+              <div>
+                <button class="px-3 py-1 text-sm">Start</button>
+              </div>
             </div>
-            
-            <div class="p-3 bg-blue-900 bg-opacity-30 rounded-lg">
-              <h3 class="font-medium flex items-center">
-                <span class="text-lg mr-2">🧩</span>
-                Interactive Learning Game
-              </h3>
-              <p class="text-sm mt-1 neurodivergent-spacing">
-                "Legal Term Detective" - match legal terms with their definitions.
-              </p>
-              <button class="mt-2 w-full">Play Game</button>
+
+            <div class="flex items-center p-3 bg-blue-900 bg-opacity-20 rounded-lg">
+              <div class="mr-4">
+                <span class="status-indicator status-completed"></span>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-medium">Legal Ethics Reflection Paper</h3>
+                <p class="text-sm">Legal Ethics • Completed Apr 8, 2025</p>
+              </div>
+              <div>
+                <button class="px-3 py-1 text-sm bg-green-700">View</button>
+              </div>
+            </div>
+
+            <div class="flex items-center p-3 bg-blue-900 bg-opacity-20 rounded-lg">
+              <div class="mr-4">
+                <span class="status-indicator status-overdue"></span>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-medium">Practice Bar Exam Questions Set 3</h3>
+                <p class="text-sm">Bar Exam Prep • Overdue: Apr 5, 2025</p>
+              </div>
+              <div>
+                <button class="px-3 py-1 text-sm bg-red-700">Submit</button>
+              </div>
             </div>
           </div>
         </div>
-        
-        <div class="bg-white rounded-xl p-6">
-          <h2 class="text-xl font-bold mb-4 high-contrast-text">Learning Resources</h2>
-          
-          <div class="space-y-3">
-            <a href="#" class="flex items-center p-3 bg-blue-900 bg-opacity-30 rounded-lg hover:bg-blue-900 hover:bg-opacity-50">
-              <span class="text-lg mr-3">📚</span>
-              <span>Digital Library</span>
-            </a>
-            
-            <a href="#" class="flex items-center p-3 bg-blue-900 bg-opacity-30 rounded-lg hover:bg-blue-900 hover:bg-opacity-50">
-              <span class="text-lg mr-3">👥</span>
-              <span>Study Groups</span>
-            </a>
-            
-            <a href="#" class="flex items-center p-3 bg-blue-900 bg-opacity-30 rounded-lg hover:bg-blue-900 hover:bg-opacity-50">
-              <span class="text-lg mr-3">📋</span>
-              <span>Practice Exams</span>
-            </a>
-            
-            <a href="#" class="flex items-center p-3 bg-blue-900 bg-opacity-30 rounded-lg hover:bg-blue-900 hover:bg-opacity-50">
-              <span class="text-lg mr-3">🎓</span>
-              <span>Career Resources</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Achievements and Superhero Progress -->
-    <section class="mb-8">
-      <div class="bg-white rounded-xl p-6">
-        <h2 class="text-xl font-bold mb-4 high-contrast-text">My Legal Superhero Journey</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h3 class="font-medium mb-3">Latest Achievements</h3>
-            <div class="space-y-3">
-              <div class="flex items-center p-3 bg-blue-900 bg-opacity-30 rounded-lg">
-                <div class="achievement-badge">🏆</div>
-                <div>
-                  <p class="font-medium">Case Master</p>
-                  <p class="text-sm neurodivergent-spacing">
-                    Completed 10 case briefs with excellent scores
+      </section>
+
+      <!-- My Courses and Next Learning Steps -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <!-- My Courses -->
+        <div class="lg:col-span-2">
+          <div class="bg-white rounded-xl p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-xl font-bold high-contrast-text">My Courses</h2>
+              <button class="text-sm px-3 py-1 rounded-lg">View All</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Course 1 -->
+              <div class="course-card">
+                <div class="p-4 bg-blue-900 bg-opacity-30">
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-bold">Contract Law Fundamentals</h3>
+                    <span class="text-sm font-medium">65%</span>
+                  </div>
+                </div>
+                <div class="p-4">
+                  <p class="text-sm mb-4 neurodivergent-spacing">
+                    Essential principles and practices of contract law with UAE-specific
+                    applications.
                   </p>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width: 65%"></div>
+                  </div>
+                  <button class="w-full mt-2">Continue Learning</button>
                 </div>
               </div>
-              
-              <div class="flex items-center p-3 bg-blue-900 bg-opacity-30 rounded-lg">
-                <div class="achievement-badge">⚡</div>
-                <div>
-                  <p class="font-medium">Quick Thinker</p>
-                  <p class="text-sm neurodivergent-spacing">
-                    Completed 5 timed quizzes with perfect scores
+
+              <!-- Course 2 -->
+              <div class="course-card">
+                <div class="p-4 bg-blue-900 bg-opacity-30">
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-bold">UAE Commercial Law</h3>
+                    <span class="text-sm font-medium">32%</span>
+                  </div>
+                </div>
+                <div class="p-4">
+                  <p class="text-sm mb-4 neurodivergent-spacing">
+                    Comprehensive exploration of UAE's commercial legal framework and business
+                    regulations.
                   </p>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width: 32%"></div>
+                  </div>
+                  <button class="w-full mt-2">Continue Learning</button>
                 </div>
               </div>
-              
-              <div class="flex items-center p-3 bg-blue-900 bg-opacity-30 rounded-lg">
-                <div class="achievement-badge">📊</div>
-                <div>
-                  <p class="font-medium">Consistent Learner</p>
-                  <p class="text-sm neurodivergent-spacing">
-                    Maintained a 7-day study streak
+
+              <!-- Course 3 -->
+              <div class="course-card">
+                <div class="p-4 bg-blue-900 bg-opacity-30">
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-bold">Legal Ethics & Professional Responsibility</h3>
+                    <span class="text-sm font-medium">78%</span>
+                  </div>
+                </div>
+                <div class="p-4">
+                  <p class="text-sm mb-4 neurodivergent-spacing">
+                    Ethical standards and professional conduct in legal practice within the UAE
+                    context.
                   </p>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width: 78%"></div>
+                  </div>
+                  <button class="w-full mt-2">Continue Learning</button>
+                </div>
+              </div>
+
+              <!-- Course 4 -->
+              <div class="course-card">
+                <div class="p-4 bg-blue-900 bg-opacity-30">
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-bold">UAE Bar Exam Preparation</h3>
+                    <span class="text-sm font-medium">45%</span>
+                  </div>
+                </div>
+                <div class="p-4">
+                  <p class="text-sm mb-4 neurodivergent-spacing">
+                    Comprehensive preparation and practice for the UAE Bar Examination.
+                  </p>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width: 45%"></div>
+                  </div>
+                  <button class="w-full mt-2">Continue Learning</button>
                 </div>
               </div>
             </div>
           </div>
-          
-          <div>
-            <h3 class="font-medium mb-3">Superhero Level Progress</h3>
-            <div class="p-4 bg-blue-900 bg-opacity-30 rounded-lg">
-              <div class="flex items-center mb-3">
-                <div class="super-badge mr-3">⚖️</div>
-                <div>
-                  <p class="font-medium">Current Level: Legal Eagle</p>
-                  <p class="text-sm">15,750 / 20,000 XP to next level</p>
-                </div>
-              </div>
-              
-              <div class="progress-container h-4">
-                <div class="progress-bar" style="width: 78.75%"></div>
-              </div>
-              
-              <div class="mt-4">
-                <p class="text-sm font-medium">Next level: Justice Champion</p>
-                <p class="text-sm neurodivergent-spacing">
-                  Unlock special access to advanced mock trials and gain mentorship from practicing attorneys.
+        </div>
+
+        <!-- Next Learning Steps and Resources -->
+        <div class="space-y-6">
+          <div class="bg-white rounded-xl p-6">
+            <h2 class="text-xl font-bold mb-4 high-contrast-text">Next Learning Steps</h2>
+
+            <div class="space-y-4">
+              <div class="p-3 bg-blue-900 bg-opacity-30 rounded-lg">
+                <h3 class="font-medium flex items-center">
+                  <span class="text-lg mr-2">📝</span>
+                  Complete Case Brief Exercise
+                </h3>
+                <p class="text-sm mt-1 neurodivergent-spacing">
+                  Practice analyzing legal cases with proper structure and reasoning.
                 </p>
+                <button class="mt-2 w-full">Start Exercise</button>
+              </div>
+
+              <div class="p-3 bg-blue-900 bg-opacity-30 rounded-lg">
+                <h3 class="font-medium flex items-center">
+                  <span class="text-lg mr-2">🎥</span>
+                  Watch Video Lecture
+                </h3>
+                <p class="text-sm mt-1 neurodivergent-spacing">
+                  "Elements of Valid Contracts in UAE Law" (25 min)
+                </p>
+                <button class="mt-2 w-full">Watch Now</button>
+              </div>
+
+              <div class="p-3 bg-blue-900 bg-opacity-30 rounded-lg">
+                <h3 class="font-medium flex items-center">
+                  <span class="text-lg mr-2">🧩</span>
+                  Interactive Learning Game
+                </h3>
+                <p class="text-sm mt-1 neurodivergent-spacing">
+                  "Legal Term Detective" - match legal terms with their definitions.
+                </p>
+                <button class="mt-2 w-full">Play Game</button>
               </div>
             </div>
-            
-            <div class="flex justify-center mt-4">
-              <button class="px-4 py-2">View Full Progress Tree</button>
+          </div>
+
+          <div class="bg-white rounded-xl p-6">
+            <h2 class="text-xl font-bold mb-4 high-contrast-text">Learning Resources</h2>
+
+            <div class="space-y-3">
+              <a
+                href="#"
+                class="flex items-center p-3 bg-blue-900 bg-opacity-30 rounded-lg hover:bg-blue-900 hover:bg-opacity-50"
+              >
+                <span class="text-lg mr-3">📚</span>
+                <span>Digital Library</span>
+              </a>
+
+              <a
+                href="#"
+                class="flex items-center p-3 bg-blue-900 bg-opacity-30 rounded-lg hover:bg-blue-900 hover:bg-opacity-50"
+              >
+                <span class="text-lg mr-3">👥</span>
+                <span>Study Groups</span>
+              </a>
+
+              <a
+                href="#"
+                class="flex items-center p-3 bg-blue-900 bg-opacity-30 rounded-lg hover:bg-blue-900 hover:bg-opacity-50"
+              >
+                <span class="text-lg mr-3">📋</span>
+                <span>Practice Exams</span>
+              </a>
+
+              <a
+                href="#"
+                class="flex items-center p-3 bg-blue-900 bg-opacity-30 rounded-lg hover:bg-blue-900 hover:bg-opacity-50"
+              >
+                <span class="text-lg mr-3">🎓</span>
+                <span>Career Resources</span>
+              </a>
             </div>
           </div>
         </div>
       </div>
-    </section>
-  </main>
 
-  <!-- Footer -->
-  <footer class="bg-gray-800 text-gray-200 p-4 mt-6">
-    <div class="container mx-auto">
-      <div class="text-center">
-        <p class="text-sm">&copy; 2025 ShotziOS Learning Platform - Law School Student Dashboard</p>
-        <p class="text-xs text-gray-400 mt-1">
-          Version 2.5.3 • Last Updated: April 10, 2025
-        </p>
+      <!-- Achievements and Superhero Progress -->
+      <section class="mb-8">
+        <div class="bg-white rounded-xl p-6">
+          <h2 class="text-xl font-bold mb-4 high-contrast-text">My Legal Superhero Journey</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 class="font-medium mb-3">Latest Achievements</h3>
+              <div class="space-y-3">
+                <div class="flex items-center p-3 bg-blue-900 bg-opacity-30 rounded-lg">
+                  <div class="achievement-badge">🏆</div>
+                  <div>
+                    <p class="font-medium">Case Master</p>
+                    <p class="text-sm neurodivergent-spacing">
+                      Completed 10 case briefs with excellent scores
+                    </p>
+                  </div>
+                </div>
+
+                <div class="flex items-center p-3 bg-blue-900 bg-opacity-30 rounded-lg">
+                  <div class="achievement-badge">⚡</div>
+                  <div>
+                    <p class="font-medium">Quick Thinker</p>
+                    <p class="text-sm neurodivergent-spacing">
+                      Completed 5 timed quizzes with perfect scores
+                    </p>
+                  </div>
+                </div>
+
+                <div class="flex items-center p-3 bg-blue-900 bg-opacity-30 rounded-lg">
+                  <div class="achievement-badge">📊</div>
+                  <div>
+                    <p class="font-medium">Consistent Learner</p>
+                    <p class="text-sm neurodivergent-spacing">Maintained a 7-day study streak</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="font-medium mb-3">Superhero Level Progress</h3>
+              <div class="p-4 bg-blue-900 bg-opacity-30 rounded-lg">
+                <div class="flex items-center mb-3">
+                  <div class="super-badge mr-3">⚖️</div>
+                  <div>
+                    <p class="font-medium">Current Level: Legal Eagle</p>
+                    <p class="text-sm">15,750 / 20,000 XP to next level</p>
+                  </div>
+                </div>
+
+                <div class="progress-container h-4">
+                  <div class="progress-bar" style="width: 78.75%"></div>
+                </div>
+
+                <div class="mt-4">
+                  <p class="text-sm font-medium">Next level: Justice Champion</p>
+                  <p class="text-sm neurodivergent-spacing">
+                    Unlock special access to advanced mock trials and gain mentorship from
+                    practicing attorneys.
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex justify-center mt-4">
+                <button class="px-4 py-2">View Full Progress Tree</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-200 p-4 mt-6">
+      <div class="container mx-auto">
+        <div class="text-center">
+          <p class="text-sm">
+            &copy; 2025 ShotziOS Learning Platform - Law School Student Dashboard
+          </p>
+          <p class="text-xs text-gray-400 mt-1">Version 2.5.3 • Last Updated: April 10, 2025</p>
+        </div>
       </div>
-    </div>
-  </footer>
+    </footer>
 
-  <!-- Help Bubble -->
-  <div id="helpBubble" class="fixed right-4 bottom-4 z-50"></div>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      initializeHelpBubble('law-student', 'right');
-    });
-  </script>
-</body>
+    <!-- Help Bubble -->
+    <div id="helpBubble" class="fixed right-4 bottom-4 z-50"></div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        initializeHelpBubble('law-student', 'right');
+      });
+    </script>
+  </body>
 </html>

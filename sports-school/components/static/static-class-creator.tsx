@@ -1,18 +1,9 @@
-"use client";
+'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Plus, 
-  BookOpen, 
-  Users, 
-  Calendar,
-  Settings,
-  Sparkles,
-  Brain,
-  Star
-} from 'lucide-react';
+import { Plus, BookOpen, Users, Calendar, Settings, Sparkles, Brain, Star } from 'lucide-react';
 
 interface StaticClassCreatorProps {
   userType: 'student' | 'parent' | 'teacher' | 'admin';
@@ -29,7 +20,7 @@ export function StaticClassCreator({ userType, schoolId, userId }: StaticClassCr
       subject: 'Mathematics',
       participants: 12,
       lastActivity: '2 hours ago',
-      status: 'active'
+      status: 'active',
     },
     {
       id: '2',
@@ -37,7 +28,7 @@ export function StaticClassCreator({ userType, schoolId, userId }: StaticClassCr
       subject: 'Science',
       participants: 8,
       lastActivity: '1 day ago',
-      status: 'active'
+      status: 'active',
     },
     {
       id: '3',
@@ -45,8 +36,8 @@ export function StaticClassCreator({ userType, schoolId, userId }: StaticClassCr
       subject: 'English',
       participants: 15,
       lastActivity: '3 days ago',
-      status: 'completed'
-    }
+      status: 'completed',
+    },
   ];
 
   const suggestedTopics = [
@@ -55,7 +46,7 @@ export function StaticClassCreator({ userType, schoolId, userId }: StaticClassCr
     'Animal Kingdom',
     'Weather Patterns',
     'Creative Arts',
-    'Problem Solving'
+    'Problem Solving',
   ];
 
   return (
@@ -96,7 +87,10 @@ export function StaticClassCreator({ userType, schoolId, userId }: StaticClassCr
             </h3>
             <div className="space-y-3">
               {recentClasses.map((cls) => (
-                <div key={cls.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <div
+                  key={cls.id}
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                >
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-purple-100 rounded-full">
                       <Brain className="w-4 h-4 text-purple-600" />
@@ -111,7 +105,10 @@ export function StaticClassCreator({ userType, schoolId, userId }: StaticClassCr
                       <Users className="w-4 h-4 text-gray-500" />
                       <span className="text-sm text-gray-600">{cls.participants}</span>
                     </div>
-                    <Badge variant={cls.status === 'active' ? 'default' : 'secondary'} className="text-xs">
+                    <Badge
+                      variant={cls.status === 'active' ? 'default' : 'secondary'}
+                      className="text-xs"
+                    >
                       {cls.status}
                     </Badge>
                   </div>
@@ -126,7 +123,10 @@ export function StaticClassCreator({ userType, schoolId, userId }: StaticClassCr
               <Plus className="w-4 h-4 mr-2" />
               Create New Class
             </Button>
-            <Button variant="outline" className="flex items-center gap-2 hover:bg-purple-50 hover:border-purple-300">
+            <Button
+              variant="outline"
+              className="flex items-center gap-2 hover:bg-purple-50 hover:border-purple-300"
+            >
               <Settings className="w-4 h-4" />
               Settings
             </Button>

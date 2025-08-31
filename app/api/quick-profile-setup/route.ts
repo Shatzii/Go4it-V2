@@ -31,14 +31,22 @@ export async function POST(request: NextRequest) {
     const validatedData = quickSetupSchema.parse(body);
 
     // Check if user exists
-    const existingUser = await db.select().from(users).where(eq(users.id, validatedData.userId)).limit(1);
+    const existingUser = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, validatedData.userId))
+      .limit(1);
     if (existingUser.length === 0) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Create or update quick setup record
-    const existingSetup = await db.select().from(quickProfileSetup).where(eq(quickProfileSetup.userId, validatedData.userId)).limit(1);
-    
+    const existingSetup = await db
+      .select()
+      .from(quickProfileSetup)
+      .where(eq(quickProfileSetup.userId, validatedData.userId))
+      .limit(1);
+
     if (existingSetup.length > 0) {
       // Update existing setup
       const updatedSetup = await db
@@ -55,17 +63,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, setup: updatedSetup[0] });
     } else {
       // Create new setup
-      const newSetup = await db.insert(quickProfileSetup).values({
-        ...validatedData,
-        isCompleted: validatedData.setupStep === 'complete',
-      }).returning();
+      const newSetup = await db
+        .insert(quickProfileSetup)
+        .values({
+          ...validatedData,
+          isCompleted: validatedData.setupStep === 'complete',
+        })
+        .returning();
 
       return NextResponse.json({ success: true, setup: newSetup[0] });
     }
   } catch (error) {
     console.error('Error creating/updating quick profile setup:', error);
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid input data', details: error.errors }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Invalid input data', details: error.errors },
+        { status: 400 },
+      );
     }
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -102,13 +116,17 @@ export async function PATCH(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const action = searchParams.get('action');
-    
+
     if (action === 'one-click-create') {
       const body = await request.json();
       const validatedData = oneClickSetupSchema.parse(body);
 
       // Check if user exists
-      const existingUser = await db.select().from(users).where(eq(users.id, validatedData.userId)).limit(1);
+      const existingUser = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, validatedData.userId))
+        .limit(1);
       if (existingUser.length === 0) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 });
       }
@@ -124,8 +142,12 @@ export async function PATCH(request: NextRequest) {
         .where(eq(users.id, validatedData.userId));
 
       // Create or update athlete profile
-      const existingProfile = await db.select().from(athleteProfiles).where(eq(athleteProfiles.userId, validatedData.userId)).limit(1);
-      
+      const existingProfile = await db
+        .select()
+        .from(athleteProfiles)
+        .where(eq(athleteProfiles.userId, validatedData.userId))
+        .limit(1);
+
       if (existingProfile.length > 0) {
         // Update existing profile
         const updatedProfile = await db
@@ -155,26 +177,29 @@ export async function PATCH(request: NextRequest) {
           })
           .where(eq(quickProfileSetup.userId, validatedData.userId));
 
-        return NextResponse.json({ 
-          success: true, 
-          message: 'Profile created successfully!', 
-          profile: updatedProfile[0] 
+        return NextResponse.json({
+          success: true,
+          message: 'Profile created successfully!',
+          profile: updatedProfile[0],
         });
       } else {
         // Create new profile
-        const newProfile = await db.insert(athleteProfiles).values({
-          userId: validatedData.userId,
-          height: validatedData.height,
-          weight: validatedData.weight,
-          yearsPlaying: validatedData.yearsPlaying,
-          goals: validatedData.goals,
-          phoneNumber: validatedData.phoneNumber,
-          parentContactName: validatedData.parentContactName,
-          parentContactPhone: validatedData.parentContactPhone,
-          parentContactEmail: validatedData.parentContactEmail,
-          isProfileComplete: true,
-          profileVisibility: 'public',
-        }).returning();
+        const newProfile = await db
+          .insert(athleteProfiles)
+          .values({
+            userId: validatedData.userId,
+            height: validatedData.height,
+            weight: validatedData.weight,
+            yearsPlaying: validatedData.yearsPlaying,
+            goals: validatedData.goals,
+            phoneNumber: validatedData.phoneNumber,
+            parentContactName: validatedData.parentContactName,
+            parentContactPhone: validatedData.parentContactPhone,
+            parentContactEmail: validatedData.parentContactEmail,
+            isProfileComplete: true,
+            profileVisibility: 'public',
+          })
+          .returning();
 
         // Create quick setup record
         await db.insert(quickProfileSetup).values({
@@ -184,10 +209,10 @@ export async function PATCH(request: NextRequest) {
           isCompleted: true,
         });
 
-        return NextResponse.json({ 
-          success: true, 
-          message: 'Profile created successfully!', 
-          profile: newProfile[0] 
+        return NextResponse.json({
+          success: true,
+          message: 'Profile created successfully!',
+          profile: newProfile[0],
         });
       }
     } else {
@@ -196,7 +221,10 @@ export async function PATCH(request: NextRequest) {
   } catch (error) {
     console.error('Error in one-click profile creation:', error);
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid input data', details: error.errors }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Invalid input data', details: error.errors },
+        { status: 400 },
+      );
     }
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

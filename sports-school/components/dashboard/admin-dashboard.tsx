@@ -1,77 +1,77 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Users, 
-  GraduationCap, 
-  BookOpen, 
-  TrendingUp, 
-  AlertTriangle, 
-  CheckCircle, 
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Users,
+  GraduationCap,
+  BookOpen,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle,
   Clock,
   School,
   BarChart3,
   FileText,
-  Settings
-} from 'lucide-react'
+  Settings,
+} from 'lucide-react';
 
 interface AdminData {
   overview: {
-    totalStudents: number
-    totalTeachers: number
-    totalParents: number
-    activeUsers: number
-  }
-  schoolBreakdown: Record<string, number>
-  neurodiversityStats: Record<string, number>
-  enrollmentTypes: Record<string, number>
+    totalStudents: number;
+    totalTeachers: number;
+    totalParents: number;
+    activeUsers: number;
+  };
+  schoolBreakdown: Record<string, number>;
+  neurodiversityStats: Record<string, number>;
+  enrollmentTypes: Record<string, number>;
   recentActivity: {
-    newRegistrations: number
-    activeToday: number
-    lessonsCompleted: number
-    assessmentsSubmitted: number
-  }
+    newRegistrations: number;
+    activeToday: number;
+    lessonsCompleted: number;
+    assessmentsSubmitted: number;
+  };
   systemHealth: {
-    serverStatus: string
-    databaseStatus: string
-    aiServiceStatus: string
-    lastBackup: string
-    uptime: string
-  }
+    serverStatus: string;
+    databaseStatus: string;
+    aiServiceStatus: string;
+    lastBackup: string;
+    uptime: string;
+  };
 }
 
 export default function AdminDashboard() {
-  const [adminData, setAdminData] = useState<AdminData | null>(null)
-  const [selectedSchool, setSelectedSchool] = useState<string>('all')
-  const [loading, setLoading] = useState(true)
+  const [adminData, setAdminData] = useState<AdminData | null>(null);
+  const [selectedSchool, setSelectedSchool] = useState<string>('all');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchAdminData()
-  }, [])
+    fetchAdminData();
+  }, []);
 
   const fetchAdminData = async () => {
     try {
-      const response = await fetch('/api/admin?type=dashboard')
-      const data = await response.json()
-      setAdminData(data)
+      const response = await fetch('/api/admin?type=dashboard');
+      const data = await response.json();
+      setAdminData(data);
     } catch (error) {
-      console.error('Failed to fetch admin data:', error)
+      console.error('Failed to fetch admin data:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
       </div>
-    )
+    );
   }
 
   if (!adminData) {
@@ -81,15 +81,15 @@ export default function AdminDashboard() {
         <h3 className="text-lg font-semibold">Unable to load admin dashboard</h3>
         <p className="text-gray-600">Please try again later</p>
       </div>
-    )
+    );
   }
 
   const schoolData = {
     'primary-school': { name: 'SuperHero School (K-6)', color: 'bg-blue-500' },
     'secondary-school': { name: 'Stage Prep School (7-12)', color: 'bg-purple-500' },
     'language-school': { name: 'Global Language Academy', color: 'bg-green-500' },
-    'law-school': { name: 'Future Legal Professionals', color: 'bg-amber-500' }
-  }
+    'law-school': { name: 'Future Legal Professionals', color: 'bg-amber-500' },
+  };
 
   return (
     <div className="space-y-6">
@@ -120,12 +120,10 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{adminData.overview.totalStudents}</div>
-            <p className="text-xs text-muted-foreground">
-              +12% from last month
-            </p>
+            <p className="text-xs text-muted-foreground">+12% from last month</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Teachers</CardTitle>
@@ -133,12 +131,10 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{adminData.overview.totalTeachers}</div>
-            <p className="text-xs text-muted-foreground">
-              +2 new hires this month
-            </p>
+            <p className="text-xs text-muted-foreground">+2 new hires this month</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Parent Accounts</CardTitle>
@@ -146,12 +142,10 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{adminData.overview.totalParents}</div>
-            <p className="text-xs text-muted-foreground">
-              98% engagement rate
-            </p>
+            <p className="text-xs text-muted-foreground">98% engagement rate</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Today</CardTitle>
@@ -159,9 +153,7 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{adminData.overview.activeUsers}</div>
-            <p className="text-xs text-muted-foreground">
-              Last 24 hours
-            </p>
+            <p className="text-xs text-muted-foreground">Last 24 hours</p>
           </CardContent>
         </Card>
       </div>
@@ -189,7 +181,9 @@ export default function AdminDashboard() {
                   {Object.entries(adminData.schoolBreakdown).map(([schoolId, count]) => (
                     <div key={schoolId} className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <div className={`w-3 h-3 rounded-full ${schoolData[schoolId as keyof typeof schoolData]?.color || 'bg-gray-400'}`} />
+                        <div
+                          className={`w-3 h-3 rounded-full ${schoolData[schoolId as keyof typeof schoolData]?.color || 'bg-gray-400'}`}
+                        />
                         <span className="text-sm font-medium">
                           {schoolData[schoolId as keyof typeof schoolData]?.name || schoolId}
                         </span>
@@ -215,9 +209,9 @@ export default function AdminDashboard() {
                         <span className="text-sm font-medium capitalize">{type}</span>
                         <span className="text-sm font-bold">{count} students</span>
                       </div>
-                      <Progress 
-                        value={(count / adminData.overview.totalStudents) * 100} 
-                        className="h-2" 
+                      <Progress
+                        value={(count / adminData.overview.totalStudents) * 100}
+                        className="h-2"
                       />
                     </div>
                   ))}
@@ -272,7 +266,10 @@ export default function AdminDashboard() {
             <CardContent>
               <div className="grid md:grid-cols-2 gap-4">
                 {Object.entries(schoolData).map(([schoolId, school]) => (
-                  <Card key={schoolId} className="border-2 hover:border-primary/50 transition-colors">
+                  <Card
+                    key={schoolId}
+                    className="border-2 hover:border-primary/50 transition-colors"
+                  >
                     <CardHeader>
                       <CardTitle className="flex items-center justify-between">
                         <span>{school.name}</span>
@@ -297,8 +294,12 @@ export default function AdminDashboard() {
                         </div>
                       </div>
                       <div className="flex space-x-2 mt-4">
-                        <Button size="sm" variant="outline">View Details</Button>
-                        <Button size="sm" variant="outline">Settings</Button>
+                        <Button size="sm" variant="outline">
+                          View Details
+                        </Button>
+                        <Button size="sm" variant="outline">
+                          Settings
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -312,7 +313,9 @@ export default function AdminDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Student Analytics</CardTitle>
-              <CardDescription>Comprehensive student performance and engagement metrics</CardDescription>
+              <CardDescription>
+                Comprehensive student performance and engagement metrics
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-3 gap-6">
@@ -370,7 +373,9 @@ export default function AdminDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Compliance Status</CardTitle>
-              <CardDescription>Texas Education Code and regulatory compliance overview</CardDescription>
+              <CardDescription>
+                Texas Education Code and regulatory compliance overview
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-2 gap-6">
@@ -487,5 +492,5 @@ export default function AdminDashboard() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

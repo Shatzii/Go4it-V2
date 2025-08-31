@@ -25,21 +25,21 @@ export class ErrorBoundaryEnhanced extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
-      showDetails: false
+      showDetails: false,
     };
   }
 
   static getDerivedStateFromError(error: Error): Partial<State> {
     return {
       hasError: true,
-      error
+      error,
     };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.setState({
       error,
-      errorInfo
+      errorInfo,
     });
 
     // Log error to monitoring service
@@ -58,7 +58,7 @@ export class ErrorBoundaryEnhanced extends Component<Props, State> {
       componentStack: errorInfo.componentStack,
       timestamp: new Date().toISOString(),
       userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : 'server',
-      url: typeof window !== 'undefined' ? window.location.href : 'server'
+      url: typeof window !== 'undefined' ? window.location.href : 'server',
     };
 
     console.error('ErrorBoundary caught an error:', errorData);
@@ -75,7 +75,7 @@ export class ErrorBoundaryEnhanced extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
-      showDetails: false
+      showDetails: false,
     });
   };
 
@@ -92,7 +92,7 @@ export class ErrorBoundaryEnhanced extends Component<Props, State> {
   };
 
   private toggleDetails = () => {
-    this.setState(prev => ({ showDetails: !prev.showDetails }));
+    this.setState((prev) => ({ showDetails: !prev.showDetails }));
   };
 
   private getErrorCategory(error: Error): string {
@@ -157,10 +157,7 @@ export class ErrorBoundaryEnhanced extends Component<Props, State> {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3">
-                <Button
-                  onClick={this.handleRetry}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700"
-                >
+                <Button onClick={this.handleRetry} className="flex-1 bg-blue-600 hover:bg-blue-700">
                   <RefreshCw className="w-4 h-4 mr-2" />
                   Try Again
                 </Button>
@@ -225,7 +222,9 @@ export class ErrorBoundaryEnhanced extends Component<Props, State> {
 
                     {this.state.errorInfo?.componentStack && (
                       <div>
-                        <h4 className="text-sm font-medium text-slate-300 mb-2">Component Stack:</h4>
+                        <h4 className="text-sm font-medium text-slate-300 mb-2">
+                          Component Stack:
+                        </h4>
                         <pre className="text-xs bg-slate-900 border border-slate-600 rounded p-3 overflow-x-auto text-slate-400 max-h-48 overflow-y-auto">
                           {this.state.errorInfo.componentStack}
                         </pre>
@@ -251,7 +250,7 @@ export class ErrorBoundaryEnhanced extends Component<Props, State> {
 // HOC for wrapping components with error boundary
 export function withErrorBoundary<P extends object>(
   Component: React.ComponentType<P>,
-  fallback?: ReactNode
+  fallback?: ReactNode,
 ) {
   return function WrappedComponent(props: P) {
     return (
@@ -271,7 +270,7 @@ export function AsyncErrorBoundary({ children }: { children: ReactNode }) {
     };
 
     window.addEventListener('unhandledrejection', handleUnhandledRejection);
-    
+
     return () => {
       window.removeEventListener('unhandledrejection', handleUnhandledRejection);
     };

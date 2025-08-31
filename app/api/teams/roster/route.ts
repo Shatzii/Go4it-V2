@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
         playerRole: teamRosters.playerRole,
         parentContactInfo: teamRosters.parentContactInfo,
         playerName: users.username,
-        playerEmail: users.email
+        playerEmail: users.email,
       })
       .from(teamRosters)
       .leftJoin(users, eq(teamRosters.playerId, users.id))
@@ -40,21 +40,17 @@ export async function GET(request: NextRequest) {
 
     // Group by position for better organization
     const organizedRoster = {
-      captains: roster.filter(p => p.playerRole === 'captain' || p.playerRole === 'co-captain'),
-      starters: roster.filter(p => p.status === 'active' && p.playerRole === 'player'),
-      injured: roster.filter(p => p.status === 'injured'),
-      inactive: roster.filter(p => p.status === 'inactive'),
-      total: roster.length
+      captains: roster.filter((p) => p.playerRole === 'captain' || p.playerRole === 'co-captain'),
+      starters: roster.filter((p) => p.status === 'active' && p.playerRole === 'player'),
+      injured: roster.filter((p) => p.status === 'injured'),
+      inactive: roster.filter((p) => p.status === 'inactive'),
+      total: roster.length,
     };
 
     return NextResponse.json(organizedRoster);
-
   } catch (error) {
     console.error('Roster fetch error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch roster' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch roster' }, { status: 500 });
   }
 }
 
@@ -65,14 +61,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
-    const { teamId, playerId, position, jerseyNumber, playerRole, parentContactInfo } = await request.json();
+    const { teamId, playerId, position, jerseyNumber, playerRole, parentContactInfo } =
+      await request.json();
 
     // Verify coach has permission to modify this team
-    const team = await db
-      .select()
-      .from(teams)
-      .where(eq(teams.id, teamId))
-      .limit(1);
+    const team = await db.select().from(teams).where(eq(teams.id, teamId)).limit(1);
 
     if (team.length === 0 || team[0].coachId !== user.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
@@ -82,33 +75,21 @@ export async function POST(request: NextRequest) {
     const existingPlayer = await db
       .select()
       .from(teamRosters)
-      .where(and(
-        eq(teamRosters.teamId, teamId),
-        eq(teamRosters.playerId, playerId)
-      ))
+      .where(and(eq(teamRosters.teamId, teamId), eq(teamRosters.playerId, playerId)))
       .limit(1);
 
     if (existingPlayer.length > 0) {
-      return NextResponse.json(
-        { error: 'Player already on roster' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Player already on roster' }, { status: 400 });
     }
 
     // Check roster size limit
     const currentRosterSize = await db
       .select()
       .from(teamRosters)
-      .where(and(
-        eq(teamRosters.teamId, teamId),
-        eq(teamRosters.status, 'active')
-      ));
+      .where(and(eq(teamRosters.teamId, teamId), eq(teamRosters.status, 'active')));
 
     if (currentRosterSize.length >= team[0].maxRosterSize) {
-      return NextResponse.json(
-        { error: 'Roster is full' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Roster is full' }, { status: 400 });
     }
 
     // Add player to roster
@@ -121,18 +102,14 @@ export async function POST(request: NextRequest) {
         jerseyNumber,
         playerRole: playerRole || 'player',
         parentContactInfo,
-        status: 'active'
+        status: 'active',
       })
       .returning();
 
     return NextResponse.json(newRosterEntry, { status: 201 });
-
   } catch (error) {
     console.error('Add player error:', error);
-    return NextResponse.json(
-      { error: 'Failed to add player to roster' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to add player to roster' }, { status: 500 });
   }
 }
 
@@ -150,7 +127,7 @@ export async function PUT(request: NextRequest) {
       .select({
         id: teamRosters.id,
         teamId: teamRosters.teamId,
-        coachId: teams.coachId
+        coachId: teams.coachId,
       })
       .from(teamRosters)
       .leftJoin(teams, eq(teamRosters.teamId, teams.id))
@@ -168,18 +145,14 @@ export async function PUT(request: NextRequest) {
         position,
         jerseyNumber,
         status,
-        playerRole
+        playerRole,
       })
       .where(eq(teamRosters.id, rosterId))
       .returning();
 
     return NextResponse.json(updatedEntry);
-
   } catch (error) {
     console.error('Update roster error:', error);
-    return NextResponse.json(
-      { error: 'Failed to update roster entry' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to update roster entry' }, { status: 500 });
   }
 }

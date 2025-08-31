@@ -1,4 +1,4 @@
-import { QueryClient } from '@tanstack/react-query'
+import { QueryClient } from '@tanstack/react-query';
 
 export function createQueryClient() {
   return new QueryClient({
@@ -9,9 +9,9 @@ export function createQueryClient() {
         retry: (failureCount, error: any) => {
           // Don't retry on authentication errors
           if (error?.status === 401 || error?.status === 403) {
-            return false
+            return false;
           }
-          return failureCount < 3
+          return failureCount < 3;
         },
         // Critical: Disable queries during SSR to prevent hydration mismatches
         enabled: typeof window !== 'undefined',
@@ -30,5 +30,5 @@ export function createQueryClient() {
         retry: 1,
       },
     },
-  })
+  });
 }

@@ -1,22 +1,28 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { 
-  Brain, 
-  Calendar, 
-  BookOpen, 
-  Users, 
-  Download, 
-  Save, 
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import {
+  Brain,
+  Calendar,
+  BookOpen,
+  Users,
+  Download,
+  Save,
   Share2,
   Clock,
   Target,
@@ -24,66 +30,66 @@ import {
   CheckCircle,
   AlertCircle,
   Lightbulb,
-  Zap
-} from 'lucide-react'
+  Zap,
+} from 'lucide-react';
 
 interface CurriculumRequest {
-  userType: 'student' | 'parent' | 'teacher'
-  state: string
-  gradeLevel: string
-  subjects: string[]
-  learningStyle: string[]
-  accommodations: string[]
-  timeframe: 'semester' | 'year' | 'quarter' | 'custom'
-  hoursPerWeek: number
-  specialRequirements: string
-  goals: string[]
+  userType: 'student' | 'parent' | 'teacher';
+  state: string;
+  gradeLevel: string;
+  subjects: string[];
+  learningStyle: string[];
+  accommodations: string[];
+  timeframe: 'semester' | 'year' | 'quarter' | 'custom';
+  hoursPerWeek: number;
+  specialRequirements: string;
+  goals: string[];
 }
 
 interface GeneratedCurriculum {
-  id: string
-  title: string
-  description: string
+  id: string;
+  title: string;
+  description: string;
   subjects: Array<{
-    name: string
-    weeks: number
+    name: string;
+    weeks: number;
     units: Array<{
-      title: string
-      duration: string
-      objectives: string[]
-      activities: string[]
-      assessments: string[]
-      accommodations: string[]
-    }>
-  }>
+      title: string;
+      duration: string;
+      objectives: string[];
+      activities: string[];
+      assessments: string[];
+      accommodations: string[];
+    }>;
+  }>;
   schedule: Array<{
-    week: number
+    week: number;
     subjects: Array<{
-      subject: string
-      topics: string[]
-      homework: string[]
-      projects: string[]
-    }>
-  }>
+      subject: string;
+      topics: string[];
+      homework: string[];
+      projects: string[];
+    }>;
+  }>;
   stateCompliance: {
-    requirements: string[]
-    standards: string[]
-    assessments: string[]
-    complianceScore: number
-  }
+    requirements: string[];
+    standards: string[];
+    assessments: string[];
+    complianceScore: number;
+  };
   adaptations: {
-    dyslexia: string[]
-    adhd: string[]
-    autism: string[]
-    ell: string[]
-    gifted: string[]
-  }
+    dyslexia: string[];
+    adhd: string[];
+    autism: string[];
+    ell: string[];
+    gifted: string[];
+  };
 }
 
 export default function AICurriculumGenerator() {
-  const [activeTab, setActiveTab] = useState('setup')
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [generationProgress, setGenerationProgress] = useState(0)
+  const [activeTab, setActiveTab] = useState('setup');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState(0);
   const [request, setRequest] = useState<CurriculumRequest>({
     userType: 'student',
     state: '',
@@ -94,80 +100,174 @@ export default function AICurriculumGenerator() {
     timeframe: 'semester',
     hoursPerWeek: 20,
     specialRequirements: '',
-    goals: []
-  })
-  const [generatedCurriculum, setGeneratedCurriculum] = useState<GeneratedCurriculum | null>(null)
+    goals: [],
+  });
+  const [generatedCurriculum, setGeneratedCurriculum] = useState<GeneratedCurriculum | null>(null);
 
   const states = [
-    'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut',
-    'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
-    'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan',
-    'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
-    'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio',
-    'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
-    'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia',
-    'Wisconsin', 'Wyoming'
-  ]
+    'Alabama',
+    'Alaska',
+    'Arizona',
+    'Arkansas',
+    'California',
+    'Colorado',
+    'Connecticut',
+    'Delaware',
+    'Florida',
+    'Georgia',
+    'Hawaii',
+    'Idaho',
+    'Illinois',
+    'Indiana',
+    'Iowa',
+    'Kansas',
+    'Kentucky',
+    'Louisiana',
+    'Maine',
+    'Maryland',
+    'Massachusetts',
+    'Michigan',
+    'Minnesota',
+    'Mississippi',
+    'Missouri',
+    'Montana',
+    'Nebraska',
+    'Nevada',
+    'New Hampshire',
+    'New Jersey',
+    'New Mexico',
+    'New York',
+    'North Carolina',
+    'North Dakota',
+    'Ohio',
+    'Oklahoma',
+    'Oregon',
+    'Pennsylvania',
+    'Rhode Island',
+    'South Carolina',
+    'South Dakota',
+    'Tennessee',
+    'Texas',
+    'Utah',
+    'Vermont',
+    'Virginia',
+    'Washington',
+    'West Virginia',
+    'Wisconsin',
+    'Wyoming',
+  ];
 
   const gradeOptions = [
-    'Kindergarten', '1st Grade', '2nd Grade', '3rd Grade', '4th Grade', '5th Grade',
-    '6th Grade', '7th Grade', '8th Grade', '9th Grade', '10th Grade', '11th Grade', '12th Grade'
-  ]
+    'Kindergarten',
+    '1st Grade',
+    '2nd Grade',
+    '3rd Grade',
+    '4th Grade',
+    '5th Grade',
+    '6th Grade',
+    '7th Grade',
+    '8th Grade',
+    '9th Grade',
+    '10th Grade',
+    '11th Grade',
+    '12th Grade',
+  ];
 
   const subjectOptions = [
-    'English Language Arts', 'Mathematics', 'Science', 'Social Studies', 'History',
-    'Geography', 'Civics', 'Economics', 'Biology', 'Chemistry', 'Physics', 'Earth Science',
-    'Algebra I', 'Algebra II', 'Geometry', 'Pre-Calculus', 'Calculus', 'Statistics',
-    'World Languages', 'Spanish', 'French', 'German', 'Art', 'Music', 'Theater',
-    'Physical Education', 'Health', 'Computer Science', 'Technology', 'Career Readiness'
-  ]
+    'English Language Arts',
+    'Mathematics',
+    'Science',
+    'Social Studies',
+    'History',
+    'Geography',
+    'Civics',
+    'Economics',
+    'Biology',
+    'Chemistry',
+    'Physics',
+    'Earth Science',
+    'Algebra I',
+    'Algebra II',
+    'Geometry',
+    'Pre-Calculus',
+    'Calculus',
+    'Statistics',
+    'World Languages',
+    'Spanish',
+    'French',
+    'German',
+    'Art',
+    'Music',
+    'Theater',
+    'Physical Education',
+    'Health',
+    'Computer Science',
+    'Technology',
+    'Career Readiness',
+  ];
 
   const learningStyleOptions = [
-    'Visual Learner', 'Auditory Learner', 'Kinesthetic Learner', 'Reading/Writing Learner',
-    'Collaborative Learner', 'Independent Learner', 'Hands-on Learner', 'Project-based Learner'
-  ]
+    'Visual Learner',
+    'Auditory Learner',
+    'Kinesthetic Learner',
+    'Reading/Writing Learner',
+    'Collaborative Learner',
+    'Independent Learner',
+    'Hands-on Learner',
+    'Project-based Learner',
+  ];
 
   const accommodationOptions = [
-    'Dyslexia Support', 'ADHD Accommodations', 'Autism Spectrum Support', 'English Language Learner',
-    'Gifted and Talented', '504 Plan', 'IEP Support', 'Extended Time', 'Frequent Breaks',
-    'Sensory Breaks', 'Alternative Assessments', 'Text-to-Speech', 'Large Print Materials'
-  ]
+    'Dyslexia Support',
+    'ADHD Accommodations',
+    'Autism Spectrum Support',
+    'English Language Learner',
+    'Gifted and Talented',
+    '504 Plan',
+    'IEP Support',
+    'Extended Time',
+    'Frequent Breaks',
+    'Sensory Breaks',
+    'Alternative Assessments',
+    'Text-to-Speech',
+    'Large Print Materials',
+  ];
 
   const handleGenerateCurriculum = async () => {
-    setIsGenerating(true)
-    setGenerationProgress(0)
-    setActiveTab('generating')
+    setIsGenerating(true);
+    setGenerationProgress(0);
+    setActiveTab('generating');
 
     try {
       // Make API call to generate curriculum
       const response = await fetch('/api/curriculum/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(request)
-      })
+        body: JSON.stringify(request),
+      });
 
       if (!response.ok) {
-        throw new Error('Failed to generate curriculum')
+        throw new Error('Failed to generate curriculum');
       }
 
       // Simulate progress updates
-      const intervals = [20, 40, 60, 80, 100]
+      const intervals = [20, 40, 60, 80, 100];
       for (const progress of intervals) {
-        setGenerationProgress(progress)
-        await new Promise(resolve => setTimeout(resolve, 500))
+        setGenerationProgress(progress);
+        await new Promise((resolve) => setTimeout(resolve, 500));
       }
 
-      const curriculum = await response.json()
-      setGeneratedCurriculum(curriculum)
-      setActiveTab('results')
+      const curriculum = await response.json();
+      setGeneratedCurriculum(curriculum);
+      setActiveTab('results');
     } catch (error) {
-      console.error('Error generating curriculum:', error)
+      console.error('Error generating curriculum:', error);
       // For now, show mock data
       const mockCurriculum: GeneratedCurriculum = {
         id: `curriculum-${Date.now()}`,
         title: `${request.gradeLevel} ${request.state} Standards Curriculum`,
         description: `Comprehensive ${request.timeframe} curriculum tailored for ${request.learningStyle.join(', ')} with ${request.accommodations.join(', ')} support`,
-        subjects: request.subjects.map(subject => ({
+        subjects: request.subjects.map((subject) => ({
           name: subject,
           weeks: request.timeframe === 'semester' ? 18 : 36,
           units: [
@@ -177,107 +277,110 @@ export default function AICurriculumGenerator() {
               objectives: [
                 `Master fundamental ${subject} concepts`,
                 'Develop critical thinking skills',
-                'Apply knowledge in practical contexts'
+                'Apply knowledge in practical contexts',
               ],
               activities: [
                 'Interactive digital lessons',
                 'Hands-on projects',
                 'Collaborative group work',
-                'Real-world applications'
+                'Real-world applications',
               ],
               assessments: [
                 'Formative assessments',
                 'Project-based evaluations',
                 'Adaptive quizzes',
-                'Portfolio development'
+                'Portfolio development',
               ],
-              accommodations: request.accommodations.map(acc => `${acc} specific adaptations`)
-            }
-          ]
+              accommodations: request.accommodations.map((acc) => `${acc} specific adaptations`),
+            },
+          ],
         })),
         schedule: Array.from({ length: request.timeframe === 'semester' ? 18 : 36 }, (_, week) => ({
           week: week + 1,
-          subjects: request.subjects.map(subject => ({
+          subjects: request.subjects.map((subject) => ({
             subject,
             topics: [`Week ${week + 1} ${subject} Topics`],
             homework: [`${subject} practice exercises`],
-            projects: week % 4 === 0 ? [`${subject} unit project`] : []
-          }))
+            projects: week % 4 === 0 ? [`${subject} unit project`] : [],
+          })),
         })),
         stateCompliance: {
           requirements: [
             `${request.state} Academic Standards`,
             'State Assessment Requirements',
             'Graduation Requirements',
-            'Special Education Compliance'
+            'Special Education Compliance',
           ],
           standards: [
             'Common Core Standards',
             'Next Generation Science Standards',
             'State-Specific Standards',
-            'Social Studies Standards'
+            'Social Studies Standards',
           ],
           assessments: [
             'State Standardized Tests',
             'Benchmark Assessments',
             'Progress Monitoring',
-            'End-of-Course Exams'
+            'End-of-Course Exams',
           ],
-          complianceScore: 98
+          complianceScore: 98,
         },
         adaptations: {
           dyslexia: [
             'Dyslexia-friendly fonts and formatting',
             'Audio support for all text',
             'Visual learning aids',
-            'Extended time for reading activities'
+            'Extended time for reading activities',
           ],
           adhd: [
             'Frequent movement breaks',
             'Chunked learning segments',
             'Visual organizers',
-            'Focus enhancement tools'
+            'Focus enhancement tools',
           ],
           autism: [
             'Structured routines',
             'Visual schedules',
             'Sensory break options',
-            'Clear expectations'
+            'Clear expectations',
           ],
           ell: [
             'Multilingual support',
             'Visual vocabulary aids',
             'Cultural connections',
-            'Language scaffolding'
+            'Language scaffolding',
           ],
           gifted: [
             'Accelerated content',
             'Independent research projects',
             'Critical thinking extensions',
-            'Leadership opportunities'
-          ]
-        }
-      }
+            'Leadership opportunities',
+          ],
+        },
+      };
 
-      setGeneratedCurriculum(mockCurriculum)
-      setActiveTab('results')
+      setGeneratedCurriculum(mockCurriculum);
+      setActiveTab('results');
     } finally {
-      setIsGenerating(false)
+      setIsGenerating(false);
     }
-  }
+  };
 
   const updateRequest = (field: keyof CurriculumRequest, value: any) => {
-    setRequest(prev => ({ ...prev, [field]: value }))
-  }
+    setRequest((prev) => ({ ...prev, [field]: value }));
+  };
 
-  const toggleArrayItem = (field: 'subjects' | 'learningStyle' | 'accommodations' | 'goals', item: string) => {
-    setRequest(prev => ({
+  const toggleArrayItem = (
+    field: 'subjects' | 'learningStyle' | 'accommodations' | 'goals',
+    item: string,
+  ) => {
+    setRequest((prev) => ({
       ...prev,
-      [field]: prev[field].includes(item) 
-        ? prev[field].filter(i => i !== item)
-        : [...prev[field], item]
-    }))
-  }
+      [field]: prev[field].includes(item)
+        ? prev[field].filter((i) => i !== item)
+        : [...prev[field], item],
+    }));
+  };
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
@@ -287,7 +390,8 @@ export default function AICurriculumGenerator() {
           <h1 className="text-3xl font-bold">AI Curriculum Generator</h1>
         </div>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Create personalized, state-compliant curricula with built-in neurodivergent support and adaptive learning features
+          Create personalized, state-compliant curricula with built-in neurodivergent support and
+          adaptive learning features
         </p>
       </div>
 
@@ -295,8 +399,12 @@ export default function AICurriculumGenerator() {
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="setup">Setup</TabsTrigger>
           <TabsTrigger value="requirements">Requirements</TabsTrigger>
-          <TabsTrigger value="generating" disabled={!isGenerating}>Generating</TabsTrigger>
-          <TabsTrigger value="results" disabled={!generatedCurriculum}>Results</TabsTrigger>
+          <TabsTrigger value="generating" disabled={!isGenerating}>
+            Generating
+          </TabsTrigger>
+          <TabsTrigger value="results" disabled={!generatedCurriculum}>
+            Results
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="setup" className="space-y-6">
@@ -306,15 +414,16 @@ export default function AICurriculumGenerator() {
                 <Users className="h-5 w-5" />
                 Basic Information
               </CardTitle>
-              <CardDescription>
-                Tell us about who will be using this curriculum
-              </CardDescription>
+              <CardDescription>Tell us about who will be using this curriculum</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="userType">I am a...</Label>
-                  <Select value={request.userType} onValueChange={(value) => updateRequest('userType', value)}>
+                  <Select
+                    value={request.userType}
+                    onValueChange={(value) => updateRequest('userType', value)}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select user type" />
                     </SelectTrigger>
@@ -328,13 +437,18 @@ export default function AICurriculumGenerator() {
 
                 <div>
                   <Label htmlFor="state">State</Label>
-                  <Select value={request.state} onValueChange={(value) => updateRequest('state', value)}>
+                  <Select
+                    value={request.state}
+                    onValueChange={(value) => updateRequest('state', value)}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select state" />
                     </SelectTrigger>
                     <SelectContent>
-                      {states.map(state => (
-                        <SelectItem key={state} value={state}>{state}</SelectItem>
+                      {states.map((state) => (
+                        <SelectItem key={state} value={state}>
+                          {state}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -342,13 +456,18 @@ export default function AICurriculumGenerator() {
 
                 <div>
                   <Label htmlFor="gradeLevel">Grade Level</Label>
-                  <Select value={request.gradeLevel} onValueChange={(value) => updateRequest('gradeLevel', value)}>
+                  <Select
+                    value={request.gradeLevel}
+                    onValueChange={(value) => updateRequest('gradeLevel', value)}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select grade" />
                     </SelectTrigger>
                     <SelectContent>
-                      {gradeOptions.map(grade => (
-                        <SelectItem key={grade} value={grade}>{grade}</SelectItem>
+                      {gradeOptions.map((grade) => (
+                        <SelectItem key={grade} value={grade}>
+                          {grade}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -358,7 +477,10 @@ export default function AICurriculumGenerator() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="timeframe">Timeframe</Label>
-                  <Select value={request.timeframe} onValueChange={(value) => updateRequest('timeframe', value)}>
+                  <Select
+                    value={request.timeframe}
+                    onValueChange={(value) => updateRequest('timeframe', value)}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select timeframe" />
                     </SelectTrigger>
@@ -391,16 +513,14 @@ export default function AICurriculumGenerator() {
                 <BookOpen className="h-5 w-5" />
                 Subject Selection
               </CardTitle>
-              <CardDescription>
-                Choose the subjects to include in your curriculum
-              </CardDescription>
+              <CardDescription>Choose the subjects to include in your curriculum</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                {subjectOptions.map(subject => (
+                {subjectOptions.map((subject) => (
                   <Button
                     key={subject}
-                    variant={request.subjects.includes(subject) ? "default" : "outline"}
+                    variant={request.subjects.includes(subject) ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => toggleArrayItem('subjects', subject)}
                     className="justify-start text-left h-auto p-2"
@@ -428,10 +548,10 @@ export default function AICurriculumGenerator() {
               <div>
                 <Label>Learning Styles</Label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
-                  {learningStyleOptions.map(style => (
+                  {learningStyleOptions.map((style) => (
                     <Button
                       key={style}
-                      variant={request.learningStyle.includes(style) ? "default" : "outline"}
+                      variant={request.learningStyle.includes(style) ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => toggleArrayItem('learningStyle', style)}
                       className="justify-start text-left h-auto p-2"
@@ -445,10 +565,12 @@ export default function AICurriculumGenerator() {
               <div>
                 <Label>Accommodations & Support</Label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
-                  {accommodationOptions.map(accommodation => (
+                  {accommodationOptions.map((accommodation) => (
                     <Button
                       key={accommodation}
-                      variant={request.accommodations.includes(accommodation) ? "default" : "outline"}
+                      variant={
+                        request.accommodations.includes(accommodation) ? 'default' : 'outline'
+                      }
                       size="sm"
                       onClick={() => toggleArrayItem('accommodations', accommodation)}
                       className="justify-start text-left h-auto p-2"
@@ -473,7 +595,7 @@ export default function AICurriculumGenerator() {
           </Card>
 
           <div className="flex justify-center">
-            <Button 
+            <Button
               onClick={handleGenerateCurriculum}
               size="lg"
               className="px-8"
@@ -493,7 +615,9 @@ export default function AICurriculumGenerator() {
                   <Brain className="h-12 w-12 text-blue-500" />
                 </div>
                 <h3 className="text-xl font-semibold">Generating Your Personalized Curriculum</h3>
-                <p className="text-gray-600">Our AI is creating a comprehensive curriculum tailored to your specific needs...</p>
+                <p className="text-gray-600">
+                  Our AI is creating a comprehensive curriculum tailored to your specific needs...
+                </p>
                 <Progress value={generationProgress} className="max-w-md mx-auto" />
                 <p className="text-sm text-gray-500">{Math.round(generationProgress)}% Complete</p>
               </div>
@@ -537,7 +661,9 @@ export default function AICurriculumGenerator() {
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
                         <span>Compliance Score</span>
-                        <Badge variant="default">{generatedCurriculum.stateCompliance.complianceScore}%</Badge>
+                        <Badge variant="default">
+                          {generatedCurriculum.stateCompliance.complianceScore}%
+                        </Badge>
                       </div>
                       <Progress value={generatedCurriculum.stateCompliance.complianceScore} />
                       <div className="text-sm text-gray-600">
@@ -581,13 +707,14 @@ export default function AICurriculumGenerator() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
-                      {Object.entries(generatedCurriculum.adaptations).map(([type, adaptations]) => (
-                        adaptations.length > 0 && (
-                          <Badge key={type} variant="outline" className="mr-1">
-                            {type.toUpperCase()}
-                          </Badge>
-                        )
-                      ))}
+                      {Object.entries(generatedCurriculum.adaptations).map(
+                        ([type, adaptations]) =>
+                          adaptations.length > 0 && (
+                            <Badge key={type} variant="outline" className="mr-1">
+                              {type.toUpperCase()}
+                            </Badge>
+                          ),
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -597,5 +724,5 @@ export default function AICurriculumGenerator() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

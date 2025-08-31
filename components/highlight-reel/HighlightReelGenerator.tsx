@@ -1,20 +1,20 @@
 'use client';
 
 import React, { useState } from 'react';
-import { 
-  Play, 
-  Video, 
-  Zap, 
-  Clock, 
-  Star, 
-  Download, 
-  Settings, 
+import {
+  Play,
+  Video,
+  Zap,
+  Clock,
+  Star,
+  Download,
+  Settings,
   ChevronRight,
   Upload,
   Sparkles,
   Target,
   Activity,
-  Award
+  Award,
 } from 'lucide-react';
 
 interface HighlightMoment {
@@ -91,7 +91,7 @@ const HighlightReelGenerator: React.FC = () => {
 
         if (data.success) {
           const reel = data.highlightReel;
-          
+
           if (reel.status === 'completed') {
             setCurrentStep(4);
             setIsGenerating(false);
@@ -119,7 +119,7 @@ const HighlightReelGenerator: React.FC = () => {
     try {
       const response = await fetch('/api/highlight-reel?limit=5');
       const data = await response.json();
-      
+
       if (data.success) {
         setRecentReels(data.highlightReels);
       }
@@ -165,9 +165,7 @@ const HighlightReelGenerator: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">
-          One-Click Highlight Reel Generator
-        </h1>
+        <h1 className="text-3xl font-bold text-white mb-2">One-Click Highlight Reel Generator</h1>
         <p className="text-slate-400">
           Create professional highlight reels from your performance videos with AI-powered analysis
         </p>
@@ -182,39 +180,53 @@ const HighlightReelGenerator: React.FC = () => {
               <h2 className="text-xl font-semibold text-white">Generation Progress</h2>
               <span className="text-sm text-slate-400">Step {currentStep} of 4</span>
             </div>
-            
+
             <div className="flex items-center space-x-4">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                currentStep >= 1 ? 'bg-blue-600 text-white' : 'bg-slate-600 text-slate-400'
-              }`}>
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  currentStep >= 1 ? 'bg-blue-600 text-white' : 'bg-slate-600 text-slate-400'
+                }`}
+              >
                 1
               </div>
-              <div className={`flex-1 h-2 rounded-full ${
-                currentStep >= 2 ? 'bg-blue-600' : 'bg-slate-600'
-              }`}></div>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                currentStep >= 2 ? 'bg-blue-600 text-white' : 'bg-slate-600 text-slate-400'
-              }`}>
+              <div
+                className={`flex-1 h-2 rounded-full ${
+                  currentStep >= 2 ? 'bg-blue-600' : 'bg-slate-600'
+                }`}
+              ></div>
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  currentStep >= 2 ? 'bg-blue-600 text-white' : 'bg-slate-600 text-slate-400'
+                }`}
+              >
                 2
               </div>
-              <div className={`flex-1 h-2 rounded-full ${
-                currentStep >= 3 ? 'bg-blue-600' : 'bg-slate-600'
-              }`}></div>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                currentStep >= 3 ? 'bg-blue-600 text-white' : 'bg-slate-600 text-slate-400'
-              }`}>
+              <div
+                className={`flex-1 h-2 rounded-full ${
+                  currentStep >= 3 ? 'bg-blue-600' : 'bg-slate-600'
+                }`}
+              ></div>
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  currentStep >= 3 ? 'bg-blue-600 text-white' : 'bg-slate-600 text-slate-400'
+                }`}
+              >
                 3
               </div>
-              <div className={`flex-1 h-2 rounded-full ${
-                currentStep >= 4 ? 'bg-blue-600' : 'bg-slate-600'
-              }`}></div>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                currentStep >= 4 ? 'bg-green-600 text-white' : 'bg-slate-600 text-slate-400'
-              }`}>
+              <div
+                className={`flex-1 h-2 rounded-full ${
+                  currentStep >= 4 ? 'bg-blue-600' : 'bg-slate-600'
+                }`}
+              ></div>
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  currentStep >= 4 ? 'bg-green-600 text-white' : 'bg-slate-600 text-slate-400'
+                }`}
+              >
                 4
               </div>
             </div>
-            
+
             <div className="mt-4 text-sm text-slate-300">
               {currentStep === 1 && 'Configure your highlight reel settings'}
               {currentStep === 2 && 'Analyzing video for key moments...'}
@@ -226,12 +238,10 @@ const HighlightReelGenerator: React.FC = () => {
           {/* Configuration Panel */}
           <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
             <h3 className="text-lg font-semibold text-white mb-4">Reel Configuration</h3>
-            
+
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Reel Title
-                </label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Reel Title</label>
                 <input
                   type="text"
                   value={reelTitle}
@@ -242,9 +252,7 @@ const HighlightReelGenerator: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Duration
-                </label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Duration</label>
                 <div className="grid grid-cols-4 gap-2">
                   {[30, 60, 90, 120].map((duration) => (
                     <button
@@ -310,7 +318,7 @@ const HighlightReelGenerator: React.FC = () => {
           {/* Recent Reels */}
           <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
             <h3 className="text-lg font-semibold text-white mb-4">Recent Highlight Reels</h3>
-            
+
             {recentReels.length === 0 ? (
               <div className="text-center py-8">
                 <Video className="w-12 h-12 text-slate-400 mx-auto mb-3" />
@@ -325,23 +333,25 @@ const HighlightReelGenerator: React.FC = () => {
                     className="bg-slate-700 rounded-lg p-4 border border-slate-600"
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium text-white text-sm truncate">
-                        {reel.title}
-                      </h4>
-                      <div className={`px-2 py-1 rounded-full text-xs ${
-                        reel.status === 'completed' ? 'bg-green-500/20 text-green-400' :
-                        reel.status === 'processing' ? 'bg-blue-500/20 text-blue-400' :
-                        'bg-red-500/20 text-red-400'
-                      }`}>
+                      <h4 className="font-medium text-white text-sm truncate">{reel.title}</h4>
+                      <div
+                        className={`px-2 py-1 rounded-full text-xs ${
+                          reel.status === 'completed'
+                            ? 'bg-green-500/20 text-green-400'
+                            : reel.status === 'processing'
+                              ? 'bg-blue-500/20 text-blue-400'
+                              : 'bg-red-500/20 text-red-400'
+                        }`}
+                      >
                         {reel.status}
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center justify-between text-xs text-slate-400">
                       <span>{reel.duration}s</span>
                       <span>{reel.highlights.length} highlights</span>
                     </div>
-                    
+
                     {reel.status === 'completed' && (
                       <button className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded text-xs font-medium flex items-center justify-center space-x-1">
                         <Download className="w-3 h-3" />
@@ -357,7 +367,7 @@ const HighlightReelGenerator: React.FC = () => {
           {/* AI Features */}
           <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
             <h3 className="text-lg font-semibold text-white mb-4">AI Features</h3>
-            
+
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
                 <div className="w-8 h-8 bg-blue-600/20 rounded-lg flex items-center justify-center">
@@ -365,10 +375,12 @@ const HighlightReelGenerator: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-white">Smart Highlight Detection</h4>
-                  <p className="text-xs text-slate-400">AI identifies your best moments automatically</p>
+                  <p className="text-xs text-slate-400">
+                    AI identifies your best moments automatically
+                  </p>
                 </div>
               </div>
-              
+
               <div className="flex items-start space-x-3">
                 <div className="w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center">
                   <Star className="w-4 h-4 text-green-400" />
@@ -378,7 +390,7 @@ const HighlightReelGenerator: React.FC = () => {
                   <p className="text-xs text-slate-400">Highlights based on performance ratings</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start space-x-3">
                 <div className="w-8 h-8 bg-purple-600/20 rounded-lg flex items-center justify-center">
                   <Settings className="w-4 h-4 text-purple-400" />

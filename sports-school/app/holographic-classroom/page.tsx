@@ -8,18 +8,20 @@ import { Play, Pause, Volume2, Users, Camera, Mic, Activity, Zap, Target } from 
 
 // Holographic Classroom Simulation (2D Visualization)
 function HolographicClassroom({ isActive }: { isActive: boolean }) {
-  const [dataPoints, setDataPoints] = useState<Array<{ x: number; y: number; intensity: number }>>([]);
-  
+  const [dataPoints, setDataPoints] = useState<Array<{ x: number; y: number; intensity: number }>>(
+    [],
+  );
+
   useEffect(() => {
     if (isActive) {
       const interval = setInterval(() => {
-        setDataPoints(prev => [
+        setDataPoints((prev) => [
           ...prev.slice(-20),
           {
             x: Math.random() * 100,
             y: Math.random() * 100,
-            intensity: Math.random()
-          }
+            intensity: Math.random(),
+          },
         ]);
       }, 500);
       return () => clearInterval(interval);
@@ -33,18 +35,20 @@ function HolographicClassroom({ isActive }: { isActive: boolean }) {
         <svg className="w-full h-full">
           <defs>
             <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="cyan" strokeWidth="1"/>
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="cyan" strokeWidth="1" />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#grid)" />
         </svg>
       </div>
-      
+
       {/* Central AI Coach Avatar */}
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <div className="relative">
-          <div className={`w-16 h-16 rounded-full border-2 border-cyan-400 flex items-center justify-center
-            ${isActive ? 'bg-cyan-400/20 animate-pulse' : 'bg-gray-600/20'}`}>
+          <div
+            className={`w-16 h-16 rounded-full border-2 border-cyan-400 flex items-center justify-center
+            ${isActive ? 'bg-cyan-400/20 animate-pulse' : 'bg-gray-600/20'}`}
+          >
             <Activity className={`w-8 h-8 ${isActive ? 'text-cyan-400' : 'text-gray-400'}`} />
           </div>
           <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm font-bold text-cyan-400">
@@ -58,15 +62,17 @@ function HolographicClassroom({ isActive }: { isActive: boolean }) {
         const angle = (i / 8) * Math.PI * 2;
         const x = 50 + Math.cos(angle) * 35;
         const y = 50 + Math.sin(angle) * 35;
-        
+
         return (
-          <div 
+          <div
             key={i}
             className="absolute transform -translate-x-1/2 -translate-y-1/2"
             style={{ left: `${x}%`, top: `${y}%` }}
           >
-            <div className={`w-8 h-8 rounded-full border border-orange-400 flex items-center justify-center
-              ${isActive ? 'bg-orange-400/30 animate-pulse' : 'bg-gray-500/30'}`}>
+            <div
+              className={`w-8 h-8 rounded-full border border-orange-400 flex items-center justify-center
+              ${isActive ? 'bg-orange-400/30 animate-pulse' : 'bg-gray-500/30'}`}
+            >
               <Users className={`w-4 h-4 ${isActive ? 'text-orange-400' : 'text-gray-400'}`} />
             </div>
           </div>
@@ -74,26 +80,31 @@ function HolographicClassroom({ isActive }: { isActive: boolean }) {
       })}
 
       {/* Real-time Data Visualization */}
-      {isActive && dataPoints.map((point, i) => (
-        <div 
-          key={i}
-          className="absolute w-2 h-2 bg-green-400 rounded-full animate-ping"
-          style={{ 
-            left: `${point.x}%`, 
-            top: `${point.y}%`,
-            opacity: point.intensity 
-          }}
-        />
-      ))}
+      {isActive &&
+        dataPoints.map((point, i) => (
+          <div
+            key={i}
+            className="absolute w-2 h-2 bg-green-400 rounded-full animate-ping"
+            style={{
+              left: `${point.x}%`,
+              top: `${point.y}%`,
+              opacity: point.intensity,
+            }}
+          />
+        ))}
 
       {/* Status Indicators */}
       <div className="absolute top-4 left-4 space-y-2">
         <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></div>
+          <div
+            className={`w-2 h-2 rounded-full ${isActive ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}
+          ></div>
           <span className="text-xs text-gray-300">Holographic Projection</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-cyan-400 animate-pulse' : 'bg-gray-400'}`}></div>
+          <div
+            className={`w-2 h-2 rounded-full ${isActive ? 'bg-cyan-400 animate-pulse' : 'bg-gray-400'}`}
+          ></div>
           <span className="text-xs text-gray-300">AI Analysis</span>
         </div>
       </div>
@@ -108,7 +119,7 @@ function BiometricMonitor() {
     vo2Max: 0,
     lactateThreshold: 0,
     powerOutput: 0,
-    efficiency: 0
+    efficiency: 0,
   });
 
   useEffect(() => {
@@ -118,7 +129,7 @@ function BiometricMonitor() {
         vo2Max: 45 + Math.random() * 15,
         lactateThreshold: 160 + Math.random() * 20,
         powerOutput: 250 + Math.random() * 100,
-        efficiency: 85 + Math.random() * 15
+        efficiency: 85 + Math.random() * 15,
       });
     }, 1000);
 
@@ -129,22 +140,18 @@ function BiometricMonitor() {
     <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
       <Card className="bg-red-500/20 border-red-500">
         <CardContent className="p-4">
-          <div className="text-2xl font-bold text-red-400">
-            {Math.round(metrics.heartRate)}
-          </div>
+          <div className="text-2xl font-bold text-red-400">{Math.round(metrics.heartRate)}</div>
           <div className="text-sm text-red-300">Heart Rate (BPM)</div>
         </CardContent>
       </Card>
-      
+
       <Card className="bg-blue-500/20 border-blue-500">
         <CardContent className="p-4">
-          <div className="text-2xl font-bold text-blue-400">
-            {Math.round(metrics.vo2Max)}
-          </div>
+          <div className="text-2xl font-bold text-blue-400">{Math.round(metrics.vo2Max)}</div>
           <div className="text-sm text-blue-300">VO2 Max</div>
         </CardContent>
       </Card>
-      
+
       <Card className="bg-green-500/20 border-green-500">
         <CardContent className="p-4">
           <div className="text-2xl font-bold text-green-400">
@@ -153,7 +160,7 @@ function BiometricMonitor() {
           <div className="text-sm text-green-300">Lactate Threshold</div>
         </CardContent>
       </Card>
-      
+
       <Card className="bg-purple-500/20 border-purple-500">
         <CardContent className="p-4">
           <div className="text-2xl font-bold text-purple-400">
@@ -162,7 +169,7 @@ function BiometricMonitor() {
           <div className="text-sm text-purple-300">Power Output</div>
         </CardContent>
       </Card>
-      
+
       <Card className="bg-orange-500/20 border-orange-500">
         <CardContent className="p-4">
           <div className="text-2xl font-bold text-orange-400">
@@ -181,35 +188,36 @@ function AIPerformanceEngine() {
     recommendations: [],
     riskFactors: [],
     optimizations: [],
-    prediction: ""
+    prediction: '',
   });
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const runAnalysis = async () => {
     setIsAnalyzing(true);
-    
+
     // Simulate AI analysis with real performance algorithms
     setTimeout(() => {
       setAnalysis({
         recommendations: [
-          "Increase interval training by 15% to improve VO2 max",
-          "Focus on lactate threshold training 3x weekly",
-          "Implement power-based training zones",
-          "Add plyometric exercises for explosive power"
+          'Increase interval training by 15% to improve VO2 max',
+          'Focus on lactate threshold training 3x weekly',
+          'Implement power-based training zones',
+          'Add plyometric exercises for explosive power',
         ],
         riskFactors: [
-          "Elevated resting heart rate indicates overtraining",
-          "Power output plateau suggests training adaptation needed",
-          "Recovery metrics below optimal range"
+          'Elevated resting heart rate indicates overtraining',
+          'Power output plateau suggests training adaptation needed',
+          'Recovery metrics below optimal range',
         ],
         optimizations: [
-          "Training load: Reduce by 10% this week",
-          "Nutrition: Increase carb intake pre-workout",
-          "Recovery: Add 30min ice bath post-training",
-          "Sleep: Target 8.5 hours for optimal adaptation"
+          'Training load: Reduce by 10% this week',
+          'Nutrition: Increase carb intake pre-workout',
+          'Recovery: Add 30min ice bath post-training',
+          'Sleep: Target 8.5 hours for optimal adaptation',
         ],
-        prediction: "With current optimization plan, expect 12% performance improvement over 6 weeks"
+        prediction:
+          'With current optimization plan, expect 12% performance improvement over 6 weeks',
       });
       setIsAnalyzing(false);
     }, 3000);
@@ -224,21 +232,21 @@ function AIPerformanceEngine() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <Button 
-          onClick={runAnalysis} 
+        <Button
+          onClick={runAnalysis}
           disabled={isAnalyzing}
           className="mb-4 bg-cyan-600 hover:bg-cyan-700"
         >
-          {isAnalyzing ? "Analyzing..." : "Run AI Analysis"}
+          {isAnalyzing ? 'Analyzing...' : 'Run AI Analysis'}
         </Button>
-        
+
         {analysis.prediction && (
           <div className="space-y-4">
             <div className="p-4 bg-green-500/20 border border-green-500 rounded-lg">
               <h4 className="font-bold text-green-400 mb-2">Performance Prediction</h4>
               <p className="text-green-300">{analysis.prediction}</p>
             </div>
-            
+
             <div className="grid md:grid-cols-3 gap-4">
               <div>
                 <h4 className="font-bold text-cyan-400 mb-2">AI Recommendations</h4>
@@ -251,7 +259,7 @@ function AIPerformanceEngine() {
                   ))}
                 </ul>
               </div>
-              
+
               <div>
                 <h4 className="font-bold text-orange-400 mb-2">Risk Factors</h4>
                 <ul className="space-y-1 text-sm text-orange-300">
@@ -263,7 +271,7 @@ function AIPerformanceEngine() {
                   ))}
                 </ul>
               </div>
-              
+
               <div>
                 <h4 className="font-bold text-purple-400 mb-2">Optimizations</h4>
                 <ul className="space-y-1 text-sm text-purple-300">
@@ -293,7 +301,7 @@ export default function HolographicClassroomPage() {
     let interval: NodeJS.Timeout;
     if (isSessionActive) {
       interval = setInterval(() => {
-        setSessionTime(prev => prev + 1);
+        setSessionTime((prev) => prev + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
@@ -316,7 +324,7 @@ export default function HolographicClassroomPage() {
           <p className="text-xl text-gray-300 mb-6">
             Revolutionary hybrid learning environment with real-time AI coaching
           </p>
-          
+
           <div className="flex justify-center gap-4 mb-6">
             <Badge variant="outline" className="border-cyan-500 text-cyan-400">
               <Users className="w-4 h-4 mr-2" />
@@ -330,13 +338,17 @@ export default function HolographicClassroomPage() {
               Session: {formatTime(sessionTime)}
             </Badge>
           </div>
-          
+
           <div className="flex justify-center gap-4">
-            <Button 
+            <Button
               onClick={() => setIsSessionActive(!isSessionActive)}
               className={`${isSessionActive ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
             >
-              {isSessionActive ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
+              {isSessionActive ? (
+                <Pause className="w-4 h-4 mr-2" />
+              ) : (
+                <Play className="w-4 h-4 mr-2" />
+              )}
               {isSessionActive ? 'End Session' : 'Start Session'}
             </Button>
             <Button variant="outline" className="border-cyan-500 text-cyan-400">
@@ -400,9 +412,7 @@ export default function HolographicClassroomPage() {
               <CardTitle className="text-green-400">Peer Mentorship Network</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-green-300 mb-4">
-                AI-powered matching with elite athlete mentors
-              </p>
+              <p className="text-green-300 mb-4">AI-powered matching with elite athlete mentors</p>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-xs">
@@ -461,11 +471,15 @@ export default function HolographicClassroomPage() {
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <div>
                 <div className="text-4xl font-bold text-green-400">95%</div>
-                <div className="text-green-300">Students maintain 3.5+ GPA during sports seasons</div>
+                <div className="text-green-300">
+                  Students maintain 3.5+ GPA during sports seasons
+                </div>
               </div>
               <div>
                 <div className="text-4xl font-bold text-blue-400">100%</div>
-                <div className="text-blue-300">College acceptance rate with 90% athletic scholarships</div>
+                <div className="text-blue-300">
+                  College acceptance rate with 90% athletic scholarships
+                </div>
               </div>
               <div>
                 <div className="text-4xl font-bold text-purple-400">200%</div>

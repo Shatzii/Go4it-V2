@@ -43,8 +43,8 @@ function PerformancePageComponent() {
 
       const response = await fetch(`/api/performance/analytics?timeframe=${timeframe}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (response.ok) {
@@ -141,29 +141,57 @@ function PerformancePageComponent() {
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Excellent (90-100)</span>
                     <div className="flex items-center gap-2">
-                      <Progress value={(analytics.score_distribution.excellent / analytics.total_sessions) * 100} className="w-32" />
-                      <span className="text-sm font-medium">{analytics.score_distribution.excellent}</span>
+                      <Progress
+                        value={
+                          (analytics.score_distribution.excellent / analytics.total_sessions) * 100
+                        }
+                        className="w-32"
+                      />
+                      <span className="text-sm font-medium">
+                        {analytics.score_distribution.excellent}
+                      </span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Good (75-89)</span>
                     <div className="flex items-center gap-2">
-                      <Progress value={(analytics.score_distribution.good / analytics.total_sessions) * 100} className="w-32" />
-                      <span className="text-sm font-medium">{analytics.score_distribution.good}</span>
+                      <Progress
+                        value={(analytics.score_distribution.good / analytics.total_sessions) * 100}
+                        className="w-32"
+                      />
+                      <span className="text-sm font-medium">
+                        {analytics.score_distribution.good}
+                      </span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Average (60-74)</span>
                     <div className="flex items-center gap-2">
-                      <Progress value={(analytics.score_distribution.average / analytics.total_sessions) * 100} className="w-32" />
-                      <span className="text-sm font-medium">{analytics.score_distribution.average}</span>
+                      <Progress
+                        value={
+                          (analytics.score_distribution.average / analytics.total_sessions) * 100
+                        }
+                        className="w-32"
+                      />
+                      <span className="text-sm font-medium">
+                        {analytics.score_distribution.average}
+                      </span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Needs Improvement (0-59)</span>
                     <div className="flex items-center gap-2">
-                      <Progress value={(analytics.score_distribution.needs_improvement / analytics.total_sessions) * 100} className="w-32" />
-                      <span className="text-sm font-medium">{analytics.score_distribution.needs_improvement}</span>
+                      <Progress
+                        value={
+                          (analytics.score_distribution.needs_improvement /
+                            analytics.total_sessions) *
+                          100
+                        }
+                        className="w-32"
+                      />
+                      <span className="text-sm font-medium">
+                        {analytics.score_distribution.needs_improvement}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -179,8 +207,13 @@ function PerformancePageComponent() {
               <CardContent>
                 <div className="space-y-4">
                   {analytics.recent_scores.map((score, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                      <span className="text-sm">Session {analytics.recent_scores.length - index}</span>
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
+                      <span className="text-sm">
+                        Session {analytics.recent_scores.length - index}
+                      </span>
                       <div className="flex items-center gap-2">
                         <Progress value={score} className="w-32" />
                         <span className="text-sm font-medium">{score.toFixed(1)}</span>

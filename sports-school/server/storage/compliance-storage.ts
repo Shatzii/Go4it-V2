@@ -1,5 +1,5 @@
-import { 
-  ComplianceStandard, 
+import {
+  ComplianceStandard,
   InsertComplianceStandard,
   Accommodation,
   InsertAccommodation,
@@ -10,7 +10,7 @@ import {
   StudentCompliancePlan,
   InsertStudentCompliancePlan,
   ComplianceReportTemplate,
-  InsertComplianceReportTemplate
+  InsertComplianceReportTemplate,
 } from '../../shared/compliance-types';
 import { z } from 'zod';
 
@@ -23,7 +23,10 @@ export interface IComplianceStorage {
   getComplianceStandardsByType(standardType: string): Promise<ComplianceStandard[]>;
   getComplianceStandard(id: number): Promise<ComplianceStandard | undefined>;
   createComplianceStandard(standard: InsertComplianceStandard): Promise<ComplianceStandard>;
-  updateComplianceStandard(id: number, standard: Partial<InsertComplianceStandard>): Promise<ComplianceStandard | undefined>;
+  updateComplianceStandard(
+    id: number,
+    standard: Partial<InsertComplianceStandard>,
+  ): Promise<ComplianceStandard | undefined>;
   deleteComplianceStandard(id: number): Promise<boolean>;
 
   // Accommodations
@@ -32,7 +35,10 @@ export interface IComplianceStorage {
   getAccommodationsByGradeLevel(gradeLevel: string): Promise<Accommodation[]>;
   getAccommodation(id: number): Promise<Accommodation | undefined>;
   createAccommodation(accommodation: InsertAccommodation): Promise<Accommodation>;
-  updateAccommodation(id: number, accommodation: Partial<InsertAccommodation>): Promise<Accommodation | undefined>;
+  updateAccommodation(
+    id: number,
+    accommodation: Partial<InsertAccommodation>,
+  ): Promise<Accommodation | undefined>;
   deleteAccommodation(id: number): Promise<boolean>;
 
   // Assessment Requirements
@@ -40,8 +46,13 @@ export interface IComplianceStorage {
   getAssessmentRequirementsByGrade(gradeLevel: string): Promise<AssessmentRequirement[]>;
   getAssessmentRequirementsBySubject(subject: string): Promise<AssessmentRequirement[]>;
   getAssessmentRequirement(id: number): Promise<AssessmentRequirement | undefined>;
-  createAssessmentRequirement(requirement: InsertAssessmentRequirement): Promise<AssessmentRequirement>;
-  updateAssessmentRequirement(id: number, requirement: Partial<InsertAssessmentRequirement>): Promise<AssessmentRequirement | undefined>;
+  createAssessmentRequirement(
+    requirement: InsertAssessmentRequirement,
+  ): Promise<AssessmentRequirement>;
+  updateAssessmentRequirement(
+    id: number,
+    requirement: Partial<InsertAssessmentRequirement>,
+  ): Promise<AssessmentRequirement | undefined>;
   deleteAssessmentRequirement(id: number): Promise<boolean>;
 
   // Compliance Audits
@@ -49,7 +60,10 @@ export interface IComplianceStorage {
   getComplianceAuditsByCurriculum(curriculumPlanId: number): Promise<ComplianceAudit[]>;
   getComplianceAudit(id: number): Promise<ComplianceAudit | undefined>;
   createComplianceAudit(audit: InsertComplianceAudit): Promise<ComplianceAudit>;
-  updateComplianceAudit(id: number, audit: Partial<InsertComplianceAudit>): Promise<ComplianceAudit | undefined>;
+  updateComplianceAudit(
+    id: number,
+    audit: Partial<InsertComplianceAudit>,
+  ): Promise<ComplianceAudit | undefined>;
   deleteComplianceAudit(id: number): Promise<boolean>;
 
   // Student Compliance Plans
@@ -58,15 +72,23 @@ export interface IComplianceStorage {
   getStudentCompliancePlansByType(planType: string): Promise<StudentCompliancePlan[]>;
   getStudentCompliancePlan(id: number): Promise<StudentCompliancePlan | undefined>;
   createStudentCompliancePlan(plan: InsertStudentCompliancePlan): Promise<StudentCompliancePlan>;
-  updateStudentCompliancePlan(id: number, plan: Partial<InsertStudentCompliancePlan>): Promise<StudentCompliancePlan | undefined>;
+  updateStudentCompliancePlan(
+    id: number,
+    plan: Partial<InsertStudentCompliancePlan>,
+  ): Promise<StudentCompliancePlan | undefined>;
   deleteStudentCompliancePlan(id: number): Promise<boolean>;
 
   // Compliance Report Templates
   getComplianceReportTemplates(): Promise<ComplianceReportTemplate[]>;
   getComplianceReportTemplatesByType(reportType: string): Promise<ComplianceReportTemplate[]>;
   getComplianceReportTemplate(id: number): Promise<ComplianceReportTemplate | undefined>;
-  createComplianceReportTemplate(template: InsertComplianceReportTemplate): Promise<ComplianceReportTemplate>;
-  updateComplianceReportTemplate(id: number, template: Partial<InsertComplianceReportTemplate>): Promise<ComplianceReportTemplate | undefined>;
+  createComplianceReportTemplate(
+    template: InsertComplianceReportTemplate,
+  ): Promise<ComplianceReportTemplate>;
+  updateComplianceReportTemplate(
+    id: number,
+    template: Partial<InsertComplianceReportTemplate>,
+  ): Promise<ComplianceReportTemplate | undefined>;
   deleteComplianceReportTemplate(id: number): Promise<boolean>;
 
   // Curriculum Compliance Analysis
@@ -78,21 +100,31 @@ export interface IComplianceStorage {
   }>;
 
   // Student Plan Compliance Analysis
-  analyzeStudentPlanCompliance(studentId: number, curriculumPlanId: number): Promise<{
+  analyzeStudentPlanCompliance(
+    studentId: number,
+    curriculumPlanId: number,
+  ): Promise<{
     compliant: boolean;
     missingAccommodations: Accommodation[];
     recommendations: any[];
   }>;
 
   // Assessment Compliance Analysis
-  analyzeAssessmentCompliance(assessmentId: number, studentId?: number): Promise<{
+  analyzeAssessmentCompliance(
+    assessmentId: number,
+    studentId?: number,
+  ): Promise<{
     compliant: boolean;
     requiredAccommodations: Accommodation[];
     notes: string;
   }>;
 
   // Generate Compliance Reports
-  generateComplianceReport(templateId: number, entityId: number, entityType: string): Promise<{
+  generateComplianceReport(
+    templateId: number,
+    entityId: number,
+    entityType: string,
+  ): Promise<{
     reportId: string;
     reportData: any;
     generatedAt: Date;
@@ -138,91 +170,93 @@ export class ComplianceMemStorage implements IComplianceStorage {
   private async initDefaultComplianceData() {
     // Sample compliance standards for demonstration
     await this.createComplianceStandard({
-      standardName: "Common Core Math K-5",
-      standardType: "Federal",
-      description: "Common Core State Standards for Mathematics, Grades K-5",
-      gradeLevel: "K-5",
-      subject: "Mathematics",
+      standardName: 'Common Core Math K-5',
+      standardType: 'Federal',
+      description: 'Common Core State Standards for Mathematics, Grades K-5',
+      gradeLevel: 'K-5',
+      subject: 'Mathematics',
       requirements: [
-        "Number recognition and counting",
-        "Basic addition and subtraction",
-        "Place value understanding",
-        "Measurement concepts",
-        "Geometric shape recognition"
+        'Number recognition and counting',
+        'Basic addition and subtraction',
+        'Place value understanding',
+        'Measurement concepts',
+        'Geometric shape recognition',
       ],
-      active: true
+      active: true,
     });
 
     await this.createComplianceStandard({
-      standardName: "Next Generation Science Standards",
-      standardType: "Federal",
-      description: "NGSS standards for K-12 science education",
-      gradeLevel: "K-12",
-      subject: "Science",
+      standardName: 'Next Generation Science Standards',
+      standardType: 'Federal',
+      description: 'NGSS standards for K-12 science education',
+      gradeLevel: 'K-12',
+      subject: 'Science',
       requirements: [
-        "Scientific inquiry skills",
-        "Physical sciences fundamentals",
-        "Life sciences fundamentals",
-        "Earth and space sciences basics",
-        "Engineering principles"
+        'Scientific inquiry skills',
+        'Physical sciences fundamentals',
+        'Life sciences fundamentals',
+        'Earth and space sciences basics',
+        'Engineering principles',
       ],
-      active: true
+      active: true,
     });
 
     // Sample accommodations
     await this.createAccommodation({
-      name: "Extended Time",
-      category: "Testing",
-      description: "Provide 1.5x or 2x the standard time for tests and assessments",
-      applicableGradeLevels: ["K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
-      implementationDetails: "Allow student to take 50% or 100% more time than standard time limits for quizzes, tests, and assessments",
-      active: true
+      name: 'Extended Time',
+      category: 'Testing',
+      description: 'Provide 1.5x or 2x the standard time for tests and assessments',
+      applicableGradeLevels: ['K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+      implementationDetails:
+        'Allow student to take 50% or 100% more time than standard time limits for quizzes, tests, and assessments',
+      active: true,
     });
 
     await this.createAccommodation({
-      name: "Text-to-Speech",
-      category: "Reading",
-      description: "Provide text-to-speech technology for reading assignments and assessments",
-      applicableGradeLevels: ["K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
-      implementationDetails: "Use text-to-speech software or devices to read text aloud to student. For digital content, ensure compatibility with screen readers.",
-      active: true
+      name: 'Text-to-Speech',
+      category: 'Reading',
+      description: 'Provide text-to-speech technology for reading assignments and assessments',
+      applicableGradeLevels: ['K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+      implementationDetails:
+        'Use text-to-speech software or devices to read text aloud to student. For digital content, ensure compatibility with screen readers.',
+      active: true,
     });
 
     // Sample assessment requirements
     await this.createAssessmentRequirement({
-      assessmentName: "Annual Math Proficiency Test",
-      gradeLevel: "3-8",
-      subject: "Mathematics",
-      frequency: "Annual",
-      standardsLink: "Common Core Math Standards",
+      assessmentName: 'Annual Math Proficiency Test',
+      gradeLevel: '3-8',
+      subject: 'Mathematics',
+      frequency: 'Annual',
+      standardsLink: 'Common Core Math Standards',
       accommodationsAllowed: true,
-      accommodationTypes: ["Extended Time", "Calculator", "Small Group Setting"],
+      accommodationTypes: ['Extended Time', 'Calculator', 'Small Group Setting'],
       stateRequired: true,
       federalRequired: true,
-      active: true
+      active: true,
     });
 
     // Sample report template
     await this.createComplianceReportTemplate({
-      templateName: "IEP Compliance Review",
-      description: "Template for reviewing IEP compliance with curriculum",
-      reportType: "IEP",
+      templateName: 'IEP Compliance Review',
+      description: 'Template for reviewing IEP compliance with curriculum',
+      reportType: 'IEP',
       sections: [
         {
-          name: "Student Information",
-          fields: ["name", "grade", "teacher", "case_manager"]
+          name: 'Student Information',
+          fields: ['name', 'grade', 'teacher', 'case_manager'],
         },
         {
-          name: "Accommodations",
-          fields: ["current_accommodations", "implementation_status"]
+          name: 'Accommodations',
+          fields: ['current_accommodations', 'implementation_status'],
         },
         {
-          name: "Goal Progress",
-          fields: ["goals", "progress_metrics", "achievement_status"]
-        }
+          name: 'Goal Progress',
+          fields: ['goals', 'progress_metrics', 'achievement_status'],
+        },
       ],
-      requiredFields: ["name", "grade", "current_accommodations", "goals"],
-      active: true
+      requiredFields: ['name', 'grade', 'current_accommodations', 'goals'],
+      active: true,
     });
   }
 
@@ -232,25 +266,23 @@ export class ComplianceMemStorage implements IComplianceStorage {
   }
 
   async getComplianceStandardsByGrade(gradeLevel: string): Promise<ComplianceStandard[]> {
-    return Array.from(this.complianceStandards.values()).filter(
-      standard => {
-        // Check if gradeLevel contains the provided grade level (like K-5 containing 3)
-        // or is a direct match
-        const gradeLevelStr = String(standard.gradeLevel);
-        return gradeLevelStr.includes(gradeLevel) || gradeLevelStr === gradeLevel;
-      }
-    );
+    return Array.from(this.complianceStandards.values()).filter((standard) => {
+      // Check if gradeLevel contains the provided grade level (like K-5 containing 3)
+      // or is a direct match
+      const gradeLevelStr = String(standard.gradeLevel);
+      return gradeLevelStr.includes(gradeLevel) || gradeLevelStr === gradeLevel;
+    });
   }
 
   async getComplianceStandardsBySubject(subject: string): Promise<ComplianceStandard[]> {
     return Array.from(this.complianceStandards.values()).filter(
-      standard => standard.subject === subject
+      (standard) => standard.subject === subject,
     );
   }
 
   async getComplianceStandardsByType(standardType: string): Promise<ComplianceStandard[]> {
     return Array.from(this.complianceStandards.values()).filter(
-      standard => standard.standardType === standardType
+      (standard) => standard.standardType === standardType,
     );
   }
 
@@ -265,7 +297,7 @@ export class ComplianceMemStorage implements IComplianceStorage {
       id,
       active: standard.active ?? true,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
     this.complianceStandards.set(id, newStandard);
     return newStandard;
@@ -273,7 +305,7 @@ export class ComplianceMemStorage implements IComplianceStorage {
 
   async updateComplianceStandard(
     id: number,
-    standard: Partial<InsertComplianceStandard>
+    standard: Partial<InsertComplianceStandard>,
   ): Promise<ComplianceStandard | undefined> {
     const existingStandard = this.complianceStandards.get(id);
     if (!existingStandard) return undefined;
@@ -281,7 +313,7 @@ export class ComplianceMemStorage implements IComplianceStorage {
     const updatedStandard = {
       ...existingStandard,
       ...standard,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     this.complianceStandards.set(id, updatedStandard);
@@ -299,25 +331,23 @@ export class ComplianceMemStorage implements IComplianceStorage {
 
   async getAccommodationsByCategory(category: string): Promise<Accommodation[]> {
     return Array.from(this.accommodations.values()).filter(
-      accommodation => accommodation.category === category
+      (accommodation) => accommodation.category === category,
     );
   }
 
   async getAccommodationsByGradeLevel(gradeLevel: string): Promise<Accommodation[]> {
-    return Array.from(this.accommodations.values()).filter(
-      accommodation => {
-        // Safely handle the applicableGradeLevels which could be an array or string
-        const applicableGradeLevels = accommodation.applicableGradeLevels;
-        
-        // Check if it's an array (as it should be)
-        if (Array.isArray(applicableGradeLevels)) {
-          return applicableGradeLevels.includes(gradeLevel);
-        }
-        
-        // Fallback if it's a string
-        return String(applicableGradeLevels).includes(gradeLevel);
+    return Array.from(this.accommodations.values()).filter((accommodation) => {
+      // Safely handle the applicableGradeLevels which could be an array or string
+      const applicableGradeLevels = accommodation.applicableGradeLevels;
+
+      // Check if it's an array (as it should be)
+      if (Array.isArray(applicableGradeLevels)) {
+        return applicableGradeLevels.includes(gradeLevel);
       }
-    );
+
+      // Fallback if it's a string
+      return String(applicableGradeLevels).includes(gradeLevel);
+    });
   }
 
   async getAccommodation(id: number): Promise<Accommodation | undefined> {
@@ -331,7 +361,7 @@ export class ComplianceMemStorage implements IComplianceStorage {
       id,
       active: accommodation.active ?? true,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
     this.accommodations.set(id, newAccommodation);
     return newAccommodation;
@@ -339,7 +369,7 @@ export class ComplianceMemStorage implements IComplianceStorage {
 
   async updateAccommodation(
     id: number,
-    accommodation: Partial<InsertAccommodation>
+    accommodation: Partial<InsertAccommodation>,
   ): Promise<Accommodation | undefined> {
     const existingAccommodation = this.accommodations.get(id);
     if (!existingAccommodation) return undefined;
@@ -347,7 +377,7 @@ export class ComplianceMemStorage implements IComplianceStorage {
     const updatedAccommodation = {
       ...existingAccommodation,
       ...accommodation,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     this.accommodations.set(id, updatedAccommodation);
@@ -364,19 +394,17 @@ export class ComplianceMemStorage implements IComplianceStorage {
   }
 
   async getAssessmentRequirementsByGrade(gradeLevel: string): Promise<AssessmentRequirement[]> {
-    return Array.from(this.assessmentRequirements.values()).filter(
-      requirement => {
-        // Check if gradeLevel contains the provided grade level (like 3-8 containing 5)
-        // or is a direct match
-        const gradeLevelStr = String(requirement.gradeLevel);
-        return gradeLevelStr.includes(gradeLevel) || gradeLevelStr === gradeLevel;
-      }
-    );
+    return Array.from(this.assessmentRequirements.values()).filter((requirement) => {
+      // Check if gradeLevel contains the provided grade level (like 3-8 containing 5)
+      // or is a direct match
+      const gradeLevelStr = String(requirement.gradeLevel);
+      return gradeLevelStr.includes(gradeLevel) || gradeLevelStr === gradeLevel;
+    });
   }
 
   async getAssessmentRequirementsBySubject(subject: string): Promise<AssessmentRequirement[]> {
     return Array.from(this.assessmentRequirements.values()).filter(
-      requirement => requirement.subject === subject
+      (requirement) => requirement.subject === subject,
     );
   }
 
@@ -384,7 +412,9 @@ export class ComplianceMemStorage implements IComplianceStorage {
     return this.assessmentRequirements.get(id);
   }
 
-  async createAssessmentRequirement(requirement: InsertAssessmentRequirement): Promise<AssessmentRequirement> {
+  async createAssessmentRequirement(
+    requirement: InsertAssessmentRequirement,
+  ): Promise<AssessmentRequirement> {
     const id = this.assessmentRequirementCurrentId++;
     const newRequirement: AssessmentRequirement = {
       ...requirement,
@@ -395,7 +425,7 @@ export class ComplianceMemStorage implements IComplianceStorage {
       stateRequired: requirement.stateRequired ?? false,
       federalRequired: requirement.federalRequired ?? false,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
     this.assessmentRequirements.set(id, newRequirement);
     return newRequirement;
@@ -403,7 +433,7 @@ export class ComplianceMemStorage implements IComplianceStorage {
 
   async updateAssessmentRequirement(
     id: number,
-    requirement: Partial<InsertAssessmentRequirement>
+    requirement: Partial<InsertAssessmentRequirement>,
   ): Promise<AssessmentRequirement | undefined> {
     const existingRequirement = this.assessmentRequirements.get(id);
     if (!existingRequirement) return undefined;
@@ -411,7 +441,7 @@ export class ComplianceMemStorage implements IComplianceStorage {
     const updatedRequirement = {
       ...existingRequirement,
       ...requirement,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     this.assessmentRequirements.set(id, updatedRequirement);
@@ -429,7 +459,7 @@ export class ComplianceMemStorage implements IComplianceStorage {
 
   async getComplianceAuditsByCurriculum(curriculumPlanId: number): Promise<ComplianceAudit[]> {
     return Array.from(this.complianceAudits.values()).filter(
-      audit => audit.curriculumPlanId === curriculumPlanId
+      (audit) => audit.curriculumPlanId === curriculumPlanId,
     );
   }
 
@@ -445,7 +475,7 @@ export class ComplianceMemStorage implements IComplianceStorage {
       active: audit.active ?? true,
       auditDate: new Date(),
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
     this.complianceAudits.set(id, newAudit);
     return newAudit;
@@ -453,7 +483,7 @@ export class ComplianceMemStorage implements IComplianceStorage {
 
   async updateComplianceAudit(
     id: number,
-    audit: Partial<InsertComplianceAudit>
+    audit: Partial<InsertComplianceAudit>,
   ): Promise<ComplianceAudit | undefined> {
     const existingAudit = this.complianceAudits.get(id);
     if (!existingAudit) return undefined;
@@ -461,7 +491,7 @@ export class ComplianceMemStorage implements IComplianceStorage {
     const updatedAudit = {
       ...existingAudit,
       ...audit,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     this.complianceAudits.set(id, updatedAudit);
@@ -479,13 +509,13 @@ export class ComplianceMemStorage implements IComplianceStorage {
 
   async getStudentCompliancePlansByStudent(studentId: number): Promise<StudentCompliancePlan[]> {
     return Array.from(this.studentCompliancePlans.values()).filter(
-      plan => plan.studentId === studentId
+      (plan) => plan.studentId === studentId,
     );
   }
 
   async getStudentCompliancePlansByType(planType: string): Promise<StudentCompliancePlan[]> {
     return Array.from(this.studentCompliancePlans.values()).filter(
-      plan => plan.planType === planType
+      (plan) => plan.planType === planType,
     );
   }
 
@@ -493,7 +523,9 @@ export class ComplianceMemStorage implements IComplianceStorage {
     return this.studentCompliancePlans.get(id);
   }
 
-  async createStudentCompliancePlan(plan: InsertStudentCompliancePlan): Promise<StudentCompliancePlan> {
+  async createStudentCompliancePlan(
+    plan: InsertStudentCompliancePlan,
+  ): Promise<StudentCompliancePlan> {
     const id = this.planCurrentId++;
     const newPlan: StudentCompliancePlan = {
       ...plan,
@@ -503,7 +535,7 @@ export class ComplianceMemStorage implements IComplianceStorage {
       notes: plan.notes ?? null,
       endDate: plan.endDate ?? null,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
     this.studentCompliancePlans.set(id, newPlan);
     return newPlan;
@@ -511,7 +543,7 @@ export class ComplianceMemStorage implements IComplianceStorage {
 
   async updateStudentCompliancePlan(
     id: number,
-    plan: Partial<InsertStudentCompliancePlan>
+    plan: Partial<InsertStudentCompliancePlan>,
   ): Promise<StudentCompliancePlan | undefined> {
     const existingPlan = this.studentCompliancePlans.get(id);
     if (!existingPlan) return undefined;
@@ -519,7 +551,7 @@ export class ComplianceMemStorage implements IComplianceStorage {
     const updatedPlan = {
       ...existingPlan,
       ...plan,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     this.studentCompliancePlans.set(id, updatedPlan);
@@ -535,9 +567,11 @@ export class ComplianceMemStorage implements IComplianceStorage {
     return Array.from(this.complianceReportTemplates.values());
   }
 
-  async getComplianceReportTemplatesByType(reportType: string): Promise<ComplianceReportTemplate[]> {
+  async getComplianceReportTemplatesByType(
+    reportType: string,
+  ): Promise<ComplianceReportTemplate[]> {
     return Array.from(this.complianceReportTemplates.values()).filter(
-      template => template.reportType === reportType
+      (template) => template.reportType === reportType,
     );
   }
 
@@ -545,14 +579,16 @@ export class ComplianceMemStorage implements IComplianceStorage {
     return this.complianceReportTemplates.get(id);
   }
 
-  async createComplianceReportTemplate(template: InsertComplianceReportTemplate): Promise<ComplianceReportTemplate> {
+  async createComplianceReportTemplate(
+    template: InsertComplianceReportTemplate,
+  ): Promise<ComplianceReportTemplate> {
     const id = this.templateCurrentId++;
     const newTemplate: ComplianceReportTemplate = {
       ...template,
       id,
       active: template.active ?? true,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
     this.complianceReportTemplates.set(id, newTemplate);
     return newTemplate;
@@ -560,7 +596,7 @@ export class ComplianceMemStorage implements IComplianceStorage {
 
   async updateComplianceReportTemplate(
     id: number,
-    template: Partial<InsertComplianceReportTemplate>
+    template: Partial<InsertComplianceReportTemplate>,
   ): Promise<ComplianceReportTemplate | undefined> {
     const existingTemplate = this.complianceReportTemplates.get(id);
     if (!existingTemplate) return undefined;
@@ -568,7 +604,7 @@ export class ComplianceMemStorage implements IComplianceStorage {
     const updatedTemplate = {
       ...existingTemplate,
       ...template,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     this.complianceReportTemplates.set(id, updatedTemplate);
@@ -592,26 +628,29 @@ export class ComplianceMemStorage implements IComplianceStorage {
       score: 85,
       findings: [
         {
-          category: "Mathematics",
+          category: 'Mathematics',
           standardId: 1,
-          standardName: "Common Core Math K-5",
-          status: "Partially Met",
-          details: "Missing coverage of fractions and decimals"
-        }
+          standardName: 'Common Core Math K-5',
+          status: 'Partially Met',
+          details: 'Missing coverage of fractions and decimals',
+        },
       ],
       recommendations: [
         {
-          category: "Mathematics",
-          description: "Add content on fractions and decimals to meet Common Core requirements",
-          priority: "High",
-          standardReference: "Common Core Math K-5, Section 3.2"
-        }
+          category: 'Mathematics',
+          description: 'Add content on fractions and decimals to meet Common Core requirements',
+          priority: 'High',
+          standardReference: 'Common Core Math K-5, Section 3.2',
+        },
       ],
-      missingStandards: []
+      missingStandards: [],
     };
   }
 
-  async analyzeStudentPlanCompliance(studentId: number, curriculumPlanId: number): Promise<{
+  async analyzeStudentPlanCompliance(
+    studentId: number,
+    curriculumPlanId: number,
+  ): Promise<{
     compliant: boolean;
     missingAccommodations: Accommodation[];
     recommendations: any[];
@@ -623,15 +662,18 @@ export class ComplianceMemStorage implements IComplianceStorage {
       missingAccommodations: [],
       recommendations: [
         {
-          category: "Reading",
-          description: "Consider adding additional visual supports for reading assignments",
-          accommodationReference: "Visual Aids"
-        }
-      ]
+          category: 'Reading',
+          description: 'Consider adding additional visual supports for reading assignments',
+          accommodationReference: 'Visual Aids',
+        },
+      ],
     };
   }
 
-  async analyzeAssessmentCompliance(assessmentId: number, studentId?: number): Promise<{
+  async analyzeAssessmentCompliance(
+    assessmentId: number,
+    studentId?: number,
+  ): Promise<{
     compliant: boolean;
     requiredAccommodations: Accommodation[];
     notes: string;
@@ -641,11 +683,15 @@ export class ComplianceMemStorage implements IComplianceStorage {
     return {
       compliant: true,
       requiredAccommodations: [],
-      notes: "All required accommodations are available for this assessment"
+      notes: 'All required accommodations are available for this assessment',
     };
   }
 
-  async generateComplianceReport(templateId: number, entityId: number, entityType: string): Promise<{
+  async generateComplianceReport(
+    templateId: number,
+    entityId: number,
+    entityType: string,
+  ): Promise<{
     reportId: string;
     reportData: any;
     generatedAt: Date;
@@ -656,24 +702,24 @@ export class ComplianceMemStorage implements IComplianceStorage {
     return {
       reportId: `${templateId}-${entityId}-${Date.now()}`,
       reportData: {
-        title: "Compliance Report",
+        title: 'Compliance Report',
         entity: {
           id: entityId,
-          type: entityType
+          type: entityType,
         },
         sections: [
           {
-            name: "Summary",
-            content: "This curriculum meets 85% of required standards"
+            name: 'Summary',
+            content: 'This curriculum meets 85% of required standards',
           },
           {
-            name: "Findings",
-            content: "Some minor adjustments needed in mathematics content"
-          }
-        ]
+            name: 'Findings',
+            content: 'Some minor adjustments needed in mathematics content',
+          },
+        ],
       },
       generatedAt: new Date(),
-      compliant: true
+      compliant: true,
     };
   }
 }

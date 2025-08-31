@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(
-  request: NextRequest, 
-  { params }: { params: { classId: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { classId: string } }) {
   try {
     const { classId } = params;
-    
+
     // In production, this would:
     // 1. Verify user has paid for and enrolled in the class
     // 2. Generate WebRTC connection details
@@ -21,48 +18,41 @@ export async function GET(
         raiseHand: true,
         privateMessage: true,
         reactions: true,
-        breakoutRooms: false
+        breakoutRooms: false,
       },
       streamQuality: {
         video: '1080p',
         audio: '48kHz',
-        bitrate: '2000kbps'
+        bitrate: '2000kbps',
       },
       recordingEnabled: false, // Privacy setting
       maxViewers: 50,
-      connectionType: 'webrtc'
+      connectionType: 'webrtc',
     };
 
     // Mock verification - in production, check user enrollment
     const userEnrolled = true; // This would be a database lookup
-    
+
     if (!userEnrolled) {
       return NextResponse.json(
         { success: false, error: 'User not enrolled in this class' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     return NextResponse.json({
       success: true,
       streamConfig,
-      message: 'Stream access granted'
+      message: 'Stream access granted',
     });
-
   } catch (error) {
     console.error('Error accessing stream:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to access stream' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to access stream' }, { status: 500 });
   }
 }
 
 // Handle stream status updates (for coaches starting/ending streams)
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { classId: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: { classId: string } }) {
   try {
     const { classId } = params;
     const data = await request.json();
@@ -78,7 +68,7 @@ export async function POST(
       classId,
       action,
       timestamp: new Date().toISOString(),
-      status: action === 'start' ? 'live' : action === 'end' ? 'ended' : 'paused'
+      status: action === 'start' ? 'live' : action === 'end' ? 'ended' : 'paused',
     };
 
     // Mock notifications to enrolled students
@@ -90,14 +80,10 @@ export async function POST(
     return NextResponse.json({
       success: true,
       streamUpdate,
-      message: `Stream ${action} successful`
+      message: `Stream ${action} successful`,
     });
-
   } catch (error) {
     console.error('Error updating stream:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to update stream' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to update stream' }, { status: 500 });
   }
 }

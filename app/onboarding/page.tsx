@@ -25,7 +25,7 @@ export default function OnboardingPage() {
     // Check if user has already completed onboarding
     const completed = localStorage.getItem('onboarding_completed');
     const skipped = localStorage.getItem('onboarding_skipped');
-    
+
     if (completed || skipped) {
       router.push('/dashboard');
       return;
@@ -36,7 +36,5 @@ export default function OnboardingPage() {
     return null;
   }
 
-  return (
-    <OnboardingWizard onComplete={handleComplete} onSkip={handleSkip} />
-  );
+  return <OnboardingWizard onComplete={handleComplete} onSkip={handleSkip} />;
 }

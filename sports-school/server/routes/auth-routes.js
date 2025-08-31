@@ -1,6 +1,6 @@
 /**
  * Authentication Routes
- * 
+ *
  * Provides secure authentication endpoints for the AI Education Platform:
  * - User login with JWT tokens
  * - Token refresh
@@ -23,7 +23,7 @@ const authLimiter = rateLimit({
   message: {
     success: false,
     error: 'Too many authentication attempts. Please try again later.',
-    code: 'RATE_LIMIT_EXCEEDED'
+    code: 'RATE_LIMIT_EXCEEDED',
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -52,36 +52,45 @@ const getDemoPasswordHash = async () => {
 };
 
 const mockUsers = new Map([
-  ['admin@demo-school.com', {
-    id: 'user_001',
-    email: 'admin@demo-school.com',
-    passwordHash: getDemoPasswordHash(),
-    firstName: 'Jane',
-    lastName: 'Administrator',
-    role: 'school_admin',
-    schoolId: 'demo-school',
-    permissions: ['all']
-  }],
-  ['teacher@demo-school.com', {
-    id: 'user_002',
-    email: 'teacher@demo-school.com',
-    passwordHash: getDemoPasswordHash(),
-    firstName: 'John',
-    lastName: 'Teacher',
-    role: 'teacher',
-    schoolId: 'demo-school',
-    permissions: ['view_students', 'create_content', 'view_analytics']
-  }],
-  ['student@demo-school.com', {
-    id: 'user_003',
-    email: 'student@demo-school.com',
-    passwordHash: getDemoPasswordHash(),
-    firstName: 'Alice',
-    lastName: 'Student',
-    role: 'student',
-    schoolId: 'demo-school',
-    permissions: ['view_courses', 'submit_assignments', 'access_ai_tutors']
-  }]
+  [
+    'admin@demo-school.com',
+    {
+      id: 'user_001',
+      email: 'admin@demo-school.com',
+      passwordHash: getDemoPasswordHash(),
+      firstName: 'Jane',
+      lastName: 'Administrator',
+      role: 'school_admin',
+      schoolId: 'demo-school',
+      permissions: ['all'],
+    },
+  ],
+  [
+    'teacher@demo-school.com',
+    {
+      id: 'user_002',
+      email: 'teacher@demo-school.com',
+      passwordHash: getDemoPasswordHash(),
+      firstName: 'John',
+      lastName: 'Teacher',
+      role: 'teacher',
+      schoolId: 'demo-school',
+      permissions: ['view_students', 'create_content', 'view_analytics'],
+    },
+  ],
+  [
+    'student@demo-school.com',
+    {
+      id: 'user_003',
+      email: 'student@demo-school.com',
+      passwordHash: getDemoPasswordHash(),
+      firstName: 'Alice',
+      lastName: 'Student',
+      role: 'student',
+      schoolId: 'demo-school',
+      permissions: ['view_courses', 'submit_assignments', 'access_ai_tutors'],
+    },
+  ],
 ]);
 
 // Mock database functions
@@ -101,7 +110,7 @@ async function getUserById(id) {
 async function createUser(userData) {
   const userId = `user_${Date.now()}`;
   const hashedPassword = await authService.hashPassword(userData.password);
-  
+
   const newUser = {
     id: userId,
     email: userData.email,
@@ -111,9 +120,9 @@ async function createUser(userData) {
     role: userData.role || 'student',
     schoolId: userData.schoolId,
     permissions: userData.permissions || [],
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   };
-  
+
   mockUsers.set(userData.email, newUser);
   return newUser;
 }
@@ -131,7 +140,7 @@ router.post('/login', authLimiter, async (req, res) => {
       return res.status(400).json({
         success: false,
         error: 'Email and password are required.',
-        code: 'MISSING_CREDENTIALS'
+        code: 'MISSING_CREDENTIALS',
       });
     }
 
@@ -147,7 +156,7 @@ router.post('/login', authLimiter, async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     // Return access token and user info
@@ -155,15 +164,14 @@ router.post('/login', authLimiter, async (req, res) => {
       success: true,
       user: result.user,
       accessToken: result.accessToken,
-      expiresIn: result.expiresIn
+      expiresIn: result.expiresIn,
     });
-
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({
       success: false,
       error: 'Internal server error.',
-      code: 'SERVER_ERROR'
+      code: 'SERVER_ERROR',
     });
   }
 });
@@ -180,7 +188,7 @@ router.post('/refresh', generalLimiter, async (req, res) => {
       return res.status(401).json({
         success: false,
         error: 'Refresh token required.',
-        code: 'NO_REFRESH_TOKEN'
+        code: 'NO_REFRESH_TOKEN',
       });
     }
 
@@ -195,15 +203,14 @@ router.post('/refresh', generalLimiter, async (req, res) => {
     res.json({
       success: true,
       accessToken: result.accessToken,
-      expiresIn: result.expiresIn
+      expiresIn: result.expiresIn,
     });
-
   } catch (error) {
     console.error('Token refresh error:', error);
     res.status(500).json({
       success: false,
       error: 'Internal server error.',
-      code: 'SERVER_ERROR'
+      code: 'SERVER_ERROR',
     });
   }
 });
@@ -215,24 +222,23 @@ router.post('/refresh', generalLimiter, async (req, res) => {
 router.post('/logout', (req, res) => {
   try {
     const refreshToken = req.cookies.refreshToken;
-    
+
     if (refreshToken) {
       authService.logout(refreshToken);
     }
 
     res.clearCookie('refreshToken');
-    
+
     res.json({
       success: true,
-      message: 'Logged out successfully.'
+      message: 'Logged out successfully.',
     });
-
   } catch (error) {
     console.error('Logout error:', error);
     res.status(500).json({
       success: false,
       error: 'Internal server error.',
-      code: 'SERVER_ERROR'
+      code: 'SERVER_ERROR',
     });
   }
 });
@@ -241,67 +247,70 @@ router.post('/logout', (req, res) => {
  * POST /api/auth/register
  * Register new user (restricted to admins)
  */
-router.post('/register', authService.requireAuth(['school_admin', 'super_admin']), async (req, res) => {
-  try {
-    const { email, password, firstName, lastName, role, schoolId } = req.body;
+router.post(
+  '/register',
+  authService.requireAuth(['school_admin', 'super_admin']),
+  async (req, res) => {
+    try {
+      const { email, password, firstName, lastName, role, schoolId } = req.body;
 
-    // Validate input
-    if (!email || !password || !firstName || !lastName) {
-      return res.status(400).json({
+      // Validate input
+      if (!email || !password || !firstName || !lastName) {
+        return res.status(400).json({
+          success: false,
+          error: 'All fields are required.',
+          code: 'MISSING_FIELDS',
+        });
+      }
+
+      // Check if user already exists
+      const existingUser = await getUserByEmail(email);
+      if (existingUser) {
+        return res.status(409).json({
+          success: false,
+          error: 'User with this email already exists.',
+          code: 'USER_EXISTS',
+        });
+      }
+
+      // Validate role
+      const validRoles = ['student', 'teacher', 'parent', 'school_admin'];
+      if (role && !validRoles.includes(role)) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid role specified.',
+          code: 'INVALID_ROLE',
+        });
+      }
+
+      // Create user
+      const newUser = await createUser({
+        email,
+        password,
+        firstName,
+        lastName,
+        role: role || 'student',
+        schoolId: schoolId || req.user.schoolId,
+      });
+
+      // Remove password hash from response
+      const { passwordHash, ...userResponse } = newUser;
+
+      res.status(201).json({
+        success: true,
+        user: userResponse,
+        message: 'User created successfully.',
+      });
+    } catch (error) {
+      console.error('Registration error:', error);
+      res.status(500).json({
         success: false,
-        error: 'All fields are required.',
-        code: 'MISSING_FIELDS'
+        error: 'Internal server error.',
+        code: 'SERVER_ERROR',
       });
     }
-
-    // Check if user already exists
-    const existingUser = await getUserByEmail(email);
-    if (existingUser) {
-      return res.status(409).json({
-        success: false,
-        error: 'User with this email already exists.',
-        code: 'USER_EXISTS'
-      });
-    }
-
-    // Validate role
-    const validRoles = ['student', 'teacher', 'parent', 'school_admin'];
-    if (role && !validRoles.includes(role)) {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid role specified.',
-        code: 'INVALID_ROLE'
-      });
-    }
-
-    // Create user
-    const newUser = await createUser({
-      email,
-      password,
-      firstName,
-      lastName,
-      role: role || 'student',
-      schoolId: schoolId || req.user.schoolId
-    });
-
-    // Remove password hash from response
-    const { passwordHash, ...userResponse } = newUser;
-
-    res.status(201).json({
-      success: true,
-      user: userResponse,
-      message: 'User created successfully.'
-    });
-
-  } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error.',
-      code: 'SERVER_ERROR'
-    });
-  }
-});
+  },
+);
 
 /**
  * GET /api/auth/me
@@ -310,12 +319,12 @@ router.post('/register', authService.requireAuth(['school_admin', 'super_admin']
 router.get('/me', authService.requireAuth(), async (req, res) => {
   try {
     const user = await getUserById(req.user.userId);
-    
+
     if (!user) {
       return res.status(404).json({
         success: false,
         error: 'User not found.',
-        code: 'USER_NOT_FOUND'
+        code: 'USER_NOT_FOUND',
       });
     }
 
@@ -324,15 +333,14 @@ router.get('/me', authService.requireAuth(), async (req, res) => {
 
     res.json({
       success: true,
-      user: userResponse
+      user: userResponse,
     });
-
   } catch (error) {
     console.error('Get user error:', error);
     res.status(500).json({
       success: false,
       error: 'Internal server error.',
-      code: 'SERVER_ERROR'
+      code: 'SERVER_ERROR',
     });
   }
 });
@@ -341,25 +349,28 @@ router.get('/me', authService.requireAuth(), async (req, res) => {
  * GET /api/auth/security-events
  * Get recent security events (admin only)
  */
-router.get('/security-events', authService.requireAuth(['school_admin', 'super_admin']), (req, res) => {
-  try {
-    const limit = parseInt(req.query.limit) || 50;
-    const events = authService.getRecentSecurityEvents(limit);
+router.get(
+  '/security-events',
+  authService.requireAuth(['school_admin', 'super_admin']),
+  (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit) || 50;
+      const events = authService.getRecentSecurityEvents(limit);
 
-    res.json({
-      success: true,
-      events
-    });
-
-  } catch (error) {
-    console.error('Security events error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error.',
-      code: 'SERVER_ERROR'
-    });
-  }
-});
+      res.json({
+        success: true,
+        events,
+      });
+    } catch (error) {
+      console.error('Security events error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Internal server error.',
+        code: 'SERVER_ERROR',
+      });
+    }
+  },
+);
 
 /**
  * POST /api/auth/change-password
@@ -373,7 +384,7 @@ router.post('/change-password', authService.requireAuth(), async (req, res) => {
       return res.status(400).json({
         success: false,
         error: 'Current password and new password are required.',
-        code: 'MISSING_PASSWORDS'
+        code: 'MISSING_PASSWORDS',
       });
     }
 
@@ -382,23 +393,26 @@ router.post('/change-password', authService.requireAuth(), async (req, res) => {
       return res.status(404).json({
         success: false,
         error: 'User not found.',
-        code: 'USER_NOT_FOUND'
+        code: 'USER_NOT_FOUND',
       });
     }
 
     // Verify current password
-    const isCurrentPasswordValid = await authService.verifyPassword(currentPassword, user.passwordHash);
+    const isCurrentPasswordValid = await authService.verifyPassword(
+      currentPassword,
+      user.passwordHash,
+    );
     if (!isCurrentPasswordValid) {
       return res.status(401).json({
         success: false,
         error: 'Current password is incorrect.',
-        code: 'INVALID_CURRENT_PASSWORD'
+        code: 'INVALID_CURRENT_PASSWORD',
       });
     }
 
     // Hash new password
     const newPasswordHash = await authService.hashPassword(newPassword);
-    
+
     // Update user password (in real implementation, update database)
     user.passwordHash = newPasswordHash;
     mockUsers.set(user.email, user);
@@ -407,15 +421,14 @@ router.post('/change-password', authService.requireAuth(), async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Password changed successfully.'
+      message: 'Password changed successfully.',
     });
-
   } catch (error) {
     console.error('Change password error:', error);
     res.status(500).json({
       success: false,
       error: 'Internal server error.',
-      code: 'SERVER_ERROR'
+      code: 'SERVER_ERROR',
     });
   }
 });

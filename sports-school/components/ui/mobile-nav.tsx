@@ -1,29 +1,29 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
-import { Badge } from '@/components/ui/badge'
-import { 
-  Menu, 
-  X, 
-  Home, 
-  GraduationCap, 
-  Users, 
-  BookOpen, 
-  Brain, 
+import { useState } from 'react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Badge } from '@/components/ui/badge';
+import {
+  Menu,
+  X,
+  Home,
+  GraduationCap,
+  Users,
+  BookOpen,
+  Brain,
   Settings,
   Shield,
   Target,
   Award,
   Globe,
   Trophy,
-  Heart
-} from 'lucide-react'
+  Heart,
+} from 'lucide-react';
 
 export default function MobileNav() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   const mainNavItems = [
     { name: 'Home', href: '/', icon: Home },
@@ -31,22 +31,42 @@ export default function MobileNav() {
     { name: 'AI Tutors', href: '/ai-tutor', icon: Brain },
     { name: 'Courses', href: '/courses', icon: BookOpen },
     { name: 'Settings', href: '/settings', icon: Settings },
-  ]
+  ];
 
   const schools = [
-    { name: 'Primary School', href: '/schools/primary', icon: Shield, color: 'bg-blue-100 text-blue-700' },
-    { name: 'S.T.A.G.E Prep', href: '/schools/secondary', icon: Target, color: 'bg-purple-100 text-purple-700' },
+    {
+      name: 'Primary School',
+      href: '/schools/primary',
+      icon: Shield,
+      color: 'bg-blue-100 text-blue-700',
+    },
+    {
+      name: 'S.T.A.G.E Prep',
+      href: '/schools/secondary',
+      icon: Target,
+      color: 'bg-purple-100 text-purple-700',
+    },
     { name: 'Law School', href: '/schools/law', icon: Award, color: 'bg-green-100 text-green-700' },
-    { name: 'Language School', href: '/schools/language', icon: Globe, color: 'bg-orange-100 text-orange-700' },
-    { name: 'Sports Academy', href: '/schools/go4it-sports-academy', icon: Trophy, color: 'bg-red-100 text-red-700' },
-  ]
+    {
+      name: 'Language School',
+      href: '/schools/language',
+      icon: Globe,
+      color: 'bg-orange-100 text-orange-700',
+    },
+    {
+      name: 'Sports Academy',
+      href: '/schools/go4it-sports-academy',
+      icon: Trophy,
+      color: 'bg-red-100 text-red-700',
+    },
+  ];
 
   const dashboards = [
     { name: 'Student Dashboard', href: '/student-dashboard', icon: Users },
     { name: 'Parent Portal', href: '/parent-portal', icon: Heart },
     { name: 'Teacher Portal', href: '/teacher-portal', icon: BookOpen },
     { name: 'Admin Dashboard', href: '/admin', icon: Settings },
-  ]
+  ];
 
   return (
     <div className="lg:hidden">
@@ -63,7 +83,7 @@ export default function MobileNav() {
               Universal One School
             </SheetTitle>
           </SheetHeader>
-          
+
           <div className="mt-6 space-y-6">
             {/* Main Navigation */}
             <div>
@@ -155,5 +175,5 @@ export default function MobileNav() {
         </SheetContent>
       </Sheet>
     </div>
-  )
+  );
 }

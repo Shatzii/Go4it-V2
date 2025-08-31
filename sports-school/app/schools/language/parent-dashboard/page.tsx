@@ -6,16 +6,30 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { StaticQuickLinks } from '@/components/static/static-quick-links';
 import { StaticClassCreator } from '@/components/static/static-class-creator';
-import { 
-  BookOpen, Heart, Shield, Calendar, 
-  MessageCircle, TrendingUp, Trophy, Star,
-  Globe, Languages, MapPin
+import {
+  BookOpen,
+  Heart,
+  Shield,
+  Calendar,
+  MessageCircle,
+  TrendingUp,
+  Trophy,
+  Star,
+  Globe,
+  Languages,
+  MapPin,
 } from 'lucide-react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Suspense } from 'react';
 
 // Force dynamic rendering for this page
-function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) {
+function ErrorFallback({
+  error,
+  resetErrorBoundary,
+}: {
+  error: Error;
+  resetErrorBoundary: () => void;
+}) {
   return (
     <Card className="bg-gradient-to-r from-red-500/20 to-pink-500/20 border-red-500">
       <CardHeader>
@@ -23,7 +37,7 @@ function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetError
       </CardHeader>
       <CardContent>
         <p className="text-red-300 mb-4">Unable to load component</p>
-        <button 
+        <button
           onClick={resetErrorBoundary}
           className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
         >
@@ -55,38 +69,42 @@ export default function LanguageParentDashboard() {
 
         {/* Quick Links */}
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <Suspense fallback={
-            <Card className="bg-gradient-to-r from-green-500/20 to-teal-500/20 border-green-500">
-              <CardHeader>
-                <CardTitle className="text-green-400">Loading Quick Links...</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="animate-pulse space-y-4">
-                  <div className="h-10 bg-green-500/10 rounded"></div>
-                  <div className="h-10 bg-green-500/10 rounded"></div>
-                </div>
-              </CardContent>
-            </Card>
-          }>
+          <Suspense
+            fallback={
+              <Card className="bg-gradient-to-r from-green-500/20 to-teal-500/20 border-green-500">
+                <CardHeader>
+                  <CardTitle className="text-green-400">Loading Quick Links...</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-10 bg-green-500/10 rounded"></div>
+                    <div className="h-10 bg-green-500/10 rounded"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            }
+          >
             <StaticQuickLinks userType="parent" schoolId="language" />
           </Suspense>
         </ErrorBoundary>
 
         {/* Class Creator */}
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <Suspense fallback={
-            <Card className="bg-gradient-to-r from-green-500/20 to-teal-500/20 border-green-500">
-              <CardHeader>
-                <CardTitle className="text-green-400">Loading Class Information...</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="animate-pulse space-y-4">
-                  <div className="h-10 bg-green-500/10 rounded"></div>
-                  <div className="h-10 bg-green-500/10 rounded"></div>
-                </div>
-              </CardContent>
-            </Card>
-          }>
+          <Suspense
+            fallback={
+              <Card className="bg-gradient-to-r from-green-500/20 to-teal-500/20 border-green-500">
+                <CardHeader>
+                  <CardTitle className="text-green-400">Loading Class Information...</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-10 bg-green-500/10 rounded"></div>
+                    <div className="h-10 bg-green-500/10 rounded"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            }
+          >
             <StaticClassCreator userType="parent" schoolId="language" userId="parent-demo" />
           </Suspense>
         </ErrorBoundary>
@@ -94,10 +112,25 @@ export default function LanguageParentDashboard() {
         {/* Children Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[
-            { name: 'Sofia', grade: '10th Grade', language: 'Spanish', progress: 88, cultural: 'Latin America' },
-            { name: 'Kenji', grade: '11th Grade', language: 'Japanese', progress: 91, cultural: 'East Asia' }
+            {
+              name: 'Sofia',
+              grade: '10th Grade',
+              language: 'Spanish',
+              progress: 88,
+              cultural: 'Latin America',
+            },
+            {
+              name: 'Kenji',
+              grade: '11th Grade',
+              language: 'Japanese',
+              progress: 91,
+              cultural: 'East Asia',
+            },
           ].map((child, index) => (
-            <Card key={index} className="bg-gradient-to-br from-green-500/20 to-teal-500/20 border-green-500">
+            <Card
+              key={index}
+              className="bg-gradient-to-br from-green-500/20 to-teal-500/20 border-green-500"
+            >
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-green-400">
                   <Avatar className="w-8 h-8">

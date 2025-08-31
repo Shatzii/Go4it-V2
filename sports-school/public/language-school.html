@@ -1,543 +1,844 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Language Learning School - ShotziOS</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="assets/js/helpBubble.js"></script>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #000000;
-      color: #ffffff;
-    }
-    h1, h2, h3, h4, h5, h6 {
-      color: #ffffff !important;
-    }
-    p {
-      color: #e0e0e0 !important;
-    }
-    a {
-      color: #0070f3;
-    }
-    .text-gray-600, .text-gray-800, .text-gray-500, .text-gray-700 {
-      color: #e0e0e0 !important;
-    }
-    .bg-white {
-      background-color: #121212 !important;
-    }
-    .bg-gray-50, .bg-gray-100 {
-      background-color: #181818 !important;
-    }
-    .border-gray-300 {
-      border-color: #333333 !important;
-    }
-    .language-card, .activity-card {
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      background-color: #121212 !important;
-      border: 1px solid #0070f3 !important;
-    }
-    .language-card:hover, .activity-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px -5px rgba(0, 112, 243, 0.4), 0 10px 10px -5px rgba(0, 112, 243, 0.3);
-    }
-    .header-gradient {
-      background: linear-gradient(135deg, #0070f3 0%, #003580 100%);
-    }
-    .content-section {
-      max-width: 1200px;
-    }
-    button, .button {
-      background-color: #0070f3 !important;
-      color: white !important;
-      border: none !important;
-    }
-    button:hover, .button:hover {
-      background-color: #0060d0 !important;
-    }
-    footer {
-      background-color: #121212 !important;
-      border-top: 1px solid #333333;
-    }
-    /* Custom color adjustments for language school */
-    .text-green-600, .text-green-700, .text-green-800 {
-      color: #0070f3 !important;
-    }
-    .bg-green-100, .bg-emerald-100, .bg-teal-100 {
-      background-color: #162038 !important;
-    }
-    .bg-green-500, .bg-green-600, .bg-green-700 {
-      background-color: #0070f3 !important;
-    }
-    .text-emerald-600, .text-teal-600 {
-      color: #0070f3 !important;
-    }
-    .bg-gradient-to-r {
-      background: linear-gradient(135deg, #162038 0%, #152238 100%) !important;
-      border-color: #0070f3 !important;
-    }
-    .bg-green-800 {
-      background-color: #000000 !important;
-    }
-    .text-green-100 {
-      color: #ffffff !important;
-    }
-    .shadow {
-      box-shadow: 0 4px 6px rgba(0, 112, 243, 0.1), 0 2px 4px rgba(0, 112, 243, 0.06);
-    }
-    .hover\:bg-gray-50:hover {
-      background-color: #1a1a1a !important;
-    }
-    /* Progress bar colors */
-    .bg-gray-200 {
-      background-color: #333333 !important;
-    }
-    /* Flag colors should still be visible */
-    .language-flag {
-      border: 2px solid #0070f3;
-    }
-    /* Neurodivergent-friendly spacing */
-    .neurodivergent-spacing {
-      letter-spacing: 0.03em;
-      line-height: 1.7;
-    }
-  </style>
-</head>
-<body>
-  <!-- Header -->
-  <header class="header-gradient text-white shadow-lg">
-    <div class="container mx-auto px-4 py-6">
-      <div class="flex items-center">
-        <a href="index.html" class="text-white hover:bg-green-600 px-4 py-2 rounded mr-4">
-          &larr; Back
-        </a>
-        <div>
-          <h1 class="text-3xl font-bold flex items-center">
-            <span class="mr-2">🗣️</span> Language Learning School
-          </h1>
-          <p class="mt-1 text-green-100">
-            Immersive language learning experience across multiple languages
-          </p>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- Main Content -->
-  <main class="container mx-auto py-8 px-4">
-    <!-- Welcome Banner -->
-    <section class="content-section mx-auto mb-8">
-      <div class="bg-gradient-to-r from-green-50 to-emerald-100 p-6 rounded-lg border border-green-200">
-        <div class="flex flex-col md:flex-row justify-between items-center">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Language Learning School - ShotziOS</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <script src="assets/js/helpBubble.js"></script>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #000000;
+        color: #ffffff;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        color: #ffffff !important;
+      }
+      p {
+        color: #e0e0e0 !important;
+      }
+      a {
+        color: #0070f3;
+      }
+      .text-gray-600,
+      .text-gray-800,
+      .text-gray-500,
+      .text-gray-700 {
+        color: #e0e0e0 !important;
+      }
+      .bg-white {
+        background-color: #121212 !important;
+      }
+      .bg-gray-50,
+      .bg-gray-100 {
+        background-color: #181818 !important;
+      }
+      .border-gray-300 {
+        border-color: #333333 !important;
+      }
+      .language-card,
+      .activity-card {
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+        background-color: #121212 !important;
+        border: 1px solid #0070f3 !important;
+      }
+      .language-card:hover,
+      .activity-card:hover {
+        transform: translateY(-5px);
+        box-shadow:
+          0 10px 25px -5px rgba(0, 112, 243, 0.4),
+          0 10px 10px -5px rgba(0, 112, 243, 0.3);
+      }
+      .header-gradient {
+        background: linear-gradient(135deg, #0070f3 0%, #003580 100%);
+      }
+      .content-section {
+        max-width: 1200px;
+      }
+      button,
+      .button {
+        background-color: #0070f3 !important;
+        color: white !important;
+        border: none !important;
+      }
+      button:hover,
+      .button:hover {
+        background-color: #0060d0 !important;
+      }
+      footer {
+        background-color: #121212 !important;
+        border-top: 1px solid #333333;
+      }
+      /* Custom color adjustments for language school */
+      .text-green-600,
+      .text-green-700,
+      .text-green-800 {
+        color: #0070f3 !important;
+      }
+      .bg-green-100,
+      .bg-emerald-100,
+      .bg-teal-100 {
+        background-color: #162038 !important;
+      }
+      .bg-green-500,
+      .bg-green-600,
+      .bg-green-700 {
+        background-color: #0070f3 !important;
+      }
+      .text-emerald-600,
+      .text-teal-600 {
+        color: #0070f3 !important;
+      }
+      .bg-gradient-to-r {
+        background: linear-gradient(135deg, #162038 0%, #152238 100%) !important;
+        border-color: #0070f3 !important;
+      }
+      .bg-green-800 {
+        background-color: #000000 !important;
+      }
+      .text-green-100 {
+        color: #ffffff !important;
+      }
+      .shadow {
+        box-shadow:
+          0 4px 6px rgba(0, 112, 243, 0.1),
+          0 2px 4px rgba(0, 112, 243, 0.06);
+      }
+      .hover\:bg-gray-50:hover {
+        background-color: #1a1a1a !important;
+      }
+      /* Progress bar colors */
+      .bg-gray-200 {
+        background-color: #333333 !important;
+      }
+      /* Flag colors should still be visible */
+      .language-flag {
+        border: 2px solid #0070f3;
+      }
+      /* Neurodivergent-friendly spacing */
+      .neurodivergent-spacing {
+        letter-spacing: 0.03em;
+        line-height: 1.7;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header-gradient text-white shadow-lg">
+      <div class="container mx-auto px-4 py-6">
+        <div class="flex items-center">
+          <a href="index.html" class="text-white hover:bg-green-600 px-4 py-2 rounded mr-4">
+            &larr; Back
+          </a>
           <div>
-            <h2 class="text-2xl font-bold text-green-800">¡Bienvenido! Bienvenue! ようこそ!</h2>
-            <p class="mt-2 text-green-700">
-              Continue your language learning journey. Practice daily to maintain your streak!
+            <h1 class="text-3xl font-bold flex items-center">
+              <span class="mr-2">🗣️</span> Language Learning School
+            </h1>
+            <p class="mt-1 text-green-100">
+              Immersive language learning experience across multiple languages
             </p>
-          </div>
-          <button class="mt-4 md:mt-0 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium">
-            Start Today's Lesson
-          </button>
-        </div>
-        
-        <!-- Dashboard Links -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-          <a href="language-school-curriculum.html" class="bg-blue-900 bg-opacity-70 p-3 rounded-lg text-center hover:bg-opacity-90 transition-all">
-            <span class="text-xl">📚</span>
-            <span class="ml-2 text-white">Curriculum Creator</span>
-          </a>
-          <a href="language-school-staff.html" class="bg-blue-900 bg-opacity-70 p-3 rounded-lg text-center hover:bg-opacity-90 transition-all">
-            <span class="text-xl">👥</span>
-            <span class="ml-2 text-white">Language Instructors</span>
-          </a>
-          <a href="#" class="bg-blue-900 bg-opacity-70 p-3 rounded-lg text-center hover:bg-opacity-90 transition-all">
-            <span class="text-xl">🗺️</span>
-            <span class="ml-2 text-white">Cultural Resources</span>
-          </a>
-        </div>
-      </div>
-    </section>
-    
-    <!-- My Languages -->
-    <section class="content-section mx-auto mb-10">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-bold text-gray-800">My Languages</h2>
-        <a href="#" class="text-sm px-4 py-2 border border-gray-300 rounded bg-white hover:bg-gray-50">Explore More Languages</a>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Language 1 -->
-        <div class="language-card bg-white rounded-lg shadow overflow-hidden">
-          <div class="p-4 pb-3">
-            <div class="flex items-center justify-between">
-              <span class="text-3xl">🇪🇸</span>
-              <span class="text-sm font-medium px-2 py-1 bg-green-100 text-green-700 rounded-full">
-                Intermediate
-              </span>
-            </div>
-            <h3 class="text-lg font-medium mt-2">Spanish</h3>
-          </div>
-          <div class="px-4 pb-3">
-            <div class="flex justify-between items-center text-sm text-gray-500 mb-3">
-              <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>Progress: 68%</span>
-              </div>
-              <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                </svg>
-                <span>Streak: 12 days</span>
-              </div>
-            </div>
-            
-            <!-- Progress bar -->
-            <div class="w-full h-2 bg-gray-200 rounded-full">
-              <div class="h-full bg-green-500 rounded-full" style="width: 68%"></div>
-            </div>
-          </div>
-          <div class="p-4 pt-0">
-            <a href="#" class="block text-center w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded">Continue Learning</a>
-          </div>
-        </div>
-        
-        <!-- Language 2 -->
-        <div class="language-card bg-white rounded-lg shadow overflow-hidden">
-          <div class="p-4 pb-3">
-            <div class="flex items-center justify-between">
-              <span class="text-3xl">🇫🇷</span>
-              <span class="text-sm font-medium px-2 py-1 bg-green-100 text-green-700 rounded-full">
-                Beginner
-              </span>
-            </div>
-            <h3 class="text-lg font-medium mt-2">French</h3>
-          </div>
-          <div class="px-4 pb-3">
-            <div class="flex justify-between items-center text-sm text-gray-500 mb-3">
-              <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>Progress: 42%</span>
-              </div>
-              <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                </svg>
-                <span>Streak: 7 days</span>
-              </div>
-            </div>
-            
-            <!-- Progress bar -->
-            <div class="w-full h-2 bg-gray-200 rounded-full">
-              <div class="h-full bg-green-500 rounded-full" style="width: 42%"></div>
-            </div>
-          </div>
-          <div class="p-4 pt-0">
-            <a href="#" class="block text-center w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded">Continue Learning</a>
-          </div>
-        </div>
-        
-        <!-- Language 3 -->
-        <div class="language-card bg-white rounded-lg shadow overflow-hidden">
-          <div class="p-4 pb-3">
-            <div class="flex items-center justify-between">
-              <span class="text-3xl">🇯🇵</span>
-              <span class="text-sm font-medium px-2 py-1 bg-green-100 text-green-700 rounded-full">
-                Advanced
-              </span>
-            </div>
-            <h3 class="text-lg font-medium mt-2">Japanese</h3>
-          </div>
-          <div class="px-4 pb-3">
-            <div class="flex justify-between items-center text-sm text-gray-500 mb-3">
-              <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>Progress: 85%</span>
-              </div>
-              <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                </svg>
-                <span>Streak: 30 days</span>
-              </div>
-            </div>
-            
-            <!-- Progress bar -->
-            <div class="w-full h-2 bg-gray-200 rounded-full">
-              <div class="h-full bg-green-500 rounded-full" style="width: 85%"></div>
-            </div>
-          </div>
-          <div class="p-4 pt-0">
-            <a href="#" class="block text-center w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded">Continue Learning</a>
-          </div>
-        </div>
-        
-        <!-- Language 4 -->
-        <div class="language-card bg-white rounded-lg shadow overflow-hidden">
-          <div class="p-4 pb-3">
-            <div class="flex items-center justify-between">
-              <span class="text-3xl">🇩🇪</span>
-              <span class="text-sm font-medium px-2 py-1 bg-green-100 text-green-700 rounded-full">
-                Beginner
-              </span>
-            </div>
-            <h3 class="text-lg font-medium mt-2">German</h3>
-          </div>
-          <div class="px-4 pb-3">
-            <div class="flex justify-between items-center text-sm text-gray-500 mb-3">
-              <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>Progress: 25%</span>
-              </div>
-              <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                </svg>
-                <span>Streak: 4 days</span>
-              </div>
-            </div>
-            
-            <!-- Progress bar -->
-            <div class="w-full h-2 bg-gray-200 rounded-full">
-              <div class="h-full bg-green-500 rounded-full" style="width: 25%"></div>
-            </div>
-          </div>
-          <div class="p-4 pt-0">
-            <a href="#" class="block text-center w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded">Continue Learning</a>
           </div>
         </div>
       </div>
-    </section>
-    
-    <!-- Activity Types -->
-    <section class="content-section mx-auto mb-10">
-      <div class="mb-6">
-        <h2 class="text-xl font-bold text-gray-800">Language Learning Activities</h2>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Activity 1 -->
-        <div class="activity-card bg-white rounded-lg shadow overflow-hidden">
-          <div class="p-4 pb-3">
-            <div class="flex items-center">
-              <div class="p-2 rounded-full bg-green-100 mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-              </div>
-              <h3 class="text-lg font-medium">Vocabulary Building</h3>
-            </div>
-          </div>
-          <div class="px-4 pb-3">
-            <p class="text-sm text-gray-600 min-h-[50px]">
-              Learn and practice new words and phrases
-            </p>
-          </div>
-          <div class="p-4 pt-0">
-            <a href="#" class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50">Start Activity</a>
-          </div>
-        </div>
-        
-        <!-- Activity 2 -->
-        <div class="activity-card bg-white rounded-lg shadow overflow-hidden">
-          <div class="p-4 pb-3">
-            <div class="flex items-center">
-              <div class="p-2 rounded-full bg-blue-100 mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
-              </div>
-              <h3 class="text-lg font-medium">Conversation Practice</h3>
-            </div>
-          </div>
-          <div class="px-4 pb-3">
-            <p class="text-sm text-gray-600 min-h-[50px]">
-              Interactive dialogues and speaking exercises
-            </p>
-          </div>
-          <div class="p-4 pt-0">
-            <a href="#" class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50">Start Activity</a>
-          </div>
-        </div>
-        
-        <!-- Activity 3 -->
-        <div class="activity-card bg-white rounded-lg shadow overflow-hidden">
-          <div class="p-4 pb-3">
-            <div class="flex items-center">
-              <div class="p-2 rounded-full bg-purple-100 mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-              </div>
-              <h3 class="text-lg font-medium">Listening Comprehension</h3>
-            </div>
-          </div>
-          <div class="px-4 pb-3">
-            <p class="text-sm text-gray-600 min-h-[50px]">
-              Audio exercises to improve understanding
-            </p>
-          </div>
-          <div class="p-4 pt-0">
-            <a href="#" class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50">Start Activity</a>
-          </div>
-        </div>
-        
-        <!-- Activity 4 -->
-        <div class="activity-card bg-white rounded-lg shadow overflow-hidden">
-          <div class="p-4 pb-3">
-            <div class="flex items-center">
-              <div class="p-2 rounded-full bg-pink-100 mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                </svg>
-              </div>
-              <h3 class="text-lg font-medium">Pronunciation Training</h3>
-            </div>
-          </div>
-          <div class="px-4 pb-3">
-            <p class="text-sm text-gray-600 min-h-[50px]">
-              Perfect your accent and speech patterns
-            </p>
-          </div>
-          <div class="p-4 pt-0">
-            <a href="#" class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50">Start Activity</a>
-          </div>
-        </div>
-        
-        <!-- Activity 5 -->
-        <div class="activity-card bg-white rounded-lg shadow overflow-hidden">
-          <div class="p-4 pb-3">
-            <div class="flex items-center">
-              <div class="p-2 rounded-full bg-amber-100 mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 class="text-lg font-medium">Cultural Immersion</h3>
-            </div>
-          </div>
-          <div class="px-4 pb-3">
-            <p class="text-sm text-gray-600 min-h-[50px]">
-              Learn through authentic cultural content
-            </p>
-          </div>
-          <div class="p-4 pt-0">
-            <a href="#" class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50">Start Activity</a>
-          </div>
-        </div>
-        
-        <!-- Activity 6 -->
-        <div class="activity-card bg-white rounded-lg shadow overflow-hidden">
-          <div class="p-4 pb-3">
-            <div class="flex items-center">
-              <div class="p-2 rounded-full bg-cyan-100 mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 class="text-lg font-medium">Language Games</h3>
-            </div>
-          </div>
-          <div class="px-4 pb-3">
-            <p class="text-sm text-gray-600 min-h-[50px]">
-              Fun games to reinforce language skills
-            </p>
-          </div>
-          <div class="p-4 pt-0">
-            <a href="#" class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50">Start Activity</a>
-          </div>
-        </div>
-      </div>
-    </section>
-    
-    <!-- Additional Resources -->
-    <section class="content-section mx-auto">
-      <div class="mb-6">
-        <h2 class="text-xl font-bold text-gray-800">Language Learning Resources</h2>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-          <div class="p-4">
-            <h3 class="font-medium text-lg flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path d="M12 14l9-5-9-5-9 5 9 5z" />
-                <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
-              </svg>
-              Language Tutors
-            </h3>
-          </div>
-          <div class="px-4 pb-4">
-            <p class="text-sm text-gray-600">
-              Connect with native speakers and qualified language tutors for personalized guidance and conversation practice.
-            </p>
-          </div>
-          <div class="px-4 pb-4">
-            <a href="#" class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50">Find a Tutor</a>
-          </div>
-        </div>
-        
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-          <div class="p-4">
-            <h3 class="font-medium text-lg flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-              </svg>
-              Language Learning Soundtrack
-            </h3>
-          </div>
-          <div class="px-4 pb-4">
-            <p class="text-sm text-gray-600">
-              Customized background music that enhances memory retention and focus during your language studies.
-            </p>
-          </div>
-          <div class="px-4 pb-4">
-            <a href="#" class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50">Generate Soundtrack</a>
-          </div>
-        </div>
-        
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-          <div class="p-4">
-            <h3 class="font-medium text-lg flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              Language Exchange Community
-            </h3>
-          </div>
-          <div class="px-4 pb-4">
-            <p class="text-sm text-gray-600">
-              Join language exchange groups to practice with other learners and native speakers in a supportive environment.
-            </p>
-          </div>
-          <div class="px-4 pb-4">
-            <a href="#" class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50">Join Community</a>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
+    </header>
 
-  <!-- Footer -->
-  <footer class="bg-green-800 text-green-100 p-6 mt-12">
-    <div class="container mx-auto">
-      <div class="text-center">
-        <p>&copy; 2025 Language Learning School</p>
-        <p class="text-sm mt-1">
-          Part of the ShotziOS Learning Platform
-        </p>
+    <!-- Main Content -->
+    <main class="container mx-auto py-8 px-4">
+      <!-- Welcome Banner -->
+      <section class="content-section mx-auto mb-8">
+        <div
+          class="bg-gradient-to-r from-green-50 to-emerald-100 p-6 rounded-lg border border-green-200"
+        >
+          <div class="flex flex-col md:flex-row justify-between items-center">
+            <div>
+              <h2 class="text-2xl font-bold text-green-800">¡Bienvenido! Bienvenue! ようこそ!</h2>
+              <p class="mt-2 text-green-700">
+                Continue your language learning journey. Practice daily to maintain your streak!
+              </p>
+            </div>
+            <button
+              class="mt-4 md:mt-0 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium"
+            >
+              Start Today's Lesson
+            </button>
+          </div>
+
+          <!-- Dashboard Links -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            <a
+              href="language-school-curriculum.html"
+              class="bg-blue-900 bg-opacity-70 p-3 rounded-lg text-center hover:bg-opacity-90 transition-all"
+            >
+              <span class="text-xl">📚</span>
+              <span class="ml-2 text-white">Curriculum Creator</span>
+            </a>
+            <a
+              href="language-school-staff.html"
+              class="bg-blue-900 bg-opacity-70 p-3 rounded-lg text-center hover:bg-opacity-90 transition-all"
+            >
+              <span class="text-xl">👥</span>
+              <span class="ml-2 text-white">Language Instructors</span>
+            </a>
+            <a
+              href="#"
+              class="bg-blue-900 bg-opacity-70 p-3 rounded-lg text-center hover:bg-opacity-90 transition-all"
+            >
+              <span class="text-xl">🗺️</span>
+              <span class="ml-2 text-white">Cultural Resources</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- My Languages -->
+      <section class="content-section mx-auto mb-10">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-gray-800">My Languages</h2>
+          <a
+            href="#"
+            class="text-sm px-4 py-2 border border-gray-300 rounded bg-white hover:bg-gray-50"
+            >Explore More Languages</a
+          >
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Language 1 -->
+          <div class="language-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center justify-between">
+                <span class="text-3xl">🇪🇸</span>
+                <span
+                  class="text-sm font-medium px-2 py-1 bg-green-100 text-green-700 rounded-full"
+                >
+                  Intermediate
+                </span>
+              </div>
+              <h3 class="text-lg font-medium mt-2">Spanish</h3>
+            </div>
+            <div class="px-4 pb-3">
+              <div class="flex justify-between items-center text-sm text-gray-500 mb-3">
+                <div class="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span>Progress: 68%</span>
+                </div>
+                <div class="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                    />
+                  </svg>
+                  <span>Streak: 12 days</span>
+                </div>
+              </div>
+
+              <!-- Progress bar -->
+              <div class="w-full h-2 bg-gray-200 rounded-full">
+                <div class="h-full bg-green-500 rounded-full" style="width: 68%"></div>
+              </div>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded"
+                >Continue Learning</a
+              >
+            </div>
+          </div>
+
+          <!-- Language 2 -->
+          <div class="language-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center justify-between">
+                <span class="text-3xl">🇫🇷</span>
+                <span
+                  class="text-sm font-medium px-2 py-1 bg-green-100 text-green-700 rounded-full"
+                >
+                  Beginner
+                </span>
+              </div>
+              <h3 class="text-lg font-medium mt-2">French</h3>
+            </div>
+            <div class="px-4 pb-3">
+              <div class="flex justify-between items-center text-sm text-gray-500 mb-3">
+                <div class="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span>Progress: 42%</span>
+                </div>
+                <div class="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                    />
+                  </svg>
+                  <span>Streak: 7 days</span>
+                </div>
+              </div>
+
+              <!-- Progress bar -->
+              <div class="w-full h-2 bg-gray-200 rounded-full">
+                <div class="h-full bg-green-500 rounded-full" style="width: 42%"></div>
+              </div>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded"
+                >Continue Learning</a
+              >
+            </div>
+          </div>
+
+          <!-- Language 3 -->
+          <div class="language-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center justify-between">
+                <span class="text-3xl">🇯🇵</span>
+                <span
+                  class="text-sm font-medium px-2 py-1 bg-green-100 text-green-700 rounded-full"
+                >
+                  Advanced
+                </span>
+              </div>
+              <h3 class="text-lg font-medium mt-2">Japanese</h3>
+            </div>
+            <div class="px-4 pb-3">
+              <div class="flex justify-between items-center text-sm text-gray-500 mb-3">
+                <div class="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span>Progress: 85%</span>
+                </div>
+                <div class="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                    />
+                  </svg>
+                  <span>Streak: 30 days</span>
+                </div>
+              </div>
+
+              <!-- Progress bar -->
+              <div class="w-full h-2 bg-gray-200 rounded-full">
+                <div class="h-full bg-green-500 rounded-full" style="width: 85%"></div>
+              </div>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded"
+                >Continue Learning</a
+              >
+            </div>
+          </div>
+
+          <!-- Language 4 -->
+          <div class="language-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center justify-between">
+                <span class="text-3xl">🇩🇪</span>
+                <span
+                  class="text-sm font-medium px-2 py-1 bg-green-100 text-green-700 rounded-full"
+                >
+                  Beginner
+                </span>
+              </div>
+              <h3 class="text-lg font-medium mt-2">German</h3>
+            </div>
+            <div class="px-4 pb-3">
+              <div class="flex justify-between items-center text-sm text-gray-500 mb-3">
+                <div class="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span>Progress: 25%</span>
+                </div>
+                <div class="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                    />
+                  </svg>
+                  <span>Streak: 4 days</span>
+                </div>
+              </div>
+
+              <!-- Progress bar -->
+              <div class="w-full h-2 bg-gray-200 rounded-full">
+                <div class="h-full bg-green-500 rounded-full" style="width: 25%"></div>
+              </div>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded"
+                >Continue Learning</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Activity Types -->
+      <section class="content-section mx-auto mb-10">
+        <div class="mb-6">
+          <h2 class="text-xl font-bold text-gray-800">Language Learning Activities</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Activity 1 -->
+          <div class="activity-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center">
+                <div class="p-2 rounded-full bg-green-100 mr-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-green-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                    />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-medium">Vocabulary Building</h3>
+              </div>
+            </div>
+            <div class="px-4 pb-3">
+              <p class="text-sm text-gray-600 min-h-[50px]">
+                Learn and practice new words and phrases
+              </p>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >Start Activity</a
+              >
+            </div>
+          </div>
+
+          <!-- Activity 2 -->
+          <div class="activity-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center">
+                <div class="p-2 rounded-full bg-blue-100 mr-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-blue-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                    />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-medium">Conversation Practice</h3>
+              </div>
+            </div>
+            <div class="px-4 pb-3">
+              <p class="text-sm text-gray-600 min-h-[50px]">
+                Interactive dialogues and speaking exercises
+              </p>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >Start Activity</a
+              >
+            </div>
+          </div>
+
+          <!-- Activity 3 -->
+          <div class="activity-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center">
+                <div class="p-2 rounded-full bg-purple-100 mr-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-purple-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                    />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-medium">Listening Comprehension</h3>
+              </div>
+            </div>
+            <div class="px-4 pb-3">
+              <p class="text-sm text-gray-600 min-h-[50px]">
+                Audio exercises to improve understanding
+              </p>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >Start Activity</a
+              >
+            </div>
+          </div>
+
+          <!-- Activity 4 -->
+          <div class="activity-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center">
+                <div class="p-2 rounded-full bg-pink-100 mr-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-pink-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                    />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-medium">Pronunciation Training</h3>
+              </div>
+            </div>
+            <div class="px-4 pb-3">
+              <p class="text-sm text-gray-600 min-h-[50px]">
+                Perfect your accent and speech patterns
+              </p>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >Start Activity</a
+              >
+            </div>
+          </div>
+
+          <!-- Activity 5 -->
+          <div class="activity-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center">
+                <div class="p-2 rounded-full bg-amber-100 mr-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-amber-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-medium">Cultural Immersion</h3>
+              </div>
+            </div>
+            <div class="px-4 pb-3">
+              <p class="text-sm text-gray-600 min-h-[50px]">
+                Learn through authentic cultural content
+              </p>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >Start Activity</a
+              >
+            </div>
+          </div>
+
+          <!-- Activity 6 -->
+          <div class="activity-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center">
+                <div class="p-2 rounded-full bg-cyan-100 mr-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-cyan-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-medium">Language Games</h3>
+              </div>
+            </div>
+            <div class="px-4 pb-3">
+              <p class="text-sm text-gray-600 min-h-[50px]">
+                Fun games to reinforce language skills
+              </p>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >Start Activity</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Additional Resources -->
+      <section class="content-section mx-auto">
+        <div class="mb-6">
+          <h2 class="text-xl font-bold text-gray-800">Language Learning Resources</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4">
+              <h3 class="font-medium text-lg flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2 text-green-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                  <path
+                    d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
+                  />
+                </svg>
+                Language Tutors
+              </h3>
+            </div>
+            <div class="px-4 pb-4">
+              <p class="text-sm text-gray-600">
+                Connect with native speakers and qualified language tutors for personalized guidance
+                and conversation practice.
+              </p>
+            </div>
+            <div class="px-4 pb-4">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >Find a Tutor</a
+              >
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4">
+              <h3 class="font-medium text-lg flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2 text-green-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
+                  />
+                </svg>
+                Language Learning Soundtrack
+              </h3>
+            </div>
+            <div class="px-4 pb-4">
+              <p class="text-sm text-gray-600">
+                Customized background music that enhances memory retention and focus during your
+                language studies.
+              </p>
+            </div>
+            <div class="px-4 pb-4">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >Generate Soundtrack</a
+              >
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4">
+              <h3 class="font-medium text-lg flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2 text-green-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
+                </svg>
+                Language Exchange Community
+              </h3>
+            </div>
+            <div class="px-4 pb-4">
+              <p class="text-sm text-gray-600">
+                Join language exchange groups to practice with other learners and native speakers in
+                a supportive environment.
+              </p>
+            </div>
+            <div class="px-4 pb-4">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >Join Community</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-green-800 text-green-100 p-6 mt-12">
+      <div class="container mx-auto">
+        <div class="text-center">
+          <p>&copy; 2025 Language Learning School</p>
+          <p class="text-sm mt-1">Part of the ShotziOS Learning Platform</p>
+        </div>
       </div>
-    </div>
-  </footer>
-</body>
+    </footer>
+  </body>
 </html>

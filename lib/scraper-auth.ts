@@ -19,50 +19,50 @@ export const sportsDataAPIs: APIConfig[] = [
     baseURL: 'https://site.api.espn.com/apis/site/v2',
     authMethod: 'none',
     headers: {
-      'Accept': 'application/json',
-      'User-Agent': 'Go4It-Sports-Platform/1.0'
+      Accept: 'application/json',
+      'User-Agent': 'Go4It-Sports-Platform/1.0',
     },
     rateLimit: {
       requestsPerMinute: 30,
-      daily: 1000
-    }
+      daily: 1000,
+    },
   },
   {
     name: 'SportsData.io',
     baseURL: 'https://api.sportsdata.io',
     authMethod: 'api_key',
     headers: {
-      'Accept': 'application/json'
+      Accept: 'application/json',
     },
     rateLimit: {
       requestsPerMinute: 200,
-      daily: 10000
-    }
+      daily: 10000,
+    },
   },
   {
     name: 'The Sports DB',
     baseURL: 'https://www.thesportsdb.com/api/v1/json',
     authMethod: 'none',
     headers: {
-      'Accept': 'application/json'
+      Accept: 'application/json',
     },
     rateLimit: {
       requestsPerMinute: 60,
-      daily: 1000
-    }
+      daily: 1000,
+    },
   },
   {
     name: 'BalldontLie NBA API',
     baseURL: 'https://www.balldontlie.io/api/v1',
     authMethod: 'none',
     headers: {
-      'Accept': 'application/json'
+      Accept: 'application/json',
     },
     rateLimit: {
       requestsPerMinute: 60,
-      daily: 1000
-    }
-  }
+      daily: 1000,
+    },
+  },
 ];
 
 export class SportsAPIManager {
@@ -72,13 +72,13 @@ export class SportsAPIManager {
   constructor() {
     this.apiConfigs = new Map();
     this.requestCounts = new Map();
-    
-    sportsDataAPIs.forEach(config => {
+
+    sportsDataAPIs.forEach((config) => {
       this.apiConfigs.set(config.name, config);
       this.requestCounts.set(config.name, {
         minute: 0,
         daily: 0,
-        lastReset: Date.now()
+        lastReset: Date.now(),
       });
     });
   }
@@ -103,13 +103,14 @@ export class SportsAPIManager {
   private canMakeRequest(apiName: string): boolean {
     const config = this.apiConfigs.get(apiName);
     const counts = this.requestCounts.get(apiName);
-    
+
     if (!config || !counts) return false;
 
     this.resetRateLimitCounters(apiName);
-    
-    return counts.minute < config.rateLimit.requestsPerMinute && 
-           counts.daily < config.rateLimit.daily;
+
+    return (
+      counts.minute < config.rateLimit.requestsPerMinute && counts.daily < config.rateLimit.daily
+    );
   }
 
   private incrementRequestCount(apiName: string): void {
@@ -120,153 +121,160 @@ export class SportsAPIManager {
     }
   }
 
-  async fetchESPNData(sport: string = 'basketball', division: string = 'mens-college-basketball'): Promise<any> {
+  async fetchESPNData(
+    sport: string = 'basketball',
+    division: string = 'mens-college-basketball',
+  ): Promise<any> {
     const apiName = 'ESPN API';
-    
+
     if (!this.canMakeRequest(apiName)) {
       throw new Error(`Rate limit exceeded for ${apiName}`);
     }
 
     const config = this.apiConfigs.get(apiName)!;
-    
+
     try {
       const response = await axios.get(`${config.baseURL}/sports/${division}/athletes`, {
         headers: config.headers,
         timeout: 10000,
         params: {
-          limit: 50
-        }
+          limit: 50,
+        },
       });
 
       this.incrementRequestCount(apiName);
-      
+
       return {
         success: true,
         data: response.data,
         source: apiName,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
     } catch (error) {
       console.error(`ESPN API error:`, error.message);
       return {
         success: false,
         error: error.message,
-        source: apiName
+        source: apiName,
       };
     }
   }
 
-  async fetchSportsDataIO(apiKey: string, sport: string = 'NBA', endpoint: string = 'Players'): Promise<any> {
+  async fetchSportsDataIO(
+    apiKey: string,
+    sport: string = 'NBA',
+    endpoint: string = 'Players',
+  ): Promise<any> {
     const apiName = 'SportsData.io';
-    
+
     if (!this.canMakeRequest(apiName)) {
       throw new Error(`Rate limit exceeded for ${apiName}`);
     }
 
     const config = this.apiConfigs.get(apiName)!;
-    
+
     try {
       const response = await axios.get(`${config.baseURL}/v3/${sport}/scores/json/${endpoint}`, {
         headers: {
           ...config.headers,
-          'Ocp-Apim-Subscription-Key': apiKey
+          'Ocp-Apim-Subscription-Key': apiKey,
         },
-        timeout: 10000
+        timeout: 10000,
       });
 
       this.incrementRequestCount(apiName);
-      
+
       return {
         success: true,
         data: response.data,
         source: apiName,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
     } catch (error) {
       console.error(`SportsData.io API error:`, error.message);
       return {
         success: false,
         error: error.message,
-        source: apiName
+        source: apiName,
       };
     }
   }
 
   async fetchTheSportsDB(query: string, type: string = 'searchplayers'): Promise<any> {
     const apiName = 'The Sports DB';
-    
+
     if (!this.canMakeRequest(apiName)) {
       throw new Error(`Rate limit exceeded for ${apiName}`);
     }
 
     const config = this.apiConfigs.get(apiName)!;
-    
+
     try {
       const response = await axios.get(`${config.baseURL}/1/${type}.php`, {
         headers: config.headers,
         timeout: 10000,
         params: {
-          p: query
-        }
+          p: query,
+        },
       });
 
       this.incrementRequestCount(apiName);
-      
+
       return {
         success: true,
         data: response.data,
         source: apiName,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
     } catch (error) {
       console.error(`The Sports DB API error:`, error.message);
       return {
         success: false,
         error: error.message,
-        source: apiName
+        source: apiName,
       };
     }
   }
 
   async fetchNBAData(endpoint: string = 'players'): Promise<any> {
     const apiName = 'BalldontLie NBA API';
-    
+
     if (!this.canMakeRequest(apiName)) {
       throw new Error(`Rate limit exceeded for ${apiName}`);
     }
 
     const config = this.apiConfigs.get(apiName)!;
-    
+
     try {
       const response = await axios.get(`${config.baseURL}/${endpoint}`, {
         headers: config.headers,
         timeout: 10000,
         params: {
-          per_page: 50
-        }
+          per_page: 50,
+        },
       });
 
       this.incrementRequestCount(apiName);
-      
+
       return {
         success: true,
         data: response.data,
         source: apiName,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
     } catch (error) {
       console.error(`NBA API error:`, error.message);
       return {
         success: false,
         error: error.message,
-        source: apiName
+        source: apiName,
       };
     }
   }
 
   async fetchMultipleAPIs(sport: string, apiKeys?: Record<string, string>): Promise<any[]> {
     const results: any[] = [];
-    
+
     // ESPN (Free)
     try {
       const espnResult = await this.fetchESPNData(sport);
@@ -316,7 +324,7 @@ export class SportsAPIManager {
 
   getAPIStatus(): Record<string, any> {
     const status: Record<string, any> = {};
-    
+
     this.apiConfigs.forEach((config, name) => {
       const counts = this.requestCounts.get(name);
       status[name] = {
@@ -324,7 +332,7 @@ export class SportsAPIManager {
         requestsThisMinute: counts?.minute || 0,
         requestsToday: counts?.daily || 0,
         limits: config.rateLimit,
-        requiresAuth: config.authMethod !== 'none'
+        requiresAuth: config.authMethod !== 'none',
       };
     });
 
